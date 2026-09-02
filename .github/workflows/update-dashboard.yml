@@ -26,10 +26,13 @@ jobs:
       - name: Calculate technical scores
         run: python scripts/dashboard/calculate_technicals.py
 
+      - name: Run technical baseline backtest
+        run: python scripts/dashboard/backtest_technicals.py
+
       - name: Verify generated-file-only scope
         shell: bash
         run: |
-          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/(market_data|technical_scores)\.json$' || true)"
+          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/(market_data|technical_scores|backtest_results)\.json$' || true)"
           if [ -n "$unexpected" ]; then
             echo "Unexpected modified files:"
             echo "$unexpected"
@@ -39,7 +42,7 @@ jobs:
       - name: Commit generated data
         shell: bash
         run: |
-          if git diff --quiet -- dashboard/data/market_data.json dashboard/data/technical_scores.json; then
+          if git diff --quiet -- dashboard/data/market_data.json dashboard/data/technical_scores.json dashboard/data/backtest_results.json; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
