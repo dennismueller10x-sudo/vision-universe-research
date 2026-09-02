@@ -1,7 +1,468 @@
 {
   "schema_version": 1,
-  "generated_at_utc": null,
-  "source_market_data_generated_at_utc": null,
-  "symbols": {},
-  "status": "not_generated"
+  "generated_at_utc": "2026-09-02T15:58:31.712964+00:00",
+  "source_market_data_generated_at_utc": "2026-09-02T15:58:31.523960+00:00",
+  "symbols": {
+    "NVDA": {
+      "last_date": "2026-09-02",
+      "close": 227.45,
+      "ema20": 217.3392881735724,
+      "sma50": 209.34579958999998,
+      "sma150": 200.48599975666667,
+      "sma200": 196.2844500525,
+      "rsi14": 58.476697704060996,
+      "high_52w": 235.74001,
+      "low_52w": 165.17,
+      "performance_pct": {
+        "1m": 3.7542195055195737,
+        "3m": 4.019939632305869,
+        "6m": 24.05912512272279,
+        "12m": 33.30793576368538
+      },
+      "annualized_volatility_pct": 38.210906379199564,
+      "max_drawdown_12m_pct": -20.22314258868818,
+      "distance_52w_high_pct": -3.516590162187583,
+      "distance_sma_pct": {
+        "sma50": 8.647988373999738,
+        "sma150": 13.449318294574187,
+        "sma200": 15.877747798750308
+      },
+      "momentum_score_beta": 66.3,
+      "timing_score_beta": 100,
+      "trend_template_tests": {
+        "price_above_sma50": true,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 8
+    },
+    "AVGO": {
+      "last_date": "2026-09-02",
+      "close": 370.37,
+      "ema20": 377.39548030317974,
+      "sma50": 384.64260016000003,
+      "sma150": 374.6153339333333,
+      "sma200": 369.699550305,
+      "rsi14": 43.779476686359324,
+      "high_52w": 481.57001,
+      "low_52w": 293.41,
+      "performance_pct": {
+        "1m": -11.454049918714727,
+        "3m": -11.587214437468674,
+        "6m": 11.299098815971952,
+        "12m": 22.4808980958068
+      },
+      "annualized_volatility_pct": 48.11559115280359,
+      "max_drawdown_12m_pct": -28.951255539143272,
+      "distance_52w_high_pct": -23.09114099526256,
+      "distance_sma_pct": {
+        "sma50": -3.7106134770467536,
+        "sma150": -1.133251511292599,
+        "sma200": 0.18134988112559203
+      },
+      "momentum_score_beta": 52.7,
+      "timing_score_beta": 40,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": false,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 6
+    },
+    "AMD": {
+      "last_date": "2026-09-02",
+      "close": 458.17,
+      "ema20": 476.67535540752584,
+      "sma50": 501.66839992,
+      "sma150": 377.95420032666664,
+      "sma200": 338.77145026,
+      "rsi14": 43.24853650840467,
+      "high_52w": 580.90997,
+      "low_52w": 151.14,
+      "performance_pct": {
+        "1m": -4.953840596299308,
+        "3m": -12.429283019317982,
+        "6m": 129.71672098270247,
+        "12m": 182.59421451921298
+      },
+      "annualized_volatility_pct": 71.65931695325636,
+      "max_drawdown_12m_pct": -27.760750870531194,
+      "distance_52w_high_pct": -21.128914347949657,
+      "distance_sma_pct": {
+        "sma50": -8.67074743534506,
+        "sma150": 21.223682553071967,
+        "sma200": 35.244572601488144
+      },
+      "momentum_score_beta": 70.7,
+      "timing_score_beta": 40,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 7
+    },
+    "TSM": {
+      "last_date": "2026-09-02",
+      "close": 412.285,
+      "ema20": 417.06723502459175,
+      "sma50": 420.94089998000004,
+      "sma150": 393.49510040666667,
+      "sma200": 371.41987507,
+      "rsi14": 46.66550236765607,
+      "high_52w": 477.57001,
+      "low_52w": 231.39,
+      "performance_pct": {
+        "1m": -0.4142512077294658,
+        "3m": -7.3350286043551876,
+        "6m": 16.510770262554985,
+        "12m": 78.17753576213322
+      },
+      "annualized_volatility_pct": 40.29688047063182,
+      "max_drawdown_12m_pct": -21.54657910784641,
+      "distance_52w_high_pct": -13.670249101278365,
+      "distance_sma_pct": {
+        "sma50": -2.0563219160721347,
+        "sma150": 4.775129238944653,
+        "sma200": 11.002406621966143
+      },
+      "momentum_score_beta": 64.7,
+      "timing_score_beta": 60,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 7
+    },
+    "ASML": {
+      "last_date": "2026-09-02",
+      "close": 1676.4,
+      "ema20": 1732.0117715101117,
+      "sma50": 1756.2143962399998,
+      "sma150": 1581.4742012333334,
+      "sma200": 1473.831947735,
+      "rsi14": 41.80251318157088,
+      "high_52w": 1989.43994,
+      "low_52w": 736.82001,
+      "performance_pct": {
+        "1m": -0.10844645115264395,
+        "3m": -4.612879388203717,
+        "6m": 22.511620644506003,
+        "12m": 127.51825103121183
+      },
+      "annualized_volatility_pct": 46.27185628764465,
+      "max_drawdown_12m_pct": -22.053945493825765,
+      "distance_52w_high_pct": -15.735078687522474,
+      "distance_sma_pct": {
+        "sma50": -4.544684089304807,
+        "sma150": 6.002361511344145,
+        "sma200": 13.744311390203512
+      },
+      "momentum_score_beta": 66.9,
+      "timing_score_beta": 40,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 7
+    },
+    "MU": {
+      "last_date": "2026-09-02",
+      "close": 943.0,
+      "ema20": 933.2826722879157,
+      "sma50": 943.7644041799999,
+      "sma150": 702.6467346133334,
+      "sma200": 598.984300415,
+      "rsi14": 51.6611895530586,
+      "high_52w": 1213.56006,
+      "low_52w": 118.72,
+      "performance_pct": {
+        "1m": 5.57664102822466,
+        "3m": -5.3212851405622486,
+        "6m": 137.50158128703936,
+        "12m": 694.3059299191375
+      },
+      "annualized_volatility_pct": 81.38010397046345,
+      "max_drawdown_12m_pct": -39.104785633765836,
+      "distance_52w_high_pct": -22.29473999004219,
+      "distance_sma_pct": {
+        "sma50": -0.08099523319743396,
+        "sma150": 34.20684300467618,
+        "sma200": 57.43317468365237
+      },
+      "momentum_score_beta": 75.1,
+      "timing_score_beta": 60,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 7
+    },
+    "MRVL": {
+      "last_date": "2026-09-02",
+      "close": 205.6,
+      "ema20": 221.77684606321557,
+      "sma50": 223.15939951000001,
+      "sma150": 172.07379985333333,
+      "sma200": 150.452549865,
+      "rsi14": 43.524130726064854,
+      "high_52w": 316.42999,
+      "low_52w": 62.31,
+      "performance_pct": {
+        "1m": -2.568478768486804,
+        "3m": -35.02512198669917,
+        "6m": 171.67019027484142,
+        "12m": 229.96308778687208
+      },
+      "annualized_volatility_pct": 78.52309681404166,
+      "max_drawdown_12m_pct": -48.36140847458864,
+      "distance_52w_high_pct": -35.02512198669917,
+      "distance_sma_pct": {
+        "sma50": -7.868545778737479,
+        "sma150": 19.483617015049724,
+        "sma200": 36.65438052361585
+      },
+      "momentum_score_beta": 65.6,
+      "timing_score_beta": 40,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": false
+      },
+      "trend_template_tests_passed": 6
+    },
+    "ARM": {
+      "last_date": "2026-09-02",
+      "close": 231.57,
+      "ema20": 252.19264353310467,
+      "sma50": 277.7551995,
+      "sma150": 226.79483338,
+      "sma200": 200.6827750525,
+      "rsi14": 37.834574727538936,
+      "high_52w": 439.45999,
+      "low_52w": 104.55,
+      "performance_pct": {
+        "1m": -15.663920011068544,
+        "3m": -41.1422326148841,
+        "6m": 91.98308738186039,
+        "12m": 76.20605691675546
+      },
+      "annualized_volatility_pct": 76.14861997024873,
+      "max_drawdown_12m_pct": -48.825830538065595,
+      "distance_52w_high_pct": -47.30578317266152,
+      "distance_sma_pct": {
+        "sma50": -16.62802337567042,
+        "sma150": 2.105500618701961,
+        "sma200": 15.391069283061132
+      },
+      "momentum_score_beta": 60.8,
+      "timing_score_beta": 40,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": false
+      },
+      "trend_template_tests_passed": 6
+    },
+    "PLTR": {
+      "last_date": "2026-09-02",
+      "close": 166.945,
+      "ema20": 171.0859569850783,
+      "sma50": 147.11689838,
+      "sma150": 143.14606579666668,
+      "sma200": 151.30132453,
+      "rsi14": 50.30322812451543,
+      "high_52w": 207.17999,
+      "low_52w": 107.27,
+      "performance_pct": {
+        "1m": 5.37462004510636,
+        "3m": 17.81580804516585,
+        "6m": 9.350232527674063,
+        "12m": 7.775991463911636
+      },
+      "annualized_volatility_pct": 60.43146309833563,
+      "max_drawdown_12m_pct": -48.223764273760224,
+      "distance_52w_high_pct": -19.42030695145801,
+      "distance_sma_pct": {
+        "sma50": 13.477786602586184,
+        "sma150": 16.62562926258746,
+        "sma200": 10.339417396771156
+      },
+      "momentum_score_beta": 60.1,
+      "timing_score_beta": 60,
+      "trend_template_tests": {
+        "price_above_sma50": true,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": false,
+        "sma200_rising_20d": false,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 6
+    },
+    "MSFT": {
+      "last_date": "2026-09-02",
+      "close": 494.12,
+      "ema20": 486.6515260620277,
+      "sma50": 438.28759908,
+      "sma150": 415.03133258,
+      "sma200": 431.07224947000003,
+      "rsi14": 59.09996350641709,
+      "high_52w": 542.070007,
+      "low_52w": 352.82999,
+      "performance_pct": {
+        "1m": 1.3662680295053464,
+        "3m": 15.435115956597102,
+        "6m": 20.317525088086242,
+        "12m": -2.2222241570748147
+      },
+      "annualized_volatility_pct": 32.361427517448284,
+      "max_drawdown_12m_pct": -34.910623084888734,
+      "distance_52w_high_pct": -8.845722209456241,
+      "distance_sma_pct": {
+        "sma50": 12.738758987750632,
+        "sma150": 19.05607148461619,
+        "sma200": 14.625796628643272
+      },
+      "momentum_score_beta": 58.7,
+      "timing_score_beta": 80,
+      "trend_template_tests": {
+        "price_above_sma50": true,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": false,
+        "sma200_rising_20d": false,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 6
+    },
+    "SPY": {
+      "last_date": "2026-09-02",
+      "close": 765.19,
+      "ema20": 765.0622413245486,
+      "sma50": 755.34140122,
+      "sma150": 720.5534669866666,
+      "sma200": 711.124250145,
+      "rsi14": 51.95887913437023,
+      "high_52w": 777.88,
+      "low_52w": 631.96997,
+      "performance_pct": {
+        "1m": -0.597562987244904,
+        "3m": 1.0698824064684365,
+        "6m": 12.311576228148734,
+        "12m": 18.866314332903265
+      },
+      "annualized_volatility_pct": 12.76098036468048,
+      "max_drawdown_12m_pct": -9.133132167725378,
+      "distance_52w_high_pct": -1.6313570216485718,
+      "distance_sma_pct": {
+        "sma50": 1.3038605806716008,
+        "sma150": 6.19475653902577,
+        "sma200": 7.6028555971724865
+      },
+      "momentum_score_beta": 57.9,
+      "timing_score_beta": 100,
+      "trend_template_tests": {
+        "price_above_sma50": true,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": false,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 7
+    },
+    "QQQ": {
+      "last_date": "2026-09-02",
+      "close": 708.155,
+      "ema20": 713.2359227582161,
+      "sma50": 710.87070024,
+      "sma150": 669.7673000999999,
+      "sma200": 656.58132438,
+      "rsi14": 46.90491474657488,
+      "high_52w": 746.15997,
+      "low_52w": 558.28003,
+      "performance_pct": {
+        "1m": -1.2749184619394782,
+        "3m": -4.382197166959633,
+        "6m": 16.298801939472263,
+        "12m": 24.222462382589427
+      },
+      "annualized_volatility_pct": 19.55310711102619,
+      "max_drawdown_12m_pct": -12.188368051705245,
+      "distance_52w_high_pct": -5.093407784928483,
+      "distance_sma_pct": {
+        "sma50": -0.382024500247824,
+        "sma150": 5.731498073176833,
+        "sma200": 7.854880074254367
+      },
+      "momentum_score_beta": 58.7,
+      "timing_score_beta": 60,
+      "trend_template_tests": {
+        "price_above_sma50": false,
+        "price_above_sma150": true,
+        "price_above_sma200": true,
+        "sma50_above_sma150": true,
+        "sma150_above_sma200": true,
+        "sma200_rising_20d": true,
+        "price_at_least_25pct_above_52w_low": true,
+        "price_within_25pct_of_52w_high": true
+      },
+      "trend_template_tests_passed": 7
+    }
+  },
+  "status": "generated",
+  "score_rules": {
+    "momentum_score_beta": "Equal-weighted capped 1M, 3M, 6M and 12M performance components.",
+    "timing_score_beta": "Five deterministic 20-point technical conditions."
+  }
 }
