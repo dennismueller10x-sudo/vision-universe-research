@@ -27,28 +27,23 @@ jobs:
         run: python scripts/dashboard/calculate_technicals.py
 
       - name: Verify generated-file-only scope
+        shell: bash
         run: |
-          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/(market_data|technical_scores)\\.json
-
-      - name: Commit generated data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/data/market_data.json dashboard/data/technical_scores.json
-          git commit -m "chore: update dashboard market data" || exit 0
-          git push
- || true)"
+          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/(market_data|technical_scores)\.json$' || true)"
           if [ -n "$unexpected" ]; then
             echo "Unexpected modified files:"
             echo "$unexpected"
             exit 1
           fi
-          test -n "$(git diff -- dashboard/data/market_data.json dashboard/data/technical_scores.json)" || exit 0
 
       - name: Commit generated data
+        shell: bash
         run: |
+          if git diff --quiet -- dashboard/data/market_data.json dashboard/data/technical_scores.json; then
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add dashboard/data/market_data.json dashboard/data/technical_scores.json
-          git commit -m "chore: update dashboard market data" || exit 0
+          git commit -m "chore: update dashboard market data"
           git push
