@@ -459,4 +459,35 @@
       <div class="quality-gate"><div><b>Datenqualität</b><span>68 grün · 23 gelb · 10 rot</span></div><strong>78.7%</strong></div>
     </section>
 <div class="footer">VISION UNIVERSE® Investment OS · Pilot / Beta · Datenstand 28.08.2026 · Keine Anlageberatung. Scores dienen der strukturierten Research-Einordnung.</div>
-</main></body></html>
+</main>
+<script>
+/* V6.3 static data layer: no browser-side provider requests or API keys. */
+(async function loadDashboardData(){
+  const notice = document.querySelector('.notice');
+  const status = document.createElement('p');
+  status.className = 'data-pipeline-status';
+  status.style.cssText = 'margin:0 0 28px;color:#71717a;font-size:12px';
+  try {
+    const [universeResponse, marketResponse, technicalResponse] = await Promise.all([
+      fetch('config/universe.json'),
+      fetch('data/market_data.json'),
+      fetch('data/technical_scores.json')
+    ]);
+    if (![universeResponse, marketResponse, technicalResponse].every(function(response){ return response.ok; })) throw new Error('static data unavailable');
+    const [universe, marketData, technicalData] = await Promise.all([
+      universeResponse.json(), marketResponse.json(), technicalResponse.json()
+    ]);
+    const activeCount = universe.stocks.filter(function(stock){ return stock.active; }).length;
+    document.documentElement.dataset.universeSize = String(activeCount);
+    document.documentElement.dataset.marketDataStatus = marketData.status || 'unknown';
+    document.documentElement.dataset.technicalDataStatus = technicalData.status || 'unknown';
+    status.textContent = technicalData.status === 'generated'
+      ? 'V6.3 Technical Data: statisch geladen · ' + activeCount + ' aktive Aktien'
+      : 'V6.3 Datenpipeline bereit · technische Daten werden nach dem ersten erfolgreichen Wochenlauf angezeigt.';
+  } catch (error) {
+    status.textContent = 'V6.3 Datenpipeline: statische Daten sind aktuell nicht verfügbar.';
+  }
+  if (notice) notice.insertAdjacentElement('afterend', status);
+}());
+</script>
+</body></html>
