@@ -1,1 +1,462 @@
-<!-- VISION UNIVERSE Investment OS Dashboard -->
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>VISION UNIVERSE® Investment OS — Score Dashboard Beta</title>
+<style>
+:root{--bg:#f5f5f2;--card:#fff;--ink:#0b0b0d;--muted:#71717a;--line:#e5e5e0;--accent:#ff6b00;--green:#1a9b58;--yellow:#c78a00;--red:#d44b43;--black:#080808;--soft:#fafaf8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;line-height:1.45}a{color:inherit;text-decoration:none}.wrap{max-width:1240px;margin:auto;padding:0 22px 80px}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(245,245,242,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.topbar-in{max-width:1240px;margin:auto;height:64px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}.logo{height:24px;width:auto;object-fit:contain}.topnav{display:flex;gap:18px;font-size:13px;font-weight:700;color:#555}.topnav a:hover{color:var(--accent)}
+.hero{padding:58px 0 28px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(190px,.55fr) minmax(230px,.85fr);gap:28px;align-items:end}.brand-link{display:inline-flex;align-items:center}.hero-atlas{align-self:center;justify-self:center;width:min(100%,270px);opacity:.9;pointer-events:none}.hero-atlas img{display:block;width:100%;height:auto;object-fit:contain;filter:grayscale(1) contrast(1.05)}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.15em;font-weight:800;color:var(--accent)}h1{font-size:clamp(42px,7vw,82px);line-height:.95;letter-spacing:-.055em;margin:12px 0 18px;max-width:850px}.hero p{font-size:18px;color:#555;max-width:760px;margin:0}.hero-badge{background:var(--black);color:white;border-radius:28px;padding:26px}.hero-badge small{color:#aaa;text-transform:uppercase;letter-spacing:.12em}.hero-badge b{display:block;font-size:34px;letter-spacing:-.04em;margin:8px 0}.hero-badge p{color:#ccc;font-size:14px}
+.notice{margin:14px 0 36px;background:#fff7ed;border:1px solid #fed7aa;border-radius:16px;padding:14px 16px;font-size:13px;color:#7c2d12}.notice b{color:#9a3412}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 34px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.kpi small{display:block;color:var(--muted);font-weight:700}.kpi b{display:block;font-size:30px;letter-spacing:-.04em;margin-top:4px}.kpi span{font-size:12px;color:#888}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:46px 0 16px}.section-head h2{margin:0;font-size:30px;letter-spacing:-.035em}.section-head p{margin:0;color:var(--muted);max-width:570px;font-size:14px}
+.matrix{position:relative;height:430px;background:white;border:1px solid var(--line);border-radius:24px;overflow:hidden;margin-bottom:28px}.matrix:before,.matrix:after{content:"";position:absolute;background:#ddd}.matrix:before{width:1px;top:0;bottom:0;left:50%}.matrix:after{height:1px;left:0;right:0;top:50%}.quad{position:absolute;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#aaa}.q1{top:16px;left:18px}.q2{top:16px;right:18px;color:var(--green)}.q3{bottom:16px;left:18px;color:var(--red)}.q4{bottom:16px;right:18px}.axis-y{position:absolute;left:12px;top:50%;transform:rotate(-90deg) translateX(-50%);transform-origin:left top;font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.12em}.axis-x{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.12em}.dot{position:absolute;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:#111;color:white;border:3px solid white;box-shadow:0 3px 14px #0002;display:grid;place-items:center;font-size:10px;font-weight:800;transition:.2s}.dot:hover{background:var(--accent);transform:translate(-50%,-50%) scale(1.08)}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.stock-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;transition:.18s}.stock-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px #0000000b;border-color:#d1d1ca}.rank{position:absolute;right:16px;top:14px;font-size:11px;font-weight:800;color:#aaa}.card-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.card-head b{display:block;font-size:23px}.card-head span{display:block;color:#777;font-size:13px;margin-top:2px}.big-score{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:900;border:5px solid #eee}.elite{border-color:#49b978!important}.strong{border-color:#8bbd58!important}.mid{border-color:#e0b64d!important}.weak{border-color:#d96b60!important}.tag{display:inline-block;margin:11px 0 6px;background:#f2f2ef;border-radius:99px;padding:6px 9px;font-size:11px;font-weight:800}.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}.mini-grid div{background:#f7f7f4;border-radius:12px;padding:9px}.mini-grid small{display:block;color:#888;font-size:10px}.mini-grid strong{font-size:18px}.stock-card p{color:#555;font-size:13px;min-height:57px}.coverage{display:flex;justify-content:space-between;font-size:11px;color:#777}.bar{height:5px;background:#eee;border-radius:99px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:#111}.open{margin-top:13px;font-size:12px;font-weight:800;color:var(--accent)}.good{color:#11804a!important}.good2{color:#52913e!important}.warn{color:#b57600!important}.bad{color:#c63d36!important}
+.methodology{margin-top:52px;background:#0a0a0b;color:#fff;border-radius:28px;padding:30px}.methodology h2{font-size:34px;margin:5px 0 12px}.methodology p{color:#bbb;max-width:850px}.formula{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.formula div{background:#171719;border:1px solid #29292c;border-radius:16px;padding:16px}.formula small{color:#999}.formula b{display:block;font-size:24px;margin-top:5px}.methodology details{border-top:1px solid #29292c;padding:16px 0}.methodology summary{cursor:pointer;font-weight:800}.methodology li{color:#ccc;margin:7px 0}
+.company-detail{scroll-margin-top:80px;background:white;border-radius:28px;border:1px solid var(--line);padding:26px;margin-top:44px}.detail-top{display:flex;justify-content:space-between;font-size:12px;color:#777}.detail-top a{font-weight:800;color:var(--accent)}.detail-hero{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;padding:28px 0 22px;border-bottom:1px solid var(--line)}.detail-hero h2{font-size:40px;line-height:1.05;letter-spacing:-.04em;margin:7px 0 10px}.detail-hero h2 em{font-style:normal;color:#aaa;font-weight:600}.detail-hero p{color:#555;max-width:780px}.score-orb{width:155px;height:155px;border-radius:50%;border:11px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}.score-orb small{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#777}.score-orb b{font-size:48px;line-height:1}.score-orb span{font-size:10px;color:#777}
+.score-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin:18px 0 28px}.score-strip>div{background:#f7f7f4;border-radius:14px;padding:12px;position:relative;overflow:hidden}.score-strip span{font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.06em;font-weight:800}.score-strip b{display:block;font-size:24px}.score-strip i{display:block;position:absolute;bottom:0;left:0;width:var(--w);height:4px;background:#111}.score-strip i.riskline{background:var(--red)}.score-strip .inactive{opacity:.42}.score-strip .inactive small{font-size:9px;color:#777}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panel{border-radius:18px;padding:18px;border:1px solid var(--line)}.panel h3{margin:0 0 10px;font-size:18px}.panel ul{list-style:none;padding:0;margin:0}.panel li{font-size:13px;margin:9px 0}.positive{background:#f3fbf6}.negative{background:#fff6f4}.section-title{margin:30px 0 12px}.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1px solid var(--line);border-radius:14px;padding:14px}.metric span{display:block;color:#777;font-size:11px}.metric b{display:block;font-size:18px;margin:4px 0}.metric small{color:#999;font-size:9px}
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.method-card{border:1px solid var(--line);border-radius:16px;padding:0 14px;background:#fafaf8}.method-card summary{cursor:pointer;padding:14px 0;font-weight:800;display:flex;justify-content:space-between;gap:12px}.method-card summary span{color:#888;font-size:11px;font-weight:600}table{width:100%;border-collapse:collapse;font-size:11px;margin:0 0 14px}th,td{padding:8px 5px;border-top:1px solid #e7e7e2;text-align:left}th{color:#888}.quality-gate{margin-top:18px;padding:16px;border-radius:16px;background:#111;color:white;display:flex;justify-content:space-between;align-items:center}.quality-gate b{display:block}.quality-gate span{font-size:11px;color:#aaa}.quality-gate strong{font-size:28px}
+.footer{text-align:center;color:#888;font-size:11px;padding:48px 0 10px}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:34px}.hero-atlas{width:min(64vw,280px);margin:0 auto}.hero-badge{padding:20px}.kpis{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.matrix{height:360px}.topnav{display:none}.detail-hero{grid-template-columns:1fr}.score-orb{width:125px;height:125px}.score-strip{grid-template-columns:repeat(3,1fr)}.two-col,.method-grid{grid-template-columns:1fr}.metrics-grid{grid-template-columns:1fr 1fr}.formula{grid-template-columns:1fr}.company-detail{padding:18px;border-radius:20px}.detail-hero h2{font-size:32px}}
+@media(max-width:460px){.wrap{padding-left:14px;padding-right:14px}.topbar-in{padding:0 14px}h1{font-size:48px}.kpis{grid-template-columns:1fr 1fr}.mini-grid{grid-template-columns:repeat(2,1fr)}.metrics-grid{grid-template-columns:1fr}.matrix{height:330px}.score-strip{grid-template-columns:repeat(2,1fr)}}
+</style></head><body>
+<header class="topbar"><div class="topbar-in"><a class="brand-link" href="../" aria-label="Vision Universe Research Startseite"><img class="logo" src="../assets/vision-universe-logo.png" alt="Vision Universe"></a><nav class="topnav"><a href="#ranking">Ranking</a><a href="#matrix">Chance/Risiko</a><a href="#methodik">Methodik</a></nav></div></header>
+<main class="wrap">
+<section class="hero"><div class="hero-content"><div class="eyebrow">Investment OS · Multi-Strategy Score</div><h1>Aktien verstehen.<br>Chancen schneller erkennen.</h1><p>VISION UNIVERSE verdichtet fundamentales Research zu einer verständlichen Bewertung von 0 bis 100. Jeder Punkt lässt sich auf konkrete Kennzahlen zurückführen.</p></div><div class="hero-atlas" aria-hidden="true"><img src="../assets/atlas.png" alt=""></div><aside class="hero-badge"><small>Aktueller Pilot</small><b>10 echte Aktien</b><p>Keine Dummy-Daten. Grundlage sind die von Claude recherchierten Unternehmens-, Finanz-, Bewertungs- und Risikodaten mit Datenstand 28.08.2026.</p></aside></section>
+<div class="notice"><b>Beta-Status:</b> Diese Version nutzt bewusst noch keine Chart-/OHLCV-Daten. Der aktuelle <b>Fundamental Score β</b> basiert auf Quality (40 %), Growth (35 %) und Value (25 %). Momentum, Timing und Elliott-Wave werden später als eigene Module ergänzt. Risiko wird separat ausgewiesen und nicht in den Fundamental Score versteckt.</div>
+<section class="kpis"><div class="kpi"><small>Unternehmen</small><b>10</b><span>Pilotuniversum</span></div><div class="kpi"><small>Ø Datenabdeckung</small><b>79,7%</b><span>Claude Data Audit</span></div><div class="kpi"><small>Aktive Score-Module</small><b>3</b><span>Quality · Growth · Value</span></div><div class="kpi"><small>Technikmodule</small><b>später</b><span>Momentum · Timing · Elliott</span></div></section>
+<section id="matrix"><div class="section-head"><div><div class="eyebrow">Chance-Risiko-Matrix</div><h2>Wo lohnt sich der zweite Blick?</h2></div><p>Oben = stärkerer fundamentaler Score. Weiter rechts = höherer Risikoindikator. Die Matrix ist kein Kaufsignal, sondern eine schnelle Priorisierung für die weitere Analyse.</p></div><div class="matrix"><span class="quad q1">Chance hoch · Risiko höher</span><span class="quad q2">Chance hoch · Risiko niedriger</span><span class="quad q3">Chance niedriger · Risiko höher</span><span class="quad q4">Chance niedriger · Risiko niedriger</span><span class="axis-y">Fundamentaler Score</span><span class="axis-x">Risikoindikator →</span><a class="dot" href="#stock-NVDA" style="left:48%;top:13%;" title="NVDA · Score 87 · Risiko 48"><span>NVDA</span></a><a class="dot" href="#stock-MU" style="left:39%;top:13%;" title="MU · Score 87 · Risiko 39"><span>MU</span></a><a class="dot" href="#stock-TSM" style="left:34%;top:19%;" title="TSM · Score 81 · Risiko 34"><span>TSM</span></a><a class="dot" href="#stock-ASML" style="left:44%;top:23%;" title="ASML · Score 77 · Risiko 44"><span>ASML</span></a><a class="dot" href="#stock-AVGO" style="left:47%;top:23%;" title="AVGO · Score 77 · Risiko 47"><span>AVGO</span></a><a class="dot" href="#stock-PLTR" style="left:54%;top:26%;" title="PLTR · Score 74 · Risiko 54"><span>PLTR</span></a><a class="dot" href="#stock-MSFT" style="left:33%;top:30%;" title="MSFT · Score 70 · Risiko 33"><span>MSFT</span></a><a class="dot" href="#stock-MRVL" style="left:51%;top:33%;" title="MRVL · Score 67 · Risiko 51"><span>MRVL</span></a><a class="dot" href="#stock-ARM" style="left:67%;top:34%;" title="ARM · Score 66 · Risiko 67"><span>ARM</span></a><a class="dot" href="#stock-AMD" style="left:58%;top:35%;" title="AMD · Score 65 · Risiko 58"><span>AMD</span></a></div></section>
+<section id="ranking"><div class="section-head"><div><div class="eyebrow">Ranking</div><h2>Fundamentaler Score β</h2></div><p>Einheitliche Regeln für alle zehn Aktien. Die technischen Module sind absichtlich noch deaktiviert, damit die Bewertung nicht auf uneinheitlichen Chartdaten beruht.</p></div><div class="cards">
+    <a class="stock-card" href="#stock-NVDA">
+      <div class="rank">#1</div>
+      <div class="card-head"><div><b>NVDA</b><span>NVIDIA Corporation</span></div><div class="big-score elite">87</div></div>
+      <div class="tag">KI-Infrastruktur</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>96</strong></div>
+        <div><small>Growth</small><strong>99</strong></div>
+        <div><small>Value</small><strong>54</strong></div>
+        <div><small>Risiko</small><strong class="good2">48</strong></div>
+      </div>
+      <p>NVIDIA bleibt der zentrale Profiteur des globalen KI-Infrastrukturbooms. Das aktuelle Research zeigt außergewöhnliches Wachstum, sehr hohe Margen und starke Cashflows. Die hohe Bewertung und die Abhängigkeit von wenigen großen Kunden begrenzen das Chance-Risiko-Profil.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>72%</b></div>
+      <div class="bar"><i style="width:72%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-MU">
+      <div class="rank">#2</div>
+      <div class="card-head"><div><b>MU</b><span>Micron Technology</span></div><div class="big-score elite">87</div></div>
+      <div class="tag">AI Memory</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>97</strong></div>
+        <div><small>Growth</small><strong>92</strong></div>
+        <div><small>Value</small><strong>66</strong></div>
+        <div><small>Risiko</small><strong class="good2">39</strong></div>
+      </div>
+      <p>Micron befindet sich in einem außergewöhnlich starken Memory-Aufschwung. HBM- und Data-Center-Nachfrage treiben Umsatz und Margen massiv. Der Score profitiert zusätzlich von einer im Vergleich zu anderen AI-Titeln niedrigeren Bewertung – bei klar zyklischem Risiko.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>86%</b></div>
+      <div class="bar"><i style="width:86%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-TSM">
+      <div class="rank">#3</div>
+      <div class="card-head"><div><b>TSM</b><span>Taiwan Semiconductor Manufacturing Company</span></div><div class="big-score strong">81</div></div>
+      <div class="tag">Foundry &amp; AI</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>91</strong></div>
+        <div><small>Growth</small><strong>83</strong></div>
+        <div><small>Value</small><strong>62</strong></div>
+        <div><small>Risiko</small><strong class="good">34</strong></div>
+      </div>
+      <p>TSMC kombiniert technologische Führungsposition, hohe Kapitalrenditen und ein strukturell starkes AI-/HPC-Nachfrageprofil. Die Bewertung ist im Vergleich zu vielen AI-Pure-Plays moderater. Geopolitik bleibt das zentrale strukturelle Risiko.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>75%</b></div>
+      <div class="bar"><i style="width:75%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-ASML">
+      <div class="rank">#4</div>
+      <div class="card-head"><div><b>ASML</b><span>ASML Holding N.V.</span></div><div class="big-score strong">77</div></div>
+      <div class="tag">Halbleiter-Equipment</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>88</strong></div>
+        <div><small>Growth</small><strong>87</strong></div>
+        <div><small>Value</small><strong>45</strong></div>
+        <div><small>Risiko</small><strong class="good2">44</strong></div>
+      </div>
+      <p>ASML verfügt mit EUV über einen außergewöhnlich starken technologischen Burggraben. Wachstum und Profitabilität bleiben hoch, gleichzeitig ist die Bewertung anspruchsvoll und China-/Exportrestriktionen können die Nachfrage beeinflussen.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>79.3%</b></div>
+      <div class="bar"><i style="width:79.3%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-AVGO">
+      <div class="rank">#5</div>
+      <div class="card-head"><div><b>AVGO</b><span>Broadcom Inc.</span></div><div class="big-score strong">77</div></div>
+      <div class="tag">AI Infrastructure</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>88</strong></div>
+        <div><small>Growth</small><strong>88</strong></div>
+        <div><small>Value</small><strong>44</strong></div>
+        <div><small>Risiko</small><strong class="good2">47</strong></div>
+      </div>
+      <p>Broadcom verbindet starkes AI-Halbleiterwachstum mit wiederkehrenden Infrastruktur-Software-Umsätzen. Das Research zeigt hohe Profitabilität und beschleunigtes Wachstum. Bewertung, Integration und Konzentration bei großen AI-Kunden bleiben zentrale Beobachtungspunkte.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>77%</b></div>
+      <div class="bar"><i style="width:77%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-PLTR">
+      <div class="rank">#6</div>
+      <div class="card-head"><div><b>PLTR</b><span>Palantir Technologies</span></div><div class="big-score mid">74</div></div>
+      <div class="tag">AI Software</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>94</strong></div>
+        <div><small>Growth</small><strong>98</strong></div>
+        <div><small>Value</small><strong>11</strong></div>
+        <div><small>Risiko</small><strong class="warn">54</strong></div>
+      </div>
+      <p>Palantir zeigt eine außergewöhnliche operative Beschleunigung mit starkem US-Commercial-Wachstum, hohen Margen und einer schuldenfreien Bilanz. Der Preis dafür ist eine extrem hohe Bewertung, die wenig Raum für Enttäuschungen lässt.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>78%</b></div>
+      <div class="bar"><i style="width:78%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-MSFT">
+      <div class="rank">#7</div>
+      <div class="card-head"><div><b>MSFT</b><span>Microsoft Corporation</span></div><div class="big-score mid">70</div></div>
+      <div class="tag">Cloud &amp; AI</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>87</strong></div>
+        <div><small>Growth</small><strong>58</strong></div>
+        <div><small>Value</small><strong>62</strong></div>
+        <div><small>Risiko</small><strong class="good">33</strong></div>
+      </div>
+      <p>Microsoft kombiniert hohe Geschäftsqualität, starke Bilanz und beschleunigtes Azure-Wachstum. Das Wachstum ist weniger explosiv als bei kleineren AI-Werten, dafür ist die Ertragsqualität deutlich stabiler. Hohe AI-Investitionen drücken kurzfristig auf den Free Cashflow.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>82.4%</b></div>
+      <div class="bar"><i style="width:82.4%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-MRVL">
+      <div class="rank">#8</div>
+      <div class="card-head"><div><b>MRVL</b><span>Marvell Technology</span></div><div class="big-score mid">67</div></div>
+      <div class="tag">AI Connectivity</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>76</strong></div>
+        <div><small>Growth</small><strong>82</strong></div>
+        <div><small>Value</small><strong>32</strong></div>
+        <div><small>Risiko</small><strong class="warn">51</strong></div>
+      </div>
+      <p>Marvell profitiert von Custom Silicon, optischer Vernetzung und AI-Infrastruktur. Das Wachstum ist attraktiv, die Profitabilität verbessert sich. Gegenüber den größten AI-Halbleiterwerten ist die operative Qualität jedoch noch weniger robust.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>82%</b></div>
+      <div class="bar"><i style="width:82%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-ARM">
+      <div class="rank">#9</div>
+      <div class="card-head"><div><b>ARM</b><span>Arm Holdings plc (ADR)</span></div><div class="big-score mid">66</div></div>
+      <div class="tag">Chip-Architektur</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>85</strong></div>
+        <div><small>Growth</small><strong>84</strong></div>
+        <div><small>Value</small><strong>9</strong></div>
+        <div><small>Risiko</small><strong class="bad">67</strong></div>
+      </div>
+      <p>Arm besitzt ein hochskalierbares Lizenz- und Royalty-Modell mit sehr hohen Bruttomargen und wachsender Bedeutung im Data Center. Das größte Problem im Research ist die extrem hohe Bewertung, hinzu kommen hohe aktienbasierte Vergütungen.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>87.0%</b></div>
+      <div class="bar"><i style="width:87.0%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a>
+    <a class="stock-card" href="#stock-AMD">
+      <div class="rank">#10</div>
+      <div class="card-head"><div><b>AMD</b><span>Advanced Micro Devices, Inc.</span></div><div class="big-score mid">65</div></div>
+      <div class="tag">AI &amp; Halbleiter</div>
+      <div class="mini-grid">
+        <div><small>Quality</small><strong>71</strong></div>
+        <div><small>Growth</small><strong>85</strong></div>
+        <div><small>Value</small><strong>28</strong></div>
+        <div><small>Risiko</small><strong class="warn">58</strong></div>
+      </div>
+      <p>AMD entwickelt sich vom klassischen PC-/Gaming-Zyklus zu einem deutlich stärkeren Data-Center- und AI-Player. Umsatz, EPS und Free Cashflow wachsen stark. Der Markt preist jedoch bereits erhebliche Erfolge gegen NVIDIA ein.</p>
+      <div class="coverage"><span>Datenabdeckung</span><b>78.7%</b></div>
+      <div class="bar"><i style="width:78.7%"></i></div>
+      <div class="open">Analyse öffnen →</div>
+    </a></div></section>
+<section class="methodology" id="methodik"><div class="eyebrow">So entsteht der Score</div><h2>Keine Black Box.</h2><p>Der Pilot verwendet feste Schwellen und Sättigungskurven. Extremwerte können den Score dadurch nicht unbegrenzt dominieren. Fehlende Chartdaten werden nicht geschätzt und nicht mit null Punkten bestraft.</p><div class="formula"><div><small>40 %</small><b>Quality</b><span>Margen · ROE · FCF · Verschuldung</span></div><div><small>35 %</small><b>Growth</b><span>Umsatz · EPS · FCF · 3J-CAGR · Guidance</span></div><div><small>25 %</small><b>Value</b><span>KGV · KUV · EV/EBITDA · FCF-Rendite</span></div></div><details><summary>Beispiel: Wie wird Umsatzwachstum in Punkte übersetzt?</summary><ul><li>0 % Wachstum ≈ 15 Punkte</li><li>10 % ≈ 45 Punkte</li><li>20 % ≈ 72 Punkte</li><li>30 % ≈ 85 Punkte</li><li>40 % ≈ 92 Punkte</li><li>50 % ≈ 97 Punkte</li><li>ab etwa 75 % wird bei 100 Punkten gedeckelt</li></ul></details><details><summary>Warum Risiko separat?</summary><p>Ein hervorragendes Unternehmen kann gleichzeitig teuer, volatil oder stark konzentriert sein. Deshalb wird der Risikoindikator nicht im Score versteckt. So kann der Nutzer Qualität und Risiko getrennt beurteilen.</p></details><details><summary>Was fehlt noch zum finalen VISION SCORE?</summary><p>Eine einheitliche OHLCV-Datenquelle für Momentum und Timing. Daraus berechnen wir später SMA50/150/200, relative Stärke, Breakouts, Drawdown und Volatilität. Elliott-Wave bleibt ein separates Analysemodul mit primärem und alternativem Count.</p></details></section>
+
+    <section class="company-detail" id="stock-NVDA">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">KI-Infrastruktur</div><h2>NVIDIA Corporation <em>NVDA</em></h2><p>NVIDIA bleibt der zentrale Profiteur des globalen KI-Infrastrukturbooms. Das aktuelle Research zeigt außergewöhnliches Wachstum, sehr hohe Margen und starke Cashflows. Die hohe Bewertung und die Abhängigkeit von wenigen großen Kunden begrenzen das Chance-Risiko-Profil.</p></div>
+        <div class="score-orb elite"><small>Fundamental Score β</small><b>87</b><span>/100 · Sehr stark</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>96</b><i style="--w:96%"></i></div>
+        <div><span>Growth</span><b>99</b><i style="--w:99%"></i></div>
+        <div><span>Value</span><b>54</b><i style="--w:54%"></i></div>
+        <div><span>Risiko</span><b class="good2">48</b><i class="riskline" style="--w:48%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Q2-Umsatzwachstum von rund 106 % gegenüber Vorjahr</li><li>✓ Data-Center-Umsatz von 89 Mrd. USD als dominanter Wachstumstreiber</li><li>✓ Sehr hohe operative und Free-Cashflow-Margen</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Hohe Bewertung erhöht das Rückschlagrisiko</li><li>! Kunden- und Lieferkettenkonzentration</li><li>! Exportkontrollen und geopolitische Risiken</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>106,1 %</b><small>Q2 FY2027 ($96.221B) vs Q2 FY2026 ($46.7B)</small></div><div class="metric"><span>Bruttomarge</span><b>74,7 %</b><small>TTM ended 2026-07-26</small></div><div class="metric"><span>Operative Marge</span><b>65,2 %</b><small>TTM ended 2026-07-26</small></div><div class="metric"><span>FCF-Marge</span><b>41,9 %</b><small>TTM ended 2026-07-26</small></div><div class="metric"><span>KGV TTM</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>FCF-Rendite</span><b>2,31 %</b><small>2026-08-28</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 96/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>74,7 %</td><td><b>91</b>/100</td></tr><tr><td>Operative Marge</td><td>65,2 %</td><td><b>99</b>/100</td></tr><tr><td>FCF-Marge</td><td>41,9 %</td><td><b>94</b>/100</td></tr><tr><td>ROE</td><td>117,2 %</td><td><b>100</b>/100</td></tr><tr><td>Verschuldung</td><td>0,1 x D/E</td><td><b>96</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 99/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>106,1 %</td><td><b>100</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>100,1 %</td><td><b>100</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>127,8 %</td><td><b>98</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 54/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KUV TTM</td><td>18,1 x</td><td><b>44</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>27,1 x</td><td><b>64</b>/100</td></tr><tr><td>FCF-Rendite</td><td>2,3 %</td><td><b>55</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 48/100 <span>Moderat</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>2,2 x</td><td><b>74</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>46</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,1 x D/E</td><td><b>14</b>/100</td></tr><tr><td>Materielle Risiken</td><td>5,0 </td><td><b>58</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>58 grün · 34 gelb · 21 rot</span></div><strong>72%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-MU">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">AI Memory</div><h2>Micron Technology <em>MU</em></h2><p>Micron befindet sich in einem außergewöhnlich starken Memory-Aufschwung. HBM- und Data-Center-Nachfrage treiben Umsatz und Margen massiv. Der Score profitiert zusätzlich von einer im Vergleich zu anderen AI-Titeln niedrigeren Bewertung – bei klar zyklischem Risiko.</p></div>
+        <div class="score-orb elite"><small>Fundamental Score β</small><b>87</b><span>/100 · Sehr stark</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>97</b><i style="--w:97%"></i></div>
+        <div><span>Growth</span><b>92</b><i style="--w:92%"></i></div>
+        <div><span>Value</span><b>66</b><i style="--w:66%"></i></div>
+        <div><span>Risiko</span><b class="good2">39</b><i class="riskline" style="--w:39%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Umsatzwachstum von über 300 % YoY im aktuellen Datensatz</li><li>✓ Massiver Margen- und Cashflow-Sprung</li><li>✓ Bewertung deutlich günstiger als viele AI-Peers</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Memory bleibt stark zyklisch</li><li>! Extrem hohe aktuelle Wachstumsraten sind nicht dauerhaft fortschreibbar</li><li>! Capex und Angebotsausweitung können den Zyklus drehen</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>346,0 percent</b><small>FQ3 FY2026 vs FQ3 FY2025</small></div><div class="metric"><span>Bruttomarge</span><b>84,6 percent</b><small>FQ3 FY2026</small></div><div class="metric"><span>Operative Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>FCF-Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>KGV TTM</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>FCF-Rendite</span><b>2,48 percent</b><small>2026-08-28</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 97/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>84,6 %</td><td><b>96</b>/100</td></tr><tr><td>ROE</td><td>66,6 %</td><td><b>97</b>/100</td></tr><tr><td>Verschuldung</td><td>0,1 x D/E</td><td><b>98</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 92/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>346,0 %</td><td><b>100</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>1.369 %</td><td><b>100</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>75</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 66/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KUV TTM</td><td>11,7 x</td><td><b>57</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>15,1 x</td><td><b>85</b>/100</td></tr><tr><td>FCF-Rendite</td><td>2,5 %</td><td><b>57</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 39/100 <span>Moderat</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Bewertungsrisiko</td><td>—</td><td><b>34</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,1 x D/E</td><td><b>12</b>/100</td></tr><tr><td>Materielle Risiken</td><td>7,0 </td><td><b>72</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>64 grün · 32 gelb · 16 rot</span></div><strong>86%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-TSM">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">Foundry &amp; AI</div><h2>Taiwan Semiconductor Manufacturing Company <em>TSM</em></h2><p>TSMC kombiniert technologische Führungsposition, hohe Kapitalrenditen und ein strukturell starkes AI-/HPC-Nachfrageprofil. Die Bewertung ist im Vergleich zu vielen AI-Pure-Plays moderater. Geopolitik bleibt das zentrale strukturelle Risiko.</p></div>
+        <div class="score-orb strong"><small>Fundamental Score β</small><b>81</b><span>/100 · Stark</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>91</b><i style="--w:91%"></i></div>
+        <div><span>Growth</span><b>83</b><i style="--w:83%"></i></div>
+        <div><span>Value</span><b>62</b><i style="--w:62%"></i></div>
+        <div><span>Risiko</span><b class="good">34</b><i class="riskline" style="--w:34%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ TTM-Umsatzwachstum von rund 31 %</li><li>✓ Bruttomarge über 64 % und starke Kapitalrendite</li><li>✓ 77 % des Wafer-Umsatzes aus 7nm und kleineren Nodes</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Taiwan-Strait-Risiko</li><li>! Hohe Kundenkonzentration im AI-Bereich</li><li>! Sehr hoher Capex-Zyklus</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>30,6 %</b><small>TTM ending 2026-06-30</small></div><div class="metric"><span>Bruttomarge</span><b>64,2 %</b><small>TTM ending 2026-06-30</small></div><div class="metric"><span>Operative Marge</span><b>56,1 %</b><small>TTM ending 2026-06-30</small></div><div class="metric"><span>FCF-Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>KGV TTM</span><b>28,4 x</b><small>2026-08-28</small></div><div class="metric"><span>FCF-Rendite</span><b>1,83 %</b><small>2026-08-28</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 91/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>64,2 %</td><td><b>83</b>/100</td></tr><tr><td>Operative Marge</td><td>56,1 %</td><td><b>97</b>/100</td></tr><tr><td>ROE</td><td>40,0 %</td><td><b>90</b>/100</td></tr><tr><td>Verschuldung</td><td>0,2 x D/E</td><td><b>96</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 83/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>30,6 %</td><td><b>85</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>34,1 %</td><td><b>93</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>53,4 %</td><td><b>81</b>/100</td></tr><tr><td>FCF-Wachstum YoY</td><td>21,9 %</td><td><b>57</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 62/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>28,4 x</td><td><b>72</b>/100</td></tr><tr><td>KUV TTM</td><td>14,2 x</td><td><b>52</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>19,1 x</td><td><b>77</b>/100</td></tr><tr><td>FCF-Rendite</td><td>1,8 %</td><td><b>47</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 34/100 <span>Niedrig</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>1,3 x</td><td><b>40</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>38</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,2 x D/E</td><td><b>14</b>/100</td></tr><tr><td>Materielle Risiken</td><td>3,0 </td><td><b>42</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>70 grün · 14 gelb · 28 rot</span></div><strong>75%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-ASML">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">Halbleiter-Equipment</div><h2>ASML Holding N.V. <em>ASML</em></h2><p>ASML verfügt mit EUV über einen außergewöhnlich starken technologischen Burggraben. Wachstum und Profitabilität bleiben hoch, gleichzeitig ist die Bewertung anspruchsvoll und China-/Exportrestriktionen können die Nachfrage beeinflussen.</p></div>
+        <div class="score-orb strong"><small>Fundamental Score β</small><b>77</b><span>/100 · Stark</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>88</b><i style="--w:88%"></i></div>
+        <div><span>Growth</span><b>87</b><i style="--w:87%"></i></div>
+        <div><span>Value</span><b>45</b><i style="--w:45%"></i></div>
+        <div><span>Risiko</span><b class="good2">44</b><i class="riskline" style="--w:44%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Einzigartige Marktstellung bei EUV-Lithografie</li><li>✓ Starkes strukturelles Wachstum durch Advanced Nodes</li><li>✓ Netto-Cash und hohe operative Qualität</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Hohe Bewertung</li><li>! Exportkontrollen gegenüber China</li><li>! Konzentration auf wenige große Kunden</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>21,2 %</b><small>Q2 2026 vs Q2 2025</small></div><div class="metric"><span>Bruttomarge</span><b>54,0 %</b><small>Q2 2026</small></div><div class="metric"><span>Operative Marge</span><b>12.513 EUR millions / 35.42%</b><small>TTM Jun-2026</small></div><div class="metric"><span>FCF-Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>KGV TTM</span><b>54,8 x</b><small>TTM</small></div><div class="metric"><span>FCF-Rendite</span><b>1,76 %</b><small>TTM</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 88/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>54,0 %</td><td><b>74</b>/100</td></tr><tr><td>Operative Marge</td><td>35,4 %</td><td><b>86</b>/100</td></tr><tr><td>ROE</td><td>53,9 %</td><td><b>95</b>/100</td></tr><tr><td>Verschuldung</td><td>0,1 x D/E</td><td><b>98</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 87/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>21,2 %</td><td><b>74</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 45/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>54,8 x</td><td><b>42</b>/100</td></tr><tr><td>KUV TTM</td><td>16,5 x</td><td><b>47</b>/100</td></tr><tr><td>FCF-Rendite</td><td>1,8 %</td><td><b>45</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 44/100 <span>Moderat</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>1,4 x</td><td><b>45</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>55</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,1 x D/E</td><td><b>12</b>/100</td></tr><tr><td>Materielle Risiken</td><td>6,0 </td><td><b>65</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>45 grün · 20 gelb · 17 rot</span></div><strong>79.3%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-AVGO">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">AI Infrastructure</div><h2>Broadcom Inc. <em>AVGO</em></h2><p>Broadcom verbindet starkes AI-Halbleiterwachstum mit wiederkehrenden Infrastruktur-Software-Umsätzen. Das Research zeigt hohe Profitabilität und beschleunigtes Wachstum. Bewertung, Integration und Konzentration bei großen AI-Kunden bleiben zentrale Beobachtungspunkte.</p></div>
+        <div class="score-orb strong"><small>Fundamental Score β</small><b>77</b><span>/100 · Stark</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>88</b><i style="--w:88%"></i></div>
+        <div><span>Growth</span><b>88</b><i style="--w:88%"></i></div>
+        <div><span>Value</span><b>44</b><i style="--w:44%"></i></div>
+        <div><span>Risiko</span><b class="good2">47</b><i class="riskline" style="--w:47%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ AI-Halbleiterumsätze wachsen sehr dynamisch</li><li>✓ VMware stärkt wiederkehrende Softwareerlöse</li><li>✓ Hohe Margen und starke Cashflow-Generierung</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Hohe Erwartungen an AI-Umsätze</li><li>! Integrations- und Verschuldungsfragen</li><li>! Abhängigkeit von wenigen Hyperscalern</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>32,3 percent</b><small>TTM vs prior TTM</small></div><div class="metric"><span>Bruttomarge</span><b>76,3 percent</b><small>TTM</small></div><div class="metric"><span>Operative Marge</span><b>44,2 percent</b><small>TTM</small></div><div class="metric"><span>FCF-Marge</span><b>43,4 percent</b><small>TTM</small></div><div class="metric"><span>KGV TTM</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>FCF-Rendite</span><b>1,85 percent</b><small>TTM</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 88/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>76,3 %</td><td><b>92</b>/100</td></tr><tr><td>Operative Marge</td><td>44,2 %</td><td><b>91</b>/100</td></tr><tr><td>FCF-Marge</td><td>43,4 %</td><td><b>95</b>/100</td></tr><tr><td>ROE</td><td>37,3 %</td><td><b>89</b>/100</td></tr><tr><td>Verschuldung</td><td>0,7 x D/E</td><td><b>75</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 88/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>32,3 %</td><td><b>87</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>24,4 %</td><td><b>81</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>124,6 %</td><td><b>97</b>/100</td></tr><tr><td>FCF-Wachstum YoY</td><td>44,3 %</td><td><b>76</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 44/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KUV TTM</td><td>23,1 x</td><td><b>37</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>42,6 x</td><td><b>47</b>/100</td></tr><tr><td>FCF-Rendite</td><td>1,9 %</td><td><b>47</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 47/100 <span>Moderat</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>1,5 x</td><td><b>49</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>56</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,7 x D/E</td><td><b>32</b>/100</td></tr><tr><td>Materielle Risiken</td><td>4,0 </td><td><b>50</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>51 grün · 26 gelb · 23 rot</span></div><strong>77%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-PLTR">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">AI Software</div><h2>Palantir Technologies <em>PLTR</em></h2><p>Palantir zeigt eine außergewöhnliche operative Beschleunigung mit starkem US-Commercial-Wachstum, hohen Margen und einer schuldenfreien Bilanz. Der Preis dafür ist eine extrem hohe Bewertung, die wenig Raum für Enttäuschungen lässt.</p></div>
+        <div class="score-orb mid"><small>Fundamental Score β</small><b>74</b><span>/100 · Solide</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>94</b><i style="--w:94%"></i></div>
+        <div><span>Growth</span><b>98</b><i style="--w:98%"></i></div>
+        <div><span>Value</span><b>11</b><i style="--w:11%"></i></div>
+        <div><span>Risiko</span><b class="warn">54</b><i class="riskline" style="--w:54%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Q2-Umsatz +93 % YoY</li><li>✓ US Commercial +149 % YoY</li><li>✓ Hohe operative Marge und 9,2 Mrd. USD Cash</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Extrem hohe Umsatz- und Gewinnmultiples</li><li>! Hohe Abhängigkeit vom US-Geschäft</li><li>! Wachstum muss auf sehr hohem Niveau bleiben</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>93,0 percent</b><small>Q2 2026</small></div><div class="metric"><span>Bruttomarge</span><b>84,8 percent</b><small>TTM Q2 2026</small></div><div class="metric"><span>Operative Marge</span><b>42,8 percent</b><small>TTM Q2 2026</small></div><div class="metric"><span>FCF-Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>KGV TTM</span><b>159,0 ratio</b><small>TTM</small></div><div class="metric"><span>FCF-Rendite</span><b>0,75 percent</b><small>TTM</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 94/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>84,8 %</td><td><b>96</b>/100</td></tr><tr><td>Operative Marge</td><td>42,8 %</td><td><b>90</b>/100</td></tr><tr><td>ROE</td><td>38,1 %</td><td><b>89</b>/100</td></tr><tr><td>Verschuldung</td><td>0,0 x D/E</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 98/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>93,0 %</td><td><b>100</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>33,0 %</td><td><b>92</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>215,4 %</td><td><b>100</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 11/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>159,0 x</td><td><b>9</b>/100</td></tr><tr><td>KUV TTM</td><td>72,8 x</td><td><b>5</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>164,8 x</td><td><b>6</b>/100</td></tr><tr><td>FCF-Rendite</td><td>0,8 %</td><td><b>22</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 54/100 <span>Erhöht</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>1,6 x</td><td><b>52</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>89</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,0 x D/E</td><td><b>10</b>/100</td></tr><tr><td>Materielle Risiken</td><td>6,0 </td><td><b>65</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>61 grün · 21 gelb · 12 rot</span></div><strong>78%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-MSFT">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">Cloud &amp; AI</div><h2>Microsoft Corporation <em>MSFT</em></h2><p>Microsoft kombiniert hohe Geschäftsqualität, starke Bilanz und beschleunigtes Azure-Wachstum. Das Wachstum ist weniger explosiv als bei kleineren AI-Werten, dafür ist die Ertragsqualität deutlich stabiler. Hohe AI-Investitionen drücken kurzfristig auf den Free Cashflow.</p></div>
+        <div class="score-orb mid"><small>Fundamental Score β</small><b>70</b><span>/100 · Solide</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>87</b><i style="--w:87%"></i></div>
+        <div><span>Growth</span><b>58</b><i style="--w:58%"></i></div>
+        <div><span>Value</span><b>62</b><i style="--w:62%"></i></div>
+        <div><span>Risiko</span><b class="good">33</b><i class="riskline" style="--w:33%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Azure-Wachstum zuletzt rund 43 %</li><li>✓ Sehr hohe operative Qualität und Bilanzstärke</li><li>✓ Commercial RPO von 678 Mrd. USD</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Hohe AI-Capex-Ausgaben</li><li>! FCF-Wachstum kurzfristig schwächer</li><li>! Regulatorische und wettbewerbliche Risiken</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>17,8 percent</b><small>TTM ending 2026-06-30</small></div><div class="metric"><span>Bruttomarge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>Operative Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>FCF-Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>KGV TTM</span><b>28,1 x</b><small>2026-08-28</small></div><div class="metric"><span>FCF-Rendite</span><b>1,75 percent</b><small>2026-08-28</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 87/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>67,9 %</td><td><b>86</b>/100</td></tr><tr><td>Operative Marge</td><td>46,8 %</td><td><b>93</b>/100</td></tr><tr><td>FCF-Marge</td><td>20,2 %</td><td><b>70</b>/100</td></tr><tr><td>ROE</td><td>34,0 %</td><td><b>87</b>/100</td></tr><tr><td>Verschuldung</td><td>0,1 x D/E</td><td><b>98</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 58/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>17,8 %</td><td><b>67</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>16,1 %</td><td><b>63</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>31,6 %</td><td><b>66</b>/100</td></tr><tr><td>FCF-Wachstum YoY</td><td>-6,5 %</td><td><b>17</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>75</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 62/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>28,1 x</td><td><b>73</b>/100</td></tr><tr><td>KUV TTM</td><td>11,5 x</td><td><b>57</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>20,0 x</td><td><b>75</b>/100</td></tr><tr><td>FCF-Rendite</td><td>1,8 %</td><td><b>45</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 33/100 <span>Niedrig</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>1,1 x</td><td><b>34</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>38</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,1 x D/E</td><td><b>12</b>/100</td></tr><tr><td>Materielle Risiken</td><td>4,0 </td><td><b>50</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>73 grün · 35 gelb · 23 rot</span></div><strong>82.4%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-MRVL">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">AI Connectivity</div><h2>Marvell Technology <em>MRVL</em></h2><p>Marvell profitiert von Custom Silicon, optischer Vernetzung und AI-Infrastruktur. Das Wachstum ist attraktiv, die Profitabilität verbessert sich. Gegenüber den größten AI-Halbleiterwerten ist die operative Qualität jedoch noch weniger robust.</p></div>
+        <div class="score-orb mid"><small>Fundamental Score β</small><b>67</b><span>/100 · Solide</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>76</b><i style="--w:76%"></i></div>
+        <div><span>Growth</span><b>82</b><i style="--w:82%"></i></div>
+        <div><span>Value</span><b>32</b><i style="--w:32%"></i></div>
+        <div><span>Risiko</span><b class="warn">51</b><i class="riskline" style="--w:51%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ AI-Infrastruktur als struktureller Wachstumstreiber</li><li>✓ Custom-Silicon- und Interconnect-Positionierung</li><li>✓ Verbesserte Umsatz- und Ergebnisdynamik</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Ausführungsrisiko bei großen Kundenprogrammen</li><li>! Kundenkonzentration</li><li>! Bewertung bleibt ambitioniert</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>37,0 percent</b><small>Q2 FY2027 vs Q2 FY2026</small></div><div class="metric"><span>Bruttomarge</span><b>53,1 percent</b><small>Q2 FY2027</small></div><div class="metric"><span>Operative Marge</span><b>16,8 percent</b><small>Q2 FY2027</small></div><div class="metric"><span>FCF-Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>KGV TTM</span><b>72,6 ratio</b><small>TTM, 2026-08-28</small></div><div class="metric"><span>FCF-Rendite</span><b>0,91 percent</b><small>2026-08-28</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 76/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>53,1 %</td><td><b>73</b>/100</td></tr><tr><td>ROE</td><td>16,5 %</td><td><b>63</b>/100</td></tr><tr><td>Verschuldung</td><td>0,3 x D/E</td><td><b>93</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 82/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>37,0 %</td><td><b>90</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>50,0 %</td><td><b>80</b>/100</td></tr><tr><td>FCF-Wachstum YoY</td><td>23,9 %</td><td><b>59</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>100</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 32/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>72,6 x</td><td><b>32</b>/100</td></tr><tr><td>KUV TTM</td><td>20,2 x</td><td><b>40</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>67,3 x</td><td><b>28</b>/100</td></tr><tr><td>FCF-Rendite</td><td>0,9 %</td><td><b>27</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 51/100 <span>Erhöht</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>2,2 x</td><td><b>75</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>68</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,3 x D/E</td><td><b>17</b>/100</td></tr><tr><td>Materielle Risiken</td><td>3,0 </td><td><b>42</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>48 grün · 26 gelb · 16 rot</span></div><strong>82%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-ARM">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">Chip-Architektur</div><h2>Arm Holdings plc (ADR) <em>ARM</em></h2><p>Arm besitzt ein hochskalierbares Lizenz- und Royalty-Modell mit sehr hohen Bruttomargen und wachsender Bedeutung im Data Center. Das größte Problem im Research ist die extrem hohe Bewertung, hinzu kommen hohe aktienbasierte Vergütungen.</p></div>
+        <div class="score-orb mid"><small>Fundamental Score β</small><b>66</b><span>/100 · Solide</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>85</b><i style="--w:85%"></i></div>
+        <div><span>Growth</span><b>84</b><i style="--w:84%"></i></div>
+        <div><span>Value</span><b>9</b><i style="--w:9%"></i></div>
+        <div><span>Risiko</span><b class="bad">67</b><i class="riskline" style="--w:67%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Über 97 % GAAP-Bruttomarge</li><li>✓ Royalty- und Licensing-Umsätze wachsen zweistellig</li><li>✓ Wachsende Relevanz im Data Center</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Extreme Bewertungsmultiples</li><li>! Hohe Stock-Based Compensation</li><li>! Governance- und SoftBank-Konzentration</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>22,0 percent</b><small>Q1 FYE27</small></div><div class="metric"><span>Bruttomarge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>Operative Marge</span><b>—</b><small>nicht verfügbar</small></div><div class="metric"><span>FCF-Marge</span><b>29,2 percent</b><small>TTM</small></div><div class="metric"><span>KGV TTM</span><b>260,5 x</b><small>TTM</small></div><div class="metric"><span>FCF-Rendite</span><b>0,57 percent</b><small>TTM</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 85/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>98,1 %</td><td><b>100</b>/100</td></tr><tr><td>Operative Marge</td><td>41,2 %</td><td><b>89</b>/100</td></tr><tr><td>FCF-Marge</td><td>29,2 %</td><td><b>81</b>/100</td></tr><tr><td>ROE</td><td>13,3 %</td><td><b>57</b>/100</td></tr><tr><td>Verschuldung</td><td>0,1 x D/E</td><td><b>98</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 84/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>22,0 %</td><td><b>75</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>22,4 %</td><td><b>77</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>108,3 %</td><td><b>96</b>/100</td></tr><tr><td>FCF-Wachstum YoY</td><td>450,0 %</td><td><b>100</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>75</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 9/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>260,5 x</td><td><b>3</b>/100</td></tr><tr><td>KUV TTM</td><td>52,9 x</td><td><b>12</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>253,1 x</td><td><b>3</b>/100</td></tr><tr><td>FCF-Rendite</td><td>0,6 %</td><td><b>17</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 67/100 <span>Hoch</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>3,9 x</td><td><b>92</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>91</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,1 x D/E</td><td><b>12</b>/100</td></tr><tr><td>Materielle Risiken</td><td>7,0 </td><td><b>72</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>81 grün · 33 gelb · 17 rot</span></div><strong>87.0%</strong></div>
+    </section>
+    <section class="company-detail" id="stock-AMD">
+      <div class="detail-top"><a href="#ranking">← Ranking</a><span>Datenstand 2026-08-28</span></div>
+      <div class="detail-hero">
+        <div><div class="eyebrow">AI &amp; Halbleiter</div><h2>Advanced Micro Devices, Inc. <em>AMD</em></h2><p>AMD entwickelt sich vom klassischen PC-/Gaming-Zyklus zu einem deutlich stärkeren Data-Center- und AI-Player. Umsatz, EPS und Free Cashflow wachsen stark. Der Markt preist jedoch bereits erhebliche Erfolge gegen NVIDIA ein.</p></div>
+        <div class="score-orb mid"><small>Fundamental Score β</small><b>65</b><span>/100 · Solide</span></div>
+      </div>
+      <div class="score-strip">
+        <div><span>Quality</span><b>71</b><i style="--w:71%"></i></div>
+        <div><span>Growth</span><b>85</b><i style="--w:85%"></i></div>
+        <div><span>Value</span><b>28</b><i style="--w:28%"></i></div>
+        <div><span>Risiko</span><b class="warn">58</b><i class="riskline" style="--w:58%"></i></div>
+        <div class="inactive"><span>Momentum</span><b>—</b><small>Marktdaten folgen</small></div>
+        <div class="inactive"><span>Timing</span><b>—</b><small>Marktdaten folgen</small></div>
+      </div>
+      <div class="two-col">
+        <article class="panel positive"><h3>Warum interessant?</h3><ul><li>✓ Q2-Umsatz +50 % YoY</li><li>✓ Data-Center-Umsatz +107 % YoY</li><li>✓ Deutlich steigender Free Cashflow</li></ul></article>
+        <article class="panel negative"><h3>Was bremst?</h3><ul><li>! Sehr anspruchsvolle Bewertung</li><li>! Starke Abhängigkeit von TSMC</li><li>! NVIDIA bleibt der dominante AI-Wettbewerber</li></ul></article>
+      </div>
+      <h3 class="section-title">Kennzahlen auf einen Blick</h3>
+      <div class="metrics-grid"><div class="metric"><span>Umsatzwachstum</span><b>50,1 %</b><small>Q2 2026 vs Q2 2025</small></div><div class="metric"><span>Bruttomarge</span><b>55,7 %</b><small>TTM ending 2026-06-27</small></div><div class="metric"><span>Operative Marge</span><b>15,8 %</b><small>TTM ending 2026-06-27</small></div><div class="metric"><span>FCF-Marge</span><b>20,3 %</b><small>TTM ending 2026-06-27</small></div><div class="metric"><span>KGV TTM</span><b>121,7 x</b><small>TTM</small></div><div class="metric"><span>FCF-Rendite</span><b>1,09 %</b><small>TTM</small></div></div>
+      <div class="method-grid">
+        <details class="method-card"><summary>Quality Score 71/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Bruttomarge</td><td>55,7 %</td><td><b>76</b>/100</td></tr><tr><td>Operative Marge</td><td>15,8 %</td><td><b>62</b>/100</td></tr><tr><td>FCF-Marge</td><td>20,3 %</td><td><b>70</b>/100</td></tr><tr><td>ROE</td><td>10,2 %</td><td><b>50</b>/100</td></tr><tr><td>Verschuldung</td><td>0,1 x D/E</td><td><b>98</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Growth Score 85/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>Umsatzwachstum YoY</td><td>50,1 %</td><td><b>97</b>/100</td></tr><tr><td>Umsatz-CAGR 3J</td><td>13,6 %</td><td><b>56</b>/100</td></tr><tr><td>EPS-Wachstum YoY</td><td>159,5 %</td><td><b>100</b>/100</td></tr><tr><td>FCF-Wachstum YoY</td><td>107,8 %</td><td><b>96</b>/100</td></tr><tr><td>Guidance</td><td>—</td><td><b>75</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Value Score 28/100 <span>Berechnung anzeigen</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Punkte</th></tr></thead><tbody><tr><td>KGV TTM</td><td>121,7 x</td><td><b>16</b>/100</td></tr><tr><td>KUV TTM</td><td>18,6 x</td><td><b>43</b>/100</td></tr><tr><td>EV/EBITDA TTM</td><td>79,6 x</td><td><b>20</b>/100</td></tr><tr><td>FCF-Rendite</td><td>1,1 %</td><td><b>32</b>/100</td></tr></tbody></table></details>
+        <details class="method-card"><summary>Risikoindikator 58/100 <span>Erhöht</span></summary><table><thead><tr><th>Faktor</th><th>Rohwert</th><th>Risiko</th></tr></thead><tbody><tr><td>Beta</td><td>2,5 x</td><td><b>82</b>/100</td></tr><tr><td>Bewertungsrisiko</td><td>—</td><td><b>72</b>/100</td></tr><tr><td>Bilanzrisiko</td><td>0,1 x D/E</td><td><b>12</b>/100</td></tr><tr><td>Materielle Risiken</td><td>6,0 </td><td><b>65</b>/100</td></tr></tbody></table></details>
+      </div>
+      <div class="quality-gate"><div><b>Datenqualität</b><span>68 grün · 23 gelb · 10 rot</span></div><strong>78.7%</strong></div>
+    </section>
+<div class="footer">VISION UNIVERSE® Investment OS · Pilot / Beta · Datenstand 28.08.2026 · Keine Anlageberatung. Scores dienen der strukturierten Research-Einordnung.</div>
+</main></body></html>
