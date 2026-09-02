@@ -468,7 +468,7 @@
  status.style.cssText='margin:0 0 20px;color:#71717a;font-size:12px';
  const n=function(v,d){return v==null?'—':Number(v).toFixed(d==null?1:d)};
  try{
-  const r=await Promise.all(['config/universe.json','data/market_data.json','data/technical_scores.json'].map(fetch));
+  const r=await Promise.all(['config/universe.json','data/market_data.json','data/technical_scores.json'].map(function(url){return fetch(url)}));
   if(!r.every(function(x){return x.ok}))throw 0;
   const [u,m,t]=await Promise.all(r.map(function(x){return x.json()})), stocks=u.stocks.filter(function(x){return x.active}), select=document.getElementById('chartSymbol');
   status.textContent='V6.3 Technical Data: statisch geladen · '+stocks.length+' aktive Aktien';
