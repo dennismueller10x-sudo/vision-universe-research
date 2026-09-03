@@ -15,6 +15,17 @@ def average(values):
 def sma(closes, period):
     return average(closes[-period:]) if len(closes) >= period else None
 
+def standard_deviation(values):
+    mean = average(values)
+    return math.sqrt(average([(value - mean) ** 2 for value in values])) if values else None
+
+def bollinger(closes, period=20, deviations=2):
+    if len(closes) < period:
+        return None
+    middle = sma(closes, period)
+    deviation = standard_deviation(closes[-period:])
+    return {"middle": middle, "upper": middle + deviations * deviation, "lower": middle - deviations * deviation}
+
 def ema(closes, period):
     if len(closes) < period:
         return None
@@ -83,9 +94,9 @@ def technicals(candles):
         20 if current >= high52 * .85 else 0,
     ])
     return {
-        "last_date": candles[-1]["date"], "close": current, "ema20": ema(closes, 20),
+        "last_date": candles[-1]["date"], "close": current, "ema20": ema(closes, 20), "ema50": ema(closes, 50), "ema200": ema(closes, 200),
         "sma50": sma50, "sma150": sma150, "sma200": sma200, "rsi14": rsi(closes),
-        "high_52w": high52, "low_52w": low52,
+        "high_52w": high52, "low_52w": low52, "bollinger20": bollinger(closes),
         "performance_pct": {"1m": performance(closes,21),"3m":performance(closes,63),"6m":performance(closes,126),"12m":performance(closes,252)},
         "annualized_volatility_pct": volatility(closes), "max_drawdown_12m_pct": max_drawdown(closes),
         "distance_52w_high_pct": pct_distance(current, high52),
