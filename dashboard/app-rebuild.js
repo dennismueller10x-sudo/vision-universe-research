@@ -1,12 +1,11 @@
-(function () {
-  const app = document.querySelector("#app");
-  const view = document.body.dataset.view || "home";
-  const pages = {
-    home: "<section class='home'><div class='kicker'>VISION UNIVERSE</div><h1>Was möchtest du heute verstehen?</h1><p class='intro'>Unabhängiges Research für fundiertere Anlageentscheidungen.</p><div class='actions'><a class='action' href='/dashboard/research/'><b>Research</b><span>Fundamentale Analyse und Score</span></a><a class='action' href='/dashboard/charting/'><b>Charting</b><span>Kurs, Trend und Szenarien</span></a><a class='action' href='/dashboard/discover/'><b>Entdecken</b><span>Aktien suchen und auswählen</span></a><a class='action' href='/dashboard/watchlist/'><b>Watchlist</b><span>Scores und Kennzahlen vergleichen</span></a></div></section>",
-    research: "<div class='kicker'>Fundamentale Analyse</div><h1 class='heading'>Research</h1><p class='notice'>Research-Ansicht wird mit Fundamentaldaten geladen.</p>",
-    charting: "<div class='kicker'>Technische Analyse</div><h1 class='heading'>Charting</h1><p class='notice'>Charting-Ansicht wird mit technischen Daten geladen.</p>",
-    discover: "<div class='kicker'>Universum</div><h1 class='heading'>Entdecken</h1><p class='notice'>Aktien-Suche wird geladen.</p>",
-    watchlist: "<div class='kicker'>Universum</div><h1 class='heading'>Watchlist</h1><p class='notice'>Watchlist wird geladen.</p>"
-  };
-  app.innerHTML = pages[view] || pages.home;
+(async function(){
+const app=document.querySelector('#app');
+const view=document.body.dataset.view||'home';
+const pages={home:"<section class='home'><div class='kicker'>VISION UNIVERSE</div><h1>Was möchtest du heute verstehen?</h1><p class='intro'>Unabhängiges Research für fundiertere Anlageentscheidungen.</p><div class='actions'><a class='action' href='/dashboard/research/'><b>Research</b><span>Fundamentale Analyse und Score</span></a><a class='action' href='/dashboard/charting/'><b>Charting</b><span>Kurs, Trend und Szenarien</span></a><a class='action' href='/dashboard/discover/'><b>Entdecken</b><span>Aktien suchen und auswählen</span></a><a class='action' href='/dashboard/watchlist/'><b>Watchlist</b><span>Scores und Kennzahlen vergleichen</span></a></div></section>"};
+if(view==='home'){app.innerHTML=pages.home;return;}
+let data;try{data=await Promise.all(['config/universe.json','data/fundamental_scores.json','data/research_profiles.json','data/fundamental_metrics.json','data/technical_scores.json'].map(function(path){return fetch('/dashboard/'+path).then(function(r){return r.json()})}));}catch(e){app.innerHTML="<p class='notice'>Daten sind derzeit nicht verfügbar.</p>";return;}
+const universe=data[0],fundamental=data[1],profiles=data[2],metrics=data[3],technical=data[4],symbol=new URLSearchParams(location.search).get('symbol')||'NVDA';
+const stock=universe.stocks.filter(function(x){return x.symbol===symbol})[0]||universe.stocks[0],score=fundamental.symbols[stock.symbol],profile=profiles.symbols[stock.symbol],metric=metrics.symbols[stock.symbol],tech=technical.symbols[stock.symbol];
+if(view==='research'){app.innerHTML="<div class='kicker'>Fundamentale Analyse</div><h1 class='heading'>Research</h1><section class='research-grid'><div class='orb'><small>Fundamental Score</small><b>"+score.fundamental_score_beta+"</b><span>/100</span></div><div class='profile'><h2>"+profile.name+"</h2><p>"+profile.summary+"</p><ul>"+profile.highlights.map(function(x){return '<li>✓ '+x+'</li>'}).join('')+"</ul></div></section><section class='scores'>"+[['Quality',score.quality],['Growth',score.growth],['Value',score.value],['Risiko',score.risk],['Momentum',tech.momentum_score_beta],['Timing',tech.timing_score_beta]].map(function(x){return "<div class='score'><span>"+x[0]+"</span><b>"+Math.round(x[1])+"</b></div>"}).join('')+"</section><section class='metrics'>"+[['Umsatzwachstum',metric.revenue_growth],['KGV',metric.pe_ratio],['KUV',metric.ps_ratio],['FCF-Rendite',metric.fcf_yield]].map(function(x){return "<div class='metric'><span>"+x[0]+"</span><b>"+x[1]+"</b></div>"}).join('')+"</section>";return;}
+app.innerHTML="<div class='kicker'>"+view+"</div><h1 class='heading'>"+view+"</h1><p class='notice'>Diese Ansicht wird im Rebuild separat ergänzt.</p>";
 }());
