@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  models: read
 
 concurrency:
   group: update-news
@@ -21,6 +22,9 @@ jobs:
         with:
           node-version: "22"
       - name: Fetch primary-source news
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/dashboard/update_news.mjs
       - name: Commit fresh news data
         shell: bash
