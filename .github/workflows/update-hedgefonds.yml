@@ -1,0 +1,51 @@
+name: Update Hedgefonds 13F data
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 2 Tage nach jeder SEC-13F-Meldefrist (14. Feb, 15. Mai, 14. Aug, 14. Nov) –
+    # 13F-Daten aktualisieren sich ohnehin nur vierteljährlich, ein häufigerer
+    # Abruf hätte keinen Mehrwert.
+    - cron: "0 8 16 2 *"
+    - cron: "0 8 17 5 *"
+    - cron: "0 8 16 8 *"
+    - cron: "0 8 16 11 *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-hedgefonds-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch SEC EDGAR 13F data
+        run: python scripts/hedgefonds/fetch_edgar_data.py
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git diff --name-only | grep -vE '^hedgefonds/data/hedgefonds\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected modified files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Commit generated data
+        shell: bash
+        run: |
+          if git diff --quiet -- hedgefonds/data/hedgefonds.json; then
+            echo "Keine Änderungen an den Holdings – nichts zu committen."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hedgefonds/data/hedgefonds.json
+          git commit -m "chore: update hedgefonds 13F data"
+          git push

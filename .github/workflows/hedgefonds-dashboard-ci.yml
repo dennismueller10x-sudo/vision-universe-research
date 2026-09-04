@@ -1,0 +1,80 @@
+name: Hedgefonds Dashboard CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hedgefonds/**"
+      - "scripts/hedgefonds/**"
+      - ".github/workflows/hedgefonds-dashboard-ci.yml"
+  pull_request:
+    paths:
+      - "hedgefonds/**"
+      - "scripts/hedgefonds/**"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+
+          path = "hedgefonds/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q "VISION UNIVERSE" hedgefonds/index.html
+          grep -q "data.sec.gov" hedgefonds/index.html
+          grep -q "DATA_URL" hedgefonds/index.html
+          echo "Markers OK"
+
+      - name: Validate seed/generated data JSON
+        run: |
+          python3 -c "import json; d=json.load(open('hedgefonds/data/hedgefonds.json')); assert 'funds' in d and len(d['funds'])==8; print('hedgefonds.json OK:', len(d['funds']), 'funds')"
+
+      - name: Validate fetch script syntax
+        run: python3 -m py_compile scripts/hedgefonds/fetch_edgar_data.py
+
+      - name: Run fetch-script logic unit tests (no network)
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "scripts/hedgefonds")
+          import fetch_edgar_data as m
+
+          filings_recent = {
+              "form": ["13F-NT", "13F-HR", "10-K", "13F-HR/A", "13F-HR"],
+              "accessionNumber": ["0001-24-001", "0001-24-002", "0001-24-003", "0001-24-004", "0001-24-005"],
+              "filingDate": ["2024-02-14", "2024-05-15", "2024-06-01", "2024-08-20", "2024-08-14"],
+              "reportDate": ["2023-12-31", "2024-03-31", "2024-03-31", "2024-06-30", "2024-06-30"],
+          }
+          recent2 = m.find_recent_13fs(filings_recent, 2)
+          assert len(recent2) == 2
+          assert recent2[0]["accession"] == "0001-24-004", recent2
+          assert recent2[1]["accession"] == "0001-24-002", recent2
+
+          prev = [{"issuer": "A", "cusip": "111", "valueUSD": 100, "shares": 1},
+                  {"issuer": "B", "cusip": "222", "valueUSD": 200, "shares": 2}]
+          cur = [{"issuer": "A", "cusip": "111", "valueUSD": 150, "shares": 1},
+                 {"issuer": "C", "cusip": "333", "valueUSD": 50, "shares": 3}]
+          opened, closed = m.diff_holdings(cur, prev)
+          assert [h["cusip"] for h in opened] == ["333"], opened
+          assert [h["cusip"] for h in closed] == ["222"], closed
+
+          print("fetch_edgar_data.py logic tests OK")
+          PY
