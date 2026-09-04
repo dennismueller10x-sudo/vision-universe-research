@@ -1,0 +1,46 @@
+name: Update VISION UNIVERSE analyst ratings
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 0"
+
+permissions:
+  contents: write
+
+jobs:
+  update-analyst-ratings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch analyst ratings
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: python scripts/dashboard/fetch_analyst_ratings.py
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/analyst_ratings\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected modified files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Commit generated data
+        shell: bash
+        run: |
+          if git diff --quiet -- dashboard/data/analyst_ratings.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard/data/analyst_ratings.json
+          git commit -m "chore: update analyst ratings data"
+          git push

@@ -31,3 +31,12 @@ Ausschließlich `dashboard/data/market_data.json` und `dashboard/data/technical_
 `reports/` ist ein eigenständiges Produkt. Dieser Dashboard-Workflow liest, verändert und committet dort nichts.
 
 Eine spätere Fundamental Engine schreibt unabhängig `fundamental_scores.json`. Sie erweitert das Dashboard, ohne die Technical Engine oder Reports umzubauen.
+
+## Analyst Ratings Pipeline
+
+`Finnhub → GitHub Actions → dashboard/data/analyst_ratings.json → statisches Dashboard`
+
+- `scripts/dashboard/fetch_analyst_ratings.py`: ruft Recommendation Trends und Kursziel-Konsens von Finnhub für alle aktiven Aktien aus `dashboard/config/universe.json` ab (Benchmarks/ETFs werden übersprungen, da sie keine Analystenabdeckung haben).
+- `.github/workflows/update-analyst-ratings.yml`: läuft sonntags und kann manuell gestartet werden. Erhält den Schlüssel ausschließlich als Secret `FINNHUB_API_KEY`. Bricht ohne Daten-Commit ab, falls der Schlüssel fehlt oder ein Endpunkt (z. B. wegen eines Finnhub-Plan-Limits) einen Zugriffsfehler liefert.
+- Ausschließlich `dashboard/data/analyst_ratings.json` darf durch diesen Workflow verändert und committed werden. Die initiale Datei trägt absichtlich den Status `not_generated`, bis der erste erfolgreiche Lauf erfolgt.
+- Diese Pipeline ist unabhängig von der Technical Engine und den Reports; sie liest und verändert deren Dateien nicht.
