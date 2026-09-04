@@ -17,12 +17,15 @@ CUSIP-level diff between the two quarters. 13F has no transaction log, so
 that diff is the standard convention used by public 13F trackers: a position
 appearing = opened, disappearing = closed.
 """
+import csv
+import io
 import json
 import sys
 import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,6 +35,8 @@ TOP_HOLDINGS_STORE = 150
 TOP_TRADES_STORE = 40
 REQUEST_DELAY = 0.3  # SEC allows ~10 req/sec; we stay far under that
 MAX_RETRIES = 3
+BULK_TOP_N = 100  # Ziel-Gesamtzahl an Fonds inkl. der kuratierten 8
+BULK_VALUE_TOLERANCE = 0.15  # Toleranz für die empirische Werte-Kalibrierung (siehe unten)
 
 
 # founder / currentLead / managerLabel / photoUrl / photoCredit sind statische,
@@ -204,6 +209,264 @@ def diff_holdings(current, previous):
     return opened, closed
 
 
+def quarter_from_date(iso_date):
+    y, m, _ = iso_date.split("-")
+    q = (int(m) - 1) // 3 + 1
+    return int(y), q
+
+
+def previous_quarter(year_quarter):
+    y, q = year_quarter
+    return (y - 1, 4) if q == 1 else (y, q - 1)
+
+
+def bulk_zip_url(year, quarter):
+    return f"https://www.sec.gov/files/structureddata/data/form-13f-data-sets/{year}q{quarter}_form13f.zip"
+
+
+def download_bulk_zip(year, quarter):
+    time.sleep(REQUEST_DELAY)
+    data = http_get(bulk_zip_url(year, quarter))
+    return zipfile.ZipFile(io.BytesIO(data))
+
+
+# Die exakten Spaltennamen der SEC-Bulk-13F-Datensätze konnten aus dieser
+# Sandbox nicht direkt verifiziert werden (sec.gov-Zugriff blockiert; nur
+# Suchergebnis-Snippets verfügbar). Daher hier bewusst KEINE feste
+# Spaltenreihenfolge, sondern Header-basiertes Nachschlagen mit mehreren
+# plausiblen Namensvarianten — bricht der echte Header ab, wird das unten
+# in parse_bulk_quarter() klar geloggt und die Bulk-Erweiterung übersprungen
+# (die 8 kuratierten Fonds bleiben davon unberührt).
+BULK_COLUMNS = {
+    "accession": ["ACCESSION_NUMBER", "ACCESSIONNUMBER"],
+    "cik": ["CIK", "FILER_CIK", "FILERCIK"],
+    "filing_date": ["FILING_DATE", "FILINGDATE"],
+    "report_period": ["PERIODOFREPORT", "PERIOD_OF_REPORT"],
+    "submission_type": ["SUBMISSIONTYPE", "SUBMISSION_TYPE"],
+    "filer_name": ["FILINGMANAGER_NAME", "FILINGMANAGERNAME", "NAME"],
+    "name_of_issuer": ["NAMEOFISSUER", "NAME_OF_ISSUER"],
+    "cusip": ["CUSIP"],
+    "value": ["VALUE"],
+    "title_of_class": ["TITLEOFCLASS", "TITLE_OF_CLASS"],
+    "shares": ["SSHPRNAMT", "SSH_PRNAMT"],
+}
+
+
+def find_column(fieldnames, candidates):
+    norm = {(f or "").strip().upper(): f for f in fieldnames}
+    for cand in candidates:
+        if cand in norm:
+            return norm[cand]
+    return None
+
+
+def open_tsv_from_zip(zf, filename):
+    names = {n.upper(): n for n in zf.namelist()}
+    real_name = names.get(filename.upper())
+    if not real_name:
+        return None
+    return io.TextIOWrapper(zf.open(real_name), encoding="utf-8", errors="replace")
+
+
+def parse_bulk_quarter(zf):
+    """Liefert dict cik10 -> {name, accession, filingDate, reportDate, holdings:[...]}
+    für alle 13F-HR/-A-Filer eines Quartals aus dem offiziellen SEC-Bulk-Datensatz."""
+    sub_f = open_tsv_from_zip(zf, "SUBMISSION.tsv")
+    info_f = open_tsv_from_zip(zf, "INFOTABLE.tsv")
+    if not sub_f or not info_f:
+        raise RuntimeError(f"SUBMISSION.tsv/INFOTABLE.tsv nicht im ZIP gefunden (vorhanden: {zf.namelist()})")
+
+    sub_reader = csv.DictReader(sub_f, delimiter="\t")
+    fn = sub_reader.fieldnames or []
+    col_acc = find_column(fn, BULK_COLUMNS["accession"])
+    col_cik = find_column(fn, BULK_COLUMNS["cik"])
+    col_filed = find_column(fn, BULK_COLUMNS["filing_date"])
+    col_period = find_column(fn, BULK_COLUMNS["report_period"])
+    col_subtype = find_column(fn, BULK_COLUMNS["submission_type"])
+    col_filername = find_column(fn, BULK_COLUMNS["filer_name"])
+    missing = [n for n, v in [("accession", col_acc), ("cik", col_cik), ("filing_date", col_filed),
+                               ("report_period", col_period), ("submission_type", col_subtype)] if not v]
+    if missing:
+        raise RuntimeError(f"SUBMISSION.tsv: Spalten fehlen {missing}. Vorhanden: {fn}")
+
+    by_period = {}  # (cik10, period) -> meta
+    for row in sub_reader:
+        subtype = (row.get(col_subtype) or "").strip().upper()
+        if subtype not in ("13F-HR", "13F-HR/A"):
+            continue
+        cik_raw = (row.get(col_cik) or "").strip().lstrip("0")
+        cik10 = (cik_raw or "0").zfill(10)
+        acc = (row.get(col_acc) or "").strip()
+        filed = (row.get(col_filed) or "").strip()
+        period = (row.get(col_period) or "").strip()
+        name = (row.get(col_filername) or "").strip() if col_filername else ""
+        key = (cik10, period)
+        if key not in by_period or filed > by_period[key]["filingDate"]:
+            by_period[key] = {"cik": cik10, "accession": acc, "filingDate": filed, "reportDate": period, "name": name}
+
+    accepted_accessions = {v["accession"] for v in by_period.values()}
+
+    info_reader = csv.DictReader(info_f, delimiter="\t")
+    ifn = info_reader.fieldnames or []
+    icol_acc = find_column(ifn, BULK_COLUMNS["accession"])
+    icol_issuer = find_column(ifn, BULK_COLUMNS["name_of_issuer"])
+    icol_cusip = find_column(ifn, BULK_COLUMNS["cusip"])
+    icol_value = find_column(ifn, BULK_COLUMNS["value"])
+    icol_class = find_column(ifn, BULK_COLUMNS["title_of_class"])
+    icol_shares = find_column(ifn, BULK_COLUMNS["shares"])
+    imissing = [n for n, v in [("accession", icol_acc), ("issuer", icol_issuer),
+                                ("cusip", icol_cusip), ("value", icol_value)] if not v]
+    if imissing:
+        raise RuntimeError(f"INFOTABLE.tsv: Spalten fehlen {imissing}. Vorhanden: {ifn}")
+
+    holdings_by_acc = {}
+    for row in info_reader:
+        acc = (row.get(icol_acc) or "").strip()
+        if acc not in accepted_accessions:
+            continue
+        try:
+            value_raw = float((row.get(icol_value) or "0").replace(",", "") or 0)
+        except ValueError:
+            value_raw = 0.0
+        try:
+            shares = float((row.get(icol_shares) or "0").replace(",", "") or 0) if icol_shares else 0.0
+        except ValueError:
+            shares = 0.0
+        holdings_by_acc.setdefault(acc, []).append({
+            "issuer": (row.get(icol_issuer) or "").strip(),
+            "cusip": (row.get(icol_cusip) or "").strip(),
+            "cls": (row.get(icol_class) or "").strip() if icol_class else "",
+            "valueUSD": value_raw,  # noch unkalibriert, siehe calibrate_bulk_scale()
+            "shares": shares,
+        })
+
+    result = {}
+    for (cik10, _period), meta in by_period.items():
+        holdings = holdings_by_acc.get(meta["accession"], [])
+        if not holdings:
+            continue
+        # bei mehreren Perioden je CIK im selben Datensatz die neueste behalten
+        if cik10 in result and result[cik10]["reportDate"] > meta["reportDate"]:
+            continue
+        result[cik10] = {
+            "name": meta["name"], "accession": meta["accession"],
+            "filingDate": meta["filingDate"], "reportDate": meta["reportDate"],
+            "holdings": holdings,
+        }
+    return result
+
+
+def calibrate_bulk_scale(bulk_quarter, curated_records):
+    """Bestimmt EMPIRISCH (nicht aus Doku, die für die einzelnen XML-Filings
+    nachweislich veraltet war — siehe Value-Bug weiter oben) den Skalierungs-
+    faktor der Bulk-VALUE-Spalte, indem die Summenwerte der kuratierten,
+    bereits individuell verifizierten Fonds mit den Bulk-Werten derselben
+    CIKs verglichen werden."""
+    ratios = []
+    for rec in curated_records:
+        bulk_fund = bulk_quarter.get(rec["cik"])
+        if not bulk_fund:
+            continue
+        bulk_total = sum(h["valueUSD"] for h in bulk_fund["holdings"])
+        if bulk_total > 0:
+            ratios.append(rec["totalValueUSD"] / bulk_total)
+    if not ratios:
+        return None, 0
+    avg_ratio = sum(ratios) / len(ratios)
+    for candidate in (1, 1000):
+        if abs(avg_ratio - candidate) / candidate < BULK_VALUE_TOLERANCE:
+            return candidate, len(ratios)
+    return None, len(ratios)
+
+
+def abbr_from_name(name):
+    words = [w for w in (name or "").replace(",", "").replace(".", "").split()
+             if w.upper() not in ("LLC", "LP", "INC", "CO", "GROUP", "CAPITAL", "MANAGEMENT", "ADVISORS", "THE", "&")]
+    return "".join(w[0] for w in words[:4]).upper() or (name or "")[:6].upper()
+
+
+def fetch_bulk_expansion(curated_records, target_total):
+    if not curated_records:
+        print("Bulk-Erweiterung übersprungen: keine kuratierten Fonds als Kalibrierungs-Basis.", file=sys.stderr)
+        return []
+    cur_period = quarter_from_date(curated_records[0]["reportDate"])
+    prev_period = previous_quarter(cur_period)
+
+    print(f"Bulk-Erweiterung: lade SEC-Sammeldatensatz {cur_period[0]}Q{cur_period[1]}...", file=sys.stderr)
+    try:
+        cur_zip = download_bulk_zip(*cur_period)
+        cur_data = parse_bulk_quarter(cur_zip)
+    except Exception as exc:  # noqa: BLE001
+        print(f"Bulk-Erweiterung übersprungen (aktuelles Quartal nicht ladbar/parsebar): {exc}", file=sys.stderr)
+        return []
+
+    scale, calib_n = calibrate_bulk_scale(cur_data, curated_records)
+    if scale is None:
+        print(f"Bulk-Erweiterung übersprungen: Werte-Kalibrierung nicht eindeutig "
+              f"({calib_n} Vergleichsfonds gefunden). Format weicht evtl. ab.", file=sys.stderr)
+        return []
+    print(f"Bulk-Werte-Skalierungsfaktor kalibriert: x{scale} (anhand {calib_n} bekannter Fonds)", file=sys.stderr)
+
+    prev_data = {}
+    try:
+        prev_zip = download_bulk_zip(*prev_period)
+        prev_data = parse_bulk_quarter(prev_zip)
+    except Exception as exc:  # noqa: BLE001
+        print(f"Vorquartals-Bulk-Daten nicht verfügbar, QoQ-Vergleich für Bulk-Fonds entfällt: {exc}", file=sys.stderr)
+
+    curated_ciks = {r["cik"] for r in curated_records}
+    ranked = sorted(
+        ((cik, f) for cik, f in cur_data.items() if cik not in curated_ciks),
+        key=lambda t: -sum(h["valueUSD"] for h in t[1]["holdings"])
+    )
+    need = max(0, target_total - len(curated_records))
+    selected = ranked[:need]
+
+    extra = []
+    for cik, f in selected:
+        holdings = sorted(f["holdings"], key=lambda h: -h["valueUSD"])
+        total_value = sum(h["valueUSD"] for h in holdings) * scale
+        position_count = len(holdings)
+        top_holdings = [
+            {"issuer": h["issuer"], "cls": h["cls"], "cusip": h["cusip"],
+             "valueUSD": h["valueUSD"] * scale, "shares": h["shares"],
+             "weightPct": (h["valueUSD"] / sum(x["valueUSD"] for x in holdings) * 100) if holdings else 0}
+            for h in holdings[:TOP_HOLDINGS_STORE]
+        ]
+
+        record = {
+            "cik": cik, "name": f["name"] or cik, "type": "Sonstige", "abbr": abbr_from_name(f["name"]),
+            "founder": None, "currentLead": None, "managerLabel": None,
+            "photoUrl": None, "photoCredit": None, "photoSourceUrl": None,
+            "reportDate": f["reportDate"], "filedDate": f["filingDate"], "accession": f["accession"],
+            "totalValueUSD": total_value, "positionCount": position_count, "topHoldings": top_holdings,
+            "prevReportDate": None, "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
+            "newPositions": [], "closedPositions": [], "newCount": 0, "closedCount": 0,
+            "error": None, "source": "bulk",
+        }
+
+        prev_fund = prev_data.get(cik)
+        if prev_fund:
+            prev_holdings = prev_fund["holdings"]
+            prev_total = sum(h["valueUSD"] for h in prev_holdings) * scale
+            opened, closed = diff_holdings(
+                [{**h, "valueUSD": h["valueUSD"] * scale} for h in holdings],
+                [{**h, "valueUSD": h["valueUSD"] * scale} for h in prev_holdings],
+            )
+            record["prevReportDate"] = prev_fund["reportDate"]
+            record["prevTotalValueUSD"] = prev_total
+            record["prevPositionCount"] = len(prev_holdings)
+            record["aumChangePct"] = ((total_value - prev_total) / prev_total * 100) if prev_total else None
+            record["newPositions"] = opened[:TOP_TRADES_STORE]
+            record["closedPositions"] = closed[:TOP_TRADES_STORE]
+            record["newCount"] = len(opened)
+            record["closedCount"] = len(closed)
+
+        extra.append(record)
+
+    return extra
+
+
 def fetch_fund(meta):
     cik = meta["cik"]
     cik_int = str(int(cik))
@@ -234,7 +497,7 @@ def fetch_fund(meta):
         "prevReportDate": prev["reportDate"] if prev else None,
         "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
         "newPositions": [], "closedPositions": [], "newCount": 0, "closedCount": 0,
-        "error": None,
+        "error": None, "source": "individual",
     }
 
     if prev:
@@ -271,6 +534,15 @@ def main():
                 "error": str(exc),
             })
         time.sleep(REQUEST_DELAY)
+
+    curated_ok = [f for f in funds if not f.get("error")]
+    try:
+        extra = fetch_bulk_expansion(curated_ok, target_total=BULK_TOP_N)
+        funds.extend(extra)
+        print(f"Bulk-Erweiterung: {len(extra)} zusätzliche Fonds ergänzt "
+              f"({len(funds)} gesamt, Ziel: Top {BULK_TOP_N}).", file=sys.stderr)
+    except Exception as exc:  # noqa: BLE001 - die kuratierten Fonds dürfen dadurch nicht gefährdet werden
+        print(f"Bulk-Erweiterung fehlgeschlagen, kuratierte Fonds bleiben unberührt: {exc}", file=sys.stderr)
 
     output = {"generatedAt": datetime.now(timezone.utc).isoformat(), "funds": funds}
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
