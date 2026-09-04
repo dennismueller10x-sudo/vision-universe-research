@@ -34,11 +34,11 @@ REQUEST_DELAY = 0.3  # SEC allows ~10 req/sec; we stay far under that
 MAX_RETRIES = 3
 
 FUND_META = [
-    {"cik": "0001423333", "abbr": "CITADEL", "name": "Citadel Advisors LLC", "type": "Multi-Strategy"},
+    {"cik": "0001423053", "abbr": "CITADEL", "name": "Citadel Advisors LLC", "type": "Multi-Strategy"},
     {"cik": "0001009207", "abbr": "DESHAW", "name": "D. E. Shaw & Co., Inc.", "type": "Quantitativ"},
     {"cik": "0001179392", "abbr": "TWOSIG", "name": "Two Sigma Investments, LP", "type": "Quantitativ"},
     {"cik": "0001273087", "abbr": "MILLENM", "name": "Millennium Management LLC", "type": "Multi-Strategy"},
-    {"cik": "0001444406", "abbr": "MGROUP", "name": "Man Group plc", "type": "Quantitativ"},
+    {"cik": "0001637460", "abbr": "MGROUP", "name": "Man Group plc", "type": "Quantitativ"},
     {"cik": "0001350694", "abbr": "BRDGWTR", "name": "Bridgewater Associates, LP", "type": "Macro"},
     {"cik": "0001037389", "abbr": "RENTEC", "name": "Renaissance Technologies LLC", "type": "Quantitativ"},
     {"cik": "0001603466", "abbr": "PT72", "name": "Point72 Asset Management, L.P.", "type": "Long/Short"},
@@ -107,9 +107,16 @@ def parse_info_table_xml(xml_bytes):
         cls = find_child_text(el, "titleOfClass")
         cusip = find_child_text(el, "cusip")
         try:
-            value_thousands = float(find_child_text(el, "value") or 0)
+            # SEC's 13F XML technical spec was updated in 2023: <value> is now
+            # reported in whole USD, not thousands as in the pre-2023 spec (this
+            # dashboard only ever fetches the current and prior quarter, so it
+            # will never hit an old-format filing). Confirmed against a real
+            # GitHub Actions run: without this, every fund's AUM came back
+            # inflated by exactly 1000x (e.g. D.E. Shaw as $210T instead of
+            # a plausible $210B).
+            value_usd = float(find_child_text(el, "value") or 0)
         except ValueError:
-            value_thousands = 0.0
+            value_usd = 0.0
         shares = 0.0
         for child in el:
             if local_name(child.tag) == "shrsOrPrnAmt":
@@ -119,7 +126,7 @@ def parse_info_table_xml(xml_bytes):
                     shares = 0.0
         holdings.append({
             "issuer": issuer, "cls": cls, "cusip": cusip,
-            "valueUSD": value_thousands * 1000, "shares": shares,
+            "valueUSD": value_usd, "shares": shares,
         })
     return holdings
 
