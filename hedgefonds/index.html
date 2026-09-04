@@ -370,6 +370,10 @@
     </div>
   </div>
 
+  <!-- KATEGORIE-FILTER (gilt für Rangliste AUM + Fonds Details) -->
+  <div class="section-label">Fonds-Kategorie<span class="section-label-note" id="categoryNote"></span></div>
+  <div class="pill-row" id="categoryPills"></div>
+
   <!-- AUM RANKING (Bar Chart) -->
   <div class="section-label">Rangliste AUM<span class="section-label-note" id="barListNote"></span></div>
   <div class="bar-list" id="barList"></div>
@@ -379,8 +383,15 @@
   <input class="fund-search" id="fundSearch" placeholder="Fonds suchen..." oninput="HF.renderRankList()">
   <div class="rank-card" id="rankList"></div>
 
+  <!-- MEISTGEKAUFTE / MEISTVERKAUFTE AKTIEN (aggregiert über alle Fonds) -->
+  <div class="section-label">Meistgekaufte Aktien<span class="section-label-note">ggü. Vorquartal, aggregiert über alle Fonds</span></div>
+  <div class="rank-card" id="topBuysList"></div>
+
+  <div class="section-label">Meistverkaufte Aktien<span class="section-label-note">ggü. Vorquartal, aggregiert über alle Fonds</span></div>
+  <div class="rank-card" id="topSellsList"></div>
+
   <!-- RECENT TRADES -->
-  <div class="section-label">Neue / geschlossene Positionen<span class="section-label-note">ggü. Vorquartal</span></div>
+  <div class="section-label">Einzelne Trades<span class="section-label-note">ggü. Vorquartal, pro Fonds</span></div>
   <div class="pill-row" id="tradePills">
     <button class="pill active" data-type="all">Alle</button>
     <button class="pill" data-type="buy">Neu eröffnet</button>
@@ -495,7 +506,8 @@ var S = {
   loaded: false,
   loadError: null,
   openCik: null,        // CIK des aktuell geöffneten Fonds-Detail-Overlays
-  fundTradeFilter: "all"
+  fundTradeFilter: "all",
+  categoryFilter: "all" // "all" | "Hedgefonds" | "Bank & Broker" | "Vermögensverwaltung" | "Marktmacher / Trading" | "Sonstige"
 };
 
 /* ---------- Utilities ---------- */
@@ -604,6 +616,11 @@ function fundsWithData(){
 function fundsWithError(){
   return S.fundOrder.map(function(cik){ return S.data[cik]; }).filter(function(d){ return d && d.error; });
 }
+function categoryFilteredFunds(){
+  var funds = fundsWithData();
+  if(S.categoryFilter === "all") return funds;
+  return funds.filter(function(d){ return (d.category || d.type) === S.categoryFilter; });
+}
 
 function aggregate(){
   var funds = fundsWithData();
@@ -637,6 +654,19 @@ function aggregate(){
   });
   trades.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
 
+  function aggregateBySecurity(action){
+    var byKey = {};
+    trades.filter(function(t){ return t.action === action; }).forEach(function(t){
+      var key = t.cusip || t.issuer;
+      if(!byKey[key]) byKey[key] = { issuer: t.issuer, cusip: t.cusip, valueUSD: 0, fundCount: 0 };
+      byKey[key].valueUSD += t.valueUSD;
+      byKey[key].fundCount++;
+    });
+    return Object.keys(byKey).map(function(k){ return byKey[k]; }).sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+  }
+  var topBuys = aggregateBySecurity("buy");
+  var topSells = aggregateBySecurity("sell");
+
   var byType = {};
   funds.forEach(function(d){ byType[d.type] = (byType[d.type] || 0) + (d.totalValueUSD || 0); });
   var typeList = Object.keys(byType).map(function(t){ return { name:t, valueUSD: byType[t] }; })
@@ -649,7 +679,8 @@ function aggregate(){
   if(filings.length) filings[0].isNew = true;
 
   return { funds:funds, totalAUM:totalAUM, aumChangePct:aumChangePct, havePrevCount:havePrevCount,
-    totalNew:totalNew, totalClosed:totalClosed, aggHoldings:aggHoldings, trades:trades, typeList:typeList, filings:filings };
+    totalNew:totalNew, totalClosed:totalClosed, aggHoldings:aggHoldings, trades:trades, typeList:typeList, filings:filings,
+    topBuys:topBuys, topSells:topSells };
 }
 
 /* ---------- Rendering ---------- */
@@ -680,7 +711,7 @@ function periodValue(d, field){
 var BAR_CHART_LIMIT = 20;
 
 function renderBars(){
-  var funds = fundsWithData();
+  var funds = categoryFilteredFunds();
   if(!funds.length){ set("#barList", loadingOrEmptyMsg()); set("#barListNote",""); return; }
   var rows = funds.map(function(d){ return { d:d, v: periodValue(d, "totalValueUSD") }; })
     .filter(function(r){ return r.v != null; })
@@ -708,7 +739,7 @@ function tickerLine(d){
 }
 
 function renderRankList(){
-  var funds = fundsWithData();
+  var funds = categoryFilteredFunds();
   if(!funds.length){ set("#rankList", loadingOrEmptyMsg()); set("#rankListNote","ggü. Vorquartal"); return; }
   var q = (($("#fundSearch") && $("#fundSearch").value) || "").toLowerCase().trim();
   var rows = funds.filter(function(d){
@@ -772,6 +803,48 @@ function renderHoldings(){
       '</div>' +
     '</div>';
   }).join(""));
+}
+
+function renderAggTradeList(elId, list, cls){
+  if(!list.length){ set(elId, '<div class="state-msg">Keine Daten.</div>'); return; }
+  set(elId, list.slice(0, 8).map(function(h, i){
+    return '<div class="rank-row" style="cursor:default">' +
+      '<div class="rank-num">#' + (i+1) + '</div>' +
+      '<div class="rank-info">' +
+        '<div class="rank-ticker">' + esc(h.cusip || "") + ' · ' + h.fundCount + ' Fonds</div>' +
+        '<div class="rank-name">' + esc(h.issuer) + '</div>' +
+      '</div>' +
+      '<div class="rank-right">' +
+        '<div class="rank-pct ' + cls + '">' + fmtUSDShort(h.valueUSD) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join(""));
+}
+function renderTopBuys(){
+  var agg = aggregate();
+  if(!agg.funds.length){ set("#topBuysList", loadingOrEmptyMsg()); return; }
+  renderAggTradeList("#topBuysList", agg.topBuys, "pos");
+}
+function renderTopSells(){
+  var agg = aggregate();
+  if(!agg.funds.length){ set("#topSellsList", loadingOrEmptyMsg()); return; }
+  renderAggTradeList("#topSellsList", agg.topSells, "neg");
+}
+
+function renderCategoryPills(){
+  var funds = fundsWithData();
+  var counts = {};
+  funds.forEach(function(d){ var c = d.category || d.type || "Sonstige"; counts[c] = (counts[c]||0) + 1; });
+  var order = ["Hedgefonds", "Bank & Broker", "Vermögensverwaltung", "Marktmacher / Trading", "Sonstige"];
+  var cats = order.filter(function(c){ return counts[c]; });
+  Object.keys(counts).forEach(function(c){ if(order.indexOf(c) === -1) cats.push(c); });
+  if(!cats.length){ set("#categoryPills", ""); set("#categoryNote",""); return; }
+  var html = '<button class="pill ' + (S.categoryFilter==="all"?"active":"") + '" data-cat="all">Alle (' + funds.length + ')</button>';
+  html += cats.map(function(c){
+    return '<button class="pill ' + (S.categoryFilter===c?"active":"") + '" data-cat="' + esc(c) + '">' + esc(c) + ' (' + counts[c] + ')</button>';
+  }).join("");
+  set("#categoryPills", html);
+  set("#categoryNote", S.categoryFilter === "all" ? "" : "gefiltert");
 }
 
 function renderTypes(){
@@ -954,11 +1027,14 @@ function loadingOrEmptyMsg(){
 
 function renderAll(){
   renderPeriodPills();
+  renderCategoryPills();
   renderSummary();
   renderBars();
   renderRankList();
   renderTrades();
   renderHoldings();
+  renderTopBuys();
+  renderTopSells();
   renderTypes();
   renderFilings();
 }
@@ -1004,11 +1080,21 @@ function setTradeFilter(type){
   $all("#tradePills .pill").forEach(function(b){ b.classList.toggle("active", b.dataset.type === type); });
   renderTrades();
 }
+function setCategoryFilter(cat){
+  S.categoryFilter = cat;
+  renderCategoryPills();
+  renderBars();
+  renderRankList();
+}
 
 document.addEventListener("DOMContentLoaded", function(){
   $("#tradePills").addEventListener("click", function(e){
     if(!e.target.classList.contains("pill")) return;
     setTradeFilter(e.target.dataset.type);
+  });
+  $("#categoryPills").addEventListener("click", function(e){
+    if(!e.target.classList.contains("pill")) return;
+    setCategoryFilter(e.target.dataset.cat);
   });
   $("#fd-trade-pills").addEventListener("click", function(e){
     if(!e.target.classList.contains("pill")) return;
@@ -1028,7 +1114,7 @@ function init(){
   loadData(false);
 }
 
-window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter, openFund: openFund, closeFund: closeFund, setFundTradeFilter: setFundTradeFilter, renderRankList: renderRankList };
+window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter, openFund: openFund, closeFund: closeFund, setFundTradeFilter: setFundTradeFilter, renderRankList: renderRankList, setCategoryFilter: setCategoryFilter };
 // Für Offline-/Node-Tests
 window.HF_TEST = { fmtUSDShort: fmtUSDShort, fmtSharesShort: fmtSharesShort, fmtPct: fmtPct, quarterLabel: quarterLabel };
 
