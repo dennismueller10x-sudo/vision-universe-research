@@ -18,7 +18,7 @@
   const bindSearch = (id) => { const input = document.getElementById(id); if (input) input.oninput = () => document.querySelectorAll('.stock-button,.watch-card').forEach((el) => { el.hidden = !el.dataset.search.includes(input.value.toLowerCase()); }); };
 
   if (view === 'home') {
-    app.innerHTML = `<section class="home"><div class="kicker">VISION UNIVERSE</div><h1>Was möchtest du heute verstehen?</h1><p class="intro">Unabhängiges Research für fundiertere Anlageentscheidungen.</p><div class="actions"><a class="action" href="/dashboard/research/"><b>Research</b><span>Fundamentale Analyse und Score</span></a><a class="action" href="/dashboard/charting/"><b>Charting</b><span>Kurs, Trend und Szenarien</span></a><a class="action" href="/dashboard/discover/"><b>Entdecken</b><span>Aktien suchen und auswählen</span></a><a class="action" href="/dashboard/watchlist/"><b>Watchlist</b><span>Scores und Kennzahlen vergleichen</span></a></div></section>`;
+    app.innerHTML = `<section class="home"><div class="kicker">VISION UNIVERSE</div><h1>Was möchtest du heute verstehen?</h1><p class="intro">Unabhängiges Research für fundiertere Anlageentscheidungen.</p><div class="actions"><a class="action" href="/dashboard/research/"><b>Research</b><span>Fundamentale Analyse und Score</span></a><a class="action" href="/dashboard/charting/"><b>Charting</b><span>Kurs, Trend und Szenarien</span></a><a class="action" href="/dashboard/discover/"><b>Entdecken</b><span>Aktien suchen und auswählen</span></a><a class="action" href="/dashboard/news/"><b>News</b><span>Kursrelevante Meldungen aus Primärquellen</span></a><a class="action" href="/dashboard/watchlist/"><b>Watchlist</b><span>Scores und Kennzahlen vergleichen</span></a></div></section>`;
     return;
   }
 
