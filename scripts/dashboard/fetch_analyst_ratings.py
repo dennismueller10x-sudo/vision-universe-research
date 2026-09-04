@@ -54,23 +54,19 @@ def fetch_json(path, symbol, api_key):
         raise RuntimeError(f"Could not fetch {path} for {symbol}: {type(error).__name__}") from error
 
 
-def consensus_label(recommendation):
-    weighted = (
-        2 * recommendation["strongBuy"]
-        + recommendation["buy"]
-        - recommendation["sell"]
-        - 2 * recommendation["strongSell"]
-    )
-    total = (
-        recommendation["strongBuy"]
-        + recommendation["buy"]
-        + recommendation["hold"]
-        + recommendation["sell"]
-        + recommendation["strongSell"]
-    )
-    if total == 0:
+TREND_HISTORY_LENGTH = 6
+
+
+def consensus_score(period):
+    weighted = 2 * period["strongBuy"] + period["buy"] - period["sell"] - 2 * period["strongSell"]
+    total = period["strongBuy"] + period["buy"] + period["hold"] + period["sell"] + period["strongSell"]
+    return None if total == 0 else weighted / total
+
+
+def consensus_label(period):
+    score = consensus_score(period)
+    if score is None:
         return "no_coverage"
-    score = weighted / total
     if score > 1:
         return "strong_buy"
     if score > 0.3:
@@ -86,15 +82,19 @@ def fetch_symbol(symbol, api_key):
     trends = fetch_json("/stock/recommendation", symbol, api_key)
     if not isinstance(trends, list) or not trends:
         raise RuntimeError(f"No recommendation trend data for {symbol}")
-    latest = trends[0]
-    recommendation = {
-        "period": latest["period"],
-        "strongBuy": int(latest["strongBuy"]),
-        "buy": int(latest["buy"]),
-        "hold": int(latest["hold"]),
-        "sell": int(latest["sell"]),
-        "strongSell": int(latest["strongSell"]),
-    }
+    trends = sorted(trends, key=lambda item: item["period"], reverse=True)[:TREND_HISTORY_LENGTH]
+    trend_history = [
+        {
+            "period": period["period"],
+            "strongBuy": int(period["strongBuy"]),
+            "buy": int(period["buy"]),
+            "hold": int(period["hold"]),
+            "sell": int(period["sell"]),
+            "strongSell": int(period["strongSell"]),
+        }
+        for period in trends
+    ]
+    latest = trend_history[0]
     target = fetch_json("/stock/price-target", symbol, api_key)
     price_target = None
     if target and target.get("targetMean") is not None:
@@ -107,8 +107,10 @@ def fetch_symbol(symbol, api_key):
             "lastUpdated": target.get("lastUpdated"),
         }
     return {
-        "recommendation": recommendation,
-        "consensus_label": consensus_label(recommendation),
+        "trend_history": trend_history,
+        "consensus_label": consensus_label(latest),
+        "consensus_score": consensus_score(latest),
+        "previous_consensus_label": consensus_label(trend_history[1]) if len(trend_history) > 1 else None,
         "price_target": price_target,
     }
 
