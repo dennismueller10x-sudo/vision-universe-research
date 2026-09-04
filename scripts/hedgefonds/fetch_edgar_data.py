@@ -33,15 +33,32 @@ TOP_TRADES_STORE = 40
 REQUEST_DELAY = 0.3  # SEC allows ~10 req/sec; we stay far under that
 MAX_RETRIES = 3
 
+
+# founder / currentLead / managerLabel / photoUrl sind statische, redaktionelle
+# Angaben (keine SEC-Daten) — verifiziert per Web-Recherche am 2026-09-04, da
+# sich Fonds-Führung schnell ändert (siehe z.B. Bridgewater: Dalio verkaufte
+# seinen letzten Anteil erst im Aug. 2025). photoUrl ist absichtlich leer:
+# ein Foto einer echten Person auf einer kommerziellen Webseite braucht deren
+# Zustimmung bzw. eine geklärte Bildlizenz (in DE strenger als in den USA,
+# Stichwort Recht am eigenen Bild) — das kann dieses Skript nicht validieren,
+# daher zunächst nur der Initialen-Avatar im Frontend als Fallback.
 FUND_META = [
-    {"cik": "0001423053", "abbr": "CITADEL", "name": "Citadel Advisors LLC", "type": "Multi-Strategy"},
-    {"cik": "0001009207", "abbr": "DESHAW", "name": "D. E. Shaw & Co., Inc.", "type": "Quantitativ"},
-    {"cik": "0001179392", "abbr": "TWOSIG", "name": "Two Sigma Investments, LP", "type": "Quantitativ"},
-    {"cik": "0001273087", "abbr": "MILLENM", "name": "Millennium Management LLC", "type": "Multi-Strategy"},
-    {"cik": "0001637460", "abbr": "MGROUP", "name": "Man Group plc", "type": "Quantitativ"},
-    {"cik": "0001350694", "abbr": "BRDGWTR", "name": "Bridgewater Associates, LP", "type": "Macro"},
-    {"cik": "0001037389", "abbr": "RENTEC", "name": "Renaissance Technologies LLC", "type": "Quantitativ"},
-    {"cik": "0001603466", "abbr": "PT72", "name": "Point72 Asset Management, L.P.", "type": "Long/Short"},
+    {"cik": "0001423053", "abbr": "CITADEL", "name": "Citadel Advisors LLC", "type": "Multi-Strategy",
+     "founder": "Ken Griffin", "currentLead": None, "photoUrl": None},
+    {"cik": "0001009207", "abbr": "DESHAW", "name": "D. E. Shaw & Co., Inc.", "type": "Quantitativ",
+     "founder": "David E. Shaw", "currentLead": "Executive Committee (D. Shaw seit 2002 primär bei D. E. Shaw Research)", "photoUrl": None},
+    {"cik": "0001179392", "abbr": "TWOSIG", "name": "Two Sigma Investments, LP", "type": "Quantitativ",
+     "founder": "John Overdeck & David Siegel", "currentLead": "Führung seit 2024 mehrfach verändert (zuletzt Co-CEO-Rücktritt, Apr. 2026)", "photoUrl": None},
+    {"cik": "0001273087", "abbr": "MILLENM", "name": "Millennium Management LLC", "type": "Multi-Strategy",
+     "founder": "Israel Englander", "currentLead": None, "photoUrl": None},
+    {"cik": "0001637460", "abbr": "MGROUP", "name": "Man Group plc", "type": "Quantitativ",
+     "founder": "Robyn Grew", "managerLabel": "CEO", "currentLead": None, "photoUrl": None},
+    {"cik": "0001350694", "abbr": "BRDGWTR", "name": "Bridgewater Associates, LP", "type": "Macro",
+     "founder": "Ray Dalio", "currentLead": "Seit Aug. 2025 nicht mehr operativ beteiligt; geführt von Co-CIOs Karniol-Tambour, Prince, Jensen", "photoUrl": None},
+    {"cik": "0001037389", "abbr": "RENTEC", "name": "Renaissance Technologies LLC", "type": "Quantitativ",
+     "founder": "Jim Simons (†2024)", "currentLead": "Peter Brown (CEO)", "photoUrl": None},
+    {"cik": "0001603466", "abbr": "PT72", "name": "Point72 Asset Management, L.P.", "type": "Long/Short",
+     "founder": "Steven A. Cohen", "currentLead": None, "photoUrl": None},
 ]
 
 
@@ -193,6 +210,8 @@ def fetch_fund(meta):
     record = {
         "cik": cik, "name": sub.get("name") or sub.get("entityName") or meta["name"],
         "type": meta["type"], "abbr": meta["abbr"],
+        "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
+        "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
         "reportDate": current["reportDate"], "filedDate": current["filedDate"], "accession": current["accession"],
         "totalValueUSD": total_value, "positionCount": position_count, "topHoldings": top_holdings,
         "prevReportDate": prev["reportDate"] if prev else None,
@@ -229,6 +248,8 @@ def main():
             print(f"  Fehler: {exc}", file=sys.stderr)
             funds.append({
                 "cik": meta["cik"], "name": meta["name"], "type": meta["type"], "abbr": meta["abbr"],
+                "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
+                "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
                 "error": str(exc),
             })
         time.sleep(REQUEST_DELAY)
