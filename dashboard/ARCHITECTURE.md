@@ -31,3 +31,15 @@ Ausschließlich `dashboard/data/market_data.json` und `dashboard/data/technical_
 `reports/` ist ein eigenständiges Produkt. Dieser Dashboard-Workflow liest, verändert und committet dort nichts.
 
 Eine spätere Fundamental Engine schreibt unabhängig `fundamental_scores.json`. Sie erweitert das Dashboard, ohne die Technical Engine oder Reports umzubauen.
+
+## Fundamentaldaten-Pipeline (separat, manuell)
+
+`Twelve Data /statistics → GitHub Actions (nur workflow_dispatch) → dashboard/data/fundamental_metrics.json`
+
+Diese Pipeline ist bewusst von der wöchentlichen Kurs-Pipeline getrennt, damit ein Fundamentaldaten-Lauf den Kurs-/Technical-Workflow niemals beeinflussen kann:
+
+- `scripts/dashboard/fetch_fundamentals.py`: ruft pro übergebenem Symbol genau einmal `/statistics` auf (1 API-Credit je Symbol) und schreibt ausschließlich `dashboard/data/fundamental_metrics.json` (Schema-Version 2). Andere Symbole im File bleiben beim Merge unverändert.
+- `.github/workflows/update-fundamentals.yml`: **nur** `workflow_dispatch` mit Pflicht-Input `symbols` (Komma-getrennt, Default `AMZN`) — kein Cron, läuft nie automatisch. Ein eigener Scope-Guard erlaubt im Diff ausschließlich `dashboard/data/fundamental_metrics.json`.
+- Neue Symbole werden weiterhin über `dashboard/config/universe.json` freigeschaltet; Kursdaten dafür liefert erst der nächste Lauf von `update-dashboard.yml` (unverändert, eigener Trigger).
+- Fehlt für ein Symbol ein Fundamental-, Score- oder Kursdatensatz, rendert `app-rebuild.js` einen degradierten Zustand (`—`, „Score noch offen“, „Kein Research-Profil hinterlegt“) statt abzustürzen — neue Symbole können so schrittweise befüllt werden, ohne bestehende Seiten zu gefährden.
+- Die Marktkapitalisierungs-Linie im Charting (`?overlay=mcap`) kostet keine zusätzlichen Credits: sie wird clientseitig aus vorhandenen Kursdaten × zuletzt gemeldeten `shares_outstanding` berechnet (Näherung, ignoriert Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Läufen) und ist nur sichtbar, wenn für das gewählte Symbol bereits Fundamentaldaten vorliegen.

@@ -5,6 +5,8 @@
 
 
 .range a{border:0;border-radius:12px;background:#f1f1ef;color:#111;text-decoration:none;padding:10px 12px;font-weight:800;text-align:center}.range a.on{background:#111;color:#fff}
+.range-disabled{border-radius:12px;background:#f7f7f5;color:#bbb;padding:10px 12px;font-weight:800;text-align:center;cursor:not-allowed}
+.chart .indicator.mcap{stroke:#c2478b;stroke-width:2;stroke-dasharray:2 4}.legend .lg-mcap:before{background:#c2478b}
 .orb.score-red,.score-red,.score-badge.score-red{border-color:#e24b45;background:#e24b45}.orb.score-yellow,.score-yellow,.score-badge.score-yellow{border-color:#e4b32b;background:#e4b32b}.orb.score-lightgreen,.score-lightgreen,.score-badge.score-lightgreen{border-color:#75c96b;background:#75c96b}.orb.score-darkgreen,.score-darkgreen,.score-badge.score-darkgreen{border-color:#15884d;background:#15884d}.orb.score-red,.orb.score-yellow,.orb.score-lightgreen,.orb.score-darkgreen{background:#fff}.score-red-text{color:#d93b35}.score-yellow-text{color:#aa7900}.score-lightgreen-text{color:#4b9d43}.score-darkgreen-text{color:#107642}
 .score-details{grid-template-columns:repeat(3,1fr)}.score-details .score{min-height:150px}.score-details .score p{font-size:12px;line-height:1.45;color:#666;margin:8px 0 0}.profile ul{list-style:disc;padding-left:20px}.profile li{margin:8px 0;color:#444}
 .chart .elliott-history{fill:none;stroke:#7057d9;stroke-width:2;stroke-dasharray:7 5}.chart .elliott-projection{fill:none;stroke:#16835b;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#arrow)}.chart .wave-dot{fill:#7057d9;stroke:#fff;stroke-width:2}.chart .wave-label{fill:#6049bd;font-size:13px;font-weight:900}.legend .lg-wave:before{background:#7057d9}.chart .zone-stop-text{fill:#d84d43;font-size:12px;font-weight:800}
