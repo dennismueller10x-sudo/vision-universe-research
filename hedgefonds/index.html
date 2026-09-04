@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
 <title>HedgeTrack – Institutional Portfolio Monitor</title>
-<meta name="description" content="13F-Holdings der größten Hedgefonds — live von der SEC EDGAR API. Citadel, D.E. Shaw, Two Sigma, Millennium, Man Group, Bridgewater, Renaissance, Point72.">
+<meta name="description" content="13F-Holdings der größten Hedgefonds — automatisch aktualisiert von der SEC EDGAR API. Citadel, D.E. Shaw, Two Sigma, Millennium, Man Group, Bridgewater, Renaissance, Point72.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -283,9 +283,9 @@
   </a>
   <div class="topbar-right">
     <span class="last-update-label" id="lastUpdate"></span>
-    <button class="btn-refresh" id="refreshBtn" onclick="HF.refreshAll()">
+    <button class="btn-refresh" id="refreshBtn" onclick="HF.reload()" title="Lädt die zuletzt automatisch abgerufenen Daten neu (kein Live-SEC-Abruf im Browser)">
       <svg id="refreshIcon" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Update
+      Neu laden
     </button>
   </div>
 </nav>
@@ -294,7 +294,7 @@
 
   <!-- PAGE TITLE -->
   <div class="page-title">Hedgefonds</div>
-  <div class="page-sub">Institutionelle Portfolios im Überblick · 13F-Filings live von der SEC</div>
+  <div class="page-sub">Institutionelle Portfolios im Überblick · 13F-Filings von der SEC, automatisch aktualisiert</div>
 
   <!-- PERIOD PILLS -->
   <div class="pill-row" id="periodPills"></div>
@@ -367,7 +367,7 @@
   <div class="filing-card" id="filingList"></div>
 
   <div class="info-note">
-    <b>Datenquelle:</b> SEC EDGAR (<span style="font-family:var(--mono)">data.sec.gov</span>), Formular 13F-HR. Hedgefonds mit &gt; 100 Mio. USD AUM müssen ihre US-Aktienpositionen vierteljährlich offenlegen (Fristen: 14. Feb, 15. Mai, 14. Aug, 14. Nov), mit 45 Tagen Verzögerung zum Quartalsende. "Neu eröffnet"/"Komplett verkauft" sind Positionen, die zwischen den letzten zwei gemeldeten Quartalen neu auftauchen bzw. verschwinden — 13F zeigt nur Stichtags-Schnappschüsse, keine exakten Handelszeitpunkte, Kurse oder Zwischenbewegungen. Nur US-Long-Positionen, keine Shorts, Derivate oder internationalen Bestände. Daten werden 28 Tage lokal zwischengespeichert. Keine Anlageberatung.
+    <b>Datenquelle:</b> SEC EDGAR (<span style="font-family:var(--mono)">data.sec.gov</span>), Formular 13F-HR. Hedgefonds mit &gt; 100 Mio. USD AUM müssen ihre US-Aktienpositionen vierteljährlich offenlegen (Fristen: 14. Feb, 15. Mai, 14. Aug, 14. Nov), mit 45 Tagen Verzögerung zum Quartalsende. Die Daten werden nicht bei jedem Seitenaufruf live abgerufen, sondern automatisiert kurz nach jeder Meldefrist server-seitig aktualisiert — das entspricht dem tatsächlichen Update-Rhythmus der 13F-Filings und ist zuverlässiger als ein Live-Abruf aus dem Browser. "Neu eröffnet"/"Komplett verkauft" sind Positionen, die zwischen den letzten zwei gemeldeten Quartalen neu auftauchen bzw. verschwinden — 13F zeigt nur Stichtags-Schnappschüsse, keine exakten Handelszeitpunkte, Kurse oder Zwischenbewegungen. Nur US-Long-Positionen, keine Shorts, Derivate oder internationalen Bestände. Keine Anlageberatung.
   </div>
 
 </div>
@@ -381,17 +381,26 @@
 
 /* =========================================================
    VISION UNIVERSE · HedgeTrack — Hedgefonds Dashboard
-   Datenquelle: SEC EDGAR (data.sec.gov / www.sec.gov), Formular 13F-HR
 
-   Hinweis zum User-Agent:
-   Die SEC bittet um einen User-Agent-Header mit Kontaktadresse
-   (z.B. "VisionUniverseResearch info@visionuniverse.de") bei
-   automatisierten Zugriffen. Browser-Fetch-Aufrufe dürfen diesen
-   Header aus Sicherheitsgründen jedoch nicht setzen ("forbidden
-   header name") — der Browser sendet stattdessen automatisch
-   seinen eigenen User-Agent. Für einen vollständig SEC-konformen
-   Zugriff müsste ein eigener Server/Proxy den Header setzen; das
-   ist auf statischem GitHub-Pages-Hosting nicht möglich.
+   Architektur: Die SEC-EDGAR-13F-Daten werden NICHT bei jedem
+   Seitenaufruf live im Browser abgerufen. Stattdessen holt ein
+   Python-Skript (scripts/hedgefonds/fetch_edgar_data.py) sie
+   server-seitig über einen geplanten GitHub-Actions-Workflow
+   (.github/workflows/update-hedgefonds.yml, kurz nach jeder
+   13F-Meldefrist) und schreibt sie als statisches JSON nach
+   hedgefonds/data/hedgefonds.json. Diese Seite lädt nur noch
+   diese kleine, gleiche-Origin-JSON-Datei.
+
+   Das ist zuverlässiger als ein Live-Abruf aus dem Browser:
+   - kein CORS-Proxy nötig (Server-zu-Server-Requests kennen
+     keine CORS-Beschränkung, die gilt nur für Browser)
+   - der Python-Fetch kann den von der SEC gewünschten
+     User-Agent-Header mit Kontaktadresse korrekt setzen
+     (Browser-Fetch darf diesen Header aus Sicherheitsgründen
+     gar nicht setzen — "forbidden header name")
+   - passt zum tatsächlichen Update-Rhythmus von 13F-Filings
+     (vierteljährlich), statt bei jedem Besuch neu (und damit
+     unnötig oft) gegen die SEC-API zu laufen
 
    Hinweis zu "Sektorverteilung":
    Das 13F-Infotable enthält keinerlei Sektor-/GICS-Klassifizierung
@@ -402,29 +411,16 @@
    (öffentlich bekannte Einordnung, kein SEC-Datenfeld).
    ========================================================= */
 
-var FUND_META = [
-  { cik:"0001423333", abbr:"CITADEL", name:"Citadel Advisors LLC",       type:"Multi-Strategy" },
-  { cik:"0001009207", abbr:"DESHAW",  name:"D. E. Shaw & Co., Inc.",     type:"Quantitativ" },
-  { cik:"0001179392", abbr:"TWOSIG",  name:"Two Sigma Investments, LP",  type:"Quantitativ" },
-  { cik:"0001273087", abbr:"MILLENM", name:"Millennium Management LLC", type:"Multi-Strategy" },
-  { cik:"0001444406", abbr:"MGROUP",  name:"Man Group plc",              type:"Quantitativ" },
-  { cik:"0001350694", abbr:"BRDGWTR", name:"Bridgewater Associates, LP", type:"Macro" },
-  { cik:"0001037389", abbr:"RENTEC",  name:"Renaissance Technologies LLC", type:"Quantitativ" },
-  { cik:"0001603466", abbr:"PT72",    name:"Point72 Asset Management, L.P.", type:"Long/Short" }
-];
-
-var CACHE_TTL_MS = 28 * 24 * 60 * 60 * 1000;
-var CACHE_PREFIX = "vuhf2_";
-var TOP_HOLDINGS_STORE = 150;
-var TOP_TRADES_STORE = 40;
+var DATA_URL = "./data/hedgefonds.json";
 
 var S = {
-  data: {},          // cik -> cached/derived record (siehe loadFund)
-  loading: {},        // cik -> bool
-  loadedCount: 0,
-  period: "current",  // "current" | "previous"
+  generatedAt: null,
+  data: {},           // cik -> Fund-Record aus dem JSON
+  fundOrder: [],       // CIKs in JSON-Reihenfolge (für stabile Anzeige)
+  period: "current",   // "current" | "previous"
   tradeFilter: "all",
-  refreshing: false
+  loaded: false,
+  loadError: null
 };
 
 /* ---------- Utilities ---------- */
@@ -468,245 +464,44 @@ function quarterLabel(iso){
   var q = Math.ceil(m/3);
   return "Q" + q + " " + y;
 }
-function daysAgo(ts){ return Math.floor((Date.now() - ts) / (24*60*60*1000)); }
-
-/* ---------- Cache ---------- */
-
-function cacheKey(cik){ return CACHE_PREFIX + cik; }
-function loadCache(cik){
-  try{ var raw = localStorage.getItem(cacheKey(cik)); return raw ? JSON.parse(raw) : null; }
-  catch(e){ return null; }
+function shortFundLabel(name){
+  return (name||"").replace(/,?\s*(LLC|LP|L\.P\.|Inc\.?|plc|& Co\.,? Inc\.)$/i,"").replace(" Associates","").trim();
 }
-function saveCache(cik, obj){
-  try{ localStorage.setItem(cacheKey(cik), JSON.stringify(obj)); }catch(e){ /* Speicher evtl. voll — läuft trotzdem im RAM weiter */ }
-}
-function isFresh(obj){ return !!obj && !obj.error && (Date.now() - obj.ts) < CACHE_TTL_MS; }
 
-/* ---------- Netzwerk: direkt, mit CORS-Proxy-Fallback ---------- */
+/* ---------- Daten laden ---------- */
 
-function corsProxied(url){ return "https://corsproxy.io/?url=" + encodeURIComponent(url); }
-
-function smartFetchText(url){
-  return fetch(url, {headers:{"Accept":"application/json, text/plain, */*"}}).then(function(r){
+function loadData(bust){
+  var url = DATA_URL + (bust ? ("?t=" + Date.now()) : "");
+  return fetch(url, {cache: bust ? "no-store" : "default"}).then(function(r){
     if(!r.ok) throw new Error("HTTP " + r.status);
-    return r.text();
-  }).catch(function(){
-    return fetch(corsProxied(url)).then(function(r){
-      if(!r.ok) throw new Error("Proxy HTTP " + r.status);
-      return r.text();
+    return r.json();
+  }).then(function(json){
+    S.generatedAt = json.generatedAt || null;
+    S.data = {};
+    S.fundOrder = [];
+    (json.funds || []).forEach(function(f){
+      S.data[f.cik] = f;
+      S.fundOrder.push(f.cik);
     });
-  });
-}
-
-function submissionsUrl(cik){ return "https://data.sec.gov/submissions/CIK" + cik + ".json"; }
-function archiveIndexUrl(cikInt, accNoDashes){ return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/index.json"; }
-function archiveFileUrl(cikInt, accNoDashes, filename){ return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/" + filename; }
-function accNoDashes(acc){ return acc.replace(/-/g, ""); }
-
-/* findRecent13Fs: liefert die n zuletzt gemeldeten, DISTINKTEN 13F-HR-Berichtsperioden
-   (bei einer Änderung/"13F-HR/A" zu einer bereits erfassten Periode wird die zuletzt
-   eingereichte Version bevorzugt). */
-function findRecent13Fs(filingsRecent, n){
-  var forms = filingsRecent.form || [];
-  var accs = filingsRecent.accessionNumber || [];
-  var filed = filingsRecent.filingDate || [];
-  var report = filingsRecent.reportDate || [];
-  var byPeriod = {};
-  for(var i = 0; i < forms.length; i++){
-    var f = forms[i];
-    if(f === "13F-HR" || f === "13F-HR/A"){
-      var rd = report[i];
-      if(!byPeriod[rd] || filed[i] > byPeriod[rd].filedDate){
-        byPeriod[rd] = { form:f, accession:accs[i], filedDate:filed[i], reportDate:rd };
-      }
-    }
-  }
-  var periods = Object.keys(byPeriod).sort().reverse();
-  return periods.slice(0, n).map(function(rd){ return byPeriod[rd]; });
-}
-
-/* ---------- XML-Parsing (infoTable) ---------- */
-
-function tagText(el, name){
-  var n = el.getElementsByTagNameNS("*", name)[0];
-  return n ? (n.textContent || "").trim() : "";
-}
-
-function parseInfoTableXml(xmlText){
-  var parser = new DOMParser();
-  var doc = parser.parseFromString(xmlText, "application/xml");
-  var perr = doc.getElementsByTagName("parsererror");
-  if(perr && perr.length) throw new Error("XML konnte nicht geparst werden");
-
-  var nodes = doc.getElementsByTagNameNS("*", "infoTable");
-  var holdings = [];
-  for(var i = 0; i < nodes.length; i++){
-    var el = nodes[i];
-    var issuer = tagText(el, "nameOfIssuer");
-    var cls = tagText(el, "titleOfClass");
-    var cusip = tagText(el, "cusip");
-    var valueThousands = parseFloat(tagText(el, "value")) || 0;
-    var sharesEl = el.getElementsByTagNameNS("*", "shrsOrPrnAmt")[0];
-    var shares = 0, shareType = "";
-    if(sharesEl){
-      shares = parseFloat(tagText(sharesEl, "sshPrnamt")) || 0;
-      shareType = tagText(sharesEl, "sshPrnamtType");
-    }
-    if(!issuer) continue;
-    holdings.push({ issuer: issuer, cls: cls, cusip: cusip, valueUSD: valueThousands * 1000, shares: shares, shareType: shareType });
-  }
-  return holdings;
-}
-
-/* ---------- Ein Filing (eine Berichtsperiode) laden & parsen ---------- */
-
-function fetchFilingHoldings(cikInt, accession){
-  var accDashes = accNoDashes(accession);
-  return smartFetchText(archiveIndexUrl(cikInt, accDashes)).then(function(idxTxt){
-    var idx = JSON.parse(idxTxt);
-    var items = (idx.directory && idx.directory.item) || [];
-    var xmlCandidates = items.map(function(it){ return it.name; })
-      .filter(function(n){ return /\.xml$/i.test(n) && n.toLowerCase() !== "primary_doc.xml"; });
-    if(!xmlCandidates.length){
-      xmlCandidates = items.map(function(it){ return it.name; }).filter(function(n){ return /\.xml$/i.test(n); });
-    }
-    if(!xmlCandidates.length) throw new Error("Keine Info-Table-XML im Filing gefunden.");
-
-    function tryNext(idx2){
-      if(idx2 >= xmlCandidates.length) throw new Error("Info-Table-XML konnte nicht geparst werden.");
-      var fname = xmlCandidates[idx2];
-      return smartFetchText(archiveFileUrl(cikInt, accDashes, fname)).then(function(xmlTxt){
-        var holdings;
-        try{ holdings = parseInfoTableXml(xmlTxt); }catch(e){ holdings = []; }
-        if(holdings.length) return holdings;
-        return tryNext(idx2 + 1);
-      });
-    }
-    return tryNext(0);
-  });
-}
-
-/* ---------- Quarter-über-Quarter Diff (neu eröffnete / komplett verkaufte Positionen) ---------- */
-
-function diffHoldings(currentHoldings, prevHoldings){
-  var prevMap = {};
-  prevHoldings.forEach(function(h){
-    var key = h.cusip || h.issuer;
-    if(!prevMap[key] || h.valueUSD > prevMap[key].valueUSD) prevMap[key] = h;
-  });
-  var curMap = {};
-  currentHoldings.forEach(function(h){
-    var key = h.cusip || h.issuer;
-    if(!curMap[key] || h.valueUSD > curMap[key].valueUSD) curMap[key] = h;
-  });
-
-  var opened = [], closed = [];
-  Object.keys(curMap).forEach(function(key){ if(!prevMap[key]) opened.push(curMap[key]); });
-  Object.keys(prevMap).forEach(function(key){ if(!curMap[key]) closed.push(prevMap[key]); });
-
-  opened.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
-  closed.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
-
-  return { opened: opened, closed: closed, openedCount: opened.length, closedCount: closed.length };
-}
-
-/* ---------- Fund laden (aktuelles + vorheriges Quartal) ---------- */
-
-function loadFund(cik, force){
-  if(!force){
-    var cached = loadCache(cik);
-    if(isFresh(cached)){ S.data[cik] = cached; return Promise.resolve(cached); }
-  }
-  S.loading[cik] = true;
-  renderAll();
-
-  var cikInt = String(parseInt(cik, 10));
-
-  return smartFetchText(submissionsUrl(cik)).then(function(txt){
-    var sub = JSON.parse(txt);
-    var periods = findRecent13Fs(sub.filings && sub.filings.recent || {}, 2);
-    if(!periods.length) throw new Error("Kein 13F-HR Filing gefunden.");
-    var current = periods[0], prev = periods[1] || null;
-
-    return fetchFilingHoldings(cikInt, current.accession).then(function(currentHoldings){
-      currentHoldings.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
-      var totalValueUSD = currentHoldings.reduce(function(s,h){ return s + h.valueUSD; }, 0);
-      var positionCount = currentHoldings.length;
-      var topHoldings = currentHoldings.slice(0, TOP_HOLDINGS_STORE).map(function(h){
-        return { issuer:h.issuer, cls:h.cls, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, weightPct: totalValueUSD ? h.valueUSD/totalValueUSD*100 : 0 };
-      });
-
-      function finish(prevTotalValueUSD, prevPositionCount, opened, closed, openedCount, closedCount){
-        var record = {
-          ts: Date.now(), cik: cik, name: (sub.name || sub.entityName || null),
-          reportDate: current.reportDate, filedDate: current.filedDate, accession: current.accession,
-          totalValueUSD: totalValueUSD, positionCount: positionCount, topHoldings: topHoldings,
-          prevReportDate: prev ? prev.reportDate : null,
-          prevTotalValueUSD: prevTotalValueUSD, prevPositionCount: prevPositionCount,
-          aumChangePct: (prevTotalValueUSD ? (totalValueUSD - prevTotalValueUSD) / prevTotalValueUSD * 100 : null),
-          newPositions: opened.slice(0, TOP_TRADES_STORE),
-          closedPositions: closed.slice(0, TOP_TRADES_STORE),
-          newCount: openedCount, closedCount: closedCount,
-          error: null
-        };
-        S.data[cik] = record;
-        saveCache(cik, record);
-        return record;
-      }
-
-      if(!prev) return finish(null, null, [], [], 0, 0);
-
-      return fetchFilingHoldings(cikInt, prev.accession).then(function(prevHoldings){
-        var prevTotalValueUSD = prevHoldings.reduce(function(s,h){ return s + h.valueUSD; }, 0);
-        var d = diffHoldings(currentHoldings, prevHoldings);
-        return finish(prevTotalValueUSD, prevHoldings.length, d.opened, d.closed, d.openedCount, d.closedCount);
-      });
-    });
+    S.loaded = true;
+    S.loadError = null;
   }).catch(function(err){
-    var record = { ts: Date.now(), cik: cik, error: (err && err.message) || "Unbekannter Fehler beim Laden." };
-    S.data[cik] = record;
-    return record;
-  }).then(function(record){
-    S.loading[cik] = false;
-    S.loadedCount++;
+    S.loadError = (err && err.message) || "Unbekannter Fehler";
+  }).then(function(){
     renderAll();
-    return record;
-  });
-}
-
-/* ---------- Orchestrierung ---------- */
-
-function loadAll(force){
-  if(S.refreshing) return;
-  S.refreshing = true;
-  updateRefreshButton();
-  set("#lastUpdate", "Lade Daten…");
-
-  var chain = Promise.resolve();
-  FUND_META.forEach(function(f){
-    chain = chain.then(function(){
-      return loadFund(f.cik, force).then(function(){
-        return new Promise(function(res){ setTimeout(res, 150); }); // freundlich zur SEC-API
-      });
-    });
-  });
-  chain.then(function(){
-    S.refreshing = false;
-    updateRefreshButton();
     setLastUpdateLabel();
-    var okCount = FUND_META.filter(function(f){ return S.data[f.cik] && !S.data[f.cik].error; }).length;
-    showToast(okCount === FUND_META.length ? "Alle Fonds aktualisiert ✓" : okCount + "/" + FUND_META.length + " Fonds geladen (Rest fehlgeschlagen)");
-    renderAll();
   });
 }
 
-function updateRefreshButton(){
+function reload(){
   var btn = $("#refreshBtn"), icon = $("#refreshIcon");
-  if(!btn) return;
-  btn.disabled = S.refreshing;
-  var doneOfTotal = FUND_META.filter(function(f){ return S.data[f.cik] && !S.loading[f.cik]; }).length;
-  btn.lastChild.textContent = S.refreshing ? (" Lädt " + doneOfTotal + "/" + FUND_META.length + "…") : " Update";
-  if(icon) icon.classList.toggle("spin", S.refreshing);
+  if(btn) btn.disabled = true;
+  if(icon) icon.classList.add("spin");
+  loadData(true).then(function(){
+    if(btn) btn.disabled = false;
+    if(icon) icon.classList.remove("spin");
+    showToast(S.loadError ? "Laden fehlgeschlagen" : "Neu geladen ✓");
+  });
 }
 
 /* ---------- Toast ---------- */
@@ -720,23 +515,25 @@ function showToast(msg){
 }
 
 function setLastUpdateLabel(){
-  var newest = 0;
-  FUND_META.forEach(function(f){ var d = S.data[f.cik]; if(d && d.ts && d.ts > newest) newest = d.ts; });
-  if(!newest){ set("#lastUpdate", "Noch nie aktualisiert"); return; }
-  var d = new Date(newest);
-  set("#lastUpdate", d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}));
+  if(!S.generatedAt){ set("#lastUpdate", S.loaded ? "Noch kein Update gelaufen" : "–"); return; }
+  var d = new Date(S.generatedAt);
+  set("#lastUpdate", "Stand " + d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}));
 }
 
 /* ---------- Aggregation über alle Fonds ---------- */
 
-function fundsWithData(){ return FUND_META.filter(function(f){ return S.data[f.cik] && !S.data[f.cik].error; }); }
+function fundsWithData(){
+  return S.fundOrder.map(function(cik){ return S.data[cik]; }).filter(function(d){ return d && !d.error; });
+}
+function fundsWithError(){
+  return S.fundOrder.map(function(cik){ return S.data[cik]; }).filter(function(d){ return d && d.error; });
+}
 
 function aggregate(){
   var funds = fundsWithData();
   var totalAUM = 0, totalPrevAUM = 0, havePrevCount = 0;
   var totalNew = 0, totalClosed = 0;
-  funds.forEach(function(f){
-    var d = S.data[f.cik];
+  funds.forEach(function(d){
     totalAUM += d.totalValueUSD || 0;
     if(d.prevTotalValueUSD != null){ totalPrevAUM += d.prevTotalValueUSD; havePrevCount++; }
     totalNew += d.newCount || 0;
@@ -744,10 +541,8 @@ function aggregate(){
   });
   var aumChangePct = havePrevCount ? (totalAUM - totalPrevAUM) / totalPrevAUM * 100 : null;
 
-  // Top-Holdings über alle Fonds aggregiert (aktuelles Quartal)
   var byIssuer = {};
-  funds.forEach(function(f){
-    var d = S.data[f.cik];
+  funds.forEach(function(d){
     (d.topHoldings || []).forEach(function(h){
       var key = h.cusip || h.issuer;
       if(!byIssuer[key]) byIssuer[key] = { issuer: h.issuer, cusip: h.cusip, valueUSD: 0, fundCount: 0 };
@@ -759,30 +554,23 @@ function aggregate(){
     .sort(function(a,b){ return b.valueUSD - a.valueUSD; })
     .map(function(h){ return Object.assign({}, h, { weightPct: totalAUM ? h.valueUSD/totalAUM*100 : 0 }); });
 
-  // Trades über alle Fonds
   var trades = [];
-  funds.forEach(function(f){
-    var d = S.data[f.cik];
-    (d.newPositions || []).forEach(function(h){ trades.push({ action:"buy", issuer:h.issuer, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, fund:d.name || f.name, date: quarterLabel(d.reportDate) }); });
-    (d.closedPositions || []).forEach(function(h){ trades.push({ action:"sell", issuer:h.issuer, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, fund:d.name || f.name, date: quarterLabel(d.reportDate) }); });
+  funds.forEach(function(d){
+    (d.newPositions || []).forEach(function(h){ trades.push({ action:"buy", issuer:h.issuer, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, fund:d.name, date: quarterLabel(d.reportDate) }); });
+    (d.closedPositions || []).forEach(function(h){ trades.push({ action:"sell", issuer:h.issuer, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, fund:d.name, date: quarterLabel(d.reportDate) }); });
   });
   trades.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
 
-  // Strategietyp-Verteilung (statische, öffentlich bekannte Einordnung × echtes AUM)
   var byType = {};
-  funds.forEach(function(f){
-    var d = S.data[f.cik];
-    byType[f.type] = (byType[f.type] || 0) + (d.totalValueUSD || 0);
-  });
+  funds.forEach(function(d){ byType[d.type] = (byType[d.type] || 0) + (d.totalValueUSD || 0); });
   var typeList = Object.keys(byType).map(function(t){ return { name:t, valueUSD: byType[t] }; })
     .sort(function(a,b){ return b.valueUSD - a.valueUSD; })
     .map(function(t){ return Object.assign({}, t, { pct: totalAUM ? t.valueUSD/totalAUM*100 : 0 }); });
 
-  // Filing-Timeline
-  var filings = funds.map(function(f){
-    var d = S.data[f.cik];
-    return { title: (d.name || f.name) + " · 13F " + quarterLabel(d.reportDate), meta: d.positionCount.toLocaleString("de-DE") + " Pos. · " + fmtUSDShort(d.totalValueUSD) + " AUM", date: d.filedDate, isNew: daysAgo(d.ts) === 0 };
+  var filings = funds.map(function(d){
+    return { title: d.name + " · 13F " + quarterLabel(d.reportDate), meta: d.positionCount.toLocaleString("de-DE") + " Pos. · " + fmtUSDShort(d.totalValueUSD) + " AUM", date: d.filedDate };
   }).sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
+  if(filings.length) filings[0].isNew = true;
 
   return { funds:funds, totalAUM:totalAUM, aumChangePct:aumChangePct, havePrevCount:havePrevCount,
     totalNew:totalNew, totalClosed:totalClosed, aggHoldings:aggHoldings, trades:trades, typeList:typeList, filings:filings };
@@ -795,11 +583,10 @@ function renderPeriodPills(){
   var curLabel = "Aktuell", prevLabel = "Vorquartal";
   var f0 = funds[0];
   if(f0){
-    var d = S.data[f0.cik];
-    curLabel = quarterLabel(d.reportDate);
-    if(d.prevReportDate) prevLabel = quarterLabel(d.prevReportDate);
+    curLabel = quarterLabel(f0.reportDate);
+    if(f0.prevReportDate) prevLabel = quarterLabel(f0.prevReportDate);
   }
-  var anyPrev = funds.some(function(f){ return S.data[f.cik].prevReportDate; });
+  var anyPrev = funds.some(function(d){ return d.prevReportDate; });
   set("#periodPills",
     '<button class="pill ' + (S.period==="current"?"active":"") + '" onclick="HF.setPeriod(\'current\')">' + esc(curLabel) + '</button>' +
     '<button class="pill ' + (S.period==="previous"?"active":"") + '" onclick="HF.setPeriod(\'previous\')" ' + (anyPrev?"":"disabled") + '>' + esc(prevLabel) + '</button>'
@@ -807,7 +594,6 @@ function renderPeriodPills(){
 }
 
 function periodValue(d, field){
-  // liefert current- oder previous-Werte je nach S.period, soweit vorhanden
   if(S.period === "previous"){
     if(field === "totalValueUSD") return d.prevTotalValueUSD;
     if(field === "positionCount") return d.prevPositionCount;
@@ -819,7 +605,7 @@ function renderBars(){
   var funds = fundsWithData();
   if(!funds.length){ set("#barList", loadingOrEmptyMsg()); set("#barListNote",""); return; }
   set("#barListNote", S.period === "previous" ? "Vorquartal" : "");
-  var rows = funds.map(function(f){ return { f:f, v: periodValue(S.data[f.cik], "totalValueUSD") }; })
+  var rows = funds.map(function(d){ return { d:d, v: periodValue(d, "totalValueUSD") }; })
     .filter(function(r){ return r.v != null; })
     .sort(function(a,b){ return b.v - a.v; });
   if(!rows.length){ set("#barList", '<div class="state-msg">Für keinen Fonds liegen Vorquartalsdaten vor.</div>'); return; }
@@ -827,28 +613,24 @@ function renderBars(){
   set("#barList", rows.map(function(r){
     var w = Math.max(6, Math.round((r.v / max) * 100));
     return '<div class="bar-row">' +
-      '<div class="bar-label">' + esc(shortFundLabel(r.f.name)) + '</div>' +
+      '<div class="bar-label">' + esc(shortFundLabel(r.d.name)) + '</div>' +
       '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"><span>' + fmtUSDShort(r.v) + '</span></div></div>' +
     '</div>';
   }).join(""));
-}
-function shortFundLabel(name){
-  return (name||"").replace(/,?\s*(LLC|LP|L\.P\.|Inc\.?|plc|& Co\.,? Inc\.)$/i,"").replace(" Associates","").trim();
 }
 
 function renderRankList(){
   var funds = fundsWithData();
   if(!funds.length){ set("#rankList", loadingOrEmptyMsg()); return; }
-  var rows = funds.map(function(f){ return { f:f, d: S.data[f.cik] }; }).sort(function(a,b){ return b.d.totalValueUSD - a.d.totalValueUSD; });
-  set("#rankList", rows.map(function(r, i){
-    var d = r.d, f = r.f;
+  var rows = funds.slice().sort(function(a,b){ return b.totalValueUSD - a.totalValueUSD; });
+  set("#rankList", rows.map(function(d, i){
     var hasChange = d.aumChangePct != null;
     var cls = !hasChange ? "flat" : (d.aumChangePct >= 0 ? "pos" : "neg");
     return '<div class="rank-row">' +
       '<div class="rank-num">#' + (i+1) + '</div>' +
       '<div class="rank-info">' +
-        '<div class="rank-ticker">' + esc(f.abbr) + ' · ' + esc(f.type) + '</div>' +
-        '<div class="rank-name">' + esc(d.name || f.name) + '</div>' +
+        '<div class="rank-ticker">' + esc(d.abbr) + ' · ' + esc(d.type) + '</div>' +
+        '<div class="rank-name">' + esc(d.name) + '</div>' +
       '</div>' +
       '<div class="rank-right">' +
         '<div class="rank-pct ' + cls + '">' + (hasChange ? fmtPct(d.aumChangePct) : "n/v") + '</div>' +
@@ -928,13 +710,13 @@ function renderFilings(){
 
 function renderSummary(){
   var agg = aggregate();
-  var errCount = FUND_META.filter(function(f){ return S.data[f.cik] && S.data[f.cik].error; }).length;
+  var errCount = fundsWithError().length;
 
   if(!agg.funds.length){
-    set("#sumAUM", S.loadedCount ? "Fehler" : "…");
-    set("#sumAUMChange", "wird geladen…");
-    set("#sumNewPos", "…");
-    set("#sumClosedPos", "wird geladen…");
+    set("#sumAUM", S.loaded ? "–" : "…");
+    set("#sumAUMChange", S.loadError ? ("Ladefehler: " + esc(S.loadError)) : (S.loaded ? "Update steht aus" : "wird geladen…"));
+    set("#sumNewPos", S.loaded ? "–" : "…");
+    set("#sumClosedPos", "–");
     return;
   }
 
@@ -944,7 +726,7 @@ function renderSummary(){
     aumChangeEl.textContent = fmtPct(agg.aumChangePct) + " vs. Vorquartal" + (agg.havePrevCount < agg.funds.length ? " (" + agg.havePrevCount + "/" + agg.funds.length + " Fonds)" : "");
     aumChangeEl.className = "sum-card-sub " + (agg.aumChangePct >= 0 ? "pos" : "neg");
   } else {
-    aumChangeEl.textContent = errCount ? ("* " + errCount + " Fonds fehlgeschlagen") : "keine Vorquartalsdaten";
+    aumChangeEl.textContent = errCount ? ("* " + errCount + " Fonds nicht verfügbar") : "keine Vorquartalsdaten";
     aumChangeEl.className = "sum-card-sub";
   }
 
@@ -953,11 +735,9 @@ function renderSummary(){
 }
 
 function loadingOrEmptyMsg(){
-  var anyLoading = FUND_META.some(function(f){ return S.loading[f.cik]; });
-  var anyData = FUND_META.some(function(f){ return S.data[f.cik]; });
-  if(anyLoading) return '<div class="state-msg">Lade Fondsdaten von der SEC…</div>';
-  if(!anyData) return '<div class="state-msg">Noch keine Daten geladen. <span class="retry-link" onclick="HF.refreshAll()">Jetzt laden</span></div>';
-  return '<div class="state-msg err">Laden fehlgeschlagen. <span class="retry-link" onclick="HF.refreshAll()">Erneut versuchen</span></div>';
+  if(!S.loaded) return '<div class="state-msg">Lade Dashboard-Daten…</div>';
+  if(S.loadError) return '<div class="state-msg err">Daten konnten nicht geladen werden (' + esc(S.loadError) + '). <span class="retry-link" onclick="HF.reload()">Erneut versuchen</span></div>';
+  return '<div class="state-msg">Noch keine Fondsdaten verfügbar — das erste automatische Update steht noch aus.</div>';
 }
 
 function renderAll(){
@@ -969,7 +749,6 @@ function renderAll(){
   renderHoldings();
   renderTypes();
   renderFilings();
-  updateRefreshButton();
 }
 
 /* ---------- Countdown (echte SEC-13F-Fristen, reine Datumslogik) ---------- */
@@ -1013,37 +792,26 @@ function setTradeFilter(type){
   $all("#tradePills .pill").forEach(function(b){ b.classList.toggle("active", b.dataset.type === type); });
   renderTrades();
 }
-function refreshAll(){ loadAll(true); }
 
-$("#tradePills").addEventListener("click", function(e){
-  if(!e.target.classList.contains("pill")) return;
-  setTradeFilter(e.target.dataset.type);
+document.addEventListener("DOMContentLoaded", function(){
+  $("#tradePills").addEventListener("click", function(e){
+    if(!e.target.classList.contains("pill")) return;
+    setTradeFilter(e.target.dataset.type);
+  });
 });
 
 /* ---------- Init ---------- */
 
 function init(){
-  FUND_META.forEach(function(f){
-    var c = loadCache(f.cik);
-    if(c) S.data[f.cik] = c;
-  });
-  renderAll();
-  setLastUpdateLabel();
   updateCountdown();
   setInterval(updateCountdown, 60000);
-
-  var anyFresh = FUND_META.some(function(f){ return isFresh(S.data[f.cik]); });
-  var allFresh = FUND_META.every(function(f){ return isFresh(S.data[f.cik]); });
-  if(!allFresh){
-    loadAll(false); // lädt nur die fehlenden/abgelaufenen Fonds (kein force)
-  } else if(anyFresh){
-    showToast("Aus dem Cache geladen (< 28 Tage alt)");
-  }
+  renderAll();
+  loadData(false);
 }
 
-window.HF = { refreshAll: refreshAll, setPeriod: setPeriod, setTradeFilter: setTradeFilter };
-// Für Offline-/Node-Tests der Parsing-/Diff-Logik
-window.HF_TEST = { parseInfoTableXml: parseInfoTableXml, findRecent13Fs: findRecent13Fs, diffHoldings: diffHoldings, fmtUSDShort: fmtUSDShort };
+window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter };
+// Für Offline-/Node-Tests
+window.HF_TEST = { fmtUSDShort: fmtUSDShort, fmtSharesShort: fmtSharesShort, fmtPct: fmtPct, quarterLabel: quarterLabel };
 
 document.addEventListener("DOMContentLoaded", init);
 })();
