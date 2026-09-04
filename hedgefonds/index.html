@@ -28,6 +28,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
 
   body {
     font-family: var(--sans);
@@ -273,6 +274,14 @@
   .photo-credit { font-size: 10px; color: var(--gray-light); margin: 5px 20px 0; }
   .photo-credit a { color: var(--gray-light); }
 
+  .fund-search {
+    width: 100%; font-family: var(--sans); font-size: 13px;
+    padding: 10px 14px; margin-bottom: 8px;
+    border: 1.5px solid var(--border); border-radius: 10px; background: #fff; color: var(--text);
+    outline: none; transition: border-color .15s;
+  }
+  .fund-search:focus { border-color: var(--black); }
+
   .d-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px; }
   .fd-link { display: block; margin: 0 20px 8px; font-size: 11.5px; color: var(--black); font-weight: 600; }
 
@@ -366,7 +375,8 @@
   <div class="bar-list" id="barList"></div>
 
   <!-- RANGLISTE -->
-  <div class="section-label">Fonds Details<span class="section-label-note">ggü. Vorquartal</span></div>
+  <div class="section-label">Fonds Details<span class="section-label-note" id="rankListNote">ggü. Vorquartal</span></div>
+  <input class="fund-search" id="fundSearch" placeholder="Fonds suchen..." oninput="HF.renderRankList()">
   <div class="rank-card" id="rankList"></div>
 
   <!-- RECENT TRADES -->
@@ -407,7 +417,7 @@
       </div>
     </div>
 
-    <div class="manager-card">
+    <div class="manager-card" id="fd-manager-card">
       <div class="manager-avatar" id="fd-avatar">–</div>
       <div class="manager-info">
         <div class="manager-label" id="fd-manager-label">Gründer</div>
@@ -416,6 +426,7 @@
       </div>
     </div>
     <div class="photo-credit" id="fd-photo-credit"></div>
+    <div class="photo-credit" id="fd-source-note" style="margin-top:2px"></div>
 
     <div class="d-summary-grid" id="fd-stats"></div>
 
@@ -498,6 +509,7 @@ function fmtUSDShort(n){
   if(n == null || isNaN(n)) return "–";
   var sign = n < 0 ? "-" : "";
   var abs = Math.abs(n);
+  if(abs >= 1e12){ var t = abs/1e12; return sign + "$" + (Math.round(t*100)/100).toString().replace(/\.?0+$/,"") + "T"; }
   if(abs >= 1e9){ var b = abs/1e9; return sign + "$" + (Math.round(b*10)/10).toString().replace(/\.0$/,"") + "B"; }
   if(abs >= 1e6){ var m = abs/1e6; return sign + "$" + (Math.round(m*10)/10).toString().replace(/\.0$/,"") + "M"; }
   if(abs >= 1e3){ var k = abs/1e3; return sign + "$" + (Math.round(k*10)/10).toString().replace(/\.0$/,"") + "K"; }
@@ -665,14 +677,18 @@ function periodValue(d, field){
   return d[field];
 }
 
+var BAR_CHART_LIMIT = 20;
+
 function renderBars(){
   var funds = fundsWithData();
   if(!funds.length){ set("#barList", loadingOrEmptyMsg()); set("#barListNote",""); return; }
-  set("#barListNote", S.period === "previous" ? "Vorquartal" : "");
   var rows = funds.map(function(d){ return { d:d, v: periodValue(d, "totalValueUSD") }; })
     .filter(function(r){ return r.v != null; })
     .sort(function(a,b){ return b.v - a.v; });
-  if(!rows.length){ set("#barList", '<div class="state-msg">Für keinen Fonds liegen Vorquartalsdaten vor.</div>'); return; }
+  if(!rows.length){ set("#barList", '<div class="state-msg">Für keinen Fonds liegen Vorquartalsdaten vor.</div>'); set("#barListNote",""); return; }
+  var truncated = rows.length > BAR_CHART_LIMIT;
+  rows = rows.slice(0, BAR_CHART_LIMIT);
+  set("#barListNote", (truncated ? ("Top " + BAR_CHART_LIMIT + " von " + funds.length) : "") + (S.period === "previous" ? (truncated?" · ":"") + "Vorquartal" : ""));
   var max = Math.max.apply(null, rows.map(function(r){ return r.v; }).concat([1]));
   set("#barList", rows.map(function(r){
     var w = Math.max(6, Math.round((r.v / max) * 100));
@@ -683,17 +699,30 @@ function renderBars(){
   }).join(""));
 }
 
+function tickerLine(d){
+  var parts = [];
+  if(d.abbr) parts.push(d.abbr);
+  if(d.type) parts.push(d.type);
+  if(d.founder) parts.push(d.founder);
+  return esc(parts.join(" · "));
+}
+
 function renderRankList(){
   var funds = fundsWithData();
-  if(!funds.length){ set("#rankList", loadingOrEmptyMsg()); return; }
-  var rows = funds.slice().sort(function(a,b){ return b.totalValueUSD - a.totalValueUSD; });
+  if(!funds.length){ set("#rankList", loadingOrEmptyMsg()); set("#rankListNote","ggü. Vorquartal"); return; }
+  var q = (($("#fundSearch") && $("#fundSearch").value) || "").toLowerCase().trim();
+  var rows = funds.filter(function(d){
+    return !q || d.name.toLowerCase().indexOf(q) !== -1 || (d.founder||"").toLowerCase().indexOf(q) !== -1;
+  }).sort(function(a,b){ return b.totalValueUSD - a.totalValueUSD; });
+  set("#rankListNote", "ggü. Vorquartal · " + rows.length + (rows.length !== funds.length ? ("/" + funds.length) : "") + " Fonds");
+  if(!rows.length){ set("#rankList", '<div class="state-msg">Keine Fonds gefunden.</div>'); return; }
   set("#rankList", rows.map(function(d, i){
     var hasChange = d.aumChangePct != null;
     var cls = !hasChange ? "flat" : (d.aumChangePct >= 0 ? "pos" : "neg");
     return '<div class="rank-row" onclick="HF.openFund(\'' + d.cik + '\')">' +
       '<div class="rank-num">#' + (i+1) + '</div>' +
       '<div class="rank-info">' +
-        '<div class="rank-ticker">' + esc(d.abbr) + ' · ' + esc(d.type) + (d.founder ? ' · ' + esc(d.founder) : '') + '</div>' +
+        '<div class="rank-ticker">' + tickerLine(d) + '</div>' +
         '<div class="rank-name">' + esc(d.name) + '</div>' +
       '</div>' +
       '<div class="rank-right">' +
@@ -841,17 +870,25 @@ function renderFundDetail(){
   set("#fd-name", esc(d.name));
   set("#fd-cik", "CIK " + esc(d.cik));
 
-  var avatarEl = $("#fd-avatar");
-  if(d.photoUrl){
-    avatarEl.innerHTML = '<img src="' + esc(d.photoUrl) + '" alt="' + esc(d.founder || d.name) + '">';
+  var managerCardEl = $("#fd-manager-card");
+  if(d.founder){
+    managerCardEl.hidden = false;
+    var avatarEl = $("#fd-avatar");
+    if(d.photoUrl){
+      avatarEl.innerHTML = '<img src="' + esc(d.photoUrl) + '" alt="' + esc(d.founder) + '">';
+    } else {
+      avatarEl.textContent = initialsFromName(d.founder);
+    }
+    set("#fd-manager-label", esc(d.managerLabel || "Gründer"));
+    set("#fd-manager-name", esc(d.founder));
+    set("#fd-manager-note", d.currentLead ? ("Aktuell: " + esc(d.currentLead)) : "");
+    set("#fd-photo-credit", (d.photoUrl && d.photoCredit) ?
+      ('Foto: ' + (d.photoSourceUrl ? ('<a href="' + esc(d.photoSourceUrl) + '" target="_blank" rel="noopener">' + esc(d.photoCredit) + '</a>') : esc(d.photoCredit))) : "");
   } else {
-    avatarEl.textContent = initialsFromName(d.founder || d.name);
+    managerCardEl.hidden = true;
+    set("#fd-photo-credit", "");
   }
-  set("#fd-manager-label", esc(d.managerLabel || "Gründer"));
-  set("#fd-manager-name", esc(d.founder || d.name));
-  set("#fd-manager-note", d.currentLead ? ("Aktuell: " + esc(d.currentLead)) : "");
-  set("#fd-photo-credit", (d.photoUrl && d.photoCredit) ?
-    ('Foto: ' + (d.photoSourceUrl ? ('<a href="' + esc(d.photoSourceUrl) + '" target="_blank" rel="noopener">' + esc(d.photoCredit) + '</a>') : esc(d.photoCredit))) : "");
+  set("#fd-source-note", d.source === "bulk" ? "Quelle: SEC-Sammeldatensatz (13F-Bulk-Daten) — nicht individuell kuratiert." : "");
 
   var hasChange = d.aumChangePct != null;
   var changeCls = !hasChange ? "" : (d.aumChangePct >= 0 ? "pos" : "neg");
@@ -991,7 +1028,7 @@ function init(){
   loadData(false);
 }
 
-window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter, openFund: openFund, closeFund: closeFund, setFundTradeFilter: setFundTradeFilter };
+window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter, openFund: openFund, closeFund: closeFund, setFundTradeFilter: setFundTradeFilter, renderRankList: renderRankList };
 // Für Offline-/Node-Tests
 window.HF_TEST = { fmtUSDShort: fmtUSDShort, fmtSharesShort: fmtSharesShort, fmtPct: fmtPct, quarterLabel: quarterLabel };
 
