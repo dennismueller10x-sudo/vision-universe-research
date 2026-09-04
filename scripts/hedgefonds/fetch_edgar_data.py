@@ -423,35 +423,68 @@ def fetch_bulk_expansion(curated_records, target_total):
     if not curated_records:
         print("Bulk-Erweiterung übersprungen: keine kuratierten Fonds als Kalibrierungs-Basis.", file=sys.stderr)
         return []
+
     cur_report_date = curated_records[0]["reportDate"]
     prev_report_date = previous_report_period(cur_report_date)
 
-    print(f"Bulk-Erweiterung: lade SEC-Sammeldatensatz für Berichtsperiode {cur_report_date} "
-          f"({bulk_zip_url_for_period(cur_report_date)})...", file=sys.stderr)
-    try:
-        cur_zip = download_bulk_zip(cur_report_date)
-        cur_data = parse_bulk_quarter(cur_zip)
-    except Exception as exc:  # noqa: BLE001
-        print(f"Bulk-Erweiterung übersprungen (aktuelles Quartal nicht ladbar/parsebar): {exc}", file=sys.stderr)
+    # Kalibrierungs-Sets MÜSSEN zur jeweiligen Bulk-Periode passen: ein Fonds'
+    # AUM kann sich zwischen zwei Quartalen leicht (real, nicht Skalierungs-
+    # Artefakt) um mehr als BULK_VALUE_TOLERANCE ändern — würde man das
+    # aktuelle Quartal gegen Bulk-Daten eines ANDEREN Quartals kalibrieren,
+    # bekäme man ein verfälschtes, evtl. fälschlich "eindeutiges" Verhältnis.
+    current_calib = [{"cik": r["cik"], "totalValueUSD": r["totalValueUSD"]} for r in curated_records]
+    prev_calib = [{"cik": r["cik"], "totalValueUSD": r["prevTotalValueUSD"]}
+                  for r in curated_records if r.get("prevTotalValueUSD") is not None]
+
+    # SEC veröffentlicht den Bulk-Datensatz für ein Quartal erst mit Verzögerung
+    # NACH dessen Meldefrist — das aktuelle Quartal kann daher noch fehlen,
+    # während das vorherige (dessen Fenster schon vor Monaten schloss) mit
+    # hoher Wahrscheinlichkeit bereits verfügbar ist. Fallback ist bewusst auf
+    # genau eine Periode begrenzt (kein unbegrenztes Rückwärtssuchen).
+    candidates = [(cur_report_date, current_calib, False)]
+    if prev_calib:
+        candidates.append((prev_report_date, prev_calib, True))
+
+    bulk_report_date, bulk_data, scale, used_fallback = None, None, None, False
+    for candidate_date, calib_set, is_fallback in candidates:
+        print(f"Bulk-Erweiterung: lade SEC-Sammeldatensatz für Berichtsperiode {candidate_date} "
+              f"({bulk_zip_url_for_period(candidate_date)})...", file=sys.stderr)
+        try:
+            zf = download_bulk_zip(candidate_date)
+            data = parse_bulk_quarter(zf)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  nicht ladbar/parsebar: {exc}", file=sys.stderr)
+            continue
+        s, calib_n = calibrate_bulk_scale(data, calib_set)
+        if s is None:
+            print(f"  Werte-Kalibrierung nicht eindeutig ({calib_n} Vergleichsfonds). Format weicht evtl. ab.",
+                  file=sys.stderr)
+            continue
+        bulk_report_date, bulk_data, scale, used_fallback = candidate_date, data, s, is_fallback
+        print(f"  OK, Skalierungsfaktor x{s} (anhand {calib_n} bekannter Fonds)"
+              + (" [Vorquartal als Fallback — aktuelles Quartal von der SEC noch nicht veröffentlicht]"
+                 if is_fallback else ""), file=sys.stderr)
+        break
+
+    if bulk_data is None:
+        print("Bulk-Erweiterung übersprungen: kein Quartal ladbar/kalibrierbar.", file=sys.stderr)
         return []
 
-    scale, calib_n = calibrate_bulk_scale(cur_data, curated_records)
-    if scale is None:
-        print(f"Bulk-Erweiterung übersprungen: Werte-Kalibrierung nicht eindeutig "
-              f"({calib_n} Vergleichsfonds gefunden). Format weicht evtl. ab.", file=sys.stderr)
-        return []
-    print(f"Bulk-Werte-Skalierungsfaktor kalibriert: x{scale} (anhand {calib_n} bekannter Fonds)", file=sys.stderr)
-
+    # QoQ-Diff für die Bulk-Fonds nur möglich, wenn wir das AKTUELLE Quartal
+    # bekommen haben — beim Vorquartals-Fallback gäbe es kein noch früheres
+    # Quartal, gegen das die kuratierten Fonds selbst kalibriert werden könnten.
     prev_data = {}
-    try:
-        prev_zip = download_bulk_zip(prev_report_date)
-        prev_data = parse_bulk_quarter(prev_zip)
-    except Exception as exc:  # noqa: BLE001
-        print(f"Vorquartals-Bulk-Daten nicht verfügbar, QoQ-Vergleich für Bulk-Fonds entfällt: {exc}", file=sys.stderr)
+    if not used_fallback:
+        try:
+            prev_zip = download_bulk_zip(prev_report_date)
+            prev_data = parse_bulk_quarter(prev_zip)
+        except Exception as exc:  # noqa: BLE001
+            print(f"Vorquartals-Bulk-Daten nicht verfügbar, QoQ-Vergleich für Bulk-Fonds entfällt: {exc}",
+                  file=sys.stderr)
 
     curated_ciks = {r["cik"] for r in curated_records}
     ranked = sorted(
-        ((cik, f) for cik, f in cur_data.items() if cik not in curated_ciks),
+        ((cik, f) for cik, f in bulk_data.items() if cik not in curated_ciks),
         key=lambda t: -sum(h["valueUSD"] for h in t[1]["holdings"])
     )
     need = max(0, target_total - len(curated_records))
