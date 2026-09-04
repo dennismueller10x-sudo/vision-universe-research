@@ -27,7 +27,7 @@ def load_symbols():
 
 def fetch_symbol(symbol, api_key):
     query = urlencode({
-        "symbol": symbol, "interval": "1day", "outputsize": 1000,
+        "symbol": symbol, "interval": "1day", "outputsize": 1500,
         "apikey": api_key,
     })
     try:
