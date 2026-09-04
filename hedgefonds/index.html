@@ -1,171 +1,387 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
-<title>Hedgefonds Dashboard — Vision Universe Research</title>
-<meta name="description" content="13F-Holdings der größten Hedgefonds — live von der SEC EDGAR API. Bridgewater, Renaissance, Citadel, D.E. Shaw, Two Sigma, Millennium, Man Group, Point72.">
+<title>HedgeTrack – Institutional Portfolio Monitor</title>
+<meta name="description" content="13F-Holdings der größten Hedgefonds — live von der SEC EDGAR API. Citadel, D.E. Shaw, Two Sigma, Millennium, Man Group, Bridgewater, Renaissance, Point72.">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{background:#fff}
-body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:#fff;color:#111;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
-.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-::-webkit-scrollbar{display:none}
-button{font-family:inherit;cursor:pointer}
-input{font-family:inherit}
-a{color:inherit;text-decoration:none}
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
-#hf-app{display:block;max-width:760px;margin:0 auto;padding-bottom:60px;min-height:100vh}
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f5f5;
+    --surface2: #ebebeb;
+    --border: #e0e0e0;
+    --black: #111111;
+    --gray: #888888;
+    --gray-light: #bbbbbb;
+    --green: #00b14f;
+    --red: #e63946;
+    --text: #111111;
+    --text-muted: #888888;
+    --text-dim: #bbbbbb;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --radius: 12px;
+  }
 
-.topbar{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f0f0}
-.topbar-brand{font-weight:800;font-size:13px;letter-spacing:.1em}
-.topbar-brand a{color:#111}
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
-.page{padding:22px 20px 0}
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
 
-.hf-title{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
-.hf-sub{font-size:14px;color:#999;margin-bottom:18px}
+  /* ── TOPBAR ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 52px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--black);
+    text-decoration: none;
+  }
+  .logo-ring {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--black);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-ring::after {
+    content: ''; width: 5px; height: 5px;
+    border-radius: 50%; background: var(--black);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .last-update-label {
+    font-size: 11px; color: var(--gray);
+    font-family: var(--mono);
+  }
+  .btn-refresh {
+    font-family: var(--sans); font-size: 12px; font-weight: 700;
+    color: #fff; background: var(--black);
+    border: none; border-radius: 20px;
+    padding: 7px 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: opacity 0.15s;
+  }
+  .btn-refresh:hover { opacity: 0.75; }
+  .btn-refresh:disabled { opacity: 0.4; cursor: default; }
+  .btn-refresh .spin { animation: hfspin 0.9s linear infinite; }
+  @keyframes hfspin { to { transform: rotate(360deg); } }
 
-.hf-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.hf-search{position:relative;flex:1;min-width:180px}
-.hf-search input{width:100%;padding:12px 14px 12px 38px;border:1.5px solid #e8e8e8;border-radius:14px;font-size:14px;background:#fff;outline:none;transition:border .15s}
-.hf-search input:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
-.hf-search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#ccc;font-size:14px;pointer-events:none}
+  /* ── WRAPPER ── */
+  .wrapper { max-width: 680px; margin: 0 auto; padding: 28px 20px 60px; }
 
-.sort-chip{padding:7px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:600;white-space:nowrap}
-.sort-chip.on{border-color:#111;background:#111;color:#fff}
+  /* ── PAGE TITLE ── */
+  .page-title {
+    font-size: 34px; font-weight: 900; letter-spacing: -1px;
+    line-height: 1.05; margin-bottom: 4px;
+  }
+  .page-sub { font-size: 14px; color: var(--gray); margin-bottom: 24px; }
 
-.hf-refresh-all{padding:7px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
-.hf-refresh-all:disabled{opacity:.5;cursor:default}
+  /* ── PILL FILTERS ── */
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; align-items: center; }
+  .pill {
+    font-family: var(--sans); font-size: 13px; font-weight: 600;
+    border-radius: 20px; padding: 7px 16px; cursor: pointer;
+    border: 1.5px solid var(--black); background: transparent;
+    color: var(--black); transition: all 0.15s;
+  }
+  .pill.active { background: var(--black); color: #fff; }
+  .pill:hover:not(.active):not(:disabled) { background: var(--surface); }
+  .pill:disabled { opacity: 0.35; cursor: default; border-color: var(--border); color: var(--gray-light); }
 
-.hf-list{border:1px solid #f0f0f0;border-radius:16px;overflow:hidden;margin-bottom:18px}
-.hf-row{display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background .1s}
-.hf-row:last-child{border-bottom:none}
-.hf-row:active{background:#fafafa}
-.hf-ic{width:46px;height:46px;border-radius:12px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:800;letter-spacing:.02em}
-.hf-row-main{flex:1;min-width:0}
-.hf-row-name{font-size:15px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hf-row-meta{font-size:11.5px;color:#999;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
-.hf-row-right{text-align:right;flex-shrink:0}
-.hf-row-value{font-size:15px;font-weight:800;color:#16a34a;letter-spacing:-.01em}
-.hf-row-count{font-size:11px;color:#aaa;margin-top:2px}
-.hf-chevron{color:#ddd;font-size:16px;flex-shrink:0}
+  /* ── SECTION LABEL ── */
+  .section-label {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--gray);
+    margin-bottom: 12px; margin-top: 32px;
+  }
+  .section-label-note { font-family: var(--mono); font-size: 10px; letter-spacing: 0; text-transform: none; color: var(--gray-light); }
 
-.hf-empty{padding:40px 20px;text-align:center;color:#aaa;font-size:13px}
-.hf-status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
-.hf-status-dot.fresh{background:#16a34a}
-.hf-status-dot.stale{background:#f59e0b}
-.hf-status-dot.none{background:#ddd}
-.hf-status-dot.err{background:#e00}
+  /* ── BAR CHART (ETF Style) ── */
+  .bar-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+  .bar-row {
+    display: grid; align-items: center;
+    grid-template-columns: 130px 1fr;
+    gap: 10px; min-height: 36px;
+  }
+  .bar-label {
+    font-size: 12px; color: var(--gray);
+    text-align: right; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .bar-track {
+    background: var(--surface); border-radius: 6px;
+    height: 36px; position: relative; overflow: hidden;
+  }
+  .bar-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--black); border-radius: 6px;
+    display: flex; align-items: center; padding-left: 12px;
+    transition: width 0.6s cubic-bezier(0.25,1,0.5,1);
+    min-width: 80px;
+  }
+  .bar-fill span {
+    font-size: 13px; font-weight: 700; color: #fff;
+    white-space: nowrap; font-family: var(--mono);
+  }
 
-.hf-info{background:#f8f8f8;border-radius:16px;padding:16px;font-size:12px;line-height:1.65;color:#666;margin-bottom:16px}
-.hf-info b{color:#111}
+  /* ── RANGLISTE ── */
+  .rank-card {
+    background: var(--surface); border-radius: var(--radius);
+    overflow: hidden; margin-bottom: 2px;
+  }
+  .rank-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.1s;
+  }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-row:hover { background: var(--surface2); }
+  .rank-num { font-size: 13px; font-weight: 700; color: var(--gray-light); width: 26px; flex-shrink: 0; }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-ticker { font-size: 11px; font-weight: 700; color: var(--gray); letter-spacing: 0.5px; margin-bottom: 2px; }
+  .rank-name { font-size: 14px; font-weight: 600; color: var(--black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-right { text-align: right; flex-shrink: 0; }
+  .rank-pct { font-family: var(--mono); font-size: 17px; font-weight: 700; }
+  .rank-pct.pos { color: var(--green); }
+  .rank-pct.neg { color: var(--red); }
+  .rank-pct.flat { color: var(--gray-light); }
+  .rank-sub { font-size: 10.5px; color: var(--gray-light); margin-top: 2px; }
 
-/* Detail overlay */
-.detail{display:none;position:fixed;inset:0;background:#fff;z-index:300;overflow-y:auto}
-.detail.open{display:block}
-.detail-inner{max-width:760px;margin:0 auto}
-.dtop{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f5f5f5;position:sticky;top:0;background:#fff;z-index:10}
-.dback{width:36px;height:36px;border-radius:50%;border:1.5px solid #e8e8e8;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
-.dtitle{flex:1;min-width:0}
-.dtitle-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dtitle-cik{font-size:11px;color:#999}
-.drefresh{padding:8px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:700;flex-shrink:0}
-.drefresh:disabled{opacity:.5}
+  /* ── SUMMARY CARDS ── */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  .sum-card {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 16px;
+  }
+  .sum-card-label { font-size: 11px; font-weight: 700; color: var(--gray); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .sum-card-value { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+  .sum-card-sub { font-size: 12px; color: var(--gray); margin-top: 3px; }
+  .sum-card-sub.pos { color: var(--green); font-weight: 600; }
+  .sum-card-sub.neg { color: var(--red); font-weight: 600; }
 
-.dstats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#f0f0f0;border:1px solid #f0f0f0;border-radius:16px;overflow:hidden;margin:18px 20px}
-.dstat{background:#fff;padding:14px 16px}
-.dstat-label{font-size:10.5px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.dstat-value{font-size:17px;font-weight:800;letter-spacing:-.01em}
+  /* ── COUNTDOWN CARD ── */
+  .countdown-card {
+    background: var(--black); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 2px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cd-left {}
+  .cd-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+  .cd-value { font-family: var(--mono); font-size: 26px; font-weight: 500; color: #fff; letter-spacing: -0.5px; }
+  .cd-date { font-size: 12px; color: #666; margin-top: 4px; }
+  .cd-right { text-align: right; }
+  .cd-progress-label { font-size: 11px; color: #666; margin-bottom: 6px; }
+  .cd-bar { width: 100px; height: 3px; background: #333; border-radius: 2px; }
+  .cd-bar-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 1s linear; }
 
-.dsection-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 20px;margin-bottom:10px}
-.dsection-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#111}
-.dsection-note{font-size:11px;color:#aaa}
+  /* ── TRADES ── */
+  .trade-card {
+    background: var(--surface); border-radius: var(--radius);
+    overflow: hidden; margin-bottom: 2px;
+  }
+  .trade-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    cursor: default; transition: background 0.1s;
+  }
+  .trade-row:last-child { border-bottom: none; }
+  .trade-row:hover { background: var(--surface2); }
+  .trade-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 3px 8px; border-radius: 5px; flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .trade-badge.buy { background: #e6f7ee; color: var(--green); }
+  .trade-badge.sell { background: #fdecea; color: var(--red); }
+  .trade-info { flex: 1; min-width: 0; }
+  .trade-ticker { font-size: 11px; font-weight: 700; color: var(--gray); letter-spacing: 0.5px; }
+  .trade-company { font-size: 14px; font-weight: 600; color: var(--black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trade-fund { font-size: 11px; color: var(--gray); margin-top: 1px; }
+  .trade-right { text-align: right; flex-shrink: 0; }
+  .trade-value { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--black); }
+  .trade-shares { font-size: 11px; color: var(--gray); margin-top: 2px; }
 
-.htable{margin:0 20px 20px;border:1px solid #f0f0f0;border-radius:16px;overflow:hidden}
-.hth{display:grid;grid-template-columns:32px 1fr 78px 70px;gap:8px;padding:10px 14px;background:#fafafa;font-size:10px;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #f0f0f0}
-.hrow{display:grid;grid-template-columns:32px 1fr 78px 70px;gap:8px;padding:11px 14px;border-bottom:1px solid #f5f5f5;align-items:center}
-.hrow:last-child{border-bottom:none}
-.hrow:nth-child(even){background:#fcfcfc}
-.hrank{font-size:11px;color:#bbb;font-weight:700}
-.hname{min-width:0}
-.hname-main{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hname-sub{font-size:10.5px;color:#aaa;margin-top:1px}
-.hval{font-size:12.5px;font-weight:700;text-align:right}
-.hpct{font-size:12.5px;font-weight:800;color:#16a34a;text-align:right}
+  /* ── SECTOR BARS ── */
+  .sector-list { display: flex; flex-direction: column; gap: 6px; }
+  .sector-row { display: grid; grid-template-columns: 110px 1fr 46px; align-items: center; gap: 10px; }
+  .sector-name { font-size: 12px; color: var(--gray); text-align: right; }
+  .sector-track { background: var(--surface); border-radius: 4px; height: 6px; }
+  .sector-fill { height: 100%; background: var(--black); border-radius: 4px; transition: width 0.5s; }
+  .sector-pct { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--black); }
 
-.hf-more{display:block;width:calc(100% - 40px);margin:0 20px 20px;padding:12px 0;border-radius:14px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:700;text-align:center}
+  /* ── FILING TIMELINE ── */
+  .filing-card {
+    background: var(--surface); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .filing-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px; border-bottom: 1px solid var(--border);
+  }
+  .filing-row:last-child { border-bottom: none; }
+  .filing-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--surface2); border: 1.5px solid var(--border); flex-shrink: 0;
+  }
+  .filing-dot.new { background: var(--green); border-color: var(--green); }
+  .filing-info { flex: 1; }
+  .filing-title { font-size: 13px; font-weight: 600; color: var(--black); }
+  .filing-meta { font-size: 11px; color: var(--gray); margin-top: 1px; }
+  .filing-date { font-family: var(--mono); font-size: 11px; color: var(--gray-light); flex-shrink: 0; }
 
-.dstate{padding:60px 24px;text-align:center;color:#999;font-size:13px;line-height:1.7}
-.dstate b{color:#111;display:block;margin-bottom:6px;font-size:15px}
-.spinner{width:26px;height:26px;border-radius:50%;border:2.5px solid #eee;border-top-color:#111;margin:0 auto 16px;animation:hfspin .8s linear infinite}
-@keyframes hfspin{to{transform:rotate(360deg)}}
-.dstate-err{color:#e00}
-.retry-btn{margin-top:14px;padding:9px 18px;border-radius:20px;border:none;background:#111;color:#fff;font-size:12px;font-weight:700}
+  /* ── STATE / EMPTY ── */
+  .state-msg { padding: 22px 16px; text-align: center; color: var(--gray); font-size: 13px; }
+  .state-msg.err { color: var(--red); }
+  .retry-link { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--black); cursor: pointer; text-decoration: underline; }
+  .info-note { background: var(--surface); border-radius: var(--radius); padding: 14px 16px; font-size: 11.5px; line-height: 1.6; color: var(--gray); margin-top: 32px; }
+  .info-note b { color: var(--black); }
+  .info-note a { color: var(--black); }
 
-.dfoot-note{margin:0 20px 30px;font-size:11px;color:#bbb;line-height:1.6}
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--black); color: #fff;
+    border-radius: 24px; padding: 12px 20px;
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 
-@media(max-width:520px){
-  .hth,.hrow{grid-template-columns:24px 1fr 64px 56px;font-size:11px}
-  .dstats{grid-template-columns:1fr 1fr}
-}
+  @media (max-width: 480px) {
+    .bar-row { grid-template-columns: 100px 1fr; }
+    .page-title { font-size: 28px; }
+    .toast { white-space: normal; max-width: calc(100vw - 40px); text-align: center; }
+  }
 </style>
 </head>
 <body>
 
-<div id="hf-app">
+<!-- TOPBAR -->
+<nav class="topbar">
+  <a class="logo" href="/">
+    <div class="logo-ring"></div>
+    Vision Universe
+  </a>
+  <div class="topbar-right">
+    <span class="last-update-label" id="lastUpdate"></span>
+    <button class="btn-refresh" id="refreshBtn" onclick="HF.refreshAll()">
+      <svg id="refreshIcon" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Update
+    </button>
+  </div>
+</nav>
 
-  <div class="topbar">
-    <span class="topbar-brand"><a href="/">⊙ VISION UNIVERSE</a></span>
-    <span style="font-size:10px;color:#bbb;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Hedgefonds</span>
+<div class="wrapper">
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">Hedgefonds</div>
+  <div class="page-sub">Institutionelle Portfolios im Überblick · 13F-Filings live von der SEC</div>
+
+  <!-- PERIOD PILLS -->
+  <div class="pill-row" id="periodPills"></div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+    <div class="sum-card">
+      <div class="sum-card-label">Beobachtete Fonds</div>
+      <div class="sum-card-value">8</div>
+      <div class="sum-card-sub">institutionelle Manager</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-card-label">Gesamt AUM</div>
+      <div class="sum-card-value" id="sumAUM">–</div>
+      <div class="sum-card-sub" id="sumAUMChange">–</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-card-label">Neue Positionen</div>
+      <div class="sum-card-value" id="sumNewPos">–</div>
+      <div class="sum-card-sub neg" id="sumClosedPos">–</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-card-label">Nächste 13F</div>
+      <div class="sum-card-value" id="daysLeft">–</div>
+      <div class="sum-card-sub" id="nextDeadlineShort">Tage verbleibend</div>
+    </div>
   </div>
 
-  <div class="page">
-    <div class="hf-title">Hedgefonds Dashboard</div>
-    <div class="hf-sub">8 Top-Fonds · 13F-Holdings direkt von der SEC</div>
-
-    <div class="hf-toolbar">
-      <div class="hf-search">
-        <span class="ic">🔍</span>
-        <input id="hf-search-input" placeholder="Fonds suchen..." oninput="HF.renderList()">
-      </div>
-      <button class="sort-chip" id="hf-sort-value" onclick="HF.setSort('value')">Nach Größe</button>
-      <button class="sort-chip" id="hf-sort-name" onclick="HF.setSort('name')">A–Z</button>
-      <button class="hf-refresh-all" id="hf-refresh-all" onclick="HF.refreshAll()">↻ Alle aktualisieren</button>
+  <!-- COUNTDOWN -->
+  <div class="section-label">13F-Meldefrist</div>
+  <div class="countdown-card">
+    <div class="cd-left">
+      <div class="cd-label">Nächstes Filing-Fenster in</div>
+      <div class="cd-value" id="countdown">–</div>
+      <div class="cd-date" id="cdDate">–</div>
     </div>
-
-    <div class="hf-list" id="hf-list"></div>
-
-    <div class="hf-info">
-      <b>Datenquelle:</b> SEC EDGAR (<span class="mono">data.sec.gov</span>), Formular 13F-HR. Hedgefonds mit &gt; 100 Mio. USD AUM müssen ihre US-Aktienpositionen vierteljährlich offenlegen (Fristen: 14. Feb, 15. Mai, 14. Aug, 14. Nov), jeweils mit 45 Tagen Verzögerung zum Quartalsende. Daten werden 28 Tage lokal zwischengespeichert. Keine Anlageberatung — 13F-Meldungen zeigen nur US-Long-Positionen, keine Shorts, Derivate oder internationalen Bestände.
+    <div class="cd-right">
+      <div class="cd-progress-label">Quartalszyklus</div>
+      <div class="cd-bar"><div class="cd-bar-fill" id="cdProgress" style="width:0%"></div></div>
     </div>
+  </div>
+
+  <!-- AUM RANKING (Bar Chart) -->
+  <div class="section-label">Rangliste AUM<span class="section-label-note" id="barListNote"></span></div>
+  <div class="bar-list" id="barList"></div>
+
+  <!-- RANGLISTE -->
+  <div class="section-label">Fonds Details<span class="section-label-note">ggü. Vorquartal</span></div>
+  <div class="rank-card" id="rankList"></div>
+
+  <!-- RECENT TRADES -->
+  <div class="section-label">Neue / geschlossene Positionen<span class="section-label-note">ggü. Vorquartal</span></div>
+  <div class="pill-row" id="tradePills">
+    <button class="pill active" data-type="all">Alle</button>
+    <button class="pill" data-type="buy">Neu eröffnet</button>
+    <button class="pill" data-type="sell">Komplett verkauft</button>
+  </div>
+  <div class="trade-card" id="tradeList"></div>
+
+  <!-- TOP HOLDINGS -->
+  <div class="section-label">Meistgehaltene Aktien<span class="section-label-note">über alle 8 Fonds</span></div>
+  <div class="rank-card" id="holdingsList"></div>
+
+  <!-- STRATEGIETYPEN (ersetzt "Sektorverteilung" – 13F-Filings enthalten keine Sektor-Klassifizierung) -->
+  <div class="section-label">AUM nach Strategietyp</div>
+  <div class="sector-list" id="sectorList"></div>
+
+  <!-- FILINGS -->
+  <div class="section-label">13F Filing Timeline</div>
+  <div class="filing-card" id="filingList"></div>
+
+  <div class="info-note">
+    <b>Datenquelle:</b> SEC EDGAR (<span style="font-family:var(--mono)">data.sec.gov</span>), Formular 13F-HR. Hedgefonds mit &gt; 100 Mio. USD AUM müssen ihre US-Aktienpositionen vierteljährlich offenlegen (Fristen: 14. Feb, 15. Mai, 14. Aug, 14. Nov), mit 45 Tagen Verzögerung zum Quartalsende. "Neu eröffnet"/"Komplett verkauft" sind Positionen, die zwischen den letzten zwei gemeldeten Quartalen neu auftauchen bzw. verschwinden — 13F zeigt nur Stichtags-Schnappschüsse, keine exakten Handelszeitpunkte, Kurse oder Zwischenbewegungen. Nur US-Long-Positionen, keine Shorts, Derivate oder internationalen Bestände. Daten werden 28 Tage lokal zwischengespeichert. Keine Anlageberatung.
   </div>
 
 </div>
 
-<!-- Detail Overlay -->
-<div class="detail" id="hf-detail">
-  <div class="detail-inner">
-    <div class="dtop">
-      <button class="dback" onclick="HF.closeDetail()">←</button>
-      <div class="dtitle">
-        <div class="dtitle-name" id="hf-d-name">–</div>
-        <div class="dtitle-cik mono" id="hf-d-cik">–</div>
-      </div>
-      <button class="drefresh" id="hf-d-refresh" onclick="HF.refreshCurrent()">↻ Aktualisieren</button>
-    </div>
-    <div id="hf-d-body"></div>
-  </div>
-</div>
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">Aktualisiert</span></div>
 
 <script>
 (function(){
 "use strict";
 
 /* =========================================================
-   VISION UNIVERSE · Hedgefonds Dashboard
-   Datenquelle: SEC EDGAR (data.sec.gov / www.sec.gov)
+   VISION UNIVERSE · HedgeTrack — Hedgefonds Dashboard
+   Datenquelle: SEC EDGAR (data.sec.gov / www.sec.gov), Formular 13F-HR
 
    Hinweis zum User-Agent:
    Die SEC bittet um einen User-Agent-Header mit Kontaktadresse
@@ -176,97 +392,99 @@ a{color:inherit;text-decoration:none}
    seinen eigenen User-Agent. Für einen vollständig SEC-konformen
    Zugriff müsste ein eigener Server/Proxy den Header setzen; das
    ist auf statischem GitHub-Pages-Hosting nicht möglich.
+
+   Hinweis zu "Sektorverteilung":
+   Das 13F-Infotable enthält keinerlei Sektor-/GICS-Klassifizierung
+   (nur nameOfIssuer, cusip, titleOfClass, value, shrsOrPrnAmt). Eine
+   echte Sektorverteilung würde eine zusätzliche CUSIP→Sektor-Zuordnung
+   erfordern, die über die kostenlose EDGAR-API nicht verfügbar ist.
+   Diese Ansicht zeigt daher AUM je bekanntem Strategietyp der Fonds
+   (öffentlich bekannte Einordnung, kein SEC-Datenfeld).
    ========================================================= */
 
-var CONTACT_EMAIL = "info@visionuniverse.de";
-
-var FUNDS = [
-  {cik:"0001350694", name:"Bridgewater Associates, LP"},
-  {cik:"0001037389", name:"Renaissance Technologies LLC"},
-  {cik:"0001423333", name:"Citadel Advisors LLC"},
-  {cik:"0001009207", name:"D. E. Shaw & Co., Inc."},
-  {cik:"0001179392", name:"Two Sigma Investments, LP"},
-  {cik:"0001273087", name:"Millennium Management LLC"},
-  {cik:"0001444406", name:"Man Group plc"},
-  {cik:"0001603466", name:"Point72 Asset Management, L.P."}
+var FUND_META = [
+  { cik:"0001423333", abbr:"CITADEL", name:"Citadel Advisors LLC",       type:"Multi-Strategy" },
+  { cik:"0001009207", abbr:"DESHAW",  name:"D. E. Shaw & Co., Inc.",     type:"Quantitativ" },
+  { cik:"0001179392", abbr:"TWOSIG",  name:"Two Sigma Investments, LP",  type:"Quantitativ" },
+  { cik:"0001273087", abbr:"MILLENM", name:"Millennium Management LLC", type:"Multi-Strategy" },
+  { cik:"0001444406", abbr:"MGROUP",  name:"Man Group plc",              type:"Quantitativ" },
+  { cik:"0001350694", abbr:"BRDGWTR", name:"Bridgewater Associates, LP", type:"Macro" },
+  { cik:"0001037389", abbr:"RENTEC",  name:"Renaissance Technologies LLC", type:"Quantitativ" },
+  { cik:"0001603466", abbr:"PT72",    name:"Point72 Asset Management, L.P.", type:"Long/Short" }
 ];
 
 var CACHE_TTL_MS = 28 * 24 * 60 * 60 * 1000;
-var CACHE_PREFIX = "vuhf_v1_";
-var TOP_N_STORE = 100;   // wie viele Positionen wir cachen/anzeigen
-var INITIAL_SHOW = 25;   // wie viele Zeilen initial sichtbar sind
+var CACHE_PREFIX = "vuhf2_";
+var TOP_HOLDINGS_STORE = 150;
+var TOP_TRADES_STORE = 40;
 
 var S = {
-  sort: "value",
-  data: {},       // cik -> {ts, name, reportDate, filedDate, accession, totalValueUSD, positionCount, holdings:[...], error}
-  loading: {},    // cik -> bool
-  openCik: null,
-  showAll: false,
-  refreshingAll: false
+  data: {},          // cik -> cached/derived record (siehe loadFund)
+  loading: {},        // cik -> bool
+  loadedCount: 0,
+  period: "current",  // "current" | "previous"
+  tradeFilter: "all",
+  refreshing: false
 };
 
 /* ---------- Utilities ---------- */
 
 function $(sel){ return document.querySelector(sel); }
+function $all(sel){ return [].slice.call(document.querySelectorAll(sel)); }
 function set(sel, html){ var el = $(sel); if(el) el.innerHTML = html; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 
-function fmtUSD(n){
+function fmtUSDShort(n){
+  if(n == null || isNaN(n)) return "–";
+  var sign = n < 0 ? "-" : "";
+  var abs = Math.abs(n);
+  if(abs >= 1e9){ var b = abs/1e9; return sign + "$" + (Math.round(b*10)/10).toString().replace(/\.0$/,"") + "B"; }
+  if(abs >= 1e6){ var m = abs/1e6; return sign + "$" + (Math.round(m*10)/10).toString().replace(/\.0$/,"") + "M"; }
+  if(abs >= 1e3){ var k = abs/1e3; return sign + "$" + (Math.round(k*10)/10).toString().replace(/\.0$/,"") + "K"; }
+  return sign + "$" + Math.round(abs);
+}
+function fmtSharesShort(n){
   if(n == null || isNaN(n)) return "–";
   var abs = Math.abs(n);
-  if(abs >= 1e9) return "$" + (n/1e9).toLocaleString("de-DE",{maximumFractionDigits:2}) + " Mrd.";
-  if(abs >= 1e6) return "$" + (n/1e6).toLocaleString("de-DE",{maximumFractionDigits:1}) + " Mio.";
-  if(abs >= 1e3) return "$" + (n/1e3).toLocaleString("de-DE",{maximumFractionDigits:1}) + " Tsd.";
-  return "$" + n.toLocaleString("de-DE");
+  if(abs >= 1e6) return (Math.round(abs/1e5)/10) + "M Aktien";
+  if(abs >= 1e3) return Math.round(abs/1e3) + "K Aktien";
+  return Math.round(abs) + " Aktien";
 }
-function fmtShares(n){
+function fmtPct(n, digits){
   if(n == null || isNaN(n)) return "–";
-  return n.toLocaleString("de-DE");
+  var sign = n >= 0 ? "+" : "";
+  return sign + n.toFixed(digits==null?1:digits) + "%";
 }
-function fmtPct(n){
-  if(n == null || isNaN(n)) return "–";
-  return n.toLocaleString("de-DE",{maximumFractionDigits:2}) + "%";
-}
-function fmtDate(iso){
+function fmtDateDE(iso){
   if(!iso) return "–";
   var p = iso.split("-");
   if(p.length !== 3) return iso;
-  return p[2] + "." + p[1] + "." + p[0];
+  var months = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+  return p[2] + " " + months[parseInt(p[1],10)-1] + " " + p[0];
 }
-function daysAgo(ts){
-  return Math.floor((Date.now() - ts) / (24*60*60*1000));
+function quarterLabel(iso){
+  if(!iso) return "–";
+  var p = iso.split("-"); var y = p[0], m = parseInt(p[1],10);
+  var q = Math.ceil(m/3);
+  return "Q" + q + " " + y;
 }
-function initials(name){
-  var words = name.replace(/[.,()]/g,"").split(/\s+/).filter(function(w){
-    return w && !/^(LLC|LP|Inc|Co|plc|&|The|L\.P\.|LLC\.)$/i.test(w);
-  });
-  return (words[0]||"").slice(0,1).toUpperCase() + (words[1]||"").slice(0,1).toUpperCase();
-}
+function daysAgo(ts){ return Math.floor((Date.now() - ts) / (24*60*60*1000)); }
 
 /* ---------- Cache ---------- */
 
 function cacheKey(cik){ return CACHE_PREFIX + cik; }
-
 function loadCache(cik){
-  try{
-    var raw = localStorage.getItem(cacheKey(cik));
-    if(!raw) return null;
-    var obj = JSON.parse(raw);
-    return obj;
-  }catch(e){ return null; }
+  try{ var raw = localStorage.getItem(cacheKey(cik)); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
 }
 function saveCache(cik, obj){
-  try{ localStorage.setItem(cacheKey(cik), JSON.stringify(obj)); }catch(e){ /* Storage voll o.ä. — still fine im Speicher */ }
+  try{ localStorage.setItem(cacheKey(cik), JSON.stringify(obj)); }catch(e){ /* Speicher evtl. voll — läuft trotzdem im RAM weiter */ }
 }
-function isFresh(obj){
-  return !!obj && !obj.error && (Date.now() - obj.ts) < CACHE_TTL_MS;
-}
+function isFresh(obj){ return !!obj && !obj.error && (Date.now() - obj.ts) < CACHE_TTL_MS; }
 
 /* ---------- Netzwerk: direkt, mit CORS-Proxy-Fallback ---------- */
 
-function corsProxied(url){
-  return "https://corsproxy.io/?url=" + encodeURIComponent(url);
-}
+function corsProxied(url){ return "https://corsproxy.io/?url=" + encodeURIComponent(url); }
 
 function smartFetchText(url){
   return fetch(url, {headers:{"Accept":"application/json, text/plain, */*"}}).then(function(r){
@@ -280,36 +498,32 @@ function smartFetchText(url){
   });
 }
 
-/* ---------- SEC EDGAR: Filing-Suche ---------- */
+function submissionsUrl(cik){ return "https://data.sec.gov/submissions/CIK" + cik + ".json"; }
+function archiveIndexUrl(cikInt, accNoDashes){ return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/index.json"; }
+function archiveFileUrl(cikInt, accNoDashes, filename){ return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/" + filename; }
+function accNoDashes(acc){ return acc.replace(/-/g, ""); }
 
-function submissionsUrl(cik){
-  return "https://data.sec.gov/submissions/CIK" + cik + ".json";
-}
-function archiveIndexUrl(cikInt, accNoDashes){
-  return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/index.json";
-}
-function archiveFileUrl(cikInt, accNoDashes, filename){
-  return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/" + filename;
-}
-
-function findLatest13F(filingsRecent){
+/* findRecent13Fs: liefert die n zuletzt gemeldeten, DISTINKTEN 13F-HR-Berichtsperioden
+   (bei einer Änderung/"13F-HR/A" zu einer bereits erfassten Periode wird die zuletzt
+   eingereichte Version bevorzugt). */
+function findRecent13Fs(filingsRecent, n){
   var forms = filingsRecent.form || [];
   var accs = filingsRecent.accessionNumber || [];
   var filed = filingsRecent.filingDate || [];
   var report = filingsRecent.reportDate || [];
-  var best = null;
+  var byPeriod = {};
   for(var i = 0; i < forms.length; i++){
     var f = forms[i];
     if(f === "13F-HR" || f === "13F-HR/A"){
-      if(!best || filed[i] > best.filedDate){
-        best = {form: f, accession: accs[i], filedDate: filed[i], reportDate: report[i]};
+      var rd = report[i];
+      if(!byPeriod[rd] || filed[i] > byPeriod[rd].filedDate){
+        byPeriod[rd] = { form:f, accession:accs[i], filedDate:filed[i], reportDate:rd };
       }
     }
   }
-  return best;
+  var periods = Object.keys(byPeriod).sort().reverse();
+  return periods.slice(0, n).map(function(rd){ return byPeriod[rd]; });
 }
-
-function accNoDashes(acc){ return acc.replace(/-/g, ""); }
 
 /* ---------- XML-Parsing (infoTable) ---------- */
 
@@ -318,7 +532,6 @@ function tagText(el, name){
   return n ? (n.textContent || "").trim() : "";
 }
 
-// Exportiert für Offline-Tests (Node/jsdom) unter window.HF_TEST
 function parseInfoTableXml(xmlText){
   var parser = new DOMParser();
   var doc = parser.parseFromString(xmlText, "application/xml");
@@ -340,338 +553,497 @@ function parseInfoTableXml(xmlText){
       shareType = tagText(sharesEl, "sshPrnamtType");
     }
     if(!issuer) continue;
-    holdings.push({
-      issuer: issuer,
-      cls: cls,
-      cusip: cusip,
-      valueUSD: valueThousands * 1000,
-      shares: shares,
-      shareType: shareType
-    });
+    holdings.push({ issuer: issuer, cls: cls, cusip: cusip, valueUSD: valueThousands * 1000, shares: shares, shareType: shareType });
   }
   return holdings;
 }
 
-/* ---------- Fund laden ---------- */
+/* ---------- Ein Filing (eine Berichtsperiode) laden & parsen ---------- */
+
+function fetchFilingHoldings(cikInt, accession){
+  var accDashes = accNoDashes(accession);
+  return smartFetchText(archiveIndexUrl(cikInt, accDashes)).then(function(idxTxt){
+    var idx = JSON.parse(idxTxt);
+    var items = (idx.directory && idx.directory.item) || [];
+    var xmlCandidates = items.map(function(it){ return it.name; })
+      .filter(function(n){ return /\.xml$/i.test(n) && n.toLowerCase() !== "primary_doc.xml"; });
+    if(!xmlCandidates.length){
+      xmlCandidates = items.map(function(it){ return it.name; }).filter(function(n){ return /\.xml$/i.test(n); });
+    }
+    if(!xmlCandidates.length) throw new Error("Keine Info-Table-XML im Filing gefunden.");
+
+    function tryNext(idx2){
+      if(idx2 >= xmlCandidates.length) throw new Error("Info-Table-XML konnte nicht geparst werden.");
+      var fname = xmlCandidates[idx2];
+      return smartFetchText(archiveFileUrl(cikInt, accDashes, fname)).then(function(xmlTxt){
+        var holdings;
+        try{ holdings = parseInfoTableXml(xmlTxt); }catch(e){ holdings = []; }
+        if(holdings.length) return holdings;
+        return tryNext(idx2 + 1);
+      });
+    }
+    return tryNext(0);
+  });
+}
+
+/* ---------- Quarter-über-Quarter Diff (neu eröffnete / komplett verkaufte Positionen) ---------- */
+
+function diffHoldings(currentHoldings, prevHoldings){
+  var prevMap = {};
+  prevHoldings.forEach(function(h){
+    var key = h.cusip || h.issuer;
+    if(!prevMap[key] || h.valueUSD > prevMap[key].valueUSD) prevMap[key] = h;
+  });
+  var curMap = {};
+  currentHoldings.forEach(function(h){
+    var key = h.cusip || h.issuer;
+    if(!curMap[key] || h.valueUSD > curMap[key].valueUSD) curMap[key] = h;
+  });
+
+  var opened = [], closed = [];
+  Object.keys(curMap).forEach(function(key){ if(!prevMap[key]) opened.push(curMap[key]); });
+  Object.keys(prevMap).forEach(function(key){ if(!curMap[key]) closed.push(prevMap[key]); });
+
+  opened.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+  closed.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+
+  return { opened: opened, closed: closed, openedCount: opened.length, closedCount: closed.length };
+}
+
+/* ---------- Fund laden (aktuelles + vorheriges Quartal) ---------- */
 
 function loadFund(cik, force){
   if(!force){
     var cached = loadCache(cik);
-    if(isFresh(cached)){
-      S.data[cik] = cached;
-      return Promise.resolve(cached);
-    }
+    if(isFresh(cached)){ S.data[cik] = cached; return Promise.resolve(cached); }
   }
   S.loading[cik] = true;
-  renderList();
-  if(S.openCik === cik) renderDetail();
+  renderAll();
 
   var cikInt = String(parseInt(cik, 10));
 
-  return smartFetchText(submissionsUrl(cik))
-    .then(function(txt){
-      var sub = JSON.parse(txt);
-      var latest = findLatest13F(sub.filings && sub.filings.recent || {});
-      if(!latest){
-        throw new Error("Kein 13F-HR Filing in den aktuellen Einreichungen gefunden.");
-      }
-      var accDashes = accNoDashes(latest.accession);
-      return smartFetchText(archiveIndexUrl(cikInt, accDashes)).then(function(idxTxt){
-        var idx = JSON.parse(idxTxt);
-        var items = (idx.directory && idx.directory.item) || [];
-        var xmlCandidates = items
-          .map(function(it){ return it.name; })
-          .filter(function(n){ return /\.xml$/i.test(n) && n.toLowerCase() !== "primary_doc.xml"; });
-        if(!xmlCandidates.length){
-          // Fallback: manche kleinen Filer bündeln alles in primary_doc.xml
-          xmlCandidates = items.map(function(it){ return it.name; }).filter(function(n){ return /\.xml$/i.test(n); });
-        }
-        if(!xmlCandidates.length) throw new Error("Keine Info-Table-XML im Filing gefunden.");
+  return smartFetchText(submissionsUrl(cik)).then(function(txt){
+    var sub = JSON.parse(txt);
+    var periods = findRecent13Fs(sub.filings && sub.filings.recent || {}, 2);
+    if(!periods.length) throw new Error("Kein 13F-HR Filing gefunden.");
+    var current = periods[0], prev = periods[1] || null;
 
-        function tryNext(idx2){
-          if(idx2 >= xmlCandidates.length) throw new Error("Info-Table-XML konnte nicht geparst werden.");
-          var fname = xmlCandidates[idx2];
-          return smartFetchText(archiveFileUrl(cikInt, accDashes, fname)).then(function(xmlTxt){
-            var holdings;
-            try{ holdings = parseInfoTableXml(xmlTxt); }catch(e){ holdings = []; }
-            if(holdings.length) return holdings;
-            return tryNext(idx2 + 1);
-          });
-        }
-
-        return tryNext(0).then(function(holdings){
-          holdings.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
-          var totalValueUSD = holdings.reduce(function(s,h){ return s + h.valueUSD; }, 0);
-          var positionCount = holdings.length;
-          var top = holdings.slice(0, TOP_N_STORE).map(function(h){
-            return {
-              issuer: h.issuer, cls: h.cls, cusip: h.cusip,
-              valueUSD: h.valueUSD, shares: h.shares, shareType: h.shareType,
-              weightPct: totalValueUSD ? (h.valueUSD / totalValueUSD * 100) : 0
-            };
-          });
-          var record = {
-            ts: Date.now(),
-            cik: cik,
-            name: (sub.name || sub.entityName || null),
-            reportDate: latest.reportDate,
-            filedDate: latest.filedDate,
-            accession: latest.accession,
-            totalValueUSD: totalValueUSD,
-            positionCount: positionCount,
-            holdings: top,
-            error: null
-          };
-          S.data[cik] = record;
-          saveCache(cik, record);
-          return record;
-        });
+    return fetchFilingHoldings(cikInt, current.accession).then(function(currentHoldings){
+      currentHoldings.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+      var totalValueUSD = currentHoldings.reduce(function(s,h){ return s + h.valueUSD; }, 0);
+      var positionCount = currentHoldings.length;
+      var topHoldings = currentHoldings.slice(0, TOP_HOLDINGS_STORE).map(function(h){
+        return { issuer:h.issuer, cls:h.cls, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, weightPct: totalValueUSD ? h.valueUSD/totalValueUSD*100 : 0 };
       });
-    })
-    .catch(function(err){
-      var record = {
-        ts: Date.now(),
-        cik: cik,
-        error: (err && err.message) || "Unbekannter Fehler beim Laden."
-      };
-      S.data[cik] = record;
-      // Fehler nicht dauerhaft cachen — soll bei nächstem Öffnen erneut versucht werden
-      return record;
-    })
-    .then(function(record){
-      S.loading[cik] = false;
-      renderList();
-      if(S.openCik === cik) renderDetail();
-      return record;
+
+      function finish(prevTotalValueUSD, prevPositionCount, opened, closed, openedCount, closedCount){
+        var record = {
+          ts: Date.now(), cik: cik, name: (sub.name || sub.entityName || null),
+          reportDate: current.reportDate, filedDate: current.filedDate, accession: current.accession,
+          totalValueUSD: totalValueUSD, positionCount: positionCount, topHoldings: topHoldings,
+          prevReportDate: prev ? prev.reportDate : null,
+          prevTotalValueUSD: prevTotalValueUSD, prevPositionCount: prevPositionCount,
+          aumChangePct: (prevTotalValueUSD ? (totalValueUSD - prevTotalValueUSD) / prevTotalValueUSD * 100 : null),
+          newPositions: opened.slice(0, TOP_TRADES_STORE),
+          closedPositions: closed.slice(0, TOP_TRADES_STORE),
+          newCount: openedCount, closedCount: closedCount,
+          error: null
+        };
+        S.data[cik] = record;
+        saveCache(cik, record);
+        return record;
+      }
+
+      if(!prev) return finish(null, null, [], [], 0, 0);
+
+      return fetchFilingHoldings(cikInt, prev.accession).then(function(prevHoldings){
+        var prevTotalValueUSD = prevHoldings.reduce(function(s,h){ return s + h.valueUSD; }, 0);
+        var d = diffHoldings(currentHoldings, prevHoldings);
+        return finish(prevTotalValueUSD, prevHoldings.length, d.opened, d.closed, d.openedCount, d.closedCount);
+      });
     });
-}
-
-function ensureFund(cik){
-  if(S.data[cik]) return Promise.resolve(S.data[cik]);
-  var cached = loadCache(cik);
-  if(cached){ S.data[cik] = cached; renderList(); return Promise.resolve(cached); }
-  return loadFund(cik, false);
-}
-
-/* ---------- Rendering: Liste ---------- */
-
-function getFilteredSorted(){
-  var q = (($("#hf-search-input") && $("#hf-search-input").value) || "").toLowerCase().trim();
-  var list = FUNDS.filter(function(f){
-    return !q || f.name.toLowerCase().indexOf(q) !== -1;
+  }).catch(function(err){
+    var record = { ts: Date.now(), cik: cik, error: (err && err.message) || "Unbekannter Fehler beim Laden." };
+    S.data[cik] = record;
+    return record;
+  }).then(function(record){
+    S.loading[cik] = false;
+    S.loadedCount++;
+    renderAll();
+    return record;
   });
-  list = list.map(function(f){
-    var d = S.data[f.cik] || loadCache(f.cik);
-    return {meta: f, data: d};
-  });
-  if(S.sort === "value"){
-    list.sort(function(a,b){
-      var av = (a.data && a.data.totalValueUSD) || -1;
-      var bv = (b.data && b.data.totalValueUSD) || -1;
-      return bv - av;
-    });
-  } else {
-    list.sort(function(a,b){ return a.meta.name.localeCompare(b.meta.name); });
-  }
-  return list;
 }
 
-function renderRow(item){
-  var f = item.meta, d = item.data;
-  var loading = !!S.loading[f.cik];
-  var name = (d && d.name) || f.name;
-  var statusClass = "none";
-  var metaBits = ['<span class="mono">CIK ' + f.cik + '</span>'];
+/* ---------- Orchestrierung ---------- */
 
-  if(loading){
-    statusClass = "stale";
-    metaBits.push("wird geladen…");
-  } else if(d && d.error){
-    statusClass = "err";
-    metaBits.push("Fehler beim Laden");
-  } else if(d && d.reportDate){
-    statusClass = isFresh(d) ? "fresh" : "stale";
-    metaBits.push("Stichtag " + fmtDate(d.reportDate));
-    metaBits.push(daysAgo(d.ts) === 0 ? "heute aktualisiert" : "vor " + daysAgo(d.ts) + " Tg. aktualisiert");
-  } else {
-    metaBits.push("noch nicht geladen");
-  }
+function loadAll(force){
+  if(S.refreshing) return;
+  S.refreshing = true;
+  updateRefreshButton();
+  set("#lastUpdate", "Lade Daten…");
 
-  var right = "";
-  if(loading){
-    right = '<div class="hf-row-value" style="color:#ccc">…</div>';
-  } else if(d && d.error){
-    right = '<div class="hf-row-value" style="color:#e00;font-size:12px">Fehler</div>';
-  } else if(d && d.totalValueUSD != null){
-    right = '<div class="hf-row-value">' + fmtUSD(d.totalValueUSD) + '</div><div class="hf-row-count">' + d.positionCount.toLocaleString("de-DE") + ' Positionen</div>';
-  } else {
-    right = '<div class="hf-row-value" style="color:#ccc">–</div>';
-  }
-
-  return '' +
-    '<div class="hf-row" onclick="HF.openDetail(\'' + f.cik + '\')">' +
-      '<div class="hf-ic">' + esc(initials(f.name)) + '</div>' +
-      '<div class="hf-row-main">' +
-        '<div class="hf-row-name">' + esc(name) + '</div>' +
-        '<div class="hf-row-meta"><span class="hf-status-dot ' + statusClass + '"></span>' + metaBits.join(" · ") + '</div>' +
-      '</div>' +
-      '<div class="hf-row-right">' + right + '</div>' +
-      '<div class="hf-chevron">›</div>' +
-    '</div>';
-}
-
-function renderList(){
-  var list = getFilteredSorted();
-  if(!list.length){
-    set("#hf-list", '<div class="hf-empty">Keine Fonds gefunden.</div>');
-    return;
-  }
-  set("#hf-list", list.map(renderRow).join(""));
-  $("#hf-sort-value").classList.toggle("on", S.sort === "value");
-  $("#hf-sort-name").classList.toggle("on", S.sort === "name");
-  var allLoading = FUNDS.some(function(f){ return S.loading[f.cik]; });
-  var btn = $("#hf-refresh-all");
-  if(btn){
-    btn.disabled = allLoading;
-    btn.innerHTML = allLoading ? "↻ Aktualisiere…" : "↻ Alle aktualisieren";
-  }
-}
-
-function setSort(mode){
-  S.sort = mode;
-  renderList();
-}
-
-function refreshAll(){
-  if(S.refreshingAll) return;
-  S.refreshingAll = true;
   var chain = Promise.resolve();
-  FUNDS.forEach(function(f, i){
+  FUND_META.forEach(function(f){
     chain = chain.then(function(){
-      return loadFund(f.cik, true).then(function(){
+      return loadFund(f.cik, force).then(function(){
         return new Promise(function(res){ setTimeout(res, 150); }); // freundlich zur SEC-API
       });
     });
   });
-  chain.then(function(){ S.refreshingAll = false; renderList(); });
+  chain.then(function(){
+    S.refreshing = false;
+    updateRefreshButton();
+    setLastUpdateLabel();
+    var okCount = FUND_META.filter(function(f){ return S.data[f.cik] && !S.data[f.cik].error; }).length;
+    showToast(okCount === FUND_META.length ? "Alle Fonds aktualisiert ✓" : okCount + "/" + FUND_META.length + " Fonds geladen (Rest fehlgeschlagen)");
+    renderAll();
+  });
 }
 
-/* ---------- Rendering: Detail ---------- */
-
-function openDetail(cik){
-  S.openCik = cik;
-  S.showAll = false;
-  $("#hf-detail").classList.add("open");
-  document.body.style.overflow = "hidden";
-  renderDetail();
-  ensureFund(cik);
-}
-function closeDetail(){
-  S.openCik = null;
-  $("#hf-detail").classList.remove("open");
-  document.body.style.overflow = "";
-  renderList();
-}
-function refreshCurrent(){
-  if(!S.openCik) return;
-  loadFund(S.openCik, true);
-}
-function showAllHoldings(){
-  S.showAll = true;
-  renderDetail();
+function updateRefreshButton(){
+  var btn = $("#refreshBtn"), icon = $("#refreshIcon");
+  if(!btn) return;
+  btn.disabled = S.refreshing;
+  var doneOfTotal = FUND_META.filter(function(f){ return S.data[f.cik] && !S.loading[f.cik]; }).length;
+  btn.lastChild.textContent = S.refreshing ? (" Lädt " + doneOfTotal + "/" + FUND_META.length + "…") : " Update";
+  if(icon) icon.classList.toggle("spin", S.refreshing);
 }
 
-function renderDetail(){
-  var cik = S.openCik;
-  if(!cik) return;
-  var meta = FUNDS.filter(function(f){ return f.cik === cik; })[0];
-  var d = S.data[cik] || loadCache(cik);
-  var loading = !!S.loading[cik];
+/* ---------- Toast ---------- */
 
-  set("#hf-d-name", esc((d && d.name) || (meta && meta.name) || "–"));
-  set("#hf-d-cik", "CIK " + cik);
-  var rbtn = $("#hf-d-refresh");
-  if(rbtn) rbtn.disabled = loading;
+function showToast(msg){
+  var t = $("#toast");
+  set("#toastMsg", esc(msg));
+  t.classList.add("show");
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(function(){ t.classList.remove("show"); }, 3200);
+}
 
-  if(loading && (!d || d.error)){
-    set("#hf-d-body", '<div class="dstate"><div class="spinner"></div><b>13F-Filing wird geladen…</b>Bei sehr großen Fonds (mehrere tausend Positionen) kann das ein paar Sekunden dauern.</div>');
+function setLastUpdateLabel(){
+  var newest = 0;
+  FUND_META.forEach(function(f){ var d = S.data[f.cik]; if(d && d.ts && d.ts > newest) newest = d.ts; });
+  if(!newest){ set("#lastUpdate", "Noch nie aktualisiert"); return; }
+  var d = new Date(newest);
+  set("#lastUpdate", d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}));
+}
+
+/* ---------- Aggregation über alle Fonds ---------- */
+
+function fundsWithData(){ return FUND_META.filter(function(f){ return S.data[f.cik] && !S.data[f.cik].error; }); }
+
+function aggregate(){
+  var funds = fundsWithData();
+  var totalAUM = 0, totalPrevAUM = 0, havePrevCount = 0;
+  var totalNew = 0, totalClosed = 0;
+  funds.forEach(function(f){
+    var d = S.data[f.cik];
+    totalAUM += d.totalValueUSD || 0;
+    if(d.prevTotalValueUSD != null){ totalPrevAUM += d.prevTotalValueUSD; havePrevCount++; }
+    totalNew += d.newCount || 0;
+    totalClosed += d.closedCount || 0;
+  });
+  var aumChangePct = havePrevCount ? (totalAUM - totalPrevAUM) / totalPrevAUM * 100 : null;
+
+  // Top-Holdings über alle Fonds aggregiert (aktuelles Quartal)
+  var byIssuer = {};
+  funds.forEach(function(f){
+    var d = S.data[f.cik];
+    (d.topHoldings || []).forEach(function(h){
+      var key = h.cusip || h.issuer;
+      if(!byIssuer[key]) byIssuer[key] = { issuer: h.issuer, cusip: h.cusip, valueUSD: 0, fundCount: 0 };
+      byIssuer[key].valueUSD += h.valueUSD;
+      byIssuer[key].fundCount++;
+    });
+  });
+  var aggHoldings = Object.keys(byIssuer).map(function(k){ return byIssuer[k]; })
+    .sort(function(a,b){ return b.valueUSD - a.valueUSD; })
+    .map(function(h){ return Object.assign({}, h, { weightPct: totalAUM ? h.valueUSD/totalAUM*100 : 0 }); });
+
+  // Trades über alle Fonds
+  var trades = [];
+  funds.forEach(function(f){
+    var d = S.data[f.cik];
+    (d.newPositions || []).forEach(function(h){ trades.push({ action:"buy", issuer:h.issuer, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, fund:d.name || f.name, date: quarterLabel(d.reportDate) }); });
+    (d.closedPositions || []).forEach(function(h){ trades.push({ action:"sell", issuer:h.issuer, cusip:h.cusip, valueUSD:h.valueUSD, shares:h.shares, fund:d.name || f.name, date: quarterLabel(d.reportDate) }); });
+  });
+  trades.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+
+  // Strategietyp-Verteilung (statische, öffentlich bekannte Einordnung × echtes AUM)
+  var byType = {};
+  funds.forEach(function(f){
+    var d = S.data[f.cik];
+    byType[f.type] = (byType[f.type] || 0) + (d.totalValueUSD || 0);
+  });
+  var typeList = Object.keys(byType).map(function(t){ return { name:t, valueUSD: byType[t] }; })
+    .sort(function(a,b){ return b.valueUSD - a.valueUSD; })
+    .map(function(t){ return Object.assign({}, t, { pct: totalAUM ? t.valueUSD/totalAUM*100 : 0 }); });
+
+  // Filing-Timeline
+  var filings = funds.map(function(f){
+    var d = S.data[f.cik];
+    return { title: (d.name || f.name) + " · 13F " + quarterLabel(d.reportDate), meta: d.positionCount.toLocaleString("de-DE") + " Pos. · " + fmtUSDShort(d.totalValueUSD) + " AUM", date: d.filedDate, isNew: daysAgo(d.ts) === 0 };
+  }).sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
+
+  return { funds:funds, totalAUM:totalAUM, aumChangePct:aumChangePct, havePrevCount:havePrevCount,
+    totalNew:totalNew, totalClosed:totalClosed, aggHoldings:aggHoldings, trades:trades, typeList:typeList, filings:filings };
+}
+
+/* ---------- Rendering ---------- */
+
+function renderPeriodPills(){
+  var funds = fundsWithData();
+  var curLabel = "Aktuell", prevLabel = "Vorquartal";
+  var f0 = funds[0];
+  if(f0){
+    var d = S.data[f0.cik];
+    curLabel = quarterLabel(d.reportDate);
+    if(d.prevReportDate) prevLabel = quarterLabel(d.prevReportDate);
+  }
+  var anyPrev = funds.some(function(f){ return S.data[f.cik].prevReportDate; });
+  set("#periodPills",
+    '<button class="pill ' + (S.period==="current"?"active":"") + '" onclick="HF.setPeriod(\'current\')">' + esc(curLabel) + '</button>' +
+    '<button class="pill ' + (S.period==="previous"?"active":"") + '" onclick="HF.setPeriod(\'previous\')" ' + (anyPrev?"":"disabled") + '>' + esc(prevLabel) + '</button>'
+  );
+}
+
+function periodValue(d, field){
+  // liefert current- oder previous-Werte je nach S.period, soweit vorhanden
+  if(S.period === "previous"){
+    if(field === "totalValueUSD") return d.prevTotalValueUSD;
+    if(field === "positionCount") return d.prevPositionCount;
+  }
+  return d[field];
+}
+
+function renderBars(){
+  var funds = fundsWithData();
+  if(!funds.length){ set("#barList", loadingOrEmptyMsg()); set("#barListNote",""); return; }
+  set("#barListNote", S.period === "previous" ? "Vorquartal" : "");
+  var rows = funds.map(function(f){ return { f:f, v: periodValue(S.data[f.cik], "totalValueUSD") }; })
+    .filter(function(r){ return r.v != null; })
+    .sort(function(a,b){ return b.v - a.v; });
+  if(!rows.length){ set("#barList", '<div class="state-msg">Für keinen Fonds liegen Vorquartalsdaten vor.</div>'); return; }
+  var max = Math.max.apply(null, rows.map(function(r){ return r.v; }).concat([1]));
+  set("#barList", rows.map(function(r){
+    var w = Math.max(6, Math.round((r.v / max) * 100));
+    return '<div class="bar-row">' +
+      '<div class="bar-label">' + esc(shortFundLabel(r.f.name)) + '</div>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"><span>' + fmtUSDShort(r.v) + '</span></div></div>' +
+    '</div>';
+  }).join(""));
+}
+function shortFundLabel(name){
+  return (name||"").replace(/,?\s*(LLC|LP|L\.P\.|Inc\.?|plc|& Co\.,? Inc\.)$/i,"").replace(" Associates","").trim();
+}
+
+function renderRankList(){
+  var funds = fundsWithData();
+  if(!funds.length){ set("#rankList", loadingOrEmptyMsg()); return; }
+  var rows = funds.map(function(f){ return { f:f, d: S.data[f.cik] }; }).sort(function(a,b){ return b.d.totalValueUSD - a.d.totalValueUSD; });
+  set("#rankList", rows.map(function(r, i){
+    var d = r.d, f = r.f;
+    var hasChange = d.aumChangePct != null;
+    var cls = !hasChange ? "flat" : (d.aumChangePct >= 0 ? "pos" : "neg");
+    return '<div class="rank-row">' +
+      '<div class="rank-num">#' + (i+1) + '</div>' +
+      '<div class="rank-info">' +
+        '<div class="rank-ticker">' + esc(f.abbr) + ' · ' + esc(f.type) + '</div>' +
+        '<div class="rank-name">' + esc(d.name || f.name) + '</div>' +
+      '</div>' +
+      '<div class="rank-right">' +
+        '<div class="rank-pct ' + cls + '">' + (hasChange ? fmtPct(d.aumChangePct) : "n/v") + '</div>' +
+        '<div class="rank-sub">' + fmtUSDShort(d.totalValueUSD) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderTrades(){
+  var agg = aggregate();
+  var filtered = agg.trades.filter(function(t){ return S.tradeFilter === "all" || t.action === S.tradeFilter; }).slice(0, 30);
+  if(!agg.funds.length){ set("#tradeList", loadingOrEmptyMsg()); return; }
+  if(!filtered.length){ set("#tradeList", '<div class="state-msg">Keine ' + (S.tradeFilter==="buy"?"neuen":S.tradeFilter==="sell"?"komplett verkauften":"") + ' Positionen zwischen den letzten zwei gemeldeten Quartalen.</div>'); return; }
+  set("#tradeList", filtered.map(function(t){
+    return '<div class="trade-row">' +
+      '<span class="trade-badge ' + t.action + '">' + (t.action === "buy" ? "Neu" : "Verkauft") + '</span>' +
+      '<div class="trade-info">' +
+        '<div class="trade-ticker">' + esc(t.cusip || "") + ' · ' + esc(t.date) + '</div>' +
+        '<div class="trade-company">' + esc(t.issuer) + '</div>' +
+        '<div class="trade-fund">' + esc(t.fund) + '</div>' +
+      '</div>' +
+      '<div class="trade-right">' +
+        '<div class="trade-value">' + fmtUSDShort(t.valueUSD) + '</div>' +
+        '<div class="trade-shares">' + fmtSharesShort(t.shares) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderHoldings(){
+  var agg = aggregate();
+  if(!agg.funds.length){ set("#holdingsList", loadingOrEmptyMsg()); return; }
+  var top = agg.aggHoldings.slice(0, 8);
+  set("#holdingsList", top.map(function(h, i){
+    return '<div class="rank-row" style="cursor:default">' +
+      '<div class="rank-num">#' + (i+1) + '</div>' +
+      '<div class="rank-info">' +
+        '<div class="rank-ticker">' + esc(h.cusip || "") + ' · ' + h.fundCount + ' von 8 Fonds</div>' +
+        '<div class="rank-name">' + esc(h.issuer) + '</div>' +
+      '</div>' +
+      '<div class="rank-right">' +
+        '<div class="rank-pct pos">' + fmtPct(h.weightPct, 1) + '</div>' +
+        '<div class="rank-sub">' + fmtUSDShort(h.valueUSD) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderTypes(){
+  var agg = aggregate();
+  if(!agg.funds.length){ set("#sectorList", loadingOrEmptyMsg()); return; }
+  var max = Math.max.apply(null, agg.typeList.map(function(t){ return t.pct; }).concat([1]));
+  set("#sectorList", agg.typeList.map(function(t){
+    return '<div class="sector-row">' +
+      '<div class="sector-name">' + esc(t.name) + '</div>' +
+      '<div class="sector-track"><div class="sector-fill" style="width:' + ((t.pct/max)*100) + '%"></div></div>' +
+      '<div class="sector-pct">' + fmtPct(t.pct, 1) + '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderFilings(){
+  var agg = aggregate();
+  if(!agg.filings.length){ set("#filingList", loadingOrEmptyMsg()); return; }
+  set("#filingList", agg.filings.map(function(f){
+    return '<div class="filing-row">' +
+      '<div class="filing-dot ' + (f.isNew?"new":"") + '"></div>' +
+      '<div class="filing-info">' +
+        '<div class="filing-title">' + esc(f.title) + '</div>' +
+        '<div class="filing-meta">' + esc(f.meta) + '</div>' +
+      '</div>' +
+      '<div class="filing-date">' + esc(fmtDateDE(f.date)) + '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderSummary(){
+  var agg = aggregate();
+  var errCount = FUND_META.filter(function(f){ return S.data[f.cik] && S.data[f.cik].error; }).length;
+
+  if(!agg.funds.length){
+    set("#sumAUM", S.loadedCount ? "Fehler" : "…");
+    set("#sumAUMChange", "wird geladen…");
+    set("#sumNewPos", "…");
+    set("#sumClosedPos", "wird geladen…");
     return;
   }
 
-  if(!d){
-    set("#hf-d-body", '<div class="dstate"><b>Noch keine Daten</b>Lade das aktuelle 13F-HR-Filing von der SEC.</div>');
-    return;
+  set("#sumAUM", fmtUSDShort(agg.totalAUM) + (errCount ? "*" : ""));
+  var aumChangeEl = $("#sumAUMChange");
+  if(agg.aumChangePct != null){
+    aumChangeEl.textContent = fmtPct(agg.aumChangePct) + " vs. Vorquartal" + (agg.havePrevCount < agg.funds.length ? " (" + agg.havePrevCount + "/" + agg.funds.length + " Fonds)" : "");
+    aumChangeEl.className = "sum-card-sub " + (agg.aumChangePct >= 0 ? "pos" : "neg");
+  } else {
+    aumChangeEl.textContent = errCount ? ("* " + errCount + " Fonds fehlgeschlagen") : "keine Vorquartalsdaten";
+    aumChangeEl.className = "sum-card-sub";
   }
 
-  if(d.error){
-    set("#hf-d-body",
-      '<div class="dstate dstate-err"><b>Laden fehlgeschlagen</b>' + esc(d.error) +
-      '<br><button class="retry-btn" onclick="HF.refreshCurrent()">Erneut versuchen</button></div>'
-    );
-    return;
-  }
-
-  var holdings = d.holdings || [];
-  var visible = S.showAll ? holdings : holdings.slice(0, INITIAL_SHOW);
-
-  var rows = visible.map(function(h, i){
-    return '' +
-      '<div class="hrow">' +
-        '<div class="hrank">' + (i+1) + '</div>' +
-        '<div class="hname">' +
-          '<div class="hname-main">' + esc(h.issuer) + '</div>' +
-          '<div class="hname-sub mono">' + esc(h.cusip || "–") + (h.cls ? " · " + esc(h.cls) : "") + '</div>' +
-        '</div>' +
-        '<div class="hval">' + fmtUSD(h.valueUSD) + '</div>' +
-        '<div class="hpct">' + fmtPct(h.weightPct) + '</div>' +
-      '</div>';
-  }).join("");
-
-  var moreBtn = (!S.showAll && holdings.length > INITIAL_SHOW)
-    ? '<button class="hf-more" onclick="HF.showAllHoldings()">Alle ' + holdings.length.toLocaleString("de-DE") + ' Positionen anzeigen</button>'
-    : "";
-
-  var html = '' +
-    '<div class="dstats">' +
-      '<div class="dstat"><div class="dstat-label">13F-Portfoliowert</div><div class="dstat-value">' + fmtUSD(d.totalValueUSD) + '</div></div>' +
-      '<div class="dstat"><div class="dstat-label">Positionen</div><div class="dstat-value">' + d.positionCount.toLocaleString("de-DE") + '</div></div>' +
-      '<div class="dstat"><div class="dstat-label">Berichtsstichtag</div><div class="dstat-value">' + fmtDate(d.reportDate) + '</div></div>' +
-      '<div class="dstat"><div class="dstat-label">Eingereicht am</div><div class="dstat-value">' + fmtDate(d.filedDate) + '</div></div>' +
-    '</div>' +
-    '<div class="dsection-head"><div class="dsection-title">Top-Holdings</div><div class="dsection-note">' + (isFresh(d) ? "aktuell (Cache " + daysAgo(d.ts) + "/28 Tg.)" : "Cache abgelaufen") + '</div></div>' +
-    '<div class="htable">' +
-      '<div class="hth"><div>#</div><div>Unternehmen</div><div style="text-align:right">Wert</div><div style="text-align:right">Anteil</div></div>' +
-      rows +
-    '</div>' +
-    moreBtn +
-    '<div class="dfoot-note">Quelle: SEC EDGAR, Formular 13F-HR (Accession ' + esc(d.accession) + '). Werte laut Meldevorschrift in Tsd. USD, hier hochgerechnet. Zeigt nur meldepflichtige US-Long-Positionen — keine Shorts, Optionen, Anleihen oder Nicht-US-Bestände. <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + esc(cik) + '&type=13F-HR" target="_blank" rel="noopener">Original-Filing auf SEC.gov ansehen →</a></div>';
-
-  set("#hf-d-body", html);
+  set("#sumNewPos", agg.totalNew.toLocaleString("de-DE"));
+  set("#sumClosedPos", "−" + agg.totalClosed.toLocaleString("de-DE") + " geschlossen");
 }
+
+function loadingOrEmptyMsg(){
+  var anyLoading = FUND_META.some(function(f){ return S.loading[f.cik]; });
+  var anyData = FUND_META.some(function(f){ return S.data[f.cik]; });
+  if(anyLoading) return '<div class="state-msg">Lade Fondsdaten von der SEC…</div>';
+  if(!anyData) return '<div class="state-msg">Noch keine Daten geladen. <span class="retry-link" onclick="HF.refreshAll()">Jetzt laden</span></div>';
+  return '<div class="state-msg err">Laden fehlgeschlagen. <span class="retry-link" onclick="HF.refreshAll()">Erneut versuchen</span></div>';
+}
+
+function renderAll(){
+  renderPeriodPills();
+  renderSummary();
+  renderBars();
+  renderRankList();
+  renderTrades();
+  renderHoldings();
+  renderTypes();
+  renderFilings();
+  updateRefreshButton();
+}
+
+/* ---------- Countdown (echte SEC-13F-Fristen, reine Datumslogik) ---------- */
+
+function nextDeadline(){
+  var now = new Date();
+  var y = now.getFullYear();
+  var dl = [ new Date(y,1,14), new Date(y,4,15), new Date(y,7,14), new Date(y,10,14), new Date(y+1,1,14) ];
+  return dl.filter(function(d){ return d > now; })[0] || dl[dl.length-1];
+}
+function prevDeadline(next){
+  var all = [];
+  for(var y = next.getFullYear()-1; y <= next.getFullYear(); y++){
+    [ [1,14],[4,15],[7,14],[10,14] ].forEach(function(md){ all.push(new Date(y, md[0], md[1])); });
+  }
+  var before = all.filter(function(d){ return d < next; });
+  return before[before.length-1];
+}
+function updateCountdown(){
+  var now = new Date();
+  var next = nextDeadline();
+  var prev = prevDeadline(next);
+  var diff = next - now;
+  var days = Math.floor(diff / 86400000);
+  var hours = Math.floor((diff % 86400000) / 3600000);
+  var mins = Math.floor((diff % 3600000) / 60000);
+  set("#countdown", days + "d " + String(hours).padStart(2,"0") + "h " + String(mins).padStart(2,"0") + "m");
+  set("#cdDate", "13F-Deadline: " + next.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}));
+  set("#daysLeft", String(days));
+  set("#nextDeadlineShort", "Tage bis nächste 13F");
+  var windowMs = next - prev;
+  var elapsed = windowMs - Math.min(next-now, windowMs);
+  $("#cdProgress").style.width = ((elapsed/windowMs)*100) + "%";
+}
+
+/* ---------- Interaktion ---------- */
+
+function setPeriod(p){ S.period = p; renderPeriodPills(); renderBars(); }
+function setTradeFilter(type){
+  S.tradeFilter = type;
+  $all("#tradePills .pill").forEach(function(b){ b.classList.toggle("active", b.dataset.type === type); });
+  renderTrades();
+}
+function refreshAll(){ loadAll(true); }
+
+$("#tradePills").addEventListener("click", function(e){
+  if(!e.target.classList.contains("pill")) return;
+  setTradeFilter(e.target.dataset.type);
+});
 
 /* ---------- Init ---------- */
 
 function init(){
-  renderList();
-  // Aus dem Cache bereits bekannte Fonds sofort in den State laden (kein Netzwerk nötig)
-  FUNDS.forEach(function(f){
+  FUND_META.forEach(function(f){
     var c = loadCache(f.cik);
     if(c) S.data[f.cik] = c;
   });
-  renderList();
+  renderAll();
+  setLastUpdateLabel();
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+
+  var anyFresh = FUND_META.some(function(f){ return isFresh(S.data[f.cik]); });
+  var allFresh = FUND_META.every(function(f){ return isFresh(S.data[f.cik]); });
+  if(!allFresh){
+    loadAll(false); // lädt nur die fehlenden/abgelaufenen Fonds (kein force)
+  } else if(anyFresh){
+    showToast("Aus dem Cache geladen (< 28 Tage alt)");
+  }
 }
 
-window.HF = {
-  setSort: setSort,
-  refreshAll: refreshAll,
-  openDetail: openDetail,
-  closeDetail: closeDetail,
-  refreshCurrent: refreshCurrent,
-  showAllHoldings: showAllHoldings,
-  renderList: renderList
-};
-// Für Offline-/Node-Tests der Parsing-Logik
-window.HF_TEST = { parseInfoTableXml: parseInfoTableXml, findLatest13F: findLatest13F, fmtUSD: fmtUSD };
+window.HF = { refreshAll: refreshAll, setPeriod: setPeriod, setTradeFilter: setTradeFilter };
+// Für Offline-/Node-Tests der Parsing-/Diff-Logik
+window.HF_TEST = { parseInfoTableXml: parseInfoTableXml, findRecent13Fs: findRecent13Fs, diffHoldings: diffHoldings, fmtUSDShort: fmtUSDShort };
 
 document.addEventListener("DOMContentLoaded", init);
 })();
