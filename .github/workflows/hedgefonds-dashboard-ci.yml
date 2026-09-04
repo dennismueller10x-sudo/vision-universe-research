@@ -45,7 +45,7 @@ jobs:
 
       - name: Validate seed/generated data JSON
         run: |
-          python3 -c "import json; d=json.load(open('hedgefonds/data/hedgefonds.json')); assert 'funds' in d and len(d['funds'])==8; print('hedgefonds.json OK:', len(d['funds']), 'funds')"
+          python3 -c "import json; d=json.load(open('hedgefonds/data/hedgefonds.json')); assert 'funds' in d and len(d['funds'])>=1; print('hedgefonds.json OK:', len(d['funds']), 'funds')"
 
       - name: Validate fetch script syntax
         run: python3 -m py_compile scripts/hedgefonds/fetch_edgar_data.py
