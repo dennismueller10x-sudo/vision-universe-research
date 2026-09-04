@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Hedgefonds Dashboard — Vision Universe Research</title>
+<meta name="description" content="13F-Holdings der größten Hedgefonds — live von der SEC EDGAR API. Bridgewater, Renaissance, Citadel, D.E. Shaw, Two Sigma, Millennium, Man Group, Point72.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:#fff}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:#fff;color:#111;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+::-webkit-scrollbar{display:none}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+a{color:inherit;text-decoration:none}
+
+#hf-app{display:block;max-width:760px;margin:0 auto;padding-bottom:60px;min-height:100vh}
+
+.topbar{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f0f0}
+.topbar-brand{font-weight:800;font-size:13px;letter-spacing:.1em}
+.topbar-brand a{color:#111}
+
+.page{padding:22px 20px 0}
+
+.hf-title{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.hf-sub{font-size:14px;color:#999;margin-bottom:18px}
+
+.hf-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.hf-search{position:relative;flex:1;min-width:180px}
+.hf-search input{width:100%;padding:12px 14px 12px 38px;border:1.5px solid #e8e8e8;border-radius:14px;font-size:14px;background:#fff;outline:none;transition:border .15s}
+.hf-search input:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+.hf-search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#ccc;font-size:14px;pointer-events:none}
+
+.sort-chip{padding:7px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:600;white-space:nowrap}
+.sort-chip.on{border-color:#111;background:#111;color:#fff}
+
+.hf-refresh-all{padding:7px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.hf-refresh-all:disabled{opacity:.5;cursor:default}
+
+.hf-list{border:1px solid #f0f0f0;border-radius:16px;overflow:hidden;margin-bottom:18px}
+.hf-row{display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background .1s}
+.hf-row:last-child{border-bottom:none}
+.hf-row:active{background:#fafafa}
+.hf-ic{width:46px;height:46px;border-radius:12px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:800;letter-spacing:.02em}
+.hf-row-main{flex:1;min-width:0}
+.hf-row-name{font-size:15px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hf-row-meta{font-size:11.5px;color:#999;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.hf-row-right{text-align:right;flex-shrink:0}
+.hf-row-value{font-size:15px;font-weight:800;color:#16a34a;letter-spacing:-.01em}
+.hf-row-count{font-size:11px;color:#aaa;margin-top:2px}
+.hf-chevron{color:#ddd;font-size:16px;flex-shrink:0}
+
+.hf-empty{padding:40px 20px;text-align:center;color:#aaa;font-size:13px}
+.hf-status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+.hf-status-dot.fresh{background:#16a34a}
+.hf-status-dot.stale{background:#f59e0b}
+.hf-status-dot.none{background:#ddd}
+.hf-status-dot.err{background:#e00}
+
+.hf-info{background:#f8f8f8;border-radius:16px;padding:16px;font-size:12px;line-height:1.65;color:#666;margin-bottom:16px}
+.hf-info b{color:#111}
+
+/* Detail overlay */
+.detail{display:none;position:fixed;inset:0;background:#fff;z-index:300;overflow-y:auto}
+.detail.open{display:block}
+.detail-inner{max-width:760px;margin:0 auto}
+.dtop{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f5f5f5;position:sticky;top:0;background:#fff;z-index:10}
+.dback{width:36px;height:36px;border-radius:50%;border:1.5px solid #e8e8e8;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.dtitle{flex:1;min-width:0}
+.dtitle-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtitle-cik{font-size:11px;color:#999}
+.drefresh{padding:8px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:700;flex-shrink:0}
+.drefresh:disabled{opacity:.5}
+
+.dstats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#f0f0f0;border:1px solid #f0f0f0;border-radius:16px;overflow:hidden;margin:18px 20px}
+.dstat{background:#fff;padding:14px 16px}
+.dstat-label{font-size:10.5px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.dstat-value{font-size:17px;font-weight:800;letter-spacing:-.01em}
+
+.dsection-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 20px;margin-bottom:10px}
+.dsection-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#111}
+.dsection-note{font-size:11px;color:#aaa}
+
+.htable{margin:0 20px 20px;border:1px solid #f0f0f0;border-radius:16px;overflow:hidden}
+.hth{display:grid;grid-template-columns:32px 1fr 78px 70px;gap:8px;padding:10px 14px;background:#fafafa;font-size:10px;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #f0f0f0}
+.hrow{display:grid;grid-template-columns:32px 1fr 78px 70px;gap:8px;padding:11px 14px;border-bottom:1px solid #f5f5f5;align-items:center}
+.hrow:last-child{border-bottom:none}
+.hrow:nth-child(even){background:#fcfcfc}
+.hrank{font-size:11px;color:#bbb;font-weight:700}
+.hname{min-width:0}
+.hname-main{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hname-sub{font-size:10.5px;color:#aaa;margin-top:1px}
+.hval{font-size:12.5px;font-weight:700;text-align:right}
+.hpct{font-size:12.5px;font-weight:800;color:#16a34a;text-align:right}
+
+.hf-more{display:block;width:calc(100% - 40px);margin:0 20px 20px;padding:12px 0;border-radius:14px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:700;text-align:center}
+
+.dstate{padding:60px 24px;text-align:center;color:#999;font-size:13px;line-height:1.7}
+.dstate b{color:#111;display:block;margin-bottom:6px;font-size:15px}
+.spinner{width:26px;height:26px;border-radius:50%;border:2.5px solid #eee;border-top-color:#111;margin:0 auto 16px;animation:hfspin .8s linear infinite}
+@keyframes hfspin{to{transform:rotate(360deg)}}
+.dstate-err{color:#e00}
+.retry-btn{margin-top:14px;padding:9px 18px;border-radius:20px;border:none;background:#111;color:#fff;font-size:12px;font-weight:700}
+
+.dfoot-note{margin:0 20px 30px;font-size:11px;color:#bbb;line-height:1.6}
+
+@media(max-width:520px){
+  .hth,.hrow{grid-template-columns:24px 1fr 64px 56px;font-size:11px}
+  .dstats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="hf-app">
+
+  <div class="topbar">
+    <span class="topbar-brand"><a href="/">⊙ VISION UNIVERSE</a></span>
+    <span style="font-size:10px;color:#bbb;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Hedgefonds</span>
+  </div>
+
+  <div class="page">
+    <div class="hf-title">Hedgefonds Dashboard</div>
+    <div class="hf-sub">8 Top-Fonds · 13F-Holdings direkt von der SEC</div>
+
+    <div class="hf-toolbar">
+      <div class="hf-search">
+        <span class="ic">🔍</span>
+        <input id="hf-search-input" placeholder="Fonds suchen..." oninput="HF.renderList()">
+      </div>
+      <button class="sort-chip" id="hf-sort-value" onclick="HF.setSort('value')">Nach Größe</button>
+      <button class="sort-chip" id="hf-sort-name" onclick="HF.setSort('name')">A–Z</button>
+      <button class="hf-refresh-all" id="hf-refresh-all" onclick="HF.refreshAll()">↻ Alle aktualisieren</button>
+    </div>
+
+    <div class="hf-list" id="hf-list"></div>
+
+    <div class="hf-info">
+      <b>Datenquelle:</b> SEC EDGAR (<span class="mono">data.sec.gov</span>), Formular 13F-HR. Hedgefonds mit &gt; 100 Mio. USD AUM müssen ihre US-Aktienpositionen vierteljährlich offenlegen (Fristen: 14. Feb, 15. Mai, 14. Aug, 14. Nov), jeweils mit 45 Tagen Verzögerung zum Quartalsende. Daten werden 28 Tage lokal zwischengespeichert. Keine Anlageberatung — 13F-Meldungen zeigen nur US-Long-Positionen, keine Shorts, Derivate oder internationalen Bestände.
+    </div>
+  </div>
+
+</div>
+
+<!-- Detail Overlay -->
+<div class="detail" id="hf-detail">
+  <div class="detail-inner">
+    <div class="dtop">
+      <button class="dback" onclick="HF.closeDetail()">←</button>
+      <div class="dtitle">
+        <div class="dtitle-name" id="hf-d-name">–</div>
+        <div class="dtitle-cik mono" id="hf-d-cik">–</div>
+      </div>
+      <button class="drefresh" id="hf-d-refresh" onclick="HF.refreshCurrent()">↻ Aktualisieren</button>
+    </div>
+    <div id="hf-d-body"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   VISION UNIVERSE · Hedgefonds Dashboard
+   Datenquelle: SEC EDGAR (data.sec.gov / www.sec.gov)
+
+   Hinweis zum User-Agent:
+   Die SEC bittet um einen User-Agent-Header mit Kontaktadresse
+   (z.B. "VisionUniverseResearch info@visionuniverse.de") bei
+   automatisierten Zugriffen. Browser-Fetch-Aufrufe dürfen diesen
+   Header aus Sicherheitsgründen jedoch nicht setzen ("forbidden
+   header name") — der Browser sendet stattdessen automatisch
+   seinen eigenen User-Agent. Für einen vollständig SEC-konformen
+   Zugriff müsste ein eigener Server/Proxy den Header setzen; das
+   ist auf statischem GitHub-Pages-Hosting nicht möglich.
+   ========================================================= */
+
+var CONTACT_EMAIL = "info@visionuniverse.de";
+
+var FUNDS = [
+  {cik:"0001350694", name:"Bridgewater Associates, LP"},
+  {cik:"0001037389", name:"Renaissance Technologies LLC"},
+  {cik:"0001423333", name:"Citadel Advisors LLC"},
+  {cik:"0001009207", name:"D. E. Shaw & Co., Inc."},
+  {cik:"0001179392", name:"Two Sigma Investments, LP"},
+  {cik:"0001273087", name:"Millennium Management LLC"},
+  {cik:"0001444406", name:"Man Group plc"},
+  {cik:"0001603466", name:"Point72 Asset Management, L.P."}
+];
+
+var CACHE_TTL_MS = 28 * 24 * 60 * 60 * 1000;
+var CACHE_PREFIX = "vuhf_v1_";
+var TOP_N_STORE = 100;   // wie viele Positionen wir cachen/anzeigen
+var INITIAL_SHOW = 25;   // wie viele Zeilen initial sichtbar sind
+
+var S = {
+  sort: "value",
+  data: {},       // cik -> {ts, name, reportDate, filedDate, accession, totalValueUSD, positionCount, holdings:[...], error}
+  loading: {},    // cik -> bool
+  openCik: null,
+  showAll: false,
+  refreshingAll: false
+};
+
+/* ---------- Utilities ---------- */
+
+function $(sel){ return document.querySelector(sel); }
+function set(sel, html){ var el = $(sel); if(el) el.innerHTML = html; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+function fmtUSD(n){
+  if(n == null || isNaN(n)) return "–";
+  var abs = Math.abs(n);
+  if(abs >= 1e9) return "$" + (n/1e9).toLocaleString("de-DE",{maximumFractionDigits:2}) + " Mrd.";
+  if(abs >= 1e6) return "$" + (n/1e6).toLocaleString("de-DE",{maximumFractionDigits:1}) + " Mio.";
+  if(abs >= 1e3) return "$" + (n/1e3).toLocaleString("de-DE",{maximumFractionDigits:1}) + " Tsd.";
+  return "$" + n.toLocaleString("de-DE");
+}
+function fmtShares(n){
+  if(n == null || isNaN(n)) return "–";
+  return n.toLocaleString("de-DE");
+}
+function fmtPct(n){
+  if(n == null || isNaN(n)) return "–";
+  return n.toLocaleString("de-DE",{maximumFractionDigits:2}) + "%";
+}
+function fmtDate(iso){
+  if(!iso) return "–";
+  var p = iso.split("-");
+  if(p.length !== 3) return iso;
+  return p[2] + "." + p[1] + "." + p[0];
+}
+function daysAgo(ts){
+  return Math.floor((Date.now() - ts) / (24*60*60*1000));
+}
+function initials(name){
+  var words = name.replace(/[.,()]/g,"").split(/\s+/).filter(function(w){
+    return w && !/^(LLC|LP|Inc|Co|plc|&|The|L\.P\.|LLC\.)$/i.test(w);
+  });
+  return (words[0]||"").slice(0,1).toUpperCase() + (words[1]||"").slice(0,1).toUpperCase();
+}
+
+/* ---------- Cache ---------- */
+
+function cacheKey(cik){ return CACHE_PREFIX + cik; }
+
+function loadCache(cik){
+  try{
+    var raw = localStorage.getItem(cacheKey(cik));
+    if(!raw) return null;
+    var obj = JSON.parse(raw);
+    return obj;
+  }catch(e){ return null; }
+}
+function saveCache(cik, obj){
+  try{ localStorage.setItem(cacheKey(cik), JSON.stringify(obj)); }catch(e){ /* Storage voll o.ä. — still fine im Speicher */ }
+}
+function isFresh(obj){
+  return !!obj && !obj.error && (Date.now() - obj.ts) < CACHE_TTL_MS;
+}
+
+/* ---------- Netzwerk: direkt, mit CORS-Proxy-Fallback ---------- */
+
+function corsProxied(url){
+  return "https://corsproxy.io/?url=" + encodeURIComponent(url);
+}
+
+function smartFetchText(url){
+  return fetch(url, {headers:{"Accept":"application/json, text/plain, */*"}}).then(function(r){
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    return r.text();
+  }).catch(function(){
+    return fetch(corsProxied(url)).then(function(r){
+      if(!r.ok) throw new Error("Proxy HTTP " + r.status);
+      return r.text();
+    });
+  });
+}
+
+/* ---------- SEC EDGAR: Filing-Suche ---------- */
+
+function submissionsUrl(cik){
+  return "https://data.sec.gov/submissions/CIK" + cik + ".json";
+}
+function archiveIndexUrl(cikInt, accNoDashes){
+  return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/index.json";
+}
+function archiveFileUrl(cikInt, accNoDashes, filename){
+  return "https://www.sec.gov/Archives/edgar/data/" + cikInt + "/" + accNoDashes + "/" + filename;
+}
+
+function findLatest13F(filingsRecent){
+  var forms = filingsRecent.form || [];
+  var accs = filingsRecent.accessionNumber || [];
+  var filed = filingsRecent.filingDate || [];
+  var report = filingsRecent.reportDate || [];
+  var best = null;
+  for(var i = 0; i < forms.length; i++){
+    var f = forms[i];
+    if(f === "13F-HR" || f === "13F-HR/A"){
+      if(!best || filed[i] > best.filedDate){
+        best = {form: f, accession: accs[i], filedDate: filed[i], reportDate: report[i]};
+      }
+    }
+  }
+  return best;
+}
+
+function accNoDashes(acc){ return acc.replace(/-/g, ""); }
+
+/* ---------- XML-Parsing (infoTable) ---------- */
+
+function tagText(el, name){
+  var n = el.getElementsByTagNameNS("*", name)[0];
+  return n ? (n.textContent || "").trim() : "";
+}
+
+// Exportiert für Offline-Tests (Node/jsdom) unter window.HF_TEST
+function parseInfoTableXml(xmlText){
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(xmlText, "application/xml");
+  var perr = doc.getElementsByTagName("parsererror");
+  if(perr && perr.length) throw new Error("XML konnte nicht geparst werden");
+
+  var nodes = doc.getElementsByTagNameNS("*", "infoTable");
+  var holdings = [];
+  for(var i = 0; i < nodes.length; i++){
+    var el = nodes[i];
+    var issuer = tagText(el, "nameOfIssuer");
+    var cls = tagText(el, "titleOfClass");
+    var cusip = tagText(el, "cusip");
+    var valueThousands = parseFloat(tagText(el, "value")) || 0;
+    var sharesEl = el.getElementsByTagNameNS("*", "shrsOrPrnAmt")[0];
+    var shares = 0, shareType = "";
+    if(sharesEl){
+      shares = parseFloat(tagText(sharesEl, "sshPrnamt")) || 0;
+      shareType = tagText(sharesEl, "sshPrnamtType");
+    }
+    if(!issuer) continue;
+    holdings.push({
+      issuer: issuer,
+      cls: cls,
+      cusip: cusip,
+      valueUSD: valueThousands * 1000,
+      shares: shares,
+      shareType: shareType
+    });
+  }
+  return holdings;
+}
+
+/* ---------- Fund laden ---------- */
+
+function loadFund(cik, force){
+  if(!force){
+    var cached = loadCache(cik);
+    if(isFresh(cached)){
+      S.data[cik] = cached;
+      return Promise.resolve(cached);
+    }
+  }
+  S.loading[cik] = true;
+  renderList();
+  if(S.openCik === cik) renderDetail();
+
+  var cikInt = String(parseInt(cik, 10));
+
+  return smartFetchText(submissionsUrl(cik))
+    .then(function(txt){
+      var sub = JSON.parse(txt);
+      var latest = findLatest13F(sub.filings && sub.filings.recent || {});
+      if(!latest){
+        throw new Error("Kein 13F-HR Filing in den aktuellen Einreichungen gefunden.");
+      }
+      var accDashes = accNoDashes(latest.accession);
+      return smartFetchText(archiveIndexUrl(cikInt, accDashes)).then(function(idxTxt){
+        var idx = JSON.parse(idxTxt);
+        var items = (idx.directory && idx.directory.item) || [];
+        var xmlCandidates = items
+          .map(function(it){ return it.name; })
+          .filter(function(n){ return /\.xml$/i.test(n) && n.toLowerCase() !== "primary_doc.xml"; });
+        if(!xmlCandidates.length){
+          // Fallback: manche kleinen Filer bündeln alles in primary_doc.xml
+          xmlCandidates = items.map(function(it){ return it.name; }).filter(function(n){ return /\.xml$/i.test(n); });
+        }
+        if(!xmlCandidates.length) throw new Error("Keine Info-Table-XML im Filing gefunden.");
+
+        function tryNext(idx2){
+          if(idx2 >= xmlCandidates.length) throw new Error("Info-Table-XML konnte nicht geparst werden.");
+          var fname = xmlCandidates[idx2];
+          return smartFetchText(archiveFileUrl(cikInt, accDashes, fname)).then(function(xmlTxt){
+            var holdings;
+            try{ holdings = parseInfoTableXml(xmlTxt); }catch(e){ holdings = []; }
+            if(holdings.length) return holdings;
+            return tryNext(idx2 + 1);
+          });
+        }
+
+        return tryNext(0).then(function(holdings){
+          holdings.sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+          var totalValueUSD = holdings.reduce(function(s,h){ return s + h.valueUSD; }, 0);
+          var positionCount = holdings.length;
+          var top = holdings.slice(0, TOP_N_STORE).map(function(h){
+            return {
+              issuer: h.issuer, cls: h.cls, cusip: h.cusip,
+              valueUSD: h.valueUSD, shares: h.shares, shareType: h.shareType,
+              weightPct: totalValueUSD ? (h.valueUSD / totalValueUSD * 100) : 0
+            };
+          });
+          var record = {
+            ts: Date.now(),
+            cik: cik,
+            name: (sub.name || sub.entityName || null),
+            reportDate: latest.reportDate,
+            filedDate: latest.filedDate,
+            accession: latest.accession,
+            totalValueUSD: totalValueUSD,
+            positionCount: positionCount,
+            holdings: top,
+            error: null
+          };
+          S.data[cik] = record;
+          saveCache(cik, record);
+          return record;
+        });
+      });
+    })
+    .catch(function(err){
+      var record = {
+        ts: Date.now(),
+        cik: cik,
+        error: (err && err.message) || "Unbekannter Fehler beim Laden."
+      };
+      S.data[cik] = record;
+      // Fehler nicht dauerhaft cachen — soll bei nächstem Öffnen erneut versucht werden
+      return record;
+    })
+    .then(function(record){
+      S.loading[cik] = false;
+      renderList();
+      if(S.openCik === cik) renderDetail();
+      return record;
+    });
+}
+
+function ensureFund(cik){
+  if(S.data[cik]) return Promise.resolve(S.data[cik]);
+  var cached = loadCache(cik);
+  if(cached){ S.data[cik] = cached; renderList(); return Promise.resolve(cached); }
+  return loadFund(cik, false);
+}
+
+/* ---------- Rendering: Liste ---------- */
+
+function getFilteredSorted(){
+  var q = (($("#hf-search-input") && $("#hf-search-input").value) || "").toLowerCase().trim();
+  var list = FUNDS.filter(function(f){
+    return !q || f.name.toLowerCase().indexOf(q) !== -1;
+  });
+  list = list.map(function(f){
+    var d = S.data[f.cik] || loadCache(f.cik);
+    return {meta: f, data: d};
+  });
+  if(S.sort === "value"){
+    list.sort(function(a,b){
+      var av = (a.data && a.data.totalValueUSD) || -1;
+      var bv = (b.data && b.data.totalValueUSD) || -1;
+      return bv - av;
+    });
+  } else {
+    list.sort(function(a,b){ return a.meta.name.localeCompare(b.meta.name); });
+  }
+  return list;
+}
+
+function renderRow(item){
+  var f = item.meta, d = item.data;
+  var loading = !!S.loading[f.cik];
+  var name = (d && d.name) || f.name;
+  var statusClass = "none";
+  var metaBits = ['<span class="mono">CIK ' + f.cik + '</span>'];
+
+  if(loading){
+    statusClass = "stale";
+    metaBits.push("wird geladen…");
+  } else if(d && d.error){
+    statusClass = "err";
+    metaBits.push("Fehler beim Laden");
+  } else if(d && d.reportDate){
+    statusClass = isFresh(d) ? "fresh" : "stale";
+    metaBits.push("Stichtag " + fmtDate(d.reportDate));
+    metaBits.push(daysAgo(d.ts) === 0 ? "heute aktualisiert" : "vor " + daysAgo(d.ts) + " Tg. aktualisiert");
+  } else {
+    metaBits.push("noch nicht geladen");
+  }
+
+  var right = "";
+  if(loading){
+    right = '<div class="hf-row-value" style="color:#ccc">…</div>';
+  } else if(d && d.error){
+    right = '<div class="hf-row-value" style="color:#e00;font-size:12px">Fehler</div>';
+  } else if(d && d.totalValueUSD != null){
+    right = '<div class="hf-row-value">' + fmtUSD(d.totalValueUSD) + '</div><div class="hf-row-count">' + d.positionCount.toLocaleString("de-DE") + ' Positionen</div>';
+  } else {
+    right = '<div class="hf-row-value" style="color:#ccc">–</div>';
+  }
+
+  return '' +
+    '<div class="hf-row" onclick="HF.openDetail(\'' + f.cik + '\')">' +
+      '<div class="hf-ic">' + esc(initials(f.name)) + '</div>' +
+      '<div class="hf-row-main">' +
+        '<div class="hf-row-name">' + esc(name) + '</div>' +
+        '<div class="hf-row-meta"><span class="hf-status-dot ' + statusClass + '"></span>' + metaBits.join(" · ") + '</div>' +
+      '</div>' +
+      '<div class="hf-row-right">' + right + '</div>' +
+      '<div class="hf-chevron">›</div>' +
+    '</div>';
+}
+
+function renderList(){
+  var list = getFilteredSorted();
+  if(!list.length){
+    set("#hf-list", '<div class="hf-empty">Keine Fonds gefunden.</div>');
+    return;
+  }
+  set("#hf-list", list.map(renderRow).join(""));
+  $("#hf-sort-value").classList.toggle("on", S.sort === "value");
+  $("#hf-sort-name").classList.toggle("on", S.sort === "name");
+  var allLoading = FUNDS.some(function(f){ return S.loading[f.cik]; });
+  var btn = $("#hf-refresh-all");
+  if(btn){
+    btn.disabled = allLoading;
+    btn.innerHTML = allLoading ? "↻ Aktualisiere…" : "↻ Alle aktualisieren";
+  }
+}
+
+function setSort(mode){
+  S.sort = mode;
+  renderList();
+}
+
+function refreshAll(){
+  if(S.refreshingAll) return;
+  S.refreshingAll = true;
+  var chain = Promise.resolve();
+  FUNDS.forEach(function(f, i){
+    chain = chain.then(function(){
+      return loadFund(f.cik, true).then(function(){
+        return new Promise(function(res){ setTimeout(res, 150); }); // freundlich zur SEC-API
+      });
+    });
+  });
+  chain.then(function(){ S.refreshingAll = false; renderList(); });
+}
+
+/* ---------- Rendering: Detail ---------- */
+
+function openDetail(cik){
+  S.openCik = cik;
+  S.showAll = false;
+  $("#hf-detail").classList.add("open");
+  document.body.style.overflow = "hidden";
+  renderDetail();
+  ensureFund(cik);
+}
+function closeDetail(){
+  S.openCik = null;
+  $("#hf-detail").classList.remove("open");
+  document.body.style.overflow = "";
+  renderList();
+}
+function refreshCurrent(){
+  if(!S.openCik) return;
+  loadFund(S.openCik, true);
+}
+function showAllHoldings(){
+  S.showAll = true;
+  renderDetail();
+}
+
+function renderDetail(){
+  var cik = S.openCik;
+  if(!cik) return;
+  var meta = FUNDS.filter(function(f){ return f.cik === cik; })[0];
+  var d = S.data[cik] || loadCache(cik);
+  var loading = !!S.loading[cik];
+
+  set("#hf-d-name", esc((d && d.name) || (meta && meta.name) || "–"));
+  set("#hf-d-cik", "CIK " + cik);
+  var rbtn = $("#hf-d-refresh");
+  if(rbtn) rbtn.disabled = loading;
+
+  if(loading && (!d || d.error)){
+    set("#hf-d-body", '<div class="dstate"><div class="spinner"></div><b>13F-Filing wird geladen…</b>Bei sehr großen Fonds (mehrere tausend Positionen) kann das ein paar Sekunden dauern.</div>');
+    return;
+  }
+
+  if(!d){
+    set("#hf-d-body", '<div class="dstate"><b>Noch keine Daten</b>Lade das aktuelle 13F-HR-Filing von der SEC.</div>');
+    return;
+  }
+
+  if(d.error){
+    set("#hf-d-body",
+      '<div class="dstate dstate-err"><b>Laden fehlgeschlagen</b>' + esc(d.error) +
+      '<br><button class="retry-btn" onclick="HF.refreshCurrent()">Erneut versuchen</button></div>'
+    );
+    return;
+  }
+
+  var holdings = d.holdings || [];
+  var visible = S.showAll ? holdings : holdings.slice(0, INITIAL_SHOW);
+
+  var rows = visible.map(function(h, i){
+    return '' +
+      '<div class="hrow">' +
+        '<div class="hrank">' + (i+1) + '</div>' +
+        '<div class="hname">' +
+          '<div class="hname-main">' + esc(h.issuer) + '</div>' +
+          '<div class="hname-sub mono">' + esc(h.cusip || "–") + (h.cls ? " · " + esc(h.cls) : "") + '</div>' +
+        '</div>' +
+        '<div class="hval">' + fmtUSD(h.valueUSD) + '</div>' +
+        '<div class="hpct">' + fmtPct(h.weightPct) + '</div>' +
+      '</div>';
+  }).join("");
+
+  var moreBtn = (!S.showAll && holdings.length > INITIAL_SHOW)
+    ? '<button class="hf-more" onclick="HF.showAllHoldings()">Alle ' + holdings.length.toLocaleString("de-DE") + ' Positionen anzeigen</button>'
+    : "";
+
+  var html = '' +
+    '<div class="dstats">' +
+      '<div class="dstat"><div class="dstat-label">13F-Portfoliowert</div><div class="dstat-value">' + fmtUSD(d.totalValueUSD) + '</div></div>' +
+      '<div class="dstat"><div class="dstat-label">Positionen</div><div class="dstat-value">' + d.positionCount.toLocaleString("de-DE") + '</div></div>' +
+      '<div class="dstat"><div class="dstat-label">Berichtsstichtag</div><div class="dstat-value">' + fmtDate(d.reportDate) + '</div></div>' +
+      '<div class="dstat"><div class="dstat-label">Eingereicht am</div><div class="dstat-value">' + fmtDate(d.filedDate) + '</div></div>' +
+    '</div>' +
+    '<div class="dsection-head"><div class="dsection-title">Top-Holdings</div><div class="dsection-note">' + (isFresh(d) ? "aktuell (Cache " + daysAgo(d.ts) + "/28 Tg.)" : "Cache abgelaufen") + '</div></div>' +
+    '<div class="htable">' +
+      '<div class="hth"><div>#</div><div>Unternehmen</div><div style="text-align:right">Wert</div><div style="text-align:right">Anteil</div></div>' +
+      rows +
+    '</div>' +
+    moreBtn +
+    '<div class="dfoot-note">Quelle: SEC EDGAR, Formular 13F-HR (Accession ' + esc(d.accession) + '). Werte laut Meldevorschrift in Tsd. USD, hier hochgerechnet. Zeigt nur meldepflichtige US-Long-Positionen — keine Shorts, Optionen, Anleihen oder Nicht-US-Bestände. <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + esc(cik) + '&type=13F-HR" target="_blank" rel="noopener">Original-Filing auf SEC.gov ansehen →</a></div>';
+
+  set("#hf-d-body", html);
+}
+
+/* ---------- Init ---------- */
+
+function init(){
+  renderList();
+  // Aus dem Cache bereits bekannte Fonds sofort in den State laden (kein Netzwerk nötig)
+  FUNDS.forEach(function(f){
+    var c = loadCache(f.cik);
+    if(c) S.data[f.cik] = c;
+  });
+  renderList();
+}
+
+window.HF = {
+  setSort: setSort,
+  refreshAll: refreshAll,
+  openDetail: openDetail,
+  closeDetail: closeDetail,
+  refreshCurrent: refreshCurrent,
+  showAllHoldings: showAllHoldings,
+  renderList: renderList
+};
+// Für Offline-/Node-Tests der Parsing-Logik
+window.HF_TEST = { parseInfoTableXml: parseInfoTableXml, findLatest13F: findLatest13F, fmtUSD: fmtUSD };
+
+document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>

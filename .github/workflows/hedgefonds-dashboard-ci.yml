@@ -1,0 +1,43 @@
+name: Hedgefonds Dashboard CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hedgefonds/**"
+      - ".github/workflows/hedgefonds-dashboard-ci.yml"
+  pull_request:
+    paths:
+      - "hedgefonds/**"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          import sys
+
+          path = "hedgefonds/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q "VISION UNIVERSE" hedgefonds/index.html
+          grep -q "var FUNDS" hedgefonds/index.html
+          grep -q "data.sec.gov" hedgefonds/index.html
+          echo "Markers OK"
