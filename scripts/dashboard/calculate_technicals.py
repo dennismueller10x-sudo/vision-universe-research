@@ -35,6 +35,21 @@ def ema(closes, period):
         value = (close - value) * multiplier + value
     return value
 
+def macd(closes, fast=12, slow=26, signal=9):
+    if len(closes) < slow + signal:
+        return None
+    def ema_series(values, period):
+        multiplier = 2 / (period + 1)
+        series, value = [], values[0]
+        for index, close in enumerate(values):
+            value = close if index == 0 else (close - value) * multiplier + value
+            series.append(value)
+        return series
+    fast_series, slow_series = ema_series(closes, fast), ema_series(closes, slow)
+    macd_series = [f - s for f, s in zip(fast_series, slow_series)]
+    signal_series = ema_series(macd_series, signal)
+    return {"macd": macd_series[-1], "signal": signal_series[-1], "histogram": macd_series[-1] - signal_series[-1]}
+
 def rsi(closes, period=14):
     if len(closes) <= period:
         return None
@@ -95,7 +110,7 @@ def technicals(candles):
     ])
     return {
         "last_date": candles[-1]["date"], "close": current, "ema20": ema(closes, 20), "ema50": ema(closes, 50), "ema200": ema(closes, 200),
-        "sma50": sma50, "sma150": sma150, "sma200": sma200, "rsi14": rsi(closes),
+        "sma50": sma50, "sma150": sma150, "sma200": sma200, "rsi14": rsi(closes), "macd": macd(closes),
         "high_52w": high52, "low_52w": low52, "bollinger20": bollinger(closes),
         "performance_pct": {"1m": performance(closes,21),"3m":performance(closes,63),"6m":performance(closes,126),"12m":performance(closes,252)},
         "annualized_volatility_pct": volatility(closes), "max_drawdown_12m_pct": max_drawdown(closes),

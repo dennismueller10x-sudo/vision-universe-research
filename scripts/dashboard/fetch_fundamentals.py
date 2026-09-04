@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "dashboard" / "data" / "fundamental_metrics.json"
 BASE_URL = "https://api.twelvedata.com/statistics"
 REQUEST_PAUSE_SECONDS = 8
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # One /statistics call costs 1 API credit and returns all of these groups at once,
 # so the curated set below adds no extra credit cost over just fetching pe_ratio/ps_ratio.
@@ -131,9 +131,11 @@ def main():
     generated_at = datetime.now(timezone.utc).isoformat()
     for index, symbol in enumerate(symbols):
         print(f"Fetching {symbol} ({index + 1}/{len(symbols)})...", file=sys.stderr)
+        legacy = (result["symbols"].get(symbol) or {}).get("legacy")
         metrics = fetch_symbol(symbol, args.api_key)
         metrics["data_as_of"] = generated_at
         metrics["source"] = "twelvedata_statistics"
+        metrics["legacy"] = legacy
         result["symbols"][symbol] = metrics
         if index < len(symbols) - 1:
             time.sleep(REQUEST_PAUSE_SECONDS)
