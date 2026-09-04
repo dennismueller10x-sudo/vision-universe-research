@@ -2,7 +2,7 @@
   const app = document.querySelector('#app');
   const esc = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const date = (value) => new Date(value).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-  const fallback = (item) => item.market && /DAX/.test(item.market) ? '/dashboard/assets/news-dax.png' : item.market && /Russell|SDAX|MDAX/.test(item.market) ? '/dashboard/assets/news-small-caps.png' : '/dashboard/assets/news-us-tech.png';
+  const fallback = (item) => item.market && /DAX/.test(item.market) ? '/dashboard/assets/news-dax.jpg' : item.market && /Russell|SDAX|MDAX/.test(item.market) ? '/dashboard/assets/news-small-caps.jpg' : '/dashboard/assets/news-us-tech.jpg';
   try {
     const response = await fetch('/dashboard/data/news_feed.json', { cache: 'no-store' });
     if (!response.ok) throw new Error('Feed nicht erreichbar');

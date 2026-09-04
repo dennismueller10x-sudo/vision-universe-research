@@ -29,7 +29,7 @@ async function secItems() {
     if (!found) return [];
     const [company, [symbol, market]] = found;
     const published = Date.parse(tag(entry, 'updated')) || Date.now();
-    return [{ id: `sec-${symbol}-${published}`, symbol, company: clean(company.replace(/ INC$| CORP$/, '')), market, category: 'Pflichtmeldung', title: `${symbol}: Neue 8-K-Unternehmensmeldung`, summary: `${symbol} hat bei der US-Börsenaufsicht eine potenziell kursrelevante Unternehmensmeldung eingereicht. Alle Details stehen in der verlinkten Originalmeldung.`, source: 'SEC EDGAR', source_url: entry.match(/<link[^>]+href="([^"]+)"/)?.[1] || 'https://www.sec.gov/edgar/search/', image_url: '/dashboard/assets/news-us-tech.png', published_at: new Date(published).toISOString(), relevance: 92 }];
+    return [{ id: `sec-${symbol}-${published}`, symbol, company: clean(company.replace(/ INC$| CORP$/, '')), market, category: 'Pflichtmeldung', title: `${symbol}: Neue 8-K-Unternehmensmeldung`, summary: `${symbol} hat bei der US-Börsenaufsicht eine potenziell kursrelevante Unternehmensmeldung eingereicht. Alle Details stehen in der verlinkten Originalmeldung.`, source: 'SEC EDGAR', source_url: entry.match(/<link[^>]+href="([^"]+)"/)?.[1] || 'https://www.sec.gov/edgar/search/', image_url: '/dashboard/assets/news-us-tech.jpg', published_at: new Date(published).toISOString(), relevance: 92 }];
   });
 }
 
@@ -39,7 +39,7 @@ async function frankfurtItems() {
     const title = tag(item, 'title'); const summary = tag(item, 'description'); const haystack = `${title} ${summary}`.toUpperCase();
     const found = Object.entries(de).find(([company]) => containsName(haystack, company));
     const [company, [symbol, market]] = found || ['Marktbericht', [null, 'Markt & Makro']]; const published = Date.parse(tag(item, 'pubDate')) || Date.now();
-    return [{ id: `bf-${symbol || 'markt'}-${published}`, symbol, company, market, category: found ? 'Deutscher Markt' : 'Marktbericht', title, summary: summary.slice(0, 420), source: 'Börse Frankfurt', source_url: tag(item, 'link'), image_url: item.match(/<enclosure[^>]+url="([^"]+)"/)?.[1] || '/dashboard/assets/news-dax.png', published_at: new Date(published).toISOString(), relevance: /PROGNOSE|ZAHLEN|GEWINN|AUFTRAG|ÜBERNAHME|KAUF|VERKAUF/i.test(haystack) ? 88 : found ? 74 : 62 }];
+    return [{ id: `bf-${symbol || 'markt'}-${published}`, symbol, company, market, category: found ? 'Deutscher Markt' : 'Marktbericht', title, summary: summary.slice(0, 420), source: 'Börse Frankfurt', source_url: tag(item, 'link'), image_url: item.match(/<enclosure[^>]+url="([^"]+)"/)?.[1] || '/dashboard/assets/news-dax.jpg', published_at: new Date(published).toISOString(), relevance: /PROGNOSE|ZAHLEN|GEWINN|AUFTRAG|ÜBERNAHME|KAUF|VERKAUF/i.test(haystack) ? 88 : found ? 74 : 62 }];
   });
 }
 
