@@ -277,7 +277,7 @@ BULK_COLUMNS = {
     "filing_date": ["FILING_DATE", "FILINGDATE"],
     "report_period": ["PERIODOFREPORT", "PERIOD_OF_REPORT"],
     "submission_type": ["SUBMISSIONTYPE", "SUBMISSION_TYPE"],
-    "filer_name": ["FILINGMANAGER_NAME", "FILINGMANAGERNAME", "NAME"],
+    "filer_name": ["FILINGMANAGER_NAME", "FILINGMANAGERNAME", "FILING_MANAGER_NAME", "NAME"],
     "name_of_issuer": ["NAMEOFISSUER", "NAME_OF_ISSUER"],
     "cusip": ["CUSIP"],
     "value": ["VALUE"],
@@ -302,6 +302,52 @@ def open_tsv_from_zip(zf, filename):
     return io.TextIOWrapper(zf.open(real_name), encoding="utf-8", errors="replace")
 
 
+_BULK_DATE_FORMATS = ["%Y-%m-%d", "%d-%b-%Y", "%Y%m%d", "%m/%d/%Y"]
+
+
+def normalize_bulk_date(raw):
+    """Normalisiert ein Datum aus den Bulk-TSVs auf ISO 'YYYY-MM-DD'. Das
+    Format ist real als '31-MAR-2026' (Tag-Monatskürzel-Jahr) beobachtet
+    worden — abweichend vom ISO-Format der data.sec.gov-JSON-API, die für
+    die kuratierten Fonds verwendet wird. Mehrere Formate werden versucht,
+    damit ein Client (der ISO 'YYYY-MM-DD' erwartet) nicht an einem
+    unerwarteten Format zerbricht; liefert bei Fehlschlag den Rohwert
+    unverändert zurück (besser sichtbar falsch als ein Absturz)."""
+    raw = (raw or "").strip()
+    if not raw:
+        return raw
+    for fmt in _BULK_DATE_FORMATS:
+        try:
+            return datetime.strptime(raw, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    return raw
+
+
+def parse_coverpage_names(zf):
+    """Liefert dict ACCESSION_NUMBER -> Name des Filing-Managers aus
+    COVERPAGE.tsv. SUBMISSION.tsv selbst enthält bei den bislang beobachteten
+    Bulk-Datensätzen keine verwertbare Namensspalte (COVERPAGE.tsv trägt den
+    Namen); optionaler, best-effort Zusatzschritt — liefert {} statt zu
+    werfen, wenn die Datei/Spalten fehlen."""
+    cp_f = open_tsv_from_zip(zf, "COVERPAGE.tsv")
+    if not cp_f:
+        return {}
+    reader = csv.DictReader(cp_f, delimiter="\t")
+    fn = reader.fieldnames or []
+    col_acc = find_column(fn, BULK_COLUMNS["accession"])
+    col_name = find_column(fn, BULK_COLUMNS["filer_name"])
+    if not col_acc or not col_name:
+        return {}
+    result = {}
+    for row in reader:
+        acc = (row.get(col_acc) or "").strip()
+        name = (row.get(col_name) or "").strip()
+        if acc and name:
+            result[acc] = name
+    return result
+
+
 def parse_bulk_quarter(zf):
     """Liefert dict cik10 -> {name, accession, filingDate, reportDate, holdings:[...]}
     für alle 13F-HR/-A-Filer eines Quartals aus dem offiziellen SEC-Bulk-Datensatz."""
@@ -309,6 +355,7 @@ def parse_bulk_quarter(zf):
     info_f = open_tsv_from_zip(zf, "INFOTABLE.tsv")
     if not sub_f or not info_f:
         raise RuntimeError(f"SUBMISSION.tsv/INFOTABLE.tsv nicht im ZIP gefunden (vorhanden: {zf.namelist()})")
+    coverpage_names = parse_coverpage_names(zf)
 
     sub_reader = csv.DictReader(sub_f, delimiter="\t")
     fn = sub_reader.fieldnames or []
@@ -331,9 +378,12 @@ def parse_bulk_quarter(zf):
         cik_raw = (row.get(col_cik) or "").strip().lstrip("0")
         cik10 = (cik_raw or "0").zfill(10)
         acc = (row.get(col_acc) or "").strip()
-        filed = (row.get(col_filed) or "").strip()
-        period = (row.get(col_period) or "").strip()
-        name = (row.get(col_filername) or "").strip() if col_filername else ""
+        # ISO-normalisieren VOR dem Stringvergleich unten — die real beobachtete
+        # Rohform ('31-MAR-2026') sortiert als String nicht chronologisch
+        # (z.B. '01-APR-2026' < '15-JAN-2026' alphabetisch, aber nicht zeitlich).
+        filed = normalize_bulk_date(row.get(col_filed))
+        period = normalize_bulk_date(row.get(col_period))
+        name = coverpage_names.get(acc) or ((row.get(col_filername) or "").strip() if col_filername else "")
         key = (cik10, period)
         if key not in by_period or filed > by_period[key]["filingDate"]:
             by_period[key] = {"cik": cik10, "accession": acc, "filingDate": filed, "reportDate": period, "name": name}
@@ -503,7 +553,8 @@ def fetch_bulk_expansion(curated_records, target_total):
         ]
 
         record = {
-            "cik": cik, "name": f["name"] or cik, "type": "Sonstige", "abbr": abbr_from_name(f["name"]),
+            "cik": cik, "name": f["name"] or f"Institutioneller Manager (CIK {cik})",
+            "type": "Sonstige", "abbr": abbr_from_name(f["name"]),
             "founder": None, "currentLead": None, "managerLabel": None,
             "photoUrl": None, "photoCredit": None, "photoSourceUrl": None,
             "reportDate": f["reportDate"], "filedDate": f["filingDate"], "accession": f["accession"],
