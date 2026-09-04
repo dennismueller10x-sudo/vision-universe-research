@@ -36,7 +36,7 @@ TOP_HOLDINGS_STORE = 150
 TOP_TRADES_STORE = 40
 REQUEST_DELAY = 0.3  # SEC allows ~10 req/sec; we stay far under that
 MAX_RETRIES = 3
-BULK_TOP_N = 100  # Ziel-Gesamtzahl an Fonds inkl. der kuratierten 8
+BULK_TOP_N = 100  # Ziel-Gesamtzahl an Fonds inkl. der kuratierten 9
 BULK_VALUE_TOLERANCE = 0.15  # Toleranz für die empirische Werte-Kalibrierung (siehe unten)
 
 
@@ -81,6 +81,11 @@ FUND_META = [
      "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:James_Simons_2007.jpg"},
     {"cik": "0001603466", "abbr": "PT72", "name": "Point72 Asset Management, L.P.", "type": "Long/Short",
      "founder": "Steven A. Cohen", "currentLead": None, "photoUrl": None},
+    {"cik": "0001067983", "abbr": "BRK", "name": "Berkshire Hathaway Inc", "type": "Value",
+     "founder": "Warren Buffett", "currentLead": "Greg Abel (CEO seit 1. Jan. 2026); Buffett bleibt Chairman",
+     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_(cropped).jpg",
+     "photoCredit": "US Department of Commerce / Wikimedia Commons, gemeinfrei (PD-USGov)",
+     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_(cropped).jpg"},
 ]
 
 
@@ -469,6 +474,45 @@ def abbr_from_name(name):
     return "".join(w[0] for w in words[:4]).upper() or (name or "")[:6].upper()
 
 
+# Grobe Klassifikation für Bulk-Fonds (die kuratierten Fonds sind alle fest
+# "Hedgefonds"): der SEC-Sammeldatensatz enthält JEDEN institutionellen
+# Manager >100M USD AUM, nicht nur Hedgefonds — u.a. Banken, Vermögensver-
+# walter und Marktmacher, die ihre eigenen/Kunden-Positionen melden. Der
+# Nutzer möchte alle behalten, aber im Frontend nach Kategorie filtern
+# können. Musterabgleich auf Basis bekannter Institutsnamen; alles
+# Unbekannte fällt auf "Sonstige" (kein Hedgefonds-Ausschluss).
+BULK_CATEGORY_PATTERNS = [
+    ("Bank & Broker", ["MORGAN STANLEY", "BANK OF AMERICA", "GOLDMAN SACHS", "UBS GROUP", "UBS AG",
+        "ROYAL BANK OF CANADA", "JPMORGAN", "JP MORGAN", "WELLS FARGO", "CITIGROUP",
+        "DEUTSCHE BANK", "CREDIT SUISSE", "HSBC", "BARCLAYS", "BANK OF NEW YORK MELLON",
+        "BNY MELLON", "NORTHERN TRUST", "CHARLES SCHWAB", "TORONTO-DOMINION",
+        "BANK OF MONTREAL", "SCOTIABANK", "NOMURA", "MIZUHO", "SUMITOMO MITSUI",
+        "MITSUBISHI UFJ", "SOCIETE GENERALE", "BNP PARIBAS", "STANDARD CHARTERED",
+        "RAYMOND JAMES", "STIFEL", "TRUIST", "U.S. BANCORP", "US BANCORP"]),
+    ("Marktmacher / Trading", ["SUSQUEHANNA", "JANE STREET", "CITADEL SECURITIES", "VIRTU FINANCIAL",
+        "IMC CHICAGO", "IMC-CHICAGO", "OPTIVER", "DRW HOLDINGS", "FLOW TRADERS",
+        "HUDSON RIVER TRADING", "JUMP TRADING", "TWO SIGMA SECURITIES", "WOLVERINE TRADING"]),
+    ("Vermögensverwaltung", ["BLACKROCK", "VANGUARD", "STATE STREET", "GEODE CAPITAL", "FMR LLC",
+        "FIDELITY", "CAPITAL WORLD INVESTORS", "CAPITAL RESEARCH", "CAPITAL GROUP",
+        "WELLINGTON MANAGEMENT", "INVESCO", "T. ROWE PRICE", "T ROWE PRICE",
+        "FRANKLIN RESOURCES", "FRANKLIN TEMPLETON", "PIMCO", "DIMENSIONAL FUND",
+        "AMERICAN CENTURY", "LEGAL & GENERAL", "AMUNDI", "NORGES BANK",
+        "ALLIANZ", "ALLIANCEBERNSTEIN", "PRUDENTIAL", "PRINCIPAL FINANCIAL",
+        "NUVEEN", "JANUS HENDERSON", "NATIXIS", "MFS ", "PUTNAM INVESTMENT",
+        "COLUMBIA MANAGEMENT", "VICTORY CAPITAL", "ARTISAN PARTNERS",
+        "LORD ABBETT", "EATON VANCE", "NORTHERN TRUST INVESTMENTS", "SSGA", "BLACKSTONE"]),
+]
+
+
+def classify_bulk_fund(name):
+    n = (name or "").upper()
+    for category, patterns in BULK_CATEGORY_PATTERNS:
+        for p in patterns:
+            if p in n:
+                return category
+    return "Sonstige"
+
+
 def fetch_bulk_expansion(curated_records, target_total):
     if not curated_records:
         print("Bulk-Erweiterung übersprungen: keine kuratierten Fonds als Kalibrierungs-Basis.", file=sys.stderr)
@@ -552,9 +596,10 @@ def fetch_bulk_expansion(curated_records, target_total):
             for h in holdings[:TOP_HOLDINGS_STORE]
         ]
 
+        category = classify_bulk_fund(f["name"])
         record = {
             "cik": cik, "name": f["name"] or f"Institutioneller Manager (CIK {cik})",
-            "type": "Sonstige", "abbr": abbr_from_name(f["name"]),
+            "type": category, "category": category, "abbr": abbr_from_name(f["name"]),
             "founder": None, "currentLead": None, "managerLabel": None,
             "photoUrl": None, "photoCredit": None, "photoSourceUrl": None,
             "reportDate": f["reportDate"], "filedDate": f["filingDate"], "accession": f["accession"],
@@ -607,7 +652,7 @@ def fetch_fund(meta):
 
     record = {
         "cik": cik, "name": sub.get("name") or sub.get("entityName") or meta["name"],
-        "type": meta["type"], "abbr": meta["abbr"],
+        "type": meta["type"], "category": "Hedgefonds", "abbr": meta["abbr"],
         "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
         "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
         "photoCredit": meta.get("photoCredit"), "photoSourceUrl": meta.get("photoSourceUrl"),
@@ -646,7 +691,7 @@ def main():
         except Exception as exc:  # noqa: BLE001 - ein fehlgeschlagener Fonds soll die anderen nicht blockieren
             print(f"  Fehler: {exc}", file=sys.stderr)
             funds.append({
-                "cik": meta["cik"], "name": meta["name"], "type": meta["type"], "abbr": meta["abbr"],
+                "cik": meta["cik"], "name": meta["name"], "type": meta["type"], "category": "Hedgefonds", "abbr": meta["abbr"],
                 "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
                 "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
                 "photoCredit": meta.get("photoCredit"), "photoSourceUrl": meta.get("photoSourceUrl"),

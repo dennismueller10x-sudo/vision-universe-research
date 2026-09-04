@@ -9,6 +9,10 @@
   const esc = (v) => String(v == null ? '—' : v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = (v, d = 1) => v == null || !Number.isFinite(Number(v)) ? '—' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
   const norm = (v) => esc(String(v == null ? '—' : v).replace(/percent/gi, '%').replace(/ratio/gi, 'x'));
+  const fmtMoney = (v) => { const n = Number(v); if (v == null || !Number.isFinite(n)) return '—'; const abs = Math.abs(n); if (abs >= 1e12) return fmt(n / 1e12, 2) + ' Bio. USD'; if (abs >= 1e9) return fmt(n / 1e9, 2) + ' Mrd. USD'; if (abs >= 1e6) return fmt(n / 1e6, 1) + ' Mio. USD'; return fmt(n, 2) + ' USD'; };
+  const fmtRatio = (v) => v == null || !Number.isFinite(Number(v)) ? '—' : fmt(v, 2) + ' x';
+  const fmtPct = (v) => v == null || !Number.isFinite(Number(v)) ? '—' : fmt(v, 1) + ' %';
+  const pick = (tdValue, legacyValue, formatter) => (tdValue != null && Number.isFinite(Number(tdValue))) ? formatter(tdValue) : (legacyValue != null ? norm(legacyValue) : '—');
   const scoreClass = (v) => v < 50 ? 'score-red' : v < 70 ? 'score-yellow' : v < 80 ? 'score-lightgreen' : 'score-darkgreen';
   const picker = (stocks, symbol, target, id) => `<section class="picker"><input class="search" id="${id}" placeholder="Aktie oder Symbol suchen"><div class="stock-buttons">${stocks.map((s) => `<a class="stock-button ${s.symbol === symbol ? 'selected' : ''}" data-search="${esc((s.symbol + ' ' + s.name).toLowerCase())}" href="/dashboard/${target}/?symbol=${s.symbol}${target === 'charting' ? '&days=' + rangeDays + '&side=' + side : ''}"><b>${s.symbol}</b><span>${esc(s.name)}</span></a>`).join('')}</div></section>`;
   const bindSearch = (id) => { const input = document.getElementById(id); if (input) input.oninput = () => document.querySelectorAll('.stock-button,.watch-card').forEach((el) => { el.hidden = !el.dataset.search.includes(input.value.toLowerCase()); }); };
@@ -22,26 +26,52 @@
     if (view === 'research') {
       const [u, f, p, m, t] = await Promise.all([get('config/universe.json'), get('data/fundamental_scores.json'), get('data/research_profiles.json'), get('data/fundamental_metrics.json'), get('data/technical_scores.json')]);
       const stocks = u.stocks.filter((s) => s.active), stock = stocks.find((s) => s.symbol === selected) || stocks[0];
-      const s = f.symbols[stock.symbol], profile = p.symbols[stock.symbol], metric = m.symbols[stock.symbol], tech = t.symbols[stock.symbol], rationale = profile.score_rationale || {};
-      const reasons = {
+      const s = f.symbols[stock.symbol], profile = p.symbols[stock.symbol], metric = m.symbols[stock.symbol] || {}, tech = t.symbols[stock.symbol], legacy = metric.legacy || {}, rationale = (profile && profile.score_rationale) || {};
+      const reasons = !s ? {} : {
         Quality: rationale.Quality || `Geschäftsqualität, Margen, Kapitalrendite, Bilanz und Cashflow-Stabilität ergeben ${s.quality}/100.`,
         Growth: rationale.Growth || `Umsatz-, Ergebnis- und Cashflow-Dynamik sowie die verfügbare Guidance ergeben ${s.growth}/100.`,
         Value: rationale.Value || `Bewertungsmultiplikatoren und Free-Cashflow-Rendite ergeben ${s.value}/100.`,
         Risiko: rationale.Risiko || `Volatilität, Bewertung, Bilanz- und unternehmensspezifische Risiken ergeben ${s.risk}/100. Ein höherer Wert bedeutet höheres Risiko.`,
-        Momentum: `Relative Kursentwicklung und Trendstärke über 1/3/6/12 Monate ergeben ${Math.round(tech.momentum_score_beta)}/100.`,
-        Timing: `${tech.trend_template_tests_passed} von 8 regelbasierten Trendtests (Kurs vs. gleitende Durchschnitte, RSI, 52-Wochen-Abstand) sind erfüllt; daraus ergeben sich ${Math.round(tech.timing_score_beta)}/100.`
+        Momentum: tech ? `Relative Kursentwicklung und Trendstärke über 1/3/6/12 Monate ergeben ${Math.round(tech.momentum_score_beta)}/100.` : 'Noch keine technischen Daten vorhanden.',
+        Timing: tech ? `${tech.trend_template_tests_passed} von 8 regelbasierten Trendtests (Kurs vs. gleitende Durchschnitte, RSI, 52-Wochen-Abstand) sind erfüllt; daraus ergeben sich ${Math.round(tech.timing_score_beta)}/100.` : 'Noch keine technischen Daten vorhanden.'
       };
-      const scoreItems = [['Quality', s.quality], ['Growth', s.growth], ['Value', s.value], ['Risiko', s.risk], ['Momentum', tech.momentum_score_beta], ['Timing', tech.timing_score_beta]];
-      app.innerHTML = `<div class="kicker">Fundamentale Analyse</div><h1 class="heading">Research</h1>${picker(stocks, stock.symbol, 'research', 'researchSearch')}<section class="research-grid"><div class="orb-wrap"><span class="orb-label">Vision Universe Score</span><div class="orb ${scoreClass(s.fundamental_score_beta)}"><b>${s.fundamental_score_beta}</b><span>/100</span></div></div><div class="profile"><h2>${esc(profile.name)}</h2><p>${esc(profile.summary)}</p><ul>${(profile.highlights || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></section><h2 class="section-title">Score-Analyse</h2><section class="scores score-details">${scoreItems.map(([name, value]) => `<article class="score"><span>${name}</span><b class="${scoreClass(value)}-text">${Math.round(value)}</b><i class="${scoreClass(value)}" style="width:${Math.min(value, 100)}%"></i><p>${esc(reasons[name])}</p></article>`).join('')}</section><h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${[['Umsatzwachstum', metric.revenue_growth], ['KGV', metric.pe_ratio], ['KUV', metric.ps_ratio], ['FCF-Rendite', metric.fcf_yield], ['Bruttomarge', metric.gross_margin], ['Operative Marge', metric.operating_margin], ['ROIC', metric.roic]].map(([name, value]) => `<div class="metric"><span>${name}</span><b>${norm(value)}</b></div>`).join('')}</section><p class="data-note">Datenstand ${esc(m.data_as_of || s.data_as_of)}. ${esc(m.sources || '')} Nicht verfügbare Werte werden nicht geschätzt.</p>`;
+      const scoreItems = !s ? [] : [['Quality', s.quality], ['Growth', s.growth], ['Value', s.value], ['Risiko', s.risk]].concat(tech ? [['Momentum', tech.momentum_score_beta], ['Timing', tech.timing_score_beta]] : []);
+      const fcfYield = (metric.free_cash_flow_ttm != null && metric.market_capitalization) ? fmtPct(metric.free_cash_flow_ttm / metric.market_capitalization * 100) : (legacy.fcf_yield != null ? norm(legacy.fcf_yield) : '—');
+      const metricRows = [
+        ['Marktkapitalisierung', fmtMoney(metric.market_capitalization)],
+        ['Enterprise Value', fmtMoney(metric.enterprise_value)],
+        ['KGV (TTM)', pick(metric.pe_ratio_ttm, legacy.pe_ratio, fmtRatio)],
+        ['KGV (erwartet)', fmtRatio(metric.pe_ratio_forward)],
+        ['KUV', pick(metric.ps_ratio_ttm, legacy.ps_ratio, fmtRatio)],
+        ['EV/Sales', fmtRatio(metric.ev_to_revenue)],
+        ['EV/EBITDA', fmtRatio(metric.ev_to_ebitda)],
+        ['EV/FCF', fmtRatio(metric.ev_to_fcf)],
+        ['KBV', fmtRatio(metric.price_to_book)],
+        ['PEG', fmtRatio(metric.peg_ratio)],
+        ['Bruttomarge', pick(metric.gross_margin_pct, legacy.gross_margin, fmtPct)],
+        ['Operative Marge', pick(metric.operating_margin_pct, legacy.operating_margin, fmtPct)],
+        ['Nettomarge', fmtPct(metric.net_margin_pct)],
+        ['Eigenkapitalrendite', fmtPct(metric.return_on_equity_pct)],
+        ['ROIC', legacy.roic != null ? norm(legacy.roic) : '—'],
+        ['Umsatzwachstum YoY', pick(metric.revenue_growth_yoy_pct, legacy.revenue_growth, fmtPct)],
+        ['Gewinnwachstum YoY', fmtPct(metric.earnings_growth_yoy_pct)],
+        ['FCF-Rendite', fcfYield],
+        ['Verschuldungsgrad', fmtRatio(metric.debt_to_equity)],
+        ['Dividendenrendite', fmtPct(metric.dividend_yield_pct)],
+        ['Free Cashflow (TTM)', fmtMoney(metric.free_cash_flow_ttm)]
+      ];
+      app.innerHTML = `<div class="kicker">Fundamentale Analyse</div><h1 class="heading">Research</h1>${picker(stocks, stock.symbol, 'research', 'researchSearch')}<section class="research-grid">${s ? `<div class="orb-wrap"><span class="orb-label">Vision Universe Score</span><div class="orb ${scoreClass(s.fundamental_score_beta)}"><b>${s.fundamental_score_beta}</b><span>/100</span></div></div>` : `<div class="orb-wrap"><span class="orb-label">Vision Universe Score</span><div class="orb"><b>—</b><span>noch offen</span></div></div>`}<div class="profile"><h2>${esc(profile ? profile.name : stock.name)}</h2>${profile ? `<p>${esc(profile.summary)}</p><ul>${(profile.highlights || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : `<p>Noch kein Research-Profil hinterlegt.</p>`}</div></section>${scoreItems.length ? `<h2 class="section-title">Score-Analyse</h2><section class="scores score-details">${scoreItems.map(([name, value]) => `<article class="score"><span>${name}</span><b class="${scoreClass(value)}-text">${Math.round(value)}</b><i class="${scoreClass(value)}" style="width:${Math.min(value, 100)}%"></i><p>${esc(reasons[name])}</p></article>`).join('')}</section>` : ''}<h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${metricRows.map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><p class="data-note">Datenstand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : esc(m.legacy_data_as_of || (s && s.data_as_of) || 'unbekannt')} · Twelve-Data-Felder manuell angestoßen, übrige Kennzahlen recherchiert (${esc(m.legacy_sources || '—')}). Nicht verfügbare Werte werden nicht geschätzt.</p>`;
       bindSearch('researchSearch'); return;
     }
 
     if (view === 'charting') {
-      const [u, t, market] = await Promise.all([get('config/universe.json'), get('data/technical_scores.json'), get('data/market_data.json')]);
+      const [u, t, market, fundamentals] = await Promise.all([get('config/universe.json'), get('data/technical_scores.json'), get('data/market_data.json'), get('data/fundamental_metrics.json')]);
       const stocks = u.stocks.filter((s) => s.active), stock = stocks.find((s) => s.symbol === selected) || stocks[0], tech = t.symbols[stock.symbol];
       const all = market.symbols[stock.symbol] || [], allCloses = all.map((r) => Number(r.close)), allHighs = all.map((r) => Number(r.high)), allLows = all.map((r) => Number(r.low));
       const totalLen = all.length;
       if (totalLen < 22) throw new Error('Keine Kursdaten');
+      const fundMetric = (fundamentals.symbols && fundamentals.symbols[stock.symbol]) || {}, sharesOut = Number(fundMetric.shares_outstanding);
+      const hasMcap = Number.isFinite(sharesOut) && sharesOut > 0;
       const emaSeries = (values, n) => { const k = 2 / (n + 1); const out = new Array(values.length).fill(null); let v = null, count = 0; for (let i = 0; i < values.length; i++) { const val = values[i]; if (val == null) continue; v = v == null ? val : val * k + v * (1 - k); count++; out[i] = count >= n ? v : null; } return out; };
       const smaSeries = (values, n) => values.map((_, i) => { if (i < n - 1) return null; const slice = values.slice(i - n + 1, i + 1); return slice.some((v) => v == null) ? null : slice.reduce((a, b) => a + b, 0) / n; });
       const rsiSeries = (values, period) => { const out = new Array(values.length).fill(null); if (values.length <= period) return out; let gains = 0, losses = 0; for (let i = 1; i <= period; i++) { const d = values[i] - values[i - 1]; if (d >= 0) gains += d; else losses -= d; } let avgGain = gains / period, avgLoss = losses / period; out[period] = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss); for (let i = period + 1; i < values.length; i++) { const d = values[i] - values[i - 1]; avgGain = (avgGain * (period - 1) + Math.max(d, 0)) / period; avgLoss = (avgLoss * (period - 1) + Math.max(-d, 0)) / period; out[i] = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss); } return out; };
@@ -57,7 +87,7 @@
       const W = 1000, H = 610, L = 74, R = 96, T = 30, B = 70;
       const minSpan = 19, defaultStart = Math.max(0, totalLen - rangeDays), defaultEnd = totalLen - 1;
       let winStart = defaultStart, winEnd = defaultEnd, curSide = side;
-      const visible = { ema20: true, ema50: true, sma200: true, bollinger: false, zones: false, rsi: false, macd: false, stoch: false, volume: false };
+      const visible = { ema20: true, ema50: true, sma200: true, bollinger: false, zones: false, rsi: false, macd: false, stoch: false, volume: false, mcap: false };
       const fmt2 = (v) => fmt(v, 2);
       const dateLabel = (s, e) => { const from = new Date(all[s].date + 'T00:00:00'), to = new Date(all[e].date + 'T00:00:00'); const fmtOpt = (e - s) <= 45 ? { day: '2-digit', month: 'short', year: '2-digit' } : { month: 'short', year: '2-digit' }; return `${from.toLocaleDateString('de-DE', fmtOpt)} – ${to.toLocaleDateString('de-DE', fmtOpt)}`; };
 
@@ -79,6 +109,13 @@
         const yTicks = Array.from({ length: 5 }, (_, i) => lo - pad + i * (hi - lo + 2 * pad) / 4), xIdx = [0, .25, .5, .75, 1].map((v) => Math.round(v * (rows.length - 1)));
         const dateFmt = rows.length <= 45 ? { day: '2-digit', month: 'short' } : { month: 'short', year: '2-digit' };
         const grid = yTicks.map((v) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis-label" x="${W - R + 10}" y="${y(v) + 4}">${fmt2(v)} USD</text>`).join('') + xIdx.map((i) => `<line class="grid" x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H - B}"/><text class="axis-label x-label" x="${x(i)}" y="${H - 28}">${new Date(rows[i].date + 'T00:00:00').toLocaleDateString('de-DE', dateFmt)}</text>`).join('');
+        let mcapPath = '', mcapAxis = '';
+        if (visible.mcap && hasMcap) {
+          const mcapVals = closes.map((c) => c * sharesOut), lo2 = Math.min(...mcapVals), hi2 = Math.max(...mcapVals), pad2 = (hi2 - lo2) * .08 || 1;
+          const y2 = (v) => T + (hi2 + pad2 - v) * (H - T - B) / (hi2 - lo2 + 2 * pad2);
+          mcapPath = mcapVals.map((v, i) => v == null ? '' : `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y2(v).toFixed(1)}`).join(' ');
+          mcapAxis = Array.from({ length: 5 }, (_, i) => lo2 - pad2 + i * (hi2 - lo2 + 2 * pad2) / 4).map((v) => `<text class="axis-label" text-anchor="end" x="${L - 10}" y="${y2(v) + 4}">${fmtMoney(v).replace(' USD', '')}</text>`).join('');
+        }
         const pivots = [];
         for (let i = 3; i < closes.length - 3; i++) { const nearby = closes.slice(i - 3, i).concat(closes.slice(i + 1, i + 4)); if (closes[i] > Math.max(...nearby) || closes[i] < Math.min(...nearby)) pivots.push(i); }
         const waves = pivots.slice(-6), wavePoints = waves.map((i) => `${x(i)},${y(closes[i])}`).join(' ');
@@ -113,22 +150,26 @@
         const volAvg = volumes.length ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0;
         const volFmt = (v) => v >= 1e9 ? (v / 1e9).toFixed(1) + ' Mrd.' : v >= 1e6 ? (v / 1e6).toFixed(1) + ' Mio.' : Math.round(v).toLocaleString('de-DE');
         const volSvg = `<svg class="volume-panel" viewBox="0 0 ${W} ${VH}">${volBars}<line class="vol-avg" x1="${L}" x2="${W - R}" y1="${vy(volAvg).toFixed(1)}" y2="${vy(volAvg).toFixed(1)}"/><text class="vol-axis" x="${W - R + 8}" y="${VT + 4}">${volFmt(volMax)}</text><text class="vol-axis" x="${W - R + 8}" y="${VH - VB + 4}">0</text></svg>`;
-        return { grid, path, x, y, closes, e20, e50, s200, upper, lower, waves, wavePoints, zonesHtml, zonesInfo, rsiSvg, stochSvg, macdSvg, volSvg, dateRange: dateLabel(s, e) };
+        return { grid, path, x, y, closes, e20, e50, s200, upper, lower, waves, wavePoints, zonesHtml, zonesInfo, rsiSvg, stochSvg, macdSvg, volSvg, mcapPath, mcapAxis, dateRange: dateLabel(s, e) };
       };
 
       const macdLatest = macdLineAll.at(-1), signalLatest = signalAll.at(-1);
       const macdState = (macdLatest != null && signalLatest != null) ? (macdLatest >= signalLatest ? 'Bullish' : 'Bearish') : '—';
 
-      app.innerHTML = `<div class="kicker">Technische Analyse β</div><h1 class="heading">Charting</h1>${picker(stocks, stock.symbol, 'charting', 'chartSearch')}<div class="chart-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2><b>${fmt2(tech.close)} USD</b></div><nav class="range"><a class="${rangeDays === 22 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=22">1 Monat</a><a class="${rangeDays === 252 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=252">1 Jahr</a><a class="${rangeDays === 756 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=756">3 Jahre</a><a class="${rangeDays === 1260 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=1260">5 Jahre</a></nav></div><p class="zoom-hint">Zum Zoomen mit zwei Fingern auf dem Chart pinchen (oder Mausrad), zum Verschieben ziehen. <button class="zoom-reset" id="zoomReset" hidden>Zoom zurücksetzen</button></p><div id="chartCanvas"></div><div class="legend"><span class="lg-price">Kurs</span><span class="lg-e20">EMA 20</span><span class="lg-e50">EMA 50</span><span class="lg-s200">200-Tage-Linie</span><span class="lg-bb">Bollinger-Bänder</span><span class="lg-wave">Elliott-Wellenzählung β</span></div><div class="indicator-toggle" id="indicatorToggle"><button data-ind="ema20" class="on">EMA 20</button><button data-ind="ema50" class="on">EMA 50</button><button data-ind="sma200" class="on">200-Tage</button><button data-ind="bollinger">Bollinger</button><button data-ind="zones">Elliott-Zonen</button><button data-ind="rsi">RSI</button><button data-ind="macd">MACD</button><button data-ind="stoch">Stochastik</button><button data-ind="volume">Volumen</button></div><div class="side-toggle" id="sideToggle"><button data-side="long" class="${curSide === 'long' ? 'on' : ''}">Long</button><button data-side="short" class="${curSide === 'short' ? 'on' : ''}">Short</button></div><section class="technical-cards">${[['RSI 14', fmt(tech.rsi14)], ['MACD', macdState], ['Momentum', fmt(tech.momentum_score_beta, 0) + '/100'], ['Timing', fmt(tech.timing_score_beta, 0) + '/100'], ['Volatilität', fmt(tech.annualized_volatility_pct) + ' %'], ['Trendtests', tech.trend_template_tests_passed + '/8']].map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><article class="notice" id="chartNotice"></article>`;
+      app.innerHTML = `<div class="kicker">Technische Analyse β</div><h1 class="heading">Charting</h1>${picker(stocks, stock.symbol, 'charting', 'chartSearch')}<div class="chart-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2><b>${fmt2(tech.close)} USD</b></div><nav class="range"><a class="${rangeDays === 22 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=22">1 Monat</a><a class="${rangeDays === 252 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=252">1 Jahr</a><a class="${rangeDays === 756 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=756">3 Jahre</a><a class="${rangeDays === 1260 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=1260">5 Jahre</a></nav></div><p class="zoom-hint">Zum Zoomen mit zwei Fingern auf dem Chart pinchen (oder Mausrad), zum Verschieben ziehen. <button class="zoom-reset" id="zoomReset" hidden>Zoom zurücksetzen</button></p><div id="chartCanvas"></div><div class="legend"><span class="lg-price">Kurs</span><span class="lg-e20">EMA 20</span><span class="lg-e50">EMA 50</span><span class="lg-s200">200-Tage-Linie</span><span class="lg-bb">Bollinger-Bänder</span><span class="lg-wave">Elliott-Wellenzählung β</span><span class="lg-mcap" id="lgMcap" hidden>Marktkapitalisierung</span></div><div class="indicator-toggle" id="indicatorToggle"><button data-ind="ema20" class="on">EMA 20</button><button data-ind="ema50" class="on">EMA 50</button><button data-ind="sma200" class="on">200-Tage</button><button data-ind="bollinger">Bollinger</button><button data-ind="zones">Elliott-Zonen</button><button data-ind="rsi">RSI</button><button data-ind="macd">MACD</button><button data-ind="stoch">Stochastik</button><button data-ind="volume">Volumen</button><button data-ind="mcap"${hasMcap ? '' : ' disabled title="Fundamentaldaten für dieses Symbol noch nicht abgerufen"'}>Marktkap.</button></div><div class="side-toggle" id="sideToggle"><button data-side="long" class="${curSide === 'long' ? 'on' : ''}">Long</button><button data-side="short" class="${curSide === 'short' ? 'on' : ''}">Short</button></div><section class="technical-cards">${[['RSI 14', fmt(tech.rsi14)], ['MACD', macdState], ['Momentum', fmt(tech.momentum_score_beta, 0) + '/100'], ['Timing', fmt(tech.timing_score_beta, 0) + '/100'], ['Volatilität', fmt(tech.annualized_volatility_pct) + ' %'], ['Trendtests', tech.trend_template_tests_passed + '/8']].map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section>${hasMcap ? `<p class="data-note" id="mcapNote" hidden>Marktkapitalisierung = Kurs × zuletzt gemeldete Aktien im Umlauf (${fmt(sharesOut / 1e6, 1)} Mio., Stand ${fundMetric.data_as_of ? esc(new Date(fundMetric.data_as_of).toLocaleDateString('de-DE')) : '—'}). Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Abrufen werden nicht berücksichtigt.</p>` : ''}<article class="notice" id="chartNotice"></article>`;
 
       const canvas = document.getElementById('chartCanvas');
       const noticeEl = document.getElementById('chartNotice');
       const zoomResetBtn = document.getElementById('zoomReset');
+      const lgMcapEl = document.getElementById('lgMcap');
+      const mcapNoteEl = document.getElementById('mcapNote');
 
       const redraw = () => {
         const c = buildChart(winStart, winEnd);
-        canvas.innerHTML = `<div class="chart-wrap"><svg class="chart" viewBox="0 0 ${W} ${H}">${c.grid}${visible.bollinger ? `<path class="band" d="${c.path(c.upper)}"/><path class="band" d="${c.path(c.lower)}"/>` : ''}${visible.ema20 ? `<path class="indicator ema20" d="${c.path(c.e20)}"/>` : ''}${visible.ema50 ? `<path class="indicator ema50" d="${c.path(c.e50)}"/>` : ''}${visible.sma200 ? `<path class="indicator sma200" d="${c.path(c.s200)}"/>` : ''}${c.zonesHtml}<path class="price" d="${c.path(c.closes)}"/>${c.waves.length > 1 ? `<polyline class="elliott-history" points="${c.wavePoints}"/>${c.waves.map((i, n) => `<circle class="wave-dot" cx="${c.x(i)}" cy="${c.y(c.closes[i])}" r="3.5"/><text class="wave-label" x="${c.x(i) + 6}" y="${c.y(c.closes[i]) - 8}">${n < 5 ? n + 1 : 'A'}</text>`).join('')}` : ''}</svg></div>${visible.rsi ? `<p class="panel-label">RSI (14)</p>${c.rsiSvg}` : ''}${visible.stoch ? `<p class="panel-label">Stochastik (14, 3)</p>${c.stochSvg}` : ''}${visible.macd ? `<p class="panel-label">MACD (12, 26, 9)</p>${c.macdSvg}` : ''}${visible.volume ? `<p class="panel-label">Volumen</p>${c.volSvg}` : ''}<p class="window-range">${c.dateRange}</p>`;
+        canvas.innerHTML = `<div class="chart-wrap"><svg class="chart" viewBox="0 0 ${W} ${H}">${c.grid}${c.mcapAxis}${visible.bollinger ? `<path class="band" d="${c.path(c.upper)}"/><path class="band" d="${c.path(c.lower)}"/>` : ''}${visible.ema20 ? `<path class="indicator ema20" d="${c.path(c.e20)}"/>` : ''}${visible.ema50 ? `<path class="indicator ema50" d="${c.path(c.e50)}"/>` : ''}${visible.sma200 ? `<path class="indicator sma200" d="${c.path(c.s200)}"/>` : ''}${c.zonesHtml}${visible.mcap && hasMcap ? `<path class="indicator mcap" d="${c.mcapPath}"/>` : ''}<path class="price" d="${c.path(c.closes)}"/>${c.waves.length > 1 ? `<polyline class="elliott-history" points="${c.wavePoints}"/>${c.waves.map((i, n) => `<circle class="wave-dot" cx="${c.x(i)}" cy="${c.y(c.closes[i])}" r="3.5"/><text class="wave-label" x="${c.x(i) + 6}" y="${c.y(c.closes[i]) - 8}">${n < 5 ? n + 1 : 'A'}</text>`).join('')}` : ''}</svg></div>${visible.rsi ? `<p class="panel-label">RSI (14)</p>${c.rsiSvg}` : ''}${visible.stoch ? `<p class="panel-label">Stochastik (14, 3)</p>${c.stochSvg}` : ''}${visible.macd ? `<p class="panel-label">MACD (12, 26, 9)</p>${c.macdSvg}` : ''}${visible.volume ? `<p class="panel-label">Volumen</p>${c.volSvg}` : ''}<p class="window-range">${c.dateRange}</p>`;
         zoomResetBtn.hidden = winStart === defaultStart && winEnd === defaultEnd;
+        if (lgMcapEl) lgMcapEl.hidden = !(visible.mcap && hasMcap);
+        if (mcapNoteEl) mcapNoteEl.hidden = !(visible.mcap && hasMcap);
         const zonesActive = c.zonesInfo && visible.zones;
         noticeEl.innerHTML = zonesActive
           ? `<b>Elliott-Wellenzählung β · ${curSide === 'short' ? 'Short-Szenario' : 'Long-Szenario'}:</b> ${c.zonesInfo.buyLabel} ${fmt2(c.zonesInfo.buy[0])}–${fmt2(c.zonesInfo.buy[1])} USD · ${c.zonesInfo.targetLabel} ${fmt2(c.zonesInfo.target[0])}–${fmt2(c.zonesInfo.target[1])} USD · Invalidierung ${fmt2(c.zonesInfo.invalid)} USD. Die Zählung ist heuristisch, noch nicht backtest-validiert und keine Anlageempfehlung.`
@@ -136,7 +177,7 @@
       };
 
       document.getElementById('indicatorToggle').onclick = (e) => {
-        const btn = e.target.closest('button[data-ind]'); if (!btn) return;
+        const btn = e.target.closest('button[data-ind]'); if (!btn || btn.disabled) return;
         const key = btn.dataset.ind; visible[key] = !visible[key]; btn.classList.toggle('on', visible[key]); redraw();
       };
       document.getElementById('sideToggle').onclick = (e) => {
@@ -193,10 +234,9 @@
 
     if (view === 'discover' || view === 'watchlist') {
       const [u, f, m] = await Promise.all([get('config/universe.json'), get('data/fundamental_scores.json'), get('data/fundamental_metrics.json')]);
-      const stocks = u.stocks.filter((s) => s.active).sort((a, b) => f.symbols[b.symbol].fundamental_score_beta - f.symbols[a.symbol].fundamental_score_beta);
+      const stocks = u.stocks.filter((s) => s.active).sort((a, b) => (f.symbols[b.symbol] ? f.symbols[b.symbol].fundamental_score_beta : -1) - (f.symbols[a.symbol] ? f.symbols[a.symbol].fundamental_score_beta : -1));
       if (view === 'discover') { app.innerHTML = `<div class="kicker">Aktienauswahl</div><h1 class="heading">Entdecken</h1><input class="search" id="discoverSearch" placeholder="Aktie oder Symbol suchen"><div id="discoverList"></div>`; const render = (term) => { document.getElementById('discoverList').innerHTML = stocks.filter((s) => (s.symbol + ' ' + s.name).toLowerCase().includes(term.toLowerCase())).map((s) => `<div class="row"><b>${s.symbol}</b><span>${esc(s.name)}</span><span class="row-actions"><a href="/dashboard/research/?symbol=${s.symbol}">Research</a><a href="/dashboard/charting/?symbol=${s.symbol}">Chart</a></span></div>`).join(''); }; render(''); document.getElementById('discoverSearch').oninput = (e) => render(e.target.value); return; }
-      app.innerHTML = `<div class="kicker">Nach Fundamental-Score sortiert</div><h1 class="heading">Watchlist</h1>${picker(stocks, '', 'research', 'watchSearch')}<div class="watch-cards">${stocks.map((s) => { const score = f.symbols[s.symbol], metric = m.symbols[s.symbol]; return `<a class="watch-card" data-search="${esc((s.symbol + ' ' + s.name).toLowerCase())}" href="/dashboard/research/?symbol=${s.symbol}"><div><b>${s.symbol}</b><span>${esc(s.name)}</span><em>KGV ${norm(metric.pe_ratio)} · KUV ${norm(metric.ps_ratio)}</em></div><strong class="score-badge ${scoreClass(score.fundamental_score_beta)}">${score.fundamental_score_beta}</strong></a>`; }).join('')}</div>`; bindSearch('watchSearch'); return;
+      app.innerHTML = `<div class="kicker">Nach Fundamental-Score sortiert</div><h1 class="heading">Watchlist</h1>${picker(stocks, '', 'research', 'watchSearch')}<div class="watch-cards">${stocks.map((s) => { const score = f.symbols[s.symbol], metric = m.symbols[s.symbol] || {}, legacy = metric.legacy || {}; return `<a class="watch-card" data-search="${esc((s.symbol + ' ' + s.name).toLowerCase())}" href="/dashboard/research/?symbol=${s.symbol}"><div><b>${s.symbol}</b><span>${esc(s.name)}</span><em>KGV ${pick(metric.pe_ratio_ttm, legacy.pe_ratio, fmtRatio)} · KUV ${pick(metric.ps_ratio_ttm, legacy.ps_ratio, fmtRatio)}</em></div><strong class="score-badge ${score ? scoreClass(score.fundamental_score_beta) : ''}">${score ? score.fundamental_score_beta : '—'}</strong></a>`; }).join('')}</div>`; bindSearch('watchSearch'); return;
     }
   } catch (error) { console.error(error); app.innerHTML = '<p class="notice">Die Daten konnten nicht vollständig geladen werden. Bitte die Seite neu laden.</p>'; }
 }());
-
