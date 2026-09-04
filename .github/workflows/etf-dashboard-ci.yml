@@ -1,0 +1,42 @@
+name: ETF Dashboard CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "etf/**"
+      - ".github/workflows/etf-dashboard-ci.yml"
+  pull_request:
+    paths:
+      - "etf/**"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          import sys
+
+          path = "etf/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q "VISION UNIVERSE" etf/index.html
+          grep -q "const ETF=" etf/index.html
+          echo "Markers OK"

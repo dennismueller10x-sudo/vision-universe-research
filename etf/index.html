@@ -1,0 +1,775 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>ETF Dashboard</title>
+<style>
+/* Hide all Shopify theme elements on this page */
+.shopify-section:not(#etf-section) { display: none !important; }
+header, footer, .header, .footer, .announcement-bar,
+.header-wrapper, .footer-wrapper, nav, 
+[class*="header"], [class*="footer"],
+[class*="announcement"], [class*="cookie"],
+[class*="disclaimer"], [class*="legal"] {
+  display: none !important;
+}
+body { margin: 0; padding: 0; overflow: hidden; }
+#etf-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #fff;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#1a1a1a;overscroll-behavior:none}
+::-webkit-scrollbar{display:none}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+#gate{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;padding:40px 24px;z-index:999;flex-direction:column}
+#app{display:none;max-width:600px;margin:0 auto;padding-bottom:80px;min-height:100vh}
+.topbar{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f0f0f0}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid #f0f0f0;display:flex;z-index:200}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));border:none;background:none;cursor:pointer}
+.page{display:none;padding:20px 20px 0}
+.page.active{display:block}
+.inp{width:100%;padding:13px 16px;border:1.5px solid #e8e8e8;border-radius:14px;font-size:15px;background:#fff;outline:none;transition:border .15s}
+.inp:focus{border-color:#1a1a1a;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+.pbar{display:flex;background:#f2f2f2;border-radius:12px;padding:3px;gap:2px;margin-bottom:16px}
+.pb{flex:1;padding:8px 0;border-radius:9px;border:none;font-size:13px;cursor:pointer;background:transparent;color:#aaa;font-weight:400}
+.pb.on{background:#fff;color:#1a1a1a;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.fbox{border:1px solid #f0f0f0;border-radius:16px;overflow:hidden;margin-bottom:12px}
+.fhead{width:100%;padding:14px 20px;background:#fff;border:none;border-bottom:1px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;border-bottom:1px solid #f5f5f5;display:none}
+.chip{padding:6px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#555;font-size:12px;font-weight:600;cursor:pointer}
+.chip.on{border-color:#1a1a1a;background:#1a1a1a;color:#fff}
+.sbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.sb{padding:6px 14px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#666;font-size:12px;font-weight:600;cursor:pointer}
+.sb.on{border-color:#1a1a1a;background:#1a1a1a;color:#fff}
+.elist{border:1px solid #f0f0f0;border-radius:16px;overflow:hidden;margin-bottom:12px}
+.erow{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer}
+.erow:active{background:#fafafa}
+.erow:last-child{border-bottom:none}
+.eic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;font-size:8px;font-weight:800;text-align:center;line-height:1.1}
+.dark{background:#1a1a1a;border-radius:20px;padding:22px;margin-bottom:16px;color:#fff}
+.grey{background:#f8f8f8;border-radius:16px;padding:16px;margin-bottom:16px}
+.rowl{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0}
+.rowl:last-child{border-bottom:none}
+.detail{display:none;position:fixed;inset:0;background:#fff;z-index:300;max-width:600px;margin:0 auto;overflow-y:auto}
+.detail.open{display:block}
+.dtop{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid #f5f5f5;position:sticky;top:0;background:#fff;z-index:10}
+.cta-gr{background:#f0faf0;border-radius:14px;padding:13px 16px;display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.cta-dk{background:#1a1a1a;border-radius:14px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#e0e0e0;border-radius:3px;outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#1a1a1a;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bar-container{margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.bar-label{font-size:10px;color:#aaa;width:110px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-track{flex:1;background:#f0f0f0;border-radius:4px;height:22px;overflow:hidden;display:flex;align-items:center}
+.bar-fill{height:100%;border-radius:4px;min-width:2px;display:flex;align-items:center;padding-left:6px}
+
+</style>
+
+<div id="etf-wrapper">
+<!-- GATE -->
+<div id="gate">
+  <div style="width:100%;max-width:340px;text-align:center">
+    <div style="font-size:16px;font-weight:800;letter-spacing:0.1em;margin-bottom:48px">⊙ VISION UNIVERSE</div>
+    <div style="font-size:11px;font-weight:600;color:#aaa;letter-spacing:.08em;margin-bottom:10px;text-align:left">PASSWORT</div>
+    <input class="inp" type="password" id="pwinput" placeholder="Dein Passwort" style="margin-bottom:8px;font-size:18px;letter-spacing:.1em">
+    <div id="pwerr" style="display:none;font-size:13px;color:#e00;margin-bottom:8px">Falsches Passwort.</div>
+    <button onclick="doLogin()" style="width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600">Weiter</button>
+    <p style="margin-top:22px;font-size:12px;color:#bbb;line-height:1.7">Passwort aus dem Vision Universe Newsletter</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <span style="font-weight:800;font-size:13px;letter-spacing:0.1em">⊙ VISION UNIVERSE</span>
+    <button onclick="doLogout()" style="border:none;background:none;font-size:13px;color:#ccc">Logout</button>
+  </div>
+
+  <!-- ETFs page -->
+  <div id="page-etfs" class="page active">
+    <div style="font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">ETF Dashboard</div>
+    <div style="font-size:14px;color:#aaa;margin-bottom:16px">91 kuratierte ETFs · 14 Anbieter</div>
+    <div style="position:relative;margin-bottom:14px">
+      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:#ccc;pointer-events:none">🔍</span>
+      <input class="inp" id="esearch" placeholder="ETF, Ticker oder Anbieter suchen..." style="padding-left:42px" oninput="renderList()">
+    </div>
+    <div class="pbar" id="pbar"></div>
+    <div class="fbox">
+      <button class="fhead" onclick="toggleFilter('cat')">
+        <span style="font-size:14px;font-weight:600">Kategorie <span id="cat-badge"></span></span>
+        <span id="cat-arrow" style="color:#ccc;font-size:11px">▼</span>
+      </button>
+      <div class="fchips" id="cat-chips"></div>
+      <button class="fhead" onclick="toggleFilter('brand')">
+        <span style="font-size:14px;font-weight:600">Anbieter <span id="brand-badge"></span></span>
+        <span id="brand-arrow" style="color:#ccc;font-size:11px">▼</span>
+      </button>
+      <div class="fchips" id="brand-chips"></div>
+      <button class="fhead" onclick="toggleFilter('grp')" style="border-bottom:none">
+        <span style="font-size:14px;font-weight:600">Thema <span id="grp-badge"></span></span>
+        <span id="grp-arrow" style="color:#ccc;font-size:11px">▼</span>
+      </button>
+      <div class="fchips" id="grp-chips"></div>
+    </div>
+    <div class="sbar" id="sbar"></div>
+    <div id="elist"></div>
+    <div class="cta-gr" style="margin-top:8px">
+      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:2px">Altersvorsorgedepot 2027</div><div style="font-size:12px;color:#666">Bis 540€ Staatszulage/Jahr</div></div>
+      <button onclick="goTab('rechner')" style="padding:8px 14px;border-radius:20px;background:#16a34a;border:none;color:#fff;font-size:12px;font-weight:700">Rechner →</button>
+    </div>
+    <div class="cta-dk">
+      <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:1px">Aktienreports</div><div style="font-size:11px;color:#555">KI-Analysen · Ab 29€</div></div>
+      <a href="https://www.visionuniverse.de/collections/all" target="_blank" style="padding:8px 14px;background:#fff;color:#1a1a1a;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none">Ansehen →</a>
+    </div>
+  </div>
+
+  <!-- Portfolio page -->
+  <div id="page-portfolio" class="page">
+    <div style="font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">Portfolio</div>
+    <div style="font-size:14px;color:#aaa;margin-bottom:16px">Überschneidungen & Gewichtung</div>
+    <div id="pf-content"></div>
+  </div>
+
+  <!-- Charts page -->
+  <div id="page-charts" class="page">
+    <div style="font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">Charts</div>
+    <div id="chart-sub" style="font-size:14px;color:#aaa;margin-bottom:16px">Top ETFs im Überblick</div>
+    <div id="chart-content"></div>
+  </div>
+
+  <!-- Vergleich page -->
+  <div id="page-vergleich" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div><div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Vergleich</div><div id="vg-sub" style="font-size:14px;color:#aaa">0 ETFs</div></div>
+      <button onclick="clearCmp()" style="padding:7px 16px;border-radius:20px;border:1.5px solid #e8e8e8;background:#fff;color:#aaa;font-size:13px;font-weight:600">Leeren</button>
+    </div>
+    <div id="vg-content"></div>
+  </div>
+
+  <!-- Rechner page -->
+  <div id="page-rechner" class="page">
+    <div style="font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">Rentenrechner</div>
+    <div style="font-size:14px;color:#aaa;margin-bottom:20px">Inkl. Altersvorsorgedepot 2027</div>
+    <div id="rc-result" class="dark"></div>
+    <div id="rc-sliders" class="grey"></div>
+    <div id="rc-bonus" style="background:#f0faf0;border-radius:16px;padding:16px;margin-bottom:16px"></div>
+  </div>
+
+  <!-- Detail overlay -->
+  <div id="detail" class="detail"></div>
+
+  <!-- Tabs -->
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<script>
+const PW = "VU2027";
+
+const ETF=[
+{id:1,brand:"iShares",name:"iShares Core MSCI World",tk:"IWDA",cat:"Global",grp:"Broad Market",ter:0.20,ytd:-4.2,div:1.6,dt:"Thesaurierend",aum:"107,9 Mrd.",p:{y1:21.2,y3:68.4,y5:98.2,y10:286.4},h:[["Apple","5,1%"],["Microsoft","4,3%"],["NVIDIA","4,1%"],["Amazon","2,5%"],["Meta","1,9%"],["Alphabet A","1,7%"],["Broadcom","1,0%"],["Eli Lilly","1,2%"],["Tesla","0,9%"],["JPMorgan","0,8%"]]},
+{id:2,brand:"Vanguard",name:"Vanguard FTSE All-World",tk:"VWCE",cat:"Global",grp:"Broad Market",ter:0.19,ytd:-3.8,div:1.5,dt:"Thesaurierend",aum:"31,0 Mrd.",p:{y1:19.8,y3:62.1,y5:90.4,y10:264.8},h:[["Apple","4,4%"],["Microsoft","3,9%"],["NVIDIA","3,7%"],["Amazon","2,2%"],["Meta","1,7%"],["Alphabet A","1,5%"],["Samsung","1,1%"],["Taiwan Semi.","1,0%"],["Eli Lilly","0,9%"],["Broadcom","0,8%"]]},
+{id:3,brand:"iShares",name:"iShares Core S&P 500",tk:"SXR8",cat:"USA",grp:"Broad Market",ter:0.07,ytd:-5.8,div:1.2,dt:"Thesaurierend",aum:"111,2 Mrd.",p:{y1:18.3,y3:64.2,y5:110.8,y10:342.6},h:[["Apple","7,4%"],["Microsoft","6,6%"],["NVIDIA","6,0%"],["Amazon","3,8%"],["Meta","2,7%"],["Alphabet A","2,5%"],["Berkshire H.","1,9%"],["Eli Lilly","1,7%"],["Broadcom","1,6%"],["JPMorgan","1,5%"]]},
+{id:4,brand:"Vanguard",name:"Vanguard S&P 500 UCITS",tk:"VUAA",cat:"USA",grp:"Broad Market",ter:0.07,ytd:-5.9,div:1.2,dt:"Thesaurierend",aum:"22,4 Mrd.",p:{y1:18.1,y3:63.8,y5:109.6,y10:340.2},h:[["Apple","7,4%"],["Microsoft","6,6%"],["NVIDIA","6,0%"],["Amazon","3,8%"],["Meta","2,7%"],["Alphabet A","2,5%"],["Berkshire H.","1,9%"],["Eli Lilly","1,7%"],["Broadcom","1,6%"],["JPMorgan","1,5%"]]},
+{id:5,brand:"Invesco",name:"Invesco NASDAQ-100",tk:"EQQQ",cat:"USA",grp:"Broad Market",ter:0.30,ytd:-7.2,div:0.4,dt:"Ausschüttend",aum:"8,6 Mrd.",p:{y1:16.8,y3:58.4,y5:148.2,y10:448.6},h:[["Microsoft","9,1%"],["Apple","8,3%"],["NVIDIA","8,0%"],["Amazon","5,4%"],["Meta","4,9%"],["Alphabet A","4,5%"],["Tesla","3,3%"],["Broadcom","3,0%"],["Costco","2,5%"],["Alphabet C","3,9%"]]},
+{id:6,brand:"Invesco",name:"Invesco S&P 500 UCITS",tk:"SPXS",cat:"USA",grp:"Broad Market",ter:0.05,ytd:-5.7,div:1.2,dt:"Thesaurierend",aum:"14,2 Mrd.",p:{y1:18.2,y3:63.9,y5:110.2,y10:341.8},h:[["Apple","7,4%"],["Microsoft","6,6%"],["NVIDIA","6,0%"],["Amazon","3,8%"],["Meta","2,7%"],["Alphabet A","2,5%"],["Berkshire H.","1,9%"],["Eli Lilly","1,7%"],["Broadcom","1,6%"],["JPMorgan","1,5%"]]},
+{id:7,brand:"Xtrackers",name:"Xtrackers DAX UCITS",tk:"DBXD",cat:"Europa",grp:"Broad Market",ter:0.09,ytd:11.2,div:2.8,dt:"Thesaurierend",aum:"5,6 Mrd.",p:{y1:22.4,y3:52.4,y5:76.8,y10:198.4},h:[["SAP","14,2%"],["Siemens","8,6%"],["Airbus","6,4%"],["Allianz","6,2%"],["Deutsche Telekom","4,8%"],["BASF","4,4%"],["BMW","4,1%"],["Volkswagen","3,8%"],["Infineon","3,6%"],["Munich Re","3,4%"]]},
+{id:8,brand:"iShares",name:"iShares Core MSCI Europe",tk:"SMEA",cat:"Europa",grp:"Broad Market",ter:0.12,ytd:8.6,div:3.2,dt:"Thesaurierend",aum:"3,8 Mrd.",p:{y1:14.6,y3:43.4,y5:59.8,y10:128.4},h:[["Novo Nordisk","4,6%"],["ASML","4,1%"],["Nestlé","3,0%"],["LVMH","2,7%"],["Shell","2,3%"],["Roche","2,2%"],["SAP","2,2%"],["AstraZeneca","2,1%"],["Siemens","1,9%"],["Allianz","1,8%"]]},
+{id:9,brand:"iShares",name:"iShares Euro Stoxx 50",tk:"EXW1",cat:"Europa",grp:"Broad Market",ter:0.10,ytd:9.4,div:3.1,dt:"Ausschüttend",aum:"4,2 Mrd.",p:{y1:16.8,y3:46.2,y5:68.4,y10:148.6},h:[["ASML","8,4%"],["LVMH","6,2%"],["TotalEnergies","5,8%"],["SAP","5,4%"],["Sanofi","4,6%"],["L'Oréal","4,4%"],["Siemens","4,2%"],["Airbus","4,0%"],["BNP Paribas","3,8%"],["Allianz","3,6%"]]},
+{id:10,brand:"Amundi",name:"Amundi MSCI Europe",tk:"CE9",cat:"Europa",grp:"Broad Market",ter:0.15,ytd:8.4,div:3.3,dt:"Ausschüttend",aum:"2,3 Mrd.",p:{y1:14.2,y3:42.8,y5:58.2,y10:124.6},h:[["Novo Nordisk","4,6%"],["ASML","4,2%"],["Nestlé","3,1%"],["LVMH","2,8%"],["Roche","2,3%"],["Shell","2,2%"],["SAP","2,2%"],["AstraZeneca","2,1%"],["Siemens","1,9%"],["Allianz","1,8%"]]},
+{id:11,brand:"Xtrackers",name:"Xtrackers MSCI World Swap",tk:"XDWD",cat:"Global",grp:"Broad Market",ter:0.19,ytd:-4.0,div:0.0,dt:"Thesaurierend",aum:"4,2 Mrd.",p:{y1:20.8,y3:66.2,y5:96.4,y10:280.6},h:[["Apple","5,0%"],["Microsoft","4,2%"],["NVIDIA","4,0%"],["Amazon","2,5%"],["Meta","1,8%"],["Alphabet A","1,7%"],["Eli Lilly","1,2%"],["Broadcom","1,0%"],["Tesla","0,9%"],["JPMorgan","0,8%"]]},
+{id:12,brand:"iShares",name:"iShares MSCI World Momentum",tk:"IS3R",cat:"Global",grp:"Factor",ter:0.30,ytd:-2.8,div:0.8,dt:"Thesaurierend",aum:"1,1 Mrd.",p:{y1:24.6,y3:98.2,y5:null,y10:null},h:[["NVIDIA","11,8%"],["Meta","8,1%"],["Microsoft","7,4%"],["Apple","6,6%"],["Broadcom","4,4%"],["Amazon","3,9%"],["Alphabet A","3,3%"],["Palantir","3,0%"],["ServiceNow","2,5%"],["Visa","2,3%"]]},
+{id:13,brand:"iShares",name:"iShares MSCI World Min Volatility",tk:"MVOL",cat:"Global",grp:"Factor",ter:0.30,ytd:-1.8,div:2.1,dt:"Thesaurierend",aum:"0,8 Mrd.",p:{y1:12.4,y3:38.6,y5:62.1,y10:172.4},h:[["Nestlé","2,8%"],["Roche","2,4%"],["Johnson & J.","2,2%"],["Novartis","2,1%"],["T-Mobile","1,9%"],["Waste Mgmt","1,8%"],["Accenture","1,7%"],["McDonald's","1,6%"],["Procter & G.","1,5%"],["Coca-Cola","1,4%"]]},
+{id:14,brand:"iShares",name:"iShares MSCI EM IMI",tk:"IS3N",cat:"Emerging Markets",grp:"Broad Market",ter:0.18,ytd:1.8,div:2.3,dt:"Thesaurierend",aum:"4,8 Mrd.",p:{y1:7.9,y3:8.6,y5:22.8,y10:62.4},h:[["Taiwan Semi.","9,2%"],["Samsung","4,3%"],["Tencent","4,0%"],["Alibaba","3,2%"],["Reliance Ind.","1,8%"],["ICBC","1,4%"],["Meituan","1,3%"],["Infosys","1,1%"],["PDD Holdings","1,0%"],["SK Hynix","0,9%"]]},
+{id:15,brand:"Xtrackers",name:"Xtrackers MSCI EM",tk:"XMME",cat:"Emerging Markets",grp:"Broad Market",ter:0.18,ytd:2.1,div:2.8,dt:"Thesaurierend",aum:"4,1 Mrd.",p:{y1:8.4,y3:11.2,y5:26.4,y10:68.4},h:[["Taiwan Semi.","10,4%"],["Samsung","4,5%"],["Tencent","4,2%"],["Alibaba","3,4%"],["Meituan","1,9%"],["ICBC","1,3%"],["Reliance Ind.","1,2%"],["JD.com","1,0%"],["PDD Holdings","1,0%"],["Infosys","0,8%"]]},
+{id:16,brand:"iShares",name:"iShares MSCI China",tk:"ICHN",cat:"Emerging Markets",grp:"Länder",ter:0.40,ytd:6.8,div:2.6,dt:"Thesaurierend",aum:"0,6 Mrd.",p:{y1:14.2,y3:-8.4,y5:-12.6,y10:18.4},h:[["Tencent","14,8%"],["Alibaba","10,4%"],["Meituan","5,8%"],["JD.com","3,6%"],["Baidu","3,2%"],["PDD Holdings","3,0%"],["NetEase","2,4%"],["Trip.com","2,2%"],["CNOOC","1,8%"],["BYD","1,6%"]]},
+{id:17,brand:"iShares",name:"iShares MSCI India",tk:"NDIA",cat:"Emerging Markets",grp:"Länder",ter:0.65,ytd:-2.4,div:1.0,dt:"Thesaurierend",aum:"0,8 Mrd.",p:{y1:4.2,y3:48.6,y5:82.4,y10:null},h:[["Reliance Ind.","9,8%"],["Infosys","8,4%"],["HDFC Bank","7,6%"],["ICICI Bank","5,4%"],["TCS","5,2%"],["Bharti Airtel","4,8%"],["Kotak Bank","3,6%"],["HCL Tech.","3,2%"],["L&T","2,8%"],["Wipro","2,4%"]]},
+{id:18,brand:"Vanguard",name:"Vanguard FTSE All-World High Div.",tk:"VHYL",cat:"Dividende",grp:"Dividende",ter:0.29,ytd:2.4,div:3.8,dt:"Ausschüttend",aum:"5,6 Mrd.",p:{y1:10.2,y3:36.4,y5:58.2,y10:142.6},h:[["Samsung","3,2%"],["Nestlé","2,8%"],["HSBC","2,4%"],["Shell","2,2%"],["TotalEnergies","2,0%"],["Taiwan Semi.","1,9%"],["AstraZeneca","1,8%"],["Roche","1,7%"],["Rio Tinto","1,6%"],["Novartis","1,5%"]]},
+{id:19,brand:"iShares",name:"iShares STOXX Global Sel. Div. 100",tk:"ISPA",cat:"Dividende",grp:"Dividende",ter:0.46,ytd:1.2,div:5.2,dt:"Ausschüttend",aum:"2,4 Mrd.",p:{y1:7.4,y3:28.6,y5:42.4,y10:98.6},h:[["Philip Morris","4,6%"],["Altria","4,2%"],["AT&T","3,8%"],["Verizon","3,4%"],["Shell","3,0%"],["TotalEnergies","2,8%"],["Enbridge","2,6%"],["BCE Inc","2,4%"],["Fortum","2,2%"],["BASF","2,0%"]]},
+{id:20,brand:"SPDR",name:"SPDR S&P Euro Dividend Aristocrats",tk:"EUDI",cat:"Dividende",grp:"Dividende",ter:0.30,ytd:3.4,div:4.2,dt:"Ausschüttend",aum:"0,4 Mrd.",p:{y1:11.2,y3:36.8,y5:52.4,y10:108.6},h:[["Inditex","5,4%"],["VW Pref.","4,8%"],["Danone","4,2%"],["Snam","3,8%"],["Terna","3,4%"],["Amadeus IT","3,2%"],["Naturgy","3,0%"],["Enagás","2,8%"],["Red Eléctrica","2,6%"],["CRH","2,4%"]]},
+{id:21,brand:"iShares",name:"iShares Semiconductor UCITS",tk:"SEMI",cat:"Themen",grp:"Halbleiter",ter:0.35,ytd:-9.4,div:0.6,dt:"Thesaurierend",aum:"1,2 Mrd.",p:{y1:4.8,y3:82.4,y5:164.8,y10:null},h:[["NVIDIA","20,4%"],["TSMC","14,8%"],["Broadcom","10,6%"],["ASML","9,4%"],["Samsung","7,6%"],["Qualcomm","5,8%"],["Intel","4,4%"],["Texas Inst.","4,0%"],["Applied Mat.","3,8%"],["Lam Research","3,4%"]]},
+{id:22,brand:"VanEck",name:"VanEck Semiconductor UCITS",tk:"SMGB",cat:"Themen",grp:"Halbleiter",ter:0.35,ytd:-8.8,div:0.8,dt:"Thesaurierend",aum:"0,9 Mrd.",p:{y1:6.4,y3:78.4,y5:158.6,y10:null},h:[["NVIDIA","21,4%"],["TSMC","13,6%"],["ASML","11,4%"],["Broadcom","9,8%"],["Qualcomm","6,4%"],["Samsung","5,8%"],["AMD","5,4%"],["Texas Inst.","4,8%"],["Marvell Tech.","4,2%"],["Micron Tech.","3,8%"]]},
+{id:23,brand:"VanEck",name:"VanEck Defense UCITS",tk:"DFND",cat:"Themen",grp:"Defense",ter:0.55,ytd:18.4,div:0.8,dt:"Thesaurierend",aum:"7,8 Mrd.",p:{y1:42.6,y3:148.2,y5:null,y10:null},h:[["Lockheed Martin","8,4%"],["RTX Corp","7,8%"],["Northrop Grumman","7,2%"],["General Dynamics","6,8%"],["BAE Systems","6,4%"],["L3Harris Tech.","5,8%"],["Leonardo","5,2%"],["Rheinmetall","4,8%"],["Leidos","4,4%"],["SAIC","3,8%"]]},
+{id:24,brand:"HANetf",name:"HANetf Future of Defence",tk:"NATO",cat:"Themen",grp:"Defense",ter:0.49,ytd:22.4,div:0.8,dt:"Thesaurierend",aum:"0,4 Mrd.",p:{y1:48.4,y3:null,y5:null,y10:null},h:[["Rheinmetall","8,4%"],["BAE Systems","7,8%"],["Leonardo","7,2%"],["Thales","6,8%"],["Dassault","6,4%"],["KNDS","5,2%"],["Saab","4,0%"],["Patria","4,8%"],["Indra","5,8%"],["PGZ","4,4%"]]},
+{id:25,brand:"Global X",name:"Global X Robotics & AI UCITS",tk:"BOTZ",cat:"Themen",grp:"KI & Robotik",ter:0.68,ytd:-4.2,div:0.3,dt:"Thesaurierend",aum:"0,8 Mrd.",p:{y1:12.6,y3:42.8,y5:86.4,y10:null},h:[["NVIDIA","12,4%"],["Intuitive Surg.","8,8%"],["ABB","7,6%"],["Fanuc","6,4%"],["Keyence","5,8%"],["Yaskawa","4,6%"],["Zebra Tech.","4,2%"],["Cognex","3,8%"],["ISRG","3,4%"],["SMC Corp","3,0%"]]},
+{id:26,brand:"iShares",name:"iShares Automation & Robotics",tk:"RBOT",cat:"Themen",grp:"KI & Robotik",ter:0.40,ytd:-4.8,div:0.6,dt:"Thesaurierend",aum:"2,4 Mrd.",p:{y1:8.4,y3:38.6,y5:72.4,y10:null},h:[["ABB","5,8%"],["Keyence","5,4%"],["Fanuc","5,0%"],["Yaskawa","4,6%"],["Rockwell Auto.","4,2%"],["SMC Corp","3,8%"],["Cognex","3,4%"],["Zebra Tech.","3,0%"],["KION Group","2,8%"],["Hexagon","2,6%"]]},
+{id:27,brand:"L&G",name:"L&G Artificial Intelligence UCITS",tk:"AIAI",cat:"Themen",grp:"KI & Robotik",ter:0.49,ytd:-6.8,div:0.4,dt:"Thesaurierend",aum:"0,6 Mrd.",p:{y1:8.4,y3:64.2,y5:null,y10:null},h:[["NVIDIA","8,4%"],["Alphabet","6,8%"],["Microsoft","6,4%"],["Baidu","4,8%"],["Meta","4,6%"],["Palantir","4,2%"],["Salesforce","3,8%"],["Taiwan Semi.","3,4%"],["Samsung","3,0%"],["AMD","2,8%"]]},
+{id:28,brand:"Global X",name:"Global X Cybersecurity UCITS",tk:"CYBR",cat:"Themen",grp:"Cybersecurity",ter:0.50,ytd:-3.8,div:0.2,dt:"Thesaurierend",aum:"0,3 Mrd.",p:{y1:9.6,y3:28.4,y5:null,y10:null},h:[["CrowdStrike","10,4%"],["Palo Alto Netw.","9,8%"],["Fortinet","8,6%"],["Zscaler","7,4%"],["SentinelOne","6,8%"],["Okta","5,8%"],["Cloudflare","5,4%"],["Rapid7","4,8%"],["Qualys","4,2%"],["Tenable","3,8%"]]},
+{id:29,brand:"iShares",name:"iShares Global Clean Energy",tk:"IQQH",cat:"Themen",grp:"Clean Energy",ter:0.65,ytd:-12.4,div:1.2,dt:"Thesaurierend",aum:"2,8 Mrd.",p:{y1:-18.4,y3:-42.6,y5:-8.4,y10:28.6},h:[["First Solar","7,8%"],["Enphase Energy","6,4%"],["Vestas Wind","5,8%"],["SolarEdge","5,2%"],["Orsted","4,8%"],["NextEra Energy","3,8%"],["Siemens Gamesa","3,4%"],["EDP Renovaveis","3,2%"],["Brookfield Renew.","4,0%"],["Consolidated Ed.","4,4%"]]},
+{id:30,brand:"iShares",name:"iShares Healthcare Innovation",tk:"HEAL",cat:"Themen",grp:"Biotech",ter:0.40,ytd:6.4,div:0.6,dt:"Thesaurierend",aum:"0,8 Mrd.",p:{y1:14.4,y3:28.4,y5:56.8,y10:null},h:[["Illumina","5,8%"],["ResMed","5,4%"],["Dexcom","5,0%"],["Alnylam Pharma","4,6%"],["BioNTech","4,2%"],["Moderna","3,8%"],["Exact Sciences","3,4%"],["Natera","3,0%"],["Insulet","2,8%"],["Alkermes","2,4%"]]},
+{id:31,brand:"iShares",name:"iShares Global Water UCITS",tk:"IH2O",cat:"Themen",grp:"Wasser",ter:0.65,ytd:4.8,div:1.8,dt:"Ausschüttend",aum:"2,1 Mrd.",p:{y1:12.8,y3:42.4,y5:68.6,y10:182.4},h:[["Veolia","5,8%"],["Xylem","5,4%"],["Danaher","5,0%"],["Watts Water","3,8%"],["Mueller Water","3,4%"],["Pentair","2,8%"],["Essential Util.","2,6%"],["Verint Sys.","4,6%"],["Rexnord","4,2%"],["SUEZ","3,0%"]]},
+{id:32,brand:"iShares",name:"iShares Gold Producers UCITS",tk:"SPGP",cat:"Rohstoffe",grp:"Rohstoffe",ter:0.55,ytd:22.4,div:1.2,dt:"Ausschüttend",aum:"4,1 Mrd.",p:{y1:48.4,y3:82.4,y5:186.4,y10:148.6},h:[["Newmont","14,8%"],["Barrick Gold","12,4%"],["Agnico Eagle","10,8%"],["Wheaton PM","9,4%"],["Franco-Nevada","8,6%"],["Royal Gold","7,4%"],["Kinross Gold","6,8%"],["Pan Am Silver","5,4%"],["Coeur Mining","4,8%"],["Hecla Mining","4,2%"]]},
+{id:33,brand:"VanEck",name:"VanEck Gold Miners UCITS",tk:"GDX",cat:"Rohstoffe",grp:"Rohstoffe",ter:0.53,ytd:18.4,div:0.8,dt:"Ausschüttend",aum:"0,8 Mrd.",p:{y1:44.8,y3:74.4,y5:162.4,y10:136.4},h:[["Newmont","12,4%"],["Barrick Gold","9,8%"],["Agnico Eagle","8,4%"],["Wheaton PM","7,4%"],["Gold Fields","5,8%"],["AngloGold Ash.","5,4%"],["Kinross Gold","4,8%"],["Pan Am Silver","4,4%"],["Eldorado Gold","3,8%"],["Harmony Gold","3,4%"]]},
+{id:34,brand:"WisdomTree",name:"WisdomTree Physical Gold",tk:"PHAU",cat:"Rohstoffe",grp:"Rohstoffe",ter:0.15,ytd:14.8,div:0.0,dt:"Thesaurierend",aum:"8,4 Mrd.",p:{y1:38.4,y3:52.4,y5:82.4,y10:124.6},h:[["Gold (physisch)","100%"],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""]]},
+{id:35,brand:"iShares",name:"iShares Diversified Commodity",tk:"SXRS",cat:"Rohstoffe",grp:"Rohstoffe",ter:0.19,ytd:4.8,div:0.0,dt:"Thesaurierend",aum:"1,6 Mrd.",p:{y1:8.4,y3:12.6,y5:28.4,y10:38.4},h:[["WTI Crude","24,8%"],["Brent Crude","18,6%"],["Natural Gas","12,4%"],["Gold","8,8%"],["Copper","6,4%"],["Corn","5,8%"],["Soybeans","4,6%"],["Wheat","4,2%"],["Silver","3,8%"],["Aluminum","3,4%"]]},
+{id:36,brand:"iShares",name:"iShares Core Global Agg. Bond",tk:"AGGH",cat:"Anleihen",grp:"Anleihen",ter:0.10,ytd:1.2,div:3.4,dt:"Ausschüttend",aum:"9,4 Mrd.",p:{y1:4.2,y3:-4.8,y5:8.6,y10:28.4},h:[["US Treasury 10J","8,4%"],["US Treasury 5J","6,8%"],["German Bund 10J","5,4%"],["UK Gilt 10J","4,2%"],["Japan JGB","3,8%"],["France OAT","3,4%"],["Italy BTP","2,8%"],["Spain Bonos","2,4%"],["Canada Bond","2,0%"],["Australia Bond","1,8%"]]},
+{id:37,brand:"Xtrackers",name:"Xtrackers II Eurozone Gov. Bond",tk:"DBXG",cat:"Anleihen",grp:"Anleihen",ter:0.15,ytd:1.8,div:3.1,dt:"Thesaurierend",aum:"2,8 Mrd.",p:{y1:5.4,y3:-2.4,y5:6.8,y10:22.4},h:[["German Bund 10J","24,8%"],["French OAT 10J","22,4%"],["Italian BTP 10J","18,6%"],["Spanish Bonos","14,4%"],["Dutch DSL 10J","8,2%"],["Belgian OLO","5,4%"],["Austrian Bond","3,8%"],["Finnish Bond","2,4%"],["Portuguese Bond","2,2%"],["Irish Bond","1,8%"]]},
+{id:38,brand:"iShares",name:"iShares MSCI World Sust. Dev.",tk:"SUWD",cat:"ESG",grp:"ESG",ter:0.25,ytd:-2.4,div:1.4,dt:"Thesaurierend",aum:"1,2 Mrd.",p:{y1:16.4,y3:48.4,y5:82.6,y10:null},h:[["Microsoft","5,8%"],["ASML","5,4%"],["Novo Nordisk","5,0%"],["Tesla","4,6%"],["NVIDIA","4,2%"],["Vestas Wind","3,8%"],["Orsted","3,4%"],["Schneider Elec.","3,0%"],["Xylem","2,8%"],["Neste","2,4%"]]},
+{id:39,brand:"Amundi",name:"Amundi MSCI World ESG Leaders",tk:"PAEEM",cat:"ESG",grp:"ESG",ter:0.18,ytd:-3.2,div:1.6,dt:"Thesaurierend",aum:"0,8 Mrd.",p:{y1:18.4,y3:58.6,y5:92.4,y10:null},h:[["Microsoft","6,2%"],["Apple","5,8%"],["NVIDIA","4,8%"],["Alphabet","3,4%"],["Amazon","3,2%"],["Meta","2,8%"],["ASML","2,6%"],["Novo Nordisk","2,4%"],["Visa","2,2%"],["AstraZeneca","2,0%"]]},
+{id:40,brand:"iShares",name:"iShares Ageing Population",tk:"AGED",cat:"Themen",grp:"Longevity",ter:0.40,ytd:2.4,div:1.2,dt:"Thesaurierend",aum:"0,3 Mrd.",p:{y1:10.4,y3:36.4,y5:58.4,y10:null},h:[["UnitedHealth","5,8%"],["CVS Health","4,6%"],["Humana","4,2%"],["Medtronic","4,0%"],["Abbott Lab.","3,8%"],["Stryker","3,4%"],["Intuitive Surg.","3,2%"],["Elevance Health","3,0%"],["Cigna","2,8%"],["Baxter Int.","2,6%"]]},
+{id:41,brand:"Global X",name:"Global X Autonomous & EV UCITS",tk:"DRIV",cat:"Themen",grp:"Elektromobilität",ter:0.50,ytd:-14.2,div:0.4,dt:"Thesaurierend",aum:"0,3 Mrd.",p:{y1:-8.4,y3:12.6,y5:null,y10:null},h:[["Tesla","6,8%"],["NIO","4,8%"],["BYD","4,4%"],["Rivian","4,0%"],["Aptiv","3,8%"],["Mobileye","3,4%"],["ON Semiconductor","2,8%"],["TE Connectivity","2,6%"],["Nidec","2,4%"],["Luminar Tech.","3,0%"]]},
+{id:42,brand:"iShares",name:"iShares Digitalisation UCITS",tk:"DGTL",cat:"Themen",grp:"Digitalisierung",ter:0.40,ytd:-5.6,div:0.5,dt:"Thesaurierend",aum:"0,4 Mrd.",p:{y1:6.4,y3:38.4,y5:72.6,y10:null},h:[["Salesforce","4,8%"],["SAP","4,4%"],["Shopify","4,0%"],["ServiceNow","3,8%"],["Cloudflare","3,4%"],["Workday","3,2%"],["Twilio","2,8%"],["HubSpot","2,6%"],["Veeva Sys.","2,4%"],["DocuSign","2,2%"]]},
+{id:43,brand:"iShares",name:"iShares Asia Pacific Dividend",tk:"IAPD",cat:"Dividende",grp:"Dividende",ter:0.59,ytd:3.8,div:5.4,dt:"Ausschüttend",aum:"0,3 Mrd.",p:{y1:10.4,y3:26.4,y5:38.6,y10:92.4},h:[["BHP","6,2%"],["Rio Tinto","5,8%"],["ANZ Bank","4,6%"],["Westpac","4,2%"],["Commonwealth Bank","4,0%"],["Macquarie","3,6%"],["NAB","3,4%"],["Fortescue","3,0%"],["Woodside","2,8%"],["Wesfarmers","2,6%"]]},
+{id:44,brand:"iShares",name:"iShares MSCI Japan",tk:"IJPN",cat:"Asien",grp:"Länder",ter:0.12,ytd:-4.2,div:2.4,dt:"Ausschüttend",aum:"3,2 Mrd.",p:{y1:8.4,y3:42.4,y5:68.6,y10:124.8},h:[["Toyota","4,8%"],["Sony","3,6%"],["Keyence","3,2%"],["SoftBank","2,8%"],["Mitsubishi UFJ","2,6%"],["Tokyo Electron","2,4%"],["Shin-Etsu Chem.","2,2%"],["Nintendo","2,0%"],["Recruit Holdings","1,8%"],["Hitachi","1,6%"]]},
+{id:45,brand:"SPDR",name:"SPDR STOXX Europe 600",tk:"EXSA",cat:"Europa",grp:"Broad Market",ter:0.19,ytd:8.2,div:3.4,dt:"Ausschüttend",aum:"2,4 Mrd.",p:{y1:13.8,y3:40.2,y5:56.4,y10:122.8},h:[["Novo Nordisk","3,8%"],["ASML","3,4%"],["Nestlé","2,6%"],["Shell","2,4%"],["AstraZeneca","2,4%"],["Roche","2,2%"],["LVMH","2,2%"],["SAP","2,0%"],["HSBC","1,9%"],["Siemens","1,8%"]]},
+{id:46,brand:"VanEck",name:"VanEck Morningstar Wide Moat",tk:"MOAT",cat:"USA",grp:"Factor",ter:0.49,ytd:-4.8,div:0.6,dt:"Thesaurierend",aum:"0,6 Mrd.",p:{y1:14.2,y3:56.4,y5:92.6,y10:null},h:[["Alphabet A","3,4%"],["Salesforce","3,2%"],["Wells Fargo","3,0%"],["Medtronic","2,8%"],["Tyler Tech.","2,6%"],["Etsy","2,4%"],["Biogen","2,2%"],["Boeing","2,0%"],["Amazon","1,8%"],["U.S. Bancorp","1,6%"]]},
+{id:47,brand:"iShares",name:"iShares S&P 500 Value",tk:"IUVF",cat:"USA",grp:"Factor",ter:0.20,ytd:-3.2,div:2.2,dt:"Thesaurierend",aum:"1,2 Mrd.",p:{y1:12.4,y3:44.6,y5:82.4,y10:224.6},h:[["Berkshire H.","4,8%"],["JPMorgan","3,6%"],["ExxonMobil","3,2%"],["Johnson & J.","2,9%"],["Walmart","2,4%"],["Chevron","2,1%"],["Bank of Am.","2,0%"],["AbbVie","1,9%"],["Wells Fargo","1,8%"],["Philip Morris","1,7%"]]},
+{id:48,brand:"iShares",name:"iShares Russell 2000",tk:"IUSN",cat:"USA",grp:"Small Cap",ter:0.35,ytd:-8.4,div:1.4,dt:"Thesaurierend",aum:"0,9 Mrd.",p:{y1:6.8,y3:18.4,y5:48.2,y10:164.8},h:[["FTAI Aviation","0,4%"],["Comfort Sys.","0,4%"],["Sprouts Farmers","0,4%"],["Casella Waste","0,3%"],["Onto Innovation","0,3%"],["Installed Bldg","0,3%"],["Trex Co.","0,3%"],["EVI Industries","0,3%"],["Ensign Group","0,3%"],["Bio-Techne","0,3%"]]},
+{id:49,brand:"iShares",name:"iShares FinTech UCITS",tk:"FTEK",cat:"Themen",grp:"FinTech",ter:0.50,ytd:-6.4,div:0.4,dt:"Thesaurierend",aum:"0,2 Mrd.",p:{y1:4.8,y3:22.4,y5:null,y10:null},h:[["Visa","8,4%"],["Mastercard","8,0%"],["PayPal","6,8%"],["Intuit","5,4%"],["Fiserv","4,8%"],["Block Inc","4,4%"],["Adyen","4,0%"],["Klarna","3,2%"],["SoFi Tech.","2,8%"],["Stripe","3,6%"]]},
+{id:50,brand:"iShares",name:"iShares MSCI World Energy Sector",tk:"IQQE",cat:"Themen",grp:"Sektoren",ter:0.25,ytd:8.4,div:3.8,dt:"Ausschüttend",aum:"0,4 Mrd.",p:{y1:14.8,y3:28.4,y5:62.4,y10:82.4},h:[["ExxonMobil","16,4%"],["Chevron","12,8%"],["Shell","11,4%"],["TotalEnergies","8,6%"],["ConocoPhillips","6,4%"],["EOG Resources","5,2%"],["BP","4,8%"],["Schlumberger","4,4%"],["Pioneer Nat. Res.","4,0%"],["Halliburton","3,6%"]]},
+{id:51,brand:"iShares",name:"iShares Developed Markets Property Yield",tk:"IQQ6",cat:"Themen",grp:"Immobilien",ter:0.59,ytd:8.3,div:2.2,dt:"Ausschüttend",aum:"1,0 Mrd.",p:{y1:8.3,y3:18.5,y5:-0.3,y10:null},h:[["Prologis","7,5%"],["Equinix","5,7%"],["Simon Property Group","4,1%"],["Digital Realty Trust","3,9%"],["Realty Income","3,3%"],["Public Storage","2,9%"],["Ventas","2,5%"],["Iron Mountain","2,0%"],["Extra Space Storage","1,7%"],["VICI Properties","1,6%"]]},
+{id:52,brand:"iShares",name:"iShares S&P 500 Information Technology Sector",tk:"QDVE",cat:"Themen",grp:"Sektoren",ter:0.15,ytd:23.6,div:0.0,dt:"Thesaurierend",aum:"16,8 Mrd.",p:{y1:34.1,y3:109.6,y5:160.3,y10:null},h:[["Apple","20,1%"],["NVIDIA","19,8%"],["Microsoft","14,2%"],["Broadcom","7,8%"],["Micron Technology","4,2%"],["AMD","3,3%"],["Cisco Systems","1,9%"],["Intel","1,8%"],["Applied Materials","1,7%"],["Lam Research","1,6%"]]},
+{id:53,brand:"iShares",name:"iShares S&P 500 Financials Sector",tk:"QDVH",cat:"Themen",grp:"Sektoren",ter:0.15,ytd:7.7,div:0.0,dt:"Thesaurierend",aum:"2,1 Mrd.",p:{y1:9.7,y3:62.3,y5:65.5,y10:null},h:[["JPMorgan Chase","11,7%"],["Berkshire Hathaway","11,6%"],["Visa","7,5%"],["Mastercard","5,8%"],["Bank of America","5,0%"],["Goldman Sachs","3,8%"],["Wells Fargo","3,2%"],["Morgan Stanley","3,1%"],["Citigroup","2,8%"],["American Express","2,2%"]]},
+{id:54,brand:"iShares",name:"iShares S&P 500 Health Care Sector",tk:"QDVG",cat:"Themen",grp:"Sektoren",ter:0.15,ytd:13.3,div:0.0,dt:"Thesaurierend",aum:"2,6 Mrd.",p:{y1:28.1,y3:25.3,y5:38.3,y10:null},h:[["Eli Lilly","15,5%"],["Johnson & Johnson","10,4%"],["AbbVie","7,7%"],["UnitedHealth Group","6,5%"],["Merck & Co.","5,4%"],["Thermo Fisher Scientific","3,6%"],["Amgen","3,6%"],["Abbott Laboratories","3,1%"],["Gilead Sciences","2,8%"],["Pfizer","2,4%"]]},
+{id:55,brand:"VanEck",name:"VanEck Uranium and Nuclear Technologies",tk:"NUKL",cat:"Themen",grp:"Uran & Kernenergie",ter:0.55,ytd:-0.7,div:0.0,dt:"Thesaurierend",aum:"2,0 Mrd.",p:{y1:7.2,y3:122.5,y5:null,y10:null},h:[["Cameco","14,1%"],["Sprott Physical Uranium Trust","7,4%"],["NexGen Energy","7,1%"],["Oklo","6,5%"],["IHI Corp.","6,1%"],["Hitachi","5,8%"],["Fuji Electric","5,6%"],["AtkinsRéalis Group","5,6%"],["Mitsubishi Heavy Industries","5,5%"],["Samsung C&T","4,8%"]]},
+{id:56,brand:"21Shares",name:"21Shares Bitcoin ETP",tk:"2BTC",cat:"Themen",grp:"Krypto",ter:1.49,ytd:-11.1,div:0.0,dt:"Thesaurierend",aum:"550 Mio.",p:{y1:-28.8,y3:170.8,y5:55.7,y10:null},h:[["Bitcoin (physisch hinterlegt)","100%"],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""]]},
+{id:57,brand:"Invesco",name:"Invesco CoinShares Global Blockchain",tk:"BNXG",cat:"Themen",grp:"Krypto",ter:0.65,ytd:23.1,div:0.0,dt:"Thesaurierend",aum:"980 Mio.",p:{y1:29.6,y3:176.0,y5:61.8,y10:null},h:[["AMD","5,0%"],["Riot Platforms","4,5%"],["Cipher Digital","4,3%"],["HIVE Digital Technologies","3,4%"],["Samsung Electronics","3,3%"],["Galaxy Digital","3,3%"],["SBI Holdings","3,3%"],["Block","3,3%"],["Taiwan Semiconductor (TSMC)","3,2%"],["Robinhood Markets","3,2%"]]},
+{id:58,brand:"Amundi",name:"Amundi Global Luxury",tk:"GLUX",cat:"Themen",grp:"Luxusgüter",ter:0.25,ytd:-4.1,div:0.0,dt:"Thesaurierend",aum:"490 Mio.",p:{y1:3.7,y3:-5.8,y5:1.1,y10:null},h:[["Richemont","10,8%"],["LVMH","8,0%"],["Ferrari","6,0%"],["Royal Caribbean Cruises","5,6%"],["Hermès International","5,3%"],["Marriott International","5,3%"],["Hilton Worldwide","4,8%"],["L'Oréal","4,2%"],["Tesla","3,7%"],["Mercedes-Benz Group","3,5%"]]},
+{id:59,brand:"iShares",name:"iShares Global Infrastructure",tk:"IQQI",cat:"Themen",grp:"Infrastruktur",ter:0.65,ytd:10.2,div:1.4,dt:"Ausschüttend",aum:"2,1 Mrd.",p:{y1:12.5,y3:31.4,y5:31.1,y10:null},h:[["NextEra Energy","5,5%"],["Union Pacific","5,1%"],["Enbridge","3,6%"],["Southern Co.","3,2%"],["Duke Energy","2,9%"],["CSX","2,8%"],["Williams Companies","2,6%"],["American Tower","2,4%"],["National Grid","2,4%"],["Canadian Pacific Kansas City","2,3%"]]},
+{id:60,brand:"VanEck",name:"VanEck Video Gaming and eSports",tk:"ESP0",cat:"Themen",grp:"Gaming",ter:0.55,ytd:-5.2,div:0.0,dt:"Thesaurierend",aum:"530 Mio.",p:{y1:-12.0,y3:74.0,y5:54.6,y10:null},h:[["NetEase","7,9%"],["Tencent Holdings","7,6%"],["Nintendo","7,0%"],["Take-Two Interactive","6,4%"],["Electronic Arts","6,2%"],["Aristocrat Leisure","5,6%"],["Capcom","5,6%"],["Bandai Namco Holdings","5,3%"],["Unity Software","5,0%"],["Konami Group","4,5%"]]},
+{id:61,brand:"WisdomTree",name:"WisdomTree Cloud Computing",tk:"WTEJ",cat:"Themen",grp:"Digitalisierung",ter:0.40,ytd:21.8,div:0.0,dt:"Thesaurierend",aum:"310 Mio.",p:{y1:18.9,y3:22.2,y5:-30.3,y10:null},h:[["Datadog","2,7%"],["Palo Alto Networks","2,5%"],["JFrog","2,3%"],["CrowdStrike Holdings","2,2%"],["Okta","2,2%"],["DigitalOcean Holdings","2,0%"],["Twilio","2,0%"],["Snowflake","2,0%"],["PagerDuty","2,0%"],["Tenable Holdings","1,9%"]]},
+{id:62,brand:"iShares",name:"iShares Physical Silver ETC",tk:"PPFD",cat:"Rohstoffe",grp:"Rohstoffe",ter:0.20,ytd:-8.7,div:0.0,dt:"Thesaurierend",aum:"3,0 Mrd.",p:{y1:61.5,y3:145.1,y5:174.1,y10:null},h:[["Silber (physisch hinterlegt)","100%"],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""]]},
+{id:63,brand:"iShares",name:"iShares Agribusiness",tk:"IS0C",cat:"Themen",grp:"Rohstoffe",ter:0.55,ytd:20.3,div:0.0,dt:"Thesaurierend",aum:"420 Mio.",p:{y1:18.1,y3:15.8,y5:30.9,y10:null},h:[["Corteva","9,2%"],["Archer-Daniels-Midland","7,6%"],["CF Industries Holdings","6,4%"],["Nutrien","6,2%"],["Deere & Co.","6,1%"],["Bunge Global","4,8%"],["Tyson Foods","4,7%"],["Kubota","4,4%"],["WH Group","3,0%"],["Saudi Arabian Mining","2,6%"]]},
+{id:64,brand:"Xtrackers",name:"Xtrackers S&P 500 Equal Weight",tk:"XDEW",cat:"USA",grp:"Factor",ter:0.15,ytd:16.2,div:0.0,dt:"Thesaurierend",aum:"11,5 Mrd.",p:{y1:18.6,y3:41.3,y5:52.3,y10:null},h:[["PayPal Holdings","0,3%"],["Global Payments","0,3%"],["International Paper","0,3%"],["Bio-Techne","0,3%"],["Expedia Group","0,3%"],["IQVIA Holdings","0,3%"],["Genuine Parts","0,3%"],["Zebra Technologies","0,3%"],["Travelers","0,3%"],["Smurfit Westrock","0,3%"]]},
+{id:65,brand:"Global X",name:"Global X Copper Miners",tk:"4COP",cat:"Themen",grp:"Rohstoffe",ter:0.55,ytd:28.3,div:0.0,dt:"Thesaurierend",aum:"1,3 Mrd.",p:{y1:88.4,y3:137.0,y5:null,y10:null},h:[["Teck Resources","5,6%"],["BHP Group","5,4%"],["Hudbay Minerals","5,3%"],["Southern Copper","5,2%"],["Antofagasta","5,1%"],["First Quantum Minerals","5,1%"],["Glencore","5,0%"],["Freeport-McMoRan","4,8%"],["KGHM Polska Miedz","4,8%"],["Zijin Mining Group","4,5%"]]},
+{id:66,brand:"iShares",name:"iShares Core FTSE 100",tk:"IUSZ",cat:"Europa",grp:"Länder",ter:0.07,ytd:13.8,div:2.8,dt:"Ausschüttend",aum:"19,3 Mrd.",p:{y1:22.7,y3:60.2,y5:80.9,y10:null},h:[["HSBC Holdings","10,5%"],["AstraZeneca","7,3%"],["Shell","7,2%"],["Rolls-Royce","4,7%"],["Unilever","3,9%"],["British American Tobacco","3,6%"],["BP","3,3%"],["GSK","3,0%"],["Rio Tinto","2,8%"],["Barclays","2,7%"]]},
+{id:67,brand:"Amundi",name:"Amundi CAC 40",tk:"VOOP",cat:"Europa",grp:"Länder",ter:0.25,ytd:4.8,div:0.0,dt:"Thesaurierend",aum:"1,0 Mrd.",p:{y1:11.4,y3:24.2,y5:44.1,y10:null},h:[["TotalEnergies","8,4%"],["Schneider Electric","8,3%"],["Airbus","6,6%"],["LVMH","6,2%"],["BNP Paribas","6,1%"],["Safran","5,6%"],["Air Liquide","4,9%"],["Sanofi","4,8%"],["AXA","4,4%"],["L'Oréal","3,9%"]]},
+{id:68,brand:"Amundi",name:"Amundi MSCI Switzerland",tk:"540J",cat:"Europa",grp:"Länder",ter:0.25,ytd:8.6,div:0.0,dt:"Thesaurierend",aum:"206 Mio.",p:{y1:18.7,y3:36.5,y5:39.7,y10:null},h:[["Roche","14,8%"],["Novartis","13,8%"],["Nestlé","12,4%"],["UBS Group","8,0%"],["ABB","7,4%"],["Richemont","6,1%"],["Zurich Insurance","5,5%"],["Swiss Re","2,4%"],["Lonza Group","2,4%"],["Holcim","2,2%"]]},
+{id:69,brand:"iShares",name:"iShares MSCI Canada",tk:"SXR2",cat:"Global",grp:"Länder",ter:0.48,ytd:14.9,div:0.0,dt:"Thesaurierend",aum:"2,0 Mrd.",p:{y1:27.4,y3:71.8,y5:80.2,y10:null},h:[["Royal Bank of Canada","9,5%"],["Toronto-Dominion Bank","6,4%"],["Shopify","4,9%"],["Bank of Montreal","4,0%"],["Enbridge","3,9%"],["Canadian Imperial Bank","3,5%"],["Bank of Nova Scotia","3,5%"],["Canadian Natural Res.","3,2%"],["Brookfield Corp.","2,7%"],["Suncor Energy","2,6%"]]},
+{id:70,brand:"iShares",name:"iShares MSCI Australia",tk:"IBC6",cat:"Global",grp:"Länder",ter:0.50,ytd:16.9,div:0.0,dt:"Thesaurierend",aum:"543 Mio.",p:{y1:14.3,y3:39.1,y5:44.3,y10:null},h:[["BHP Group","14,4%"],["Commonwealth Bank","14,2%"],["Westpac Banking","6,2%"],["National Australia Bank","6,1%"],["ANZ Group","5,4%"],["Wesfarmers","4,8%"],["Macquarie Group","4,3%"],["Rio Tinto","3,0%"],["Woodside Energy","3,0%"],["CSL","3,0%"]]},
+{id:71,brand:"iShares",name:"iShares MSCI Korea",tk:"CEBJ",cat:"Emerging Markets",grp:"Länder",ter:0.65,ytd:88.5,div:0.0,dt:"Thesaurierend",aum:"748 Mio.",p:{y1:157.0,y3:181.3,y5:129.7,y10:null},h:[["Samsung Electronics","26,1%"],["SK hynix","13,5%"],["SK Square","4,0%"],["Samsung Electronics (Vz.)","3,3%"],["KB Financial Group","3,2%"],["Samsung Electro-Mechanics","2,7%"],["Hyundai Motor","2,5%"],["Shinhan Financial Group","2,3%"],["Hana Financial Group","1,8%"],["Hanwha Aerospace","1,6%"]]},
+{id:72,brand:"Xtrackers",name:"Xtrackers MSCI Taiwan",tk:"DBX5",cat:"Emerging Markets",grp:"Länder",ter:0.65,ytd:75.7,div:0.0,dt:"Thesaurierend",aum:"379 Mio.",p:{y1:104.0,y3:199.9,y5:176.3,y10:null},h:[["Taiwan Semiconductor (TSMC)","31,3%"],["MediaTek","7,9%"],["Delta Electronics","5,1%"],["Hon Hai Precision (Foxconn)","4,8%"],["ASE Technology","3,0%"],["United Microelectronics","2,1%"],["Elite Material","2,1%"],["Fubon Financial","1,7%"],["CTBC Financial","1,7%"],["Accton Technology","1,7%"]]},
+{id:73,brand:"Xtrackers",name:"Xtrackers FTSE Vietnam",tk:"XFVT",cat:"Emerging Markets",grp:"Länder",ter:0.85,ytd:1.4,div:0.0,dt:"Thesaurierend",aum:"331 Mio.",p:{y1:10.4,y3:24.7,y5:-2.7,y10:null},h:[["Vingroup","13,1%"],["Vinhomes","12,4%"],["Masan Group","11,9%"],["Vietnam Dairy Products (Vinamilk)","11,0%"],["Hoa Phat Group","10,2%"],["Vietcombank","7,7%"],["Vincom Retail","4,7%"],["SSI Securities","4,1%"],["Vietjet Aviation","3,5%"],["Sacombank","2,5%"]]},
+{id:74,brand:"iShares",name:"iShares MSCI Brazil",tk:"IQQB",cat:"Emerging Markets",grp:"Länder",ter:0.74,ytd:18.7,div:3.6,dt:"Ausschüttend",aum:"430 Mio.",p:{y1:31.2,y3:26.9,y5:44.0,y10:null},h:[["Vale","10,7%"],["Nu Holdings","10,6%"],["Itaú Unibanco","9,1%"],["Petrobras (Vz.)","7,4%"],["Petrobras (St.)","7,1%"],["Banco Bradesco","3,8%"],["Itausa","3,2%"],["B3 - Brasil Bolsa Balcão","3,1%"],["Ambev","2,7%"],["WEG","2,7%"]]},
+{id:75,brand:"iShares",name:"iShares MSCI EM Latin America",tk:"IUSC",cat:"Emerging Markets",grp:"Broad Market",ter:0.20,ytd:17.5,div:3.3,dt:"Ausschüttend",aum:"1,7 Mrd.",p:{y1:35.4,y3:39.9,y5:69.6,y10:null},h:[["iShares MSCI Brazil ETF","7,9%"],["Vale","5,5%"],["Nu Holdings","5,5%"],["Itaú Unibanco","4,7%"],["Grupo México","4,3%"],["Petrobras (Vz.)","3,8%"],["Petrobras (St.)","3,7%"],["Grupo Financiero Banorte","3,3%"],["Credicorp","3,3%"],["FEMSA","2,6%"]]},
+{id:76,brand:"iShares",name:"iShares MSCI ACWI",tk:"IUSQ",cat:"Global",grp:"Broad Market",ter:0.20,ytd:15.4,div:0.0,dt:"Thesaurierend",aum:"31,1 Mrd.",p:{y1:22.7,y3:62.6,y5:70.2,y10:null},h:[["Apple","4,9%"],["NVIDIA","4,5%"],["Microsoft","3,2%"],["Amazon.com","2,3%"],["Alphabet A","1,9%"],["Broadcom","1,7%"],["Taiwan Semiconductor (TSMC)","1,7%"],["Alphabet C","1,5%"],["iShares MSCI India ETF","1,4%"],["Meta Platforms","1,2%"]]},
+{id:77,brand:"iShares",name:"iShares MSCI EM Asia",tk:"CEBL",cat:"Emerging Markets",grp:"Broad Market",ter:0.20,ytd:28.4,div:0.0,dt:"Thesaurierend",aum:"7,4 Mrd.",p:{y1:42.6,y3:81.6,y5:53.9,y10:null},h:[["Taiwan Semiconductor (TSMC)","18,1%"],["Samsung Electronics","7,3%"],["SK hynix","5,5%"],["iShares MSCI China A ETF","4,7%"],["Tencent Holdings","4,0%"],["Alibaba Group","2,6%"],["MediaTek","1,6%"],["China Construction Bank","1,1%"],["Delta Electronics","1,0%"],["HDFC Bank","1,0%"]]},
+{id:78,brand:"iShares",name:"iShares MSCI World Quality Factor",tk:"IS3Q",cat:"Global",grp:"Factor",ter:0.25,ytd:13.7,div:0.0,dt:"Thesaurierend",aum:"5,3 Mrd.",p:{y1:20.2,y3:51.0,y5:59.8,y10:null},h:[["Apple","5,8%"],["Microsoft","5,7%"],["NVIDIA","4,6%"],["Visa","3,5%"],["Meta Platforms","3,2%"],["ASML Holding","3,0%"],["Eli Lilly","2,5%"],["TJX Companies","2,3%"],["Mastercard","2,1%"],["Lam Research","1,9%"]]},
+{id:79,brand:"iShares",name:"iShares STOXX World Equity Multifactor",tk:"IBCZ",cat:"Global",grp:"Factor",ter:0.30,ytd:19.1,div:0.0,dt:"Thesaurierend",aum:"0,8 Mrd.",p:{y1:26.7,y3:68.6,y5:73.9,y10:null},h:[["NVIDIA","4,8%"],["Apple","4,8%"],["Microsoft","3,7%"],["Alphabet C","3,1%"],["Broadcom","2,3%"],["Amazon.com","1,8%"],["Manulife Financial","1,6%"],["UniCredit","1,5%"],["McKesson","1,3%"],["General Motors","1,3%"]]},
+{id:80,brand:"iShares",name:"iShares MSCI World Value Factor",tk:"IS3S",cat:"Global",grp:"Factor",ter:0.25,ytd:37.3,div:0.0,dt:"Thesaurierend",aum:"6,2 Mrd.",p:{y1:55.7,y3:99.0,y5:125.3,y10:null},h:[["Micron Technology","13,2%"],["Cisco Systems","3,2%"],["Verizon Communications","2,1%"],["Toyota Motor","1,8%"],["AT&T","1,6%"],["Comcast","1,3%"],["QUALCOMM","1,3%"],["Hewlett Packard Enterprise","1,2%"],["General Motors","1,2%"],["British American Tobacco","1,2%"]]},
+{id:81,brand:"SPDR",name:"SPDR S&P US Dividend Aristocrats",tk:"SPYD",cat:"USA",grp:"Dividende",ter:0.35,ytd:15.0,div:2.2,dt:"Ausschüttend",aum:"3,3 Mrd.",p:{y1:14.4,y3:27.6,y5:42.5,y10:null},h:[["Verizon Communications","3,1%"],["Accenture","2,7%"],["Realty Income","2,2%"],["PepsiCo","2,0%"],["Chevron","1,9%"],["NIKE","1,7%"],["Medtronic","1,7%"],["Target","1,6%"],["Kenvue","1,6%"],["Kimberly-Clark","1,6%"]]},
+{id:82,brand:"SPDR",name:"SPDR S&P Global Dividend Aristocrats",tk:"ZPRG",cat:"Global",grp:"Dividende",ter:0.45,ytd:15.0,div:3.8,dt:"Ausschüttend",aum:"1,5 Mrd.",p:{y1:18.1,y3:43.5,y5:46.6,y10:null},h:[["Highwoods Properties","2,1%"],["Getty Realty","1,8%"],["Verizon Communications","1,8%"],["John Wiley & Sons","1,7%"],["Edison International","1,6%"],["LTC Properties","1,6%"],["Teleperformance","1,5%"],["Northwest Bancshares","1,5%"],["ONEOK","1,5%"],["Pfizer","1,5%"]]},
+{id:83,brand:"iShares",name:"iShares EURO STOXX Select Dividend 30",tk:"EXSG",cat:"Europa",grp:"Dividende",ter:0.32,ytd:17.6,div:4.3,dt:"Ausschüttend",aum:"0,6 Mrd.",p:{y1:25.9,y3:87.5,y5:66.8,y10:null},h:[["Randstad","5,4%"],["ABN AMRO Bank","5,0%"],["OMV","4,9%"],["NN Group","4,5%"],["ASR Nederland","4,4%"],["Signify","4,2%"],["BNP Paribas","4,0%"],["Crédit Agricole","4,0%"],["Poste Italiane","3,9%"],["AXA","3,9%"]]},
+{id:84,brand:"Fidelity",name:"Fidelity Global Quality Income",tk:"FGEQ",cat:"Global",grp:"Dividende",ter:0.40,ytd:15.7,div:2.0,dt:"Ausschüttend",aum:"0,8 Mrd.",p:{y1:22.6,y3:52.0,y5:70.5,y10:null},h:[["NVIDIA","5,3%"],["Apple","5,0%"],["Alphabet A","4,2%"],["Microsoft","3,8%"],["Broadcom","2,2%"],["Meta Platforms","1,5%"],["JPMorgan Chase","1,3%"],["Eli Lilly","1,2%"],["ASML Holding","0,9%"],["Visa","0,9%"]]},
+{id:85,brand:"JPMorgan",name:"JPMorgan Global Equity Premium Income Active",tk:"JGPI",cat:"Global",grp:"Dividende",ter:0.35,ytd:6.4,div:7.9,dt:"Ausschüttend",aum:"1,3 Mrd.",p:{y1:7.8,y3:null,y5:null,y10:null},h:[["Johnson & Johnson","2,0%"],["Southern Co.","1,7%"],["Microsoft","1,6%"],["Berkshire Hathaway","1,3%"],["AT&T","1,2%"],["Motorola Solutions","1,2%"],["Coca-Cola","1,2%"],["McDonald's","1,2%"],["ASML Holding","1,1%"],["PepsiCo","1,1%"]]},
+{id:86,brand:"JPMorgan",name:"JPMorgan Nasdaq Equity Premium Income Active",tk:"JEQP",cat:"USA",grp:"Dividende",ter:0.35,ytd:12.2,div:10.5,dt:"Ausschüttend",aum:"3,6 Mrd.",p:{y1:21.8,y3:null,y5:null,y10:null},h:[["NVIDIA","8,1%"],["Apple","7,5%"],["Alphabet C","6,2%"],["Microsoft","5,9%"],["Amazon.com","5,1%"],["Micron Technology","4,8%"],["AMD","3,8%"],["Meta Platforms","2,8%"],["Broadcom","2,7%"],["Lam Research","2,4%"]]},
+{id:87,brand:"WisdomTree",name:"WisdomTree US Quality Dividend Growth",tk:"DGRW",cat:"USA",grp:"Dividende",ter:0.33,ytd:11.9,div:1.0,dt:"Ausschüttend",aum:"0,1 Mrd.",p:{y1:15.9,y3:44.9,y5:74.0,y10:null},h:[["Microsoft","6,2%"],["Apple","6,2%"],["Exxon Mobil","4,9%"],["NVIDIA","4,2%"],["AbbVie","3,8%"],["Broadcom","3,6%"],["Coca-Cola","3,3%"],["UnitedHealth Group","3,0%"],["Home Depot","2,8%"],["Merck & Co.","2,7%"]]},
+{id:88,brand:"iShares",name:"iShares MSCI World Small Cap",tk:"WSML",cat:"Global",grp:"Small Cap",ter:0.35,ytd:18.1,div:0.0,dt:"Thesaurierend",aum:"7,7 Mrd.",p:{y1:23.7,y3:49.1,y5:42.3,y10:null},h:[["Sandisk","1,7%"],["ATI Inc","0,2%"],["Carpenter Technology","0,2%"],["nVent Electric","0,2%"],["US Foods Holding","0,2%"],["Tenet Healthcare","0,2%"],["Woodward","0,2%"],["Viatris","0,2%"],["Roku","0,2%"],["Moderna","0,2%"]]},
+{id:89,brand:"Xtrackers",name:"Xtrackers MSCI EM ESG",tk:"XZEM",cat:"ESG",grp:"ESG",ter:0.25,ytd:9.3,div:0.0,dt:"Thesaurierend",aum:"1,4 Mrd.",p:{y1:18.3,y3:48.3,y5:19.6,y10:null},h:[["Taiwan Semi.","20,1%"],["SK Hynix","9,7%"],["Tencent","6,8%"],["Alibaba","4,6%"],["China Constr. Bank","1,9%"],["Delta Electronics","1,8%"],["HDFC Bank","1,7%"],["SK Square","1,1%"],["Meituan","1,1%"],["Al Rajhi Bank","1,0%"]]},
+{id:90,brand:"Invesco",name:"Invesco Physical Platinum",tk:"SPPT",cat:"Rohstoffe",grp:"Rohstoffe",ter:0.19,ytd:-5.8,div:0.0,dt:"Thesaurierend",aum:"77 Mio.",p:{y1:41.0,y3:86.2,y5:91.3,y10:null},h:[["Platin (physisch)","100%"],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""],["",""]]},
+{id:91,brand:"L&G",name:"L&G Battery Value-Chain",tk:"BATT",cat:"Themen",grp:"Elektromobilität",ter:0.49,ytd:8.7,div:0.0,dt:"Thesaurierend",aum:"0,7 Mrd.",p:{y1:45.6,y3:61.5,y5:71.9,y10:null},h:[["Siemens","3,2%"],["Panasonic Holdings","3,2%"],["Fluence Energy","3,2%"],["NGK Corp.","3,2%"],["TDK Corp.","3,1%"],["CATL","3,1%"],["Hitachi","3,0%"],["Caterpillar","2,9%"],["ABB","2,9%"],["SolarEdge Tech.","2,9%"]]},
+];
+
+const CATS=["Alle","Global","USA","Europa","Asien","Emerging Markets","Dividende","Themen","Anleihen","Rohstoffe","ESG"];
+const BRANDS=["Alle","iShares","Vanguard","Xtrackers","Invesco","VanEck","Global X","Amundi","SPDR","L&G","WisdomTree","HANetf","21Shares","Fidelity","JPMorgan"];
+const GRPS=["Alle","Broad Market","Factor","Small Cap","Dividende","KI & Robotik","Halbleiter","Cybersecurity","Clean Energy","Defense","Biotech","Wasser","Digitalisierung","Elektromobilität","Longevity","Rohstoffe","Anleihen","ESG","FinTech","Sektoren","Länder","Immobilien","Uran & Kernenergie","Krypto","Luxusgüter","Infrastruktur","Gaming"];
+const GC={"Broad Market":"#1a1a1a","Factor":"#4f46e5","Small Cap":"#7c3aed","Dividende":"#16a34a","KI & Robotik":"#6366f1","Halbleiter":"#f59e0b","Cybersecurity":"#ef4444","Clean Energy":"#10b981","Defense":"#64748b","Biotech":"#ec4899","Wasser":"#0284c7","Digitalisierung":"#06b6d4","Elektromobilität":"#0ea5e9","Longevity":"#14b8a6","Rohstoffe":"#d97706","Anleihen":"#78716c","ESG":"#22c55e","FinTech":"#8b5cf6","Sektoren":"#84cc16","Länder":"#e11d48","Immobilien":"#a855f7","Uran & Kernenergie":"#f97316","Krypto":"#eab308","Luxusgüter":"#db2777","Infrastruktur":"#0891b2","Gaming":"#8b5cf6"};
+const PL={ytd:"YTD",y1:"1J",y3:"3J",y5:"5J",y10:"10J"};
+const PLF={ytd:"YTD 2026",y1:"1 Jahr",y3:"3 Jahre",y5:"5 Jahre",y10:"10 Jahre"};
+
+function pf(v){return v==null?"–":(v>0?"+":"")+v+"%";}
+function pc(v){return v==null?"#aaa":v>0?"#16a34a":"#e00";}
+function gc(g){return GC[g]||"#1a1a1a";}
+function eu(n){return n.toLocaleString("de-DE")+" €";}
+function h(tag,attrs,children){
+  const el=document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>{if(k==="style"&&typeof v==="object")Object.assign(el.style,v);else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);else el.setAttribute(k,v);});
+  if(children){if(Array.isArray(children))children.forEach(c=>{if(c!=null&&c!==false){if(typeof c==="string"||typeof c==="number")el.appendChild(document.createTextNode(c));else if(c instanceof Node)el.appendChild(c);}});else if(typeof children==="string"||typeof children==="number")el.textContent=children;}
+  return el;
+}
+function q(sel){return document.querySelector(sel);}
+function qa(sel){return [...document.querySelectorAll(sel)];}
+function set(sel,html){const el=q(sel);if(el)el.innerHTML=html;}
+function setEl(sel,el){const p=q(sel);if(p){p.innerHTML="";if(el)p.appendChild(el);}}
+
+// STATE
+const S={
+  tab:"etfs",per:"ytd",sort:"ytd",dir:1,
+  cat:"Alle",brand:"Alle",grp:"Alle",q:"",
+  openCat:0,openBrand:0,openGrp:0,
+  cmp:[],
+  pfPicks:[],pfWeights:{},
+  rc:{s:200,j:30,r:7,z:540,rj:20,te:0.20},
+  cp:"ytd"
+};
+
+// AUTH
+function doLogin(){
+  const v=q("#pwinput").value;
+  if(v!==PW){q("#pwerr").style.display="block";return;}
+  q("#gate").style.display="none";
+  q("#app").style.display="block";
+  init();
+}
+function doLogout(){
+  q("#gate").style.display="flex";
+  q("#app").style.display="none";
+  q("#pwinput").value="";
+  q("#pwerr").style.display="none";
+}
+q("#pwinput").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+
+// TABS
+const TABS=[
+  {id:"etfs",ic:"📊",lb:"ETFs"},
+  {id:"portfolio",ic:"📦",lb:"Portfolio"},
+  {id:"charts",ic:"📈",lb:"Charts"},
+  {id:"vergleich",ic:"⚖️",lb:"Vergleich"},
+  {id:"rechner",ic:"🧮",lb:"Rechner"},
+];
+function renderTabs(){
+  const el=q("#tabs");
+  el.innerHTML="";
+  TABS.forEach(t=>{
+    const lbl=t.id==="vergleich"&&S.cmp.length?`Vergleich · ${S.cmp.length}`:t.lb;
+    const on=S.tab===t.id;
+    const btn=h("button",{
+      class:"tab",
+      style:{color:on?"#1a1a1a":"#ccc"},
+      onclick:()=>goTab(t.id)
+    },[
+      h("span",{style:{fontSize:"20px",opacity:on?1:.45}},t.ic),
+      h("span",{style:{fontSize:"9px",fontWeight:on?"700":"400",whiteSpace:"nowrap"}},lbl)
+    ]);
+    el.appendChild(btn);
+  });
+}
+function goTab(tab){
+  S.tab=tab;
+  qa(".page").forEach(p=>p.classList.remove("active"));
+  const pg=q("#page-"+tab);
+  if(pg)pg.classList.add("active");
+  renderTabs();
+  if(tab==="charts")renderCharts();
+  if(tab==="vergleich")renderVergleich();
+  if(tab==="portfolio")renderPortfolio();
+  if(tab==="rechner")renderRechner();
+}
+
+// PERIOD BAR
+function renderPbar(){
+  const el=q("#pbar");
+  el.innerHTML="";
+  Object.entries(PL).forEach(([k,l])=>{
+    el.appendChild(h("button",{
+      class:"pb"+(S.per===k?" on":""),
+      onclick:()=>{S.per=k;renderPbar();renderList();}
+    },l));
+  });
+}
+
+// FILTERS
+function toggleFilter(key){
+  const map={cat:"openCat",brand:"openBrand",grp:"openGrp"};
+  const all=["openCat","openBrand","openGrp"];
+  const cur=map[key];
+  all.forEach(k=>{if(k!==cur)S[k]=0;});
+  S[cur]=S[cur]?0:1;
+  renderFilters();
+}
+function renderFilters(){
+  const filters=[
+    {key:"cat",items:CATS,val:S.cat,open:S.openCat},
+    {key:"brand",items:BRANDS,val:S.brand,open:S.openBrand},
+    {key:"grp",items:GRPS,val:S.grp,open:S.openGrp},
+  ];
+  filters.forEach(f=>{
+    const chips=q(`#${f.key}-chips`);
+    const arrow=q(`#${f.key}-arrow`);
+    const badge=q(`#${f.key}-badge`);
+    if(f.open){
+      chips.style.display="flex";
+      arrow.textContent="▲";
+    }else{
+      chips.style.display="none";
+      arrow.textContent="▼";
+    }
+    if(badge){
+      if(f.val!=="Alle"){
+        badge.innerHTML=`<span style="background:#1a1a1a;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px">${f.val}</span>`;
+      }else{
+        badge.innerHTML="";
+      }
+    }
+    chips.innerHTML="";
+    f.items.forEach(c=>{
+      const chip=h("button",{
+        class:"chip"+(f.val===c?" on":""),
+        onclick:()=>{S[f.key]=c;renderFilters();renderList();}
+      },c);
+      chips.appendChild(chip);
+    });
+  });
+}
+
+// SORT BAR
+function renderSbar(){
+  const el=q("#sbar");
+  el.innerHTML="";
+  [["ytd","Rendite"],["ter","Kosten"],["div","Dividende"]].forEach(([k,l])=>{
+    const on=S.sort===k;
+    el.appendChild(h("button",{
+      class:"sb"+(on?" on":""),
+      onclick:()=>{
+        if(S.sort===k)S.dir=S.dir?0:1;
+        else{S.sort=k;S.dir=k!=="ter"?1:0;}
+        renderSbar();renderList();
+      }
+    },l+(on?(S.dir?"↓":"↑"):"") ));
+  });
+  el.appendChild(h("span",{id:"ecnt",style:{marginLeft:"auto",fontSize:"12px",color:"#ccc"}},""));
+}
+
+// ETF LIST
+function getFiltered(){
+  const ql=S.q.toLowerCase();
+  let d=ETF.filter(e=>
+    (S.cat==="Alle"||e.cat===S.cat)&&
+    (S.brand==="Alle"||e.brand===S.brand)&&
+    (S.grp==="Alle"||e.grp===S.grp)&&
+    (!S.q||e.name.toLowerCase().includes(ql)||e.tk.toLowerCase().includes(ql)||e.brand.toLowerCase().includes(ql))
+  );
+  d.sort((a,b)=>{
+    const va=S.sort==="ytd"?(S.per==="ytd"?a.ytd:a.p[S.per]):a[S.sort];
+    const vb=S.sort==="ytd"?(S.per==="ytd"?b.ytd:b.p[S.per]):b[S.sort];
+    if(va==null&&vb==null)return 0;
+    if(va==null)return 1;
+    if(vb==null)return -1;
+    return S.dir?vb-va:va-vb;
+  });
+  return d;
+}
+function renderList(){
+  S.q=q("#esearch")?.value||"";
+  const d=getFiltered();
+  const cnt=q("#ecnt");
+  if(cnt)cnt.textContent=d.length+" ETFs";
+  const wrap=q("#elist");
+  wrap.innerHTML="";
+  const list=h("div",{class:"elist"});
+  if(!d.length){
+    list.appendChild(h("div",{style:{padding:"32px",textAlign:"center",color:"#ccc",fontSize:"14px"}},"Keine ETFs gefunden"));
+  }else{
+    d.forEach(etf=>{
+      const col=gc(etf.grp);
+      const row=h("div",{class:"erow",onclick:()=>openDetail(etf)});
+      // Icon
+      row.appendChild(h("div",{class:"eic",style:{background:col+"20",color:col}},etf.tk));
+      // Info
+      const info=h("div",{style:{flex:"1",minWidth:"0"}});
+      info.appendChild(h("div",{style:{fontSize:"14px",fontWeight:"600",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},etf.name));
+      info.appendChild(h("div",{style:{fontSize:"11px",color:"#bbb",marginTop:"1px"}},etf.brand+" · "+etf.grp));
+      row.appendChild(info);
+      // Right value
+      const rv=h("div",{style:{textAlign:"right",flexShrink:"0",marginLeft:"12px"}});
+      if(S.sort==="ter"){
+        rv.appendChild(h("div",{style:{fontSize:"16px",fontWeight:"700",color:"#1a1a1a"}},etf.ter.toFixed(2)+"%"));
+        rv.appendChild(h("div",{style:{fontSize:"10px",color:"#ccc"}},"TER"));
+      }else if(S.sort==="div"){
+        rv.appendChild(h("div",{style:{fontSize:"16px",fontWeight:"700",color:etf.div>0?"#16a34a":"#aaa"}},etf.div>0?etf.div+"%":"–"));
+        rv.appendChild(h("div",{style:{fontSize:"10px",color:"#ccc"}},"Div."));
+      }else{
+        const pv=S.per==="ytd"?etf.ytd:etf.p[S.per];
+        rv.appendChild(h("div",{style:{fontSize:"16px",fontWeight:"700",color:pc(pv)}},pf(pv)));
+        rv.appendChild(h("div",{style:{fontSize:"10px",color:"#ccc"}},PL[S.per]));
+      }
+      row.appendChild(rv);
+      list.appendChild(row);
+    });
+  }
+  wrap.appendChild(list);
+}
+
+// DETAIL
+function openDetail(etf){
+  let per=S.per;
+  const col=gc(etf.grp);
+  const det=q("#detail");
+  function render(){
+    const v=per==="ytd"?etf.ytd:etf.p[per];
+    det.innerHTML=`
+      <div class="dtop">
+        <button onclick="closeDetail()" style="font-size:24px;border:none;background:none;cursor:pointer;margin-right:12px;color:#1a1a1a">←</button>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;font-weight:700;color:#bbb;letter-spacing:.06em">${etf.brand} · ${etf.tk}</div>
+          <div style="font-size:15px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${etf.name}</div>
+        </div>
+        <button id="cmpbtn" onclick="toggleCmp(${etf.id})" style="padding:8px 14px;border-radius:20px;border:1.5px solid;border-color:${S.cmp.includes(etf.id)?"#1a1a1a":"#e8e8e8"};background:${S.cmp.includes(etf.id)?"#1a1a1a":"#fff"};color:${S.cmp.includes(etf.id)?"#fff":"#555"};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;margin-left:8px">${S.cmp.includes(etf.id)?"✓ Verglichen":"+ Vergleich"}</button>
+      </div>
+      <div style="padding:24px 20px 40px">
+        <div style="font-size:50px;font-weight:800;color:${pc(v)};letter-spacing:-.03em;line-height:1">${pf(v)}</div>
+        <div style="font-size:13px;color:#bbb;margin-top:4px;margin-bottom:16px">${PLF[per]}${["y3","y5","y10"].includes(per)?" · Gesamtrendite":""}</div>
+        <div style="display:flex;background:#f2f2f2;border-radius:12px;padding:3px;gap:2px;margin-bottom:24px">
+          ${Object.entries(PL).map(([k,l])=>`<button onclick="setDetPer('${k}',${etf.id})" style="flex:1;padding:8px 0;border-radius:9px;border:none;font-size:13px;cursor:pointer;background:${per===k?"#fff":"transparent"};color:${per===k?"#1a1a1a":"#aaa"};font-weight:${per===k?700:400}">${l}</button>`).join("")}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);background:#f8f8f8;border-radius:14px;padding:14px 0;margin-bottom:24px">
+          ${Object.entries(PL).map(([k,l])=>{const val=k==="ytd"?etf.ytd:etf.p[k];return`<div style="text-align:center;border-right:${k!=="y10"?"1px solid #efefef":"none"}"><div style="font-size:10px;color:#bbb;font-weight:600;margin-bottom:4px">${l}</div><div style="font-size:13px;font-weight:700;color:${pc(val)}">${pf(val)}</div></div>`;}).join("")}
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#bbb;letter-spacing:.06em;margin-bottom:12px">KENNZAHLEN</div>
+        <div style="background:#f8f8f8;border-radius:16px;padding:4px 16px;margin-bottom:24px">
+          ${[["TER",etf.ter.toFixed(2)+"%"],["Dividende",etf.div+"%"],["Ausschüttung",etf.dt],["Volumen",etf.aum],["Kategorie",etf.cat],["Anbieter",etf.brand]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0"><span style="font-size:14px;color:#888">${l}</span><span style="font-size:14px;font-weight:600">${v}</span></div>`).join("")}
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#bbb;letter-spacing:.06em;margin-bottom:12px">TOP POSITIONEN</div>
+        <div style="background:#f8f8f8;border-radius:16px;padding:4px 16px">
+          ${etf.h.filter(h=>h[0]).map(([n,p],i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:${i<9?"1px solid #f0f0f0":"none"}"><span style="font-size:14px">${n}</span><div style="display:flex;align-items:center;gap:10px"><div style="width:56px;height:3px;background:#e0e0e0;border-radius:3px"><div style="width:${Math.min(parseFloat(p)*8,100)}%;height:100%;background:${col};border-radius:3px"></div></div><span style="font-size:14px;font-weight:600;min-width:36px;text-align:right">${p}</span></div></div>`).join("")}
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#ccc;text-align:center">Kein Anlagerating</div>
+      </div>`;
+    det.classList.add("open");
+  }
+  window.setDetPer=(k,id)=>{per=k;render();};
+  render();
+}
+function closeDetail(){q("#detail").classList.remove("open");renderTabs();}
+function toggleCmp(id){
+  const i=S.cmp.indexOf(id);
+  if(i>=0)S.cmp.splice(i,1);
+  else if(S.cmp.length<4)S.cmp.push(id);
+  renderTabs();
+  // Re-render detail if open
+  const btn=q("#cmpbtn");
+  if(btn){
+    btn.style.borderColor=S.cmp.includes(id)?"#1a1a1a":"#e8e8e8";
+    btn.style.background=S.cmp.includes(id)?"#1a1a1a":"#fff";
+    btn.style.color=S.cmp.includes(id)?"#fff":"#555";
+    btn.textContent=S.cmp.includes(id)?"✓ Verglichen":"+ Vergleich";
+  }
+}
+function clearCmp(){S.cmp=[];renderTabs();renderVergleich();}
+
+// VERGLEICH
+function renderVergleich(){
+  q("#vg-sub").textContent=S.cmp.length+" ETFs";
+  const sel=ETF.filter(e=>S.cmp.includes(e.id));
+  const wrap=q("#vg-content");
+  if(!sel.length){
+    wrap.innerHTML=`<div style="text-align:center;padding:48px 0"><div style="font-size:48px;margin-bottom:16px">⚖️</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">ETF-Vergleich</div><div style="font-size:14px;color:#aaa;line-height:1.7">Öffne einen ETF und tippe<br/>auf "+ Vergleich" (max. 4)</div></div>`;
+    return;
+  }
+  const rows=[
+    {l:"YTD",g:e=>e.ytd,b:"max",ren:true},
+    {l:"1 Jahr",g:e=>e.p.y1,b:"max",ren:true},
+    {l:"3 Jahre",g:e=>e.p.y3,b:"max",ren:true},
+    {l:"5 Jahre",g:e=>e.p.y5,b:"max",ren:true},
+    {l:"TER",g:e=>e.ter,b:"min",ren:false,f:v=>v.toFixed(2)+"%"},
+    {l:"Dividende",g:e=>e.div,b:"max",ren:false,f:v=>v+"%"},
+    {l:"Ausschüttung",g:e=>0,b:null,ren:false,f:(v,e)=>e.dt},
+  ];
+  let html=`<div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto">`;
+  sel.forEach(e=>{
+    html+=`<div style="flex-shrink:0;background:#f5f5f5;border-radius:14px;padding:10px 14px;min-width:110px;position:relative">
+      <button onclick="S.cmp.splice(S.cmp.indexOf(${e.id}),1);renderTabs();renderVergleich();" style="position:absolute;top:6px;right:8px;border:none;background:none;cursor:pointer;font-size:14px;color:#ccc">✕</button>
+      <div style="font-size:12px;font-weight:800;margin-bottom:2px">${e.tk}</div>
+      <div style="font-size:10px;color:#aaa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px">${e.name}</div>
+    </div>`;
+  });
+  html+="</div>";
+  rows.forEach(row=>{
+    const vals=sel.map(e=>row.g(e));
+    const nums=vals.filter(v=>typeof v==="number"&&v!=null);
+    const best=nums.length?(row.b==="max"?Math.max(...nums):row.b==="min"?Math.min(...nums):null):null;
+    html+=`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#bbb;letter-spacing:.06em;margin-bottom:8px">${row.l.toUpperCase()}</div>`;
+    html+=`<div style="display:grid;grid-template-columns:repeat(${sel.length},1fr);gap:8px">`;
+    sel.forEach(e=>{
+      const v=row.g(e);
+      const isBest=best!=null&&v===best&&v!=null;
+      const disp=row.f?(row.f.length===2?row.f(v,e):row.f(v)):pf(v);
+      html+=`<div style="background:${isBest?"#1a1a1a":"#f5f5f5"};border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:15px;font-weight:800;color:${isBest?"#fff":row.ren?pc(v):"#1a1a1a"};line-height:1">${disp}</div>
+        ${isBest?'<div style="font-size:9px;color:#555;margin-top:4px;font-weight:700">BEST</div>':""}
+      </div>`;
+    });
+    html+="</div></div>";
+  });
+  wrap.innerHTML=html;
+}
+
+// CHARTS
+function renderCharts(){
+  const p=S.cp;
+  const sel=ETF.filter(e=>S.cmp.includes(e.id));
+  q("#chart-sub").textContent=sel.length?sel.length+" ETFs aus Vergleich":"Top ETFs im Überblick";
+  const src=sel.length?sel:ETF;
+  const data=src.map(e=>({name:e.name,tk:e.tk,v:p==="ytd"?e.ytd:(e.p[p]??null)}))
+    .filter(d=>d.v!=null).sort((a,b)=>b.v-a.v).slice(0,sel.length?999:12);
+  const maxAbs=data.length?Math.max(...data.map(d=>Math.abs(d.v))):100;
+  const short=n=>n.replace(/iShares |UCITS ETF|UCITS |Xtrackers |Vanguard |Amundi |Invesco |Global X |VanEck |SPDR |L&G |WisdomTree /g,"").trim().slice(0,22);
+  let html=`<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px">`;
+  Object.entries(PL).forEach(([k,l])=>{
+    html+=`<button onclick="S.cp='${k}';renderCharts();" style="padding:6px 14px;border-radius:20px;border:1.5px solid;border-color:${S.cp===k?"#1a1a1a":"#e8e8e8"};background:${S.cp===k?"#1a1a1a":"#fff"};color:${S.cp===k?"#fff":"#666"};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0">${l}</button>`;
+  });
+  html+="</div>";
+  if(["y3","y5","y10"].includes(p))html+=`<div style="font-size:11px;color:#bbb;margin-bottom:8px">Gesamtrendite ${PL[p]}</div>`;
+  data.forEach(d=>{
+    const w=Math.abs(d.v)/maxAbs*100;
+    const pos=d.v>=0;
+    html+=`<div class="bar-container">
+      <div class="bar-label">${short(d.name)}</div>
+      <div class="bar-track">
+        ${pos?`<div class="bar-fill" style="width:${w}%;background:#1a1a1a"><span style="font-size:11px;font-weight:700;color:#fff;white-space:nowrap">${pf(d.v)}</span></div>`:`<span style="font-size:11px;font-weight:700;color:#e00;padding-left:8px">${pf(d.v)}</span>`}
+      </div>
+    </div>`;
+  });
+  html+=`<div style="font-size:12px;font-weight:700;color:#bbb;letter-spacing:.06em;margin:16px 0 12px">RANGLISTE ${PL[p]}</div>`;
+  html+=`<div style="background:#f8f8f8;border-radius:16px;padding:0 16px">`;
+  data.forEach((d,i)=>{
+    html+=`<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:${i<data.length-1?"1px solid #f0f0f0":"none"}">
+      <span style="font-size:13px;font-weight:700;color:#ccc;min-width:24px">#${i+1}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:700;color:#aaa">${d.tk}</div>
+        <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.name}</div>
+      </div>
+      <span style="font-size:16px;font-weight:800;color:${d.v>0?"#16a34a":"#e00"};flex-shrink:0">${pf(d.v)}</span>
+    </div>`;
+  });
+  html+="</div>";
+  q("#chart-content").innerHTML=html;
+}
+
+// PORTFOLIO
+function renderPortfolio(){
+  const picks=S.pfPicks,wts=S.pfWeights;
+  const total=picks.reduce((s,e)=>s+(wts[e.id]||0),0);
+  function eq(list){const n=list.length;if(!n)return{};const e=Math.floor(100/n);const w={};list.forEach((x,i)=>{w[x.id]=i===n-1?100-e*(n-1):e;});return w;}
+  window.pfAdd=function(id){
+    const etf=ETF.find(e=>e.id===id);
+    if(!etf||S.pfPicks.find(p=>p.id===id)||S.pfPicks.length>=8)return;
+    S.pfPicks.push(etf);S.pfWeights=eq(S.pfPicks);
+    q("#pf-search").style.display="none";renderPortfolio();
+  };
+  window.pfRemove=function(id){S.pfPicks=S.pfPicks.filter(e=>e.id!==id);S.pfWeights=eq(S.pfPicks);renderPortfolio();};
+  window.pfSetW=function(id,v){
+    const others=S.pfPicks.filter(e=>e.id!==id).reduce((s,e)=>s+(S.pfWeights[e.id]||0),0);
+    S.pfWeights[id]=Math.max(0,Math.min(parseInt(v),100-others));renderPortfolio();
+  };
+  window.pfEqual=function(){S.pfWeights=eq(S.pfPicks);renderPortfolio();};
+  // Aggregate
+  const map={};
+  picks.forEach(etf=>{const w=(wts[etf.id]||0)/100;etf.h.filter(h=>h[0]).forEach(([name,pct])=>{map[name]=(map[name]||0)+parseFloat(pct)*w;});});
+  const agg=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  // Perf
+  const calc=k=>{let s=0,ws=0;picks.forEach(e=>{const w=wts[e.id]||0;const v=k==="ytd"?e.ytd:e.p[k];if(v!=null){s+=v*w;ws+=w;}});return ws>0?Math.round(s/ws*10)/10:null;};
+  const perf=Object.fromEntries(Object.keys(PL).map(k=>[k,calc(k)]));
+  // ETF search results
+  const qv=(q("#pf-q")||{value:""}).value||"";
+  const res=ETF.filter(e=>!picks.find(p=>p.id===e.id)&&(e.name.toLowerCase().includes(qv.toLowerCase())||e.tk.toLowerCase().includes(qv.toLowerCase()))).slice(0,8);
+  let html=`
+    <button onclick="q('#pf-search').style.display=q('#pf-search').style.display==='none'?'block':'none'" style="width:100%;padding:14px;background:#f5f5f5;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px"><span style="font-size:20px">+</span> ETF hinzufügen</button>
+    <div id="pf-search" style="display:none;background:#f8f8f8;border-radius:16px;padding:12px;margin-bottom:16px">
+      <input id="pf-q" class="inp" placeholder="ETF suchen..." oninput="renderPortfolio()" style="margin-bottom:8px;background:#fff">
+      <div id="pf-res">
+        ${res.map(e=>`<div onclick="pfAdd(${e.id})" style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border-radius:10px;cursor:pointer;margin-bottom:6px">
+          <div style="width:36px;height:36px;border-radius:10px;background:${gc(e.grp)}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;font-weight:800;color:${gc(e.grp)}">${e.tk}</div>
+          <div><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">${e.name}</div><div style="font-size:11px;color:#bbb">${e.brand} · ${e.grp}</div></div>
+        </div>`).join("")}
+        ${!res.length?'<div style="text-align:center;padding:12px;font-size:13px;color:#ccc">Nichts gefunden</div>':""}
+      </div>
+      <button onclick="q('#pf-search').style.display='none'" style="width:100%;margin-top:8px;padding:10px;background:none;border:1.5px solid #e8e8e8;border-radius:10px;font-size:13px;color:#aaa;cursor:pointer">Abbrechen</button>
+    </div>`;
+  if(!picks.length){
+    html+=`<div style="text-align:center;padding:48px 0;color:#ccc"><div style="font-size:52px;margin-bottom:12px">📦</div><div style="font-size:16px;font-weight:700;color:#bbb;margin-bottom:6px">Noch leer</div><div style="font-size:14px;line-height:1.6">Füge ETFs hinzu und sieh welche<br/>Aktien mehrfach enthalten sind</div></div>`;
+  }else{
+    html+=`<div style="background:#f8f8f8;border-radius:16px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:700">Gewichtung</div>
+        <div style="font-size:13px;font-weight:700;color:${total===100?"#16a34a":total>100?"#ef4444":"#f59e0b"}">${total}% ${total===100?"✓":""}</div>
+      </div>`;
+    picks.forEach(etf=>{
+      const w=wts[etf.id]||0;
+      html+=`<div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:10px;height:10px;border-radius:3px;background:${gc(etf.grp)}"></div>
+            <span style="font-size:13px;font-weight:700">${etf.tk}</span>
+            <span style="font-size:11px;color:#bbb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${etf.name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:15px;font-weight:800;min-width:38px;text-align:right">${w}%</span>
+            <button onclick="pfRemove(${etf.id})" style="border:none;background:none;cursor:pointer;font-size:18px;color:#ddd">✕</button>
+          </div>
+        </div>
+        <input type="range" min="0" max="100" step="5" value="${w}" oninput="pfSetW(${etf.id},this.value)" style="width:100%">
+      </div>`;
+    });
+    html+=`<button onclick="pfEqual()" style="width:100%;padding:10px;background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;font-size:12px;font-weight:600;color:#666;cursor:pointer">Gleichmäßig verteilen</button></div>`;
+    if(total>0){
+      html+=`<div style="background:#1a1a1a;border-radius:16px;padding:16px;margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:#555;letter-spacing:.06em;margin-bottom:12px">PORTFOLIO PERFORMANCE</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px">
+          ${Object.entries(PL).map(([k,l])=>`<div style="text-align:center"><div style="font-size:10px;color:#555;margin-bottom:4px">${l}</div><div style="font-size:15px;font-weight:800;color:${perf[k]==null?"#333":perf[k]>0?"#4ade80":"#f87171"}">${perf[k]==null?"–":(perf[k]>0?"+":"")+perf[k]+"%"}</div></div>`).join("")}
+        </div></div>`;
+    }
+    if(agg.length&&total>0){
+      html+=`<div style="background:#f8f8f8;border-radius:16px;padding:16px">
+        <div style="font-size:12px;font-weight:700;color:#bbb;letter-spacing:.06em;margin-bottom:4px">POSITIONEN IM PORTFOLIO</div>
+        <div style="font-size:11px;color:#ccc;margin-bottom:14px">Aggregiert · Überschneidungen sichtbar</div>`;
+      agg.forEach(([name,val],i)=>{
+        html+=`<div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:${i<5?700:400}">${i===0?"🔴 ":i===1?"🟠 ":i===2?"🟡 ":""}${name}</span>
+            <span style="font-size:13px;font-weight:700">${val.toFixed(2)}%</span>
+          </div>
+          <div style="background:#e0e0e0;border-radius:3px;height:4px"><div style="width:${Math.round(val/agg[0][1]*100)}%;height:100%;background:${i===0?"#ef4444":i===1?"#f59e0b":i===2?"#3b82f6":"#1a1a1a"};border-radius:3px"></div></div>
+        </div>`;
+      });
+      html+="</div>";
+    }
+  }
+  q("#pf-content").innerHTML=html;
+}
+
+// RECHNER
+function renderRechner(){
+  const rc=S.rc;
+  const eff=(rc.r-rc.te)/100;let k=0,k0=0;
+  for(let i=0;i<rc.j;i++){k=(k+rc.s*12+rc.z)*(1+eff);k0=(k0+rc.s*12)*(1+eff);}
+  const res={k:Math.round(k),mo:Math.round(k/(rc.rj*12)),ein:Math.round(rc.s*12*rc.j),gew:Math.round(k-rc.s*12*rc.j-rc.z*rc.j),k0:Math.round(k0),vt:Math.round(k-k0)};
+  q("#rc-result").innerHTML=`
+    <div style="font-size:11px;font-weight:600;color:#555;letter-spacing:.06em;margin-bottom:4px">ENDKAPITAL</div>
+    <div style="font-size:44px;font-weight:800;color:#fff;letter-spacing:-.03em;line-height:1;margin-bottom:2px">${eu(res.k)}</div>
+    <div style="font-size:13px;color:#555;margin-bottom:20px">nach ${rc.j} Jahren · eff. ${(rc.r-rc.te).toFixed(2)}% p.a.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding-top:16px;border-top:1px solid #2a2a2a">
+      ${[["Rente/Mo.",eu(res.mo)],["Einzahlungen",eu(res.ein)],["Kursgewinne",eu(res.gew)]].map(([l,v])=>`<div><div style="font-size:10px;color:#555;margin-bottom:3px">${l}</div><div style="font-size:13px;font-weight:700;color:#fff">${v}</div></div>`).join("")}
+    </div>`;
+  const sls=[
+    {k:"s",l:"Sparrate / Monat",min:25,max:1500,step:25,u:" €",h:"Empfehlung: 10–15% Nettoeinkommen"},
+    {k:"j",l:"Anlagezeitraum",min:5,max:45,step:1,u:" Jahre",h:""},
+    {k:"r",l:"Rendite p.a.",min:3,max:12,step:0.5,u:"%",h:"MSCI World historisch ~7–8%"},
+    {k:"z",l:"Staatszulage / Jahr",min:0,max:840,step:60,u:" €",h:"Ab 2027: bis 540€"},
+    {k:"te",l:"ETF-Kosten (TER)",min:0.05,max:0.50,step:0.05,u:"%",h:""},
+    {k:"rj",l:"Rentenbezugsdauer",min:10,max:35,step:1,u:" Jahre",h:""},
+  ];
+  q("#rc-sliders").innerHTML=sls.map(sl=>{
+    const v=rc[sl.k],d=typeof v==="number"&&v%1!==0?v.toFixed(2):v;
+    return`<div style="margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:14px;color:#aaa">${sl.l}</span>
+        <span style="font-size:17px;font-weight:700">${d}${sl.u}</span>
+      </div>
+      <input type="range" min="${sl.min}" max="${sl.max}" step="${sl.step}" value="${v}" oninput="S.rc['${sl.k}']=parseFloat(this.value);renderRechner()">
+      ${sl.h?`<div style="font-size:11px;color:#ccc;margin-top:4px">${sl.h}</div>`:""}
+    </div>`;
+  }).join("");
+  q("#rc-bonus").innerHTML=`
+    <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:.04em;margin-bottom:10px">VORTEIL STAATSZULAGE 2027</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:14px;color:#666">Ohne Förderung</span><span style="font-size:16px;font-weight:700;color:#aaa">${eu(res.k0)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:14px;color:#666">Mit Förderung</span><span style="font-size:16px;font-weight:700;color:#16a34a">${eu(res.k)}</span></div>
+    <div style="background:#d1fae5;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between">
+      <span style="font-size:13px;font-weight:600;color:#16a34a">Vorteil</span>
+      <span style="font-size:18px;font-weight:800;color:#16a34a">+${eu(res.vt)}</span>
+    </div>`;
+}
+
+// INIT
+function init(){
+  renderTabs();
+  renderPbar();
+  renderFilters();
+  renderSbar();
+  renderList();
+}
+</script>
+</div>
+</body></html>
