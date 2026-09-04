@@ -19,6 +19,8 @@ UNIVERSE = ROOT / "dashboard" / "config" / "universe.json"
 OUTPUT = ROOT / "dashboard" / "data" / "analyst_ratings.json"
 BASE_URL = "https://finnhub.io/api/v1"
 REQUEST_PAUSE_SECONDS = 1.1
+MAX_CALLS_PER_RUN = 100
+_call_count = 0
 
 
 def load_symbols():
@@ -31,6 +33,12 @@ def load_symbols():
 
 
 def fetch_json(path, symbol, api_key):
+    global _call_count
+    _call_count += 1
+    if _call_count > MAX_CALLS_PER_RUN:
+        raise SystemExit(
+            f"Aborting: exceeded safety ceiling of {MAX_CALLS_PER_RUN} Finnhub calls in one run."
+        )
     query = urlencode({"symbol": symbol, "token": api_key})
     try:
         with urlopen(f"{BASE_URL}{path}?{query}", timeout=30) as response:
