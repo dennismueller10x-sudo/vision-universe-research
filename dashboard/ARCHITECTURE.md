@@ -43,3 +43,13 @@ Diese Pipeline ist bewusst von der wöchentlichen Kurs-Pipeline getrennt, damit 
 - Neue Symbole werden weiterhin über `dashboard/config/universe.json` freigeschaltet; Kursdaten dafür liefert erst der nächste Lauf von `update-dashboard.yml` (unverändert, eigener Trigger).
 - Fehlt für ein Symbol ein Fundamental-, Score- oder Kursdatensatz, rendert `app-rebuild.js` einen degradierten Zustand (`—`, „Score noch offen“, „Kein Research-Profil hinterlegt“) statt abzustürzen — neue Symbole können so schrittweise befüllt werden, ohne bestehende Seiten zu gefährden.
 - Die Marktkapitalisierungs-Linie im Charting (`?overlay=mcap`) kostet keine zusätzlichen Credits: sie wird clientseitig aus vorhandenen Kursdaten × zuletzt gemeldeten `shares_outstanding` berechnet (Näherung, ignoriert Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Läufen) und ist nur sichtbar, wenn für das gewählte Symbol bereits Fundamentaldaten vorliegen.
+
+## Analyst Ratings Pipeline
+
+`Finnhub → GitHub Actions → dashboard/data/analyst_ratings.json → statisches Dashboard`
+
+- `scripts/dashboard/fetch_analyst_ratings.py`: ruft Recommendation Trends (letzte 6 Monate) und Kursziel-Konsens von Finnhub für alle aktiven Aktien aus `dashboard/config/universe.json` ab (Benchmarks/ETFs werden übersprungen, da sie keine Analystenabdeckung haben).
+- `.github/workflows/update-analyst-ratings.yml`: läuft sonntags und kann manuell gestartet werden. Erhält den Schlüssel ausschließlich als Secret `FINNHUB_API_KEY`. Bricht ohne Daten-Commit ab, falls der Schlüssel fehlt oder ein Endpunkt (z. B. wegen eines Finnhub-Plan-Limits) einen Zugriffsfehler liefert. Ein lokales Sicherheits-Limit (`MAX_CALLS_PER_RUN`) bricht den Lauf zusätzlich hart ab, falls je Lauf ungewöhnlich viele Finnhub-Calls anfallen würden.
+- Ausschließlich `dashboard/data/analyst_ratings.json` darf durch diesen Workflow verändert und committed werden. Die initiale Datei trägt absichtlich den Status `not_generated`, bis der erste erfolgreiche Lauf erfolgt.
+- `analysten/index.html`: eigenständige Dashboard-Seite (wie `hedgefonds/index.html`), die ausschließlich `dashboard/data/analyst_ratings.json`, `dashboard/config/universe.json` (Firmennamen) und `dashboard/data/market_data.json` (aktueller Kurs für das Kurszielpotenzial) lädt. Kein Live-Finnhub-Zugriff im Browser.
+- Diese Pipeline ist unabhängig von der Technical Engine und den Reports; sie liest und verändert deren Dateien nicht.

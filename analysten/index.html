@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<title>Analysten – Vision Universe</title>
+<meta name="description" content="Wie Wall-Street-Analysten die Aktien im Vision-Universe-Universum aktuell einstufen — Konsens-Rating, Kursziele und Trend, wöchentlich aktualisiert über Finnhub.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f5f5;
+    --surface2: #ebebeb;
+    --border: #e0e0e0;
+    --black: #111111;
+    --gray: #888888;
+    --gray-light: #bbbbbb;
+    --green: #00b14f;
+    --red: #e63946;
+    --text: #111111;
+    --text-muted: #888888;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── TOPBAR ── */
+  .topbar { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: #fff; border-bottom: 1px solid var(--border); }
+  .logo { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--black); text-decoration: none; }
+  .logo-ring { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--black); display: flex; align-items: center; justify-content: center; }
+  .logo-ring::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--black); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .last-update-label { font-size: 11px; color: var(--gray); font-family: var(--mono); }
+  .btn-refresh { font-family: var(--sans); font-size: 12px; font-weight: 700; color: #fff; background: var(--black); border: none; border-radius: 20px; padding: 7px 16px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
+  .btn-refresh:hover { opacity: 0.75; }
+  .btn-refresh:disabled { opacity: 0.4; cursor: default; }
+  .btn-refresh .spin { animation: anspin 0.9s linear infinite; }
+  @keyframes anspin { to { transform: rotate(360deg); } }
+
+  .wrapper { max-width: 680px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .page-title { font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1.05; margin-bottom: 4px; }
+  .page-sub { font-size: 14px; color: var(--gray); margin-bottom: 24px; }
+
+  .section-label { display: flex; align-items: baseline; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gray); margin-bottom: 12px; margin-top: 32px; }
+  .section-label-note { font-family: var(--mono); font-size: 10px; letter-spacing: 0; text-transform: none; color: var(--gray-light); }
+
+  /* ── SUMMARY ── */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+  .sum-card { background: var(--surface); border-radius: var(--radius); padding: 14px 16px; }
+  .sum-card-label { font-size: 11px; color: var(--gray); font-weight: 600; margin-bottom: 6px; }
+  .sum-card-value { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; }
+  .sum-card-sub { font-size: 11px; color: var(--gray); margin-top: 2px; font-family: var(--mono); }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+
+  /* ── LEGEND ── */
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; font-size: 11px; color: var(--text-muted); }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+
+  /* ── DIVERGING BAR LIST ── */
+  .bar-list { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 110px 1fr 64px; align-items: center; gap: 8px; cursor: pointer; }
+  .bar-symbol { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .bar-symbol .name { display: block; font-family: var(--sans); font-weight: 500; font-size: 10px; color: var(--gray); }
+  .bar-track { position: relative; height: 18px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+  .bar-track::after { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border); }
+  .bar-fill { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; }
+  .bar-fill.up { left: 50%; background: var(--green); }
+  .bar-fill.down { right: 50%; background: var(--red); }
+  .bar-fill.flat { left: 50%; width: 3px !important; background: var(--gray-light); }
+  .bar-value { font-family: var(--mono); font-size: 12px; font-weight: 700; text-align: right; }
+
+  /* ── STOCK LIST ── */
+  .rank-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+  .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+  .rank-item:last-child { border-bottom: none; }
+  .rank-item:hover { background: var(--surface2); }
+  .rank-id { flex: none; width: 54px; }
+  .rank-id .sym { font-family: var(--mono); font-size: 13px; font-weight: 800; display: block; }
+  .rank-id .nm { font-size: 10px; color: var(--gray); }
+  .rank-mid { flex: 1; min-width: 0; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 10px; margin-bottom: 5px; }
+  .badge.buy { background: rgba(0,177,79,0.12); color: var(--green); }
+  .badge.hold { background: var(--surface2); color: var(--gray); }
+  .badge.sell { background: rgba(230,57,70,0.12); color: var(--red); }
+  .stack { display: flex; height: 6px; border-radius: 3px; overflow: hidden; gap: 2px; }
+  .stack span { display: block; height: 100%; }
+  .stack .seg-buy { background: var(--green); }
+  .stack .seg-hold { background: var(--gray-light); }
+  .stack .seg-sell { background: var(--red); }
+  .rank-right { flex: none; text-align: right; }
+  .rank-right .pt { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .rank-right .trend { font-size: 14px; }
+
+  /* ── DETAIL OVERLAY ── */
+  .detail { position: fixed; inset: 0; background: #fff; z-index: 200; overflow-y: auto; transform: translateY(100%); transition: transform 0.22s ease; }
+  .detail.open { transform: translateY(0); }
+  .detail-inner { max-width: 680px; margin: 0 auto; padding-bottom: 60px; }
+  .dtop { position: sticky; top: 0; background: #fff; display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); z-index: 5; }
+  .dback { border: none; background: var(--surface); width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; }
+  .dtitle-name { font-size: 16px; font-weight: 800; }
+  .dtitle-sym { font-family: var(--mono); font-size: 11px; color: var(--gray); }
+
+  .d-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 20px; }
+
+  .pt-range { position: relative; height: 44px; margin: 10px 20px 24px; }
+  .pt-track { position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); border-radius: 2px; }
+  .pt-fill { position: absolute; top: 20px; height: 2px; background: var(--gray-light); border-radius: 2px; }
+  .pt-marker { position: absolute; top: 13px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--border); }
+  .pt-marker.mean { background: var(--black); z-index: 2; }
+  .pt-marker.current { background: #fff; border: 2px solid var(--black); z-index: 3; }
+  .pt-label { position: absolute; top: -2px; font-size: 9px; font-family: var(--mono); color: var(--gray); white-space: nowrap; transform: translateX(-50%); }
+
+  .trend-hist { display: flex; flex-direction: column; gap: 6px; padding: 0 20px; }
+  .trend-row { display: grid; grid-template-columns: 52px 1fr 40px; align-items: center; gap: 8px; font-size: 11px; }
+  .trend-period { font-family: var(--mono); color: var(--gray); }
+  .trend-track { position: relative; height: 12px; background: var(--surface); border-radius: 3px; }
+  .trend-track::after { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border); }
+  .trend-fill { position: absolute; top: 1px; bottom: 1px; border-radius: 3px; }
+  .trend-fill.up { left: 50%; background: var(--green); }
+  .trend-fill.down { right: 50%; background: var(--red); }
+  .trend-fill.flat { left: 50%; width: 3px !important; background: var(--gray-light); }
+  .trend-score { font-family: var(--mono); text-align: right; font-weight: 700; }
+
+  .info-note { margin-top: 32px; padding: 14px 16px; background: var(--surface); border-radius: var(--radius); font-size: 12px; color: var(--gray); line-height: 1.5; }
+  .info-note a { color: var(--text); }
+
+  .state-msg { padding: 30px 10px; text-align: center; color: var(--gray); font-size: 13px; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); background: var(--black); color: #fff; font-size: 12px; font-weight: 600; padding: 10px 18px; border-radius: 20px; display: flex; align-items: center; gap: 8px; transition: transform 0.25s ease; z-index: 300; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a class="logo" href="/">
+    <div class="logo-ring"></div>
+    VISION UNIVERSE
+  </a>
+  <div class="topbar-right">
+    <span class="last-update-label" id="lastUpdate"></span>
+    <button class="btn-refresh" id="refreshBtn" onclick="AN.reload()" title="Lädt die zuletzt automatisch abgerufenen Daten neu (kein Live-Finnhub-Abruf im Browser)">
+      <svg id="refreshIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M20 10a8 8 0 00-14.6-4.6M4 14a8 8 0 0014.6 4.6"/></svg>
+      Aktualisieren
+    </button>
+  </div>
+</nav>
+
+<div class="wrapper">
+
+  <div class="page-title">Analysten</div>
+  <div class="page-sub">Konsens-Rating &amp; Kursziele der Wall-Street-Analysten · wöchentlich aktualisiert über Finnhub</div>
+
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <div class="section-label">Konsens-Ranking<span class="section-label-note">bullish ↔ bearish</span></div>
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Kaufen-Konsens</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--gray-light)"></span>Halten</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Verkaufen-Konsens</span>
+  </div>
+  <div class="bar-list" id="consensusList"></div>
+
+  <div class="section-label">Kursziel-Potenzial<span class="section-label-note">Ø Kursziel vs. aktueller Kurs</span></div>
+  <div class="bar-list" id="upsideList"></div>
+
+  <div class="section-label">Aktien im Überblick<span class="section-label-note">antippen für Details</span></div>
+  <div class="rank-card" id="stockList"></div>
+
+  <div class="info-note" id="infoNote">
+    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends &amp; Price Target Consensus), aggregiert aus veröffentlichten Analystenmeinungen. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
+  </div>
+
+</div>
+
+<div class="detail" id="stock-detail">
+  <div class="detail-inner">
+    <div class="dtop">
+      <button class="dback" onclick="AN.closeStock()">←</button>
+      <div>
+        <div class="dtitle-name" id="d-name">–</div>
+        <div class="dtitle-sym" id="d-sym">–</div>
+      </div>
+    </div>
+
+    <div class="d-summary-grid" id="d-stats"></div>
+
+    <div class="section-label" style="margin-left:20px;margin-right:20px">Kurszielspanne</div>
+    <div class="pt-range" id="d-ptrange"></div>
+
+    <div class="section-label" style="margin-left:20px;margin-right:20px">Konsens-Verlauf<span class="section-label-note" id="d-hist-note"></span></div>
+    <div class="trend-hist" id="d-trendhist"></div>
+
+    <div class="info-note" style="margin:24px 20px 0" id="d-note"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">Aktualisiert</span></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   VISION UNIVERSE · Analysten-Dashboard
+
+   Architektur: Finnhub wird NICHT bei jedem Seitenaufruf live im
+   Browser abgerufen. Ein Python-Skript
+   (scripts/dashboard/fetch_analyst_ratings.py) holt die Daten
+   server-seitig über einen wöchentlichen GitHub-Actions-Workflow
+   (.github/workflows/update-analyst-ratings.yml, sonntags) und
+   schreibt sie als statisches JSON nach
+   dashboard/data/analyst_ratings.json. Diese Seite lädt nur noch
+   diese kleine, gleiche-Origin-JSON-Datei — plus universe.json für
+   die Firmennamen und market_data.json für den aktuellen Kurs
+   (Kursziel-Potenzial = Kursziel vs. letzter Schlusskurs).
+   ========================================================= */
+
+var UNIVERSE_URL = "../dashboard/config/universe.json";
+var RATINGS_URL = "../dashboard/data/analyst_ratings.json";
+var MARKET_URL = "../dashboard/data/market_data.json";
+
+var CONSENSUS_META = {
+  strong_buy:   { label: "Klarer Kauf", badge: "buy" },
+  buy:          { label: "Kaufen", badge: "buy" },
+  hold:         { label: "Halten", badge: "hold" },
+  sell:         { label: "Verkaufen", badge: "sell" },
+  strong_sell:  { label: "Klarer Verkauf", badge: "sell" },
+  no_coverage:  { label: "Keine Abdeckung", badge: "hold" }
+};
+var CONSENSUS_RANK = ["strong_sell","sell","hold","buy","strong_buy"];
+
+var S = {
+  generatedAt: null,
+  order: [],
+  names: {},
+  ratings: {},
+  prices: {},
+  loaded: false,
+  loadError: null,
+  openSymbol: null
+};
+
+/* ---------- Utilities ---------- */
+
+function $(sel){ return document.querySelector(sel); }
+function set(sel, html){ var el = $(sel); if(el) el.innerHTML = html; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmtUSD(n, digits){
+  if(n == null || isNaN(n)) return "–";
+  return "$" + n.toFixed(digits==null?2:digits);
+}
+function fmtPct(n, digits){
+  if(n == null || isNaN(n)) return "–";
+  var sign = n >= 0 ? "+" : "";
+  return sign + n.toFixed(digits==null?1:digits) + "%";
+}
+function fmtDateDE(iso){
+  if(!iso) return "–";
+  var p = String(iso).split("-");
+  if(p.length < 2) return iso;
+  var months = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+  return (p[2]||"") + (p[2]?" ":"") + months[parseInt(p[1],10)-1] + " " + p[0];
+}
+
+/* ---------- Daten laden ---------- */
+
+function loadData(bust){
+  var suffix = bust ? ("?t=" + Date.now()) : "";
+  var opts = { cache: bust ? "no-store" : "default" };
+  return Promise.all([
+    fetch(UNIVERSE_URL + suffix, opts).then(function(r){ return r.ok ? r.json() : { stocks: [] }; }).catch(function(){ return { stocks: [] }; }),
+    fetch(RATINGS_URL + suffix, opts).then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); }),
+    fetch(MARKET_URL + suffix, opts).then(function(r){ return r.ok ? r.json() : { symbols: {} }; }).catch(function(){ return { symbols: {} }; })
+  ]).then(function(results){
+    var universe = results[0], ratings = results[1], market = results[2];
+    S.order = [];
+    S.names = {};
+    (universe.stocks || []).forEach(function(s){
+      if(!s.active) return;
+      S.order.push(s.symbol);
+      S.names[s.symbol] = s.name || s.symbol;
+    });
+    S.ratings = ratings.symbols || {};
+    S.generatedAt = ratings.generated_at_utc || null;
+    S.loadError = ratings.status === "not_generated" ? "not_generated" : null;
+    S.prices = {};
+    Object.keys(market.symbols || {}).forEach(function(sym){
+      var candles = market.symbols[sym];
+      if(candles && candles.length) S.prices[sym] = candles[candles.length - 1].close;
+    });
+    S.loaded = true;
+  }).catch(function(err){
+    S.loadError = (err && err.message) || "Unbekannter Fehler";
+  }).then(function(){
+    renderAll();
+    setLastUpdateLabel();
+  });
+}
+
+function reload(){
+  var btn = $("#refreshBtn"), icon = $("#refreshIcon");
+  if(btn) btn.disabled = true;
+  if(icon) icon.classList.add("spin");
+  loadData(true).then(function(){
+    if(btn) btn.disabled = false;
+    if(icon) icon.classList.remove("spin");
+    showToast(S.loadError ? "Laden fehlgeschlagen" : "Neu geladen ✓");
+  });
+}
+
+/* ---------- Toast ---------- */
+
+function showToast(msg){
+  var t = $("#toast");
+  set("#toastMsg", esc(msg));
+  t.classList.add("show");
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(function(){ t.classList.remove("show"); }, 3200);
+}
+
+function setLastUpdateLabel(){
+  if(S.loadError === "not_generated"){ set("#lastUpdate", "Noch kein Update gelaufen"); return; }
+  if(!S.generatedAt){ set("#lastUpdate", "–"); return; }
+  var d = new Date(S.generatedAt);
+  set("#lastUpdate", "Stand " + d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}));
+}
+
+/* ---------- Aggregation ---------- */
+
+function coveredSymbols(){
+  return S.order.filter(function(sym){ return S.ratings[sym] && S.ratings[sym].consensus_label !== "no_coverage"; });
+}
+
+function upsidePct(sym){
+  var r = S.ratings[sym];
+  var price = S.prices[sym];
+  if(!r || !r.price_target || r.price_target.targetMean == null || price == null) return null;
+  return (r.price_target.targetMean / price - 1) * 100;
+}
+
+function trendArrow(sym){
+  var r = S.ratings[sym];
+  if(!r || !r.previous_consensus_label) return "→";
+  var cur = CONSENSUS_RANK.indexOf(r.consensus_label);
+  var prev = CONSENSUS_RANK.indexOf(r.previous_consensus_label);
+  if(cur > prev) return "↑";
+  if(cur < prev) return "↓";
+  return "→";
+}
+
+/* ---------- Rendering: Summary ---------- */
+
+function renderSummary(){
+  var covered = coveredSymbols();
+  if(!covered.length){
+    set("#summaryGrid", loadingOrEmptyMsg());
+    return;
+  }
+  var labelCounts = {};
+  covered.forEach(function(sym){
+    var l = S.ratings[sym].consensus_label;
+    labelCounts[l] = (labelCounts[l] || 0) + 1;
+  });
+  var topLabel = Object.keys(labelCounts).sort(function(a,b){ return labelCounts[b]-labelCounts[a]; })[0];
+
+  var upsides = covered.map(upsidePct).filter(function(v){ return v != null; });
+  var avgUpside = upsides.length ? upsides.reduce(function(a,b){ return a+b; },0) / upsides.length : null;
+
+  set("#summaryGrid",
+    '<div class="sum-card"><div class="sum-card-label">Abgedeckte Aktien</div><div class="sum-card-value">' + covered.length + ' / ' + S.order.length + '</div><div class="sum-card-sub">von Analysten bewertet</div></div>' +
+    '<div class="sum-card"><div class="sum-card-label">Häufigste Einstufung</div><div class="sum-card-value">' + esc(CONSENSUS_META[topLabel].label) + '</div><div class="sum-card-sub">' + labelCounts[topLabel] + ' von ' + covered.length + ' Aktien</div></div>' +
+    '<div class="sum-card"><div class="sum-card-label">Ø Kurspotenzial</div><div class="sum-card-value ' + (avgUpside>=0?"pos":"neg") + '">' + fmtPct(avgUpside) + '</div><div class="sum-card-sub">Kursziel vs. aktueller Kurs</div></div>' +
+    '<div class="sum-card"><div class="sum-card-label">Nächstes Update</div><div class="sum-card-value">So.</div><div class="sum-card-sub">wöchentlicher Finnhub-Abruf</div></div>'
+  );
+}
+
+function loadingOrEmptyMsg(){
+  if(S.loadError === "not_generated") return '<div class="state-msg">Noch kein Datenlauf erfolgt. Sobald der Workflow läuft, erscheinen hier die Analystendaten.</div>';
+  if(S.loadError) return '<div class="state-msg">Laden fehlgeschlagen: ' + esc(S.loadError) + '</div>';
+  if(!S.loaded) return '<div class="state-msg">Lädt…</div>';
+  return '<div class="state-msg">Keine Daten verfügbar.</div>';
+}
+
+/* ---------- Rendering: Diverging bar lists ---------- */
+
+function divergingBar(widthPct, positive, flat){
+  if(flat) return '<div class="bar-fill flat"></div>';
+  var cls = positive ? "up" : "down";
+  return '<div class="bar-fill ' + cls + '" style="width:' + widthPct + '%"></div>';
+}
+
+function renderConsensusList(){
+  var covered = coveredSymbols();
+  if(!covered.length){ set("#consensusList", loadingOrEmptyMsg()); return; }
+  var rows = covered.map(function(sym){ return { sym: sym, score: S.ratings[sym].consensus_score || 0 }; })
+    .sort(function(a,b){ return b.score - a.score; });
+  set("#consensusList", rows.map(function(r){
+    var flat = Math.abs(r.score) < 0.05;
+    var widthPct = Math.min(50, Math.round(Math.abs(r.score) / 2 * 50));
+    return '<div class="bar-row" onclick="AN.openStock(\'' + r.sym + '\')">' +
+      '<div class="bar-symbol">' + esc(r.sym) + '<span class="name">' + esc(S.names[r.sym]||"") + '</span></div>' +
+      '<div class="bar-track">' + divergingBar(widthPct, r.score>=0, flat) + '</div>' +
+      '<div class="bar-value ' + (r.score>=0?"pos":"neg") + '">' + esc(CONSENSUS_META[S.ratings[r.sym].consensus_label].label) + '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderUpsideList(){
+  var covered = coveredSymbols().map(function(sym){ return { sym: sym, up: upsidePct(sym) }; })
+    .filter(function(r){ return r.up != null; })
+    .sort(function(a,b){ return b.up - a.up; });
+  if(!covered.length){ set("#upsideList", '<div class="state-msg">Keine Kursziele mit hinterlegtem aktuellen Kurs verfügbar.</div>'); return; }
+  var max = Math.max.apply(null, covered.map(function(r){ return Math.abs(r.up); }).concat([1]));
+  set("#upsideList", covered.map(function(r){
+    var flat = Math.abs(r.up) < 0.5;
+    var widthPct = Math.min(50, Math.round(Math.abs(r.up) / max * 50));
+    return '<div class="bar-row" onclick="AN.openStock(\'' + r.sym + '\')">' +
+      '<div class="bar-symbol">' + esc(r.sym) + '<span class="name">' + esc(S.names[r.sym]||"") + '</span></div>' +
+      '<div class="bar-track">' + divergingBar(widthPct, r.up>=0, flat) + '</div>' +
+      '<div class="bar-value ' + (r.up>=0?"pos":"neg") + '">' + fmtPct(r.up) + '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+/* ---------- Rendering: Stock list ---------- */
+
+function stackBar(rec){
+  var total = rec.strongBuy + rec.buy + rec.hold + rec.sell + rec.strongSell;
+  if(!total) return "";
+  function seg(cls, n, label){
+    if(!n) return "";
+    var pct = Math.max(4, Math.round(n/total*100));
+    return '<span class="' + cls + '" style="width:' + pct + '%" title="' + label + ': ' + n + '"></span>';
+  }
+  return '<div class="stack">' +
+    seg("seg-buy", rec.strongBuy + rec.buy, "Kaufen") +
+    seg("seg-hold", rec.hold, "Halten") +
+    seg("seg-sell", rec.sell + rec.strongSell, "Verkaufen") +
+  '</div>';
+}
+
+function renderStockList(){
+  if(!S.order.length){ set("#stockList", loadingOrEmptyMsg()); return; }
+  set("#stockList", S.order.map(function(sym){
+    var r = S.ratings[sym];
+    if(!r || r.consensus_label === "no_coverage"){
+      return '<div class="rank-item">' +
+        '<div class="rank-id"><span class="sym">' + esc(sym) + '</span><span class="nm">' + esc(S.names[sym]||"") + '</span></div>' +
+        '<div class="rank-mid"><span class="badge hold">Keine Abdeckung</span></div>' +
+      '</div>';
+    }
+    var meta = CONSENSUS_META[r.consensus_label];
+    var rec = r.trend_history[0];
+    var up = upsidePct(sym);
+    return '<div class="rank-item" onclick="AN.openStock(\'' + sym + '\')">' +
+      '<div class="rank-id"><span class="sym">' + esc(sym) + '</span><span class="nm">' + esc(S.names[sym]||"") + '</span></div>' +
+      '<div class="rank-mid"><span class="badge ' + meta.badge + '">' + esc(meta.label) + '</span>' + stackBar(rec) + '</div>' +
+      '<div class="rank-right"><div class="pt ' + (up!=null?(up>=0?"pos":"neg"):"") + '">' + (up!=null?fmtPct(up,0):"–") + '</div><div class="trend">' + trendArrow(sym) + '</div></div>' +
+    '</div>';
+  }).join(""));
+}
+
+/* ---------- Detail overlay ---------- */
+
+function openStock(sym){
+  S.openSymbol = sym;
+  var r = S.ratings[sym];
+  set("#d-name", esc(S.names[sym] || sym));
+  set("#d-sym", esc(sym));
+  if(!r || r.consensus_label === "no_coverage"){
+    set("#d-stats", '<div class="state-msg">Für diese Aktie liegt keine Analystenabdeckung von Finnhub vor.</div>');
+    set("#d-ptrange", "");
+    set("#d-trendhist", "");
+    set("#d-note", "");
+    $("#stock-detail").classList.add("open");
+    return;
+  }
+  var rec = r.trend_history[0];
+  var total = rec.strongBuy + rec.buy + rec.hold + rec.sell + rec.strongSell;
+  var meta = CONSENSUS_META[r.consensus_label];
+  var up = upsidePct(sym);
+  var price = S.prices[sym];
+
+  set("#d-stats",
+    '<div class="sum-card"><div class="sum-card-label">Konsens</div><div class="sum-card-value">' + esc(meta.label) + '</div><div class="sum-card-sub">' + total + ' Analysten · ' + esc(fmtDateDE(rec.period)) + '</div></div>' +
+    '<div class="sum-card"><div class="sum-card-label">Kurspotenzial</div><div class="sum-card-value ' + (up!=null?(up>=0?"pos":"neg"):"") + '">' + (up!=null?fmtPct(up):"–") + '</div><div class="sum-card-sub">vs. ' + (price!=null?fmtUSD(price):"–") + ' aktuell</div></div>'
+  );
+
+  if(r.price_target && price != null){
+    var pt = r.price_target;
+    var lo = Math.min(pt.targetLow, price), hi = Math.max(pt.targetHigh, price);
+    var pad = (hi - lo) * 0.08 || 1;
+    lo -= pad; hi += pad;
+    function xPct(v){ return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100)); }
+    set("#d-ptrange",
+      '<div class="pt-track"></div>' +
+      '<div class="pt-fill" style="left:' + xPct(pt.targetLow) + '%;width:' + (xPct(pt.targetHigh)-xPct(pt.targetLow)) + '%"></div>' +
+      '<div class="pt-label" style="left:' + xPct(pt.targetLow) + '%">Tief ' + fmtUSD(pt.targetLow,0) + '</div>' +
+      '<div class="pt-label" style="left:' + xPct(pt.targetHigh) + '%">Hoch ' + fmtUSD(pt.targetHigh,0) + '</div>' +
+      '<div class="pt-marker mean" style="left:' + xPct(pt.targetMean) + '%" title="Ø Kursziel: ' + fmtUSD(pt.targetMean) + '"></div>' +
+      '<div class="pt-marker current" style="left:' + xPct(price) + '%" title="Aktueller Kurs: ' + fmtUSD(price) + '"></div>'
+    );
+  } else {
+    set("#d-ptrange", '<div class="state-msg">Kein Kursziel-Konsens verfügbar.</div>');
+  }
+
+  var hist = r.trend_history;
+  var maxAbs = Math.max.apply(null, hist.map(function(p){
+    var t = p.strongBuy+p.buy+p.hold+p.sell+p.strongSell;
+    return t ? Math.abs((2*p.strongBuy+p.buy-p.sell-2*p.strongSell)/t) : 0;
+  }).concat([0.1]));
+  set("#d-hist-note", hist.length > 1 ? "letzte " + hist.length + " Monate" : "");
+  set("#d-trendhist", hist.map(function(p){
+    var t = p.strongBuy+p.buy+p.hold+p.sell+p.strongSell;
+    var score = t ? (2*p.strongBuy+p.buy-p.sell-2*p.strongSell)/t : 0;
+    var flat = Math.abs(score) < 0.05;
+    var widthPct = Math.min(50, Math.round(Math.abs(score)/maxAbs*50));
+    return '<div class="trend-row">' +
+      '<div class="trend-period">' + esc(fmtDateDE(p.period)) + '</div>' +
+      '<div class="trend-track">' + (flat ? '<div class="trend-fill flat"></div>' : '<div class="trend-fill ' + (score>=0?"up":"down") + '" style="width:' + widthPct + '%"></div>') + '</div>' +
+      '<div class="trend-score">' + t + '</div>' +
+    '</div>';
+  }).join(""));
+
+  set("#d-note", 'Quelle: Finnhub Recommendation Trends. Werte sind die Anzahl Analysten je Kategorie im jeweiligen Monat, keine Einzelnennung von Bank oder Analyst.');
+
+  $("#stock-detail").classList.add("open");
+}
+
+function closeStock(){
+  $("#stock-detail").classList.remove("open");
+  S.openSymbol = null;
+}
+
+/* ---------- Orchestrierung ---------- */
+
+function renderAll(){
+  renderSummary();
+  renderConsensusList();
+  renderUpsideList();
+  renderStockList();
+}
+
+/* ---------- Public API ---------- */
+
+window.AN = { reload: reload, openStock: openStock, closeStock: closeStock };
+
+loadData(false);
+
+})();
+</script>
+</body>
+</html>
