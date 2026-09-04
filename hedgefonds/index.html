@@ -270,6 +270,8 @@
   .manager-label { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
   .manager-name { font-size: 15px; font-weight: 800; }
   .manager-note { font-size: 11.5px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+  .photo-credit { font-size: 10px; color: var(--gray-light); margin: 5px 20px 0; }
+  .photo-credit a { color: var(--gray-light); }
 
   .d-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px; }
   .fd-link { display: block; margin: 0 20px 8px; font-size: 11.5px; color: var(--black); font-weight: 600; }
@@ -413,6 +415,7 @@
         <div class="manager-note" id="fd-manager-note"></div>
       </div>
     </div>
+    <div class="photo-credit" id="fd-photo-credit"></div>
 
     <div class="d-summary-grid" id="fd-stats"></div>
 
@@ -847,6 +850,8 @@ function renderFundDetail(){
   set("#fd-manager-label", esc(d.managerLabel || "Gründer"));
   set("#fd-manager-name", esc(d.founder || d.name));
   set("#fd-manager-note", d.currentLead ? ("Aktuell: " + esc(d.currentLead)) : "");
+  set("#fd-photo-credit", (d.photoUrl && d.photoCredit) ?
+    ('Foto: ' + (d.photoSourceUrl ? ('<a href="' + esc(d.photoSourceUrl) + '" target="_blank" rel="noopener">' + esc(d.photoCredit) + '</a>') : esc(d.photoCredit))) : "");
 
   var hasChange = d.aumChangePct != null;
   var changeCls = !hasChange ? "" : (d.aumChangePct >= 0 ? "pos" : "neg");
