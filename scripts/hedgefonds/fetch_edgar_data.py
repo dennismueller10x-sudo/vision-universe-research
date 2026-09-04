@@ -34,17 +34,27 @@ REQUEST_DELAY = 0.3  # SEC allows ~10 req/sec; we stay far under that
 MAX_RETRIES = 3
 
 
-# founder / currentLead / managerLabel / photoUrl sind statische, redaktionelle
-# Angaben (keine SEC-Daten) — verifiziert per Web-Recherche am 2026-09-04, da
-# sich Fonds-Führung schnell ändert (siehe z.B. Bridgewater: Dalio verkaufte
-# seinen letzten Anteil erst im Aug. 2025). photoUrl ist absichtlich leer:
-# ein Foto einer echten Person auf einer kommerziellen Webseite braucht deren
-# Zustimmung bzw. eine geklärte Bildlizenz (in DE strenger als in den USA,
-# Stichwort Recht am eigenen Bild) — das kann dieses Skript nicht validieren,
-# daher zunächst nur der Initialen-Avatar im Frontend als Fallback.
+# founder / currentLead / managerLabel / photoUrl / photoCredit sind statische,
+# redaktionelle Angaben (keine SEC-Daten) — verifiziert per Web-Recherche am
+# 2026-09-04, da sich Fonds-Führung schnell ändert (siehe z.B. Bridgewater:
+# Dalio verkaufte seinen letzten Anteil erst im Aug. 2025).
+#
+# photoUrl ist nur für Personen gesetzt, für die ein frei lizenziertes Foto
+# auf Wikimedia Commons verifiziert werden konnte (CC BY / CC BY-SA); die
+# anderen bleiben None und fallen im Frontend auf einen Initialen-Avatar
+# zurück — für die meisten Hedgefonds-Manager (anders als z.B. Politiker)
+# gibt es schlicht kein frei lizenziertes Pressefoto. CC BY(-SA) verlangt
+# Namensnennung, daher photoCredit + Link zur Commons-Dateiseite bei jedem
+# gesetzten Foto. Direkter Abruf von commons.wikimedia.org war aus dieser
+# Sandbox blockiert; Lizenzangaben stammen aus Suchergebnis-Snippets, nicht
+# aus einem direkten Seitenabruf — vor Veröffentlichung stichprobenartig auf
+# commons.wikimedia.org gegenprüfen.
 FUND_META = [
     {"cik": "0001423053", "abbr": "CITADEL", "name": "Citadel Advisors LLC", "type": "Multi-Strategy",
-     "founder": "Ken Griffin", "currentLead": None, "photoUrl": None},
+     "founder": "Ken Griffin", "currentLead": None,
+     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kenneth_C._Griffin_photo.jpg",
+     "photoCredit": "Wikimedia Commons, CC BY-SA 4.0",
+     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:Kenneth_C._Griffin_photo.jpg"},
     {"cik": "0001009207", "abbr": "DESHAW", "name": "D. E. Shaw & Co., Inc.", "type": "Quantitativ",
      "founder": "David E. Shaw", "currentLead": "Executive Committee (D. Shaw seit 2002 primär bei D. E. Shaw Research)", "photoUrl": None},
     {"cik": "0001179392", "abbr": "TWOSIG", "name": "Two Sigma Investments, LP", "type": "Quantitativ",
@@ -54,9 +64,15 @@ FUND_META = [
     {"cik": "0001637460", "abbr": "MGROUP", "name": "Man Group plc", "type": "Quantitativ",
      "founder": "Robyn Grew", "managerLabel": "CEO", "currentLead": None, "photoUrl": None},
     {"cik": "0001350694", "abbr": "BRDGWTR", "name": "Bridgewater Associates, LP", "type": "Macro",
-     "founder": "Ray Dalio", "currentLead": "Seit Aug. 2025 nicht mehr operativ beteiligt; geführt von Co-CIOs Karniol-Tambour, Prince, Jensen", "photoUrl": None},
+     "founder": "Ray Dalio", "currentLead": "Seit Aug. 2025 nicht mehr operativ beteiligt; geführt von Co-CIOs Karniol-Tambour, Prince, Jensen",
+     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ray_Dalio_Sept_23_2017_NYC.jpg",
+     "photoCredit": "Wikimedia Commons, CC BY 3.0",
+     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:Ray_Dalio_Sept_23_2017_NYC.jpg"},
     {"cik": "0001037389", "abbr": "RENTEC", "name": "Renaissance Technologies LLC", "type": "Quantitativ",
-     "founder": "Jim Simons (†2024)", "currentLead": "Peter Brown (CEO)", "photoUrl": None},
+     "founder": "Jim Simons (†2024)", "currentLead": "Peter Brown (CEO)",
+     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/James_Simons_2007.jpg",
+     "photoCredit": "Oberwolfach Photo Collection / Wikimedia Commons, CC BY-SA 2.0 DE",
+     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:James_Simons_2007.jpg"},
     {"cik": "0001603466", "abbr": "PT72", "name": "Point72 Asset Management, L.P.", "type": "Long/Short",
      "founder": "Steven A. Cohen", "currentLead": None, "photoUrl": None},
 ]
@@ -212,6 +228,7 @@ def fetch_fund(meta):
         "type": meta["type"], "abbr": meta["abbr"],
         "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
         "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
+        "photoCredit": meta.get("photoCredit"), "photoSourceUrl": meta.get("photoSourceUrl"),
         "reportDate": current["reportDate"], "filedDate": current["filedDate"], "accession": current["accession"],
         "totalValueUSD": total_value, "positionCount": position_count, "topHoldings": top_holdings,
         "prevReportDate": prev["reportDate"] if prev else None,
@@ -250,6 +267,7 @@ def main():
                 "cik": meta["cik"], "name": meta["name"], "type": meta["type"], "abbr": meta["abbr"],
                 "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
                 "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
+                "photoCredit": meta.get("photoCredit"), "photoSourceUrl": meta.get("photoSourceUrl"),
                 "error": str(exc),
             })
         time.sleep(REQUEST_DELAY)
