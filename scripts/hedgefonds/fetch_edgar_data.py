@@ -17,6 +17,7 @@ CUSIP-level diff between the two quarters. 13F has no transaction log, so
 that diff is the standard convention used by public 13F trackers: a position
 appearing = opened, disappearing = closed.
 """
+import calendar
 import csv
 import io
 import json
@@ -209,25 +210,58 @@ def diff_holdings(current, previous):
     return opened, closed
 
 
-def quarter_from_date(iso_date):
-    y, m, _ = iso_date.split("-")
-    q = (int(m) - 1) // 3 + 1
-    return int(y), q
+_MONTH_ABBR = ["", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+_REPORT_MONTH_TO_DEADLINE_MONTH = {3: 5, 6: 8, 9: 11, 12: 2}  # Quartalsende-Monat -> Meldefrist-Monat
 
 
-def previous_quarter(year_quarter):
-    y, q = year_quarter
-    return (y - 1, 4) if q == 1 else (y, q - 1)
+def bulk_window_for_report_period(report_date):
+    """Bildet ein 13F-Berichtsdatum (Quartalsende, z.B. '2026-06-30') auf das
+    SEC-Sammel-Datensatz-Fenster ab, das dessen Filings enthält.
+
+    Das Namensschema der SEC-Bulk-13F-ZIPs wechselte irgendwann zwischen 2021
+    und 2024 von '{jahr}q{quartal}_form13f.zip' auf ein Datumsfenster-Format
+    wie '01jun2024-31aug2024_form13f.zip' — verifiziert per Web-Suche anhand
+    zweier echter Beispiel-URLs: '01jun2024-31aug2024' (zur Meldefrist 14.
+    Aug) und '01sep2025-30nov2025' (zur Meldefrist 14. Nov). Das Fenster
+    beginnt jeweils 2 Kalendermonate vor dem Meldefrist-Monat und endet am
+    letzten Tag des Meldefrist-Monats."""
+    y, m, _ = report_date.split("-")
+    y, m = int(y), int(m)
+    deadline_month = _REPORT_MONTH_TO_DEADLINE_MONTH.get(m)
+    if deadline_month is None:
+        raise ValueError(f"Unerwartetes Berichts-Quartalsende: {report_date}")
+    deadline_year = y + 1 if (m == 12) else y  # Q4-Ende (Dez) -> Meldefrist im Februar des Folgejahres
+    start_month = deadline_month - 2
+    start_year = deadline_year
+    if start_month <= 0:
+        start_month += 12
+        start_year -= 1
+    last_day = calendar.monthrange(deadline_year, deadline_month)[1]
+    return f"01{_MONTH_ABBR[start_month]}{start_year}-{last_day:02d}{_MONTH_ABBR[deadline_month]}{deadline_year}"
 
 
-def bulk_zip_url(year, quarter):
-    return f"https://www.sec.gov/files/structureddata/data/form-13f-data-sets/{year}q{quarter}_form13f.zip"
+def bulk_zip_url_for_period(report_date):
+    window = bulk_window_for_report_period(report_date)
+    return f"https://www.sec.gov/files/structureddata/data/form-13f-data-sets/{window}_form13f.zip"
 
 
-def download_bulk_zip(year, quarter):
+def download_bulk_zip(report_date):
     time.sleep(REQUEST_DELAY)
-    data = http_get(bulk_zip_url(year, quarter))
+    data = http_get(bulk_zip_url_for_period(report_date))
     return zipfile.ZipFile(io.BytesIO(data))
+
+
+def previous_report_period(report_date):
+    """Quartalsende-Datum des VORHERIGEN Quartals, z.B. '2026-06-30' -> '2026-03-31'."""
+    y, m, _ = report_date.split("-")
+    y, m = int(y), int(m)
+    prev_m = m - 3
+    prev_y = y
+    if prev_m <= 0:
+        prev_m += 12
+        prev_y -= 1
+    last_day = calendar.monthrange(prev_y, prev_m)[1]
+    return f"{prev_y:04d}-{prev_m:02d}-{last_day:02d}"
 
 
 # Die exakten Spaltennamen der SEC-Bulk-13F-Datensätze konnten aus dieser
@@ -389,12 +423,13 @@ def fetch_bulk_expansion(curated_records, target_total):
     if not curated_records:
         print("Bulk-Erweiterung übersprungen: keine kuratierten Fonds als Kalibrierungs-Basis.", file=sys.stderr)
         return []
-    cur_period = quarter_from_date(curated_records[0]["reportDate"])
-    prev_period = previous_quarter(cur_period)
+    cur_report_date = curated_records[0]["reportDate"]
+    prev_report_date = previous_report_period(cur_report_date)
 
-    print(f"Bulk-Erweiterung: lade SEC-Sammeldatensatz {cur_period[0]}Q{cur_period[1]}...", file=sys.stderr)
+    print(f"Bulk-Erweiterung: lade SEC-Sammeldatensatz für Berichtsperiode {cur_report_date} "
+          f"({bulk_zip_url_for_period(cur_report_date)})...", file=sys.stderr)
     try:
-        cur_zip = download_bulk_zip(*cur_period)
+        cur_zip = download_bulk_zip(cur_report_date)
         cur_data = parse_bulk_quarter(cur_zip)
     except Exception as exc:  # noqa: BLE001
         print(f"Bulk-Erweiterung übersprungen (aktuelles Quartal nicht ladbar/parsebar): {exc}", file=sys.stderr)
@@ -409,7 +444,7 @@ def fetch_bulk_expansion(curated_records, target_total):
 
     prev_data = {}
     try:
-        prev_zip = download_bulk_zip(*prev_period)
+        prev_zip = download_bulk_zip(prev_report_date)
         prev_data = parse_bulk_quarter(prev_zip)
     except Exception as exc:  # noqa: BLE001
         print(f"Vorquartals-Bulk-Daten nicht verfügbar, QoQ-Vergleich für Bulk-Fonds entfällt: {exc}", file=sys.stderr)
