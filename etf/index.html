@@ -25,8 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#fff;col
 ::-webkit-scrollbar{display:none}
 button{font-family:inherit;cursor:pointer}
 input{font-family:inherit}
-#gate{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;padding:40px 24px;z-index:999;flex-direction:column}
-#app{display:none;max-width:600px;margin:0 auto;padding-bottom:80px;min-height:100vh}
+#app{display:block;max-width:600px;margin:0 auto;padding-bottom:80px;min-height:100vh}
 .topbar{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f0f0f0}
 .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid #f0f0f0;display:flex;z-index:200}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));border:none;background:none;cursor:pointer}
@@ -69,23 +68,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </style>
 
 <div id="etf-wrapper">
-<!-- GATE -->
-<div id="gate">
-  <div style="width:100%;max-width:340px;text-align:center">
-    <div style="font-size:16px;font-weight:800;letter-spacing:0.1em;margin-bottom:48px">⊙ VISION UNIVERSE</div>
-    <div style="font-size:11px;font-weight:600;color:#aaa;letter-spacing:.08em;margin-bottom:10px;text-align:left">PASSWORT</div>
-    <input class="inp" type="password" id="pwinput" placeholder="Dein Passwort" style="margin-bottom:8px;font-size:18px;letter-spacing:.1em">
-    <div id="pwerr" style="display:none;font-size:13px;color:#e00;margin-bottom:8px">Falsches Passwort.</div>
-    <button onclick="doLogin()" style="width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600">Weiter</button>
-    <p style="margin-top:22px;font-size:12px;color:#bbb;line-height:1.7">Passwort aus dem Vision Universe Newsletter</p>
-  </div>
-</div>
-
 <!-- APP -->
 <div id="app">
   <div class="topbar">
     <span style="font-weight:800;font-size:13px;letter-spacing:0.1em">⊙ VISION UNIVERSE</span>
-    <button onclick="doLogout()" style="border:none;background:none;font-size:13px;color:#ccc">Logout</button>
   </div>
 
   <!-- ETFs page -->
@@ -166,8 +152,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </div>
 
 <script>
-const PW = "VU2027";
-
 const ETF=[
 {id:1,brand:"iShares",name:"iShares Core MSCI World",tk:"IWDA",cat:"Global",grp:"Broad Market",ter:0.20,ytd:-4.2,div:1.6,dt:"Thesaurierend",aum:"107,9 Mrd.",p:{y1:21.2,y3:68.4,y5:98.2,y10:286.4},h:[["Apple","5,1%"],["Microsoft","4,3%"],["NVIDIA","4,1%"],["Amazon","2,5%"],["Meta","1,9%"],["Alphabet A","1,7%"],["Broadcom","1,0%"],["Eli Lilly","1,2%"],["Tesla","0,9%"],["JPMorgan","0,8%"]]},
 {id:2,brand:"Vanguard",name:"Vanguard FTSE All-World",tk:"VWCE",cat:"Global",grp:"Broad Market",ter:0.19,ytd:-3.8,div:1.5,dt:"Thesaurierend",aum:"31,0 Mrd.",p:{y1:19.8,y3:62.1,y5:90.4,y10:264.8},h:[["Apple","4,4%"],["Microsoft","3,9%"],["NVIDIA","3,7%"],["Amazon","2,2%"],["Meta","1,7%"],["Alphabet A","1,5%"],["Samsung","1,1%"],["Taiwan Semi.","1,0%"],["Eli Lilly","0,9%"],["Broadcom","0,8%"]]},
@@ -295,21 +279,7 @@ const S={
   cp:"ytd"
 };
 
-// AUTH
-function doLogin(){
-  const v=q("#pwinput").value;
-  if(v!==PW){q("#pwerr").style.display="block";return;}
-  q("#gate").style.display="none";
-  q("#app").style.display="block";
-  init();
-}
-function doLogout(){
-  q("#gate").style.display="flex";
-  q("#app").style.display="none";
-  q("#pwinput").value="";
-  q("#pwerr").style.display="none";
-}
-q("#pwinput").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+init();
 
 // TABS
 const TABS=[
