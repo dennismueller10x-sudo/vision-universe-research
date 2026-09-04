@@ -252,6 +252,28 @@
   .info-note b { color: var(--black); }
   .info-note a { color: var(--black); }
 
+  /* ── FUND DETAIL OVERLAY ── */
+  .detail { display: none; position: fixed; inset: 0; background: #fff; z-index: 500; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .detail.open { display: block; }
+  .detail-inner { max-width: 680px; margin: 0 auto; padding-bottom: 60px; }
+  .dtop { display: flex; align-items: center; gap: 12px; padding: 0 20px; height: 52px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 10; }
+  .dback { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; cursor: pointer; }
+  .dback:hover { background: var(--surface); }
+  .dtitle { flex: 1; min-width: 0; }
+  .dtitle-name { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dtitle-cik { font-size: 10.5px; color: var(--gray); font-family: var(--mono); }
+
+  .manager-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border-radius: var(--radius); padding: 16px; margin: 20px 20px 0; }
+  .manager-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--black); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; overflow: hidden; }
+  .manager-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .manager-info { min-width: 0; }
+  .manager-label { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+  .manager-name { font-size: 15px; font-weight: 800; }
+  .manager-note { font-size: 11.5px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+
+  .d-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px; }
+  .fd-link { display: block; margin: 0 20px 8px; font-size: 11.5px; color: var(--black); font-weight: 600; }
+
   /* ── TOAST ── */
   .toast {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
@@ -303,7 +325,7 @@
   <div class="summary-grid">
     <div class="sum-card">
       <div class="sum-card-label">Beobachtete Fonds</div>
-      <div class="sum-card-value">8</div>
+      <div class="sum-card-value" id="sumFundCount">–</div>
       <div class="sum-card-sub">institutionelle Manager</div>
     </div>
     <div class="sum-card">
@@ -355,7 +377,7 @@
   <div class="trade-card" id="tradeList"></div>
 
   <!-- TOP HOLDINGS -->
-  <div class="section-label">Meistgehaltene Aktien<span class="section-label-note">über alle 8 Fonds</span></div>
+  <div class="section-label">Meistgehaltene Aktien<span class="section-label-note" id="holdingsNote">über alle Fonds</span></div>
   <div class="rank-card" id="holdingsList"></div>
 
   <!-- STRATEGIETYPEN (ersetzt "Sektorverteilung" – 13F-Filings enthalten keine Sektor-Klassifizierung) -->
@@ -370,6 +392,43 @@
     <b>Datenquelle:</b> SEC EDGAR (<span style="font-family:var(--mono)">data.sec.gov</span>), Formular 13F-HR. Hedgefonds mit &gt; 100 Mio. USD AUM müssen ihre US-Aktienpositionen vierteljährlich offenlegen (Fristen: 14. Feb, 15. Mai, 14. Aug, 14. Nov), mit 45 Tagen Verzögerung zum Quartalsende. Die Daten werden nicht bei jedem Seitenaufruf live abgerufen, sondern automatisiert kurz nach jeder Meldefrist server-seitig aktualisiert — das entspricht dem tatsächlichen Update-Rhythmus der 13F-Filings und ist zuverlässiger als ein Live-Abruf aus dem Browser. "Neu eröffnet"/"Komplett verkauft" sind Positionen, die zwischen den letzten zwei gemeldeten Quartalen neu auftauchen bzw. verschwinden — 13F zeigt nur Stichtags-Schnappschüsse, keine exakten Handelszeitpunkte, Kurse oder Zwischenbewegungen. Nur US-Long-Positionen, keine Shorts, Derivate oder internationalen Bestände. Keine Anlageberatung.
   </div>
 
+</div>
+
+<!-- FUND DETAIL OVERLAY -->
+<div class="detail" id="fund-detail">
+  <div class="detail-inner">
+    <div class="dtop">
+      <button class="dback" onclick="HF.closeFund()">←</button>
+      <div class="dtitle">
+        <div class="dtitle-name" id="fd-name">–</div>
+        <div class="dtitle-cik" id="fd-cik">–</div>
+      </div>
+    </div>
+
+    <div class="manager-card">
+      <div class="manager-avatar" id="fd-avatar">–</div>
+      <div class="manager-info">
+        <div class="manager-label" id="fd-manager-label">Gründer</div>
+        <div class="manager-name" id="fd-manager-name">–</div>
+        <div class="manager-note" id="fd-manager-note"></div>
+      </div>
+    </div>
+
+    <div class="d-summary-grid" id="fd-stats"></div>
+
+    <div class="section-label" style="margin:0 20px 12px">Top-Holdings dieses Fonds</div>
+    <div class="rank-card" id="fd-holdings" style="margin:0 20px 8px"></div>
+
+    <div class="section-label" style="margin-left:20px;margin-right:20px">Neue / geschlossene Positionen<span class="section-label-note">ggü. Vorquartal</span></div>
+    <div class="pill-row" id="fd-trade-pills" style="margin:0 20px 14px">
+      <button class="pill active" data-type="all">Alle</button>
+      <button class="pill" data-type="buy">Neu eröffnet</button>
+      <button class="pill" data-type="sell">Komplett verkauft</button>
+    </div>
+    <div class="trade-card" id="fd-trades" style="margin:0 20px 8px"></div>
+
+    <a class="fd-link" id="fd-sec-link" href="#" target="_blank" rel="noopener">Original-13F-Filing auf SEC.gov ansehen →</a>
+  </div>
 </div>
 
 <!-- TOAST -->
@@ -420,7 +479,9 @@ var S = {
   period: "current",   // "current" | "previous"
   tradeFilter: "all",
   loaded: false,
-  loadError: null
+  loadError: null,
+  openCik: null,        // CIK des aktuell geöffneten Fonds-Detail-Overlays
+  fundTradeFilter: "all"
 };
 
 /* ---------- Utilities ---------- */
@@ -612,7 +673,7 @@ function renderBars(){
   var max = Math.max.apply(null, rows.map(function(r){ return r.v; }).concat([1]));
   set("#barList", rows.map(function(r){
     var w = Math.max(6, Math.round((r.v / max) * 100));
-    return '<div class="bar-row">' +
+    return '<div class="bar-row" style="cursor:pointer" onclick="HF.openFund(\'' + r.d.cik + '\')">' +
       '<div class="bar-label">' + esc(shortFundLabel(r.d.name)) + '</div>' +
       '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"><span>' + fmtUSDShort(r.v) + '</span></div></div>' +
     '</div>';
@@ -626,10 +687,10 @@ function renderRankList(){
   set("#rankList", rows.map(function(d, i){
     var hasChange = d.aumChangePct != null;
     var cls = !hasChange ? "flat" : (d.aumChangePct >= 0 ? "pos" : "neg");
-    return '<div class="rank-row">' +
+    return '<div class="rank-row" onclick="HF.openFund(\'' + d.cik + '\')">' +
       '<div class="rank-num">#' + (i+1) + '</div>' +
       '<div class="rank-info">' +
-        '<div class="rank-ticker">' + esc(d.abbr) + ' · ' + esc(d.type) + '</div>' +
+        '<div class="rank-ticker">' + esc(d.abbr) + ' · ' + esc(d.type) + (d.founder ? ' · ' + esc(d.founder) : '') + '</div>' +
         '<div class="rank-name">' + esc(d.name) + '</div>' +
       '</div>' +
       '<div class="rank-right">' +
@@ -664,12 +725,13 @@ function renderTrades(){
 function renderHoldings(){
   var agg = aggregate();
   if(!agg.funds.length){ set("#holdingsList", loadingOrEmptyMsg()); return; }
+  set("#holdingsNote", "über alle " + agg.funds.length + " Fonds");
   var top = agg.aggHoldings.slice(0, 8);
   set("#holdingsList", top.map(function(h, i){
     return '<div class="rank-row" style="cursor:default">' +
       '<div class="rank-num">#' + (i+1) + '</div>' +
       '<div class="rank-info">' +
-        '<div class="rank-ticker">' + esc(h.cusip || "") + ' · ' + h.fundCount + ' von 8 Fonds</div>' +
+        '<div class="rank-ticker">' + esc(h.cusip || "") + ' · ' + h.fundCount + ' von ' + agg.funds.length + ' Fonds</div>' +
         '<div class="rank-name">' + esc(h.issuer) + '</div>' +
       '</div>' +
       '<div class="rank-right">' +
@@ -708,9 +770,117 @@ function renderFilings(){
   }).join(""));
 }
 
+/* ---------- Einzelner Fonds (Detail-Overlay) ---------- */
+
+function initialsFromName(name){
+  var words = (name || "").replace(/[.,()]/g, "").split(/\s+/).filter(function(w){
+    return w && !/^(LLC|LP|L\.P\.|Inc\.?|plc|&|The|Co\.,?|Group)$/i.test(w);
+  });
+  return ((words[0]||"").slice(0,1) + (words[1]||"").slice(0,1)).toUpperCase();
+}
+
+function openFund(cik){
+  S.openCik = cik;
+  S.fundTradeFilter = "all";
+  $all("#fd-trade-pills .pill").forEach(function(b){ b.classList.toggle("active", b.dataset.type === "all"); });
+  document.body.style.overflow = "hidden";
+  $("#fund-detail").classList.add("open");
+  window.scrollTo(0, 0);
+  $("#fund-detail").scrollTop = 0;
+  renderFundDetail();
+}
+function closeFund(){
+  S.openCik = null;
+  document.body.style.overflow = "";
+  $("#fund-detail").classList.remove("open");
+}
+function setFundTradeFilter(type){
+  S.fundTradeFilter = type;
+  $all("#fd-trade-pills .pill").forEach(function(b){ b.classList.toggle("active", b.dataset.type === type); });
+  renderFundTrades();
+}
+
+function renderFundTrades(){
+  var d = S.data[S.openCik];
+  if(!d) return;
+  var trades = []
+    .concat((d.newPositions||[]).map(function(h){ return Object.assign({action:"buy"}, h); }))
+    .concat((d.closedPositions||[]).map(function(h){ return Object.assign({action:"sell"}, h); }))
+    .sort(function(a,b){ return b.valueUSD - a.valueUSD; });
+  var filtered = trades.filter(function(t){ return S.fundTradeFilter === "all" || t.action === S.fundTradeFilter; });
+  if(!d.prevReportDate){
+    set("#fd-trades", '<div class="state-msg">Für diesen Fonds liegt noch kein Vorquartal zum Vergleich vor.</div>');
+    return;
+  }
+  if(!filtered.length){
+    set("#fd-trades", '<div class="state-msg">Keine ' + (S.fundTradeFilter==="buy"?"neuen":S.fundTradeFilter==="sell"?"komplett verkauften":"") + ' Positionen ggü. Vorquartal.</div>');
+    return;
+  }
+  set("#fd-trades", filtered.map(function(t){
+    return '<div class="trade-row">' +
+      '<span class="trade-badge ' + t.action + '">' + (t.action === "buy" ? "Neu" : "Verkauft") + '</span>' +
+      '<div class="trade-info">' +
+        '<div class="trade-ticker">' + esc(t.cusip || "") + (t.cls ? ' · ' + esc(t.cls) : '') + '</div>' +
+        '<div class="trade-company">' + esc(t.issuer) + '</div>' +
+      '</div>' +
+      '<div class="trade-right">' +
+        '<div class="trade-value">' + fmtUSDShort(t.valueUSD) + '</div>' +
+        '<div class="trade-shares">' + fmtSharesShort(t.shares) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join(""));
+}
+
+function renderFundDetail(){
+  var d = S.data[S.openCik];
+  if(!d) return;
+
+  set("#fd-name", esc(d.name));
+  set("#fd-cik", "CIK " + esc(d.cik));
+
+  var avatarEl = $("#fd-avatar");
+  if(d.photoUrl){
+    avatarEl.innerHTML = '<img src="' + esc(d.photoUrl) + '" alt="' + esc(d.founder || d.name) + '">';
+  } else {
+    avatarEl.textContent = initialsFromName(d.founder || d.name);
+  }
+  set("#fd-manager-label", esc(d.managerLabel || "Gründer"));
+  set("#fd-manager-name", esc(d.founder || d.name));
+  set("#fd-manager-note", d.currentLead ? ("Aktuell: " + esc(d.currentLead)) : "");
+
+  var hasChange = d.aumChangePct != null;
+  var changeCls = !hasChange ? "" : (d.aumChangePct >= 0 ? "pos" : "neg");
+  set("#fd-stats",
+    '<div class="sum-card"><div class="sum-card-label">13F-AUM</div><div class="sum-card-value">' + fmtUSDShort(d.totalValueUSD) + '</div>' +
+      '<div class="sum-card-sub ' + changeCls + '">' + (hasChange ? fmtPct(d.aumChangePct) + ' vs. Vorquartal' : 'keine Vorquartalsdaten') + '</div></div>' +
+    '<div class="sum-card"><div class="sum-card-label">Positionen</div><div class="sum-card-value">' + d.positionCount.toLocaleString("de-DE") + '</div>' +
+      '<div class="sum-card-sub">Berichtsstichtag ' + fmtDateDE(d.reportDate) + '</div></div>'
+  );
+
+  set("#fd-holdings", (d.topHoldings||[]).slice(0, 12).map(function(h, i){
+    return '<div class="rank-row" style="cursor:default">' +
+      '<div class="rank-num">#' + (i+1) + '</div>' +
+      '<div class="rank-info">' +
+        '<div class="rank-ticker">' + esc(h.cusip || "") + (h.cls ? ' · ' + esc(h.cls) : '') + '</div>' +
+        '<div class="rank-name">' + esc(h.issuer) + '</div>' +
+      '</div>' +
+      '<div class="rank-right">' +
+        '<div class="rank-pct pos">' + fmtPct(h.weightPct, 1) + '</div>' +
+        '<div class="rank-sub">' + fmtUSDShort(h.valueUSD) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join("") || '<div class="state-msg">Keine Holdings verfügbar.</div>');
+
+  renderFundTrades();
+
+  $("#fd-sec-link").href = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=" + encodeURIComponent(d.cik) + "&type=13F-HR";
+}
+
 function renderSummary(){
   var agg = aggregate();
   var errCount = fundsWithError().length;
+
+  set("#sumFundCount", S.loaded ? String(S.fundOrder.length) : "…");
 
   if(!agg.funds.length){
     set("#sumAUM", S.loaded ? "–" : "…");
@@ -798,6 +968,13 @@ document.addEventListener("DOMContentLoaded", function(){
     if(!e.target.classList.contains("pill")) return;
     setTradeFilter(e.target.dataset.type);
   });
+  $("#fd-trade-pills").addEventListener("click", function(e){
+    if(!e.target.classList.contains("pill")) return;
+    setFundTradeFilter(e.target.dataset.type);
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && S.openCik) closeFund();
+  });
 });
 
 /* ---------- Init ---------- */
@@ -809,7 +986,7 @@ function init(){
   loadData(false);
 }
 
-window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter };
+window.HF = { reload: reload, setPeriod: setPeriod, setTradeFilter: setTradeFilter, openFund: openFund, closeFund: closeFund, setFundTradeFilter: setFundTradeFilter };
 // Für Offline-/Node-Tests
 window.HF_TEST = { fmtUSDShort: fmtUSDShort, fmtSharesShort: fmtSharesShort, fmtPct: fmtPct, quarterLabel: quarterLabel };
 
