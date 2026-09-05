@@ -92,7 +92,10 @@ def fetch_symbol(symbol, api_key):
     try:
         with urlopen(f"{BASE_URL}?{query}", timeout=30) as response:
             payload = json.loads(response.read().decode("utf-8"))
-    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as error:
+    except HTTPError as error:
+        body = error.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Could not fetch {symbol}: HTTP {error.code} {error.reason} - {body}") from error
+    except (URLError, TimeoutError, json.JSONDecodeError) as error:
         raise RuntimeError(f"Could not fetch {symbol}: {type(error).__name__}") from error
     if payload.get("status") == "error" or "statistics" not in payload:
         message = payload.get("message", "provider returned no statistics")
