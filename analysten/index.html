@@ -139,14 +139,11 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
 
-<nav class="topbar">
-  <a class="logo" href="/">
-    <div class="logo-ring"></div>
-    VISION UNIVERSE
-  </a>
+<nav class="topbar vu-tools" aria-label="Daten aktualisieren">
+
   <div class="topbar-right">
     <span class="last-update-label" id="lastUpdate"></span>
     <button class="btn-refresh" id="refreshBtn" onclick="AN.reload()" title="Lädt die zuletzt automatisch abgerufenen Daten neu (kein Live-Finnhub-Abruf im Browser)">

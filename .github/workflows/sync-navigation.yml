@@ -1,0 +1,32 @@
+name: Integrate shared navigation
+on:
+  push:
+    branches: [main]
+    paths: ['**/*.html', 'scripts/sync-navigation.mjs']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync-navigation
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/sync-navigation.mjs
+      - name: Save navigation integration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Integrate shared navigation on new pages'
+          git pull --rebase origin main
+          git push
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"

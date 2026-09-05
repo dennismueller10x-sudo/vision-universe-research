@@ -305,15 +305,12 @@
     .toast { white-space: normal; max-width: calc(100vw - 40px); text-align: center; }
   }
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
 
 <!-- TOPBAR -->
-<nav class="topbar">
-  <a class="logo" href="/">
-    <div class="logo-ring"></div>
-    Vision Universe
-  </a>
+<nav class="topbar vu-tools" aria-label="Daten aktualisieren">
+
   <div class="topbar-right">
     <span class="last-update-label" id="lastUpdate"></span>
     <button class="btn-refresh" id="refreshBtn" onclick="HF.reload()" title="Lädt die zuletzt automatisch abgerufenen Daten neu (kein Live-SEC-Abruf im Browser)">
