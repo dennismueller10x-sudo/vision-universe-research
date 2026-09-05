@@ -1,0 +1,68 @@
+{
+  "_comment": "VISION UNIVERSE MACRO INTELLIGENCE — redaktionelle Interpretationsebene. Getrennt von Rohdaten (current.json) und Berechnungslogik (config.json/calc.js). Wird monatlich von Hand aktualisiert, sobald ein neuer Snapshot erstellt wird. Bezieht sich auf den Datenstand September 2026 (siehe data/current.json meta.snapshotMonth).",
+
+  "categoryIntro": {
+    "liquidity": "Geldmengenwachstum, Fed-Bilanz, Bankreserven, Reverse Repo und Treasury General Account — die Rohstoffe, aus denen Marktliquidität entsteht. Der Net Liquidity Proxy fasst die drei zentralen Fed-/Treasury-Positionen zu einer Kennzahl zusammen.",
+    "rates": "Leitzins, Treasury-Renditekurve und Realrenditen. Entscheidend ist weniger das absolute Niveau als die Form der Kurve und die Richtung der Realrenditen — beides bestimmt Diskontsätze und Bewertungsdruck auf Risikoassets.",
+    "financialConditions": "Der Chicago Fed NFCI/ANFCI misst, wie locker oder restriktiv die tatsächlichen Finanzierungsbedingungen sind — unabhängig davon, was die Fed offiziell beschließt. Negative Werte = lockerer als im historischen Durchschnitt.",
+    "credit": "Kreditmärkte gelten in diesem Dashboard als Wahrheitstest des Makro-Narrativs: Spreads und Ausfallraten reagieren oft früher und ehrlicher auf realen Stress als offizielle Konjunkturdaten.",
+    "inflation": "Nicht nur das aktuelle Niveau zählt, sondern die Richtung — sie bestimmt den Handlungsspielraum der Fed (FED FLEXIBILITY). Niedrigere, fallende Inflation erweitert diesen Spielraum, hartnäckige oder wieder steigende Inflation schränkt ihn ein.",
+    "growth": "Industrieproduktion, Einzelhandel, Aufträge und Einkommen zusammen ergeben das Wachstumsmomentum. Ergänzt um Unternehmensgewinne und Lohnstückkosten (PROFIT CYCLE) — denn am Ende der makroökonomischen Kette stehen die Unternehmensgewinne.",
+    "labor": "Arbeitslosenquote, Payrolls, Jobless Claims, JOLTS und die Sahm-Regel. Claims und Wochenarbeitszeit drehen häufig früher als die Arbeitslosenquote selbst — die Sahm-Regel dient als Rezessions-Monitor, nicht als alleiniger Frühindikator.",
+    "housing": "Zinssensitivster Sektor der Realwirtschaft und häufig ein Frühindikator für die Gesamtkonjunktur. Baubeginne, Genehmigungen und Verkäufe reagieren rascher auf Hypothekenzinsen als die meisten anderen Konjunkturdaten.",
+    "global": "Dollar, Öl und Gold als globale Liquiditäts- und Risikoindikatoren. Ein starker Dollar wirkt wie eine Straffung für den Rest der Welt; Architektur für weitere globale Datenreihen (China Credit Impulse, globale PMIs) ist vorbereitet, aber in V1 mangels verlässlicher Quelle noch nicht befüllt."
+  },
+
+  "compositeNotes": {
+    "net_liquidity_proxy": "VISION UNIVERSE COMPOSITE — kein offizieller FRED-Indikator. Formel: Fed-Bilanzsumme (WALCL) minus Treasury General Account (WTREGEN) minus Overnight Reverse Repo (RRPONTSYD). Ein weit verbreiteter, aber nicht von der Fed selbst veröffentlichter Näherungswert für die im Bankensystem verfügbare Liquidität.",
+    "yield_curve_regime": "VISION UNIVERSE COMPOSITE — Klassifikation basierend auf 10J-2J-Spread (T10Y2Y) und den Bewegungen von 2J- und 10J-Rendite. Keine offizielle FRED-Kennzahl.",
+    "credit_stress_score": "VISION UNIVERSE COMPOSITE — gleichgewichteter Durchschnitt aus HY-OAS, IG-OAS, Baa-Spread und Kreditkarten-Delinquenzquote, transformiert in Richtung/Momentum/Beschleunigung.",
+    "growth_momentum_score": "VISION UNIVERSE COMPOSITE — gleichgewichteter Durchschnitt aus Industrieproduktion, Kapazitätsauslastung, Einzelhandel, Auftragseingang langlebiger Güter und real verfügbarem Einkommen.",
+    "profit_cycle": "VISION UNIVERSE COMPOSITE — basiert auf Unternehmensgewinnen nach Steuern (YoY) und Lohnstückkosten (YoY) als Gegenspieler.",
+    "fed_flexibility": "VISION UNIVERSE COMPOSITE — abgeleitet aus dem Inflations-Subscore. Kein Bestandteil der offiziellen Fed-Kommunikation, sondern eine Einordnung dieses Dashboards."
+  },
+
+  "macroRead": {
+    "asOf": "2026-09",
+    "tailwinds": [
+      "M2-Wachstum liegt bei 5,4% YoY — dem höchsten Tempo seit Jahren — nach einem kurzen Dämpfer im Sommer wieder mit Aufwärtstendenz über die letzten 12 Monate (4,8% → 4,7% → 5,4%).",
+      "Die Treasury General Account wurde Anfang September in einem einzigen Tag um 80,7 Mrd. USD abgebaut, die Reverse-Repo-Fazilität ist mit ca. 0,2 Mrd. USD praktisch leergelaufen — beides setzt tendenziell Liquidität ins Bankensystem frei.",
+      "Kreditmärkte zeigen keinen breiten Stress: High-Yield-Spreads bei 2,65% nahe historischer Tiefs, Kreditkarten-Delinquenzen mit 2,92% auf dem niedrigsten Stand seit Q2 2023, Baa-Spread von 1,75 auf 1,60 Prozentpunkte gefallen.",
+      "CPI kühlt drei Monate in Folge ab (3,8% → 3,5% → 3,4% YoY), nachdem ein Energiepreisschock im Frühjahr die Rate kurzzeitig hochgetrieben hatte.",
+      "Die Fed hat den Leitzins binnen eines Jahres bereits um rund 70 Basispunkte gesenkt (4,33% → 3,63% EFFR) und hält seit Dezember 2025 auf diesem Niveau."
+    ],
+    "headwinds": [
+      "Reale Renditen bleiben mit rund 2,45% (10J) erhöht und belasten die Bewertung von Long-Duration- und Wachstumswerten.",
+      "Die nominale 10J-Rendite ist zuletzt auf 4,78% gestiegen, getrieben von einem überraschend starken August-Arbeitsmarktbericht (+162K Payrolls) — ein Beispiel für 'gute Konjunkturdaten, schlechte Nachrichten für die Duration'.",
+      "Der Immobilienmarkt kühlt spürbar ab: Baubeginne −13,5% ggü. Vorjahr, Neubauverkäufe −10,5% zum Vormonat, 30J-Hypothekenzins bei 6,71%.",
+      "Reales verfügbares Einkommen (ex. Transferzahlungen) ist YoY leicht negativ, da PCE-Inflation (3,7%) das nominale Einkommenswachstum übertrifft.",
+      "WTI-Rohöl bei rund 91 USD/Barrel infolge geopolitischer Spannungen im Nahen Osten — ein Gegenwind sowohl für Inflation als auch für Konsumausgaben.",
+      "Die IG-Corporate-Spreads haben sich leicht ausgeweitet (77 auf 81 Basispunkte) — noch kein Stresssignal, aber die einzige spürbar negative Bewegung im sonst gesunden Kreditbild."
+    ],
+    "regimeChange": "Die Disinflation setzt sich nach dem Energiepreisschock im Frühjahr fort, bleibt aber mit 3,4% (CPI) und 3,3% (Kern-PCE) deutlich über dem 2%-Ziel — das hält die FED-FLEXIBILITY im Dashboard aktuell auf 'LIMITED'. Am Arbeitsmarkt zeigt sich ein 'Low-Hire, Low-Fire'-Muster: Jobless Claims bleiben niedrig und stabil, doch der durchschnittliche Beschäftigungsaufbau der letzten 12 Monate liegt bei nur rund 31.000 Stellen pro Monat — spürbar unter dem historischen Trend, selbst wenn die jüngste August-Zahl mit +162K überraschend stark ausfiel. Die Fed ist nach ihrem Zinssenkungszyklus 2025 seit fünf Sitzungen in Folge auf 3,50–3,75% pausiert; der Fokus hat sich von 'wie schnell senken' zu 'wie lange halten' verschoben.",
+    "bottomLine": "Der VISION UNIVERSE MACRO REGIME SCORE steht bei 55/100 (NEUTRAL) — Liquidität ist der klare Ausreißer nach oben (68, IMPROVING) und spricht für Risikoassets, während Zinsen, Financial Conditions und Wachstum um die neutrale Mitte pendeln und Credit trotz insgesamt gesunder Fundamentaldaten durch die leichte IG-Spread-Ausweitung knapp ins TIGHTENING-Band rutscht. Das Gesamtbild ist kein klares Risk-on- oder Risk-off-Signal, sondern ein selektives Bild: Liquidität und Kreditgesundheit unterstützen, erhöhte Realrenditen und ein abkühlender Immobilienmarkt (Housing-Subscore 43, SLOWING) mahnen zur Selektivität bei zinssensitiven und Long-Duration-Assets."
+  },
+
+  "assetImplications": [
+    { "asset": "US Equities", "stance": "neutral", "tailwind": "starkes Liquiditätswachstum, lockerere Financial Conditions", "headwind": "erhöhte Realrenditen begrenzen Multiple-Expansion" },
+    { "asset": "Growth / Technology", "stance": "neutral", "tailwind": "verbesserte Liquidität, gesunde Kreditmärkte", "headwind": "hohe Realrenditen erhöhen den Diskontsatz für lange Duration" },
+    { "asset": "Small Caps", "stance": "negative", "tailwind": "Fed hat 2025 bereits ~70 Bp gesenkt", "headwind": "steigende Long-Renditen und ein abkühlender Immobilienmarkt treffen zinssensitive Nebenwerte überproportional" },
+    { "asset": "Bonds (Duration)", "stance": "negative", "tailwind": "Leitzins-Senkungszyklus seit 2025 stützt den kurzen Bereich der Kurve", "headwind": "steigende nominale und reale Langfristrenditen belasten die lange Duration" },
+    { "asset": "Gold", "stance": "positive", "tailwind": "starkes M2-Wachstum, TGA-Abbau, geopolitische Risikoprämie", "headwind": "hohe Realrenditen sind historisch ein Gegenwind für zinsloses Gold" },
+    { "asset": "Commodities", "stance": "positive", "tailwind": "geopolitisch getriebene Ölpreis-Prämie, solides Wachstumsmomentum", "headwind": "ein anhaltend starker Dollar würde Rohstoffe in USD verteuern und die Nachfrage dämpfen" },
+    { "asset": "US Dollar", "stance": "neutral", "tailwind": "Realrenditen in den USA bleiben im internationalen Vergleich hoch", "headwind": "Fed-Pause nach Zinssenkungszyklus nimmt Aufwärtsdynamik" },
+    { "asset": "Bitcoin / Crypto", "stance": "positive", "tailwind": "beschleunigtes Geldmengenwachstum, lockerere Financial Conditions", "headwind": "hohe Realrenditen dämpfen historisch die Risikobereitschaft für spekulative Long-Duration-Assets" },
+    { "asset": "Emerging Markets", "stance": "neutral", "tailwind": "globale Liquidität verbessert sich tendenziell mit US-Geldmengenwachstum", "headwind": "hohe US-Realrenditen und ein nicht eindeutig schwächerer Dollar begrenzen den Rückenwind" }
+  ],
+
+  "playbook": [
+    { "title": "LIQUIDITY BEATS NARRATIVE", "text": "Geldmenge, Fed-Bilanz und Net Liquidity Proxy bestimmen langfristig mehr über Risikoassets als jede einzelne Schlagzeile oder Konjunkturprognose." },
+    { "title": "CREDIT IS THE TRUTH TEST", "text": "Kreditspreads und Ausfallraten lügen selten. Wenn das Makro-Narrativ optimistisch ist, aber Kredit-Spreads sich ausweiten, verdient Credit mehr Vertrauen als die Story." },
+    { "title": "WATCH THE CHANGE, NOT ONLY THE LEVEL", "text": "Ein Indikator auf hohem Niveau, der fällt, sendet ein anderes Signal als derselbe Level, der steigt. Die Richtung zählt mehr als die Zahl allein." },
+    { "title": "ACCELERATION MATTERS", "text": "Ob sich ein Trend beschleunigt oder verlangsamt, verrät oft mehr über den nächsten Marktzyklus als die aktuelle Wachstumsrate selbst." },
+    { "title": "INFLATION DETERMINES FED FLEXIBILITY", "text": "Je niedriger und stabiler Inflation und Inflationserwartungen, desto mehr Handlungsspielraum hat die Fed, bei wirtschaftlicher Schwäche gegenzusteuern." },
+    { "title": "THE DOLLAR IS GLOBAL LIQUIDITY", "text": "Ein starker Dollar wirkt wie eine geldpolitische Straffung für den Rest der Welt — besonders für Schwellenländer mit Dollar-Verschuldung." },
+    { "title": "MARKET PRICES OFTEN TURN BEFORE ECONOMIC DATA", "text": "Kredit- und Zinsmärkte reagieren häufig früher auf einen Regimewechsel als offizielle Konjunkturdaten, die mit Verzögerung veröffentlicht werden." },
+    { "title": "CONCENTRATE WHEN MULTIPLE MACRO SIGNALS ALIGN", "text": "Die stärksten Marktbewegungen entstehen, wenn Liquidität, Credit, Financial Conditions und Wachstum in dieselbe Richtung zeigen — nicht wenn ein einzelner Indikator ausschlägt." }
+  ]
+}
