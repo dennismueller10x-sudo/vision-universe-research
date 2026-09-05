@@ -32,6 +32,10 @@ def load_symbols():
     return symbols
 
 
+class PlanLimitError(RuntimeError):
+    """Raised when Finnhub denies access because the endpoint needs a paid plan."""
+
+
 def fetch_json(path, symbol, api_key):
     global _call_count
     _call_count += 1
@@ -45,7 +49,7 @@ def fetch_json(path, symbol, api_key):
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
         if error.code in (401, 403):
-            raise RuntimeError(
+            raise PlanLimitError(
                 f"Could not fetch {path} for {symbol}: access denied (HTTP {error.code}). "
                 "This endpoint may require a paid Finnhub plan."
             ) from error
@@ -95,8 +99,12 @@ def fetch_symbol(symbol, api_key):
         for period in trends
     ]
     latest = trend_history[0]
-    target = fetch_json("/stock/price-target", symbol, api_key)
     price_target = None
+    try:
+        target = fetch_json("/stock/price-target", symbol, api_key)
+    except PlanLimitError as error:
+        print(f"::warning::{error} Continuing without a price target for {symbol}.")
+        target = None
     if target and target.get("targetMean") is not None:
         price_target = {
             "targetHigh": target.get("targetHigh"),
