@@ -21,6 +21,7 @@ jobs:
       - name: Fetch analyst ratings
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: python scripts/dashboard/fetch_analyst_ratings.py
 
       - name: Verify generated-file-only scope

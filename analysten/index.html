@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
 <title>Analysten – Vision Universe</title>
-<meta name="description" content="Wie Wall-Street-Analysten die Aktien im Vision-Universe-Universum aktuell einstufen — Konsens-Rating, Kursziele und Trend, wöchentlich aktualisiert über Finnhub.">
+<meta name="description" content="Wie Wall-Street-Analysten die Aktien im Vision-Universe-Universum aktuell einstufen — Konsens-Rating, Kursziele und Trend, wöchentlich aktualisiert über Finnhub und FMP.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -159,7 +159,7 @@
 <div class="wrapper">
 
   <div class="page-title">Analysten</div>
-  <div class="page-sub">Konsens-Rating &amp; Kursziele der Wall-Street-Analysten · wöchentlich aktualisiert über Finnhub</div>
+  <div class="page-sub">Konsens-Rating &amp; Kursziele der Wall-Street-Analysten · wöchentlich aktualisiert über Finnhub &amp; FMP</div>
 
   <div class="summary-grid" id="summaryGrid"></div>
 
@@ -178,7 +178,7 @@
   <div class="rank-card" id="stockList"></div>
 
   <div class="info-note" id="infoNote">
-    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends &amp; Price Target Consensus), aggregiert aus veröffentlichten Analystenmeinungen. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
+    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
   </div>
 
 </div>
@@ -195,7 +195,7 @@
 
     <div class="d-summary-grid" id="d-stats"></div>
 
-    <div class="section-label" style="margin-left:20px;margin-right:20px">Kurszielspanne</div>
+    <div class="section-label" style="margin-left:20px;margin-right:20px">Kurszielspanne<span class="section-label-note" id="d-pt-note"></span></div>
     <div class="pt-range" id="d-ptrange"></div>
 
     <div class="section-label" style="margin-left:20px;margin-right:20px">Konsens-Verlauf<span class="section-label-note" id="d-hist-note"></span></div>
@@ -481,6 +481,7 @@ function openStock(sym){
   if(!r || r.consensus_label === "no_coverage"){
     set("#d-stats", '<div class="state-msg">Für diese Aktie liegt keine Analystenabdeckung von Finnhub vor.</div>');
     set("#d-ptrange", "");
+    set("#d-pt-note", "");
     set("#d-trendhist", "");
     set("#d-note", "");
     $("#stock-detail").classList.add("open");
@@ -511,8 +512,10 @@ function openStock(sym){
       '<div class="pt-marker mean" style="left:' + xPct(pt.targetMean) + '%" title="Ø Kursziel: ' + fmtUSD(pt.targetMean) + '"></div>' +
       '<div class="pt-marker current" style="left:' + xPct(price) + '%" title="Aktueller Kurs: ' + fmtUSD(price) + '"></div>'
     );
+    set("#d-pt-note", r.price_target_provider ? esc(r.price_target_provider) : "");
   } else {
     set("#d-ptrange", '<div class="state-msg">Kein Kursziel-Konsens verfügbar.</div>');
+    set("#d-pt-note", "");
   }
 
   var hist = r.trend_history;
@@ -533,7 +536,10 @@ function openStock(sym){
     '</div>';
   }).join(""));
 
-  set("#d-note", 'Quelle: Finnhub Recommendation Trends. Werte sind die Anzahl Analysten je Kategorie im jeweiligen Monat, keine Einzelnennung von Bank oder Analyst.');
+  var noteParts = ['Konsens-Rating: Finnhub Recommendation Trends (Anzahl Analysten je Kategorie im jeweiligen Monat).'];
+  if(r.price_target_provider) noteParts.push('Kursziel-Konsens: ' + esc(r.price_target_provider) + '.');
+  noteParts.push('Keine Einzelnennung, welche Bank oder welcher Analyst welches Kursziel gesetzt hat — diese Detailtiefe ist bei keinem der beiden Anbieter kostenlos verfügbar.');
+  set("#d-note", noteParts.join(' '));
 
   $("#stock-detail").classList.add("open");
 }
