@@ -34,12 +34,15 @@ Eine spätere Fundamental Engine schreibt unabhängig `fundamental_scores.json`.
 
 ## Fundamentaldaten-Pipeline (separat, manuell)
 
-`Twelve Data /statistics → GitHub Actions (nur workflow_dispatch) → dashboard/data/fundamental_metrics.json`
+`Financial Modeling Prep (profile, ratios-ttm, key-metrics-ttm, financial-growth) → GitHub Actions (nur workflow_dispatch) → dashboard/data/fundamental_metrics.json`
+
+Ursprünglich war diese Pipeline auf Twelve Data ausgelegt; deren `/statistics`-Endpoint ist dort aber erst ab dem Pro-Tarif freigeschaltet (bestätigt per 403-Fehler mit expliziter Plan-Meldung). Umgestellt auf Financial Modeling Prep, deren kostenloser Tarif (250 Requests/Tag) die benötigten Endpunkte für US-Aktien bereits enthält.
 
 Diese Pipeline ist bewusst von der wöchentlichen Kurs-Pipeline getrennt, damit ein Fundamentaldaten-Lauf den Kurs-/Technical-Workflow niemals beeinflussen kann:
 
-- `scripts/dashboard/fetch_fundamentals.py`: ruft pro übergebenem Symbol genau einmal `/statistics` auf (1 API-Credit je Symbol) und schreibt ausschließlich `dashboard/data/fundamental_metrics.json` (Schema-Version 2). Andere Symbole im File bleiben beim Merge unverändert.
-- `.github/workflows/update-fundamentals.yml`: **nur** `workflow_dispatch` mit Pflicht-Input `symbols` (Komma-getrennt, Default `AMZN`) — kein Cron, läuft nie automatisch. Ein eigener Scope-Guard erlaubt im Diff ausschließlich `dashboard/data/fundamental_metrics.json`.
+- `scripts/dashboard/fetch_fundamentals.py`: ruft pro übergebenem Symbol vier FMP-Endpunkte auf (`profile`, `ratios-ttm`, `key-metrics-ttm`, `financial-growth`) und schreibt ausschließlich `dashboard/data/fundamental_metrics.json` (Schema-Version 3). Andere Symbole im File bleiben beim Merge unverändert; `pe_ratio_forward` bleibt leer, da FMPs kostenloser Tarif keine Analysten-Schätzungen liefert.
+- `.github/workflows/update-fundamentals.yml`: **nur** `workflow_dispatch` mit Pflicht-Input `symbols` (Komma-getrennt, Default `AMZN`) — kein Cron, läuft nie automatisch. Erhält den Schlüssel ausschließlich als Secret `FMP_API_KEY`. Ein eigener Scope-Guard erlaubt im Diff ausschließlich `dashboard/data/fundamental_metrics.json`.
+- Symbole, die schon vor dieser Pipeline von Hand recherchierte Kennzahlen hatten, behalten diese unter `legacy` je Symbol als Fallback; `app-rebuild.js` und `guide/app.js` zeigen den FMP-Wert, sobald einer vorliegt, sonst den `legacy`-Wert, sonst „—“.
 - Neue Symbole werden weiterhin über `dashboard/config/universe.json` freigeschaltet; Kursdaten dafür liefert erst der nächste Lauf von `update-dashboard.yml` (unverändert, eigener Trigger).
 - Fehlt für ein Symbol ein Fundamental-, Score- oder Kursdatensatz, rendert `app-rebuild.js` einen degradierten Zustand (`—`, „Score noch offen“, „Kein Research-Profil hinterlegt“) statt abzustürzen — neue Symbole können so schrittweise befüllt werden, ohne bestehende Seiten zu gefährden.
 - Die Marktkapitalisierungs-Linie im Charting (`?overlay=mcap`) kostet keine zusätzlichen Credits: sie wird clientseitig aus vorhandenen Kursdaten × zuletzt gemeldeten `shares_outstanding` berechnet (Näherung, ignoriert Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Läufen) und ist nur sichtbar, wenn für das gewählte Symbol bereits Fundamentaldaten vorliegen.
