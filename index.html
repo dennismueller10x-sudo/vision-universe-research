@@ -99,6 +99,13 @@ Hintergrund schwarz dargestellt.
 .nav-links{
   display:flex;
   align-items:center;
+  min-width:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.nav-links::-webkit-scrollbar{
+  display:none;
 }
 
 .nav-links a{
@@ -109,6 +116,7 @@ Hintergrund schwarz dargestellt.
   letter-spacing:.08em;
   text-decoration:none;
   text-transform:uppercase;
+  white-space:nowrap;
 }
 
 .nav-links a+a{
@@ -908,6 +916,8 @@ alt="Vision Universe">
 
 <a href="./analysten/">Analysten</a>
 
+<a href="./macro/">Macro</a>
+
 <a href="./magazin/">Magazin</a>
 
 <a href="./reports/xpeng/">Reports</a>
@@ -953,6 +963,8 @@ aria-expanded="false">
 <a href="./hedgefonds/">Hedgefonds</a>
 
 <a href="./analysten/">Analysten</a>
+
+<a href="./macro/">Macro</a>
 
 <a href="./magazin/">Magazin</a>
 
@@ -1455,6 +1467,71 @@ Konsens-Rating und Kursziele der Wall-Street-Analysten
 <div class="card-link-inner">
 
 <span>Analysten Dashboard öffnen</span>
+
+<svg viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor">
+
+<path d="M4 12h16"/>
+<path d="M15 7l5 5-5 5"/>
+
+</svg>
+
+</div>
+
+</div>
+
+</a>
+
+
+
+<!-- MACRO INTELLIGENCE -->
+
+<a href="./macro/"
+class="product-card">
+
+<div class="icon-disc">
+
+<svg viewBox="0 0 32 32">
+
+<path d="M6 26a10 10 0 0 1 20 0"/>
+<path d="M16 26V15"/>
+<path d="M16 15l6-6"/>
+
+</svg>
+
+</div>
+
+
+<div>
+
+<h2><span class="card-number">07</span>Macro Intelligence</h2>
+
+<div class="card-rule"></div>
+
+<p class="card-description">
+Makroregime, Liquidität und Wendepunkte —
+Trend statt nur Level.
+</p>
+
+</div>
+
+
+<ul class="card-list">
+
+<li>Macro Regime Score</li>
+<li>Liquidität, Credit, Zinsen</li>
+<li>Macro Inflection Points</li>
+<li>Monatliches Update</li>
+
+</ul>
+
+
+<div class="card-link">
+
+<div class="card-link-inner">
+
+<span>Macro Dashboard öffnen</span>
 
 <svg viewBox="0 0 24 24"
 fill="none"

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Vision Universe® Macro Intelligence — Macro Regime Dashboard</title>
+<meta name="description" content="Vision Universe® Macro Intelligence: Macro-Regime-Score, Liquidität, Zinsen, Financial Conditions, Credit, Inflation, Wachstum, Arbeitsmarkt, Housing und globale Makro-Signale — mit Fokus auf Trend, Veränderungsrate und Wendepunkte statt reiner Level-Betrachtung. Datenquelle: FRED (Federal Reserve Bank of St. Louis).">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="mheader">
+  <a class="mlogo" href="/">
+    <img src="/assets/vision-universe-logo.png" alt="Vision Universe">
+    <b>Macro Intelligence</b>
+  </a>
+  <div class="mheader-right">
+    <span class="mheader-stand" id="lastUpdate"></span>
+    <a class="mhome-link" href="/">Vision Universe</a>
+  </div>
+</header>
+
+<div class="mtabs-wrap">
+  <nav class="mtabs" id="mtabs">
+    <button class="mtab" data-view="overview">ÜBERSICHT</button>
+    <button class="mtab" data-view="liquidity">LIQUIDITÄT</button>
+    <button class="mtab" data-view="rates">ZINSEN</button>
+    <button class="mtab" data-view="financialConditions">FINANCIAL CONDITIONS</button>
+    <button class="mtab" data-view="credit">CREDIT</button>
+    <button class="mtab" data-view="inflation">INFLATION</button>
+    <button class="mtab" data-view="growth">WACHSTUM</button>
+    <button class="mtab" data-view="labor">ARBEITSMARKT</button>
+    <button class="mtab" data-view="housing">HOUSING</button>
+    <button class="mtab" data-view="global">GLOBAL</button>
+    <button class="mtab" data-view="playbook">PLAYBOOK</button>
+  </nav>
+</div>
+
+<main class="mshell" id="app">
+  <div class="mview" id="view-overview"><div class="mstate">Lade Makrodaten…</div></div>
+  <div class="mview" id="view-liquidity"></div>
+  <div class="mview" id="view-rates"></div>
+  <div class="mview" id="view-financialConditions"></div>
+  <div class="mview" id="view-credit"></div>
+  <div class="mview" id="view-inflation"></div>
+  <div class="mview" id="view-growth"></div>
+  <div class="mview" id="view-labor"></div>
+  <div class="mview" id="view-housing"></div>
+  <div class="mview" id="view-global"></div>
+  <div class="mview" id="view-playbook"></div>
+
+  <footer class="mfooter">
+    <p><b>Datenquelle:</b> primär Federal Reserve Economic Data (FRED), Federal Reserve Bank of St. Louis, ergänzt um BLS, BEA, US Census Bureau, Freddie Mac, S&amp;P Dow Jones Indices, ICE BofA und Moody's. Direkte FRED-Live-Abfragen aus dem Browser finden bewusst nicht statt (CORS-/Fetch-Beschränkungen) — stattdessen ein statischer, monatlich aktualisierter Datensatz (siehe <code>data/current.json</code>). Mit „VISION UNIVERSE COMPOSITE" gekennzeichnete Kennzahlen (Net Liquidity Proxy, Yield Curve Regime, Credit Stress Score, Growth Momentum Score, Profit Cycle, Fed Flexibility) sind eigene, aus FRED-Rohdaten abgeleitete Einordnungen dieses Dashboards und keine offiziellen FRED- oder Fed-Kennzahlen. Historische Vergleichswerte, die in der zugrunde liegenden Recherche nicht verlässlich verifiziert werden konnten, werden als "n/v" ausgewiesen statt geschätzt — Details dazu im „Datenhinweis" jeder Kennzahl.</p>
+    <p>Die dargestellten Inhalte dienen ausschließlich Informations- und Researchzwecken und stellen keine Anlageberatung oder Empfehlung zum Kauf oder Verkauf von Finanzinstrumenten dar.</p>
+  </footer>
+</main>
+
+<script src="calc.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
