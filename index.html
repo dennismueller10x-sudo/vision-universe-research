@@ -30,6 +30,8 @@ content="Vision Universe Research – unabhängige Aktienanalysen, Investment Re
 
 html{
   scroll-behavior:smooth;
+  max-width:100%;
+  overflow-x:hidden;
 }
 
 body{
@@ -522,6 +524,20 @@ Kein schwarzer Hintergrund mehr.
 
 
 /* =========================
+   MORNING BRIEFING
+========================= */
+
+.home-morning{background:#050505;color:#fff;padding:88px 0}
+.home-morning-grid{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:62px;align-items:center}
+.home-morning-kicker{color:var(--red);font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+.home-morning-meta{display:flex;flex-wrap:wrap;gap:9px 20px;color:#999;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:25px 0 18px}
+.home-morning h2{font-size:clamp(44px,5vw,76px);line-height:.94;letter-spacing:-.055em;margin:0 0 22px}
+.home-morning-summary{color:#bbb;font-family:Georgia,serif;font-size:clamp(18px,2vw,23px);line-height:1.5;max-width:650px}
+.home-morning-link{display:inline-flex;justify-content:space-between;gap:55px;min-width:225px;margin-top:23px;padding:16px 19px;background:#fff;color:#050505;text-decoration:none;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.home-morning-visual{display:block;aspect-ratio:16/9;overflow:hidden;background:#171717}
+.home-morning-visual img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* =========================
    STATEMENT
 ========================= */
 
@@ -834,6 +850,11 @@ Kein schwarzer Hintergrund mehr.
     padding:23px;
   }
 
+  .home-morning{padding:62px 0}
+  .home-morning-grid{grid-template-columns:1fr;gap:32px}
+  .home-morning-visual{grid-row:1}
+  .home-morning h2{font-size:clamp(40px,12vw,58px);overflow-wrap:anywhere}
+
 
   .statement-inner{
     grid-template-columns:1fr;
@@ -922,6 +943,8 @@ alt="Vision Universe">
 
 <a href="./magazin/">Magazin</a>
 
+<a href="./morning/">Morning</a>
+
 <a href="./reports/xpeng/">Reports</a>
 
 </div>
@@ -971,6 +994,8 @@ aria-expanded="false">
 <a href="./macro/">Macro</a>
 
 <a href="./magazin/">Magazin</a>
+
+<a href="./morning/">Morning</a>
 
 <a href="./reports/xpeng/">Reports</a>
 
@@ -1625,6 +1650,27 @@ stroke="currentColor">
 
 
 
+<!-- MORNING BRIEFING -->
+
+<section class="home-morning" id="morningBriefing">
+<div class="shell home-morning-grid">
+<div class="home-morning-copy">
+<div class="home-morning-kicker">Vision Universe Morning</div>
+<div class="home-morning-meta">
+<span data-morning-date>04. September 2026</span>
+<span data-morning-category>Altersvorsorge</span>
+</div>
+<h2 data-morning-title>1.913 Euro Rente oder ein Millionen-Depot?</h2>
+<p class="home-morning-summary" data-morning-excerpt>Was Deutschland beim langfristigen Vermögensaufbau über Jahrzehnte verpasst hat.</p>
+<a class="home-morning-link" data-morning-link href="./morning/2026-09-04/"><span>Morning lesen</span><span>→</span></a>
+</div>
+<a class="home-morning-visual" data-morning-link href="./morning/2026-09-04/">
+<img data-morning-image src="./morning/assets/2026-09-04-rente-compound-growth.png" alt="Morgendlicher Blick über eine Stadt mit ansteigender Wachstumskurve" width="1600" height="900" loading="lazy">
+</a>
+</div>
+</section>
+
+
 <!-- STATEMENT -->
 
 <section class="statement">
@@ -1797,6 +1843,24 @@ String(open)
 });
 
 }
+
+
+/* LATEST MORNING BRIEFING */
+
+fetch("./morning/issues.json")
+.then(response=>response.ok?response.json():Promise.reject())
+.then(([latest])=>{
+  if(!latest)return;
+  const date=new Intl.DateTimeFormat("de-DE",{day:"2-digit",month:"long",year:"numeric",timeZone:"Europe/Berlin"}).format(new Date(`${latest.date}T12:00:00Z`));
+  document.querySelector("[data-morning-date]").textContent=date;
+  document.querySelector("[data-morning-category]").textContent=latest.category;
+  document.querySelector("[data-morning-title]").textContent=latest.title;
+  document.querySelector("[data-morning-excerpt]").textContent=latest.excerpt;
+  document.querySelectorAll("[data-morning-link]").forEach(link=>link.href=`./morning/${latest.slug}/`);
+  const image=document.querySelector("[data-morning-image]");
+  if(image&&latest.heroImage){image.src=latest.heroImage;image.alt=latest.heroAlt||"Vision Universe Morning Briefing";}
+})
+.catch(()=>{});
 
 
 /* SUBTLE ATLAS MOTION */

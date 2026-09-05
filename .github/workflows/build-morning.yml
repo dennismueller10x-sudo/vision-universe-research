@@ -1,0 +1,39 @@
+name: Build VISION UNIVERSE Morning
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "content/morning/**"
+      - "scripts/morning/**"
+      - "morning/assets/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-morning
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Generate Morning pages
+        run: node scripts/morning/build-morning.mjs
+      - name: Commit generated pages
+        shell: bash
+        run: |
+          if git diff --quiet -- morning; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add morning
+          git commit -m "chore: build Morning Briefing"
+          git push
