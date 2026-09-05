@@ -37,6 +37,8 @@ jobs:
 
       - name: Check required markers are present
         run: |
-          grep -q "VISION UNIVERSE" etf/index.html
+          grep -q '<vu-navigation></vu-navigation>' etf/index.html
+          grep -q '/assets/site-navigation.js' etf/index.html
+          grep -q 'alt="Vision Universe"' assets/site-navigation.js
           grep -q "const ETF=" etf/index.html
           echo "Markers OK"
