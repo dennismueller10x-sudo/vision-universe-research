@@ -49,7 +49,7 @@ def _fetch(url, provider, path, symbol):
         with urlopen(url, timeout=30) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
-        if error.code in (401, 403):
+        if error.code in (401, 402, 403):
             raise PlanLimitError(
                 f"Could not fetch {provider} {path} for {symbol}: access denied (HTTP {error.code}). "
                 "This endpoint may require a paid plan."
