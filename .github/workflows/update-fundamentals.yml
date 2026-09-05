@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       symbols:
-        description: "Comma-separated symbols to fetch (e.g. AMZN or AMZN,NVDA). Each symbol costs 1 Twelve Data API credit."
+        description: "Comma-separated symbols to fetch (e.g. AMZN or AMZN,NVDA). Each symbol costs 4 FMP API requests (free tier: 250/day)."
         required: true
         default: "AMZN"
 
@@ -23,7 +23,7 @@ jobs:
 
       - name: Fetch fundamentals
         env:
-          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: python scripts/dashboard/fetch_fundamentals.py --symbols "${{ github.event.inputs.symbols }}"
 
       - name: Verify generated-file-only scope
