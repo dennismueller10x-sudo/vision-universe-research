@@ -20,11 +20,14 @@ hashtags: ["Aktien", "Märkte"]
 keyNumber: "42 %"
 keyNumberLabel: "Kurze Einordnung der Zahl"
 excerpt: "Teaser für Archiv und Startseite."
+atlasOpinion: "Klare Atlas-Meinung in ein bis zwei Sätzen."
+investorTakeawayTitle: "Überschrift der Anleger-Einordnung."
+investorTakeaway: "Konkrete Bedeutung für Anleger."
 xHeadline: "VISION UNIVERSE BÖRSENGRUSS ☕️"
 xText: "Vorbereiteter Social-Text"
 xTickers: ["SPY", "QQQ"]
 xHashtags: ["Aktien", "Märkte"]
-sources: ["Primärquelle – Dokument oder Datensatz"]
+sources: ["Primärquelle – Dokument oder Datensatz|https://example.com/quelle"]
 ---
 ```
 
