@@ -170,22 +170,38 @@ def main():
 
     result = load_existing()
     generated_at = datetime.now(timezone.utc).isoformat()
+    succeeded, failed = [], []
     for index, symbol in enumerate(symbols):
         print(f"Fetching {symbol} ({index + 1}/{len(symbols)})...", file=sys.stderr)
+        try:
+            metrics = fetch_symbol(symbol, args.api_key)
+        except RuntimeError as error:
+            print(f"  skipping {symbol}: {error}", file=sys.stderr)
+            failed.append(symbol)
+            if index < len(symbols) - 1:
+                time.sleep(REQUEST_PAUSE_SECONDS)
+            continue
         legacy = (result["symbols"].get(symbol) or {}).get("legacy")
-        metrics = fetch_symbol(symbol, args.api_key)
         metrics["data_as_of"] = generated_at
         metrics["source"] = "fmp_stable"
         metrics["legacy"] = legacy
         result["symbols"][symbol] = metrics
+        succeeded.append(symbol)
         if index < len(symbols) - 1:
             time.sleep(REQUEST_PAUSE_SECONDS)
+
+    if not succeeded:
+        raise SystemExit(f"No symbols could be fetched. Failed: {', '.join(failed)}")
 
     result["schema_version"] = SCHEMA_VERSION
     result["generated_at_utc"] = generated_at
     result["provider"] = "Financial Modeling Prep"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+
+    print(f"Updated: {', '.join(succeeded)}", file=sys.stderr)
+    if failed:
+        print(f"Skipped (see notes above for why): {', '.join(failed)}", file=sys.stderr)
 
 
 if __name__ == "__main__":
