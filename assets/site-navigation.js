@@ -15,8 +15,8 @@
         *{box-sizing:border-box}header{background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(0,0,0,.07)}
         .shell{width:min(1400px,calc(100% - 64px));margin:auto}.row{height:88px;display:flex;align-items:center;justify-content:space-between;gap:32px}
         .brand{flex-shrink:0;display:flex;align-items:center}img{display:block;width:310px;max-width:30vw;height:auto}
-        nav{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-left:auto}
-        nav a{color:#111;text-decoration:none;text-transform:uppercase;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.08em;padding:12px 13px;border-left:1px solid #e5e5e2}
+        nav{display:flex;align-items:center;min-width:0;overflow-x:auto;margin-left:auto;scrollbar-width:thin}
+        nav a{flex-shrink:0;color:#111;text-decoration:none;text-transform:uppercase;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.08em;padding:12px 13px;border-left:1px solid #e5e5e2}
         nav a:first-child{border-left:0}a:hover{text-decoration:underline;text-underline-offset:7px}a:focus-visible,button:focus-visible{outline:2px solid #111;outline-offset:4px}
         button{display:none;flex-shrink:0;border:0;background:#050505;color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer}button span{display:block;width:17px;height:1px;background:#fff;margin:4px auto}
         @media(max-width:1100px){.shell{width:calc(100% - 42px)}img{width:240px}nav{display:none}button{display:block}nav.open{display:flex;position:absolute;top:88px;left:0;right:0;max-height:calc(100dvh - 88px);overflow:auto;flex-direction:column;align-items:stretch;background:#fff;padding:0 21px 18px;border-bottom:1px solid #ddd}nav a{border:0;border-top:1px solid #e5e5e2;padding:16px 0}}
