@@ -42,7 +42,7 @@ CURATED_FIELDS = [
 ]
 
 
-def fmp_get(endpoint, symbol, api_key, extra_params=None):
+def fmp_get_raw(endpoint, symbol, api_key, extra_params=None):
     params = {"symbol": symbol, "apikey": api_key}
     if extra_params:
         params.update(extra_params)
@@ -57,16 +57,39 @@ def fmp_get(endpoint, symbol, api_key, extra_params=None):
         raise RuntimeError(f"Could not fetch {endpoint} for {symbol}: {type(error).__name__}") from error
     if isinstance(payload, dict) and ("Error Message" in payload or payload.get("error")):
         raise RuntimeError(f"Could not fetch {endpoint} for {symbol}: {payload}")
+    return payload
+
+
+def fmp_get(endpoint, symbol, api_key, extra_params=None):
+    payload = fmp_get_raw(endpoint, symbol, api_key, extra_params)
     if isinstance(payload, list):
         return payload[0] if payload else {}
     return payload or {}
+
+
+def fmp_get_list(endpoint, symbol, api_key, extra_params=None):
+    payload = fmp_get_raw(endpoint, symbol, api_key, extra_params)
+    return payload if isinstance(payload, list) else []
+
+
+def yoy_growth_pct(quarters, field):
+    """True year-over-year growth from 5 quarterly statements (latest first):
+    compares the latest quarter against the same quarter one year (4 quarters) earlier.
+    FMP's own financial-growth endpoint computes sequential quarter-over-quarter growth
+    for period=quarterly, not YoY, so it isn't used here."""
+    if len(quarters) < 5:
+        return None
+    latest, year_ago = quarters[0].get(field), quarters[4].get(field)
+    if not isinstance(latest, (int, float)) or not isinstance(year_ago, (int, float)) or not year_ago:
+        return None
+    return round((latest - year_ago) / abs(year_ago) * 100, 4)
 
 
 def pct(value):
     return round(value * 100, 4) if isinstance(value, (int, float)) else None
 
 
-def extract_metrics(profile, ratios, key_metrics, growth):
+def extract_metrics(profile, ratios, key_metrics, quarterly_income):
     market_cap = profile.get("marketCap")
     price = profile.get("price")
     shares_outstanding = None
@@ -98,8 +121,8 @@ def extract_metrics(profile, ratios, key_metrics, growth):
         "operating_margin_pct": pct(ratios.get("operatingProfitMarginTTM")),
         "net_margin_pct": pct(ratios.get("netProfitMarginTTM")),
         "return_on_equity_pct": pct(key_metrics.get("returnOnEquityTTM")),
-        "revenue_growth_yoy_pct": pct(growth.get("revenueGrowth")),
-        "earnings_growth_yoy_pct": pct(growth.get("netIncomeGrowth")),
+        "revenue_growth_yoy_pct": yoy_growth_pct(quarterly_income, "revenue"),
+        "earnings_growth_yoy_pct": yoy_growth_pct(quarterly_income, "netIncome"),
         "debt_to_equity": ratios.get("debtToEquityRatioTTM"),
         "dividend_yield_pct": pct(ratios.get("dividendYieldTTM")),
         "free_cash_flow_ttm": free_cash_flow_ttm,
@@ -112,10 +135,10 @@ def fetch_symbol(symbol, api_key):
     profile = fmp_get("profile", symbol, api_key)
     ratios = fmp_get("ratios-ttm", symbol, api_key)
     key_metrics = fmp_get("key-metrics-ttm", symbol, api_key)
-    growth = fmp_get("financial-growth", symbol, api_key, {"period": "quarterly", "limit": 1})
+    quarterly_income = fmp_get_list("income-statement", symbol, api_key, {"period": "quarterly", "limit": 5})
     if not profile:
         raise RuntimeError(f"Could not fetch {symbol}: profile endpoint returned no data (invalid symbol or plan restriction)")
-    metrics = extract_metrics(profile, ratios, key_metrics, growth)
+    metrics = extract_metrics(profile, ratios, key_metrics, quarterly_income)
     missing = [key for key, value in metrics.items() if value is None]
     if missing:
         print(f"  note: {symbol} has no data for: {', '.join(missing)}", file=sys.stderr)
