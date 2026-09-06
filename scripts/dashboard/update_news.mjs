@@ -34,7 +34,7 @@ function classify(headline, raw, stock) {
 // syndicate alongside real editorial news — filtered out before scoring, not just ranked low.
 const JUNK_PATTERN = /^(IRW-PRESS|EQS-News|PR Newswire|GlobeNewswire|Business Wire|Sponsored|Anzeige|Werbung|Gewinnspiel|Horoskop|Rätsel|Forum:|Community:|Diskussion:|Kolumne:)/i;
 function isJunk(headline, raw, link) { return JUNK_PATTERN.test(headline) || raw.replace(/\s/g, '').length < 40 || /utm_medium=referral|utm_campaign=intern/i.test(link || ''); }
-async function rssItems(sourceName, prefix, url) {
+async function rssItems(sourceName, prefix, url, useOwnImage = false) {
   const xml = await fetchText(url, { headers: { Accept: 'application/rss+xml, application/xml, text/xml' } });
   return (xml.match(/<item>[\s\S]*?<\/item>/gi) || []).flatMap((item) => {
     const headline = tag(item, 'title'), link = tag(item, 'link');
@@ -43,7 +43,8 @@ async function rssItems(sourceName, prefix, url) {
     if (!headline || !published || published < cutoff || isJunk(headline, raw, link)) return [];
     const stock = detectStock(`${headline} ${raw}`);
     const { region, tags } = classify(headline, raw, stock);
-    return [{ id: `${prefix}-${stock?.symbol || 'markt'}-${published}`, symbol: stock?.symbol || null, company: stock?.name || 'Marktbericht', market: region, tags, category: stock ? 'Unternehmen' : 'Marktbericht', headline, raw_summary: raw.slice(0, 900), source: sourceName, source_url: link, image_url: pickImage(stock, headline), published_ms: published }];
+    const ownImage = useOwnImage ? item.match(/<enclosure url="([^"]+)"/)?.[1] : null;
+    return [{ id: `${prefix}-${stock?.symbol || 'markt'}-${published}`, symbol: stock?.symbol || null, company: stock?.name || 'Marktbericht', market: region, tags, category: stock ? 'Unternehmen' : 'Marktbericht', headline, raw_summary: raw.slice(0, 900), source: sourceName, source_url: link, image_url: ownImage || pickImage(stock, headline), published_ms: published }];
   });
 }
 const frankfurtItems = () => rssItems('Börse Frankfurt', 'bf', 'https://api.boerse-frankfurt.de/v1/feeds/news.rss');
@@ -51,7 +52,12 @@ const frankfurtItems = () => rssItems('Börse Frankfurt', 'bf', 'https://api.boe
 // strong Wall-Street/US-stock focus complements Börse Frankfurt's German-market coverage.
 const wallstreetOnlineItems = () => rssItems('wallstreet-online.de', 'wo', 'https://www.wallstreet-online.de/rss/nachrichten-alle.xml');
 const finanznachrichtenItems = () => rssItems('FinanzNachrichten.de', 'fn', 'https://www.finanznachrichten.de/rss-nachrichten-aktien-usa');
-const investingComItems = () => rssItems('Investing.com', 'iv', 'https://de.investing.com/rss/news_25.rss');
+// Investing.com is the only one of the four with real per-article photos (Reuters wire images);
+// the others either have none (wallstreet-online.de, FinanzNachrichten.de) or tiny 305x280 icons
+// (Börse Frankfurt). news.js already falls back to a local image on load failure (onerror), so
+// using Investing.com's own image here is a safe try even though it 403s from this pipeline's
+// own (likely IP-blocked) requests — real visitor browsers are a different, unblocked path.
+const investingComItems = () => rssItems('Investing.com', 'iv', 'https://de.investing.com/rss/news_25.rss', true);
 function summarize(text, maxLen = 320) {
   const t = clean(text);
   if (t.length <= maxLen) return t;
