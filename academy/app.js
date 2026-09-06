@@ -1,7 +1,8 @@
-/* Vision Universe Academy — landing page.
-   Reads the data-driven registries (worlds.json, experiences.json,
-   questions.json) and renders three grids. Adding a new World or
-   Experience later means editing JSON here, not rebuilding this page. */
+/* Vision Universe Academy — Landingpage.
+   Liest die datengetriebenen Registries (worlds.json, experiences.json,
+   questions.json, concepts.json) und rendert drei Grids. Eine neue World
+   oder Experience spaeter zu ergaenzen heisst: JSON editieren, nicht diese
+   Seite umbauen. */
 (function () {
   "use strict";
   var Shell = window.AcademyShell;
@@ -42,23 +43,46 @@
     ]));
   }
 
-  function renderWorlds(worlds) {
+  function renderWorlds(worlds, concepts) {
     var mount = Shell.$("#worlds-mount");
     mount.innerHTML = "";
     worlds.forEach(function (w) {
+      var conceptCount = 0;
+      if (concepts && concepts.concepts) {
+        Object.keys(concepts.concepts).forEach(function (id) {
+          if ((concepts.concepts[id].worlds || []).indexOf(w.id) !== -1) conceptCount++;
+        });
+      }
+
       var card = Shell.el("div", {
         class: "vu-a-world-card",
-        style: "--vu-world-accent: var(--vu-accent-" + w.accent + ")"
+        style: "--vu-world-accent: var(--vu-accent-" + w.accent + ")",
+        role: "button", tabindex: "0"
       });
-      card.appendChild(Shell.el("h3", { class: "vu-a-world-title", text: w.title }));
+      var head = Shell.el("div", { class: "vu-a-world-card-head" }, [
+        Shell.createIconBadge(w.icon, "var(--vu-accent-" + w.accent + ")"),
+        Shell.el("h3", { class: "vu-a-world-title", text: w.title })
+      ]);
+      card.appendChild(head);
       card.appendChild(Shell.el("p", { class: "vu-a-world-summary", text: w.summary }));
+
       var nodes = Shell.el("div", { class: "vu-a-world-nodes" });
       w.sampleNodes.forEach(function (n) { nodes.appendChild(Shell.el("span", { class: "vu-a-world-node", text: n })); });
       card.appendChild(nodes);
-      card.appendChild(Shell.el("span", {
-        class: "vu-a-world-status is-" + w.status,
-        text: w.status === "available" ? "Verfügbar" : "In Aufbau"
-      }));
+
+      var foot = Shell.el("div", { class: "vu-a-world-foot" }, [
+        Shell.el("span", {
+          class: "vu-a-world-status is-" + w.status,
+          text: w.status === "available" ? "Verfügbar" : "In Aufbau"
+        }),
+        Shell.el("span", { class: "vu-a-world-count", text: conceptCount > 0 ? conceptCount + (conceptCount === 1 ? " Konzept" : " Konzepte") : w.sampleNodes.length + " Themen" })
+      ]);
+      card.appendChild(foot);
+
+      function toggle() { card.classList.toggle("is-open"); }
+      card.addEventListener("click", toggle);
+      card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+
       mount.appendChild(card);
     });
   }
@@ -67,10 +91,11 @@
     var worldsData = await Shell.loadJSON("/academy/data/worlds.json");
     var experiencesData = await Shell.loadJSON("/academy/data/experiences.json");
     var questionsData = await Shell.loadJSON("/academy/data/questions.json");
+    var conceptsData = await Shell.loadJSON("/academy/data/concepts.json").catch(function () { return null; });
 
     renderQuestions(questionsData.questions, experiencesData.experiences);
     renderFeaturedPilot(experiencesData.experiences);
-    renderWorlds(worldsData.worlds);
+    renderWorlds(worldsData.worlds, conceptsData);
   }
 
   init();

@@ -1,93 +1,104 @@
 {
   "schemaVersion": 1,
-  "note": "Academy Master Map V2 (11 Worlds) aus der Deep-Research-Audit-Datei vom 6. September 2026. Bewusst datengetrieben statt hart codiert: neue Worlds/Nodes koennen hier ergaenzt werden, ohne die Shell oder Engines anzufassen. status='available' nur, wenn die World mindestens eine gebaute Experience enthaelt — Phase 1 baut ausschliesslich 'Follow the Money' in Financial Statements & Accounting Quality.",
+  "note": "Academy Master Map V2 (11 Worlds) aus der Deep-Research-Audit-Datei vom 6. September 2026. Bewusst datengetrieben statt hart codiert: neue Worlds/Nodes koennen hier ergaenzt werden, ohne die Shell oder Engines anzufassen. status='available' nur, wenn die World mindestens eine gebaute Experience enthaelt — Phase 1 baut ausschliesslich 'Follow the Money' in Rechnungslegung & Bilanzqualitaet. Titel bewusst auf Deutsch (Ausnahme: etablierte Fachbegriffe wie ETF, FX, AI/KI bleiben kurz).",
   "worlds": [
     {
       "id": "foundations-market-mechanics",
-      "title": "Investment Foundations & Market Mechanics",
+      "title": "Investment-Grundlagen & Marktmechanik",
+      "icon": "bar-chart",
       "accent": "electric-blue",
       "summary": "Grundintuition für Rendite, Risiko, Zinseszins und Handel.",
-      "sampleNodes": ["Total Return & Compounding", "Bid/Ask/Spread", "Orders & Execution", "Liquidität & Market Makers"],
+      "sampleNodes": ["Zinseszins & Total Return", "Nominal, real, netto", "Bid/Ask & Spread", "Orders & Ausführung", "Liquidität & Market Maker", "Primary/Secondary/Index-Flows"],
       "status": "planned"
     },
     {
       "id": "assets-indexes-derivatives",
-      "title": "Assets, Indexes & Derivatives",
+      "title": "Anlageklassen, Indizes & Derivate",
+      "icon": "coins",
       "accent": "azure",
-      "summary": "Verstehen, was man tatsächlich besitzt — Aktien, Anleihen, ETFs, FX, Rohstoffe.",
-      "sampleNodes": ["Bond Price ↔ Yield", "ETF Mechanics & Overlap", "Index Construction", "FX Exposure"],
+      "summary": "Verstehen, was man tatsächlich besitzt — Aktien, Anleihen, ETFs, Devisen, Rohstoffe.",
+      "sampleNodes": ["Anleihekurs ↔ Rendite", "Duration & Konvexität", "ETF-Mechanik & Overlap", "Index-Konstruktion", "Devisen-Exposure", "Rohstoffe & Immobilien"],
       "status": "planned"
     },
     {
       "id": "companies-competitive-economics",
-      "title": "Companies & Competitive Economics",
+      "title": "Unternehmen & Wettbewerbsökonomie",
+      "icon": "building",
       "accent": "amber",
       "summary": "Die wirtschaftliche Maschine eines Unternehmens — Geschäftsmodell, Margen, ROIC, Kapitalallokation.",
-      "sampleNodes": ["Unit Economics", "Operating Leverage", "ROIC", "Capital Allocation"],
+      "sampleNodes": ["Umsatztreiber", "Unit Economics", "Operating Leverage", "Wettbewerbsvorteile (Moats)", "ROIC", "Kapitalallokation & Buybacks"],
       "status": "planned"
     },
     {
       "id": "financial-statements-accounting-quality",
-      "title": "Financial Statements & Accounting Quality",
+      "title": "Rechnungslegung & Bilanzqualität",
+      "icon": "ledger",
       "accent": "warm-orange",
-      "summary": "Wirtschaftliche Realität in Rechnungslegung übersetzen — und warum Gewinn nicht gleich Cash ist.",
-      "sampleNodes": ["Three-Statement Connections", "Free Cash Flow", "Working Capital", "Earnings Quality"],
+      "summary": "Wirtschaftliche Realität in Zahlen übersetzen — und warum Gewinn nicht gleich Cash ist.",
+      "sampleNodes": ["Die drei Rechnungen im Zusammenspiel", "Free Cash Flow", "Working Capital", "Abschreibungen & Investitionen", "Verschuldung", "Ergebnisqualität"],
       "status": "available"
     },
     {
       "id": "forecasting-valuation-expectations",
-      "title": "Forecasting, Valuation & Expectations",
+      "title": "Prognose, Bewertung & Erwartungen",
+      "icon": "target",
       "accent": "violet",
-      "summary": "Von operativen Treibern zum Preis — DCF, Multiples, Reverse DCF, Consensus.",
-      "sampleNodes": ["DCF", "Reverse DCF", "Cost of Capital", "Sensitivity Analysis"],
+      "summary": "Von operativen Treibern zum Preis — DCF, Multiples, Reverse DCF, Konsensschätzungen.",
+      "sampleNodes": ["Discounted Cashflow (DCF)", "Reverse DCF", "Kapitalkosten", "Multiples-Familie (KGV, EV/EBITDA)", "Sensitivitätsanalyse", "Konsens & Schätzungsrevisionen"],
       "status": "planned"
     },
     {
       "id": "macro-rates-credit-fx",
-      "title": "Macro, Rates, Credit & FX",
+      "title": "Makro, Zinsen, Kredit & Devisen",
+      "icon": "globe",
       "accent": "cyan",
       "summary": "Wie sich Wirtschaft auf Assets überträgt — ohne deterministische Kausalketten.",
-      "sampleNodes": ["Monetary Transmission", "Yield Curve", "Credit Cycle", "Financial Conditions"],
+      "sampleNodes": ["Geldpolitische Transmission", "Zinskurve", "Kreditzyklus", "Finanzierungsbedingungen", "Inflation & Realzins", "Marktregime"],
       "status": "planned"
     },
     {
       "id": "strategies-factors-evidence",
-      "title": "Strategies, Factors & Market Evidence",
+      "title": "Strategien, Faktoren & Markt-Evidenz",
+      "icon": "trend",
       "accent": "magenta",
       "summary": "Investmentstile evidenzbasiert beurteilen statt Regeln zu glauben.",
-      "sampleNodes": ["Value", "Momentum", "Factor Cycles", "Backtest Bias"],
+      "sampleNodes": ["Value", "Momentum", "Qualität", "Faktor-Zyklen", "Backtest-Verzerrungen", "Aktiv vs. Passiv"],
       "status": "planned"
     },
     {
       "id": "portfolio-construction-risk",
-      "title": "Portfolio Construction, Risk & Performance",
+      "title": "Portfoliokonstruktion, Risiko & Performance",
+      "icon": "pie",
       "accent": "emerald",
       "summary": "Investments zu einem System kombinieren — Diversifikation, Risiko, Stresstests.",
-      "sampleNodes": ["Diversification & Correlation", "Drawdown & Recovery", "Stress Testing", "Portfolio Risk DNA"],
+      "sampleNodes": ["Diversifikation & Korrelation", "Konzentration", "Drawdown & Erholung", "Asset Allocation", "Stresstests", "Performance & Attribution"],
       "status": "planned"
     },
     {
       "id": "behavior-decision-making",
-      "title": "Behavior & Decision Making",
+      "title": "Verhalten & Entscheidungsfindung",
+      "icon": "brain",
       "accent": "coral",
       "summary": "Verzerrungen nicht nur kennen, sondern im Entscheidungsprozess abfangen.",
-      "sampleNodes": ["Loss Aversion", "Anchoring", "Herding", "Overconfidence"],
+      "sampleNodes": ["Verlustaversion", "Ankereffekt", "Herdenverhalten", "Selbstüberschätzung", "Bestätigungsfehler", "Entscheidungsprozess & Pre-Mortem"],
       "status": "planned"
     },
     {
       "id": "research-evidence-ai",
-      "title": "Research, Evidence & AI",
+      "title": "Research, Evidenz & KI",
+      "icon": "magnifier",
       "accent": "gold",
       "summary": "Informationen finden, bewerten und Thesen aktualisieren — inklusive KI-Verifikation.",
-      "sampleNodes": ["Source Hierarchy", "Consensus & Revisions", "Thesis Tracking", "AI Verification"],
+      "sampleNodes": ["Quellenhierarchie", "Geschäftsberichte & Calls", "Konsensschätzungen", "Investmentthese & Tracking", "Datenherkunft", "KI-Verifikation"],
       "status": "planned"
     },
     {
       "id": "professional-markets-institutional",
-      "title": "Professional Markets & Institutional Flows",
+      "title": "Professionelle Märkte & institutionelle Flows",
+      "icon": "briefcase",
       "accent": "indigo",
       "summary": "Professionelle Marktaktivität korrekt interpretieren — inklusive ihrer Grenzen.",
-      "sampleNodes": ["13F Filings", "Short Selling & Borrow", "Institutional Investor Types"],
+      "sampleNodes": ["13F-Filings", "Leerverkäufe & Borrow", "Institutionelle Anlegertypen", "Optionspositionierung", "Fondsflüsse"],
       "status": "planned"
     }
   ]

@@ -89,7 +89,7 @@
   }
 
   // ---- Evidence tag (FACT/MODEL/ASSUMPTION/ESTIMATE) ----------------------
-  var EVIDENCE_LABEL = { FACT: "Fact", MODEL: "Model Output", ASSUMPTION: "Assumption", ESTIMATE: "Estimate" };
+  var EVIDENCE_LABEL = { FACT: "Fakt", MODEL: "Modellwert", ASSUMPTION: "Annahme", ESTIMATE: "Schätzung" };
   function createEvidenceTag(type) {
     return el("span", { class: "vu-a-evidence", "data-evidence": type, text: EVIDENCE_LABEL[type] || type });
   }
@@ -143,6 +143,8 @@
     baseline.setAttribute("stroke", "rgba(255,255,255,.14)");
     svg.appendChild(baseline);
 
+    var baselineY = y(0);
+    var animatedRects = [];
     bars.forEach(function (b, i) {
       var x = padSide + i * (barW + gap);
       var top = y(Math.max(b.from, b.to));
@@ -153,14 +155,19 @@
         : (b.item.value >= 0 ? "var(--vu-acad-positive)" : "var(--vu-acad-negative)");
 
       var rect = document.createElementNS(svg.namespaceURI, "rect");
-      rect.setAttribute("x", x); rect.setAttribute("y", top);
-      rect.setAttribute("width", barW); rect.setAttribute("height", h);
+      rect.setAttribute("class", "vu-a-chart-bar");
+      // Startzustand an der Nulllinie — wird nach dem Einhängen ins DOM auf
+      // die Zielposition gesetzt, damit die CSS-Transition greift (kleine,
+      // informative 2D-Animation statt Deko-Effekt).
+      rect.setAttribute("x", x); rect.setAttribute("y", baselineY);
+      rect.setAttribute("width", barW); rect.setAttribute("height", 0);
       rect.setAttribute("rx", 4);
       rect.setAttribute("fill", color);
       var title = document.createElementNS(svg.namespaceURI, "title");
       title.textContent = b.item.label + ": " + fmtCurrency(b.item.value, { unit: opts.unit || "" });
       rect.appendChild(title);
       svg.appendChild(rect);
+      animatedRects.push({ rect: rect, top: top, h: h });
 
       // Connector zwischen den Bars (typisches Waterfall-Merkmal)
       if (i > 0 && b.item.kind !== "total") {
@@ -189,8 +196,12 @@
       nameLabel.setAttribute("text-anchor", "middle");
       nameLabel.setAttribute("font-size", "9.5");
       nameLabel.setAttribute("fill", "#8b90a3");
-      var words = b.item.label.split(" ");
-      nameLabel.textContent = words.length > 1 && b.item.label.length > 12 ? words[0] + "…" : b.item.label;
+      if (b.item.shortLabel) {
+        nameLabel.textContent = b.item.shortLabel;
+      } else {
+        var words = b.item.label.split(" ");
+        nameLabel.textContent = words.length > 1 && b.item.label.length > 12 ? words[0] + "…" : b.item.label;
+      }
       var fullTitle = document.createElementNS(svg.namespaceURI, "title");
       fullTitle.textContent = b.item.label;
       nameLabel.appendChild(fullTitle);
@@ -200,6 +211,13 @@
     container.innerHTML = "";
     var wrap = el("div", { class: "vu-a-chart-wrap" });
     wrap.appendChild(svg);
+
+    requestAnimationFrame(function () {
+      animatedRects.forEach(function (r) {
+        r.rect.setAttribute("y", r.top);
+        r.rect.setAttribute("height", r.h);
+      });
+    });
 
     var summary = el("ul", { class: "vu-a-chart-summary" });
     items.forEach(function (it) {
@@ -216,7 +234,7 @@
   // ---- Methodology / Sources panel ---------------------------------------
   function renderMethodologyAndSources(container, methodology, sources) {
     container.innerHTML = "";
-    var mPanel = el("div", { class: "vu-a-panel" }, [el("h3", { text: "Methodology" })]);
+    var mPanel = el("div", { class: "vu-a-panel" }, [el("h3", { text: "Methodik" })]);
     var dl = el("dl", { class: "vu-a-def-list" });
     (methodology || []).forEach(function (m) {
       dl.appendChild(el("dt", { text: m.term }));
@@ -225,26 +243,53 @@
     mPanel.appendChild(dl);
     container.appendChild(mPanel);
 
-    var sPanel = el("div", { class: "vu-a-panel" }, [el("h3", { text: "Sources" })]);
+    var sPanel = el("div", { class: "vu-a-panel" }, [el("h3", { text: "Quellen" })]);
     var ul = el("ul", { class: "vu-a-source-list" });
     (sources || []).forEach(function (s) { ul.appendChild(el("li", { text: s })); });
     sPanel.appendChild(ul);
     container.appendChild(sPanel);
   }
 
-  // ---- Related concepts chips (reads the Concept Registry) --------------
+  // ---- Related concepts: klickbare Chips + Detailkarte (Concept Registry) -
+  // Ein Tap/Klick zeigt Definition, Formel und "Warum wichtig" direkt unter
+  // den Chips — kein reines title-Tooltip mehr (auf Touch nicht bedienbar).
   function renderRelatedConcepts(container, conceptIds, registry) {
     container.innerHTML = "";
     var chips = el("div", { class: "vu-a-chips" });
+    var detail = el("div", { id: "vu-a-concept-detail-mount" });
+    var openId = null;
+
+    function renderDetail(id) {
+      detail.innerHTML = "";
+      if (!id) return;
+      var c = registry && registry.concepts && registry.concepts[id];
+      if (!c) return;
+      var card = el("div", { class: "vu-a-concept-detail" }, [
+        el("h4", { text: c.title }),
+        el("p", { text: c.shortDefinition })
+      ]);
+      if (c.formula) card.appendChild(el("p", { class: "vu-a-concept-formula", text: c.formula }));
+      if (c.whyItMatters) card.appendChild(el("p", { class: "vu-a-concept-why", text: "Warum wichtig: " + c.whyItMatters }));
+      detail.appendChild(card);
+    }
+
     (conceptIds || []).forEach(function (id) {
       var c = registry && registry.concepts && registry.concepts[id];
       if (!c) return;
-      chips.appendChild(el("span", { class: "vu-a-chip", title: c.shortDefinition }, [
-        document.createTextNode(""),
+      var chip = el("button", { class: "vu-a-chip", type: "button", "aria-expanded": "false" }, [
         el("b", { text: c.title })
-      ]));
+      ]);
+      chip.addEventListener("click", function () {
+        var wasOpen = openId === id;
+        openId = wasOpen ? null : id;
+        $all(".vu-a-chip", chips).forEach(function (b) { b.classList.remove("is-open"); b.setAttribute("aria-expanded", "false"); });
+        if (!wasOpen) { chip.classList.add("is-open"); chip.setAttribute("aria-expanded", "true"); }
+        renderDetail(openId);
+      });
+      chips.appendChild(chip);
     });
     container.appendChild(chips);
+    container.appendChild(detail);
   }
 
   // ---- Scrollytelling: marks the Act nearest to viewport center active --
@@ -270,6 +315,43 @@
     actEls.forEach(function (a) { io.observe(a); });
   }
 
+  // ---- World/Concept icon badges (kleine 2D-Glyphen statt Textwand) ------
+  // Ein Icon pro World (siehe academy/data/worlds.json "icon"-Feld). Bewusst
+  // handgezeichnete, einfache Linien-Icons statt einer externen Icon-Library
+  // (Repo hat keine npm-Abhaengigkeiten, siehe ARCHITECTURE.md).
+  var ICON_PATHS = {
+    "bar-chart": "M4 19V10 M10 19V5 M16 19V13 M4 19H20",
+    "coins": "M8 8a5 3 0 1 0 8 0a5 3 0 1 0 -8 0 M3 8v5a5 3 0 0 0 8 2.9 M8 13a5 3 0 0 0 8 0v-5",
+    "building": "M5 20V6l7-3 7 3v14 M5 20h14 M9 9h1 M14 9h1 M9 13h1 M14 13h1 M9 20v-4h6v4",
+    "ledger": "M6 3h9l3 3v15H6z M15 3v3h3 M9 11h6 M9 14h6 M9 17h4",
+    "target": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z",
+    "globe": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M3 12h18 M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9 M12 3c-2.5 2.6-3.8 5.7-3.8 9s1.3 6.4 3.8 9",
+    "trend": "M4 17l5-6 4 3 7-9 M14 5h6v6",
+    "pie": "M12 3a9 9 0 1 0 9 9h-9z",
+    "brain": "M9 4a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8 3 3 0 0 0 3 4.2 3 3 0 0 0 5-1M9 4a3 3 0 0 1 3 3v10a3 3 0 0 1-5 2.2M9 4v14",
+    "magnifier": "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M21 21l-4.3-4.3",
+    "briefcase": "M4 8h16v11H4z M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2 M4 13h16"
+  };
+  function createIcon(key, color) {
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("aria-hidden", "true");
+    var path = document.createElementNS(svg.namespaceURI, "path");
+    path.setAttribute("d", ICON_PATHS[key] || ICON_PATHS["bar-chart"]);
+    path.setAttribute("stroke", color || "currentColor");
+    path.setAttribute("stroke-width", "1.7");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(path);
+    return svg;
+  }
+  function createIconBadge(key, accentVar) {
+    var badge = el("div", { class: "vu-a-icon-badge", style: "--vu-world-accent: " + accentVar });
+    badge.appendChild(createIcon(key, accentVar));
+    return badge;
+  }
+
   async function loadJSON(url) {
     var res = await fetch(url);
     if (!res.ok) throw new Error("Fetch failed: " + url + " (" + res.status + ")");
@@ -286,6 +368,8 @@
     renderMethodologyAndSources: renderMethodologyAndSources,
     renderRelatedConcepts: renderRelatedConcepts,
     initScrollytelling: initScrollytelling,
+    createIcon: createIcon,
+    createIconBadge: createIconBadge,
     loadJSON: loadJSON
   };
 })(window);
