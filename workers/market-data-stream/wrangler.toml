@@ -1,0 +1,11 @@
+name = "vu-market-data-stream"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+# Optional: comma-separated list of origins allowed to call this worker.
+# Defaults to https://research.visionuniverse.de if unset (see src/index.js).
+# [vars]
+# ALLOWED_ORIGINS = "https://research.visionuniverse.de,http://localhost:8080"
+
+# TWELVE_DATA_API_KEY must be set as a secret, never as a plaintext var:
+#   wrangler secret put TWELVE_DATA_API_KEY

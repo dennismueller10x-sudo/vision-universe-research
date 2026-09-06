@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "worker_base_url": "",
+  "note": "worker_base_url must point at the deployed Vision Universe market-data worker (see workers/market-data-stream/README.md). No secret belongs in this file — it only holds the public worker URL. Leave it empty until the worker is deployed; the live chart then shows an OFFLINE/setup notice and offers ?mock=1 for testing."
+}

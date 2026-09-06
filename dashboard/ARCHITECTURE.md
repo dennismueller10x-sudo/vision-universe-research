@@ -47,6 +47,20 @@ Diese Pipeline ist bewusst von der wöchentlichen Kurs-Pipeline getrennt, damit 
 - Fehlt für ein Symbol ein Fundamental-, Score- oder Kursdatensatz, rendert `app-rebuild.js` einen degradierten Zustand (`—`, „Score noch offen“, „Kein Research-Profil hinterlegt“) statt abzustürzen — neue Symbole können so schrittweise befüllt werden, ohne bestehende Seiten zu gefährden.
 - Die Marktkapitalisierungs-Linie im Charting (`?overlay=mcap`) kostet keine zusätzlichen Credits: sie wird clientseitig aus vorhandenen Kursdaten × zuletzt gemeldeten `shares_outstanding` berechnet (Näherung, ignoriert Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Läufen) und ist nur sichtbar, wenn für das gewählte Symbol bereits Fundamentaldaten vorliegen.
 
+## Live-Chart-Proof-of-Concept (Marktdaten-Streaming)
+
+`Twelve Data (WebSocket + REST) → Cloudflare Worker (workers/market-data-stream) → dashboard/services/market-data/* → dashboard/components/live-stock-chart.js → dashboard/charting/`
+
+Getrennt von der wöchentlichen Batch-Pipeline oben: Diese Schicht liefert Intraday-/Live-Daten für genau die aktuell betrachtete Aktie, statt täglicher Kerzen für das ganze Universe. Der Browser ruft weiterhin niemals Twelve Data direkt auf; der API-Key liegt ausschließlich als Cloudflare-Worker-Secret vor (`workers/market-data-stream/README.md`).
+
+- `workers/market-data-stream/`: eigenständiger Cloudflare Worker (nicht Teil der GitHub-Pages-Auslieferung). Proxied `/history` und `/quote` (REST) sowie `/stream` (WebSocket) zu Twelve Data, hält den API-Key serverseitig und fällt bei fehlendem WebSocket-Zugriff selbst nicht um, sondern schließt die Downstream-Verbindung mit einem Code, den der Client als „Fallback auf Polling“ interpretiert.
+- `dashboard/config/market-data.json`: einzige (nicht geheime) Konfigurationsquelle für die öffentliche Worker-URL. Leer = Live-Layer nicht deployed; die Komponente zeigt dann `OFFLINE` mit Hinweis auf `?mock=1` statt abzustürzen.
+- `dashboard/services/market-data/`: Provider-Abstraktion. `MarketDataProvider.js` definiert das interne Datenmodell (`MarketPriceUpdate`, `HistoricalBar`) und die Validierung; `TwelveDataProvider.js` implementiert es gegen den Worker (WebSocket mit Exponential-Backoff-Reconnect, automatischer REST-Polling-Fallback); `MockProvider.js` simuliert Ticks nur bei explizitem `?mock=1` in der URL. `index.js` ist die einzige Stelle, die einen Provider auswählt — ein Wechsel auf einen anderen Anbieter ändert nur diese Datei plus einen neuen `*Provider.js`, nie die Chart-Komponente.
+- `dashboard/components/live-stock-chart.js` (+ `.css`): dashboardunabhängige, wiederverwendbare Komponente (`mountLiveStockChart(container, {symbol, name})`). Lädt Intraday-Historie, abonnements-verwaltet Live-Updates (kein Page-Reload), throttled Redraws über `requestAnimationFrame`, zeigt LIVE/DELAYED/MARKET CLOSED/OFFLINE und einen versteckten Debug-Panel (Klick auf „⋯“). `handle.update({symbol})` erlaubt Tickerwechsel ohne Remount und beendet die alte Subscription sauber, `handle.dispose()` für Unmount.
+- `dashboard/charting/`: Der bestehende Range-Umschalter (`1 Monat`/`1 Jahr`/`3 Jahre`/`5 Jahre`, weiterhin aus `market_data.json`) hat einen neuen ersten Eintrag `1 Tag · Live` (`?days=1`) bekommen, der `mountLiveStockChart` per dynamischem Import lädt. Alle anderen Ranges sind unverändert (gleicher Code-Pfad wie vorher).
+
+Betrieb: Der Worker wird unabhängig von den GitHub-Actions-Workflows via `wrangler deploy` betrieben und benötigt das Secret `TWELVE_DATA_API_KEY` (separat von dem in GitHub Actions hinterlegten Secret gleichen Namens — beide dürfen denselben Wert tragen, sind aber unabhängige Speicherorte).
+
 ## Analyst Ratings Pipeline
 
 `Finnhub (+ FMP für Kursziele) → GitHub Actions → dashboard/data/analyst_ratings.json → statisches Dashboard`
