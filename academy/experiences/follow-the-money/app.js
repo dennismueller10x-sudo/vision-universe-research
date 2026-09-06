@@ -13,7 +13,8 @@
     days: function (v) { return Math.round(v) + " Tage"; }
   };
 
-  var state = { assumptions: Object.assign({}, Engine.DEFAULT_ASSUMPTIONS), tab: "income", model: null };
+  var state = { assumptions: Object.assign({}, Engine.DEFAULT_ASSUMPTIONS), tab: "income", model: null, profileId: "standard" };
+  var controlInstances = {};
 
   function renderHero(data) {
     Shell.$("#hero-hook").textContent = data.hook;
@@ -35,9 +36,42 @@
     Shell.initScrollytelling(actEls);
   }
 
+  // ---- Branchenprofile: illustrative Archetypen, keine echten Firmen -----
+  function renderProfiles(data) {
+    var mount = Shell.$("#profiles-mount");
+    mount.innerHTML = "";
+    (data.industryProfiles || []).forEach(function (profile) {
+      var pill = Shell.el("button", {
+        type: "button", class: "vu-a-profile-pill" + (profile.id === state.profileId ? " is-active" : ""),
+        title: profile.description
+      }, [document.createTextNode(profile.label)]);
+      pill.addEventListener("click", function () { applyProfile(profile); });
+      mount.appendChild(pill);
+    });
+    var note = Shell.$("#profiles-note-mount");
+    if (!note) {
+      note = Shell.el("p", { id: "profiles-note-mount", class: "vu-a-profile-note" });
+      mount.parentNode.appendChild(note);
+    }
+    note.textContent = data.industryProfileNote || "";
+  }
+
+  function applyProfile(profile) {
+    state.profileId = profile.id;
+    state.assumptions = Object.assign({}, Engine.DEFAULT_ASSUMPTIONS, profile.assumptions || {});
+    Object.keys(controlInstances).forEach(function (key) {
+      controlInstances[key].set(state.assumptions[key]);
+    });
+    Shell.$all(".vu-a-profile-pill").forEach(function (p) {
+      p.classList.toggle("is-active", p.textContent === profile.label);
+    });
+    recompute();
+  }
+
   function renderControls(data) {
     var mount = Shell.$("#controls-mount");
     mount.innerHTML = "";
+    controlInstances = {};
     data.controls.forEach(function (cfg) {
       var range = Engine.ASSUMPTION_RANGES[cfg.key];
       var control = Shell.createControl({
@@ -51,6 +85,7 @@
           recompute();
         }
       });
+      controlInstances[cfg.key] = control;
       mount.appendChild(control.el);
     });
   }
@@ -58,27 +93,27 @@
   function incomeWaterfallItems(model) {
     var is1 = model.year1.incomeStatement;
     return [
-      { label: "Revenue", value: is1.revenue, kind: "total" },
-      { label: "COGS", value: -is1.cogs, kind: "decrease" },
-      { label: "Gross Profit", value: is1.grossProfit, kind: "total" },
-      { label: "Opex", value: -is1.opex, kind: "decrease" },
-      { label: "D&A", value: -is1.da, kind: "decrease" },
-      { label: "Operating Income", value: is1.operatingIncome, kind: "total" },
-      { label: "Taxes", value: -is1.taxes, kind: "decrease" },
-      { label: "Net Income", value: is1.netIncome, kind: "total" }
+      { label: "Umsatz", value: is1.revenue, kind: "total" },
+      { label: "Herstellkosten (COGS)", shortLabel: "Herstellk.", value: -is1.cogs, kind: "decrease" },
+      { label: "Bruttogewinn", value: is1.grossProfit, kind: "total" },
+      { label: "Betriebskosten (Opex)", shortLabel: "Opex", value: -is1.opex, kind: "decrease" },
+      { label: "Abschreibungen (D&A)", shortLabel: "D&A", value: -is1.da, kind: "decrease" },
+      { label: "Operatives Ergebnis (EBIT)", shortLabel: "EBIT", value: is1.operatingIncome, kind: "total" },
+      { label: "Steuern", value: -is1.taxes, kind: "decrease" },
+      { label: "Jahresüberschuss", shortLabel: "Gewinn", value: is1.netIncome, kind: "total" }
     ];
   }
 
   function bridgeWaterfallItems(model) {
     var b = model.bridge;
     return [
-      { label: "Net Income", value: b.netIncome, kind: "total" },
-      { label: "+ D&A", value: b.da, kind: "increase" },
-      { label: "+ SBC", value: b.sbc, kind: "increase" },
-      { label: "− Δ Working Capital", value: -b.deltaWC, kind: "decrease" },
-      { label: "Operating Cash Flow", value: b.cfo, kind: "total" },
-      { label: "− CapEx", value: -b.capex, kind: "decrease" },
-      { label: "Free Cash Flow", value: b.fcf, kind: "total" }
+      { label: "Jahresüberschuss", shortLabel: "Gewinn", value: b.netIncome, kind: "total" },
+      { label: "+ Abschreibungen", shortLabel: "+ D&A", value: b.da, kind: "increase" },
+      { label: "+ Aktienvergütung (SBC)", shortLabel: "+ SBC", value: b.sbc, kind: "increase" },
+      { label: "− Δ Working Capital", shortLabel: "− ΔWC", value: -b.deltaWC, kind: "decrease" },
+      { label: "Operativer Cashflow (CFO)", shortLabel: "CFO", value: b.cfo, kind: "total" },
+      { label: "− Investitionen (CapEx)", shortLabel: "− CapEx", value: -b.capex, kind: "decrease" },
+      { label: "Free Cash Flow", shortLabel: "FCF", value: b.fcf, kind: "total" }
     ];
   }
 
@@ -86,7 +121,7 @@
     var mount = Shell.$("#chart-mount");
     var items = state.tab === "income" ? incomeWaterfallItems(state.model) : bridgeWaterfallItems(state.model);
     Shell.renderWaterfall(mount, items, {
-      title: state.tab === "income" ? "Income Statement" : "Cash Bridge",
+      title: state.tab === "income" ? "Gewinn- und Verlustrechnung" : "Cashflow-Brücke",
       unit: ""
     });
   }
@@ -102,12 +137,12 @@
     var m = state.model.metrics;
     var cashGap = state.model.year1.incomeStatement.netIncome - state.model.bridge.fcf;
     var tiles = [
-      ["Gross Margin", Shell.fmtPct(m.grossMarginPct, 1), ""],
-      ["Operating Margin", Shell.fmtPct(m.operatingMarginPct, 1), ""],
-      ["Net Margin", Shell.fmtPct(m.netMarginPct, 1), ""],
-      ["FCF Margin", Shell.fmtPct(m.fcfMarginPct, 1), m.fcfMarginPct < 0 ? "negative" : ""],
+      ["Bruttomarge", Shell.fmtPct(m.grossMarginPct, 1), ""],
+      ["Operative Marge", Shell.fmtPct(m.operatingMarginPct, 1), ""],
+      ["Nettomarge", Shell.fmtPct(m.netMarginPct, 1), ""],
+      ["FCF-Marge", Shell.fmtPct(m.fcfMarginPct, 1), m.fcfMarginPct < 0 ? "negative" : ""],
       ["Cash Conversion", m.cashConversion == null ? "—" : m.cashConversion.toFixed(2) + "×", metricTone("cashConversion", m.cashConversion)],
-      ["Net Income − FCF", Shell.fmtCurrency(cashGap, { forceSign: true }), cashGap > 0 ? "negative" : "positive"]
+      ["Gewinn − FCF", Shell.fmtCurrency(cashGap, { forceSign: true }), cashGap > 0 ? "negative" : "positive"]
     ];
     tiles.forEach(function (t) { mount.appendChild(Shell.createMetric(t[0], t[1], t[2])); });
   }
@@ -158,6 +193,7 @@
 
     renderHero(data);
     renderActs(data);
+    renderProfiles(data);
     renderControls(data);
     recompute();
     wireTabs();

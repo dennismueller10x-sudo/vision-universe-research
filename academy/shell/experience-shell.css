@@ -3,45 +3,44 @@
 
    Gemeinsame visuelle Sprache aller Academy-Experiences: Hero, Story-
    Sections, Sticky-Visualisierung, Controls, Live-Metrics, Evidence-Tags,
-   Methodology/Sources. Eigenstaendiger "Academy Layer" (raeumlicher,
-   farbiger, bewegter als der monochrome Research-Layer), aber auf demselben
-   Grundraster (Inter, Shell-Breite) wie der Rest von Vision Universe.
+   Methodology/Sources. Heller, bunter "Big Ideas"-Look (Research-/
+   Grafik-Magazin-Stil) statt dem monochromen, dichten Research-Layer —
+   große Typografie, farbige Icon-Badges, viele kleine Schaubilder statt
+   reiner Textwände.
    ========================================================================= */
 
 :root{
-  --vu-acad-bg:#07080c;
-  --vu-acad-bg-elevated:#101219;
-  --vu-acad-bg-card:#14161f;
-  --vu-acad-line:rgba(255,255,255,.09);
-  --vu-acad-text:#f2f3f7;
-  --vu-acad-text-muted:#a3a7b7;
-  --vu-acad-text-faint:#6b7086;
+  --vu-acad-bg:#ffffff;
+  --vu-acad-bg-elevated:#f6f7fb;
+  --vu-acad-bg-card:#ffffff;
+  --vu-acad-line:#e7e8f0;
+  --vu-acad-text:#12131a;
+  --vu-acad-text-muted:#54576b;
+  --vu-acad-text-faint:#8a8da3;
 
-  --vu-acad-positive:#2fd68f;
-  --vu-acad-negative:#ff5d68;
-  --vu-acad-neutral:#7c9bff;
+  --vu-acad-positive:#0ea968;
+  --vu-acad-negative:#e0384b;
+  --vu-acad-neutral:#3b5bfb;
 
-  /* World accent colors, siehe academy/data/worlds.json */
-  --vu-accent-electric-blue:#3b82f6;
-  --vu-accent-azure:#38bdf8;
-  --vu-accent-amber:#f5a524;
-  --vu-accent-warm-orange:#fb7a3c;
-  --vu-accent-violet:#a685fa;
-  --vu-accent-cyan:#22d3ee;
-  --vu-accent-magenta:#f0479c;
-  --vu-accent-emerald:#2fd68f;
-  --vu-accent-coral:#ff7a7a;
-  --vu-accent-gold:#e6c34c;
-  --vu-accent-indigo:#7c7cff;
+  /* World accent colors, siehe academy/data/worlds.json — kräftig statt Pastell,
+     damit sie auf Weiß wie im ARK-"Big Ideas"-Stil tragen. */
+  --vu-accent-electric-blue:#2f6bff;
+  --vu-accent-azure:#00a9e0;
+  --vu-accent-amber:#ff9f1a;
+  --vu-accent-warm-orange:#ff5a1f;
+  --vu-accent-violet:#8446f0;
+  --vu-accent-cyan:#00bcd4;
+  --vu-accent-magenta:#e8329b;
+  --vu-accent-emerald:#12b76a;
+  --vu-accent-coral:#ff5d6c;
+  --vu-accent-gold:#d6a400;
+  --vu-accent-indigo:#5947e0;
 
   --vu-acad-accent: var(--vu-accent-warm-orange);
-  --vu-acad-radius:16px;
+  --vu-acad-radius:18px;
   --vu-acad-max:1160px;
-}
-
-@media (prefers-color-scheme: light){
-  /* Academy bleibt bewusst dunkel/raeumlich (data-lab), unabhaengig vom
-     System-Farbschema — Farbwahl ist redaktionell, nicht Light/Dark-Mode. */
+  --vu-acad-shadow: 0 1px 2px rgba(18,19,26,.04), 0 12px 28px -14px rgba(18,19,26,.14);
+  --vu-acad-shadow-hover: 0 4px 10px rgba(18,19,26,.06), 0 22px 40px -16px rgba(18,19,26,.22);
 }
 
 .vu-academy{
@@ -64,21 +63,23 @@
    TYPE
 ========================= */
 .vu-a-eyebrow{
-  font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
   color:var(--vu-acad-accent);
 }
-.vu-a-h1{font-size:clamp(32px,6vw,60px);line-height:1.03;font-weight:800;letter-spacing:-.02em;margin:10px 0 0;}
-.vu-a-h2{font-size:clamp(22px,3.4vw,32px);line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0 0 12px;}
+.vu-a-eyebrow::before{content:"";width:18px;height:2px;background:var(--vu-acad-accent);border-radius:2px}
+.vu-a-h1{font-size:clamp(34px,6.4vw,64px);line-height:1.02;font-weight:800;letter-spacing:-.025em;margin:14px 0 0;}
+.vu-a-h2{font-size:clamp(24px,3.6vw,36px);line-height:1.12;font-weight:800;letter-spacing:-.015em;margin:0 0 12px;}
 .vu-a-lede{font-size:clamp(16px,2vw,19px);color:var(--vu-acad-text-muted);line-height:1.55;max-width:62ch;}
 .vu-a-body{font-size:15.5px;line-height:1.65;color:var(--vu-acad-text-muted);max-width:58ch;}
-.vu-a-body strong{color:var(--vu-acad-text);font-weight:600;}
+.vu-a-body strong{color:var(--vu-acad-text);font-weight:700;}
 
 /* =========================
    HERO
 ========================= */
-.vu-a-hero{padding:64px 0 40px;}
-.vu-a-hero-tagline{margin-top:18px;font-size:14px;color:var(--vu-acad-text-faint);letter-spacing:.02em}
-.vu-a-hero-tagline b{color:var(--vu-acad-text-muted);font-weight:600}
+.vu-a-hero{padding:56px 0 40px;position:relative;}
+.vu-a-hero-tagline{margin-top:20px;font-size:13px;font-weight:700;color:var(--vu-acad-text-faint);letter-spacing:.03em}
+.vu-a-hero-tagline b{color:var(--vu-acad-text);font-weight:800}
 
 /* =========================
    STORY LAYOUT (desktop: text scrolls, viz sticky)
@@ -96,13 +97,17 @@
 .vu-a-act{
   padding:36px 0;
   border-top:1px solid var(--vu-acad-line);
-  opacity:.42;
-  transition:opacity .25s ease;
+  opacity:.4;
+  transform:translateY(6px);
+  transition:opacity .3s ease, transform .3s ease;
 }
 .vu-a-act:first-child{border-top:0}
-.vu-a-act.is-active{opacity:1}
-.vu-a-act-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-acad-accent);margin-bottom:10px;}
-.vu-a-act-title{font-size:clamp(19px,2.6vw,24px);font-weight:700;margin:0 0 10px;letter-spacing:-.01em}
+.vu-a-act.is-active{opacity:1;transform:translateY(0);}
+.vu-a-act-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--vu-acad-accent);margin-bottom:10px;
+}
+.vu-a-act-title{font-size:clamp(19px,2.6vw,25px);font-weight:800;margin:0 0 10px;letter-spacing:-.01em}
 
 @media (max-width:900px){
   .vu-a-story{grid-template-columns:1fr;gap:0;}
@@ -111,7 +116,7 @@
     order:-1;
     margin-bottom:8px;
   }
-  .vu-a-act{opacity:1;padding:26px 0;}
+  .vu-a-act{opacity:1;transform:none;padding:26px 0;}
 }
 
 /* =========================
@@ -121,10 +126,11 @@
   background:var(--vu-acad-bg-card);
   border:1px solid var(--vu-acad-line);
   border-radius:var(--vu-acad-radius);
+  box-shadow:var(--vu-acad-shadow);
   padding:20px 20px 22px;
 }
 .vu-a-viz-panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-.vu-a-viz-panel-title{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--vu-acad-text-muted)}
+.vu-a-viz-panel-title{font-size:13px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--vu-acad-text-muted)}
 
 /* =========================
    LIVE METRICS
@@ -133,11 +139,12 @@
 .vu-a-metric{
   background:var(--vu-acad-bg-elevated);
   border:1px solid var(--vu-acad-line);
-  border-radius:12px;
+  border-radius:14px;
   padding:12px 12px 10px;
+  transition:transform .15s ease;
 }
-.vu-a-metric-label{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--vu-acad-text-faint);margin-bottom:4px;}
-.vu-a-metric-value{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.vu-a-metric-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--vu-acad-text-faint);margin-bottom:4px;}
+.vu-a-metric-value{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
 .vu-a-metric-value.is-positive{color:var(--vu-acad-positive)}
 .vu-a-metric-value.is-negative{color:var(--vu-acad-negative)}
 .vu-a-metric-delta{font-size:11px;color:var(--vu-acad-text-faint);margin-top:2px}
@@ -148,8 +155,8 @@
 .vu-a-controls{display:grid;gap:16px;margin-top:6px;}
 .vu-a-control{display:grid;gap:6px;}
 .vu-a-control-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.vu-a-control-label{font-size:13px;font-weight:600;color:var(--vu-acad-text)}
-.vu-a-control-value{font-size:13px;font-variant-numeric:tabular-nums;color:var(--vu-acad-accent);font-weight:700}
+.vu-a-control-label{font-size:13px;font-weight:700;color:var(--vu-acad-text)}
+.vu-a-control-value{font-size:13px;font-variant-numeric:tabular-nums;color:var(--vu-acad-accent);font-weight:800}
 .vu-a-control-row{display:flex;align-items:center;gap:10px;}
 .vu-a-stepper{
   display:flex;align-items:center;justify-content:center;
@@ -158,7 +165,7 @@
   background:var(--vu-acad-bg-elevated);color:var(--vu-acad-text);
   font-size:18px;line-height:1;cursor:pointer;user-select:none;
 }
-.vu-a-stepper:hover{border-color:var(--vu-acad-accent)}
+.vu-a-stepper:hover{border-color:var(--vu-acad-accent);color:var(--vu-acad-accent)}
 .vu-a-stepper:focus-visible,.vu-a-slider:focus-visible{outline:2px solid var(--vu-acad-accent);outline-offset:2px}
 .vu-a-slider{
   -webkit-appearance:none;appearance:none;
@@ -169,11 +176,11 @@
 .vu-a-slider::-webkit-slider-thumb{
   -webkit-appearance:none;width:24px;height:24px;border-radius:50%;
   background:var(--vu-acad-accent);border:3px solid var(--vu-acad-bg);
-  margin-top:-9px;box-shadow:0 0 0 1px var(--vu-acad-line);
+  margin-top:-9px;box-shadow:0 0 0 1px var(--vu-acad-line), 0 2px 6px rgba(18,19,26,.18);
 }
 .vu-a-slider::-moz-range-thumb{
   width:24px;height:24px;border-radius:50%;border:3px solid var(--vu-acad-bg);
-  background:var(--vu-acad-accent);box-shadow:0 0 0 1px var(--vu-acad-line);
+  background:var(--vu-acad-accent);box-shadow:0 0 0 1px var(--vu-acad-line), 0 2px 6px rgba(18,19,26,.18);
 }
 .vu-a-control-hint{font-size:11.5px;color:var(--vu-acad-text-faint)}
 
@@ -182,18 +189,18 @@
 ========================= */
 .vu-a-evidence{
   display:inline-flex;align-items:center;gap:6px;
-  font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:3px 8px;border-radius:999px;white-space:nowrap;
+  font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;white-space:nowrap;
 }
 .vu-a-evidence::before{content:"";width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
-.vu-a-evidence[data-evidence="FACT"]{color:#bfe9ff;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.35)}
-.vu-a-evidence[data-evidence="FACT"]::before{background:#3b82f6}
-.vu-a-evidence[data-evidence="MODEL"]{color:#ffe1b8;background:rgba(245,165,36,.12);border:1px dashed rgba(245,165,36,.5)}
-.vu-a-evidence[data-evidence="MODEL"]::before{background:#f5a524;border-radius:2px}
-.vu-a-evidence[data-evidence="ASSUMPTION"]{color:#d8d3ff;background:rgba(166,133,250,.12);border:1px dotted rgba(166,133,250,.6)}
-.vu-a-evidence[data-evidence="ASSUMPTION"]::before{background:transparent;border:1.5px dotted #a685fa}
-.vu-a-evidence[data-evidence="ESTIMATE"]{color:#ffd7de;background:rgba(255,93,104,.1);border:1px dashed rgba(255,93,104,.45)}
-.vu-a-evidence[data-evidence="ESTIMATE"]::before{background:#ff5d68}
+.vu-a-evidence[data-evidence="FACT"]{color:#0b57c9;background:rgba(47,107,255,.1);border:1px solid rgba(47,107,255,.3)}
+.vu-a-evidence[data-evidence="FACT"]::before{background:#2f6bff}
+.vu-a-evidence[data-evidence="MODEL"]{color:#b45a00;background:rgba(255,159,26,.12);border:1px dashed rgba(255,159,26,.55)}
+.vu-a-evidence[data-evidence="MODEL"]::before{background:#ff9f1a;border-radius:2px}
+.vu-a-evidence[data-evidence="ASSUMPTION"]{color:#6229c9;background:rgba(132,70,240,.1);border:1px dotted rgba(132,70,240,.6)}
+.vu-a-evidence[data-evidence="ASSUMPTION"]::before{background:transparent;border:1.5px dotted #8446f0}
+.vu-a-evidence[data-evidence="ESTIMATE"]{color:#c22037;background:rgba(224,56,75,.09);border:1px dashed rgba(224,56,75,.45)}
+.vu-a-evidence[data-evidence="ESTIMATE"]::before{background:#e0384b}
 
 /* =========================
    CONTEXT CARDS / CALLOUTS
@@ -201,8 +208,8 @@
 .vu-a-callout{
   background:var(--vu-acad-bg-elevated);
   border:1px solid var(--vu-acad-line);
-  border-left:3px solid var(--vu-acad-accent);
-  border-radius:10px;
+  border-left:4px solid var(--vu-acad-accent);
+  border-radius:12px;
   padding:14px 16px;
   font-size:14px;line-height:1.55;color:var(--vu-acad-text-muted);
   margin:16px 0;
@@ -210,15 +217,32 @@
 .vu-a-callout b{color:var(--vu-acad-text)}
 
 /* =========================
-   RELATED CONCEPTS
+   RELATED CONCEPTS — klickbare Chips + Detailkarte
 ========================= */
 .vu-a-chips{display:flex;flex-wrap:wrap;gap:8px;}
 .vu-a-chip{
-  font-size:12.5px;padding:7px 12px;border-radius:999px;
+  font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;
   background:var(--vu-acad-bg-elevated);border:1px solid var(--vu-acad-line);
-  color:var(--vu-acad-text-muted);
+  color:var(--vu-acad-text-muted);cursor:pointer;transition:border-color .15s ease, background .15s ease, color .15s ease;
 }
-.vu-a-chip b{color:var(--vu-acad-text);font-weight:600}
+.vu-a-chip b{color:var(--vu-acad-text);font-weight:700}
+.vu-a-chip:hover{border-color:var(--vu-acad-accent)}
+.vu-a-chip.is-open{background:var(--vu-acad-accent);border-color:var(--vu-acad-accent);}
+.vu-a-chip.is-open,.vu-a-chip.is-open b{color:#fff}
+.vu-a-concept-detail{
+  margin-top:14px;padding:18px 20px;border-radius:14px;
+  background:var(--vu-acad-bg-elevated);border:1px solid var(--vu-acad-line);
+  animation:vuFadeIn .2s ease;
+}
+.vu-a-concept-detail h4{font-size:16px;font-weight:800;margin:0 0 6px;}
+.vu-a-concept-detail p{font-size:13.5px;line-height:1.6;color:var(--vu-acad-text-muted);margin:0 0 8px;}
+.vu-a-concept-detail .vu-a-concept-formula{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;
+  background:#fff;border:1px solid var(--vu-acad-line);border-radius:8px;padding:8px 10px;color:var(--vu-acad-text);
+}
+.vu-a-concept-why{font-size:13px;color:var(--vu-acad-text);background:#fff;border-radius:10px;padding:10px 12px;border:1px solid var(--vu-acad-line);}
+
+@keyframes vuFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 /* =========================
    METHODOLOGY / SOURCES
@@ -227,13 +251,14 @@
   border:1px solid var(--vu-acad-line);
   border-radius:var(--vu-acad-radius);
   background:var(--vu-acad-bg-card);
+  box-shadow:var(--vu-acad-shadow);
   padding:22px 24px;
   margin-top:18px;
 }
 .vu-a-panel + .vu-a-panel{margin-top:14px}
-.vu-a-panel h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--vu-acad-text-faint);margin:0 0 12px;}
+.vu-a-panel h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--vu-acad-text-faint);margin:0 0 12px;}
 .vu-a-def-list{display:grid;gap:10px;margin:0;}
-.vu-a-def-list dt{font-size:13px;font-weight:600;color:var(--vu-acad-text)}
+.vu-a-def-list dt{font-size:13px;font-weight:700;color:var(--vu-acad-text)}
 .vu-a-def-list dd{font-size:13.5px;color:var(--vu-acad-text-muted);margin:2px 0 0;line-height:1.55}
 .vu-a-source-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;}
 .vu-a-source-list li{font-size:13px;color:var(--vu-acad-text-muted);padding-left:16px;position:relative;}
@@ -248,9 +273,20 @@
   display:grid;gap:4px;font-size:12.5px;font-variant-numeric:tabular-nums;
 }
 .vu-a-chart-summary li{display:flex;justify-content:space-between;gap:12px;color:var(--vu-acad-text-muted);padding:2px 0;}
-.vu-a-chart-summary li b{color:var(--vu-acad-text);font-weight:600}
+.vu-a-chart-summary li b{color:var(--vu-acad-text);font-weight:700}
 .vu-a-chart-summary li.is-total{border-top:1px solid var(--vu-acad-line);padding-top:6px;margin-top:2px;}
 .vu-a-chart-summary li.is-total b{color:var(--vu-acad-accent)}
+.vu-a-chart-bar{transition:y .45s cubic-bezier(.2,.8,.2,1), height .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease;}
+
+/* =========================
+   ICON BADGES (Worlds/Konzepte — kleine, farbige Glyphen statt Textwand)
+========================= */
+.vu-a-icon-badge{
+  width:44px;height:44px;border-radius:12px;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb, var(--vu-world-accent, var(--vu-acad-accent)) 14%, white);
+}
+.vu-a-icon-badge svg{width:22px;height:22px}
 
 /* =========================
    GENERIC PAGE SECTIONS (shared by landing page + experiences)

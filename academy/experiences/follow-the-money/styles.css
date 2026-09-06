@@ -15,8 +15,23 @@
   padding:7px 12px;border-radius:999px;border:1px solid var(--vu-acad-line);
   background:transparent;color:var(--vu-acad-text-faint);cursor:pointer;
 }
-.vu-a-tab.is-active{background:var(--vu-acad-accent);border-color:var(--vu-acad-accent);color:#12100c;}
+.vu-a-tab.is-active{background:var(--vu-acad-accent);border-color:var(--vu-acad-accent);color:#fff;}
 .vu-a-tab:focus-visible{outline:2px solid var(--vu-acad-accent);outline-offset:2px}
+
+.vu-a-profiles{
+  display:flex;align-items:center;flex-wrap:wrap;gap:12px;
+  padding:14px 0 6px;
+}
+.vu-a-profiles-label{font-size:12.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--vu-acad-text-faint);}
+.vu-a-profile-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.vu-a-profile-pill{
+  font-size:13px;font-weight:700;padding:8px 15px;border-radius:999px;
+  border:1px solid var(--vu-acad-line);background:var(--vu-acad-bg-elevated);color:var(--vu-acad-text-muted);
+  cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.vu-a-profile-pill:hover{border-color:var(--vu-acad-accent)}
+.vu-a-profile-pill.is-active{background:var(--vu-acad-accent);border-color:var(--vu-acad-accent);color:#fff;}
+.vu-a-profile-note{font-size:12.5px;color:var(--vu-acad-text-faint);margin-top:8px;max-width:70ch;}
 
 .vu-a-integrations{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:14px;}
 .vu-a-integration-card{

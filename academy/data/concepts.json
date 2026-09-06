@@ -1,115 +1,129 @@
 {
   "schemaVersion": 1,
-  "note": "Concept Registry (Phase 1 subset). Jedes Konzept hat genau eine Definition, die von jeder Academy Experience und spaeter von anderen Vision-Universe-Produkten wiederverwendet werden soll, statt dieselbe Kennzahl mehrfach unterschiedlich zu definieren.",
+  "note": "Concept Registry (Phase 1 subset). Jedes Konzept hat genau eine Definition, die von jeder Academy Experience und spaeter von anderen Vision-Universe-Produkten wiederverwendet werden soll, statt dieselbe Kennzahl mehrfach unterschiedlich zu definieren. Titel bewusst Deutsch zuerst, etablierte englische Fachbegriffe (Free Cash Flow, CapEx, SBC, EBIT, CFO) bleiben in Klammern bzw. bei sehr gebraeuchlichen Kurzformen vorn.",
   "concepts": {
     "revenue": {
-      "title": "Revenue (Umsatz)",
+      "title": "Umsatz (Revenue)",
       "shortDefinition": "Der Wert der Waren/Dienstleistungen, die ein Unternehmen in einer Periode verkauft hat, vor Abzug jeglicher Kosten.",
-      "formula": "Revenue = Menge × Preis (aggregiert über alle Produkte/Segmente)",
+      "formula": "Umsatz = Menge × Preis (aggregiert über alle Produkte/Segmente)",
+      "whyItMatters": "Ohne Umsatzwachstum gibt es langfristig kein Gewinnwachstum — aber Wachstum allein sagt nichts über die Qualität des Geschäfts.",
       "relatedConcepts": ["gross-profit", "operating-income"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "cogs": {
-      "title": "Cost of Goods Sold (Herstellungskosten)",
+      "title": "Herstellungskosten (COGS)",
       "shortDefinition": "Direkte Kosten, die unmittelbar mit der Erstellung des verkauften Produkts/der Dienstleistung zusammenhängen.",
-      "formula": "COGS = Revenue − Gross Profit",
+      "formula": "COGS = Umsatz − Bruttogewinn",
+      "whyItMatters": "Bestimmt zusammen mit dem Umsatz die Bruttomarge — und damit, wie viel Spielraum für alle weiteren Kosten bleibt.",
       "relatedConcepts": ["revenue", "gross-profit", "inventory"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "gross-profit": {
-      "title": "Gross Profit (Bruttogewinn)",
+      "title": "Bruttogewinn (Gross Profit)",
       "shortDefinition": "Was vom Umsatz übrig bleibt, nachdem die direkten Herstellungskosten abgezogen wurden.",
-      "formula": "Gross Profit = Revenue − COGS",
+      "formula": "Bruttogewinn = Umsatz − COGS",
+      "whyItMatters": "Zeigt die Preissetzungsmacht eines Geschäftsmodells, bevor Fixkosten und Investitionen ins Spiel kommen.",
       "relatedConcepts": ["revenue", "cogs", "operating-income"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "operating-expenses": {
-      "title": "Operating Expenses (Opex)",
+      "title": "Betriebskosten (Opex)",
       "shortDefinition": "Vertriebs-, Verwaltungs- und Forschungskosten, die zum Betrieb des Geschäfts nötig sind, aber nicht direkt in der Herstellung anfallen.",
-      "formula": "Opex (hier ohne D&A) reduziert Gross Profit zu Operating Income",
+      "formula": "Opex (hier ohne Abschreibungen) reduziert den Bruttogewinn zum operativen Ergebnis",
+      "whyItMatters": "Wächst Opex schneller als der Umsatz, frisst das jedes Umsatzwachstum wieder auf — ein zentrales Warnsignal.",
       "relatedConcepts": ["gross-profit", "operating-income"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "operating-income": {
-      "title": "Operating Income (EBIT)",
+      "title": "Operatives Ergebnis (EBIT)",
       "shortDefinition": "Operatives Ergebnis aus dem Kerngeschäft, vor Steuern und vor Finanzierungseffekten.",
-      "formula": "Operating Income = Gross Profit − Opex − D&A",
+      "formula": "EBIT = Bruttogewinn − Opex − Abschreibungen (D&A)",
+      "whyItMatters": "Die reinste Kennzahl für die operative Ertragskraft eines Geschäfts, unabhängig von Kapitalstruktur und Steuersituation.",
       "relatedConcepts": ["gross-profit", "operating-expenses", "depreciation-amortization", "net-income"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "net-income": {
-      "title": "Net Income (Jahresüberschuss)",
+      "title": "Jahresüberschuss (Net Income)",
       "shortDefinition": "Der buchhalterische Gewinn nach allen Kosten und Steuern — nicht identisch mit Cashflow.",
-      "formula": "Net Income = Operating Income − Taxes (vereinfachtes Modell ohne Fremdkapitalzinsen)",
+      "formula": "Jahresüberschuss = EBIT − Steuern (vereinfachtes Modell ohne Fremdkapitalzinsen)",
+      "whyItMatters": "Die meistzitierte Gewinnkennzahl — aber ohne Cashflow-Kontext leicht misszuverstehen, wie „Follow the Money” zeigt.",
       "relatedConcepts": ["operating-income", "operating-cash-flow", "free-cash-flow"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "depreciation-amortization": {
-      "title": "Depreciation & Amortization (D&A)",
+      "title": "Abschreibungen (D&A)",
       "shortDefinition": "Nicht-zahlungswirksame buchhalterische Verteilung vergangener Investitionsausgaben über deren Nutzungsdauer.",
-      "formula": "Reduziert Operating Income, wird in der Cashflow-Rechnung als Non-Cash-Add-back wieder hinzugerechnet.",
+      "formula": "Reduziert das operative Ergebnis, wird in der Kapitalflussrechnung als Non-Cash-Posten wieder hinzugerechnet.",
+      "whyItMatters": "Erklärt einen zentralen Teil der Lücke zwischen Gewinn und Cashflow bei kapitalintensiven Geschäftsmodellen.",
       "relatedConcepts": ["capex", "operating-cash-flow"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
     },
     "stock-based-compensation": {
-      "title": "Stock-Based Compensation (SBC)",
-      "shortDefinition": "Mitarbeitervergütung in Aktien statt Cash. Im Cashflow ein Non-Cash-Add-back, ökonomisch aber eine reale Verwässerung bestehender Aktionäre.",
-      "formula": "CFO-Add-back, erhöht die Aktienzahl außerhalb dieses Modells — nicht kostenlos.",
+      "title": "Aktienbasierte Vergütung (SBC)",
+      "shortDefinition": "Mitarbeitervergütung in Aktien statt Cash. In der Kapitalflussrechnung ein Non-Cash-Posten, ökonomisch aber eine reale Verwässerung bestehender Aktionäre.",
+      "formula": "Add-back im operativen Cashflow, erhöht die Aktienzahl außerhalb dieses Modells — nicht kostenlos.",
+      "whyItMatters": "Boomt vor allem bei Tech-Unternehmen — wer SBC ignoriert, überschätzt systematisch die tatsächliche Profitabilität.",
       "relatedConcepts": ["operating-cash-flow", "net-income"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
     },
     "working-capital": {
-      "title": "Working Capital (Nettoumlaufvermögen)",
+      "title": "Nettoumlaufvermögen (Working Capital)",
       "shortDefinition": "Kapital, das im laufenden Geschäft gebunden ist — vor allem in Forderungen und Vorräten, teilweise finanziert durch Verbindlichkeiten.",
-      "formula": "Net Working Capital = Accounts Receivable + Inventory − Accounts Payable",
+      "formula": "Working Capital = Forderungen + Vorräte − Verbindlichkeiten",
+      "whyItMatters": "Schnelles Wachstum kann Cash binden statt freisetzen — genau das Gegenteil dessen, was viele erwarten.",
       "relatedConcepts": ["accounts-receivable", "inventory", "accounts-payable", "operating-cash-flow"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
     },
     "accounts-receivable": {
-      "title": "Accounts Receivable (Forderungen)",
+      "title": "Forderungen (Accounts Receivable)",
       "shortDefinition": "Umsatz, der bereits verbucht, aber vom Kunden noch nicht bezahlt wurde.",
-      "formula": "AR ≈ Revenue × Days Sales Outstanding / 365",
+      "formula": "Forderungen ≈ Umsatz × Debitorenlaufzeit (Tage) / 365",
+      "whyItMatters": "Steigende Forderungen bei gleichbleibendem Umsatz können ein frühes Warnsignal für aggressive Bilanzierung oder schwache Kunden sein.",
       "relatedConcepts": ["working-capital", "revenue"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
     },
     "inventory": {
-      "title": "Inventory (Vorräte)",
+      "title": "Vorräte (Inventory)",
       "shortDefinition": "Bereits bezahlte, aber noch nicht verkaufte Waren — gebundenes Kapital.",
-      "formula": "Inventory ≈ COGS × Days Inventory Outstanding / 365",
+      "formula": "Vorräte ≈ COGS × Lagerdauer (Tage) / 365",
+      "whyItMatters": "Zu hohe Lagerbestände binden Kapital und signalisieren oft nachlassende Nachfrage, bevor es in den Umsatzzahlen sichtbar wird.",
       "relatedConcepts": ["working-capital", "cogs"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
     },
     "accounts-payable": {
-      "title": "Accounts Payable (Verbindlichkeiten)",
+      "title": "Verbindlichkeiten (Accounts Payable)",
       "shortDefinition": "Vom Unternehmen selbst noch nicht bezahlte Lieferantenrechnungen — eine Finanzierungsquelle des Working Capital.",
-      "formula": "AP ≈ COGS × Days Payable Outstanding / 365",
+      "formula": "Verbindlichkeiten ≈ COGS × Kreditorenlaufzeit (Tage) / 365",
+      "whyItMatters": "Ein Unternehmen, das seine Lieferanten spät bezahlt, finanziert sich teilweise kostenlos über sein eigenes Working Capital.",
       "relatedConcepts": ["working-capital", "cogs"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
     },
     "capex": {
-      "title": "Capital Expenditures (CapEx)",
-      "shortDefinition": "Investitionsausgaben in langlebige Vermögenswerte (Anlagen, Ausrüstung, Software) — im Cashflow-Statement, nicht im Income Statement.",
-      "formula": "Reduziert Free Cash Flow, ohne Net Income direkt zu berühren.",
+      "title": "Investitionsausgaben (CapEx)",
+      "shortDefinition": "Investitionsausgaben in langlebige Vermögenswerte (Anlagen, Ausrüstung, Software) — in der Kapitalflussrechnung, nicht in der Gewinn- und Verlustrechnung.",
+      "formula": "Reduziert den Free Cash Flow, ohne den Jahresüberschuss direkt zu berühren.",
+      "whyItMatters": "Unterscheidet Geschäftsmodelle, die aus eigener Kraft wachsen können, von solchen, die dauerhaft neues Kapital verbrennen.",
       "relatedConcepts": ["depreciation-amortization", "free-cash-flow"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "FACT"
     },
     "operating-cash-flow": {
-      "title": "Operating Cash Flow (CFO)",
-      "shortDefinition": "Tatsächlicher Zahlungsmittelzufluss aus dem operativen Geschäft — Net Income korrigiert um Non-Cash-Posten und Working-Capital-Veränderungen.",
-      "formula": "CFO = Net Income + D&A + SBC − Δ Working Capital",
+      "title": "Operativer Cashflow (CFO)",
+      "shortDefinition": "Tatsächlicher Zahlungsmittelzufluss aus dem operativen Geschäft — Jahresüberschuss korrigiert um Non-Cash-Posten und Working-Capital-Veränderungen.",
+      "formula": "CFO = Jahresüberschuss + Abschreibungen + SBC − Δ Working Capital",
+      "whyItMatters": "Der Cashflow, der tatsächlich aus dem Tagesgeschäft hereinkommt — schwerer zu manipulieren als der buchhalterische Gewinn.",
       "relatedConcepts": ["net-income", "working-capital", "free-cash-flow"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
@@ -117,15 +131,17 @@
     "free-cash-flow": {
       "title": "Free Cash Flow (FCF)",
       "shortDefinition": "Cash, der nach nötigen Investitionen für Aktionäre, Schuldenabbau oder weiteres Wachstum übrig bleibt.",
-      "formula": "FCF = Operating Cash Flow − CapEx",
+      "formula": "FCF = Operativer Cashflow − CapEx",
+      "whyItMatters": "Die Grundlage fast jeder seriösen Bewertungsmethode (DCF, FCF-Rendite) — weil nur echtes Cash an Aktionäre zurückfließen kann.",
       "relatedConcepts": ["operating-cash-flow", "capex", "cash-conversion"],
       "worlds": ["financial-statements-accounting-quality", "forecasting-valuation-expectations"],
       "evidenceType": "MODEL"
     },
     "cash-conversion": {
-      "title": "Cash Conversion",
+      "title": "Cash-Conversion-Quote",
       "shortDefinition": "Wie viel des buchhalterischen Gewinns tatsächlich als Cashflow ankommt — ein Qualitätsmerkmal, das immer im Kontext von Wachstumsphase und Kapitalintensität zu lesen ist, nicht isoliert.",
-      "formula": "Cash Conversion = Operating Cash Flow / Net Income",
+      "formula": "Cash Conversion = Operativer Cashflow / Jahresüberschuss",
+      "whyItMatters": "Ein niedriger Wert ist nicht automatisch schlecht — bei wachstums- oder investitionsstarken Unternehmen ist er sogar zu erwarten.",
       "relatedConcepts": ["operating-cash-flow", "net-income", "free-cash-flow"],
       "worlds": ["financial-statements-accounting-quality"],
       "evidenceType": "MODEL"
