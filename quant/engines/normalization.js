@@ -157,7 +157,8 @@
    * @param {boolean} higherIsBetter
    * @returns {Array<{percentile, peerPercentile, universePercentile, robustZ, peerGroup, raw, winsorized}>}
    */
-  function peerNormalize(rows, getValue, config, groupKeys, higherIsBetter) {
+  function peerNormalize(rows, getValue, config, groupKeys, higherIsBetter, options) {
+    options = options || {};
     var n = rows.length;
     var raw = rows.map(function (r) { return validateValue(getValue(r)); });
 
@@ -165,7 +166,10 @@
     var winsorized = winsorize(raw, w.lowerPercentile, w.upperPercentile);
 
     var universePct = percentileRanks(winsorized, higherIsBetter);
-    var universeZ = robustZScores(winsorized, higherIsBetter);
+    /* Der robuste Z-Score wird nur fuer die Anzeige gebraucht. In einem
+       Backtest mit 250 Rebalancing-Terminen kosten die zusaetzlichen
+       Median-/MAD-Sortierungen mehr als der Rest der Normalisierung. */
+    var universeZ = options.robustZ === false ? null : robustZScores(winsorized, higherIsBetter);
 
     /* Gruppenindizes je Ebene der Fallback-Kette aufbauen. */
     var levels = config.peerFallbackChain;
@@ -222,7 +226,7 @@
         percentile: Math.round(combined * 100) / 100,
         peerPercentile: peerPct === null ? null : Math.round(peerPct * 100) / 100,
         universePercentile: Math.round(universePct[i] * 100) / 100,
-        robustZ: universeZ[i] === null ? null : Math.round(universeZ[i] * 1000) / 1000,
+        robustZ: (!universeZ || universeZ[i] === null) ? null : Math.round(universeZ[i] * 1000) / 1000,
         peerGroup: peerGroup,
         raw: raw[i],
         winsorized: winsorized[i]

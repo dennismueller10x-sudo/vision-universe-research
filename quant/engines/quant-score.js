@@ -51,7 +51,8 @@
    * Normalisiert alle Faktorkomponenten ueber das gesamte Panel.
    * @returns {object} componentId -> Array (parallel zu rows)
    */
-  function normalizeComponents(rows, cfg) {
+  function normalizeComponents(rows, cfg, options) {
+    options = options || {};
     var out = Object.create(null);
     var groupKeys = {
       industry: function (r) { return r.industry; },
@@ -69,7 +70,8 @@
           function (r) { return r[componentId]; },
           cfg.normalization,
           groupKeys,
-          field.higherIsBetter
+          field.higherIsBetter,
+          { robustZ: options.robustZ !== false }
         );
       });
     });
@@ -239,7 +241,7 @@
     var rows = input.metricPanel.rows;
     var context = { asOf: input.metricPanel.asOf, dataSnapshotId: input.dataSnapshotId || null };
 
-    var normalized = normalizeComponents(rows, cfg);
+    var normalized = normalizeComponents(rows, cfg, { robustZ: input.robustZ !== false });
     var scores = rows.map(function (row, i) { return scoreSecurity(row, i, normalized, cfg, context); });
 
     /* Letzter Schritt der Pipeline (§17): Composite -> Universums-Perzentil
@@ -312,16 +314,22 @@
    * avgDollarVolume, dividendYield ...), damit auch dort PCTL-Filter
    * funktionieren.
    */
-  function addAuxiliaryPercentiles(rows, cfg) {
+  function addAuxiliaryPercentiles(rows, cfg, options) {
+    options = options || {};
+    var only = options.fields ? options.fields : null;
     var groupKeys = {
       industry: function (r) { return r.industry; },
       sector: function (r) { return r.sector; }
     };
     Catalog.FIELD_LIST.forEach(function (field) {
       if (!field.percentileAvailable) return;
+      /* Ein Backtest braucht nur die Perzentile, die seine Regeln
+         tatsaechlich abfragen. Alle 20 Zusatzfelder an 250 Stichtagen zu
+         normalisieren ist reine Verschwendung. */
+      if (only && only.indexOf(field.id) === -1) return;
       if (rows.length && rows[0].percentiles && rows[0].percentiles[field.id] !== undefined) return;
       var norm = Norm.peerNormalize(rows, function (r) { return r[field.id]; },
-        cfg.normalization, groupKeys, field.higherIsBetter);
+        cfg.normalization, groupKeys, field.higherIsBetter, { robustZ: false });
       rows.forEach(function (r, i) {
         if (!r.percentiles) r.percentiles = {};
         if (r.percentiles[field.id] === undefined) r.percentiles[field.id] = norm[i].percentile;

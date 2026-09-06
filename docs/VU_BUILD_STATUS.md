@@ -1,6 +1,6 @@
 # VU INVESTMENT INTELLIGENCE — BUILD STATUS
 
-Letzte Aktualisierung: Phase 3 abgeschlossen.
+Letzte Aktualisierung: Phase 6 abgeschlossen.
 
 ## Completed
 
@@ -43,13 +43,40 @@ Letzte Aktualisierung: Phase 3 abgeschlossen.
 
 Tests gesamt: **46 / 46 gruen** (`node --test "quant/tests/*.test.mjs"`).
 
+**Phase 4 — Discovery**
+- `quant/ui/quant.css`, `shell.js`, `charts.js`, `components.js` — Designsystem auf Basis
+  der bestehenden Vision-Universe-Tokens, Datenladen, ein gemeinsames SVG-Chartmodul
+- Seiten: Quant Home, Ranking, Screener (mit VUQL-Editor), Radar, Stock Quant Detail
+- Menuepunkt `Quant` in `assets/site-navigation.js`
+
+**Phase 5 — Strategy Engine (UI)**
+- `quant/api/client.js` — die v1-API-Contracts als Funktionsschicht; Seiten und AI-Tools
+  rufen ausschliesslich diese Grenze auf, nie eine Engine direkt
+- `quant/strategies/` — Bibliothek mit fuenf Strategien, Detailansicht mit Regelwerk,
+  Lineage, VUQL- und JSON-Darstellung
+- `quant/strategies/builder/` — Strategy Lab; erzeugt exakt dasselbe Objekt wie die AI
+
+**Phase 6 — Backtest Engine**
+- `quant/engines/backtest.js` — PIT-Universum je Rebalancing-Termin, Ausfuehrung T+1,
+  Kosten und Slippage, Positions- und Sektorgrenzen, Delisting-Glattstellung,
+  vollstaendige Kennzahlen, Teilperioden, Reproduktionshash, Current Holdings
+- `quant/engines/trust-score.js` — evidenzbasierte Bewertung aus den gemeldeten
+  Kapabilitaeten des Laufs, mit harten Obergrenzen
+- `quant/ui/backtest-worker.js` — Ausfuehrung im Web Worker (ein 20-Jahres-Lauf mit
+  monatlichem Rebalancing rechnet rund 19 Sekunden; im Hauptthread waere die Seite so
+  lange eingefroren)
+- `quant/backtests/` — Ergebnisseite mit Equity-Kurve, Drawdown, Risiko, Jahresrenditen,
+  Trust Score, Robustheit, aktuellem Modellportfolio, Portfolio-Historie, Trades und
+  vollstaendiger Methodik
+
+Tests gesamt: **90 / 90 gruen**.
+
 ## In Progress
 
-Phase 4 — Discovery (Quant Home, Ranking, Screener, Stock Detail, Radar).
+Phase 7 — AI Foundation.
 
 ## Pending
 
-Phase 4 Discovery · Phase 5 Strategy Engine UI · Phase 6 Backtest Engine ·
 Phase 7 AI Foundation · Phase 8 Watchlist Intelligence · Phase 9 Quality Pass
 
 ## Known Limitations
@@ -58,9 +85,13 @@ Phase 7 AI Foundation · Phase 8 Watchlist Intelligence · Phase 9 Quality Pass
   ist in `quant-v1.json` als `available: false` markiert und wird von der Strategy-
   Validierung abgelehnt, solange keine lizenzierten PIT-Estimates vorliegen.
 - Nur ein Universum (`US_EQUITIES`, Mock). Europa ist Extension Point.
+- Deflated Sharpe Ratio und Probability of Backtest Overfitting sind nicht implementiert;
+  der Trust Score vergibt fuer diesen Block bewusst null Punkte statt ihn zu ueberspringen.
+- Backtests werden im `localStorage` des Browsers gespeichert (kein Nutzerkonto).
+- Ein 20-Jahres-Lauf mit monatlichem Rebalancing dauert rund 19 Sekunden. Der Web Worker
+  haelt die Oberflaeche bedienbar, beschleunigt die Rechnung aber nicht.
 
 ## Next Phase
 
-Phase 4 — Discovery: Quant Home, VU Quant Ranking, Screener mit VUQL, Stock Quant Detail,
-Quant Radar. Dazu das gemeinsame UI-Fundament (`quant/ui/*`) auf Basis der bestehenden
-Vision-Universe-Design-Tokens.
+Phase 7 — AI Foundation: AIProvider-Abstraktion, MockAIProvider, Tool Registry mit
+Sicherheitsgrenze, Natural Language → Query-/Strategy-AST, AI-Oberflaeche.

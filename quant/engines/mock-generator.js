@@ -507,6 +507,25 @@
   var OU_PERSISTENCE = 0.9985;      // Halbwertszeit der Abweichung ca. 1,8 Jahre
   var MAX_RERATING = 0.55;          // maximale dauerhafte Bewertungsverschiebung (log)
 
+  /* Momentum-Rueckkopplung.
+
+     Ohne diesen Term waere das Modell strukturell ANTI-Momentum: eine reine
+     Ornstein-Uhlenbeck-Abweichung kehrt zum Anker zurueck, also verlieren
+     genau die Titel, die zuletzt gestiegen sind. Eine Momentum-Strategie
+     koennte in einem solchen Universum nie funktionieren — der Backtest
+     wuerde dann nicht die Strategie testen, sondern eine Eigenschaft des
+     Datengenerators.
+
+     Der Term bildet den empirisch dokumentierten Befund nach (Jegadeesh/
+     Titman): positive Autokorrelation ueber mittlere Horizonte, langfristig
+     Umkehr. Gespeist wird er aus der 12-1-Monats-Rendite, also genau dem
+     Horizont der Literatur, und die Umkehr uebernimmt weiterhin der
+     OU-Prozess. */
+  var MOMENTUM_FEEDBACK = 0.00075;
+  var MOMENTUM_LOOKBACK = 252;
+  var MOMENTUM_SKIP = 21;
+  var MOMENTUM_CLAMP = 0.7;
+
   /** Taeglich interpolierte TTM-Ertragskraft, normiert auf den Starttag. */
   function buildEarningsAnchor(profile, financials, tradingDays, dayIndex, startIdx, endIdx) {
     var originals = financials.filter(function (p) { return p.revisionId === 0; })
@@ -586,11 +605,19 @@
     var dev = 0;
     var splitFactor = 1;
     var prevRaw = null;   // splitbereinigter Kurs des Vortages
+    var logPrice = new Float64Array(n);   // fuer die Momentum-Rueckkopplung
 
     for (var t = startIdx; t <= endIdx; t++) {
       if (t > startIdx) {
         dev = OU_PERSISTENCE * dev + profile.beta * marketReturns[t] + idioVol * Hash.gaussian(rand);
         if (profile.recentDrift && t > endIdx - profile.recentDriftDays) dev += profile.recentDrift;
+        var back = t - MOMENTUM_LOOKBACK, skip = t - MOMENTUM_SKIP;
+        if (back >= startIdx && logPrice[back]) {
+          var trailing = logPrice[skip] - logPrice[back];
+          if (trailing > MOMENTUM_CLAMP) trailing = MOMENTUM_CLAMP;
+          else if (trailing < -MOMENTUM_CLAMP) trailing = -MOMENTUM_CLAMP;
+          dev += MOMENTUM_FEEDBACK * trailing;
+        }
       }
       var elapsed = t - startIdx;
       var rerating = MAX_RERATING * Math.tanh(profile.alpha * 0.45 * elapsed / MAX_RERATING);
@@ -613,6 +640,7 @@
         div.amount = Math.round(dividendAmount * 10000) / 10000;
       }
 
+      logPrice[t] = Math.log(raw);
       var priceBeforeDividend = raw / splitFactor;
       close[t] = Math.max(0.05, priceBeforeDividend - dividendAmount);
 
@@ -767,6 +795,7 @@
     FIXTURES: FIXTURES,
     ARCHETYPES: ARCHETYPES,
     CRISIS_WINDOWS: CRISIS_WINDOWS,
+    MOMENTUM_FEEDBACK: MOMENTUM_FEEDBACK,
     buildTradingDays: buildTradingDays,
     generateDataset: generateDataset,
     addDays: addDays,

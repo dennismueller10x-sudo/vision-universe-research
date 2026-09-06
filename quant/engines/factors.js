@@ -57,57 +57,59 @@
       m12_1 = adj[t - WINDOWS.m1] / adj[t - WINDOWS.m12] - 1;
     }
 
-    var highStart = Math.max(series.startIndex, t - WINDOWS.m12);
+    /* Ein einziger Durchlauf ueber das letzte Jahr statt vier: 52-Wochen-
+       Hoch, Renditemomente, Downside-Varianz, Beta-Kovarianz und Drawdown
+       teilen dasselbe Fenster. Bei 250 Rebalancing-Terminen x 480 Titeln
+       macht das den Unterschied zwischen einem laufenden und einem
+       unbenutzbaren Backtest — die Semantik bleibt unveraendert. */
+    var from12 = Math.max(series.startIndex, t - WINDOWS.m12);
     var high52 = 0;
-    for (var i = highStart; i <= t; i++) if (close[i] > high52) high52 = close[i];
+    var n = 0, sum = 0, sumSq = 0;
+    var downSumSq = 0, downN = 0;
+    var bmN = 0, bmSum = 0, bmSumSq = 0, crossSum = 0;
+    var peak = 0, maxDd = 0;
+
+    for (var i = from12; i <= t; i++) {
+      if (close[i] > high52) high52 = close[i];
+      if (adj[i] > peak) peak = adj[i];
+      if (peak > 0 && adj[i] > 0) {
+        var dd = adj[i] / peak - 1;
+        if (dd < maxDd) maxDd = dd;
+      }
+      if (i === from12) continue;
+      if (!adj[i - 1] || !adj[i]) continue;
+      var r = adj[i] / adj[i - 1] - 1;
+      n++; sum += r; sumSq += r * r;
+      if (r < 0) { downSumSq += r * r; downN++; }
+      if (benchmarkLevel && benchmarkLevel[i - 1]) {
+        var br = benchmarkLevel[i] / benchmarkLevel[i - 1] - 1;
+        bmN++; bmSum += br; bmSumSq += br * br; crossSum += r * br;
+      }
+    }
+
     var distance52 = high52 > 0 ? (high52 - close[t]) / high52 : null;
 
     function dma(days) {
-      var from = t - days + 1;
-      if (from < series.startIndex) return null;
-      var sum = 0, n = 0;
-      for (var j = from; j <= t; j++) { if (close[j] > 0) { sum += close[j]; n++; } }
-      return n === days ? sum / n : null;
+      var start = t - days + 1;
+      if (start < series.startIndex) return null;
+      var acc = 0, count = 0;
+      for (var j = start; j <= t; j++) { if (close[j] > 0) { acc += close[j]; count++; } }
+      return count === days ? acc / count : null;
     }
     var d50 = dma(WINDOWS.dma50);
     var d200 = dma(WINDOWS.dma200);
 
-    /* Renditen des letzten Jahres — Basis fuer Volatilitaet, Downside-
-       Volatilitaet, Drawdown und Beta. */
-    var rets = [], bmRets = [];
-    var from12 = Math.max(series.startIndex + 1, t - WINDOWS.m12 + 1);
-    for (var k = from12; k <= t; k++) {
-      if (!adj[k - 1] || !adj[k]) continue;
-      rets.push(adj[k] / adj[k - 1] - 1);
-      if (benchmarkLevel && benchmarkLevel[k - 1]) bmRets.push(benchmarkLevel[k] / benchmarkLevel[k - 1] - 1);
-    }
-
     var vol = null, downVol = null, beta = null;
-    if (rets.length > 60) {
-      var mean = rets.reduce(function (a, b) { return a + b; }, 0) / rets.length;
-      var varSum = 0, downSum = 0, downN = 0;
-      for (var r = 0; r < rets.length; r++) {
-        varSum += (rets[r] - mean) * (rets[r] - mean);
-        if (rets[r] < 0) { downSum += rets[r] * rets[r]; downN++; }
+    if (n > 60) {
+      var mean = sum / n;
+      var variance = (sumSq - n * mean * mean) / (n - 1);
+      vol = Math.sqrt(Math.max(0, variance) * TRADING_DAYS_YEAR);
+      downVol = downN > 5 ? Math.sqrt(downSumSq / downN) * Math.sqrt(TRADING_DAYS_YEAR) : null;
+      if (bmN === n && bmN > 60) {
+        var bMean = bmSum / bmN;
+        var bVar = bmSumSq - bmN * bMean * bMean;
+        beta = bVar > 0 ? (crossSum - n * mean * bMean) / bVar : null;
       }
-      vol = Math.sqrt(varSum / (rets.length - 1)) * Math.sqrt(TRADING_DAYS_YEAR);
-      downVol = downN > 5 ? Math.sqrt(downSum / downN) * Math.sqrt(TRADING_DAYS_YEAR) : null;
-
-      if (bmRets.length === rets.length && bmRets.length > 60) {
-        var bMean = bmRets.reduce(function (a, b) { return a + b; }, 0) / bmRets.length;
-        var cov = 0, bVar = 0;
-        for (var b2 = 0; b2 < rets.length; b2++) {
-          cov += (rets[b2] - mean) * (bmRets[b2] - bMean);
-          bVar += (bmRets[b2] - bMean) * (bmRets[b2] - bMean);
-        }
-        beta = bVar > 0 ? cov / bVar : null;
-      }
-    }
-
-    var peak = 0, maxDd = 0;
-    for (var d = Math.max(series.startIndex, t - WINDOWS.m12); d <= t; d++) {
-      if (adj[d] > peak) peak = adj[d];
-      if (peak > 0) maxDd = Math.min(maxDd, adj[d] / peak - 1);
     }
 
     /* Liquiditaet als Dollar-Volumen, nicht als Stueckzahl: 10 Mio. Stueck
