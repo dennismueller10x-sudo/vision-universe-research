@@ -2,10 +2,11 @@ name: Update VISION UNIVERSE news
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 6,11,15,20 * * *"
 
 permissions:
   contents: write
-  models: read
 
 concurrency:
   group: update-news
@@ -22,7 +23,6 @@ jobs:
       - name: Fetch primary-source news
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/dashboard/update_news.mjs
       - name: Commit fresh news data
         shell: bash
