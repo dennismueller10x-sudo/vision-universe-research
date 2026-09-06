@@ -1,0 +1,263 @@
+/* =========================================================================
+   VISION UNIVERSE ACADEMY — Experience Shell (experience-shell.css)
+
+   Gemeinsame visuelle Sprache aller Academy-Experiences: Hero, Story-
+   Sections, Sticky-Visualisierung, Controls, Live-Metrics, Evidence-Tags,
+   Methodology/Sources. Eigenstaendiger "Academy Layer" (raeumlicher,
+   farbiger, bewegter als der monochrome Research-Layer), aber auf demselben
+   Grundraster (Inter, Shell-Breite) wie der Rest von Vision Universe.
+   ========================================================================= */
+
+:root{
+  --vu-acad-bg:#07080c;
+  --vu-acad-bg-elevated:#101219;
+  --vu-acad-bg-card:#14161f;
+  --vu-acad-line:rgba(255,255,255,.09);
+  --vu-acad-text:#f2f3f7;
+  --vu-acad-text-muted:#a3a7b7;
+  --vu-acad-text-faint:#6b7086;
+
+  --vu-acad-positive:#2fd68f;
+  --vu-acad-negative:#ff5d68;
+  --vu-acad-neutral:#7c9bff;
+
+  /* World accent colors, siehe academy/data/worlds.json */
+  --vu-accent-electric-blue:#3b82f6;
+  --vu-accent-azure:#38bdf8;
+  --vu-accent-amber:#f5a524;
+  --vu-accent-warm-orange:#fb7a3c;
+  --vu-accent-violet:#a685fa;
+  --vu-accent-cyan:#22d3ee;
+  --vu-accent-magenta:#f0479c;
+  --vu-accent-emerald:#2fd68f;
+  --vu-accent-coral:#ff7a7a;
+  --vu-accent-gold:#e6c34c;
+  --vu-accent-indigo:#7c7cff;
+
+  --vu-acad-accent: var(--vu-accent-warm-orange);
+  --vu-acad-radius:16px;
+  --vu-acad-max:1160px;
+}
+
+@media (prefers-color-scheme: light){
+  /* Academy bleibt bewusst dunkel/raeumlich (data-lab), unabhaengig vom
+     System-Farbschema — Farbwahl ist redaktionell, nicht Light/Dark-Mode. */
+}
+
+.vu-academy{
+  background:var(--vu-acad-bg);
+  color:var(--vu-acad-text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+.vu-academy *{box-sizing:border-box}
+.vu-academy a{color:inherit}
+.vu-academy img,.vu-academy svg{display:block;max-width:100%}
+
+.vu-a-shell{
+  width:min(var(--vu-acad-max),calc(100% - 48px));
+  margin-inline:auto;
+}
+
+/* =========================
+   TYPE
+========================= */
+.vu-a-eyebrow{
+  font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--vu-acad-accent);
+}
+.vu-a-h1{font-size:clamp(32px,6vw,60px);line-height:1.03;font-weight:800;letter-spacing:-.02em;margin:10px 0 0;}
+.vu-a-h2{font-size:clamp(22px,3.4vw,32px);line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0 0 12px;}
+.vu-a-lede{font-size:clamp(16px,2vw,19px);color:var(--vu-acad-text-muted);line-height:1.55;max-width:62ch;}
+.vu-a-body{font-size:15.5px;line-height:1.65;color:var(--vu-acad-text-muted);max-width:58ch;}
+.vu-a-body strong{color:var(--vu-acad-text);font-weight:600;}
+
+/* =========================
+   HERO
+========================= */
+.vu-a-hero{padding:64px 0 40px;}
+.vu-a-hero-tagline{margin-top:18px;font-size:14px;color:var(--vu-acad-text-faint);letter-spacing:.02em}
+.vu-a-hero-tagline b{color:var(--vu-acad-text-muted);font-weight:600}
+
+/* =========================
+   STORY LAYOUT (desktop: text scrolls, viz sticky)
+========================= */
+.vu-a-story{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:48px;
+  align-items:start;
+  padding:24px 0 8px;
+}
+.vu-a-story-col{min-width:0;}
+.vu-a-viz-col{position:sticky;top:calc(var(--vu-navigation-height,88px) + 24px);}
+
+.vu-a-act{
+  padding:36px 0;
+  border-top:1px solid var(--vu-acad-line);
+  opacity:.42;
+  transition:opacity .25s ease;
+}
+.vu-a-act:first-child{border-top:0}
+.vu-a-act.is-active{opacity:1}
+.vu-a-act-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-acad-accent);margin-bottom:10px;}
+.vu-a-act-title{font-size:clamp(19px,2.6vw,24px);font-weight:700;margin:0 0 10px;letter-spacing:-.01em}
+
+@media (max-width:900px){
+  .vu-a-story{grid-template-columns:1fr;gap:0;}
+  .vu-a-viz-col{
+    position:static;
+    order:-1;
+    margin-bottom:8px;
+  }
+  .vu-a-act{opacity:1;padding:26px 0;}
+}
+
+/* =========================
+   VIZ PANEL
+========================= */
+.vu-a-viz-panel{
+  background:var(--vu-acad-bg-card);
+  border:1px solid var(--vu-acad-line);
+  border-radius:var(--vu-acad-radius);
+  padding:20px 20px 22px;
+}
+.vu-a-viz-panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.vu-a-viz-panel-title{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--vu-acad-text-muted)}
+
+/* =========================
+   LIVE METRICS
+========================= */
+.vu-a-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-top:14px;}
+.vu-a-metric{
+  background:var(--vu-acad-bg-elevated);
+  border:1px solid var(--vu-acad-line);
+  border-radius:12px;
+  padding:12px 12px 10px;
+}
+.vu-a-metric-label{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--vu-acad-text-faint);margin-bottom:4px;}
+.vu-a-metric-value{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.vu-a-metric-value.is-positive{color:var(--vu-acad-positive)}
+.vu-a-metric-value.is-negative{color:var(--vu-acad-negative)}
+.vu-a-metric-delta{font-size:11px;color:var(--vu-acad-text-faint);margin-top:2px}
+
+/* =========================
+   CONTROLS (mobile-first: +/- stepper always available, no hover needed)
+========================= */
+.vu-a-controls{display:grid;gap:16px;margin-top:6px;}
+.vu-a-control{display:grid;gap:6px;}
+.vu-a-control-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.vu-a-control-label{font-size:13px;font-weight:600;color:var(--vu-acad-text)}
+.vu-a-control-value{font-size:13px;font-variant-numeric:tabular-nums;color:var(--vu-acad-accent);font-weight:700}
+.vu-a-control-row{display:flex;align-items:center;gap:10px;}
+.vu-a-stepper{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;flex:0 0 auto;
+  border-radius:10px;border:1px solid var(--vu-acad-line);
+  background:var(--vu-acad-bg-elevated);color:var(--vu-acad-text);
+  font-size:18px;line-height:1;cursor:pointer;user-select:none;
+}
+.vu-a-stepper:hover{border-color:var(--vu-acad-accent)}
+.vu-a-stepper:focus-visible,.vu-a-slider:focus-visible{outline:2px solid var(--vu-acad-accent);outline-offset:2px}
+.vu-a-slider{
+  -webkit-appearance:none;appearance:none;
+  flex:1 1 auto;height:36px;background:transparent;cursor:pointer;
+}
+.vu-a-slider::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--vu-acad-line)}
+.vu-a-slider::-moz-range-track{height:6px;border-radius:3px;background:var(--vu-acad-line)}
+.vu-a-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--vu-acad-accent);border:3px solid var(--vu-acad-bg);
+  margin-top:-9px;box-shadow:0 0 0 1px var(--vu-acad-line);
+}
+.vu-a-slider::-moz-range-thumb{
+  width:24px;height:24px;border-radius:50%;border:3px solid var(--vu-acad-bg);
+  background:var(--vu-acad-accent);box-shadow:0 0 0 1px var(--vu-acad-line);
+}
+.vu-a-control-hint{font-size:11.5px;color:var(--vu-acad-text-faint)}
+
+/* =========================
+   EVIDENCE TAGS — Farbe + Form, nie nur Farbe (WCAG)
+========================= */
+.vu-a-evidence{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;white-space:nowrap;
+}
+.vu-a-evidence::before{content:"";width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.vu-a-evidence[data-evidence="FACT"]{color:#bfe9ff;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.35)}
+.vu-a-evidence[data-evidence="FACT"]::before{background:#3b82f6}
+.vu-a-evidence[data-evidence="MODEL"]{color:#ffe1b8;background:rgba(245,165,36,.12);border:1px dashed rgba(245,165,36,.5)}
+.vu-a-evidence[data-evidence="MODEL"]::before{background:#f5a524;border-radius:2px}
+.vu-a-evidence[data-evidence="ASSUMPTION"]{color:#d8d3ff;background:rgba(166,133,250,.12);border:1px dotted rgba(166,133,250,.6)}
+.vu-a-evidence[data-evidence="ASSUMPTION"]::before{background:transparent;border:1.5px dotted #a685fa}
+.vu-a-evidence[data-evidence="ESTIMATE"]{color:#ffd7de;background:rgba(255,93,104,.1);border:1px dashed rgba(255,93,104,.45)}
+.vu-a-evidence[data-evidence="ESTIMATE"]::before{background:#ff5d68}
+
+/* =========================
+   CONTEXT CARDS / CALLOUTS
+========================= */
+.vu-a-callout{
+  background:var(--vu-acad-bg-elevated);
+  border:1px solid var(--vu-acad-line);
+  border-left:3px solid var(--vu-acad-accent);
+  border-radius:10px;
+  padding:14px 16px;
+  font-size:14px;line-height:1.55;color:var(--vu-acad-text-muted);
+  margin:16px 0;
+}
+.vu-a-callout b{color:var(--vu-acad-text)}
+
+/* =========================
+   RELATED CONCEPTS
+========================= */
+.vu-a-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.vu-a-chip{
+  font-size:12.5px;padding:7px 12px;border-radius:999px;
+  background:var(--vu-acad-bg-elevated);border:1px solid var(--vu-acad-line);
+  color:var(--vu-acad-text-muted);
+}
+.vu-a-chip b{color:var(--vu-acad-text);font-weight:600}
+
+/* =========================
+   METHODOLOGY / SOURCES
+========================= */
+.vu-a-panel{
+  border:1px solid var(--vu-acad-line);
+  border-radius:var(--vu-acad-radius);
+  background:var(--vu-acad-bg-card);
+  padding:22px 24px;
+  margin-top:18px;
+}
+.vu-a-panel + .vu-a-panel{margin-top:14px}
+.vu-a-panel h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--vu-acad-text-faint);margin:0 0 12px;}
+.vu-a-def-list{display:grid;gap:10px;margin:0;}
+.vu-a-def-list dt{font-size:13px;font-weight:600;color:var(--vu-acad-text)}
+.vu-a-def-list dd{font-size:13.5px;color:var(--vu-acad-text-muted);margin:2px 0 0;line-height:1.55}
+.vu-a-source-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;}
+.vu-a-source-list li{font-size:13px;color:var(--vu-acad-text-muted);padding-left:16px;position:relative;}
+.vu-a-source-list li::before{content:"—";position:absolute;left:0;color:var(--vu-acad-text-faint)}
+
+/* =========================
+   CHART: WATERFALL / BRIDGE
+========================= */
+.vu-a-chart-wrap{width:100%;}
+.vu-a-chart-summary{
+  list-style:none;margin:10px 0 0;padding:0;
+  display:grid;gap:4px;font-size:12.5px;font-variant-numeric:tabular-nums;
+}
+.vu-a-chart-summary li{display:flex;justify-content:space-between;gap:12px;color:var(--vu-acad-text-muted);padding:2px 0;}
+.vu-a-chart-summary li b{color:var(--vu-acad-text);font-weight:600}
+.vu-a-chart-summary li.is-total{border-top:1px solid var(--vu-acad-line);padding-top:6px;margin-top:2px;}
+.vu-a-chart-summary li.is-total b{color:var(--vu-acad-accent)}
+
+/* =========================
+   GENERIC PAGE SECTIONS (shared by landing page + experiences)
+========================= */
+.vu-a-section{padding:40px 0;}
+.vu-a-foot-note{margin-top:56px;padding:24px 0 60px;border-top:1px solid var(--vu-acad-line);font-size:12px;color:var(--vu-acad-text-faint);}
+
+@media (prefers-reduced-motion: reduce){
+  .vu-academy *{transition:none!important;animation:none!important;}
+}

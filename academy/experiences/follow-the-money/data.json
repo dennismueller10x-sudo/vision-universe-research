@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "id": "follow-the-money",
+  "title": "Follow the Money",
+  "subtitle": "Wie wird aus Umsatz echter Cashflow?",
+  "hook": "Ein Unternehmen meldet Rekordgewinne. Warum kann trotzdem kaum Geld in der Kasse landen?",
+  "controls": [
+    { "key": "revenueGrowth", "label": "Umsatzwachstum", "format": "pct1", "hint": "Treibt Revenue Year 1 gegenüber Year 0 — und damit auch Forderungen und Vorräte." },
+    { "key": "grossMargin", "label": "Gross Margin", "format": "pct0", "hint": "Wie viel vom Umsatz bleibt nach Herstellungskosten übrig." },
+    { "key": "opexPctRevenue", "label": "Operating Expenses (% Umsatz)", "format": "pct0", "hint": "Vertrieb, Verwaltung, Forschung — ohne D&A." },
+    { "key": "daPctRevenue", "label": "Depreciation & Amortization (% Umsatz)", "format": "pct1", "hint": "Non-cash — reduziert Net Income, wird im Cashflow addiert." },
+    { "key": "sbcPctRevenue", "label": "Stock-Based Compensation (% Umsatz)", "format": "pct1", "hint": "Non-cash im Cashflow — ökonomisch aber reale Verwässerung." },
+    { "key": "capexPctRevenue", "label": "CapEx (% Umsatz)", "format": "pct1", "hint": "Investitionen in Anlagen/Ausrüstung — reduziert nur Free Cash Flow, nicht Net Income." },
+    { "key": "daysReceivable", "label": "Days Sales Outstanding", "format": "days", "hint": "Wie lange Kunden im Schnitt brauchen, um zu zahlen." },
+    { "key": "daysInventory", "label": "Days Inventory Outstanding", "format": "days", "hint": "Wie lange Ware im Lager gebunden ist." },
+    { "key": "daysPayable", "label": "Days Payable Outstanding", "format": "days", "hint": "Wie lange das Unternehmen selbst mit Zahlungen wartet." },
+    { "key": "taxRate", "label": "Steuersatz", "format": "pct0", "hint": "Vereinfachter Effektivsteuersatz auf operatives Ergebnis." }
+  ],
+  "acts": [
+    {
+      "id": "illusion",
+      "label": "Act 1 — The Illusion",
+      "title": "„Das Unternehmen verdient 100 Millionen.“",
+      "body": [
+        "Ein Rekordgewinn klingt nach einer eindeutigen Aussage. Ist das automatisch 100 Millionen Cash auf dem Konto?",
+        "Rechts siehst du ein vereinfachtes Demo-Unternehmen mit Umsatz 1.000. Verändere unten nichts — beobachte erst, wie aus Umsatz Schritt für Schritt ein Jahresüberschuss entsteht."
+      ],
+      "evidence": "MODEL"
+    },
+    {
+      "id": "follow-the-profit",
+      "label": "Act 2 — Follow the Profit",
+      "title": "Revenue → Gross Profit → Operating Income → Net Income",
+      "body": [
+        "Jede Stufe zieht weitere Kosten ab: Herstellungskosten (COGS), dann operative Kosten (Opex) und Abschreibungen (D&A), zuletzt Steuern.",
+        "Das Waterfall-Chart rechts zerlegt genau diesen Weg — jede Stufe zeigt, wo ein Teil des Umsatzes „verloren“ geht, bevor er zu Net Income wird."
+      ],
+      "evidence": "FACT"
+    },
+    {
+      "id": "profit-not-cash",
+      "label": "Act 3 — Profit ≠ Cash",
+      "title": "Net Income ist eine Meinung über die Periode — kein Kontostand.",
+      "body": [
+        "Zwei Effekte trennen Net Income von echtem Cash: nicht-zahlungswirksame Posten (D&A, Stock-Based Compensation) und Working Capital — das Kapital, das in Forderungen und Vorräten gebunden ist, abzüglich dessen, was durch Lieferantenverbindlichkeiten finanziert wird.",
+        "Wechsle rechts auf „Cash Bridge“, um zu sehen, wie aus Net Income über diese Anpassungen der Operating Cash Flow entsteht."
+      ],
+      "evidence": "MODEL"
+    },
+    {
+      "id": "growth-eats-cash",
+      "label": "Act 4 — Growth Can Eat Cash",
+      "title": "Schnelleres Wachstum kann den Cashflow verschlechtern — bei steigendem Gewinn.",
+      "body": [
+        "Erhöhe jetzt „Umsatzwachstum“ deutlich. Net Income steigt weiter. Aber Forderungen und Vorräte müssen mitwachsen, bevor der Umsatz als Cash ankommt — das bindet zusätzliches Kapital.",
+        "Genau das ist der klassische Fall wachstumsstarker, kapitalhungriger Geschäftsmodelle: profitabel auf dem Papier, angespannt in der Kasse."
+      ],
+      "evidence": "MODEL"
+    },
+    {
+      "id": "investment",
+      "label": "Act 5 — Investment",
+      "title": "CapEx erscheint nie im Net Income — aber immer im Free Cash Flow.",
+      "body": [
+        "Erhöhe jetzt „CapEx“. Net Income bewegt sich nicht (CapEx ist keine Expense im Income Statement), aber Free Cash Flow sinkt sofort.",
+        "Das ist der Kern des Unterschieds zwischen Operating Cash Flow und Free Cash Flow: FCF berücksichtigt, was ein Geschäftsmodell an Investitionen braucht, um überhaupt weiterzubestehen."
+      ],
+      "evidence": "FACT"
+    },
+    {
+      "id": "build-the-business",
+      "label": "Act 6 — Build the Business",
+      "title": "Jetzt hast du die Kontrolle.",
+      "body": [
+        "Alle Regler oben sind frei — kombiniere Wachstum, Margen und Working-Capital-Annahmen, wie du willst. Beobachte, welche Variable Net Income bewegt und welche stattdessen (oder zusätzlich) Cash bewegt.",
+        "Es gibt kein „richtig“ oder „falsch“ — nur unterschiedliche Kombinationen aus Wachstum, Profitabilität und Kapitalintensität, wie sie auch bei echten Unternehmen nebeneinander existieren."
+      ],
+      "evidence": "ASSUMPTION"
+    },
+    {
+      "id": "real-world",
+      "label": "Act 7 — Real World",
+      "title": "Reale Unternehmen als Nächstes.",
+      "body": [
+        "Phase 1 dieser Experience arbeitet bewusst mit einem kontrollierten Demo-Modell statt mit Live-Daten realer Unternehmen — damit die Mechanik ohne Datenlücken oder Lizenzfragen sauber erlebbar ist.",
+        "Sobald reale, sauber aufbereitete Financial-Statement-Daten angebunden sind, kann dieselbe Engine echte Unternehmen laden, ohne dass sich Chart, Controls oder Storyline ändern müssen."
+      ],
+      "evidence": "ASSUMPTION"
+    },
+    {
+      "id": "apply",
+      "label": "Act 8 — Apply",
+      "title": "Zurück ins Research.",
+      "body": [
+        "Free Cash Flow, Working Capital und Cash Conversion sind zentrale Bausteine für Aktienreports, Earnings-Quality-Einschätzungen, ROIC und DCF — die nächsten Academy-Experiences bauen direkt auf dieser Financial Model Engine auf.",
+        "Erkunde, wie Vision Universe Free Cash Flow bereits in echten Research-Produkten einsetzt."
+      ],
+      "evidence": "FACT"
+    }
+  ],
+  "relatedConcepts": ["revenue", "gross-profit", "operating-income", "net-income", "working-capital", "capex", "stock-based-compensation", "operating-cash-flow", "free-cash-flow", "cash-conversion"],
+  "visionUniverseIntegrations": [
+    { "label": "Vision Universe Aktienreports", "detail": "Free Cash Flow und Earnings Quality sind Kernbestandteile jedes Reports.", "href": "/reports/xpeng/" },
+    { "label": "Vision Universe Dashboard / Discover", "detail": "Cash-Conversion- und FCF-Filter im Screener sind für eine spätere Phase vorgesehen.", "href": "/dashboard/discover/" }
+  ],
+  "methodology": [
+    { "term": "Modelltyp", "detail": "Vereinfachtes Zwei-Perioden-Modell (Year 0 → Year 1) eines fiktiven Demo-Unternehmens. Keine reale Firma, keine realen Finanzdaten." },
+    { "term": "Umfang", "detail": "Kein Fremdkapital, keine Zinsen, keine Financing-Cashflows. Der Fokus liegt bewusst auf Operating Cash Flow und Free Cash Flow." },
+    { "term": "Working Capital", "detail": "Forderungen und Vorräte werden aus Days-Sales-Outstanding/Days-Inventory-Outstanding auf Basis von Umsatz bzw. COGS abgeleitet, Verbindlichkeiten aus Days-Payable-Outstanding auf COGS-Basis. Die Days-Annahmen gelten für Year 0 und Year 1 gleichermaßen, damit die Working-Capital-Veränderung ausschließlich den Wachstumseffekt zeigt." },
+    { "term": "D&A und CapEx", "detail": "D&A reduziert Operating Income und wird im Cashflow als Non-Cash-Add-back zurückaddiert. CapEx erscheint ausschließlich im Cashflow (reduziert Free Cash Flow), nie im Income Statement." },
+    { "term": "Stock-Based Compensation", "detail": "SBC ist ein Non-Cash-Add-back in der Cashflow-Rechnung. Diese Experience stellt SBC bewusst nicht als „kostenlos“ dar: ökonomisch verwässert SBC bestehende Aktionäre, auch wenn das in dieser vereinfachten Kennzahl nicht als Kostenposition erscheint." },
+    { "term": "Steuern", "detail": "Ein einzelner effektiver Steuersatz auf positives operatives Ergebnis. Keine Verlustvorträge, keine latenten Steuern, keine Sondereffekte." },
+    { "term": "Cash Conversion", "detail": "Operating Cash Flow ÷ Net Income. Als Qualitätsindikator zu lesen, aber immer im Kontext von Wachstumsphase und Kapitalintensität — nicht als absolute Kennzahl." }
+  ],
+  "sources": [
+    "U.S. Securities and Exchange Commission — Investor.gov, Grundlagen zu Jahresabschlüssen (Bilanz, Gewinn- und Verlustrechnung, Kapitalflussrechnung) als zusammenhängende Finanzberichterstattung.",
+    "CFA Institute — Practical Skills Modules, insbesondere Financial Statement Modeling (Three-Statement-Modellierung als praxisnahe Kernkompetenz).",
+    "Vision Universe Demo-Modell — illustrative Annahmen dieser Experience, keine realen Unternehmensdaten oder Prognosen."
+  ]
+}
