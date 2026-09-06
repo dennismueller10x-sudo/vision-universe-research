@@ -522,21 +522,6 @@ Kein schwarzer Hintergrund mehr.
   transform:translateX(5px);
 }
 
-/* AKTUELLE NEWS */
-.home-news{padding:34px 0 76px}
-.home-news-head{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:24px}
-.home-news-kicker{color:var(--red);font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
-.home-news h2{font-size:clamp(34px,4vw,58px);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
-.home-news-all{flex:0 0 auto;color:#111;font-size:11px;font-weight:800;letter-spacing:.13em;text-decoration:none;text-transform:uppercase;border-bottom:1px solid #111;padding-bottom:5px}
-.home-news-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.home-news-card{display:grid;grid-template-columns:minmax(180px,.8fr) 1.2fr;min-height:270px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fafaf8}
-.home-news-card img{width:100%;height:100%;min-height:270px;object-fit:cover}
-.home-news-copy{display:flex;flex-direction:column;padding:28px}
-.home-news-meta{color:var(--red);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
-.home-news-card h3{margin-top:16px;font-size:clamp(23px,2.1vw,34px);line-height:1.02;letter-spacing:-.04em}
-.home-news-card p{margin-top:16px;color:#444;font-size:14px;line-height:1.55}
-.home-news-read{margin-top:auto;padding-top:18px;color:#111;font-size:10px;font-weight:800;letter-spacing:.13em;text-decoration:none;text-transform:uppercase}
-.home-news-empty{grid-column:1/-1;padding:32px;border:1px solid var(--line);color:var(--muted)}
 
 
 /* =========================
@@ -750,9 +735,6 @@ Kein schwarzer Hintergrund mehr.
     padding:28px;
   }
 
-  .home-news-card{grid-template-columns:1fr}
-  .home-news-card img{height:220px;min-height:0}
-
 }
 
 
@@ -858,12 +840,6 @@ Kein schwarzer Hintergrund mehr.
   .products{
     padding:25px 0 65px;
   }
-
-  .home-news{padding:20px 0 55px}
-  .home-news-head{align-items:start;flex-direction:column;gap:18px}
-  .home-news-grid{grid-template-columns:1fr}
-  .home-news-card{grid-template-columns:1fr}
-  .home-news-card img{height:210px;min-height:0}
 
   .products-grid{
     grid-template-columns:1fr;
@@ -1034,23 +1010,6 @@ class="atlas-img">
 
 
 </section>
-
-
-<!-- AKTUELLE NEWS -->
-
-<section class="shell home-news" id="news" aria-labelledby="homeNewsTitle">
-<div class="home-news-head">
-<div>
-<div class="home-news-kicker">Vision Universe News</div>
-<h2 id="homeNewsTitle">Was die Märkte bewegt</h2>
-</div>
-<a class="home-news-all" href="./news/">Alle News ansehen</a>
-</div>
-<div class="home-news-grid" id="homeNewsGrid" aria-live="polite">
-<div class="home-news-empty">Aktuelle Meldungen werden geladen.</div>
-</div>
-</section>
-
 
 
 <!-- RESEARCH PRODUKTE -->
@@ -1592,6 +1551,72 @@ stroke="currentColor">
 </a>
 
 
+
+<!-- NEWS -->
+
+<a href="./news/"
+class="product-card">
+
+<div class="icon-disc">
+
+<svg viewBox="0 0 32 32">
+
+<path d="M6 6h20v20H6z"/>
+<path d="M11 12h10"/>
+<path d="M11 17h10"/>
+<path d="M11 22h6"/>
+
+</svg>
+
+</div>
+
+
+<div>
+
+<h2><span class="card-number">09</span>News</h2>
+
+<div class="card-rule"></div>
+
+<p class="card-description">
+Kursrelevante Meldungen, mehrfach täglich
+aktualisiert und eingeordnet.
+</p>
+
+</div>
+
+
+<ul class="card-list">
+
+<li>Mehrmals täglich aktuell</li>
+<li>Unternehmens- & Marktnews</li>
+<li>Direkt aus Primärquellen</li>
+<li>Kurz & auf den Punkt</li>
+
+</ul>
+
+
+<div class="card-link">
+
+<div class="card-link-inner">
+
+<span>News lesen</span>
+
+<svg viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor">
+
+<path d="M4 12h16"/>
+<path d="M15 7l5 5-5 5"/>
+
+</svg>
+
+</div>
+
+</div>
+
+</a>
+
+
 </div>
 
 </section>
@@ -1862,26 +1887,6 @@ stage.style.transform =
 }
 
 
-/* AKTUELLE NEWS */
-
-const homeNewsGrid = document.getElementById("homeNewsGrid");
-if(homeNewsGrid){
-  const escapeNewsText = value => String(value ?? "").replace(/[&<>"']/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[character]);
-  const newsDate = value => new Date(value).toLocaleString("de-DE", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"});
-  fetch("./dashboard/data/news_feed.json", {cache:"no-store"})
-  .then(response => response.ok ? response.json() : Promise.reject())
-  .then(feed => {
-    const items = Array.isArray(feed.items) ? feed.items.slice(0,2) : [];
-    if(!items.length){
-      homeNewsGrid.innerHTML = '<div class="home-news-empty">Derzeit liegen keine ausreichend relevanten aktuellen Meldungen vor.</div>';
-      return;
-    }
-    homeNewsGrid.innerHTML = items.map(item => `<article class="home-news-card"><img src="${escapeNewsText(item.image_url)}" alt="" loading="lazy"><div class="home-news-copy"><span class="home-news-meta">${escapeNewsText(item.market)} · ${escapeNewsText(newsDate(item.published_at))} Uhr</span><h3>${escapeNewsText(item.title)}</h3><p>${escapeNewsText(item.summary)}</p><a class="home-news-read" href="./news/">Artikel &amp; Einordnung lesen →</a></div></article>`).join("");
-  })
-  .catch(() => {
-    homeNewsGrid.innerHTML = '<div class="home-news-empty">Die aktuellen Meldungen werden gerade aktualisiert.</div>';
-  });
-}
 
 </script>
 
