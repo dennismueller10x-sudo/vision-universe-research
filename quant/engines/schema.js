@@ -449,6 +449,68 @@
   // ---------------------------------------------------------------------
   // Provenance
   // ---------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------
+  // Bulk-Repraesentation von Fundamentaldaten
+  //
+  // FundamentalPeriod ist eine verlustfreie, kompakte Kodierung mehrerer
+  // FundamentalFacts derselben Periode und Revision. Sie existiert aus
+  // einem einzigen Grund: 500 Titel x 80 Quartale x 15 Kennzahlen sind
+  // 600.000 Einzelobjekte, und Cross-Sectional-Quant braucht sie am Stueck.
+  // expandPeriodToFacts() beweist die Aequivalenz zur kanonischen Form und
+  // wird genau dafuer getestet.
+  // ---------------------------------------------------------------------
+  var METRIC_UNITS = {
+    revenue: "usd_m", grossProfit: "usd_m", operatingIncome: "usd_m", netIncome: "usd_m",
+    ebitda: "usd_m", freeCashFlow: "usd_m", totalAssets: "usd_m", totalEquity: "usd_m",
+    netDebt: "usd_m", investedCapital: "usd_m", capex: "usd_m", interestExpense: "usd_m",
+    sharesOutstanding: "count_m", dividendPerShare: "usd", accruals: "ratio"
+  };
+
+  function expandPeriodToFacts(period, securityId, dataSourceId) {
+    var out = [];
+    Object.keys(period.values).forEach(function (metricId) {
+      var unit = METRIC_UNITS[metricId] || "ratio";
+      out.push({
+        securityId: securityId,
+        metricId: metricId,
+        fiscalPeriod: period.fiscalPeriod,
+        fiscalYear: period.fiscalYear,
+        periodEnd: period.periodEnd,
+        value: period.values[metricId] === null ? undefined : period.values[metricId],
+        unit: unit,
+        currency: unit === "ratio" || unit === "count_m" ? undefined : "USD",
+        reportedAt: period.reportedAt,
+        filedAt: period.filedAt,
+        availableAt: period.availableAt,
+        ingestedAt: period.ingestedAt,
+        revisionId: period.revisionId,
+        restatementStatus: period.restatementStatus,
+        sourceFilingId: period.sourceFilingId,
+        dataSourceId: dataSourceId
+      });
+    });
+    return out;
+  }
+
+  /** Die zum Stichtag zuletzt bekannten Perioden (Bulk-Variante von
+      latestKnownSeries, arbeitet auf FundamentalPeriod statt Facts). */
+  function latestKnownPeriods(periods, decisionDate, count) {
+    var byPeriod = Object.create(null);
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i];
+      if (p.availableAt > decisionDate) continue;
+      var cur = byPeriod[p.periodEnd];
+      if (!cur || p.availableAt > cur.availableAt ||
+         (p.availableAt === cur.availableAt && p.revisionId > cur.revisionId)) {
+        byPeriod[p.periodEnd] = p;
+      }
+    }
+    var keys = Object.keys(byPeriod).sort().reverse();
+    if (count) keys = keys.slice(0, count);
+    return keys.map(function (k) { return byPeriod[k]; });
+  }
+
   function makeProvenance(fields) {
     return assertValid("DataProvenance", {
       provider: fields.provider,
@@ -482,6 +544,9 @@
     latestKnownFact: latestKnownFact,
     latestKnownSeries: latestKnownSeries,
     wasListed: wasListed,
+    METRIC_UNITS: METRIC_UNITS,
+    expandPeriodToFacts: expandPeriodToFacts,
+    latestKnownPeriods: latestKnownPeriods,
     makeProvenance: makeProvenance,
     definitionHash: definitionHash
   };

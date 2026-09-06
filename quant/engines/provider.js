@@ -30,12 +30,12 @@
       description: "Security Master, Exchanges, Universen und historische Mitgliedschaften."
     },
     MarketDataProvider: {
-      methods: ["getPriceBars", "getLatestPrice", "getBenchmarkBars", "healthCheck"],
-      description: "Tages-OHLCV inklusive total-return-adjustierter Schlusskurse."
+      methods: ["getPriceBars", "getLatestPrice", "getBenchmarkBars", "getPricePanel", "healthCheck"],
+      description: "Tages-OHLCV inklusive total-return-adjustierter Schlusskurse. getPricePanel liefert dieselben Daten als Bulk-Panel (typisierte Arrays): Cross-Sectional-Quant ueber 500 Titel und 20 Jahre laesst sich nicht sinnvoll ueber Einzelabrufe bedienen — echte Anbieter stellen dafuer ebenfalls Bulk-/Parquet-Zugriffe bereit."
     },
     FundamentalDataProvider: {
-      methods: ["getFacts", "getFilings", "healthCheck"],
-      description: "Bitemporale Fundamentaldaten. getFacts MUSS Point-in-Time unterstuetzen."
+      methods: ["getFacts", "getFilings", "getFactPanel", "healthCheck"],
+      description: "Bitemporale Fundamentaldaten. getFacts MUSS Point-in-Time unterstuetzen. getFactPanel ist die Bulk-Variante fuer die Quant Engine und unterliegt derselben availableAt-Regel."
     },
     EstimateDataProvider: {
       methods: ["getEstimates", "getRevisionHistory", "healthCheck"],
