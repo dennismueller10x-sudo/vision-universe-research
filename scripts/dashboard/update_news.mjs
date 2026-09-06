@@ -16,6 +16,20 @@ function pickImage(stock, headline) {
   if (/DAX|MDAX|SDAX|TECDAX|AKTIENINDE|AUSWAHLINDIZ|DEUTSCHE.?B[ÖO]RSE/.test(h)) return '/dashboard/assets/news-dax.jpg';
   return '/dashboard/assets/news-small-caps.jpg';
 }
+// Classifies each item so the news page can offer a real filter (US / Deutschland / Tech / Weltmärkte)
+// instead of the near-useless two-value split ("US-Aktien" vs "Markt & Makro") this used to produce.
+// Beyond our own tracked universe, these sources constantly mention large US names we don't track
+// (GameStop, Oracle, Boeing, ...) — a short list of well-known tickers catches most real headlines.
+const US_COMPANIES = /GAMESTOP|ADOBE|ORACLE|TESLA|NETFLIX|\bINTEL\b|QUALCOMM|SALESFORCE|\bIBM\b|BROADCOM|PAYPAL|\bUBER\b|AIRBNB|\bAMC\b|COINBASE|ROBINHOOD|BERKSHIRE|JPMORGAN|GOLDMAN SACHS|MORGAN STANLEY|WALMART|EXXON|CHEVRON|PFIZER|\bVISA\b|MASTERCARD|COCA-COLA|MCDONALD|DISNEY|BOEING|\bFORD\b|GENERAL MOTORS|CITIGROUP|BANK OF AMERICA|WELLS FARGO|UNITEDHEALTH|HOME DEPOT|COSTCO|STARBUCKS|BLACKROCK|FEDEX/;
+const US_TECH_COMPANIES = /NVIDIA|MICROSOFT|\bAPPLE\b|AMAZON|ALPHABET|\bGOOGLE\b|\bMETA\b|OPENAI|TESLA|INTEL\b|QUALCOMM|SALESFORCE|\bIBM\b|BROADCOM|ORACLE|ADOBE/;
+function classify(headline, raw, stock) {
+  const t = `${headline} ${raw}`.toUpperCase();
+  const isDE = /\bDAX\b|MDAX|SDAX|TECDAX|DEUTSCHE B[ÖO]RSE|FRANKFURT|BUNDESBANK|DEUTSCHLAND/.test(t);
+  const isUS = !isDE && (Boolean(stock) || US_COMPANIES.test(t) || /WALL STREET|DOW JONES|NASDAQ|S&P.?500|\bFED\b|\bUSA\b|US-NOTENBANK|WEISSES HAUS|WHITE HOUSE|WASHINGTON/.test(t));
+  const isTech = Boolean(stock) || US_TECH_COMPANIES.test(t) || /CHIP|HALBLEITER|\bKI\b|SOFTWARE|CLOUD|RECHENZENTRUM|K[ÜU]NSTLICHE INTELLIGENZ/.test(t);
+  const region = isDE ? 'Deutschland' : isUS ? 'US-Märkte' : 'Weltmärkte';
+  return { region, tags: isTech ? [region, 'Tech'] : [region] };
+}
 // Wire-service filler, press-release spam and forum/community posts that these aggregators
 // syndicate alongside real editorial news — filtered out before scoring, not just ranked low.
 const JUNK_PATTERN = /^(IRW-PRESS|EQS-News|PR Newswire|GlobeNewswire|Business Wire|Sponsored|Anzeige|Werbung|Gewinnspiel|Horoskop|Rätsel|Forum:|Community:|Diskussion:|Kolumne:)/i;
@@ -28,7 +42,8 @@ async function rssItems(sourceName, prefix, url) {
     const published = Date.parse(tag(item, 'pubDate') || tag(item, 'dc:date'));
     if (!headline || !published || published < cutoff || isJunk(headline, raw, link)) return [];
     const stock = detectStock(`${headline} ${raw}`);
-    return [{ id: `${prefix}-${stock?.symbol || 'markt'}-${published}`, symbol: stock?.symbol || null, company: stock?.name || 'Marktbericht', market: stock ? 'US-Aktien' : 'Markt & Makro', category: stock ? 'Unternehmen' : 'Marktbericht', headline, raw_summary: raw.slice(0, 900), source: sourceName, source_url: link, image_url: pickImage(stock, headline), published_ms: published }];
+    const { region, tags } = classify(headline, raw, stock);
+    return [{ id: `${prefix}-${stock?.symbol || 'markt'}-${published}`, symbol: stock?.symbol || null, company: stock?.name || 'Marktbericht', market: region, tags, category: stock ? 'Unternehmen' : 'Marktbericht', headline, raw_summary: raw.slice(0, 900), source: sourceName, source_url: link, image_url: pickImage(stock, headline), published_ms: published }];
   });
 }
 const frankfurtItems = () => rssItems('Börse Frankfurt', 'bf', 'https://api.boerse-frankfurt.de/v1/feeds/news.rss');
@@ -44,7 +59,7 @@ function summarize(text, maxLen = 320) {
   return sentenceEnd > 80 ? cut.slice(0, sentenceEnd + 1).trim() : `${cut.slice(0, cut.lastIndexOf(' '))}…`;
 }
 function buildArticles(items) {
-  return items.map((i) => ({ id: i.id, symbol: i.symbol, company: i.company, market: i.market, category: i.category, title: clean(i.headline).slice(0, 90), summary: summarize(i.raw_summary) || clean(i.headline), why_it_matters: i.company ? `Relevant für ${i.company}-Anleger im Bereich ${i.category}.` : `Relevant für Anleger im Bereich ${i.category}.`, source: i.source, source_url: i.source_url, image_url: i.image_url, published_at: new Date(i.published_ms).toISOString(), relevance: score(i), editorial: 'Vision Universe Redaktion' }));
+  return items.map((i) => ({ id: i.id, symbol: i.symbol, company: i.company, market: i.market, tags: i.tags, category: i.category, title: clean(i.headline).slice(0, 90), summary: summarize(i.raw_summary) || clean(i.headline), source: i.source, source_url: i.source_url, image_url: i.image_url, published_at: new Date(i.published_ms).toISOString(), relevance: score(i), editorial: 'Vision Universe Redaktion' }));
 }
 const normalizeHeadline = (h) => h.toLowerCase().normalize('NFKD').replace(/[^a-z0-9äöüß ]/g, '').replace(/\s+/g, ' ').trim();
 const MIN_RELEVANCE = 40, MIN_ARTICLES = 4;
