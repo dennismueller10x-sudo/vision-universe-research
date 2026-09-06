@@ -28,8 +28,8 @@ h1.heading{font-size:clamp(38px,6vw,60px);letter-spacing:-.06em;line-height:.95;
 .change-badge.down{color:var(--red)}
 
 .range{display:flex;gap:6px;flex-wrap:wrap}
-.range a{border:0;border-radius:12px;background:#f1f1ef;color:#111;text-decoration:none;padding:9px 12px;font-weight:800;font-size:13px}
-.range a.on{background:#111;color:#fff}
+.range button{border:0;border-radius:12px;background:#f1f1ef;color:#111;text-decoration:none;padding:9px 12px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer}
+.range button.on{background:#111;color:#fff}
 .range-disabled{border-radius:12px;background:#f7f7f5;color:#bbb;padding:9px 12px;font-weight:800;font-size:13px;cursor:not-allowed}
 
 .chart-wrap{width:100%;overflow:hidden}

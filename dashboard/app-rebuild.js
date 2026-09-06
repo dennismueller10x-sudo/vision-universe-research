@@ -85,14 +85,16 @@
       const histAll = allCloses.map((_, i) => (macdLineAll[i] == null || signalAll[i] == null) ? null : macdLineAll[i] - signalAll[i]);
       const stochKAll = allCloses.map((_, i) => { if (i < 13) return null; const hh = Math.max(...allHighs.slice(i - 13, i + 1)), ll = Math.min(...allLows.slice(i - 13, i + 1)); return hh === ll ? 50 : (allCloses[i] - ll) / (hh - ll) * 100; });
       const stochDAll = smaSeries(stochKAll, 3);
-      const W = 1000, H = 610, L = 74, R = 96, T = 30, B = 70;
-      const minSpan = 19, defaultStart = Math.max(0, totalLen - rangeDays), defaultEnd = totalLen - 1;
+      const W = 1000, H = 610, T = 30, B = 70;
+      const minSpan = 19;
+      let defaultStart = Math.max(0, totalLen - rangeDays), defaultEnd = totalLen - 1;
       let winStart = defaultStart, winEnd = defaultEnd, curSide = side;
       const visible = { ema20: true, ema50: true, sma200: true, bollinger: false, zones: false, rsi: false, macd: false, stoch: false, volume: false, mcap: false };
       const fmt2 = (v) => fmt(v, 2);
       const dateLabel = (s, e) => { const from = new Date(all[s].date + 'T00:00:00'), to = new Date(all[e].date + 'T00:00:00'); const fmtOpt = (e - s) <= 45 ? { day: '2-digit', month: 'short', year: '2-digit' } : { month: 'short', year: '2-digit' }; return `${from.toLocaleDateString('de-DE', fmtOpt)} – ${to.toLocaleDateString('de-DE', fmtOpt)}`; };
 
       const buildChart = (s, e) => {
+        const L = (visible.mcap && hasMcap) ? 74 : 8, R = 40;
         const rows = all.slice(s, e + 1), closes = allCloses.slice(s, e + 1);
         const atPresent = e === totalLen - 1;
         const futureBars = atPresent ? Math.max(10, Math.round(rows.length * .15)) : 0;
@@ -104,7 +106,7 @@
         const volumes = rows.map((r) => Number(r.volume || 0));
         const bandVals = visible.bollinger ? upper.concat(lower) : [];
         const trendVals = [closes, visible.ema20 ? e20 : [], visible.ema50 ? e50 : [], visible.sma200 ? s200 : [], bandVals].flat().filter(Number.isFinite);
-        const lo = Math.min(...trendVals), hi = Math.max(...trendVals), pad = (hi - lo) * .08 || 1;
+        const lo = Math.min(...trendVals), hi = Math.max(...trendVals), pad = (hi - lo) * .05 || 1;
         const y = (v) => T + (hi + pad - v) * (H - T - B) / (hi - lo + 2 * pad);
         const path = (vals) => vals.map((v, i) => v == null ? '' : `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
         const yTicks = Array.from({ length: 5 }, (_, i) => lo - pad + i * (hi - lo + 2 * pad) / 4), xIdx = [0, .25, .5, .75, 1].map((v) => Math.round(v * (rows.length - 1)));
@@ -112,7 +114,7 @@
         const grid = yTicks.map((v) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis-label" x="${W - R + 10}" y="${y(v) + 4}">${fmt2(v)} USD</text>`).join('') + xIdx.map((i) => `<line class="grid" x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H - B}"/><text class="axis-label x-label" x="${x(i)}" y="${H - 28}">${new Date(rows[i].date + 'T00:00:00').toLocaleDateString('de-DE', dateFmt)}</text>`).join('');
         let mcapPath = '', mcapAxis = '';
         if (visible.mcap && hasMcap) {
-          const mcapVals = closes.map((c) => c * sharesOut), lo2 = Math.min(...mcapVals), hi2 = Math.max(...mcapVals), pad2 = (hi2 - lo2) * .08 || 1;
+          const mcapVals = closes.map((c) => c * sharesOut), lo2 = Math.min(...mcapVals), hi2 = Math.max(...mcapVals), pad2 = (hi2 - lo2) * .05 || 1;
           const y2 = (v) => T + (hi2 + pad2 - v) * (H - T - B) / (hi2 - lo2 + 2 * pad2);
           mcapPath = mcapVals.map((v, i) => v == null ? '' : `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y2(v).toFixed(1)}`).join(' ');
           mcapAxis = Array.from({ length: 5 }, (_, i) => lo2 - pad2 + i * (hi2 - lo2 + 2 * pad2) / 4).map((v) => `<text class="axis-label" text-anchor="end" x="${L - 10}" y="${y2(v) + 4}">${fmtMoney(v).replace(' USD', '')}</text>`).join('');
@@ -159,7 +161,7 @@
       const macdLatest = macdLineAll.at(-1), signalLatest = signalAll.at(-1);
       const macdState = (macdLatest != null && signalLatest != null) ? (macdLatest >= signalLatest ? 'Bullish' : 'Bearish') : '—';
 
-      app.innerHTML = `<div class="kicker">Technische Analyse β</div><h1 class="heading">Charting</h1>${picker(stocks, stock.symbol, 'charting', 'chartSearch')}<div class="chart-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2><b>${fmt2(tech.close)} USD</b><span class="change-badge" id="pctBadge"></span></div><nav class="range"><a class="${rangeDays === 5 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=5">1 Woche</a><a class="${rangeDays === 22 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=22">1 Monat</a><a class="${rangeDays === 252 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=252">1 Jahr</a><a class="${rangeDays === 756 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=756">3 Jahre</a><a class="${rangeDays === 1260 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=1260">5 Jahre</a></nav></div><p class="zoom-hint">Zum Zoomen mit zwei Fingern auf dem Chart pinchen (oder Mausrad), zum Verschieben ziehen. <button class="zoom-reset" id="zoomReset" hidden>Zoom zurücksetzen</button></p><div id="chartCanvas"></div><div class="legend"><span class="lg-price">Kurs</span><span class="lg-e20">EMA 20</span><span class="lg-e50">EMA 50</span><span class="lg-s200">200-Tage-Linie</span><span class="lg-bb">Bollinger-Bänder</span><span class="lg-wave">Elliott-Wellenzählung β</span><span class="lg-mcap" id="lgMcap" hidden>Marktkapitalisierung</span></div><div class="indicator-toggle" id="indicatorToggle"><button data-ind="ema20" class="on">EMA 20</button><button data-ind="ema50" class="on">EMA 50</button><button data-ind="sma200" class="on">200-Tage</button><button data-ind="bollinger">Bollinger</button><button data-ind="zones">Elliott-Zonen</button><button data-ind="rsi">RSI</button><button data-ind="macd">MACD</button><button data-ind="stoch">Stochastik</button><button data-ind="volume">Volumen</button><button data-ind="mcap"${hasMcap ? '' : ' disabled title="Fundamentaldaten für dieses Symbol noch nicht abgerufen"'}>Marktkap.</button></div><div class="side-toggle" id="sideToggle"><button data-side="long" class="${curSide === 'long' ? 'on' : ''}">Long</button><button data-side="short" class="${curSide === 'short' ? 'on' : ''}">Short</button></div><section class="technical-cards">${[['RSI 14', fmt(tech.rsi14)], ['MACD', macdState], ['Momentum', fmt(tech.momentum_score_beta, 0) + '/100'], ['Timing', fmt(tech.timing_score_beta, 0) + '/100'], ['Volatilität', fmt(tech.annualized_volatility_pct) + ' %'], ['Trendtests', tech.trend_template_tests_passed + '/8']].map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section>${hasMcap ? `<p class="data-note" id="mcapNote" hidden>Marktkapitalisierung = Kurs × zuletzt gemeldete Aktien im Umlauf (${fmt(sharesOut / 1e6, 1)} Mio., Stand ${fundMetric.data_as_of ? esc(new Date(fundMetric.data_as_of).toLocaleDateString('de-DE')) : '—'}). Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Abrufen werden nicht berücksichtigt.</p>` : ''}<article class="notice" id="chartNotice"></article>`;
+      app.innerHTML = `<div class="kicker">Technische Analyse β</div><h1 class="heading">Charting</h1>${picker(stocks, stock.symbol, 'charting', 'chartSearch')}<div class="chart-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2><b>${fmt2(tech.close)} USD</b><span class="change-badge" id="pctBadge"></span></div><nav class="range" id="rangeNav"><button class="${rangeDays === 5 ? 'on' : ''}" data-days="5">1 Woche</button><button class="${rangeDays === 22 ? 'on' : ''}" data-days="22">1 Monat</button><button class="${rangeDays === 252 ? 'on' : ''}" data-days="252">1 Jahr</button><button class="${rangeDays === 756 ? 'on' : ''}" data-days="756">3 Jahre</button><button class="${rangeDays === 1260 ? 'on' : ''}" data-days="1260">5 Jahre</button></nav></div><p class="zoom-hint">Zum Zoomen mit zwei Fingern auf dem Chart pinchen (oder Mausrad), zum Verschieben ziehen. <button class="zoom-reset" id="zoomReset" hidden>Zoom zurücksetzen</button></p><div id="chartCanvas"></div><div class="legend"><span class="lg-price">Kurs</span><span class="lg-e20">EMA 20</span><span class="lg-e50">EMA 50</span><span class="lg-s200">200-Tage-Linie</span><span class="lg-bb">Bollinger-Bänder</span><span class="lg-wave">Elliott-Wellenzählung β</span><span class="lg-mcap" id="lgMcap" hidden>Marktkapitalisierung</span></div><div class="indicator-toggle" id="indicatorToggle"><button data-ind="ema20" class="on">EMA 20</button><button data-ind="ema50" class="on">EMA 50</button><button data-ind="sma200" class="on">200-Tage</button><button data-ind="bollinger">Bollinger</button><button data-ind="zones">Elliott-Zonen</button><button data-ind="rsi">RSI</button><button data-ind="macd">MACD</button><button data-ind="stoch">Stochastik</button><button data-ind="volume">Volumen</button><button data-ind="mcap"${hasMcap ? '' : ' disabled title="Fundamentaldaten für dieses Symbol noch nicht abgerufen"'}>Marktkap.</button></div><div class="side-toggle" id="sideToggle"><button data-side="long" class="${curSide === 'long' ? 'on' : ''}">Long</button><button data-side="short" class="${curSide === 'short' ? 'on' : ''}">Short</button></div><section class="technical-cards">${[['RSI 14', fmt(tech.rsi14)], ['MACD', macdState], ['Momentum', fmt(tech.momentum_score_beta, 0) + '/100'], ['Timing', fmt(tech.timing_score_beta, 0) + '/100'], ['Volatilität', fmt(tech.annualized_volatility_pct) + ' %'], ['Trendtests', tech.trend_template_tests_passed + '/8']].map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section>${hasMcap ? `<p class="data-note" id="mcapNote" hidden>Marktkapitalisierung = Kurs × zuletzt gemeldete Aktien im Umlauf (${fmt(sharesOut / 1e6, 1)} Mio., Stand ${fundMetric.data_as_of ? esc(new Date(fundMetric.data_as_of).toLocaleDateString('de-DE')) : '—'}). Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Abrufen werden nicht berücksichtigt.</p>` : ''}<article class="notice" id="chartNotice"></article>`;
 
       const canvas = document.getElementById('chartCanvas');
       const noticeEl = document.getElementById('chartNotice');
@@ -193,6 +195,16 @@
         redraw();
       };
       zoomResetBtn.onclick = () => { winStart = defaultStart; winEnd = defaultEnd; redraw(); };
+
+      document.getElementById('rangeNav').onclick = (e) => {
+        const btn = e.target.closest('button[data-days]'); if (!btn) return;
+        const days = Number(btn.dataset.days);
+        defaultStart = Math.max(0, totalLen - days); defaultEnd = totalLen - 1;
+        winStart = defaultStart; winEnd = defaultEnd;
+        document.querySelectorAll('#rangeNav button').forEach((b) => b.classList.toggle('on', b === btn));
+        redraw();
+        const url = new URL(location.href); url.searchParams.set('days', String(days)); history.replaceState(null, '', url);
+      };
 
       const applyWindow = (s, e) => {
         let span = Math.max(minSpan, Math.min(totalLen - 1, e - s));
