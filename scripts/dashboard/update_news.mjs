@@ -23,7 +23,8 @@ function isJunk(headline, raw, link) { return JUNK_PATTERN.test(headline) || raw
 async function rssItems(sourceName, prefix, url) {
   const xml = await fetchText(url, { headers: { Accept: 'application/rss+xml, application/xml, text/xml' } });
   return (xml.match(/<item>[\s\S]*?<\/item>/gi) || []).flatMap((item) => {
-    const headline = tag(item, 'title'), raw = tag(item, 'description'), link = tag(item, 'link');
+    const headline = tag(item, 'title'), link = tag(item, 'link');
+    const raw = tag(item, 'description') || headline; // some feeds (e.g. Investing.com) carry no description
     const published = Date.parse(tag(item, 'pubDate') || tag(item, 'dc:date'));
     if (!headline || !published || published < cutoff || isJunk(headline, raw, link)) return [];
     const stock = detectStock(`${headline} ${raw}`);
@@ -34,7 +35,7 @@ const frankfurtItems = () => rssItems('Börse Frankfurt', 'bf', 'https://api.boe
 // wallstreet-online.de explicitly permits headline + excerpt + backlink reuse (not full articles);
 // strong Wall-Street/US-stock focus complements Börse Frankfurt's German-market coverage.
 const wallstreetOnlineItems = () => rssItems('wallstreet-online.de', 'wo', 'https://www.wallstreet-online.de/rss/nachrichten-alle.xml');
-const finanznachrichtenItems = () => rssItems('FinanzNachrichten.de', 'fn', 'https://www.finanznachrichten.de/rss-nachrichten-boerse.htm');
+const finanznachrichtenItems = () => rssItems('FinanzNachrichten.de', 'fn', 'https://www.finanznachrichten.de/rss-nachrichten-aktien-usa');
 const investingComItems = () => rssItems('Investing.com', 'iv', 'https://de.investing.com/rss/news_25.rss');
 function summarize(text, maxLen = 320) {
   const t = clean(text);
