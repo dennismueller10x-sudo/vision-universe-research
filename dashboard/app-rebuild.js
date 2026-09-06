@@ -85,7 +85,7 @@
       const histAll = allCloses.map((_, i) => (macdLineAll[i] == null || signalAll[i] == null) ? null : macdLineAll[i] - signalAll[i]);
       const stochKAll = allCloses.map((_, i) => { if (i < 13) return null; const hh = Math.max(...allHighs.slice(i - 13, i + 1)), ll = Math.min(...allLows.slice(i - 13, i + 1)); return hh === ll ? 50 : (allCloses[i] - ll) / (hh - ll) * 100; });
       const stochDAll = smaSeries(stochKAll, 3);
-      const W = 1000, H = 610, T = 30, B = 70;
+      const W = 1000, H = 750, T = 30, B = 70;
       const minSpan = 19;
       let defaultStart = Math.max(0, totalLen - rangeDays), defaultEnd = totalLen - 1;
       let winStart = defaultStart, winEnd = defaultEnd, curSide = side;
@@ -112,7 +112,7 @@
         const path = (vals) => vals.map((v, i) => v == null ? '' : `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
         const yTicks = Array.from({ length: 5 }, (_, i) => domainLo + i * (domainHi - domainLo) / 4), xIdx = [0, .25, .5, .75, 1].map((v) => Math.round(v * (rows.length - 1)));
         const dateFmt = rows.length <= 45 ? { day: '2-digit', month: 'short' } : { month: 'short', year: '2-digit' };
-        const grid = yTicks.map((v) => `<text class="axis-label" x="${W - R + 10}" y="${y(v) + 4}">${fmt2(v)} USD</text>`).join('') + xIdx.map((i) => `<text class="axis-label x-label" x="${x(i)}" y="${H - 28}">${new Date(rows[i].date + 'T00:00:00').toLocaleDateString('de-DE', dateFmt)}</text>`).join('');
+        const grid = yTicks.map((v) => `<text class="axis-label" x="${W - R + 10}" y="${y(v) + 4}">${fmt2(v)} USD</text>`).join('') + xIdx.map((i, idx) => `<text class="axis-label x-label" style="text-anchor:${idx === 0 ? 'start' : idx === xIdx.length - 1 ? 'end' : 'middle'}" x="${x(i)}" y="${H - 28}">${new Date(rows[i].date + 'T00:00:00').toLocaleDateString('de-DE', dateFmt)}</text>`).join('');
         let mcapPath = '', mcapAxis = '';
         if (visible.mcap && hasMcap) {
           const mcapVals = closes.map((c) => c * sharesOut), lo2 = Math.min(...mcapVals), hi2 = Math.max(...mcapVals), pad2 = (hi2 - lo2) * .05 || 1;
