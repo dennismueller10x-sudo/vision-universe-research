@@ -33,9 +33,9 @@ h1.heading{font-size:clamp(38px,6vw,60px);letter-spacing:-.06em;line-height:.95;
 .range-disabled{border-radius:12px;background:#f7f7f5;color:#bbb;padding:9px 12px;font-weight:800;font-size:13px;cursor:not-allowed}
 
 .chart-wrap{width:100%;overflow:hidden}
-.chart{width:100%;height:min(52vw,460px);display:block;border:1px solid var(--line);border-radius:20px}
+.chart{width:100%;height:min(52vw,460px);display:block}
 .chart .grid{stroke:#eee;stroke-width:1}
-.chart .axis-label{fill:#8a8a90;font-size:12px}
+.chart .axis-label{fill:#8f8f95;font-size:13px;font-weight:700}
 .chart .x-label{text-anchor:middle}
 .chart .price{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
 .chart .price.up{stroke:var(--green)}
