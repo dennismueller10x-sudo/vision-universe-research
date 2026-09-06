@@ -19,14 +19,15 @@ function pickImage(stock, headline) {
 // Wire-service filler, press-release spam and forum/community posts that these aggregators
 // syndicate alongside real editorial news — filtered out before scoring, not just ranked low.
 const JUNK_PATTERN = /^(IRW-PRESS|EQS-News|PR Newswire|GlobeNewswire|Business Wire|Sponsored|Anzeige|Werbung|Gewinnspiel|Horoskop|Rätsel|Forum:|Community:|Diskussion:|Kolumne:)/i;
-function isJunk(headline, raw) { return JUNK_PATTERN.test(headline) || raw.replace(/\s/g, '').length < 40; }
+function isJunk(headline, raw, link) { return JUNK_PATTERN.test(headline) || raw.replace(/\s/g, '').length < 40 || /utm_medium=referral|utm_campaign=intern/i.test(link || ''); }
 async function rssItems(sourceName, prefix, url) {
   const xml = await fetchText(url, { headers: { Accept: 'application/rss+xml, application/xml, text/xml' } });
   return (xml.match(/<item>[\s\S]*?<\/item>/gi) || []).flatMap((item) => {
-    const headline = tag(item, 'title'), raw = tag(item, 'description'), published = Date.parse(tag(item, 'pubDate'));
-    if (!headline || !published || published < cutoff || isJunk(headline, raw)) return [];
+    const headline = tag(item, 'title'), raw = tag(item, 'description'), link = tag(item, 'link');
+    const published = Date.parse(tag(item, 'pubDate') || tag(item, 'dc:date'));
+    if (!headline || !published || published < cutoff || isJunk(headline, raw, link)) return [];
     const stock = detectStock(`${headline} ${raw}`);
-    return [{ id: `${prefix}-${stock?.symbol || 'markt'}-${published}`, symbol: stock?.symbol || null, company: stock?.name || 'Marktbericht', market: stock ? 'US-Aktien' : 'Markt & Makro', category: stock ? 'Unternehmen' : 'Marktbericht', headline, raw_summary: raw.slice(0, 900), source: sourceName, source_url: tag(item, 'link'), image_url: pickImage(stock, headline), published_ms: published }];
+    return [{ id: `${prefix}-${stock?.symbol || 'markt'}-${published}`, symbol: stock?.symbol || null, company: stock?.name || 'Marktbericht', market: stock ? 'US-Aktien' : 'Markt & Makro', category: stock ? 'Unternehmen' : 'Marktbericht', headline, raw_summary: raw.slice(0, 900), source: sourceName, source_url: link, image_url: pickImage(stock, headline), published_ms: published }];
   });
 }
 const frankfurtItems = () => rssItems('Börse Frankfurt', 'bf', 'https://api.boerse-frankfurt.de/v1/feeds/news.rss');
@@ -34,7 +35,7 @@ const frankfurtItems = () => rssItems('Börse Frankfurt', 'bf', 'https://api.boe
 // strong Wall-Street/US-stock focus complements Börse Frankfurt's German-market coverage.
 const wallstreetOnlineItems = () => rssItems('wallstreet-online.de', 'wo', 'https://www.wallstreet-online.de/rss/nachrichten-alle.xml');
 const finanznachrichtenItems = () => rssItems('FinanzNachrichten.de', 'fn', 'https://www.finanznachrichten.de/rss-nachrichten-boerse.htm');
-const investingComItems = () => rssItems('Investing.com', 'iv', 'https://de.investing.com/rss/news_301.rss');
+const investingComItems = () => rssItems('Investing.com', 'iv', 'https://de.investing.com/rss/news_25.rss');
 function summarize(text, maxLen = 320) {
   const t = clean(text);
   if (t.length <= maxLen) return t;
