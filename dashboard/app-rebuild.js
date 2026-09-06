@@ -95,7 +95,7 @@
         const L = (visible.mcap && hasMcap) ? 74 : 8, R = 48;
         const rows = all.slice(s, e + 1), closes = allCloses.slice(s, e + 1);
         const atPresent = e === totalLen - 1;
-        const futureBars = atPresent ? Math.max(10, Math.round(rows.length * .15)) : 0;
+        const futureBars = (atPresent && visible.zones) ? Math.max(10, Math.round(rows.length * .15)) : 0;
         const domainLen = Math.max(1, rows.length - 1 + futureBars);
         const x = (i) => L + i * (W - L - R) / domainLen;
         const slice = (arr) => arr.slice(s, e + 1);
