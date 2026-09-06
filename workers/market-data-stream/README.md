@@ -79,5 +79,5 @@ connection and up to 8 subscribed symbols — enough to stream one actively
 viewed chart. If the account's websocket access is exhausted or unavailable,
 the worker's `/stream` endpoint closes with a 4xxx code and the frontend
 provider (`dashboard/services/market-data/TwelveDataProvider.js`) automatically
-falls back to REST polling of `/quote` every 10 seconds — the dashboard never
+falls back to REST polling of `/quote` every 30 seconds — the dashboard never
 crashes, it just shows `DELAYED` instead of `LIVE`.

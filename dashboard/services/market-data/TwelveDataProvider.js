@@ -3,7 +3,7 @@ import { MarketDataProvider, isValidPriceUpdate } from './MarketDataProvider.js'
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
 const MAX_WS_ATTEMPTS = 5;
-const POLL_INTERVAL_MS = 10000;
+const POLL_INTERVAL_MS = 30000;
 
 // Close codes the market-data worker uses to signal "don't bother retrying the
 // websocket, the upstream refused it" (auth failure, plan doesn't include
