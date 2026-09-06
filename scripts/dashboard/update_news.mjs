@@ -46,7 +46,9 @@ function buildArticles(items) {
 }
 const normalizeHeadline = (h) => h.toLowerCase().normalize('NFKD').replace(/[^a-z0-9äöüß ]/g, '').replace(/\s+/g, ' ').trim();
 const MIN_RELEVANCE = 40, MIN_ARTICLES = 4;
-const feeds = await Promise.allSettled([frankfurtItems(), wallstreetOnlineItems(), finanznachrichtenItems(), investingComItems()]);
+const sourceCalls = [['Börse Frankfurt', frankfurtItems], ['wallstreet-online.de', wallstreetOnlineItems], ['FinanzNachrichten.de', finanznachrichtenItems], ['Investing.com', investingComItems]];
+const feeds = await Promise.allSettled(sourceCalls.map(([, fn]) => fn()));
+feeds.forEach((r, idx) => { const [name] = sourceCalls[idx]; console.log(r.status === 'fulfilled' ? `${name}: ${r.value.length} Rohtreffer` : `${name}: FEHLER — ${r.reason}`); });
 const seenUrl = new Set(), seenHeadline = new Set();
 const deduped = feeds.flatMap((r) => r.status === 'fulfilled' ? r.value : []).sort((a, b) => score(b) - score(a)).filter((i) => {
   const urlKey = i.source_url || null, headKey = normalizeHeadline(i.headline);
