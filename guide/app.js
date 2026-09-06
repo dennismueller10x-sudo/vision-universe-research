@@ -1,7 +1,7 @@
 (async function () {
   const app = document.querySelector('#app');
   const params = new URLSearchParams(location.search);
-  const rangeDays = [22, 252, 756].includes(Number(params.get('days'))) ? Number(params.get('days')) : 252;
+  const rangeDays = [5, 22, 252, 756, 1260].includes(Number(params.get('days'))) ? Number(params.get('days')) : 252;
   const get = (path) => fetch('/dashboard/' + path, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(path); return r.json(); });
   const esc = (v) => String(v == null ? '—' : v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = (v, d = 1) => v == null || !Number.isFinite(Number(v)) ? '—' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -9,6 +9,7 @@
   const fmtMoney = (v) => { const n = Number(v); if (v == null || !Number.isFinite(n)) return '—'; const abs = Math.abs(n); if (abs >= 1e12) return fmt(n / 1e12, 2) + ' Bio. USD'; if (abs >= 1e9) return fmt(n / 1e9, 2) + ' Mrd. USD'; if (abs >= 1e6) return fmt(n / 1e6, 1) + ' Mio. USD'; return fmt(n, 2) + ' USD'; };
   const fmtRatio = (v) => v == null || !Number.isFinite(Number(v)) ? '—' : fmt(v, 2) + ' x';
   const fmtPct = (v) => v == null || !Number.isFinite(Number(v)) ? '—' : fmt(v, 1) + ' %';
+  const fmtChange = (v) => v == null || !Number.isFinite(Number(v)) ? '' : (v >= 0 ? '+' : '') + fmt(v, 2) + ' %';
   const pick = (tdValue, legacyValue, formatter) => (tdValue != null && Number.isFinite(Number(tdValue))) ? formatter(tdValue) : (legacyValue != null ? norm(legacyValue) : '—');
 
   try {
@@ -25,9 +26,11 @@
 
     const picker = `<section class="picker"><input class="search" id="guideSearch" placeholder="Aktie oder Symbol suchen"><div class="stock-buttons">${stocks.map((s) => `<a class="stock-button ${s.symbol === stock.symbol ? 'selected' : ''}" data-search="${esc((s.symbol + ' ' + s.name).toLowerCase())}" href="?symbol=${s.symbol}&days=${rangeDays}"><b>${s.symbol}</b><span>${esc(s.name)}</span></a>`).join('')}</div></section>`;
 
-    let chartHtml, legendHtml = '', noteHtml = '';
+    let chartHtml, legendHtml = '', noteHtml = '', pctChange = null, priceDir = 'up';
     if (closes.length >= 2) {
       const start = Math.max(0, candles.length - rangeDays), rows = candles.slice(start), rowCloses = closes.slice(start);
+      pctChange = rowCloses[0] ? (rowCloses[rowCloses.length - 1] - rowCloses[0]) / rowCloses[0] * 100 : null;
+      priceDir = (pctChange == null || pctChange >= 0) ? 'up' : 'down';
       const lo = Math.min(...rowCloses), hi = Math.max(...rowCloses), pad = (hi - lo) * .08 || 1;
       const W = 1000, H = 460, L = 74, R = hasMcap ? 96 : 40, T = 24, B = 60;
       const x = (i) => L + i * (W - L - R) / (rows.length - 1), y = (v) => T + (hi + pad - v) * (H - T - B) / (hi - lo + 2 * pad);
@@ -43,13 +46,13 @@
         legendHtml = `<span class="lg-mcap">Marktkapitalisierung</span>`;
         noteHtml = `<p class="data-note">Marktkapitalisierung = Kurs × zuletzt gemeldete Aktien im Umlauf (${fmt(sharesOut / 1e6, 1)} Mio., Stand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : '—'}). Rückkäufe/Kapitalerhöhungen zwischen zwei Fundamental-Abrufen werden nicht berücksichtigt.</p>`;
       }
-      chartHtml = `<div class="chart-wrap"><svg class="chart" viewBox="0 0 ${W} ${H}">${grid}${mcapAxis}${overlay ? `<path class="mcap" d="${mcapPath}"/>` : ''}<path class="price" d="${pathWith(rowCloses, y)}"/></svg></div><div class="legend"><span class="lg-price">Kurs</span>${legendHtml}</div>${noteHtml}`;
+      chartHtml = `<div class="chart-wrap"><svg class="chart" viewBox="0 0 ${W} ${H}">${grid}${mcapAxis}${overlay ? `<path class="mcap" d="${mcapPath}"/>` : ''}<path class="price ${priceDir}" d="${pathWith(rowCloses, y)}"/></svg></div><div class="legend"><span class="lg-price">Kurs</span>${legendHtml}</div>${noteHtml}`;
     } else {
       chartHtml = `<article class="notice">Für ${esc(stock.symbol)} liegen noch keine Kursdaten vor. Diese werden über den bestehenden wöchentlichen Dashboard-Workflow befüllt, sobald das Symbol dort mit läuft.</article>`;
     }
 
     const lastClose = closes.length ? closes[closes.length - 1] : null;
-    const rangeNav = `<nav class="range"><a class="${rangeDays === 22 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=22">1 Monat</a><a class="${rangeDays === 252 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=252">1 Jahr</a><a class="${rangeDays === 756 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=756">3 Jahre</a>${hasMcap ? `<a class="${overlay ? 'on' : ''}" href="?symbol=${stock.symbol}&days=${rangeDays}${overlay ? '' : '&overlay=mcap'}">+ Marktkap.</a>` : `<span class="range-disabled" title="Fundamentaldaten für ${esc(stock.symbol)} noch nicht abgerufen">+ Marktkap.</span>`}</nav>`;
+    const rangeNav = `<nav class="range"><a class="${rangeDays === 5 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=5">1 Woche</a><a class="${rangeDays === 22 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=22">1 Monat</a><a class="${rangeDays === 252 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=252">1 Jahr</a><a class="${rangeDays === 756 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=756">3 Jahre</a><a class="${rangeDays === 1260 ? 'on' : ''}" href="?symbol=${stock.symbol}&days=1260">5 Jahre</a>${hasMcap ? `<a class="${overlay ? 'on' : ''}" href="?symbol=${stock.symbol}&days=${rangeDays}${overlay ? '' : '&overlay=mcap'}">+ Marktkap.</a>` : `<span class="range-disabled" title="Fundamentaldaten für ${esc(stock.symbol)} noch nicht abgerufen">+ Marktkap.</span>`}</nav>`;
 
     const fcfYield = (metric.free_cash_flow_ttm != null && metric.market_capitalization) ? fmtPct(metric.free_cash_flow_ttm / metric.market_capitalization * 100) : (legacy.fcf_yield != null ? norm(legacy.fcf_yield) : '—');
     const metricRows = [
@@ -76,7 +79,7 @@
       ['Free Cashflow (TTM)', fmtMoney(metric.free_cash_flow_ttm)]
     ];
 
-    app.innerHTML = `<div class="kicker">Aktien Guide</div><h1 class="heading">Guide</h1>${picker}<div class="stock-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2>${lastClose != null ? `<b>${fmt(lastClose, 2)} USD</b>` : ''}</div>${rangeNav}</div>${chartHtml}<h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${metricRows.map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><p class="data-note">Datenstand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : esc(fundamentals.legacy_data_as_of || 'unbekannt')} · Twelve-Data-Felder manuell angestoßen, übrige Kennzahlen recherchiert (${esc(fundamentals.legacy_sources || '—')}). Nicht verfügbare Werte werden nicht geschätzt.</p>`;
+    app.innerHTML = `<div class="kicker">Aktien Guide</div><h1 class="heading">Guide</h1>${picker}<div class="stock-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2>${lastClose != null ? `<b>${fmt(lastClose, 2)} USD</b>${pctChange != null ? `<span class="change-badge ${priceDir}">${priceDir === 'up' ? '▲' : '▼'} ${fmtChange(pctChange)}</span>` : ''}` : ''}</div>${rangeNav}</div>${chartHtml}<h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${metricRows.map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><p class="data-note">Datenstand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : esc(fundamentals.legacy_data_as_of || 'unbekannt')} · Twelve-Data-Felder manuell angestoßen, übrige Kennzahlen recherchiert (${esc(fundamentals.legacy_sources || '—')}). Nicht verfügbare Werte werden nicht geschätzt.</p>`;
 
     const input = document.getElementById('guideSearch');
     if (input) input.oninput = () => document.querySelectorAll('.stock-button').forEach((el) => { el.hidden = !el.dataset.search.includes(input.value.toLowerCase()); });
