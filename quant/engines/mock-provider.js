@@ -179,7 +179,8 @@
           dayIndex: dataset.dayIndex,
           series: dataset.prices,
           benchmark: dataset.benchmark,
-          volumeAt: volumeAt
+          volumeAt: volumeAt,
+          sharesAtIndex: sharesAtIndex
         }, provenanceFor(opts.to));
       },
 
@@ -287,27 +288,55 @@
       _dataset: dataset
     };
 
-    /* Deterministisches Volumen aus Kurs und Turnover-Rate statt einer
-       weiteren 21-MB-Zeitreihe. */
+    /* Deterministisches Volumen aus Kurs, Aktienzahl und Turnover-Rate
+       statt einer weiteren 21-MB-Zeitreihe. Die Aktienzahl aendert sich nur
+       quartalsweise, deshalb werden Aenderungspunkte einmal je Security
+       gecached und per Binaersuche gelesen — sonst wuerde jeder
+       Rebalancing-Termin eines Backtests erneut linear ueber alle Perioden
+       laufen. */
+    var sharesPointsCache = Object.create(null);
+
+    function sharesPoints(securityId) {
+      var cached = sharesPointsCache[securityId];
+      if (cached) return cached;
+      var periods = (dataset.financials[securityId] || [])
+        .filter(function (p) { return Number.isFinite(p.values.sharesOutstanding); })
+        .slice()
+        .sort(function (a, b) { return a.availableAt < b.availableAt ? -1 : 1; });
+      var points = [];
+      periods.forEach(function (p) {
+        var idx = indexAtOrBefore(p.availableAt);
+        if (idx < 0) idx = 0;
+        var lastPoint = points[points.length - 1];
+        if (lastPoint && lastPoint.t === idx) lastPoint.shares = p.values.sharesOutstanding;
+        else points.push({ t: idx, shares: p.values.sharesOutstanding });
+      });
+      sharesPointsCache[securityId] = points;
+      return points;
+    }
+
+    function sharesAtIndex(securityId, t) {
+      var points = sharesPoints(securityId);
+      if (!points.length) return 100;
+      if (t < points[0].t) return points[0].shares;
+      var lo = 0, hi = points.length - 1, best = 0;
+      while (lo <= hi) {
+        var mid = (lo + hi) >> 1;
+        if (points[mid].t <= t) { best = mid; lo = mid + 1; } else { hi = mid - 1; }
+      }
+      return points[best].shares;
+    }
+
     function volumeAt(securityId, t) {
       var profile = dataset.profileById[securityId];
       var series = dataset.prices[securityId];
       if (!profile || !series) return 0;
-      var price = series.close[t] || 1;
-      var shares = sharesAt(securityId, dataset.tradingDays[t]);
+      var shares = sharesAtIndex(securityId, t);
       var wobble = 0.7 + 0.6 * ((Math.sin(t * 0.37 + profile.index) + 1) / 2);
       return Math.max(1000, shares * 1e6 * profile.turnoverRate * wobble);
-      function sharesAt(id, date) {
-        var periods = dataset.financials[id] || [];
-        var latest = null;
-        for (var i = 0; i < periods.length; i++) {
-          var p = periods[i];
-          if (p.availableAt <= date && p.values.sharesOutstanding &&
-             (!latest || p.periodEnd > latest.periodEnd)) latest = p;
-        }
-        return latest ? latest.values.sharesOutstanding : 100;
-      }
     }
+
+    api.sharesAtIndex = sharesAtIndex;
 
     return api;
   }

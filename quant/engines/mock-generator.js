@@ -94,13 +94,13 @@
   // Archetypen — realistische Streuung statt Gleichverteilung (§12)
   // ---------------------------------------------------------------------
   var ARCHETYPES = {
-    compounder:  { share: 0.16, growth: [0.06, 0.14], grossMargin: [0.52, 0.74], opMargin: [0.20, 0.34], capitalIntensity: [0.05, 0.12], vol: [0.19, 0.29], beta: [0.75, 1.05], alpha:  0.00020, leverage: [0.2, 1.6], payout: 0.55, valuationPremium: [1.25, 1.85] },
-    hypergrowth: { share: 0.12, growth: [0.20, 0.48], grossMargin: [0.55, 0.80], opMargin: [-0.05, 0.16], capitalIntensity: [0.08, 0.20], vol: [0.38, 0.62], beta: [1.20, 1.75], alpha:  0.00026, leverage: [-0.5, 0.8], payout: 0.00, valuationPremium: [1.90, 3.30] },
-    steady:      { share: 0.20, growth: [0.02, 0.08], grossMargin: [0.30, 0.52], opMargin: [0.10, 0.20], capitalIntensity: [0.06, 0.14], vol: [0.15, 0.24], beta: [0.65, 0.95], alpha:  0.00008, leverage: [0.8, 2.6], payout: 0.45, valuationPremium: [0.85, 1.25] },
-    cyclical:    { share: 0.16, growth: [-0.06, 0.18], grossMargin: [0.18, 0.36], opMargin: [0.03, 0.16], capitalIntensity: [0.12, 0.26], vol: [0.28, 0.44], beta: [1.15, 1.60], alpha:  0.00004, leverage: [1.2, 3.4], payout: 0.30, valuationPremium: [0.55, 0.95] },
-    defensive:   { share: 0.12, growth: [0.01, 0.06], grossMargin: [0.32, 0.50], opMargin: [0.11, 0.21], capitalIntensity: [0.05, 0.11], vol: [0.11, 0.18], beta: [0.40, 0.70], alpha:  0.00006, leverage: [1.0, 2.8], payout: 0.62, valuationPremium: [0.90, 1.30] },
-    deepValue:   { share: 0.12, growth: [-0.03, 0.05], grossMargin: [0.16, 0.32], opMargin: [0.04, 0.12], capitalIntensity: [0.10, 0.22], vol: [0.24, 0.38], beta: [0.90, 1.35], alpha: -0.00004, leverage: [1.6, 3.8], payout: 0.40, valuationPremium: [0.32, 0.58] },
-    laggard:     { share: 0.12, growth: [-0.12, 0.02], grossMargin: [0.14, 0.30], opMargin: [-0.04, 0.08], capitalIntensity: [0.10, 0.24], vol: [0.30, 0.50], beta: [1.00, 1.45], alpha: -0.00021, leverage: [2.0, 4.5], payout: 0.20, valuationPremium: [0.30, 0.62] }
+    compounder:  { share: 0.16, growth: [0.06, 0.14], grossMargin: [0.52, 0.74], opMargin: [0.20, 0.34], capitalIntensity: [0.05, 0.12], vol: [0.19, 0.29], beta: [0.75, 1.05], alpha:  0.00020, leverage: [0.2, 1.6], payout: 0.55, growthTarget: 0.080, valuationPremium: [1.25, 1.85] },
+    hypergrowth: { share: 0.12, growth: [0.20, 0.48], grossMargin: [0.55, 0.80], opMargin: [-0.05, 0.16], capitalIntensity: [0.08, 0.20], vol: [0.38, 0.62], beta: [1.20, 1.75], alpha:  0.00026, leverage: [-0.5, 0.8], payout: 0.00, growthTarget: 0.160, valuationPremium: [1.90, 3.30] },
+    steady:      { share: 0.20, growth: [0.02, 0.08], grossMargin: [0.30, 0.52], opMargin: [0.10, 0.20], capitalIntensity: [0.06, 0.14], vol: [0.15, 0.24], beta: [0.65, 0.95], alpha:  0.00008, leverage: [0.8, 2.6], payout: 0.45, growthTarget: 0.040, valuationPremium: [0.85, 1.25] },
+    cyclical:    { share: 0.16, growth: [-0.06, 0.18], grossMargin: [0.18, 0.36], opMargin: [0.03, 0.16], capitalIntensity: [0.12, 0.26], vol: [0.28, 0.44], beta: [1.15, 1.60], alpha:  0.00004, leverage: [1.2, 3.4], payout: 0.30, growthTarget: 0.050, valuationPremium: [0.55, 0.95] },
+    defensive:   { share: 0.12, growth: [0.01, 0.06], grossMargin: [0.32, 0.50], opMargin: [0.11, 0.21], capitalIntensity: [0.05, 0.11], vol: [0.11, 0.18], beta: [0.40, 0.70], alpha:  0.00006, leverage: [1.0, 2.8], payout: 0.62, growthTarget: 0.030, valuationPremium: [0.90, 1.30] },
+    deepValue:   { share: 0.12, growth: [-0.03, 0.05], grossMargin: [0.16, 0.32], opMargin: [0.04, 0.12], capitalIntensity: [0.10, 0.22], vol: [0.24, 0.38], beta: [0.90, 1.35], alpha: -0.00004, leverage: [1.6, 3.8], payout: 0.40, growthTarget: 0.015, valuationPremium: [0.32, 0.58] },
+    laggard:     { share: 0.12, growth: [-0.12, 0.02], grossMargin: [0.14, 0.30], opMargin: [-0.04, 0.08], capitalIntensity: [0.10, 0.24], vol: [0.30, 0.50], beta: [1.00, 1.45], alpha: -0.00021, leverage: [2.0, 4.5], payout: 0.20, growthTarget: -0.020, valuationPremium: [0.30, 0.62] }
   };
   var ARCHETYPE_IDS = Object.keys(ARCHETYPES);
 
@@ -159,15 +159,15 @@
   // ---------------------------------------------------------------------
   var FIXTURES = [
     { fixtureId: "MOCK_HIGH_QUALITY",     ticker: "VUF001", archetype: "compounder",  purpose: "Sehr hohe Quality-Komponenten — prueft die obere Kante der Quality-Normalisierung.",
-      overrides: { opMargin: 0.36, grossMargin: 0.72, growth: 0.11, leverage: 0.3, vol: 0.20, beta: 0.85, alpha: 0.00024 } },
+      overrides: { opMargin: 0.36, grossMargin: 0.72, growth: 0.11, growthTarget: 0.10, leverage: 0.3, vol: 0.20, beta: 0.85, alpha: 0.00024 } },
     { fixtureId: "MOCK_HIGH_MOMENTUM",    ticker: "VUF002", archetype: "hypergrowth", purpose: "Anhaltend starke Kursentwicklung nahe dem 52-Wochen-Hoch.",
-      overrides: { alpha: 0.00090, vol: 0.34, beta: 1.25, growth: 0.30 } },
+      overrides: { alpha: 0.00040, vol: 0.26, beta: 1.15, growth: 0.30, growthTarget: 0.22, recentDrift: 0.00200, recentDriftDays: 340 } },
     { fixtureId: "MOCK_HIGH_GROWTH",      ticker: "VUF003", archetype: "hypergrowth", purpose: "Extremes Umsatzwachstum bei duenner Marge — Growth ohne Quality.",
-      overrides: { growth: 0.46, opMargin: 0.02, grossMargin: 0.62, vol: 0.52, beta: 1.55 } },
+      overrides: { growth: 0.46, growthTarget: 0.30, opMargin: 0.02, grossMargin: 0.62, vol: 0.52, beta: 1.55 } },
     { fixtureId: "MOCK_DEEP_VALUE",       ticker: "VUF004", archetype: "deepValue",   purpose: "Sehr niedrige Bewertung bei intakter Cash-Erzeugung.",
-      overrides: { valuationPremium: 0.28, opMargin: 0.10, growth: 0.02 } },
+      overrides: { valuationPremium: 0.28, opMargin: 0.10, growth: 0.02, growthTarget: 0.02 } },
     { fixtureId: "MOCK_VALUE_TRAP",       ticker: "VUF005", archetype: "laggard",     purpose: "Optisch guenstig, aber schrumpfend und mit negativem Momentum — der Screener darf das nicht als Value-Chance ausgeben.",
-      overrides: { valuationPremium: 0.30, growth: -0.11, opMargin: 0.01, marginTrend: -0.010, alpha: -0.00075, leverage: 4.0 } },
+      overrides: { valuationPremium: 0.30, growth: -0.09, growthTarget: -0.06, opMargin: 0.09, marginTrend: -0.16, alpha: -0.00030, leverage: 3.4, recentDrift: -0.00105, recentDriftDays: 320 } },
     { fixtureId: "MOCK_LOW_VOL",          ticker: "VUF006", archetype: "defensive",   purpose: "Sehr niedrige Volatilitaet — obere Kante des Risk-Faktors.",
       overrides: { vol: 0.085, beta: 0.32, growth: 0.03 } },
     { fixtureId: "MOCK_MISSING_DATA",     ticker: "VUF007", archetype: "steady",      purpose: "Mehrere Fundamentalkennzahlen fehlen — der Titel darf KEINEN vollstaendigen Quant Score bekommen, sondern muss als INCOMPLETE erscheinen (§21).",
@@ -216,8 +216,16 @@
       valuationPremium: between(rand, a.valuationPremium),
       /* Margentrend erzeugt Margenausweitung/-erosion und damit einen
          echten marginExpansion-Faktor statt einer Zufallszahl. */
-      marginTrend: (rand() - 0.45) * 0.010,
+      /* marginTrend beschreibt die Gesamtverschiebung der operativen Marge
+         ueber den Lebenszyklus (in Prozentpunkten/100), nicht pro Jahr. */
+      marginTrend: (rand() - 0.45) * 0.16,
       growthDecay: 0.90 + rand() * 0.09,
+      /* Langfristiges Wachstumsniveau, gegen das das Anfangswachstum
+         konvergiert. Ohne diesen Parameter waeren nach 20 Jahren alle
+         Unternehmen gleich schnell und der Growth-Faktor haette im
+         Querschnitt keine Streuung mehr. */
+      growthTarget: a.growthTarget + (rand() - 0.5) * 0.040,
+      marginTarget: 0,   // wird direkt nach den Overrides aus opMargin + marginTrend gesetzt
       /* Startumsatz log-normal verteilt: viele mittelgrosse, wenige sehr
          grosse Titel — wie in einem realen Querschnitt. */
       startRevenue: Math.exp(4.6 + 1.55 * Hash.gaussian(rand)) * 60,
@@ -232,12 +240,19 @@
       restatement: (fixture && fixture.restatement) || null,
       futureFact: (fixture && fixture.futureFact) || null,
       corporateAction: (fixture && fixture.corporateAction) || null,
-      purpose: fixture ? fixture.purpose : null
+      purpose: fixture ? fixture.purpose : null,
+      /* recentDrift verschiebt die Bewertungsabweichung der letzten
+         Handelstage gezielt. Nur Fixtures nutzen das: MOCK_HIGH_MOMENTUM und
+         MOCK_VALUE_TRAP muessen ihr Verhalten im aktuellen Fenster zeigen,
+         nicht nur im 20-Jahres-Mittel. */
+      recentDrift: 0,
+      recentDriftDays: 0
     };
 
     if (fixture && fixture.overrides) {
       Object.keys(fixture.overrides).forEach(function (k) { p[k] = fixture.overrides[k]; });
     }
+    p.marginTarget = Math.max(-0.20, Math.min(0.46, p.opMargin + p.marginTrend));
     if (fixture && fixture.delistOn) {
       p.lastTradingDate = fixture.delistOn;
       p.status = "delisted";
@@ -266,10 +281,13 @@
   function buildFinancials(profile, startYear, endDate, seed) {
     var rand = Hash.mulberry32(Hash.seedFromString(seed + "|fin|" + profile.ticker));
     var periods = [];
-    var revenue = profile.startRevenue / 4;          // Quartalsumsatz
+    var trendRevenue = profile.startRevenue / 4;     // Quartalsumsatz auf dem Wachstumspfad
     var growth = profile.growth;
     var opMargin = profile.opMargin;
-    var totalAssets = revenue * 4 * (1.1 + rand() * 1.6);
+    /* Bilanzsumme als Vielfaches des Jahresumsatzes. Der Faktor bestimmt die
+       Kapitalumschlagshaeufigkeit und damit direkt das ROIC-Niveau des
+       Universums; 0,65-1,8 entspricht einer plausiblen Bandbreite. */
+    var totalAssets = trendRevenue * 4 * (0.65 + rand() * 1.15);
     /* Aktienzahl und Startkurs werden NICHT frei gewuerfelt, sondern aus
        den ersten Fundamentaldaten und der Bewertungspraemie des Archetyps
        abgeleitet. Sonst waeren Kurs, Marktkapitalisierung, Dividende und
@@ -285,15 +303,23 @@
       for (var q = 0; q < 4; q++) {
         var periodEnd = year + QUARTER_ENDS[q][1];
         if (periodEnd > endDate) continue;
-        if (periodEnd < profile.firstTradingDate) { revenue *= 1 + growth / 4; continue; }
+        if (periodEnd < profile.firstTradingDate) { trendRevenue *= 1 + growth / 4; continue; }
         if (profile.lastTradingDate && periodEnd > profile.lastTradingDate) continue;
 
-        /* Wachstum konvergiert langfristig, Margen driften mit dem
-           Margentrend, beides mit Quartalsrauschen. */
-        var noise = 1 + (rand() - 0.5) * 0.09;
-        revenue = revenue * (1 + growth / 4) * noise;
-        growth = growth * profile.growthDecay + 0.045 * (1 - profile.growthDecay);
-        opMargin = Math.max(-0.35, Math.min(0.50, opMargin + profile.marginTrend / 4 + (rand() - 0.5) * 0.006));
+        /* Der Umsatz folgt einem sauberen Wachstumspfad; das Quartalsrauschen
+           wirkt nur auf das einzelne Quartal und nicht auf den Pfad selbst.
+           Multiplikatives Rauschen auf dem Level waere ein Random Walk: nach
+           80 Quartalen haette der Umsatz mit dem Wachstumsprofil des Titels
+           nichts mehr zu tun, und der Growth-Faktor wuerde kumuliertes
+           Rauschen messen statt Wachstum. */
+        trendRevenue = trendRevenue * (1 + growth / 4);
+        var revenue = trendRevenue * (1 + (rand() - 0.5) * 0.055);
+        growth = growth * profile.growthDecay + profile.growthTarget * (1 - profile.growthDecay);
+        /* Die Marge laeuft asymptotisch auf ein Zielniveau zu, statt 20
+           Jahre linear zu driften. Ein konstanter Trend haette jede Marge
+           gegen ihre Klammergrenze laufen lassen. */
+        opMargin = Math.max(-0.30, Math.min(0.48,
+          opMargin + (profile.marginTarget - opMargin) * 0.025 + (rand() - 0.5) * 0.006));
 
         var grossProfit = revenue * profile.grossMargin;
         var operatingIncome = revenue * opMargin;
@@ -306,9 +332,14 @@
         var capex = revenue * profile.capitalIntensity;
         var workingCapitalChange = revenue * growth * 0.14;
         var freeCashFlow = operatingIncome + da - capex - workingCapitalChange - Math.max(0, pretax) * 0.21;
-        totalAssets = totalAssets * (1 + growth / 4 * 0.85) + capex * 0.4;
-        var totalEquity = Math.max(revenue * 0.4, totalAssets - Math.max(0, netDebt) - revenue * 0.9);
-        var investedCapital = Math.max(revenue * 0.5, totalEquity + Math.max(0, netDebt));
+        /* Die Bilanz waechst mit dem Geschaeft. Ein zusaetzlicher
+           CapEx-Aufschlag wuerde die Kapitalumschlagshaeufigkeit ueber 20
+           Jahre systematisch verschlechtern und ROIC kuenstlich druecken. */
+        totalAssets = totalAssets * (1 + growth / 4);
+        var totalEquity = Math.max(revenue * 0.4, totalAssets - Math.max(0, netDebt) - revenue * 0.7);
+        /* Invested Capital = Eigenkapital + Nettoverschuldung, also das
+           betrieblich gebundene Kapital ohne kurzfristige Verbindlichkeiten. */
+        var investedCapital = Math.max(revenue * 1.2, totalEquity + Math.max(0, netDebt));
         if (shares === null) {
           var annualNet = netIncome * 4;
           var annualRev = revenue * 4;
@@ -559,6 +590,7 @@
     for (var t = startIdx; t <= endIdx; t++) {
       if (t > startIdx) {
         dev = OU_PERSISTENCE * dev + profile.beta * marketReturns[t] + idioVol * Hash.gaussian(rand);
+        if (profile.recentDrift && t > endIdx - profile.recentDriftDays) dev += profile.recentDrift;
       }
       var elapsed = t - startIdx;
       var rerating = MAX_RERATING * Math.tanh(profile.alpha * 0.45 * elapsed / MAX_RERATING);

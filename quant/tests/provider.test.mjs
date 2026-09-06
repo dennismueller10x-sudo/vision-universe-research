@@ -1,5 +1,5 @@
 // Provider- und Mock-Datensatz-Tests.
-// Ausfuehren: node --test quant/tests/
+// Ausfuehren: node --test "quant/tests/*.test.mjs"
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
