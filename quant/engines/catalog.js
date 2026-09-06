@@ -173,26 +173,43 @@
   }
   function operator(op) { return OPERATORS[op] || null; }
 
-  /** Formatierung eines Wertes gemaess seiner Unit — UI und AI-Erklaerung
-      benutzen dieselbe Funktion, damit Zahlen nirgends anders aussehen. */
-  function formatValue(fieldId, value) {
-    if (value === null || value === undefined || !Number.isFinite(value)) return "–";
+  /**
+   * Strukturierte Formatierungsteile eines Wertes.
+   *
+   * Der Grund fuer diese Trennung: Zahl und Einheit muessen getrennt
+   * bleiben, damit die Lokalisierung nur die Zahl anfasst. Ein naiver
+   * Austausch von "." und "," im fertigen String macht aus "$1.3 Mrd."
+   * ein "$1,3 Mrd," — der Punkt der Abkuerzung wird mitgetauscht.
+   *
+   * @returns {{value:number, digits:number, prefix:string, suffix:string}|null}
+   */
+  function formatParts(fieldId, value) {
+    if (value === null || value === undefined || !Number.isFinite(value)) return null;
     var fd = FIELDS[fieldId];
-    if (!fd) return String(value);
+    if (!fd) return { value: value, digits: 2, prefix: "", suffix: "" };
     switch (fd.unit) {
-      case "pct":   return (Math.round(value * 10) / 10).toFixed(1) + " %";
-      case "pctl":  return Math.round(value) + ". Perzentil";
-      case "score": return String(Math.round(value * 10) / 10);
-      case "x":     return (Math.round(value * 10) / 10).toFixed(1) + "x";
-      case "usd":   return "$" + (Math.round(value * 100) / 100).toFixed(2);
-      case "usd_m": return value >= 1000
-        ? "$" + (Math.round(value / 100) / 10).toFixed(1) + " Mrd."
-        : "$" + Math.round(value) + " Mio.";
-      case "ratio": return (Math.round(value * 100) / 100).toFixed(2);
-      case "years": return Math.round(value) + " J.";
-      case "count": return String(Math.round(value));
-      default:      return String(value);
+      case "pct":   return { value: value, digits: 1, prefix: "", suffix: " %" };
+      case "pctl":  return { value: value, digits: 0, prefix: "", suffix: ". Perzentil" };
+      case "score": return { value: value, digits: 1, prefix: "", suffix: "" };
+      case "x":     return { value: value, digits: 1, prefix: "", suffix: "x" };
+      case "usd":   return { value: value, digits: 2, prefix: "$", suffix: "" };
+      case "usd_m":
+        if (Math.abs(value) >= 1000000) return { value: value / 1000000, digits: 2, prefix: "$", suffix: " Bio." };
+        if (Math.abs(value) >= 1000)    return { value: value / 1000, digits: 1, prefix: "$", suffix: " Mrd." };
+        return { value: value, digits: 0, prefix: "$", suffix: " Mio." };
+      case "count_m": return { value: value, digits: 1, prefix: "", suffix: " Mio." };
+      case "ratio": return { value: value, digits: 2, prefix: "", suffix: "" };
+      case "years": return { value: value, digits: 0, prefix: "", suffix: " J." };
+      case "count": return { value: value, digits: 0, prefix: "", suffix: "" };
+      default:      return { value: value, digits: 2, prefix: "", suffix: "" };
     }
+  }
+
+  /** Formatierung mit Punkt als Dezimaltrennzeichen (Engine-/Testkontext). */
+  function formatValue(fieldId, value) {
+    var p = formatParts(fieldId, value);
+    if (!p) return "–";
+    return p.prefix + p.value.toFixed(p.digits) + p.suffix;
   }
 
   var api = {
@@ -205,7 +222,8 @@
     fieldsByCategory: fieldsByCategory,
     componentsOfFactor: componentsOfFactor,
     operator: operator,
-    formatValue: formatValue
+    formatValue: formatValue,
+    formatParts: formatParts
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
