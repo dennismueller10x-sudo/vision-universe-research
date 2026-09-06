@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: DEBUG source probe (temporary)
+        run: node scripts/dashboard/debug_news_sources.mjs
       - name: Fetch primary-source news
         run: node scripts/dashboard/update_news.mjs
       - name: Commit fresh news data
