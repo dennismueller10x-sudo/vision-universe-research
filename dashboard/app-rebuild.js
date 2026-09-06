@@ -5,7 +5,7 @@
   const selected = params.get('symbol') || 'NVDA';
   const rangeDays = [22, 252, 756, 1260].includes(Number(params.get('days'))) ? Number(params.get('days')) : 756;
   const side = params.get('side') === 'short' ? 'short' : 'long';
-  const get = (path) => fetch('/dashboard/' + path).then((r) => { if (!r.ok) throw new Error(path); return r.json(); });
+  const get = (path) => fetch('/dashboard/' + path, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(path); return r.json(); });
   const esc = (v) => String(v == null ? '—' : v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = (v, d = 1) => v == null || !Number.isFinite(Number(v)) ? '—' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
   const norm = (v) => esc(String(v == null ? '—' : v).replace(/percent/gi, '%').replace(/ratio/gi, 'x'));
