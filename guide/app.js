@@ -34,11 +34,11 @@
         priceDir = (pctChange == null || pctChange >= 0) ? 'up' : 'down';
         const lo = Math.min(...rowCloses), hi = Math.max(...rowCloses), pad = (hi - lo) * .05 || 1;
         const domainLo = Math.max(0, lo - pad), domainHi = hi + pad;
-        const W = 1000, H = 460, L = overlayOn ? 74 : 8, R = 48, T = 24, B = 60;
+        const W = 1000, H = 750, L = overlayOn ? 74 : 8, R = 48, T = 24, B = 60;
         const x = (i) => L + i * (W - L - R) / (rows.length - 1), y = (v) => T + (domainHi - v) * (H - T - B) / (domainHi - domainLo);
         const pathWith = (vals, yFn) => vals.map((v, i) => v == null ? '' : `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${yFn(v).toFixed(1)}`).join(' ');
         const yTicks = Array.from({ length: 5 }, (_, i) => domainLo + i * (domainHi - domainLo) / 4), xIdx = [0, .25, .5, .75, 1].map((v) => Math.round(v * (rows.length - 1)));
-        const grid = yTicks.map((v) => `<text class="axis-label" x="${W - R + 10}" y="${y(v) + 4}">${fmt(v, 2)} USD</text>`).join('') + xIdx.map((i) => `<text class="axis-label x-label" x="${x(i)}" y="${H - 18}">${new Date(rows[i].date + 'T00:00:00').toLocaleDateString('de-DE', { month: 'short', year: '2-digit' })}</text>`).join('');
+        const grid = yTicks.map((v) => `<text class="axis-label" x="${W - R + 10}" y="${y(v) + 4}">${fmt(v, 2)} USD</text>`).join('') + xIdx.map((i, idx) => `<text class="axis-label x-label" style="text-anchor:${idx === 0 ? 'start' : idx === xIdx.length - 1 ? 'end' : 'middle'}" x="${x(i)}" y="${H - 18}">${new Date(rows[i].date + 'T00:00:00').toLocaleDateString('de-DE', { month: 'short', year: '2-digit' })}</text>`).join('');
         let mcapAxis = '', mcapPath = '';
         if (overlayOn) {
           const mcap = rowCloses.map((c) => c * sharesOut), lo2 = Math.min(...mcap), hi2 = Math.max(...mcap), pad2 = (hi2 - lo2) * .05 || 1;
