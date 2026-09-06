@@ -5,7 +5,7 @@
     ['Dashboard', '/dashboard/'], ['Guide', '/guide/'], ['ETF', '/etf/'],
     ['Hedgefonds', '/hedgefonds/'], ['Analysten', '/analysten/'], ['Macro', '/macro/'],
     ['Magazin', '/magazin/'], ['Morning', '/morning/'], ['Reports', '/reports/xpeng/'],
-    ['Academy', '/academy/']
+    ['Academy', '/academy/'], ['Budget', '/budget/']
   ];
   class VisionNavigation extends HTMLElement {
     connectedCallback() {
