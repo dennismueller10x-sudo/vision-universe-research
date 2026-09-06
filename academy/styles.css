@@ -1,0 +1,67 @@
+/* Vision Universe Academy — landing page.
+   Shared primitives (type scale, evidence tags, dark palette) live in
+   academy/shell/experience-shell.css. This file only adds landing-page-
+   specific layout: question grid, world cards, featured pilot, connected
+   section. */
+
+.vu-a-questions{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:24px;
+}
+.vu-a-question-card{
+  position:relative;padding:20px 20px 22px;border-radius:14px;
+  background:var(--vu-acad-bg-card);border:1px solid var(--vu-acad-line);
+  text-decoration:none;color:var(--vu-acad-text);
+  transition:border-color .15s ease, transform .15s ease;
+}
+.vu-a-question-card.is-available:hover{border-color:var(--vu-acad-accent);transform:translateY(-2px);}
+.vu-a-question-card.is-planned{opacity:.62;cursor:default;}
+.vu-a-question-text{font-size:16.5px;font-weight:600;line-height:1.4;letter-spacing:-.005em;}
+.vu-a-question-badge{
+  display:inline-block;margin-top:14px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;
+}
+.vu-a-question-card.is-available .vu-a-question-badge{background:rgba(47,214,143,.15);color:#6bf0bb;}
+.vu-a-question-card.is-planned .vu-a-question-badge{background:rgba(255,255,255,.06);color:var(--vu-acad-text-faint);}
+
+.vu-a-pilot{
+  margin-top:24px;padding:34px 32px;border-radius:20px;
+  background:linear-gradient(135deg,rgba(251,122,60,.14),rgba(251,122,60,0) 60%),var(--vu-acad-bg-card);
+  border:1px solid rgba(251,122,60,.35);
+  display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;
+}
+.vu-a-pilot-copy{max-width:56ch}
+.vu-a-pilot-cta{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;
+  padding:14px 22px;border-radius:12px;background:var(--vu-acad-accent);color:#1a1204;
+  font-weight:700;font-size:14.5px;text-decoration:none;white-space:nowrap;
+}
+.vu-a-pilot-cta:hover{filter:brightness(1.08)}
+
+.vu-a-worlds{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:24px;
+}
+.vu-a-world-card{
+  padding:18px 20px 20px;border-radius:14px;
+  background:var(--vu-acad-bg-card);border:1px solid var(--vu-acad-line);
+  border-top:3px solid var(--vu-world-accent, var(--vu-acad-accent));
+}
+.vu-a-world-title{font-size:15px;font-weight:700;margin:0 0 6px;letter-spacing:-.005em}
+.vu-a-world-summary{font-size:13px;color:var(--vu-acad-text-muted);line-height:1.5;margin:0 0 12px;}
+.vu-a-world-nodes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.vu-a-world-node{font-size:11px;color:var(--vu-acad-text-faint);background:var(--vu-acad-bg-elevated);border:1px solid var(--vu-acad-line);border-radius:999px;padding:3px 9px;}
+.vu-a-world-status{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.vu-a-world-status.is-available{color:#6bf0bb}
+.vu-a-world-status.is-planned{color:var(--vu-acad-text-faint)}
+
+.vu-a-connected{
+  margin-top:24px;padding:28px;border-radius:16px;
+  background:var(--vu-acad-bg-card);border:1px solid var(--vu-acad-line);
+}
+.vu-a-graph{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:18px;font-size:13px;}
+.vu-a-graph-node{padding:10px 16px;border-radius:10px;background:var(--vu-acad-bg-elevated);border:1px solid var(--vu-acad-line);color:var(--vu-acad-text-muted);}
+.vu-a-graph-node.is-center{color:var(--vu-acad-text);border-color:var(--vu-acad-accent);font-weight:600;}
+.vu-a-graph-arrow{color:var(--vu-acad-text-faint);}
+
+@media(max-width:640px){
+  .vu-a-pilot{padding:26px 22px;}
+}

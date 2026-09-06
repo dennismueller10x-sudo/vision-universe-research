@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "note": "Concept Registry (Phase 1 subset). Jedes Konzept hat genau eine Definition, die von jeder Academy Experience und spaeter von anderen Vision-Universe-Produkten wiederverwendet werden soll, statt dieselbe Kennzahl mehrfach unterschiedlich zu definieren.",
+  "concepts": {
+    "revenue": {
+      "title": "Revenue (Umsatz)",
+      "shortDefinition": "Der Wert der Waren/Dienstleistungen, die ein Unternehmen in einer Periode verkauft hat, vor Abzug jeglicher Kosten.",
+      "formula": "Revenue = Menge × Preis (aggregiert über alle Produkte/Segmente)",
+      "relatedConcepts": ["gross-profit", "operating-income"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "cogs": {
+      "title": "Cost of Goods Sold (Herstellungskosten)",
+      "shortDefinition": "Direkte Kosten, die unmittelbar mit der Erstellung des verkauften Produkts/der Dienstleistung zusammenhängen.",
+      "formula": "COGS = Revenue − Gross Profit",
+      "relatedConcepts": ["revenue", "gross-profit", "inventory"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "gross-profit": {
+      "title": "Gross Profit (Bruttogewinn)",
+      "shortDefinition": "Was vom Umsatz übrig bleibt, nachdem die direkten Herstellungskosten abgezogen wurden.",
+      "formula": "Gross Profit = Revenue − COGS",
+      "relatedConcepts": ["revenue", "cogs", "operating-income"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "operating-expenses": {
+      "title": "Operating Expenses (Opex)",
+      "shortDefinition": "Vertriebs-, Verwaltungs- und Forschungskosten, die zum Betrieb des Geschäfts nötig sind, aber nicht direkt in der Herstellung anfallen.",
+      "formula": "Opex (hier ohne D&A) reduziert Gross Profit zu Operating Income",
+      "relatedConcepts": ["gross-profit", "operating-income"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "operating-income": {
+      "title": "Operating Income (EBIT)",
+      "shortDefinition": "Operatives Ergebnis aus dem Kerngeschäft, vor Steuern und vor Finanzierungseffekten.",
+      "formula": "Operating Income = Gross Profit − Opex − D&A",
+      "relatedConcepts": ["gross-profit", "operating-expenses", "depreciation-amortization", "net-income"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "net-income": {
+      "title": "Net Income (Jahresüberschuss)",
+      "shortDefinition": "Der buchhalterische Gewinn nach allen Kosten und Steuern — nicht identisch mit Cashflow.",
+      "formula": "Net Income = Operating Income − Taxes (vereinfachtes Modell ohne Fremdkapitalzinsen)",
+      "relatedConcepts": ["operating-income", "operating-cash-flow", "free-cash-flow"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "depreciation-amortization": {
+      "title": "Depreciation & Amortization (D&A)",
+      "shortDefinition": "Nicht-zahlungswirksame buchhalterische Verteilung vergangener Investitionsausgaben über deren Nutzungsdauer.",
+      "formula": "Reduziert Operating Income, wird in der Cashflow-Rechnung als Non-Cash-Add-back wieder hinzugerechnet.",
+      "relatedConcepts": ["capex", "operating-cash-flow"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "stock-based-compensation": {
+      "title": "Stock-Based Compensation (SBC)",
+      "shortDefinition": "Mitarbeitervergütung in Aktien statt Cash. Im Cashflow ein Non-Cash-Add-back, ökonomisch aber eine reale Verwässerung bestehender Aktionäre.",
+      "formula": "CFO-Add-back, erhöht die Aktienzahl außerhalb dieses Modells — nicht kostenlos.",
+      "relatedConcepts": ["operating-cash-flow", "net-income"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "working-capital": {
+      "title": "Working Capital (Nettoumlaufvermögen)",
+      "shortDefinition": "Kapital, das im laufenden Geschäft gebunden ist — vor allem in Forderungen und Vorräten, teilweise finanziert durch Verbindlichkeiten.",
+      "formula": "Net Working Capital = Accounts Receivable + Inventory − Accounts Payable",
+      "relatedConcepts": ["accounts-receivable", "inventory", "accounts-payable", "operating-cash-flow"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "accounts-receivable": {
+      "title": "Accounts Receivable (Forderungen)",
+      "shortDefinition": "Umsatz, der bereits verbucht, aber vom Kunden noch nicht bezahlt wurde.",
+      "formula": "AR ≈ Revenue × Days Sales Outstanding / 365",
+      "relatedConcepts": ["working-capital", "revenue"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "inventory": {
+      "title": "Inventory (Vorräte)",
+      "shortDefinition": "Bereits bezahlte, aber noch nicht verkaufte Waren — gebundenes Kapital.",
+      "formula": "Inventory ≈ COGS × Days Inventory Outstanding / 365",
+      "relatedConcepts": ["working-capital", "cogs"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "accounts-payable": {
+      "title": "Accounts Payable (Verbindlichkeiten)",
+      "shortDefinition": "Vom Unternehmen selbst noch nicht bezahlte Lieferantenrechnungen — eine Finanzierungsquelle des Working Capital.",
+      "formula": "AP ≈ COGS × Days Payable Outstanding / 365",
+      "relatedConcepts": ["working-capital", "cogs"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "capex": {
+      "title": "Capital Expenditures (CapEx)",
+      "shortDefinition": "Investitionsausgaben in langlebige Vermögenswerte (Anlagen, Ausrüstung, Software) — im Cashflow-Statement, nicht im Income Statement.",
+      "formula": "Reduziert Free Cash Flow, ohne Net Income direkt zu berühren.",
+      "relatedConcepts": ["depreciation-amortization", "free-cash-flow"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "FACT"
+    },
+    "operating-cash-flow": {
+      "title": "Operating Cash Flow (CFO)",
+      "shortDefinition": "Tatsächlicher Zahlungsmittelzufluss aus dem operativen Geschäft — Net Income korrigiert um Non-Cash-Posten und Working-Capital-Veränderungen.",
+      "formula": "CFO = Net Income + D&A + SBC − Δ Working Capital",
+      "relatedConcepts": ["net-income", "working-capital", "free-cash-flow"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    },
+    "free-cash-flow": {
+      "title": "Free Cash Flow (FCF)",
+      "shortDefinition": "Cash, der nach nötigen Investitionen für Aktionäre, Schuldenabbau oder weiteres Wachstum übrig bleibt.",
+      "formula": "FCF = Operating Cash Flow − CapEx",
+      "relatedConcepts": ["operating-cash-flow", "capex", "cash-conversion"],
+      "worlds": ["financial-statements-accounting-quality", "forecasting-valuation-expectations"],
+      "evidenceType": "MODEL"
+    },
+    "cash-conversion": {
+      "title": "Cash Conversion",
+      "shortDefinition": "Wie viel des buchhalterischen Gewinns tatsächlich als Cashflow ankommt — ein Qualitätsmerkmal, das immer im Kontext von Wachstumsphase und Kapitalintensität zu lesen ist, nicht isoliert.",
+      "formula": "Cash Conversion = Operating Cash Flow / Net Income",
+      "relatedConcepts": ["operating-cash-flow", "net-income", "free-cash-flow"],
+      "worlds": ["financial-statements-accounting-quality"],
+      "evidenceType": "MODEL"
+    }
+  }
+}

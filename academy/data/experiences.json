@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "note": "Experience Registry. Der Academy Shell/Landingpage-Code liest ausschliesslich diese Datei, um Karten zu rendern — eine neue Experience wird hinzugefuegt, indem hier ein Eintrag ergaenzt wird, nicht indem die Landingpage umgebaut wird.",
+  "experiences": [
+    {
+      "id": "follow-the-money",
+      "slug": "follow-the-money",
+      "path": "/academy/experiences/follow-the-money/",
+      "title": "Follow the Money",
+      "editorialHook": "Ein Unternehmen meldet Rekordgewinne. Warum landet trotzdem kaum Geld in der Kasse?",
+      "shortDescription": "Vom Umsatz zum echten Cashflow — verändere Wachstum, Margen und Working Capital und beobachte live, was Gewinn wird und was Cash bleibt.",
+      "world": "financial-statements-accounting-quality",
+      "engine": "financial-model-engine",
+      "prerequisiteConcepts": ["revenue", "gross-profit", "operating-income"],
+      "relatedConcepts": ["net-income", "working-capital", "capex", "stock-based-compensation", "operating-cash-flow", "free-cash-flow", "cash-conversion"],
+      "visionUniverseIntegrations": ["Aktienreports (Free Cash Flow, Earnings Quality)", "Screener (Cash-Conversion-Filter, geplant)"],
+      "status": "available",
+      "featured": true
+    },
+    {
+      "id": "why-did-the-stock-fall",
+      "slug": "why-did-the-stock-fall",
+      "path": null,
+      "title": "Why Did the Stock Fall?",
+      "editorialHook": "Rekordumsatz. Rekordgewinn. Aktie −14 %. Was hat sich wirklich verändert?",
+      "shortDescription": "Was war erwartet, was wurde berichtet, was hat sich an der Zukunft verändert — mit Causal-Confidence-Kennzeichnung statt vorgetäuschter Kausalität.",
+      "world": "forecasting-valuation-expectations",
+      "engine": "evidence-document-engine",
+      "prerequisiteConcepts": ["net-income"],
+      "relatedConcepts": [],
+      "visionUniverseIntegrations": ["Aktienreports (Consensus, Guidance)", "News", "Analysten"],
+      "status": "planned",
+      "featured": false
+    },
+    {
+      "id": "how-diversified-are-you-really",
+      "slug": "how-diversified-are-you-really",
+      "path": null,
+      "title": "How Diversified Are You Really?",
+      "editorialHook": "Besitzt du 20 Investments – oder nur drei Risiken?",
+      "shortDescription": "Portfolio X-Ray für Konzentration, Korrelation, Sektor- und Länder-Exposure.",
+      "world": "portfolio-construction-risk",
+      "engine": "portfolio-engine",
+      "prerequisiteConcepts": [],
+      "relatedConcepts": [],
+      "visionUniverseIntegrations": ["ETF-Vergleich", "zukünftiges Portfolio Tool"],
+      "status": "planned",
+      "featured": false
+    }
+  ]
+}
