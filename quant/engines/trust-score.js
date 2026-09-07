@@ -189,7 +189,13 @@
       var triggered =
         (cap.id === "noPointInTime" && !caps.pointInTimeFundamentals) ||
         (cap.id === "noDelisted" && !caps.delistedSecurities) ||
-        (cap.id === "optimizedNoOos" && context.userOptimized && !context.outOfSample);
+        (cap.id === "optimizedNoOos" && context.userOptimized && !context.outOfSample) ||
+        /* Ein Lauf ohne je gehaltene Position ist kein Backtest mit dem
+           Ergebnis 0 %, sondern gar kein Backtest. Er darf keine Punktzahl
+           bekommen, die nach einem belastbaren Test aussieht. */
+        (cap.id === "neverInvested" && caps.everInvested === false) ||
+        (cap.id === "mostlyCash" && caps.everInvested !== false &&
+         isNum(caps.timeInvestedPct) && caps.timeInvestedPct < 50);
       if (!triggered) return;
       appliedCaps.push({ id: cap.id, label: cap.label, maxScore: cap.maxScore });
       capped = Math.min(capped, cap.maxScore);
@@ -214,6 +220,19 @@
 
   function buildLimitations(blocks, appliedCaps, caps) {
     var out = [];
+    if (caps.everInvested === false) {
+      out.push({
+        label: "Kein investiertes Kapital", status: "fail",
+        note: "Die Strategie hielt zu keinem Zeitpunkt eine Position. Saemtliche Kennzahlen dieses Laufs " +
+              "beschreiben ein unveraendertes Barmittelkonto, nicht die Regeln."
+      });
+    } else if (isNum(caps.timeInvestedPct) && caps.timeInvestedPct < 100) {
+      out.push({
+        label: "Nicht durchgehend investiert", status: "partial",
+        note: "An " + round(100 - caps.timeInvestedPct, 1) + " % der Handelstage lag das Portfolio ganz oder " +
+              "teilweise in Barmitteln. Das daempft sowohl Rendite als auch Drawdown."
+      });
+    }
     Object.keys(blocks).forEach(function (key) {
       blocks[key].checks.forEach(function (c) {
         if (c.status !== "pass" && c.note) out.push({ label: c.label, status: c.status, note: c.note });

@@ -29,7 +29,9 @@
       if (v === null || v === undefined || v === false) return;
       if (k === "class") node.className = v;
       else if (k === "text") node.textContent = v;
-      else if (k === "html") node.innerHTML = v;
+      /* Bewusst kein "html"-Attribut: el() setzt ausschliesslich textContent.
+         Eine innerHTML-Hintertuer wird frueher oder spaeter mit Provider- oder
+         Nutzerdaten benutzt, und dann ist sie eine XSS-Luecke. */
       else if (k.slice(0, 2) === "on" && typeof v === "function") node.addEventListener(k.slice(2), v);
       else if (k === "dataset") Object.keys(v).forEach(function (d) { node.dataset[d] = v[d]; });
       else node.setAttribute(k, v === true ? "" : String(v));
@@ -56,13 +58,43 @@
   }
 
   // ----------------------------------------------------------------- Laden
-  function loadJSON(path) {
+  /**
+   * Laedt eine JSON-Datei und merkt sich das ERGEBNIS — niemals einen
+   * Fehlschlag. Wuerde die abgelehnte Promise im Cache bleiben, waere eine
+   * einzige verlorene Anfrage endgueltig: jeder weitere Aufruf bekaeme
+   * dieselbe Ablehnung zurueck, und die Seite liesse sich nur durch Neuladen
+   * reparieren. Mit echten Providerdaten sind voruebergehende Fehler der
+   * Normalfall, nicht die Ausnahme.
+   */
+  function loadJSON(path, options) {
+    options = options || {};
     if (cache[path]) return cache[path];
-    cache[path] = fetch(path, { cache: "no-cache" }).then(function (res) {
-      if (!res.ok) throw new Error("Konnte " + path + " nicht laden (HTTP " + res.status + ")");
-      return res.json();
+    var attempts = options.attempts === undefined ? 3 : options.attempts;
+
+    function attempt(remaining, delay) {
+      return fetch(path, { cache: "no-cache" }).then(function (res) {
+        if (!res.ok) {
+          var err = new Error("Konnte " + path + " nicht laden (HTTP " + res.status + ")");
+          err.status = res.status;
+          throw err;
+        }
+        return res.json();
+      }).catch(function (err) {
+        /* 4xx ausser 408/429 sind dauerhaft — ein erneuter Versuch aendert
+           nichts und verzoegert die Fehlermeldung nur. */
+        var permanent = err.status >= 400 && err.status < 500 && err.status !== 408 && err.status !== 429;
+        if (remaining <= 1 || permanent) throw err;
+        return new Promise(function (resolve) { setTimeout(resolve, delay); })
+          .then(function () { return attempt(remaining - 1, delay * 2); });
+      });
+    }
+
+    var pending = attempt(attempts, 400).catch(function (err) {
+      delete cache[path];        // Fehlschlag nicht konservieren
+      throw err;
     });
-    return cache[path];
+    cache[path] = pending;
+    return pending;
   }
 
   var DATA_FILES = {

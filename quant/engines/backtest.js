@@ -398,6 +398,11 @@
     var holdings = Object.create(null);          // securityId -> {shares, sector, ticker}
     var equity = [], equityDates = [], trades = [], rebalanceLog = [], positionsHistory = [];
     var turnoverSum = 0, rebalanceCount = 0;
+    /* Wie viele Handelstage war ueberhaupt Kapital investiert? Ein Lauf, der
+       nie eine Position hielt, ist kein Ergebnis von 0 % Rendite — er ist gar
+       kein Test. Ohne diese Zaehlung liefe er als flache Equity-Kurve mit
+       CAGR 0 % durch und saehe wie eine gueltige Auswertung aus. */
+    var investedDays = 0;
 
     for (var t = startIdx; t <= endIdx; t++) {
       var day = tradingDays[t];
@@ -451,7 +456,9 @@
       }
 
       /* 3) Bewertung zum Tagesschluss. */
-      var value = valueOf(holdings, pricePanel, t) + cash;
+      var positionValue = valueOf(holdings, pricePanel, t);
+      if (positionValue > 0) investedDays++;
+      var value = positionValue + cash;
       equity.push(value);
       equityDates.push(day);
       if (decisionIdx !== undefined) {
@@ -489,6 +496,48 @@
     metrics.tradeCount = trades.length;
     metrics.totalCosts = round(trades.reduce(function (s, tr) { return s + tr.costs; }, 0), 2);
     metrics.hitRate = hitRate(equity, equityDates, rebalanceLog);
+    metrics.investedDays = investedDays;
+    metrics.timeInvestedPct = equity.length ? round((investedDays / equity.length) * 100, 1) : 0;
+
+    /* Warnungen gehoeren ins Ergebnis, nicht in die Konsole. Die
+       Ergebnisseite und der Trust Score muessen sie auswerten koennen. */
+    var warnings = [];
+    if (investedDays === 0) {
+      warnings.push({
+        code: "never_invested",
+        severity: "critical",
+        message: rebalanceCount === 0
+          ? "Im gewaehlten Zeitraum lag kein Rebalancing-Termin. Es wurde nie eine Position eroeffnet — " +
+            "die ausgewiesene Rendite von 0 % ist kein Testergebnis, sondern das Fehlen eines Tests."
+          : "Die Strategieregeln haben an keinem der " + rebalanceCount + " Rebalancing-Termine einen " +
+            "investierbaren Titel geliefert. Es wurde nie eine Position eroeffnet — die ausgewiesene " +
+            "Rendite von 0 % ist kein Testergebnis, sondern das Fehlen eines Tests."
+      });
+    } else if (metrics.timeInvestedPct < 50) {
+      warnings.push({
+        code: "mostly_cash",
+        severity: "high",
+        message: "Das Portfolio war nur an " + metrics.timeInvestedPct + " % der Handelstage investiert. " +
+                 "Die Kennzahlen beschreiben ueberwiegend gehaltene Barmittel, nicht die Strategie."
+      });
+    }
+    var emptyRebalances = rebalanceLog.filter(function (r) { return r.selected === 0; }).length;
+    if (emptyRebalances > 0 && investedDays > 0) {
+      warnings.push({
+        code: "empty_rebalances",
+        severity: "notable",
+        message: emptyRebalances + " von " + rebalanceLog.length + " Rebalancing-Terminen lieferten keinen " +
+                 "einzigen investierbaren Titel. In diesen Perioden lag das Portfolio in Barmitteln."
+      });
+    }
+    if (rebalanceCount > 0 && rebalanceCount < 8) {
+      warnings.push({
+        code: "few_rebalances",
+        severity: "notable",
+        message: "Nur " + rebalanceCount + " Rebalancing-Termine im Zeitraum. Das ist zu wenig, um aus dem " +
+                 "Ergebnis auf die Tragfaehigkeit der Regeln zu schliessen."
+      });
+    }
 
     var executionAssumptions = {
       timing: definition.execution.timing,
@@ -549,8 +598,13 @@
         averageHoldings: metrics.averageHoldings,
         annualTurnoverPct: metrics.turnover,
         subperiodAnalysis: true,
+        /* Beweisgrundlage fuer den Trust Score: war der Lauf ueberhaupt ein Test? */
+        everInvested: investedDays > 0,
+        timeInvestedPct: metrics.timeInvestedPct,
+        emptyRebalances: emptyRebalances,
         isMock: true
       },
+      warnings: warnings,
       equity: { dates: equityDates, values: equity.map(function (v) { return round(v, 2); }) },
       benchmark: benchmarkSeries ? {
         benchmarkId: btCfg.benchmark.defaultBenchmarkId,
@@ -687,7 +741,12 @@
       universeSize: selection.universeSize,
       screenedCount: selection.screenedCount,
       eligibleCount: selection.eligibleCount,
-      statement: "Diese Unternehmen erfuellen aktuell die Regeln der Strategie.",
+      /* Bei null Treffern darf hier nicht stehen "diese Unternehmen erfuellen
+         die Regeln" — es gibt keine. */
+      statement: selection.candidates.length
+        ? "Diese Unternehmen erfuellen aktuell die Regeln der Strategie."
+        : "Zum aktuellen Datenstand erfuellt kein Unternehmen des Modelluniversums die Regeln dieser Strategie.",
+      empty: selection.candidates.length === 0,
       holdings: selection.candidates.map(function (c, i) {
         return {
           rank: i + 1, securityId: c.securityId, ticker: c.ticker, name: c.name,

@@ -88,6 +88,10 @@
         "reale historische Wertentwicklung." })
     ]));
 
+    /* Warnungen stehen VOR den Kennzahlen. Ein Lauf, der nie investiert war,
+       darf nicht erst unterhalb einer Equity-Kurve relativiert werden. */
+    var warningBlock = warningsSection(run);
+    if (warningBlock) root.appendChild(warningBlock);
     root.appendChild(headlineMetrics(m));
     root.appendChild(equitySection(run));
     root.appendChild(drawdownSection(run));
@@ -103,6 +107,29 @@
     root.appendChild(el("div", { style: "margin-top:26px" }, [
       C.askBar("Frage zu diesem Backtest …", run.backtestId)
     ]));
+  }
+
+  function warningsSection(run) {
+    var warnings = run.warnings || [];
+    if (!warnings.length) return null;
+    var critical = warnings.filter(function (w) { return w.severity === "critical"; });
+    var box = el("div", {
+      class: critical.length ? "q-state q-state--error" : "q-mock-banner",
+      style: "margin-top:22px", role: critical.length ? "alert" : "note"
+    });
+    if (critical.length) {
+      box.appendChild(el("b", { text: "Dieser Lauf ist kein belastbares Testergebnis" }));
+      box.appendChild(el("ul", { style: "margin:8px 0 0;padding-left:20px;line-height:1.6" },
+        warnings.map(function (w) { return el("li", { text: w.message }); })));
+    } else {
+      box.appendChild(el("span", { class: "q-mock-dot" }));
+      box.appendChild(el("div", {}, [
+        el("b", { text: "Einschraenkungen dieses Laufs" }),
+        el("ul", { style: "margin:6px 0 0;padding-left:18px;line-height:1.55" },
+          warnings.map(function (w) { return el("li", { text: w.message }); }))
+      ]));
+    }
+    return box;
   }
 
   function headlineMetrics(m) {
@@ -164,7 +191,9 @@
       { label: "Turnover", value: fmtPct(m.turnover), hint: "einseitig pro Jahr" },
       { label: "Transaktionskosten", value: Number.isFinite(m.totalCosts) ? "$" + S.num(m.totalCosts, 0) : "–", hint: m.tradeCount + " Trades" },
       { label: "Trefferquote", value: fmtPct(m.hitRate), hint: "Perioden mit positivem Ergebnis" },
-      { label: "Positionen", value: S.num(m.averageHoldings, 1), hint: "im Durchschnitt" }
+      { label: "Positionen", value: S.num(m.averageHoldings, 1), hint: "im Durchschnitt" },
+      { label: "Investiert", value: Number.isFinite(m.timeInvestedPct) ? S.num(m.timeInvestedPct, 1) + " %" : "–",
+        hint: "der Handelstage mit offener Position" }
     ]));
   }
 
@@ -264,6 +293,11 @@
   function currentHoldingsSection(run) {
     var ch = run.currentHoldings;
     if (!ch) return el("div", {});
+    if (!ch.holdings.length) {
+      return C.section("Was die Strategie heute halten wuerde", null,
+        S.stateBox("Kein Titel erfuellt die Regeln", ch.statement + " Das ist ein Ergebnis der Regeln, " +
+          "kein Datenfehler — eine zu enge Filterkombination kann im gesamten Universum leer ausgehen.", "empty"));
+    }
     return C.section("Was die Strategie heute halten wuerde",
       ch.statement + " Der Datenstand ist " + S.formatDate(ch.asOf) + "; " + ch.screenedCount +
       " von " + ch.universeSize + " Titeln erfuellen die Filter, " + ch.eligibleCount + " sind rankbar.",

@@ -48,7 +48,9 @@
   "hardCaps": [
     { "id": "noPointInTime",   "condition": "pointInTimeFundamentals === false", "maxScore": 60, "label": "Keine Point-in-Time-Fundamentaldaten" },
     { "id": "noDelisted",      "condition": "delistedSecurities === false",      "maxScore": 70, "label": "Keine delisteten Titel im Universum" },
-    { "id": "optimizedNoOos",  "condition": "userOptimized && !outOfSample",     "maxScore": 75, "label": "Optimierte Strategie ohne Out-of-Sample-Validierung" }
+    { "id": "optimizedNoOos",  "condition": "userOptimized && !outOfSample",     "maxScore": 75, "label": "Optimierte Strategie ohne Out-of-Sample-Validierung" },
+    { "id": "neverInvested",   "condition": "everInvested === false",           "maxScore": 5,  "label": "Es wurde nie eine Position gehalten - kein Testergebnis" },
+    { "id": "mostlyCash",      "condition": "timeInvestedPct < 50",             "maxScore": 40, "label": "Ueberwiegend Barmittel statt investierter Strategie" }
   ],
   "sampleQualityThresholds": {
     "historyFullPointsYears": 15,

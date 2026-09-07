@@ -49,6 +49,11 @@
 
   var cache = {};
 
+  var STORAGE_ERROR =
+    "Speichern im Browser fehlgeschlagen. Der lokale Speicher ist voll oder in diesem Modus gesperrt " +
+    "(private Fenster blockieren ihn haeufig). Loesche aeltere Backtests oder oeffne die Seite in einem " +
+    "normalen Fenster.";
+
   function data(name) {
     if (!cache[name]) cache[name] = S.loadJSON(S.BASE + S.DATA_FILES[name]);
     return cache[name];
@@ -147,7 +152,12 @@
     var record = Strategy.createStrategy(fields);
     var own = loadStore(STRATEGY_STORE_KEY, []);
     own.unshift(record);
-    saveStore(STRATEGY_STORE_KEY, own.slice(0, 40));
+    /* Ein fehlgeschlagener Schreibvorgang darf nicht als Erfolg gemeldet
+       werden — der Nutzer wuerde sonst weitergeleitet und faende seine
+       Strategie nicht wieder. */
+    if (!saveStore(STRATEGY_STORE_KEY, own.slice(0, 40))) {
+      return Promise.resolve({ ok: false, route: ROUTES.createStrategy, errors: [STORAGE_ERROR] });
+    }
     return Promise.resolve({ ok: true, route: ROUTES.createStrategy, record: record, warnings: validation.warnings });
   }
 
@@ -161,7 +171,9 @@
         var idx = own.findIndex(function (r) { return r.strategy.strategyId === strategyId; });
         if (idx >= 0) own[idx] = updated;
         else own.unshift(updated);   // abgeleitet von einer Bibliotheksstrategie
-        saveStore(STRATEGY_STORE_KEY, own.slice(0, 40));
+        if (!saveStore(STRATEGY_STORE_KEY, own.slice(0, 40))) {
+          return { ok: false, route: ROUTES.createVersion, errors: [STORAGE_ERROR] };
+        }
         return { ok: true, route: ROUTES.createVersion, record: updated,
                  version: updated.versions[updated.versions.length - 1] };
       } catch (err) {
@@ -245,6 +257,7 @@
       executionAssumptions: result.executionAssumptions,
       definition: result.definition,
       capabilities: result.capabilities,
+      warnings: result.warnings || [],
       metrics: result.metrics,
       equity: thinSeries(result.equity, result.benchmark, result.metrics.drawdownSeries),
       benchmarkLabel: result.benchmark ? result.benchmark.label : null,

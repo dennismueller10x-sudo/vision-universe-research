@@ -1,2 +1,12 @@
 scripts/hedgefonds/__pycache__/
 scripts/dashboard/__pycache__/
+
+# Phase 2 — Zugangsdaten fuer Marktdatenanbieter.
+# Der Schluessel gehoert in die Umgebung oder in ein GitHub-Secret,
+# niemals in das Repository. Siehe docs/VU_MARKET_DATA_ARCHITECTURE.md.
+.env
+.env.*
+!.env.example
+*.key
+secrets.json
+providers/**/credentials.json
