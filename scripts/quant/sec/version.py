@@ -9,7 +9,12 @@ Bump the matching constant whenever the behaviour it names changes.
 NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 
 # Semantics of period assignment, YTD de-accumulation and PIT resolution.
-NORMALIZATION_LOGIC_VERSION = "1.0.0"
+#
+# 1.1.0 — cover-date instants (dei:EntityCommonStockSharesOutstanding) are
+#         assigned to the last CLOSED reporting period instead of the period
+#         their cover date falls into; a standalone quarter is no longer
+#         reconstructed from cumulative periods that are out of order.
+NORMALIZATION_LOGIC_VERSION = "1.1.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -23,6 +28,36 @@ PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
 
 # Data quality rule set.
 QUALITY_RULES_VERSION = "1.0.0"
+
+
+# Files whose content defines NORMALIZATION_LOGIC_VERSION. Changing any of them
+# changes the meaning of stored facts, so the version above has to move with
+# them — otherwise `pipeline._is_current` treats a cached factbook as current
+# and the new logic never runs. That happened once: a cover-date fix was
+# deployed, every run reported success, and nothing was re-normalized.
+# test_version_discipline.py turns that into a failing test instead.
+NORMALIZATION_SOURCES = (
+    "normalize.py", "fiscal.py", "periods.py", "derived.py", "canonical.py",
+)
+
+# sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
+# bumped. Update BOTH together.
+NORMALIZATION_SOURCE_DIGEST = (
+    "24c65dba1211f05d4854c74b67841b3f1934c4254466f068dfdff28d824cd8c3"
+)
+
+
+def normalization_source_digest():
+    """Hash of the modules that define normalization semantics."""
+    import hashlib
+    from pathlib import Path
+
+    here = Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    for name in NORMALIZATION_SOURCES:
+        digest.update(name.encode("utf-8"))
+        digest.update((here / name).read_bytes())
+    return digest.hexdigest()
 
 
 def version_stamp(metric_registry_version=None):
