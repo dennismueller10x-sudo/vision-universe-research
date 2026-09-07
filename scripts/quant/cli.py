@@ -7,6 +7,7 @@
     python3 scripts/quant/cli.py export    --as-of 2026-09-07
     python3 scripts/quant/cli.py coverage
     python3 scripts/quant/cli.py gates
+    python3 scripts/quant/cli.py resolve
     python3 scripts/quant/cli.py canonical
     python3 scripts/quant/cli.py inspect   --ticker NVDA --metric revenue
     python3 scripts/quant/cli.py test
@@ -78,7 +79,8 @@ def _resolve_universe(provider, companies, verify=True):
         if verify and hint and normalize_cik(hint) != cik:
             raise SystemExit(
                 f"CIK mismatch for {ticker}: config says {normalize_cik(hint)}, "
-                f"SEC says {cik}. Fix quant/config/sec-universe.json."
+                f"SEC says {cik}. Run `cli.py resolve` to see what each CIK "
+                f"actually contains, then fix quant/config/sec-universe.json."
             )
         resolved.append({**entry, "cik": cik})
     return resolved
@@ -223,6 +225,90 @@ def cmd_gates(args):
     return 0
 
 
+def _submissions_summary(provider, cik):
+    """What a CIK actually contains, straight from the submissions endpoint."""
+    from quant.sec.provider import PERIODIC_FORMS
+    try:
+        submissions = provider.get_submissions(cik)
+    except Exception as exc:  # noqa: BLE001 - a diagnostic must not abort
+        return {"cik": cik, "error": str(exc)}
+    profile = provider.get_company_profile(cik, submissions)
+    filings = provider.get_filing_metadata(cik, submissions)
+    periodic = [row for row in filings if row["form"] in PERIODIC_FORMS]
+    reports = sorted(row["report_date"] for row in periodic if row.get("report_date"))
+    forms = {}
+    for row in periodic:
+        forms[row["form"]] = forms.get(row["form"], 0) + 1
+    return {
+        "cik": cik,
+        "name": profile.name,
+        "entity_type": profile.entity_type,
+        "sic": profile.sic,
+        "sic_description": profile.sic_description,
+        "tickers": profile.tickers,
+        "exchanges": profile.exchanges,
+        "former_names": [n.get("name") for n in profile.former_names],
+        "fiscal_year_end": profile.fiscal_year_end,
+        "periodic_filings": len(periodic),
+        "forms": dict(sorted(forms.items())),
+        "earliest_report": reports[0] if reports else None,
+        "latest_report": reports[-1] if reports else None,
+    }
+
+
+def cmd_resolve(args):
+    """Diagnostic: what does each configured ticker actually resolve to?
+
+    Exists because of a real finding on the first live run: the SEC ticker map
+    resolved XOM to a different CIK than the configured hint. Guessing which one
+    is right would be exactly the invented answer this pipeline refuses to give,
+    so this command fetches both and prints what each one contains.
+    """
+    provider = SECProvider()
+    companies = _load_universe(args.universe)
+    report = []
+
+    for entry in companies:
+        ticker = entry.get("ticker")
+        hint = normalize_cik(entry["cik"]) if entry.get("cik") else None
+        resolved = provider.try_resolve_ticker(ticker) if ticker else None
+        row = {"ticker": ticker, "configured_cik": hint, "sec_cik": resolved,
+               "match": hint == resolved}
+        print(f"\n{ticker}: config={hint} sec={resolved} "
+              f"{'MATCH' if row['match'] else 'MISMATCH'}")
+
+        candidates = [c for c in {hint, resolved} if c]
+        row["candidates"] = []
+        for cik in sorted(candidates):
+            summary = _submissions_summary(provider, cik)
+            row["candidates"].append(summary)
+            if "error" in summary:
+                print(f"  CIK {cik}: NOT RETRIEVABLE ({summary['error']})")
+                continue
+            print(f"  CIK {cik}: {summary['name']}")
+            print(f"    entityType={summary['entity_type']} sic={summary['sic']} "
+                  f"({summary['sic_description']})")
+            print(f"    tickers={summary['tickers']} exchanges={summary['exchanges']}")
+            print(f"    formerNames={summary['former_names']}")
+            print(f"    fiscalYearEnd={summary['fiscal_year_end']}")
+            print(f"    periodic filings={summary['periodic_filings']} {summary['forms']}")
+            print(f"    report dates {summary['earliest_report']} .. {summary['latest_report']}")
+        report.append(row)
+
+    _write(DATA_DIR / "universe_resolution.json", {
+        "schema_version": 1,
+        "generated_at_utc": _utcnow(),
+        "note": ("Diagnostic. Shows what each configured ticker resolves to in the "
+                 "SEC ticker map and what each candidate CIK actually contains. "
+                 "The SEC is the authority; the config CIK is only a hint."),
+        "companies": report,
+    })
+    mismatches = [row["ticker"] for row in report if not row["match"]]
+    if mismatches:
+        print(f"\nMismatches: {mismatches}")
+    return 1 if (mismatches and args.strict) else 0
+
+
 def cmd_canonical(args):
     """Emit the canonical Vision Universe payload the JS adapter serves.
 
@@ -355,6 +441,13 @@ def build_parser():
     gate = subparsers.add_parser("gates", help="run the qualification gates")
     gate.add_argument("--as-of")
     gate.set_defaults(func=cmd_gates)
+
+    resolve = subparsers.add_parser(
+        "resolve", help="diagnose what each configured ticker resolves to at the SEC")
+    resolve.add_argument("--universe", default=str(DEFAULT_UNIVERSE))
+    resolve.add_argument("--strict", action="store_true",
+                         help="exit non-zero when a configured CIK disagrees with the SEC")
+    resolve.set_defaults(func=cmd_resolve)
 
     canonical = subparsers.add_parser(
         "canonical", help="write the canonical FundamentalFact/Filing payload")

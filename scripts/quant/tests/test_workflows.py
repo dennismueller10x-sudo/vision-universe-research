@@ -64,10 +64,28 @@ class CliCommandTests(unittest.TestCase):
     def test_the_live_workflow_runs_the_full_documented_chain(self):
         """Ingest -> canonical -> coverage -> checks -> gates -> export."""
         text = workflow_text("update-sec-fundamentals.yml")
-        for command in ("ingest", "canonical", "coverage", "gates", "export"):
+        for command in ("resolve", "ingest", "canonical", "coverage", "gates", "export"):
             with self.subTest(command=command):
                 self.assertRegex(text, rf"cli\.py {command}\b")
         self.assertIn("run-sec-gates.mjs", text)
+
+    def test_the_universe_is_resolved_before_the_expensive_ingest(self):
+        """The cheap identity check must come first, not after the big fetch."""
+        text = workflow_text("update-sec-fundamentals.yml")
+        self.assertLess(text.index("cli.py resolve"), text.index("cli.py ingest"))
+
+    def test_every_step_that_reaches_the_sec_declares_the_user_agent(self):
+        """A SEC step without the User-Agent gets blocked by the SEC, not by us."""
+        import re
+        text = workflow_text("update-sec-fundamentals.yml")
+        blocks = re.split(r"\n      - name: ", text)
+        for block in blocks:
+            reaches_sec = any(cmd in block for cmd in
+                              ("cli.py resolve", "cli.py ingest", "cli.py retry",
+                               "cli.py update"))
+            if reaches_sec:
+                with self.subTest(step=block.split("\n")[0]):
+                    self.assertIn("SEC_USER_AGENT", block)
 
     def test_the_live_workflow_declares_the_sec_user_agent(self):
         """SEC requires a declaring User-Agent; without it the run gets blocked."""
