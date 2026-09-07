@@ -84,9 +84,11 @@ jobs:
         # das andere nicht - und der Fehler aus MEDIUM-7 ist zurueck.
         run: node scripts/market/verify-semantics-parity.mjs
 
-      - name: Die Dashboard-Kette laeuft mit gekennzeichneten Daten
+      - name: Die Bereinigungs-Sperre der Dashboard-Kette greift
+        # Arbeitet auf einer Kopie in einem temporaeren Verzeichnis und loest
+        # beide Faelle aus: mit Stufe muss die Kette laufen, ohne muss sie
+        # abbrechen. Ein Test, der den Fehlerfall nicht ausloest, prueft die
+        # Sperre nicht - und die committeten Datendateien bleiben unberuehrt.
         run: |
           python3 scripts/dashboard/migrate_adjustment_semantics.py --check
-          python3 scripts/dashboard/calculate_technicals.py
-          python3 scripts/dashboard/backtest_technicals.py
-          echo 'Kette vollstaendig durchgelaufen.'
+          python3 scripts/dashboard/verify_adjustment_gate.py

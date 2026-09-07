@@ -56,7 +56,10 @@ Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
   Fehlerzustaende funktionieren
 - Vollstaendige User Journey aus Abschnitt 96 end-to-end
 - AI-Flow aus Abschnitt 97 (Strategie → Feedback → neue Version)
-- Mobile (390 px): kein Ueberlauf auf einer der Seiten, Touch-Ziele ≥ 40 px
+- Mobile (390 px): kein Ueberlauf auf einer der Seiten. Primaere Bedienelemente
+  (Karten, Schaltflaechen, Tabs, Listeneintraege) ≥ 40 px. Ticker-Links in
+  Datentabellen liegen bei Textzeilenhoehe (~15 px) - konventionell fuer
+  Tabellen, aber auf dem Telefon klein. Als bekannte Einschraenkung gefuehrt.
 
 ## Phase 2 — Produktionsaudit und Marktdaten
 
