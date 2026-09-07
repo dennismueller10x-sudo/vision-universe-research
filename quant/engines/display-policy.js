@@ -162,6 +162,35 @@
              basis: policy.basis || null, checkedAt: policy.checkedAt || null };
   }
 
+  /**
+   * Liest die Gates aus der ausgelieferten Konfigurationsdatei.
+   *
+   * Der Browser hat keine Umgebungsvariablen. Statt dafuer eine zweite,
+   * lockerere Regel zu erfinden, liest er dieselben Gates aus einer Datei,
+   * die im Repository steht - eine Freischaltung ist damit ein Commit mit
+   * Begruendung und Datum, kein Schalter, den jemand vergisst.
+   *
+   * Die Auswertung ist genauso streng wie bei der Umgebungsvariante: nur
+   * ein ausdrueckliches true schaltet ein. Eine fehlende Datei, ein
+   * fehlender Eintrag oder ein unerwarteter Wert bedeuten aus.
+   */
+  function gatesFromConfig(config) {
+    var entries = (config && config.gates) || {};
+    var out = {};
+    Object.keys(GATES).forEach(function (name) {
+      var entry = entries[name];
+      out[name] = !!(entry && entry.enabled === true);
+    });
+    return out;
+  }
+
+  /** Warum steht ein Gate so, wie es steht? Fuer die Entwickleransicht. */
+  function gateReason(config, name) {
+    var entry = (config && config.gates && config.gates[name]) || null;
+    if (!entry) return "Kein Eintrag in der Konfiguration. Es gilt der Standard: aus.";
+    return entry.reason || (entry.enabled ? "Eingeschaltet ohne Begruendung." : "Ausgeschaltet.");
+  }
+
   /** Liest die Gates aus der Umgebung. Alles ausser "true" ist aus. */
   function gatesFromEnv(env) {
     env = env || {};
@@ -183,7 +212,8 @@
     PERMISSIONS: PERMISSIONS, DATA_CLASSES: DATA_CLASSES,
     DEFAULT_POLICY: DEFAULT_POLICY, GATES: GATES,
     declare: declare, lookup: lookup, check: check,
-    gatesFromEnv: gatesFromEnv, list: list, reset: reset
+    gatesFromEnv: gatesFromEnv, gatesFromConfig: gatesFromConfig,
+    gateReason: gateReason, list: list, reset: reset
   };
 
   if (isNode) module.exports = api;
