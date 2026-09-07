@@ -239,6 +239,19 @@ function finish(code) {
     verificationLevel: "RUNTIME_VERIFIED",
     note: "Jeder Befund in dieser Datei stammt aus einer echten Anfrage. Was hier nicht " +
           "steht, wurde nicht gemessen.",
+    /* Woher der Befund stammt. Eine Messung ohne nachpruefbare Herkunft ist
+       nur eine Behauptung mit Zeitstempel: mit diesen Angaben laesst sich
+       der erzeugende Lauf im Actions-Protokoll wiederfinden. Lokal
+       ausgefuehrt bleiben die Felder leer - dann ist die Datei ein
+       Arbeitsstand und kein Nachweis. */
+    run: {
+      source: process.env.GITHUB_ACTIONS === "true" ? "github-actions" : "local",
+      repository: process.env.GITHUB_REPOSITORY || null,
+      runId: process.env.GITHUB_RUN_ID || null,
+      runAttempt: process.env.GITHUB_RUN_ATTEMPT || null,
+      commit: process.env.GITHUB_SHA || null,
+      ref: process.env.GITHUB_REF_NAME || null
+    },
     findings,
     quotaUsed: {
       requests: stats.requests,

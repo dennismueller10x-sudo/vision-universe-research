@@ -97,7 +97,11 @@ jobs:
           '
 
       - name: Bericht als Artefakt
-        if: steps.secret.outputs.available == 'true' && inputs.publish_report != false
+        # Bei einem push-Ausloeser gibt es keine inputs; ein blosser
+        # Vergleich gegen false wuerde den Schritt dann ueberspringen -
+        # genau das ist beim ersten Lauf passiert, und der Nachweis lag
+        # nur im Protokoll statt als Datei vor.
+        if: steps.secret.outputs.available == 'true' && (github.event_name != 'workflow_dispatch' || inputs.publish_report)
         uses: actions/upload-artifact@v4
         with:
           name: tiingo-runtime-verification
