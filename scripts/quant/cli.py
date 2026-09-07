@@ -77,10 +77,31 @@ def _resolve_universe(provider, companies, verify=True):
         if cik is None:
             raise SystemExit(f"cannot resolve a CIK for {entry!r}")
         if verify and hint and normalize_cik(hint) != cik:
+            # A divergence may be legitimate — a reorganisation can move the
+            # ticker to a successor entity while the filing history stays with
+            # the old CIK (measured for XOM on 2026-09-07). But it may only
+            # stand when it is declared AND justified, so that an accidental
+            # wrong CIK still stops the run.
+            if entry.get("cik_authority") == "config":
+                reason = (entry.get("cik_authority_reason") or "").strip()
+                if len(reason) < 40:
+                    raise SystemExit(
+                        f"{ticker}: cik_authority is 'config' but "
+                        f"cik_authority_reason is missing or too short. An override "
+                        f"of the SEC's own ticker map has to say what was measured."
+                    )
+                print(f"  {ticker}: using configured CIK {normalize_cik(hint)} instead "
+                      f"of the SEC ticker map's {cik} — declared override")
+                print(f"    reason: {reason}")
+                resolved.append({**entry, "cik": normalize_cik(hint),
+                                 "sec_ticker_map_cik": cik})
+                continue
             raise SystemExit(
                 f"CIK mismatch for {ticker}: config says {normalize_cik(hint)}, "
                 f"SEC says {cik}. Run `cli.py resolve` to see what each CIK "
-                f"actually contains, then fix quant/config/sec-universe.json."
+                f"actually contains. If the divergence is real and intended, set "
+                f"cik_authority: \"config\" with a cik_authority_reason that states "
+                f"what was measured; otherwise fix quant/config/sec-universe.json."
             )
         resolved.append({**entry, "cik": cik})
     return resolved

@@ -1,11 +1,39 @@
 {
   "schema_version": 1,
-  "description": "Validation universe for the SEC Financial Data Core. These five issuers were chosen to cover different accounting structures (semiconductors, hardware, software, banking, energy) and different fiscal calendars. They are inputs, not special cases: nothing in scripts/quant/ branches on a ticker or a CIK. The `cik` field is a hint only - the pipeline resolves the ticker against the SEC ticker map at ingest time and aborts on a mismatch.",
+  "description": "Validierungsuniversum fuer den SEC Financial Data Core. Die fuenf Emittenten decken unterschiedliche Accounting-Strukturen und Fiskalkalender ab. Sie sind Eingabe, kein Sonderfall: nichts in scripts/quant/ verzweigt auf einen Ticker oder eine CIK. Das Feld `cik` ist ein Hinweis - die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf und bricht bei Abweichung ab. Eine Abweichung darf nur bestehen bleiben, wenn sie mit `cik_authority: \"config\"` UND einer belegten Begruendung ausdruecklich erklaert ist.",
   "companies": [
-    {"ticker": "NVDA", "name": "NVIDIA Corporation", "cik": "0001045810", "why": "Semiconductors; non-calendar fiscal year ending late January"},
-    {"ticker": "AAPL", "name": "Apple Inc.", "cik": "0000320193", "why": "Hardware; 52/53-week fiscal year ending late September"},
-    {"ticker": "MSFT", "name": "Microsoft Corporation", "cik": "0000789019", "why": "Software; fiscal year ending 30 June"},
-    {"ticker": "JPM", "name": "JPMorgan Chase & Co.", "cik": "0000019617", "why": "Banking; no cost of revenue, sector-dependent metric availability"},
-    {"ticker": "XOM", "name": "Exxon Mobil Corporation", "cik": "0000034088", "why": "Energy; calendar fiscal year, capital intensive"}
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corporation",
+      "cik": "0001045810",
+      "why": "Semiconductors; non-calendar fiscal year ending late January"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "cik": "0000320193",
+      "why": "Hardware; 52/53-week fiscal year ending late September"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corporation",
+      "cik": "0000789019",
+      "why": "Software; fiscal year ending 30 June"
+    },
+    {
+      "ticker": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "cik": "0000019617",
+      "why": "Banking; no cost of revenue, sector-dependent metric availability"
+    },
+    {
+      "ticker": "XOM",
+      "name": "Exxon Mobil Corporation",
+      "cik": "0000034088",
+      "why": "Energie; Kalenderjahr, kapitalintensiv. Zusaetzlich der reale Testfall fuer Entitaetswechsel durch Umstrukturierung.",
+      "cik_authority": "config",
+      "successor_cik": "0002115436",
+      "cik_authority_reason": "Gemessen am 2026-09-07 gegen data.sec.gov (Lauf 34153589913): der Ticker XOM loest auf CIK 0002115436 'ExxonMobil Holdings Corp' auf - eine neue Holding, die das NYSE-Listing traegt, aber genau EIN periodisches Filing hat (10-Q, Periode 2026-06-30). Die gesamte Fundamentalhistorie liegt bei CIK 0000034088 'EXXON MOBIL CORP': 132 periodische Filings, Berichtsperioden 1993-12-31 bis 2026-06-30, formerNames ['EXXON CORP'] - dieser CIK traegt inzwischen keinen Ticker mehr (tickers=[], exchanges=[]). Fuer Fundamentaldaten ist deshalb der historische CIK der richtige. Die beiden Reihen muessen spaeter verknuepft werden, sobald die Holding eigene Historie aufgebaut hat; siehe docs/SEC_COVERAGE_REPORT.md."
+    }
   ]
 }
