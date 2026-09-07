@@ -322,6 +322,63 @@ class ProviderTests(unittest.TestCase):
         from quant.sec.provider import load_declared_capabilities
         self.assertEqual(load_declared_capabilities(path="/nonexistent.json"), {})
 
+    def test_a_large_filing_index_is_processed_in_linear_time(self):
+        """Regression: real filers have tens of thousands of filings.
+
+        JPMorgan's live submissions index has roughly 70,000 filings across 71
+        pages. The first live SEC run downloaded all of it in eight seconds and
+        then spent over ten minutes inside get_filing_metadata, because the
+        column helper copied the whole column once per row. The synthetic
+        fixtures had fifty filings and never showed it.
+
+        The bound below is deliberately generous: the linear version handles
+        50,000 rows in well under a second, the quadratic one needs many
+        minutes. Anything in between still fails the test.
+        """
+        import time
+
+        count = 50_000
+        payload = submissions(1045810, "SYNTHETIC ONE", "3674", "1231", ["SYN1"], [])
+        payload["filings"]["recent"] = {
+            "accessionNumber": [f"acc-{i:06d}" for i in range(count)],
+            "form": ["10-Q" if i % 4 else "10-K" for i in range(count)],
+            "filingDate": ["2024-02-20"] * count,
+            "reportDate": ["2023-12-31"] * count,
+            "acceptanceDateTime": [None] * count,
+            "primaryDocument": ["d.htm"] * count,
+            "isXBRL": [1] * count,
+        }
+        provider = self._provider({
+            "https://data.sec.gov/submissions/CIK0001045810.json": payload})
+
+        started = time.monotonic()
+        rows = provider.get_filing_metadata("1045810", payload)
+        elapsed = time.monotonic() - started
+
+        self.assertEqual(len(rows), count)
+        self.assertLess(elapsed, 10.0,
+                        f"get_filing_metadata took {elapsed:.1f}s for {count} filings; "
+                        "the per-row column copy is back")
+
+    def test_a_short_column_is_padded_not_truncated(self):
+        """Padding still has to work now that columns are built once."""
+        payload = submissions(1045810, "SYNTHETIC ONE", "3674", "1231", ["SYN1"], [])
+        payload["filings"]["recent"] = {
+            "accessionNumber": ["a-1", "a-2"],
+            "form": ["10-K", "10-Q"],
+            "filingDate": ["2024-02-20", "2024-05-20"],
+            "reportDate": ["2023-12-31"],          # deliberately short
+            "acceptanceDateTime": [],              # deliberately empty
+            "primaryDocument": ["d.htm", "e.htm"],
+            "isXBRL": [1, 1],
+        }
+        provider = self._provider({
+            "https://data.sec.gov/submissions/CIK0001045810.json": payload})
+        rows = {row["accession"]: row for row in provider.get_filing_metadata("1045810", payload)}
+        self.assertEqual(rows["a-1"]["report_date"], "2023-12-31")
+        self.assertIsNone(rows["a-2"]["report_date"])
+        self.assertIsNone(rows["a-1"]["acceptance_datetime"])
+
     def test_amendments_are_recognised_in_the_filing_index(self):
         payload = submissions(1045810, "SYNTHETIC ONE", "3674", "1231", ["SYN1"], [])
         payload["filings"]["recent"] = {

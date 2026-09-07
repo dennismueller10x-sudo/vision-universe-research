@@ -217,25 +217,43 @@ class SECProvider:
         count = len(recent.get("accessionNumber", []))
 
         def column(name):
+            """One padded column. Built ONCE per column, never inside the loop.
+
+            This used to be called per row, and each call copied the whole
+            column. That is quadratic, and with a synthetic fixture of fifty
+            filings it looked fine. JPMorgan's real submissions index has ~70k
+            filings across 71 pages: the first live run downloaded all 25 MB in
+            eight seconds and then sat in this loop for over ten minutes without
+            issuing another request. Real data found what the fixtures could not.
+            """
             values = recent.get(name) or []
+            if len(values) >= count:
+                return list(values)
             return list(values) + [None] * (count - len(values))
 
         accessions = column("accessionNumber")
+        form_column = column("form")
+        filing_dates = column("filingDate")
+        report_dates = column("reportDate")
+        acceptance = column("acceptanceDateTime")
+        primary_documents = column("primaryDocument")
+        is_xbrl_column = column("isXBRL")
+
         rows = []
         for index in range(count):
-            form = (column("form")[index] or "").strip()
+            form = (form_column[index] or "").strip()
             if forms is not None and form not in forms:
                 continue
             rows.append({
                 "cik": cik,
                 "accession": accessions[index],
                 "form": form,
-                "filing_date": column("filingDate")[index],
-                "report_date": column("reportDate")[index] or None,
-                "acceptance_datetime": column("acceptanceDateTime")[index] or None,
-                "primary_document": column("primaryDocument")[index],
+                "filing_date": filing_dates[index],
+                "report_date": report_dates[index] or None,
+                "acceptance_datetime": acceptance[index] or None,
+                "primary_document": primary_documents[index],
                 "is_amendment": form in AMENDMENT_FORMS,
-                "is_xbrl": bool(column("isXBRL")[index]),
+                "is_xbrl": bool(is_xbrl_column[index]),
             })
         rows.sort(key=lambda row: (row["filing_date"] or "", row["accession"] or ""), reverse=True)
         return rows
