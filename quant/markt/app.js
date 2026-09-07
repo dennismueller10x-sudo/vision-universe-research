@@ -127,11 +127,29 @@
     };
 
     var market = (status.capabilities && status.capabilities.market) || {};
+    var evidence = status.evidence || {};
+
+    /* Die dritte Spalte ist der eigentliche Fortschritt dieser Phase.
+       "vorhanden" ohne Angabe der Herkunft ist eine Behauptung; mit Lauf
+       und Datum ist es ein Befund, den jemand nachschlagen kann. */
+    function beleg(k) {
+      var e = evidence[k];
+      if (!e) {
+        return el("span", { class: "q-note", text:
+          market[k] === true ? "aus der Deklaration" : "—" });
+      }
+      var wann = String(e.checkedAt || "").slice(0, 10);
+      return el("span", { class: "q-note", text:
+        (e.source === "github-actions" ? "Laufzeitpruefung" : "Laufzeitpruefung (lokal)") +
+        (e.runId ? " · Lauf " + e.runId : "") + (wann ? " · " + wann : "") });
+    }
+
     var rows = Object.keys(NAMES).filter(function (k) { return k in market; }).map(function (k) {
       var spec = LABEL[String(market[k])] || LABEL["null"];
       return el("tr", {}, [
         el("td", { text: NAMES[k] }),
-        el("td", {}, [el("span", { class: "q-cap " + spec.cls, text: spec.text })])
+        el("td", {}, [el("span", { class: "q-cap " + spec.cls, text: spec.text })]),
+        el("td", {}, [beleg(k)])
       ]);
     });
 
@@ -148,9 +166,105 @@
       el("div", { class: "q-table-wrap" }, [
         el("table", { class: "q-table" }, [
           el("thead", {}, [el("tr", {}, [
-            el("th", { text: "Faehigkeit" }), el("th", { text: "Status" })
+            el("th", { text: "Faehigkeit" }), el("th", { text: "Status" }),
+            el("th", { text: "Woher" })
           ])]),
           el("tbody", {}, rows)
+        ])
+      ])
+    ]);
+  }
+
+  /* ------------------------------------------- Entwickleransicht (§27) */
+
+  var KLASSE_LABEL = {
+    marketData: "Tageskurse",
+    intraday: "Intraday",
+    realtime: "Echtzeit",
+    corporateActions: "Kapitalmassnahmen",
+    fundamentals: "Fundamentaldaten"
+  };
+
+  /**
+   * Wer darf was sehen - und warum nicht.
+   *
+   * Die Frage "koennen wir diese Kurse anzeigen" und die Frage "duerfen
+   * wir sie anzeigen" werden regelmaessig verwechselt, weil ein
+   * funktionierender Abruf sich wie eine Erlaubnis anfuehlt. Diese Tabelle
+   * haelt beide getrennt und nennt bei jedem Nein den Grund. Ein
+   * gesperrter Zugang ohne Begruendung ist eine Sackgasse; mit
+   * Begruendung ist er eine Aufgabe.
+   */
+  function permissionSection(status) {
+    var policy = status.policy || {};
+    var gateInfo = status.gates || {};
+
+    var klassen = Object.keys(policy);
+    if (!klassen.length) return null;
+
+    var zeilen = klassen.map(function (k) {
+      var p = policy[k] || {};
+      function zelle(entscheidung) {
+        var ja = entscheidung && entscheidung.allowed === true;
+        return el("td", {}, [
+          el("span", { class: "q-cap " + (ja ? "q-cap-yes" : "q-cap-no"),
+                       text: ja ? "erlaubt" : "gesperrt" }),
+          !ja && entscheidung && entscheidung.message
+            ? el("p", { class: "q-note", text: entscheidung.message })
+            : null
+        ]);
+      }
+      return el("tr", {}, [
+        el("td", { text: KLASSE_LABEL[k] || k }),
+        zelle(p.internal),
+        zelle(p.public)
+      ]);
+    });
+
+    var gateZeilen = Object.keys(gateInfo).map(function (name) {
+      var g = gateInfo[name];
+      return el("tr", {}, [
+        el("td", {}, [
+          el("strong", { class: "q-mono", text: name }),
+          el("p", { class: "q-note", text: g.reason || "" })
+        ]),
+        el("td", {}, [el("span", {
+          class: "q-cap " + (g.enabled ? "q-cap-yes" : "q-cap-no"),
+          text: g.enabled ? "an" : "aus" })])
+      ]);
+    });
+
+    return el("section", { class: "q-section" }, [
+      el("div", { class: "q-section-head" }, [
+        el("div", {}, [
+          el("h2", { class: "q-h2", text: "Freigaben" }),
+          el("p", { text: "Ob Daten abrufbar sind, ist eine technische Frage. Ob sie gezeigt " +
+                          "werden duerfen, ist eine rechtliche. Beide stehen hier getrennt — " +
+                          "ein funktionierender Abruf ist keine Erlaubnis." })
+        ])
+      ]),
+      el("div", { class: "q-table-wrap" }, [
+        el("table", { class: "q-table" }, [
+          el("thead", {}, [el("tr", {}, [
+            el("th", { text: "Datenklasse" }),
+            el("th", { text: "Intern" }),
+            el("th", { text: "Oeffentlich" })
+          ])]),
+          el("tbody", {}, zeilen)
+        ])
+      ]),
+      el("h3", { class: "q-h3", text: "Feature-Gates" }),
+      el("p", { class: "q-note", text:
+        "Die Gates stehen neben der Richtlinie, nicht ueber ihr. Ein eingeschaltetes Gate hebt " +
+        "keine fehlende Erlaubnis auf — beides muss zutreffen. Sie stehen in " +
+        "quant/config/feature-gates.json; eine Freischaltung ist damit ein Commit mit " +
+        "Begruendung und Datum." }),
+      el("div", { class: "q-table-wrap" }, [
+        el("table", { class: "q-table" }, [
+          el("thead", {}, [el("tr", {}, [
+            el("th", { text: "Gate" }), el("th", { text: "Zustand" })
+          ])]),
+          el("tbody", {}, gateZeilen)
         ])
       ])
     ]);
@@ -449,6 +563,8 @@
         if (universe) root.appendChild(universe);
         root.appendChild(operations(status));
         root.appendChild(capabilityTable(status));
+        var freigaben = permissionSection(status);
+        if (freigaben) root.appendChild(freigaben);
         root.appendChild(Q.disclaimer());
       }).catch(function (err) {
         Q.mount(root, [Q.errorBox(err), Q.disclaimer()]);

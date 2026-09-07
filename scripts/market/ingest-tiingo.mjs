@@ -51,10 +51,69 @@ const DRY_RUN = args.has("--dry-run");
 const INITIAL = args.has("--initial");
 const PUBLISH = args.has("--publish");
 const apiKey = process.env.TIINGO_API_KEY || null;
-const gates = DisplayPolicy.gatesFromEnv(process.env);
+/* Die Gates kommen aus derselben Datei, die auch der Browser liest.
+   Zwei Quellen fuer dieselbe Frage waeren zwei Antworten: der Import
+   koennte Intraday holen, das die Seite nie zeigen darf, oder umgekehrt.
+   Die Umgebung darf nur zusaetzlich abschalten, nie zusaetzlich
+   freischalten - eine Freigabe bleibt ein Commit mit Begruendung. */
+const GATE_CONFIG = JSON.parse(
+  readFileSync(join(root, "quant", "config", "feature-gates.json"), "utf8"));
+const gatesAusDatei = DisplayPolicy.gatesFromConfig(GATE_CONFIG);
+const gatesAusUmgebung = DisplayPolicy.gatesFromEnv(process.env);
+const gates = {};
+Object.keys(DisplayPolicy.GATES).forEach((name) => {
+  const inUmgebung = process.env[name] !== undefined;
+  gates[name] = inUmgebung
+    ? (gatesAusDatei[name] && gatesAusUmgebung[name])
+    : gatesAusDatei[name];
+});
 
 const OUT_DIR = join(root, "quant", "data", "market");
 const STATUS_FILE = join(OUT_DIR, "tiingo-status.json");
+
+/**
+ * Was der Statusbericht ueber Freigaben sagt (§27).
+ *
+ * Der Bericht ist die einzige Auskunft, die der Browser ueber die
+ * Datenlage bekommt - er wird statisch ausgeliefert, es gibt keinen
+ * Dienst, den man fragen koennte. Also muss darin stehen, was jemand
+ * wissen muss, um das Gezeigte einzuordnen: nicht nur was da ist,
+ * sondern woher es kommen darf.
+ */
+function policySnapshot() {
+  const klassen = ["marketData", "intraday", "realtime", "corporateActions"];
+  const out = {};
+  klassen.forEach((klasse) => {
+    const intern = DisplayPolicy.check({
+      providerId: Tiingo.PROVIDER_ID, dataClass: klasse, audience: "internal",
+      form: klasse === "realtime" ? "realtime" : "raw", gates
+    });
+    const oeffentlich = DisplayPolicy.check({
+      providerId: Tiingo.PROVIDER_ID, dataClass: klasse, audience: "public",
+      form: klasse === "realtime" ? "realtime" : "raw", gates
+    });
+    const richtlinie = DisplayPolicy.lookup(Tiingo.PROVIDER_ID, klasse);
+    out[klasse] = {
+      internal: { allowed: intern.allowed, reason: intern.reason, message: intern.message },
+      public: { allowed: oeffentlich.allowed, reason: oeffentlich.reason,
+                message: oeffentlich.message },
+      basis: richtlinie.basis, checkedAt: richtlinie.checkedAt
+    };
+  });
+  return out;
+}
+
+function gateSnapshot() {
+  const out = {};
+  Object.keys(DisplayPolicy.GATES).forEach((name) => {
+    out[name] = {
+      enabled: gates[name] === true,
+      label: DisplayPolicy.GATES[name].label,
+      reason: DisplayPolicy.gateReason(GATE_CONFIG, name)
+    };
+  });
+  return out;
+}
 
 function writeStatus(fields) {
   mkdirSync(OUT_DIR, { recursive: true });
@@ -62,7 +121,9 @@ function writeStatus(fields) {
     generatedAt: new Date().toISOString(),
     provider: Tiingo.PROVIDER_ID,
     universeId: CONFIG.universeId,
-    boundary: CONFIG.boundary
+    boundary: CONFIG.boundary,
+    gates: gateSnapshot(),
+    policy: policySnapshot()
   }, fields);
   writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2));
   return status;
@@ -81,6 +142,7 @@ if (!apiKey) {
     configured: false,
     dataMode: "mock",
     capabilities: Tiingo.freePlanCapabilities().sets,
+    evidence: Tiingo.freePlanCapabilities().evidence,
     limits: Tiingo.FREE_LIMITS,
     securities: {},
     notice: "Kein Tiingo-Zugang konfiguriert. Der Quant-Bereich laeuft unveraendert im " +
@@ -302,6 +364,9 @@ writeStatus({
   configured: true,
   dataMode: ok > 0 ? "hybrid" : "mock",
   capabilities: capabilities.sets,
+  /* Woher jede zugesagte Faehigkeit ihren Wert hat. Ohne diese Angabe ist
+     die Matrix eine Behauptung; mit ihr ist sie nachpruefbar. */
+  evidence: capabilities.evidence,
   limits: Tiingo.FREE_LIMITS,
   adjustmentStatus: provider.adjustmentStatus(),
   health: { status: health.status, message: health.message },
