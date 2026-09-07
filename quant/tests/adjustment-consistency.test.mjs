@@ -168,23 +168,64 @@ test("A9 · Der Faktor steht zwischen den Ereignissen still", () => {
   }
 });
 
-test("A10 · Der echte Tiingo-Befund haelt der Gegenprobe stand", () => {
-  // Kein Netzverkehr: die Zahlen stammen aus dem committeten
-  // Laufzeitnachweis. Sie sind hier, damit die Ableitung dieser Datei an
-  // echten Werten gemessen wird und nicht nur an gebauten.
+test("A10 · Der committete Laufzeitnachweis belegt dasselbe Muster wie A3 und A4", () => {
+  /* Kein Netzverkehr. Der Nachweis fuehrt seit dem Release-Audit keine
+     Kurse, Betraege oder Verhaeltnisse mehr - dieses Repository ist
+     oeffentlich, und Marktdaten des Anbieters gehoeren nicht hinein.
+     Geprueft wird deshalb, dass die Aussagen dastehen, die A3 und A4 an
+     konstruierten Reihen nachrechnen: dieselbe Beweislogik, nur ohne die
+     Zahlen. */
   const bericht = require("../data/market/tiingo-runtime-verification.json");
-  const dividende = bericht.findings.find((f) => f.capability === "adjustedPrices");
-  const split = bericht.findings.find((f) => f.capability === "splitAdjustedPrices");
+  const findung = (c) => bericht.findings.find((f) => f.capability === c);
 
-  // KO: bereinigt liegt vor dem Ex-Tag unter roh - die Dividende ist drin.
-  const e = dividende.evidence;
-  assert.ok(e.adjustedOpen < e.rawOpen);
-  assert.ok(Math.abs(e.adjustedOpen / e.rawOpen - e.ratio) < 0.0005);
+  const split = findung("splitAdjustedPrices");
+  assert.equal(split.result, "PASSED");
+  assert.equal(split.evidence.rawSeriesJumpsAtSplitDay, true);
+  assert.equal(split.evidence.rawJumpMatchesKnownSplitRatio, true);
+  assert.equal(split.evidence.adjustedSeriesContinuousAtSplitDay, true);
 
-  // NVDA: roh springt um den Splitfaktor, bereinigt nicht. Genau das
-  // Muster, das A3 prueft.
-  assert.ok(split.evidence.rawRatio > 3.5 && split.evidence.rawRatio < 4.5);
-  assert.ok(Math.abs(split.evidence.adjustedRatio - 1) < 0.15);
+  const dividende = findung("adjustedPrices");
+  assert.equal(dividende.result, "PASSED");
+  assert.equal(dividende.evidence.adjustedBelowRawBeforeExDate, true);
+  assert.equal(dividende.evidence.factorStepAtExDateMatchesDividend, true,
+    "der Schritt ueber den Ex-Tag ist der eigentliche Beleg - der blosse " +
+    "Abstand davor traegt alle spaeteren Ausschuettungen mit");
+});
+
+test("A11 · Der oeffentliche Nachweis enthaelt keine Providerwerte", () => {
+  /* Die Gegenprobe zum Aufraeumen. Ohne sie schreibt der naechste Lauf die
+     Kurse wieder hinein, und niemand merkt es. Erlaubt sind Aussagen,
+     Anzahlen und Ereignistage - aus keinem davon laesst sich ein
+     Kursbestand nachbilden. */
+  const bericht = require("../data/market/tiingo-runtime-verification.json");
+  const zaehlfelder = ["bars", "count", "flaggedDayCount", "requests"];
+
+  /* Beide Dateien, nicht nur eine: der Statusbericht kopiert die Belege in
+     die Datei, die der Browser tatsaechlich laedt. Wer nur den Nachweis
+     prueft, uebersieht genau den Weg, auf dem die Werte oeffentlich
+     werden. */
+  const status = require("../data/market/tiingo-status.json");
+  const ausStatus = Object.entries(status.evidence || {}).map(([cap, e]) =>
+    ({ capability: "status:" + cap, evidence: e.observed || {} }));
+
+  for (const f of bericht.findings.concat(ausStatus)) {
+    for (const [k, v] of Object.entries(f.evidence || {})) {
+      if (typeof v === "boolean" || v === null) continue;
+      if (typeof v === "number") {
+        assert.ok(Number.isInteger(v) && zaehlfelder.includes(k),
+          `${f.capability}.${k} = ${v} ist ein Zahlenwert, der kein Zaehler ist`);
+        continue;
+      }
+      if (Array.isArray(v)) {
+        for (const x of v) {
+          assert.equal(typeof x, "string",
+            `${f.capability}.${k} enthaelt ein Objekt - dort standen frueher Betraege`);
+        }
+        continue;
+      }
+      assert.equal(typeof v, "string", `${f.capability}.${k} hat einen unerwarteten Typ`);
+    }
+  }
 });
 
 /* ===================================================================

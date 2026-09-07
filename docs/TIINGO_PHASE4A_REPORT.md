@@ -73,9 +73,13 @@ Erstimport von 500 Anfragen und einem von mehreren tausend.
 Ja, beide, und das ist der wichtigste Befund der Phase.
 
 Tiingo liefert je Handelstag beide Spalten. Am Ex-Tag einer KO-Dividende
-(2024-03-14) liegt der bereinigte Eröffnungskurs des 07.03. bei **55,5092**
-gegenüber **59,69** unbereinigt, Verhältnis **0,92996**. Die Ausschüttung ist
-eingerechnet: nach `price-adjustment-v1.json` ist das **TOTAL_RETURN**.
+(2024-03-14) liegt der bereinigte Eröffnungskurs des Vortags **unter** dem
+unbereinigten, und der Schritt des Bereinigungsfaktors über den Ex-Tag
+entspricht der Ausschüttungsrendite. Die Ausschüttung ist eingerechnet: nach
+`price-adjustment-v1.json` ist das **TOTAL_RETURN**.
+
+(Die konkreten Kurse stehen weder hier noch im Nachweis — siehe
+`TIINGO_DATA_SEMANTICS.md`.)
 
 Damit ist Tiingo der erste zur Laufzeit belegte Total-Return-Bestand im
 Projekt — und er kostet nichts. Twelve Data liefert im Free-Tarif kein
@@ -88,16 +92,17 @@ aus dieser Reihe berechnet werden. Das Wort „Rendite" ist erstmals gedeckt.
 ### 6. Funktionieren Splits?
 
 Ja. `splitFactor` kennzeichnet den Splittag in der Kursreihe (NVDA 2021-07-20,
-Faktor 4). Der unbereinigte Kurs springt um **4,036×**, der bereinigte um
-**0,957×**. Der Import fand über zwölf Titel drei Splitereignisse.
+Faktor 4). Der unbereinigte Kurs springt um das bekannte Splitverhältnis, der
+bereinigte bleibt stetig. Der Import fand über zwölf Titel drei
+Splitereignisse.
 
 Ein eigener Endpoint ist nicht nötig — und damit auch keine zusätzliche
 Anfrage.
 
 ### 7. Funktionieren Dividenden?
 
-Ja. `divCash` steht je Handelstag. Gemessen bei KO vier Zahlungen zu je 0,485
-USD in 2024; über den vollen Importzeitraum 46–47 Ausschüttungen je
+Ja. `divCash` steht je Handelstag. Gemessen bei KO vier Ausschüttungen in 2024,
+alle Beträge positiv; über den vollen Importzeitraum 46–47 Ausschüttungen je
 Dividendentitel.
 
 ### 8. Funktioniert Intraday?

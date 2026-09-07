@@ -164,20 +164,29 @@ if (nvda.available && nvda.data.bars.length > 3) {
 
   const splitAdjusted = rawJump !== null && adjJump !== null && Math.abs(adjJump - 1) < 0.2;
   record("splitAdjustedPrices", splitAdjusted ? "PASSED" : "FAILED", {
-    splitDay, rawRatio: rawJump ? +rawJump.toFixed(3) : null,
-    adjustedRatio: adjJump ? +adjJump.toFixed(3) : null,
+    splitDay,
+    /* Aussagen statt Werte. Der Befund haengt an den Vergleichen, nicht an
+       den Zahlen - und die Zahlen sind Kursdaten des Anbieters, die in
+       einem oeffentlichen Repository nichts zu suchen haben. */
+    rawSeriesJumpsAtSplitDay: rawJump !== null,
+    rawJumpMatchesKnownSplitRatio: rawJump !== null && rawJump > 3 && rawJump < 5,
+    adjustedSeriesContinuousAtSplitDay: adjJump !== null && Math.abs(adjJump - 1) < 0.2,
     interpretation: splitAdjusted
       ? "Der unbereinigte Kurs springt um den Splitfaktor, der bereinigte nicht. Splitbereinigung bestaetigt."
       : "Kein eindeutiger Befund. Entweder liegt der Split ausserhalb des Fensters, oder die Reihe ist nicht splitbereinigt."
   }, 1);
   record("splits", splitFlagged.length ? "PASSED" : "FAILED", {
-    flaggedDays: splitFlagged.map((b) => ({ date: b.date, factor: b.splitFactor })),
+    /* Nur die Anzahl und die Ereignistage. Der Splitfaktor selbst ist eine
+       Unternehmensmeldung, aber er steht hier als Anbieterfeld - also raus. */
+    flaggedDayCount: splitFlagged.length,
+    flaggedDates: splitFlagged.map((b) => b.date),
+    allFlagsDifferFromOne: splitFlagged.every((b) => b.splitFactor !== 1),
     interpretation: splitFlagged.length
       ? "splitFactor kennzeichnet den Splittag in der Kursreihe."
       : "Kein splitFactor ungleich 1 im Fenster gefunden."
   }, 0);
-  console.log(`        Rohsprung ${rawJump ? rawJump.toFixed(2) : "—"}x, ` +
-              `bereinigt ${adjJump ? adjJump.toFixed(3) : "—"}x, ` +
+  console.log(`        Rohreihe springt: ${rawJump !== null ? "ja" : "nein"}, ` +
+              `bereinigte Reihe stetig: ${adjJump !== null && Math.abs(adjJump - 1) < 0.2 ? "ja" : "nein"}, ` +
               `splitFactor gesetzt: ${splitFlagged.length ? "ja" : "nein"}`);
 } else {
   record("splitAdjustedPrices", befund(nvda), { reason: nvda.reason }, 1);
@@ -204,10 +213,37 @@ if (ko.available && ko.data.bars.length) {
     if (vorher.adjustedOpen && vorher.open) {
       const ratio = vorher.adjustedOpen / vorher.open;
       totalReturn = ratio < 0.999;
+
+      /* Die zweite Aussage ist die eigentliche - und sie braucht den
+         SCHRITT ueber den Ex-Tag, nicht den Abstand davor.
+         
+         Der kumulierte Bereinigungsfaktor traegt alle Ausschuettungen von
+         diesem Tag bis zum Ende der Reihe. Bei einem Dividendenwert ueber
+         zweieinhalb Jahre sind das rund 7 %, waehrend die eine
+         Ausschuettung nur 0,8 % ausmacht. Ein Vergleich des Abstands mit
+         der Einzelrendite wuerde also einen voellig richtigen Befund als
+         falsch ausweisen - er misst schlicht etwas anderes.
+         
+         Der Schritt ueber den Ex-Tag misst genau diese eine
+         Ausschuettung. */
+      const vorEx = bars[idx - 1];
+      let schrittPasst = null;
+      if (idx > 0 && vorEx && vorEx.adjustedOpen && vorEx.open &&
+          exDay.adjustedOpen && exDay.open && exDay.dividend > 0) {
+        const fVor = vorEx.adjustedOpen / vorEx.open;
+        const fEx = exDay.adjustedOpen / exDay.open;
+        const beobachtet = fEx / fVor - 1;
+        const erwartet = exDay.dividend / vorEx.close / (1 - exDay.dividend / vorEx.close);
+        schrittPasst = Math.abs(beobachtet - erwartet) < Math.max(0.0005, erwartet * 0.35);
+      }
+
       evidence = {
-        exDate: exDay.date, dividend: exDay.dividend,
-        priorDay: vorher.date, rawOpen: vorher.open, adjustedOpen: vorher.adjustedOpen,
-        ratio: +ratio.toFixed(5),
+        exDate: exDay.date, priorDay: vorher.date,
+        adjustedBelowRawBeforeExDate: totalReturn,
+        /* null heisst: der Schritt liess sich an diesen Bars nicht messen -
+           nicht, dass er falsch waere. */
+        factorStepAtExDateMatchesDividend: schrittPasst,
+        toleranceNote: "Abweichung des Faktorschritts unter 5 Basispunkten oder 35 % der Ausschuettungsrendite.",
         interpretation: totalReturn
           ? "Der bereinigte Kurs vor dem Ex-Tag liegt unter dem unbereinigten. Die Dividende ist eingerechnet — das ist TOTAL_RETURN."
           : "Bereinigter und unbereinigter Kurs stimmen ueberein. Die Dividende ist NICHT eingerechnet — das waere nur SPLIT_ADJUSTED."
@@ -217,8 +253,12 @@ if (ko.available && ko.data.bars.length) {
   record("adjustedPrices", divDays.length === 0 ? "UNKNOWN" : (totalReturn ? "PASSED" : "FAILED"),
          evidence || { reason: "Keine Dividende im Fenster gefunden" }, 1);
   record("dividends", divDays.length ? "PASSED" : "FAILED", {
+    /* Anzahl und Ex-Tage ja, Betraege nein: aus einer Liste von
+       Ausschuettungsbetraegen laesst sich der Datenbestand des Anbieters
+       nachbilden, aus dem Ereigniskalender nicht. */
     count: divDays.length,
-    sample: divDays.slice(0, 4).map((b) => ({ date: b.date, amount: b.dividend }))
+    exDates: divDays.slice(0, 4).map((b) => b.date),
+    allAmountsPositive: divDays.every((b) => b.dividend > 0)
   }, 0);
   console.log(`        ${divDays.length} Ausschuettung(en); Total Return: ` +
               `${divDays.length ? (totalReturn ? "ja" : "NEIN") : "unbestimmt"}`);

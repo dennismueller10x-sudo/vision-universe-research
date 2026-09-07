@@ -27,13 +27,22 @@ on:
         type: boolean
         default: false
 
-  # Waehrend der Entwicklung auf dem Phase-4A-Branch: workflow_dispatch ist
-  # erst verfuegbar, wenn der Workflow auf dem Default-Branch liegt. Der
-  # Ausloeser ist bewusst eng - nur dieser Branch, und nur wenn der
-  # Nachweis selbst oder der Adapter sich aendert. Ein Lauf kostet acht von
-  # 50 Anfragen pro Stunde; er soll nicht bei jedem Commit anfallen.
+  # Nach dem Merge ist workflow_dispatch der vorgesehene Weg: der Workflow
+  # liegt dann auf dem Default-Branch und laesst sich dort mit den beiden
+  # Schaltern oben von Hand ausloesen.
+  #
+  # Der Push-Ausloeser bleibt daneben bestehen, aber eng gefasst: nur auf
+  # Entwicklungsbranches unter claude/, nur wenn Nachweis, Import oder
+  # Adapter sich aendern, und nur mit einer Marke in der Commit-Nachricht
+  # ([verify] bzw. [ingest], siehe die Job-Bedingungen). Ohne Marke laeuft
+  # nichts.
+  #
+  # Auf main ist er ausdruecklich NICHT eingetragen. Ein Merge soll keine
+  # Anfragen ausloesen - weder Kontingent verbrauchen noch, mit einer
+  # kuenftigen Freigabe, ungewollt Daten bewegen.
   push:
-    branches: [claude/tiingo-phase4a]
+    branches:
+      - 'claude/**'
     paths:
       - 'scripts/market/verify-tiingo-runtime.mjs'
       - 'scripts/market/ingest-tiingo.mjs'

@@ -3,7 +3,7 @@
   "provider": "tiingo",
   "plan": "free",
   "verificationLevel": "RUNTIME_VERIFIED",
-  "note": "Jeder Befund in dieser Datei stammt aus einer echten Anfrage. Was hier nicht steht, wurde nicht gemessen.",
+  "note": "Jeder Befund in dieser Datei stammt aus einer echten Anfrage. Was hier nicht steht, wurde nicht gemessen. Die Belege sind bewusst als Aussagen und Anzahlen gefasst und nicht als Kurse, Betraege oder Verhaeltnisse: dieses Repository ist oeffentlich, und Marktdaten des Anbieters gehoeren nicht hinein. Die Rohwerte existieren nur fluechtig im Speicher des Pruflaufs.",
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
@@ -41,8 +41,9 @@
       "result": "PASSED",
       "evidence": {
         "splitDay": "2021-07-20",
-        "rawRatio": 4.036,
-        "adjustedRatio": 0.957,
+        "rawSeriesJumpsAtSplitDay": true,
+        "rawJumpMatchesKnownSplitRatio": true,
+        "adjustedSeriesContinuousAtSplitDay": true,
         "interpretation": "Der unbereinigte Kurs springt um den Splitfaktor, der bereinigte nicht. Splitbereinigung bestaetigt."
       },
       "requests": 1,
@@ -52,12 +53,11 @@
       "capability": "splits",
       "result": "PASSED",
       "evidence": {
-        "flaggedDays": [
-          {
-            "date": "2021-07-20",
-            "factor": 4
-          }
+        "flaggedDayCount": 1,
+        "flaggedDates": [
+          "2021-07-20"
         ],
+        "allFlagsDifferFromOne": true,
         "interpretation": "splitFactor kennzeichnet den Splittag in der Kursreihe."
       },
       "requests": 0,
@@ -68,11 +68,10 @@
       "result": "PASSED",
       "evidence": {
         "exDate": "2024-03-14",
-        "dividend": 0.485,
         "priorDay": "2024-03-07",
-        "rawOpen": 59.69,
-        "adjustedOpen": 55.5092347289,
-        "ratio": 0.92996,
+        "adjustedBelowRawBeforeExDate": true,
+        "factorStepAtExDateMatchesDividend": true,
+        "toleranceNote": "Abweichung des Faktorschritts unter 5 Basispunkten oder 35 % der Ausschuettungsrendite.",
         "interpretation": "Der bereinigte Kurs vor dem Ex-Tag liegt unter dem unbereinigten. Die Dividende ist eingerechnet — das ist TOTAL_RETURN."
       },
       "requests": 1,
@@ -83,24 +82,13 @@
       "result": "PASSED",
       "evidence": {
         "count": 4,
-        "sample": [
-          {
-            "date": "2024-03-14",
-            "amount": 0.485
-          },
-          {
-            "date": "2024-06-14",
-            "amount": 0.485
-          },
-          {
-            "date": "2024-09-13",
-            "amount": 0.485
-          },
-          {
-            "date": "2024-11-29",
-            "amount": 0.485
-          }
-        ]
+        "exDates": [
+          "2024-03-14",
+          "2024-06-14",
+          "2024-09-13",
+          "2024-11-29"
+        ],
+        "allAmountsPositive": true
       },
       "requests": 0,
       "checkedAt": "2026-09-07T15:04:23.250Z"

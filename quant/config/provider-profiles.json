@@ -812,21 +812,21 @@
           "level": "RUNTIME_VERIFIED",
           "source": "GitHub Actions Lauf 34136349043, Commit 8cd2e0d, quant/data/market/tiingo-runtime-verification.json - NVDA 4:1 am 2021-07-20",
           "checkedAt": "2026-09-07",
-          "note": "Der unbereinigte Kurs springt um 4.036x, der bereinigte um 0.957x. splitFactor = 4 kennzeichnet den Tag."
+          "note": "Der unbereinigte Kurs springt am Splittag um das bekannte Splitverhaeltnis, der bereinigte bleibt stetig. splitFactor kennzeichnet den Tag. Die gemessenen Kurse stehen bewusst nicht hier - dieses Repository ist oeffentlich."
         },
         "dividends": {
           "value": true,
           "level": "RUNTIME_VERIFIED",
           "source": "GitHub Actions Lauf 34136349043, Commit 8cd2e0d, quant/data/market/tiingo-runtime-verification.json - KO, vier Ausschuettungen 2024",
           "checkedAt": "2026-09-07",
-          "note": "divCash je Handelstag; im Testzeitraum vier Ausschuettungen zu je 0.485 USD."
+          "note": "divCash je Handelstag; im Testzeitraum vier Ausschuettungen, alle Betraege positiv. Die Betraege stehen bewusst nicht hier."
         },
         "totalReturnPrices": {
           "value": true,
           "level": "RUNTIME_VERIFIED",
           "source": "GitHub Actions Lauf 34136349043, Commit 8cd2e0d, quant/data/market/tiingo-runtime-verification.json - KO, Ex-Tag 2024-03-14",
           "checkedAt": "2026-09-07",
-          "note": "Der bereinigte Eroeffnungskurs vom 2024-03-07 liegt bei 55.5092 gegenueber 59.69 unbereinigt, Verhaeltnis 0.92996. Die Dividende ist eingerechnet: nach price-adjustment-v1.json ist das TOTAL_RETURN. Damit ist Tiingo der erste gepruefte Anbieter, dessen Kursreihe das Wort Rendite traegt."
+          "note": "Der bereinigte Eroeffnungskurs vor dem Ex-Tag liegt unter dem unbereinigten, und der Schritt des Bereinigungsfaktors ueber den Ex-Tag entspricht der Ausschuettungsrendite. Die Dividende ist eingerechnet: nach price-adjustment-v1.json ist das TOTAL_RETURN. Damit ist Tiingo der erste gepruefte Anbieter, dessen Kursreihe das Wort Rendite traegt. Die gemessenen Kurse stehen bewusst nicht hier."
         },
         "historicalIdentifiers": {
           "value": null,

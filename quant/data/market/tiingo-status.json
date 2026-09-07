@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-07T15:39:25.630Z",
+  "generatedAt": "2026-09-07T18:43:06.047Z",
   "provider": "tiingo",
   "universeId": "TIINGO_PHASE4A_TESTSET",
   "boundary": "Diese Titel erhalten AUSSCHLIESSLICH echte Kursdaten von Tiingo. Sie bekommen keine Fundamentaldaten und damit keinen vollstaendigen VU Quant Score. Reale Unternehmen mit synthetischen Fundamentalzahlen zu verbinden bleibt ausgeschlossen - das ist seit Phase 1 die Grenze und aendert sich hier nicht.",
@@ -155,8 +155,9 @@
       "commit": "8cd2e0d05e14416e604ce046fc340e683b613539",
       "observed": {
         "splitDay": "2021-07-20",
-        "rawRatio": 4.036,
-        "adjustedRatio": 0.957,
+        "rawSeriesJumpsAtSplitDay": true,
+        "rawJumpMatchesKnownSplitRatio": true,
+        "adjustedSeriesContinuousAtSplitDay": true,
         "interpretation": "Der unbereinigte Kurs springt um den Splitfaktor, der bereinigte nicht. Splitbereinigung bestaetigt."
       }
     },
@@ -168,12 +169,11 @@
       "runId": "34136349043",
       "commit": "8cd2e0d05e14416e604ce046fc340e683b613539",
       "observed": {
-        "flaggedDays": [
-          {
-            "date": "2021-07-20",
-            "factor": 4
-          }
+        "flaggedDayCount": 1,
+        "flaggedDates": [
+          "2021-07-20"
         ],
+        "allFlagsDifferFromOne": true,
         "interpretation": "splitFactor kennzeichnet den Splittag in der Kursreihe."
       }
     },
@@ -186,11 +186,10 @@
       "commit": "8cd2e0d05e14416e604ce046fc340e683b613539",
       "observed": {
         "exDate": "2024-03-14",
-        "dividend": 0.485,
         "priorDay": "2024-03-07",
-        "rawOpen": 59.69,
-        "adjustedOpen": 55.5092347289,
-        "ratio": 0.92996,
+        "adjustedBelowRawBeforeExDate": true,
+        "factorStepAtExDateMatchesDividend": true,
+        "toleranceNote": "Abweichung des Faktorschritts unter 5 Basispunkten oder 35 % der Ausschuettungsrendite.",
         "interpretation": "Der bereinigte Kurs vor dem Ex-Tag liegt unter dem unbereinigten. Die Dividende ist eingerechnet — das ist TOTAL_RETURN."
       }
     },
@@ -203,24 +202,13 @@
       "commit": "8cd2e0d05e14416e604ce046fc340e683b613539",
       "observed": {
         "count": 4,
-        "sample": [
-          {
-            "date": "2024-03-14",
-            "amount": 0.485
-          },
-          {
-            "date": "2024-06-14",
-            "amount": 0.485
-          },
-          {
-            "date": "2024-09-13",
-            "amount": 0.485
-          },
-          {
-            "date": "2024-11-29",
-            "amount": 0.485
-          }
-        ]
+        "exDates": [
+          "2024-03-14",
+          "2024-06-14",
+          "2024-09-13",
+          "2024-11-29"
+        ],
+        "allAmountsPositive": true
       }
     },
     "intraday": {

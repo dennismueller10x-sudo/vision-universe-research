@@ -28,19 +28,24 @@ Stunde. Der Schlüssel liegt dort und nirgendwo sonst.
 |---|---|---|
 | Zugang und Stammdaten | AAPL | Apple Inc, NASDAQ, Historie ab 1980-12-12 |
 | Historientiefe | AAPL ab 1990-01-01 | 1517 Bars ab 1990-01-02 |
-| Splitbereinigung | NVDA 4:1 am 2021-07-20 | roh springt 4,036× — bereinigt 0,957× |
+| Splitbereinigung | NVDA 4:1 am 2021-07-20 | rohe Reihe springt, bereinigte bleibt stetig |
 | Splitkennzeichnung | NVDA | `splitFactor = 4` am Splittag |
-| Dividendenbereinigung | KO, Ex-Tag 2024-03-14 | bereinigt 55,5092 gegen roh 59,69 |
-| Ausschüttungen | KO 2024 | vier Zahlungen zu je 0,485 USD |
+| Dividendenbereinigung | KO, Ex-Tag 2024-03-14 | bereinigt liegt vor dem Ex-Tag unter roh |
+| Ausschüttungen | KO 2024 | vier Zahlungen, alle Beträge positiv |
 | Sonderzeichen im Ticker | BRK-B | 25 Bars, keine Sonderbehandlung nötig |
 | Intraday | AAPL über IEX | 78 Bars |
 
 ## Der entscheidende Befund
 
 Am Ex-Tag einer Dividende liegt der bereinigte Kurs des Vortags **unter** dem
-unbereinigten: 55,5092 gegen 59,69, Verhältnis 0,92996. Genau das ist die
-Signatur einer Dividendenbereinigung — die Ausschüttung ist in die Reihe
-eingerechnet.
+unbereinigten, und der Schritt des Faktors über den Ex-Tag entspricht der
+Ausschüttungsrendite. Genau das ist die Signatur einer Dividendenbereinigung —
+die Ausschüttung ist in die Reihe eingerechnet.
+
+Die konkreten Kurse stehen hier bewusst nicht. Dieses Repository ist
+öffentlich; Marktdaten des Anbieters gehören nicht hinein, und für den Befund
+sind sie auch nicht nötig — er hängt an den Vergleichen, nicht an den Zahlen.
+Die Rohwerte existieren nur flüchtig im Speicher des Prüflaufs.
 
 Nach `price-adjustment-v1.json` ist `adjClose` damit **TOTAL_RETURN**.
 
