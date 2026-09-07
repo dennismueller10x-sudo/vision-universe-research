@@ -357,6 +357,7 @@ def cmd_canonical(args):
             "file": f"canonical/{path.name}",
             "factCount": bundle["coverage"]["factCount"],
             "metricIds": bundle["coverage"]["metricIds"],
+            "suppressedCells": bundle["coverage"]["suppressedCells"],
             "annualYearsExamined": bundle["coverage"]["annualYearsExamined"],
             "quarterlyYears": bundle["coverage"]["quarterlyYears"],
         })

@@ -392,6 +392,42 @@ test("der kanonische Export liefert nur Quartale, keine Jahreszeilen", () => {
   }
 });
 
+test("ein Quartal traegt genau ein Periodenende", () => {
+  /* Live gemessen: 113 von 3613 Zellen trugen mehrere Periodenenden unter einem
+     Quartalslabel — 86 davon auf sharesOutstanding (Cover-Datum des Filings
+     statt Bilanzstichtag), der Rest aus Kalender-Mehrdeutigkeit in den ersten
+     duennen XBRL-Jahren. Zwei verschiedene Quartale unter einem Label sind
+     keine Daten, sondern eine stille Verwechslung. */
+  for (const bundle of BUNDLES) {
+    const ends = new Map();
+    for (const fact of bundle.facts) {
+      const key = `${fact.metricId}|${fact.fiscalYear}|${fact.fiscalPeriod}`;
+      if (!ends.has(key)) ends.set(key, new Set());
+      ends.get(key).add(fact.periodEnd);
+    }
+    for (const [key, set] of ends) {
+      assert.equal(set.size, 1,
+        `${bundle.security.ticker} ${key}: ${set.size} verschiedene Periodenenden`);
+    }
+  }
+});
+
+test("unterdrueckte Zellen werden benannt, nicht verschwiegen", () => {
+  for (const bundle of BUNDLES) {
+    assert.ok(Array.isArray(bundle.periodEndConflicts));
+    assert.equal(bundle.coverage.suppressedCells, bundle.periodEndConflicts.length);
+    for (const conflict of bundle.periodEndConflicts) {
+      assert.equal(conflict.reason, "AMBIGUOUS_PERIOD_END");
+      assert.ok(conflict.periodEnds.length > 1);
+      /* Und die unterdrueckte Zelle darf wirklich nicht mehr in den Fakten stehen. */
+      const still = bundle.facts.some((f) =>
+        f.metricId === conflict.metricId && f.fiscalYear === conflict.fiscalYear
+        && f.fiscalPeriod === conflict.fiscalPeriod);
+      assert.equal(still, false, `${conflict.metricId} wurde gemeldet, ist aber noch da`);
+    }
+  }
+});
+
 test("Kennzahlen ohne SEC-Quelle werden benannt statt verschwiegen", () => {
   for (const bundle of BUNDLES) {
     assert.ok(bundle.unsupportedMetrics.ebitda);

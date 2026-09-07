@@ -128,7 +128,8 @@ def _source_periods(fiscal_period):
     return (fiscal_period, "YTD2", "YTD3", "FY")
 
 
-def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at):
+def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at,
+                     conflicts=None):
     """Canonical FundamentalFacts for one company and one fiscal period.
 
     One record per canonical metric per revision. A later filing that repeats an
@@ -138,6 +139,7 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
     from .derived import reconstruct
 
     factbook = resolver.factbook
+    conflicts = conflicts if conflicts is not None else []
     out = []
 
     for sec_metric, (metric_id, unit, scale) in METRIC_MAP.items():
@@ -193,6 +195,25 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
             out.append(record)
             cell["previous"] = value
             cell["revision"] += 1
+
+        # A fiscal quarter has exactly one end date. If resolving this cell at
+        # different as-of dates produced facts with different period ends, the
+        # fiscal calendar could not place them reliably — this happens in the
+        # sparse first XBRL years. Publishing them would put two different
+        # quarters under one label. A gap plus a recorded conflict is the
+        # honest answer; the caller counts them into the bundle.
+        if len(state) > 1:
+            conflicts.append({
+                "metricId": metric_id,
+                "fiscalYear": int(fiscal_year),
+                "fiscalPeriod": fiscal_period,
+                "periodEnds": sorted(state),
+                "reason": "AMBIGUOUS_PERIOD_END",
+            })
+            out = [r for r in out
+                   if not (r["metricId"] == metric_id
+                           and r["fiscalPeriod"] == fiscal_period
+                           and r["fiscalYear"] == int(fiscal_year))]
 
     return out
 
@@ -310,10 +331,11 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
     # needs. The full annual series stays available inside the SEC layer and in
     # the data inspector.
     facts = []
+    conflicts = []
     for fiscal_year in quarterly_scope:
         for index in range(1, 5):
             facts.extend(facts_for_period(resolver, security, fiscal_year,
-                                          f"Q{index}", ingested_at))
+                                          f"Q{index}", ingested_at, conflicts))
 
     bundle = {
         "schema": "vu-canonical-v1",
@@ -324,6 +346,7 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
         "filings": filings_for_company(document, calendar, security) if calendar else [],
         "facts": facts,
         "unsupportedMetrics": UNSUPPORTED_METRICS,
+        "periodEndConflicts": conflicts,
         "coverage": {
             "annualYearsExamined": annual_scope,
             "note": ("facts are quarterly only (Q1..Q4): quant/engines/schema.js keys a "
@@ -332,6 +355,7 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
             "quarterlyYears": quarterly_scope,
             "factCount": len(facts),
             "metricIds": sorted({fact["metricId"] for fact in facts}),
+            "suppressedCells": len(conflicts),
         },
     }
     LOGGER.info("canonical bundle cik=%s facts=%d", document["cik"], len(facts))

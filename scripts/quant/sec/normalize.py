@@ -117,7 +117,12 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                                      metric=metric_name))
                 continue
 
-            fiscal_year, fiscal_period, kind = calendar.assign(fact.start, fact.end)
+            if fact.taxonomy == "dei" and fact.start is None:
+                # Cover-date instant: dated after the period it describes.
+                fiscal_year, fiscal_period = calendar.assign_cover_date(fact.end)
+                kind = "instant"
+            else:
+                fiscal_year, fiscal_period, kind = calendar.assign(fact.start, fact.end)
             if kind == "UNKNOWN":
                 issues.append(_issue(ISSUE_UNEXPECTED_DURATION, fact,
                                      "period length matches no known reporting period",
