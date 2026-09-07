@@ -706,8 +706,8 @@ function createTiingoProvider(options) {
       }
       const h = client.health();
       const map = { available: "ok", degraded: "degraded", offline: "unavailable",
-                    quotaExceeded: "degraded", authError: "unavailable",
-                    notConfigured: "not_configured" };
+                    rateLimited: "degraded", quotaExceeded: "degraded",
+                    authError: "unavailable", notConfigured: "not_configured" };
       return Provider.makeHealth(map[h.status] || "degraded", {
         provider: PROVIDER_ID,
         message: h.message || ("Status: " + h.status),

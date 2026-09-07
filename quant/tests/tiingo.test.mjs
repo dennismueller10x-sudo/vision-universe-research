@@ -500,3 +500,42 @@ test("T30 · Ein Kontingentproblem widerlegt keine Faehigkeit", () => {
     "intraday war ungeprueft und bleibt ungeprueft");
   assert.deepEqual(caps.evidence, {}, "ein nicht messbarer Lauf ist kein Beleg");
 });
+
+test("T31 · Anfragegrenze und Kontingent sind zwei verschiedene Zustaende", async () => {
+  /* §25: die Unterscheidung ist fuer den Aufrufer die interessante. Eine
+     Anfragegrenze loest sich in Sekunden, ein erschoepftes Tageskontingent
+     erst am naechsten Tag. Beides "erschoepft" zu nennen nimmt ihm die
+     Entscheidung ab, ob er wartet oder aufhoert. */
+  let uhr = 1_000_000;
+  const p = Tiingo.createTiingoProvider({
+    apiKey: KEY,
+    capabilities: Tiingo.freePlanCapabilities(),
+    symbolRegistry: registry(),
+    fetchImpl: () => F.response(F.AAPL_PLAIN),
+    sleep: () => Promise.resolve(),
+    now: () => uhr,
+    limits: { requestsPerMinute: 2, requestsPerHour: 2, requestsPerDay: 100,
+              bytesPerMonth: Infinity, concurrency: 1, maxRetries: 0, baseBackoffMs: 1 }
+  });
+
+  // Nur Symbole aus der Registry: ein nicht zugeordnetes Symbol wuerde gar
+  // keine Anfrage ausloesen und die Zaehlung still verfaelschen.
+  const ersteZwei = await Promise.all([
+    p.getDailyBars("ref_AAPL", { from: "2024-01-01" }),
+    p.getDailyBars("ref_NVDA", { from: "2024-01-01" })
+  ]);
+  assert.deepEqual(ersteZwei.map((r) => r.available), [true, true],
+    "die ersten beiden Abrufe muessen durchgehen - sonst prueft der Test nichts");
+  assert.equal(p.healthCheck().status, "ok");
+
+  // Der dritte Abruf faellt in die Stundengrenze - und die Wartezeit ist
+  // zu lang, um sie auszusitzen.
+  const dritter = await p.getDailyBars("ref_KO", { from: "2024-01-01" });
+  assert.equal(dritter.available, false);
+  assert.equal(dritter.reason, "rateLimited");
+  assert.equal(p.rawHealth().status, "rateLimited",
+    "der Zustand muss sich vom erschoepften Tageskontingent unterscheiden");
+  assert.match(dritter.message, /Stundenkontingent/);
+  // Nach aussen bleibt es "degraded": der Anbieter antwortet, er drosselt nur.
+  assert.equal(p.healthCheck().status, "degraded");
+});

@@ -38,7 +38,13 @@
     intradayBars: 5 * 60 * 1000
   };
 
-  var HEALTH = ["available", "degraded", "offline", "quotaExceeded", "authError", "notConfigured"];
+  /* rateLimited und quotaExceeded sind nicht dasselbe, und die
+     Unterscheidung ist fuer den Aufrufer die interessante: das eine loest
+     sich in Sekunden, das andere in Stunden oder erst am naechsten Tag.
+     Beides "erschoepft" zu nennen nimmt ihm die Entscheidung ab, ob er
+     wartet oder aufhoert. */
+  var HEALTH = ["available", "degraded", "offline", "rateLimited", "quotaExceeded",
+                "authError", "notConfigured"];
 
   /* Fehlerklassen. Nur `transient` rechtfertigt einen erneuten Versuch —
      ein 401 wird durch Wiederholung nicht besser, verbraucht aber Kontingent. */
@@ -299,6 +305,7 @@
                       "). Naechster freier Platz in " + Math.round(wait / 1000) + " s.";
         if (wait > (spec.maxWaitMs || 65000)) {
           stats.quotaBlocks++;
+          setHealth("rateLimited", message);
           return Promise.resolve(staleFallback(key, "rateLimited", message) ||
             { ok: false, reason: "rateLimited", message: message, waitMs: wait });
         }
