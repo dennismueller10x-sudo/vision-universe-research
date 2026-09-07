@@ -1,6 +1,6 @@
 # TIINGO PHASE 4A — ABSCHLUSSBERICHT
 
-Stand: 2026-09-07 · Branch `claude/tiingo-phase4a` · 321 Tests grün
+Stand: 2026-09-07 · Branch `claude/tiingo-phase4a` · 324 Tests grün
 
 Der Erfolgsmaßstab dieser Phase war nicht die Zahl geänderter Dateien, sondern
 eine Frage: **Kann Tiingo als Market-Data-Layer für Vision Universe
@@ -286,8 +286,8 @@ Monatsbudgets.
 
 ### 21. Welche kritischen Probleme wurden gefunden?
 
-Vier — **drei davon erst durch den Lauf gegen die echte API.** Keiner der
-damals 310 Tests hatte sie gefunden.
+Sieben, in fünf Gruppen. **Drei davon kamen erst durch den Lauf gegen die
+echte API** — keiner der damals 310 Tests hatte sie gefunden.
 
 **a) Die Stetigkeitsprüfung lief auf der falschen Spalte.**
 Der erste Import verwarf AAPL, NVDA, AMZN und TSLA — alle vier mit Split, alle
@@ -316,20 +316,29 @@ Die Bars des Twelve-Data-Adapters verletzten das eigene Schema:
 `adjustedClose` war als Pflichtfeld deklariert, `adjustmentStatus` gar nicht.
 Kein Test hatte je Adapterausgabe gegen das Schema geprüft.
 
-Alle vier sind behoben und durch Tests festgehalten. **CRITICAL oder HIGH
+**e) Drei Fehler in der Zeitraumlogik (beim Nachlesen gefunden).**
+Ein voller Zeitstempel als Stichtag löste eine Ausnahme mitten im Rendern aus.
+Ein unlesbarer Stichtag ließ das Fenster stillschweigend entfallen — „1 Monat"
+zeigte dann die ganze Historie. Und das Fenster hatte keine obere Grenze: bei
+einem Stichtag mitten in der Reihe zeigte der Chart auch die Tage danach.
+
+Der zweite und dritte sind die unangenehmeren, weil sie nicht abstürzen,
+sondern still das Falsche zeigen.
+
+Alle sieben sind behoben und durch Tests festgehalten. **CRITICAL oder HIGH
 offen: keine.**
 
 ### 22. Wie viele Tests sind grün?
 
-**321 von 321.** Ausgangspunkt Phase 3: 232.
+**324 von 324.** Ausgangspunkt Phase 3: 232.
 
 | Datei | Tests |
 |---|---|
 | `tiingo.test.mjs` | 31 |
 | `adjustment-consistency.test.mjs` | 18 |
 | `market-store.test.mjs` | 16 |
+| `chart-ranges.test.mjs` | 15 |
 | `panel-builder.test.mjs` | 12 |
-| `chart-ranges.test.mjs` | 12 |
 | bestehende (Phase 1–3) | 232 |
 
 Kein Test ruft eine echte API auf; alle arbeiten auf Fixtures. Die Läufe gegen
@@ -387,11 +396,20 @@ Was **nicht** als Nächstes ansteht:
 
 ## Was diese Phase über das Vorgehen zeigt
 
-Drei der vier kritischen Befunde kamen aus **sechs echten API-Aufrufen und
-einem Import**, nicht aus 310 Tests. Die Tests waren nicht schlecht — sie
-kannten nur keinen Fall, in dem beide Spalten mit einem echten Split
-nebeneinander liegen, und keinen Titel, der eine Eigenschaft schlicht nicht
-hat.
+Drei der sieben Befunde kamen aus **sechs echten API-Aufrufen und einem
+Import**. Drei weitere kamen aus dem adversarischen Nachlesen des eigenen,
+frisch geschriebenen Codes. Sechs von sieben also nicht aus den 310 Tests, die
+zu dem Zeitpunkt grün waren.
 
-Das ist kein Argument gegen Tests. Es ist eines dafür, den ersten Lauf gegen
-echte Daten früh zu machen und ihn ernst zu nehmen, wenn er etwas verwirft.
+Die Tests waren nicht schlecht. Sie kannten nur keinen Fall, in dem beide
+Spalten mit einem echten Split nebeneinander liegen, und keinen Titel, der eine
+Eigenschaft schlicht nicht hat — AMZN zahlt keine Dividende, BRK-B hat keine
+Kapitalmaßnahme. Solche Fälle denkt man sich nicht aus; die Wirklichkeit legt
+sie vor.
+
+Das ist kein Argument gegen Tests, sondern eines für zweierlei: den ersten Lauf
+gegen echte Daten früh zu machen und ihn ernst zu nehmen, wenn er etwas
+verwirft — und den eigenen frischen Code noch einmal mit der Frage zu lesen,
+was ihn zum stillen Falschantworten bringen würde. Die beiden Befunde, die
+niemandem aufgefallen wären, sind genau die: kein Absturz, nur ein Fenster, das
+mehr zeigt als bestellt.
