@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Calculate deterministic technical indicators from market_data.json only."""
 import json
+import sys
 import math
 from datetime import datetime, timezone
 from pathlib import Path
+
+import price_semantics
 
 ROOT = Path(__file__).resolve().parents[2]
 MARKET_DATA = ROOT / "dashboard" / "data" / "market_data.json"
@@ -124,9 +127,21 @@ def main():
     market = json.loads(MARKET_DATA.read_text(encoding="utf-8"))
     if market.get("status") != "generated":
         raise SystemExit("market_data.json has not been generated successfully.")
+
+    # Momentum, Volatilitaet und Performance sind Renditekennzahlen. Sie
+    # setzen mindestens splitbereinigte Kurse voraus - auf unbereinigten
+    # Reihen erzeugt jeder Split ein Signal, das es nie gab.
+    adjustment = price_semantics.normalize(market.get("adjustment"))
+    gate = price_semantics.check("momentum", adjustment)
+    if not gate["allowed"]:
+        print(f"Abbruch: {gate['message']}", file=sys.stderr)
+        print("  Neu erzeugen mit scripts/dashboard/fetch_market_data.py (schema_version 2).",
+              file=sys.stderr)
+        raise SystemExit(1)
     symbols = {name: technicals(candles) for name, candles in market["symbols"].items()}
     result = {
-        "schema_version": 1, "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "schema_version": 2, "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "return_semantics": price_semantics.describe(adjustment, metric="price_return"),
         "source_market_data_generated_at_utc": market.get("generated_at_utc"),
         "symbols": symbols, "status": "generated",
         "score_rules": {

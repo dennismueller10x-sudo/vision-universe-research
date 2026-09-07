@@ -1,12 +1,24 @@
 {
-  "schema_version": "0.1-baseline",
-  "generated_at_utc": "2026-09-05T07:03:39.871848+00:00",
+  "schema_version": "0.2-baseline",
+  "generated_at_utc": "2026-09-07T06:00:51.248613+00:00",
   "scope": "Daily OHLC pilot only; not an Elliott-wave probability model.",
+  "return_semantics": {
+    "adjustment": "SPLIT_ADJUSTED",
+    "adjustmentLabel": "Splitbereinigt",
+    "adjustmentCaveat": "Ohne Dividenden gerechnet. Bei einem Ausschuetter liegt die tatsaechliche Gesamtrendite darueber.",
+    "semanticsVersion": "price-adjustment-v1.0.0",
+    "metric": "price_return",
+    "metricLabel": "Kursrendite",
+    "field": "average_return_pct",
+    "meaning": "Kursrendite",
+    "note": "Nicht mit der Gesamtrendite des Quant-Bereichs vergleichbar: die rechnet auf total-return-bereinigten Reihen."
+  },
   "method": {
     "entry": "Close above SMA20 above SMA50 and 20-day breakout; entry next daily open.",
     "invalidation": "4% fixed stop.",
     "target": "8% fixed target (2R).",
-    "horizon": "20 trading days; stop wins on an intraday tie."
+    "horizon": "20 trading days; stop wins on an intraday tie.",
+    "return_basis": "Kursrendite"
   },
   "symbols": {
     "NVDA": {
