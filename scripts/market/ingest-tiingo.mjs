@@ -379,7 +379,10 @@ writeStatus({
                 failed: checkpoint.failed.length, requests: checkpoint.requests },
   notice: ok > 0
     ? "Echte Tageskurse von Tiingo fuer das Testuniversum. Fundamentaldaten bleiben " +
-      "synthetisch. Die Bereinigungsstufe ist " + provider.adjustmentStatus() + "."
+      /* Die kanonische Stufe, nicht das Anbietervokabular: "adjusted" ist
+         Tiingos Wort und sagt einem Leser nichts. */
+      "synthetisch. Die Bereinigungsstufe ist " +
+      Semantics.normalize(provider.adjustmentStatus()) + "."
     : "Kein Titel geladen. Der Quant-Bereich bleibt im Modelldatenmodus."
 });
 

@@ -186,3 +186,105 @@ test("A10 · Der echte Tiingo-Befund haelt der Gegenprobe stand", () => {
   assert.ok(split.evidence.rawRatio > 3.5 && split.evidence.rawRatio < 4.5);
   assert.ok(Math.abs(split.evidence.adjustedRatio - 1) < 0.15);
 });
+
+/* ===================================================================
+   DIE STETIGKEITSPRUEFUNG UND DIE ZWEITE SPALTE
+
+   Diese Faelle stammen nicht aus dem Kopf. Der erste Import gegen die
+   echte Tiingo-API hat vier von zwoelf Titeln verworfen - AAPL, NVDA,
+   AMZN und TSLA, alle vier mit Split im Zeitraum, alle vier mit
+   tadellos bereinigter Reihe daneben.
+
+   Die Ursache war eine Annahme aus Phase 2, die mit einer Spalte
+   richtig war und mit zweien falsch wird: geprueft wurde die ROHE
+   Spalte, und die springt an einem Split - das ist ihre Aufgabe, nicht
+   ihr Fehler.
+   =================================================================== */
+
+/* AAPL, 4:1 am 2020-08-31, wie Tiingo es liefert: die rohe Spalte
+   springt, die bereinigte laeuft durch. */
+function splitReihe(opts) {
+  opts = opts || {};
+  const faktor = opts.factor || 4;
+  const bars = [];
+  const d = new Date(Date.UTC(2020, 7, 3));
+  for (let i = 0; i < 40; i++) {
+    const stetig = 120 + i * 0.4;                 // der bereinigte Verlauf
+    const nachSplit = i >= 20;
+    bars.push({
+      date: d.toISOString().slice(0, 10),
+      close: +(nachSplit ? stetig : stetig * faktor).toFixed(4),
+      adjustedClose: opts.ohneBereinigt ? null : +stetig.toFixed(4),
+      splitFactor: (opts.ohneKennzeichnung ? 1 : (i === 20 ? faktor : 1)),
+      dividend: 0, volume: 1000000,
+      open: +(nachSplit ? stetig : stetig * faktor).toFixed(4),
+      high: +((nachSplit ? stetig : stetig * faktor) * 1.01).toFixed(4),
+      low: +((nachSplit ? stetig : stetig * faktor) * 0.99).toFixed(4)
+    });
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+  return bars;
+}
+
+test("A11 · Ein Split verwirft eine bereinigte Reihe nicht mehr", () => {
+  // Der Fall aus dem echten Import. Vorher: abgelehnt.
+  const res = Quality.validateBars(splitReihe(), {
+    today: "2026-09-07", adjustmentStatus: "TOTAL_RETURN"
+  });
+  assert.equal(res.ok, true, "eine bereinigte Reihe mit Split muss durchgehen");
+  assert.equal(res.stats.continuityBasis, "adjustedClose");
+  assert.equal(res.stats.suspectedSplits, 0);
+  assert.equal(res.bars.length, 40, "kein Tag darf verloren gehen");
+});
+
+test("A12 · Auf einer rohen Reihe bleibt der Verdacht bestehen", () => {
+  // Die Gegenprobe. Waere der Test nur ein Freibrief, haette er den
+  // eigentlichen Zweck der Pruefung aufgehoben.
+  const res = Quality.validateBars(
+    splitReihe({ ohneBereinigt: true, ohneKennzeichnung: true }),
+    { today: "2026-09-07", adjustmentStatus: "RAW" });
+  assert.equal(res.ok, false);
+  assert.equal(res.stats.continuityBasis, "close");
+  assert.ok(res.findings.some((f) => f.code === "suspected_unadjusted_split"));
+});
+
+test("A13 · Ein gekennzeichneter Splittag erklaert seinen eigenen Sprung", () => {
+  // Auch ohne bereinigte Spalte: was der Anbieter selbst als Splittag
+  // ausweist, ist eine dokumentierte Kapitalmassnahme und kein
+  // Verdachtsfall. Die eingeschraenkte Brauchbarkeit steht trotzdem da.
+  const res = Quality.validateBars(splitReihe({ ohneBereinigt: true }), {
+    today: "2026-09-07", adjustmentStatus: "RAW"
+  });
+  assert.equal(res.ok, true);
+  const hinweis = res.findings.find((f) => f.code === "announced_split");
+  assert.ok(hinweis, "der gekennzeichnete Split muss als Hinweis erscheinen");
+  assert.equal(hinweis.severity, "info");
+  assert.match(hinweis.message, /nur eingeschraenkt brauchbar/);
+});
+
+test("A14 · Eine behauptete Bereinigung ohne zweite Spalte hebt nichts auf", () => {
+  // Die Stufe allein darf die Pruefung nicht entschaerfen. Sonst genuegte
+  // es, eine Reihe "TOTAL_RETURN" zu nennen, um jede Kontrolle
+  // abzuschalten.
+  const res = Quality.validateBars(
+    splitReihe({ ohneBereinigt: true, ohneKennzeichnung: true }),
+    { today: "2026-09-07", adjustmentStatus: "TOTAL_RETURN" });
+  assert.equal(res.stats.continuityBasis, "close",
+    "ohne bereinigte Spalte gibt es nichts, worauf man ausweichen koennte");
+  assert.equal(res.ok, false);
+});
+
+test("A15 · Ein echter Kurssturz bleibt ein Befund", () => {
+  // Die wichtigste Gegenprobe: die Lockerung darf nur Splits betreffen.
+  // Ein Einbruch von 60 % ohne Splitverhaeltnis und ohne Kennzeichnung
+  // muss weiterhin auffallen.
+  const bars = splitReihe();
+  bars[30].adjustedClose = +(bars[29].adjustedClose * 0.4).toFixed(4);
+  bars[30].close = +(bars[29].close * 0.4).toFixed(4);
+  const res = Quality.validateBars(bars, {
+    today: "2026-09-07", adjustmentStatus: "TOTAL_RETURN"
+  });
+  assert.ok(res.findings.some((f) => f.code === "large_move" ||
+                                     f.code === "suspected_unadjusted_split"),
+    "ein Einbruch ohne Erklaerung muss gemeldet werden");
+});

@@ -78,6 +78,36 @@
     var suspectedSplits = [];
     var gaps = [];
 
+    /* Auf welcher Spalte wird die Stetigkeit geprueft?
+    
+       Diese Frage stellte sich nicht, solange eine Reihe nur eine Spalte
+       hatte. Tiingo liefert beide, und dann ist die Antwort entscheidend:
+       die ROHE Spalte springt an einem Split - das ist ihre Aufgabe, nicht
+       ihr Fehler. Wer sie auf Stetigkeit prueft, lehnt genau die Titel ab,
+       die eine Kapitalmassnahme hatten.
+
+       Das ist nicht hypothetisch: der erste Import gegen die echte API hat
+       AAPL, NVDA, AMZN und TSLA verworfen - alle vier mit Split im
+       Zeitraum, alle vier mit tadellos bereinigter Reihe daneben.
+
+       Traegt die Reihe eine belastbare bereinigte Spalte, wird auf ihr
+       geprueft. Sonst auf der rohen, und dann gilt der Verdacht wieder. */
+    var stufe = String(options.adjustmentStatus || "").toUpperCase();
+    var bereinigtBelastbar = stufe === "TOTAL_RETURN" || stufe === "SPLIT_ADJUSTED" ||
+                             options.adjustmentStatus === "adjusted" ||
+                             options.adjustmentStatus === "splitAdjusted";
+    var pruefeBereinigt = bereinigtBelastbar && bars.some(function (b) {
+      return b && isNum(b.adjustedClose) && b.adjustedClose > 0;
+    });
+
+    /** Der Wert, an dem die Stetigkeit gemessen wird. */
+    function verlaufswert(bar) {
+      if (pruefeBereinigt && isNum(bar.adjustedClose) && bar.adjustedClose > 0) {
+        return bar.adjustedClose;
+      }
+      return bar.close;
+    }
+
     for (var i = 0; i < bars.length; i++) {
       var bar = bars[i];
       var where = { index: i, date: bar && bar.date };
@@ -133,14 +163,27 @@
         findings.push(finding("warning", "non_positive_open", "Eroeffnungskurs nicht positiv.", where));
       }
 
-      if (previous && isNum(previous.close) && previous.close > 0) {
-        var change = c / previous.close - 1;
+      var vorher = previous ? verlaufswert(previous) : null;
+      var jetzt = verlaufswert(bar);
+      if (previous && isNum(vorher) && vorher > 0 && isNum(jetzt) && jetzt > 0) {
+        var change = jetzt / vorher - 1;
         var movePct = Math.abs(change) * 100;
         if (movePct > config.maxDailyMovePct) {
-          var split = looksLikeSplit(previous.close / c, config);
-          if (split) {
+          var split = looksLikeSplit(vorher / jetzt, config);
+          /* Ein Tag, den der Anbieter selbst als Splittag kennzeichnet,
+             erklaert seinen eigenen Sprung. Das ist eine dokumentierte
+             Kapitalmassnahme und kein Verdachtsfall - auch dann nicht, wenn
+             nur die rohe Spalte vorliegt. */
+          var angekuendigt = isNum(bar.splitFactor) && Math.abs(bar.splitFactor - 1) > 1e-9;
+          if (angekuendigt) {
+            findings.push(finding("info", "announced_split",
+              "Kurssprung von " + round(movePct, 1) + " % am " + bar.date + " faellt mit einem " +
+              "vom Anbieter gekennzeichneten Split zusammen (Faktor " + bar.splitFactor + ")." +
+              (pruefeBereinigt ? "" : " Die Reihe traegt keine belastbare bereinigte Spalte; " +
+               "fuer Kennzahlen ist sie damit nur eingeschraenkt brauchbar."), where));
+          } else if (split) {
             suspectedSplits.push({ date: bar.date, ratio: split.ratio, direction: split.direction,
-                                   from: previous.close, to: c });
+                                   from: vorher, to: jetzt });
             findings.push(finding("error", "suspected_unadjusted_split",
               "Kurssprung von " + round(movePct, 1) + " % am " + bar.date + " entspricht einem " +
               split.ratio + ":1-Verhaeltnis. Das ist mit hoher Wahrscheinlichkeit ein nicht bereinigter " +
@@ -190,6 +233,10 @@
     var errors = findings.filter(function (f) { return f.severity === "error"; });
     var stats = {
       bars: bars.length, usable: usable.length,
+      /* Worauf die Stetigkeitspruefung lief. Ohne diese Angabe laesst sich
+         ein Befund nicht einordnen: "kein Sprung gefunden" bedeutet auf der
+         bereinigten Spalte etwas anderes als auf der rohen. */
+      continuityBasis: pruefeBereinigt ? "adjustedClose" : "close",
       first: usable.length ? usable[0].date : null,
       last: usable.length ? usable[usable.length - 1].date : null,
       suspectedSplits: suspectedSplits.length,
