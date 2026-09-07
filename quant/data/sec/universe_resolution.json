@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-07T19:03:36+00:00",
+  "note": "Diagnostic. Shows what each configured ticker resolves to in the SEC ticker map and what each candidate CIK actually contains. The SEC is the authority; the config CIK is only a hint.",
+  "companies": [
+    {
+      "ticker": "NVDA",
+      "configured_cik": "0001045810",
+      "sec_cik": "0001045810",
+      "match": true,
+      "candidates": [
+        {
+          "cik": "0001045810",
+          "name": "NVIDIA CORP",
+          "entity_type": "operating",
+          "sic": "3674",
+          "sic_description": "Semiconductors & Related Devices",
+          "tickers": [
+            "NVDA"
+          ],
+          "exchanges": [
+            "Nasdaq"
+          ],
+          "former_names": [
+            "NVIDIA CORP/CA"
+          ],
+          "fiscal_year_end": "0131",
+          "periodic_filings": 112,
+          "forms": {
+            "10-K": 25,
+            "10-K/A": 2,
+            "10-Q": 83,
+            "10-Q/A": 2
+          },
+          "earliest_report": "1999-05-02",
+          "latest_report": "2026-07-26"
+        }
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "configured_cik": "0000320193",
+      "sec_cik": "0000320193",
+      "match": true,
+      "candidates": [
+        {
+          "cik": "0000320193",
+          "name": "Apple Inc.",
+          "entity_type": "operating",
+          "sic": "3571",
+          "sic_description": "Electronic Computers",
+          "tickers": [
+            "AAPL"
+          ],
+          "exchanges": [
+            "Nasdaq"
+          ],
+          "former_names": [
+            "APPLE INC",
+            "APPLE COMPUTER INC",
+            "APPLE COMPUTER INC/ FA"
+          ],
+          "fiscal_year_end": "0926",
+          "periodic_filings": 132,
+          "forms": {
+            "10-K": 30,
+            "10-K/A": 2,
+            "10-Q": 98,
+            "10-Q/A": 2
+          },
+          "earliest_report": "1993-12-31",
+          "latest_report": "2026-06-27"
+        }
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "configured_cik": "0000789019",
+      "sec_cik": "0000789019",
+      "match": true,
+      "candidates": [
+        {
+          "cik": "0000789019",
+          "name": "MICROSOFT CORP",
+          "entity_type": "operating",
+          "sic": "7372",
+          "sic_description": "Services-Prepackaged Software",
+          "tickers": [
+            "MSFT"
+          ],
+          "exchanges": [
+            "Nasdaq"
+          ],
+          "former_names": [],
+          "fiscal_year_end": "0630",
+          "periodic_filings": 137,
+          "forms": {
+            "10-K": 33,
+            "10-Q": 98,
+            "10-Q/A": 6
+          },
+          "earliest_report": "1993-12-31",
+          "latest_report": "2026-06-30"
+        }
+      ]
+    },
+    {
+      "ticker": "JPM",
+      "configured_cik": "0000019617",
+      "sec_cik": "0000019617",
+      "match": true,
+      "candidates": [
+        {
+          "cik": "0000019617",
+          "name": "JPMORGAN CHASE & CO",
+          "entity_type": "operating",
+          "sic": "6021",
+          "sic_description": "National Commercial Banks",
+          "tickers": [
+            "JPM",
+            "JPM-PC",
+            "AMJB",
+            "JPM-PD",
+            "JPM-PJ",
+            "JPM-PK",
+            "JPM-PL",
+            "JPM-PM",
+            "VYLD"
+          ],
+          "exchanges": [
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE"
+          ],
+          "former_names": [
+            "JPMORGAN CHASE & CO",
+            "J P MORGAN CHASE & CO",
+            "CHASE MANHATTAN CORP /DE/",
+            "CHEMICAL BANKING CORP"
+          ],
+          "fiscal_year_end": "1231",
+          "periodic_filings": 137,
+          "forms": {
+            "10-K": 27,
+            "10-K/A": 10,
+            "10-Q": 98,
+            "10-Q/A": 2
+          },
+          "earliest_report": "1993-12-31",
+          "latest_report": "2026-06-30"
+        }
+      ]
+    },
+    {
+      "ticker": "XOM",
+      "configured_cik": "0000034088",
+      "sec_cik": "0002115436",
+      "match": false,
+      "candidates": [
+        {
+          "cik": "0000034088",
+          "name": "EXXON MOBIL CORP",
+          "entity_type": "operating",
+          "sic": "2911",
+          "sic_description": "Petroleum Refining",
+          "tickers": [],
+          "exchanges": [],
+          "former_names": [
+            "EXXON CORP"
+          ],
+          "fiscal_year_end": "1231",
+          "periodic_filings": 132,
+          "forms": {
+            "10-K": 31,
+            "10-K/A": 1,
+            "10-Q": 98,
+            "10-Q/A": 2
+          },
+          "earliest_report": "1993-12-31",
+          "latest_report": "2026-06-30"
+        },
+        {
+          "cik": "0002115436",
+          "name": "ExxonMobil Holdings Corp",
+          "entity_type": "operating",
+          "sic": "2911",
+          "sic_description": "Petroleum Refining",
+          "tickers": [
+            "XOM"
+          ],
+          "exchanges": [
+            "NYSE"
+          ],
+          "former_names": [],
+          "fiscal_year_end": "1231",
+          "periodic_filings": 1,
+          "forms": {
+            "10-Q": 1
+          },
+          "earliest_report": "2026-06-30",
+          "latest_report": "2026-06-30"
+        }
+      ]
+    }
+  ]
+}
