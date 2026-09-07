@@ -41,10 +41,14 @@ function registry() {
   ]);
 }
 
-function provider(fetchImpl, capOverrides) {
+/* `report` reicht bis in freePlanCapabilities durch: null bedeutet
+   ausdruecklich "kein Laufzeitnachweis", undefined "nimm den aus dem
+   Baum". Ohne diesen Durchgriff koennte kein Test mehr den ungeprueften
+   Ausgangszustand herstellen, sobald ein Bericht existiert. */
+function provider(fetchImpl, capOverrides, report) {
   return Tiingo.createTiingoProvider({
     apiKey: KEY,
-    capabilities: Tiingo.freePlanCapabilities(capOverrides),
+    capabilities: Tiingo.freePlanCapabilities(capOverrides, report),
     symbolRegistry: registry(),
     fetchImpl, sleep: () => Promise.resolve()
   });
@@ -146,11 +150,18 @@ test("T7 · Ungepruefte Bereinigung wird nicht behauptet", async () => {
   // Der wichtigste Test dieser Datei. Sekundaerquellen berichten, adjClose
   // sei total-return-bereinigt. Solange das niemand an echten Daten gezeigt
   // hat, darf der Adapter es nicht behaupten.
-  const caps = Tiingo.freePlanCapabilities();
+  //
+  // Inzwischen liegt ein Laufzeitnachweis im Baum, und die Faehigkeit steht
+  // deshalb auf true. Geprueft wird hier trotzdem die Regel und nicht der
+  // Tag, an dem sie geschrieben wurde: ohne Bericht bleibt alles auf null.
+  // Wuerde der Test nur den heutigen Stand festhalten, wuerde er beim
+  // Wegfall des Nachweises nicht anschlagen - also genau dann nicht, wenn
+  // es darauf ankommt.
+  const caps = Tiingo.freePlanCapabilities(null, null);
   assert.equal(caps.sets.market.adjustedPrices, null,
     "ungeprueft heisst null, nicht true und nicht false");
 
-  const p = provider(() => F.response(F.AAPL_PLAIN));
+  const p = provider(() => F.response(F.AAPL_PLAIN), null, null);
   assert.equal(p.adjustmentStatus(), "unknown");
 
   const res = await p.getDailyBars("ref_AAPL", {});
@@ -320,9 +331,11 @@ test("T19 · Stammdaten werden kanonisch uebersetzt", async () => {
   assert.ok(!("exchangeCode" in res.data), "Vendor-Feldname durchgeschlagen");
 });
 
-test("T20 · Intraday laeuft ueber IEX und ist als ungeprueft deklariert", async () => {
-  const caps = Tiingo.freePlanCapabilities();
-  assert.equal(caps.sets.market.intraday, null, "ungeprueft, nicht behauptet");
+test("T20 · Intraday laeuft ueber IEX und wird erst nach dem Nachweis zugesagt", async () => {
+  assert.equal(Tiingo.freePlanCapabilities(null, null).sets.market.intraday, null,
+    "ohne Bericht ungeprueft, nicht behauptet");
+  assert.equal(Tiingo.freePlanCapabilities().sets.market.intraday, true,
+    "mit Bericht zugesagt - der Nachweis hat 78 Bars ueber IEX geholt");
 
   let seenUrl = null;
   const p = provider((url) => { seenUrl = url; return F.response(F.IEX_INTRADAY); });
@@ -352,4 +365,97 @@ test("T22 · Der Adapter erfuellt den MarketDataProvider-Vertrag sinngemaess", (
   }
   assert.equal(p.isMock, false, "ein echter Adapter darf sich nicht als Mock ausgeben");
   assert.equal(p.providerId, "tiingo");
+});
+
+/* ------------------------------------------ Laufzeitnachweis (§33) */
+
+/* Ein erfundener Bericht - er prueft die Mechanik, nicht Tiingo. Der echte
+   Bericht liegt unter quant/data/market/ und entsteht nur in GitHub
+   Actions, wo der Schluessel liegt. */
+const BERICHT = (findings) => ({
+  provider: "tiingo",
+  generatedAt: "2026-01-01T00:00:00.000Z",
+  run: { source: "github-actions", runId: "42", commit: "abc123", ref: "test" },
+  findings
+});
+
+test("T23 · Ohne Nachweis sagt der Adapter nichts zu", () => {
+  const caps = Tiingo.freePlanCapabilities(null, null);
+  for (const cap of ["adjustedPrices", "splitAdjustedPrices", "splits", "dividends",
+                     "intraday", "realtime", "websocket"]) {
+    assert.equal(caps.sets.market[cap], null, cap + " ist ohne Beleg keine Zusage");
+  }
+  assert.deepEqual(caps.evidence, {});
+  assert.equal(caps.verifiedAt, null);
+});
+
+test("T24 · Ein Befund hebt genau eine Faehigkeit an und hinterlaesst den Beleg", () => {
+  const caps = Tiingo.freePlanCapabilities(null, BERICHT([
+    { capability: "adjustedPrices", result: "PASSED",
+      checkedAt: "2026-01-01T00:00:00.000Z", evidence: { ratio: 0.93 } }
+  ]));
+
+  assert.equal(caps.sets.market.adjustedPrices, true);
+  // Und nur diese eine. Ein Befund ueber die Bereinigung sagt nichts
+  // ueber Intraday.
+  assert.equal(caps.sets.market.intraday, null);
+  assert.equal(caps.sets.market.splits, null);
+
+  const beleg = caps.evidence.adjustedPrices;
+  assert.equal(beleg.verificationLevel, "RUNTIME_VERIFIED");
+  assert.equal(beleg.runId, "42");
+  assert.equal(beleg.source, "github-actions");
+  assert.deepEqual(beleg.observed, { ratio: 0.93 });
+  assert.equal(caps.verifiedAt, "2026-01-01T00:00:00.000Z");
+});
+
+test("T25 · Ein gescheiterter Befund setzt auf false, kein Befund laesst null", () => {
+  const caps = Tiingo.freePlanCapabilities(null, BERICHT([
+    { capability: "intraday", result: "FAILED", evidence: { reason: "403" } },
+    { capability: "dividends", result: "SKIPPED" }
+  ]));
+  // false und null sind nicht dasselbe: das eine ist eine Auskunft, das
+  // andere ihr Fehlen.
+  assert.equal(caps.sets.market.intraday, false);
+  assert.equal(caps.sets.market.dividends, null);
+  assert.equal(caps.evidence.dividends, undefined,
+    "ein uebersprungener Test ist kein Beleg");
+});
+
+test("T26 · Ein Befund ohne Zuordnung hebt nichts an", () => {
+  // symbolEncoding und apiAccess sind Voraussetzungen, keine Faehigkeiten
+  // der Matrix. Ein Befund darf nicht auf eine Faehigkeit durchschlagen,
+  // die er gar nicht geprueft hat.
+  const caps = Tiingo.freePlanCapabilities(null, BERICHT([
+    { capability: "symbolEncoding", result: "PASSED", evidence: { symbol: "BRK-B" } }
+  ]));
+  assert.equal(caps.evidence.symbolEncoding, undefined);
+  assert.equal(Object.keys(caps.evidence).length, 0);
+});
+
+test("T27 · Ein unbrauchbarer Bericht haelt den Adapter nicht an", () => {
+  for (const kaputt of [{}, { findings: null }, { provider: "polygon", findings: [] }]) {
+    const caps = Tiingo.freePlanCapabilities(null, kaputt);
+    assert.equal(caps.sets.market.adjustedPrices, null);
+  }
+  // Und eine fehlende Datei ist kein Fehler, sondern ein leerer Befund.
+  assert.equal(Tiingo.loadRuntimeEvidence("/nicht/vorhanden.json"), null);
+});
+
+test("T28 · Der echte Nachweis im Baum belegt, was er behauptet", () => {
+  // Kein Netzverkehr: die Datei ist committed und stammt aus einem Lauf in
+  // GitHub Actions. Dieser Test haelt fest, dass sie das auch bleibt - eine
+  // von Hand gesetzte Zusage waere daran erkennbar, dass ihr der Beleg fehlt.
+  const bericht = Tiingo.loadRuntimeEvidence();
+  assert.ok(bericht, "der Laufzeitnachweis fehlt");
+  assert.equal(bericht.run.source, "github-actions");
+  assert.ok(bericht.run.runId, "ohne Run-ID ist der Befund nicht nachpruefbar");
+
+  const caps = Tiingo.freePlanCapabilities();
+  for (const [cap, wert] of Object.entries(caps.sets.market)) {
+    if (wert === null) continue;
+    if (cap === "daily" || cap === "marketStatus") continue;   // aus der Deklaration
+    assert.ok(caps.evidence[cap], cap + " ist zugesagt, aber ohne Beleg");
+    assert.equal(caps.evidence[cap].verificationLevel, "RUNTIME_VERIFIED");
+  }
 });

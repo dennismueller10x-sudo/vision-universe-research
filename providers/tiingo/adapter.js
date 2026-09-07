@@ -73,6 +73,101 @@ const COMMERCIAL_LIMITS = {
   baseBackoffMs: 500
 };
 
+/* ==========================================================================
+   LAUFZEITNACHWEIS (§33)
+
+   Die Faehigkeitsmatrix unten steht auf null, wo die Antwortform bekannt,
+   das Verhalten aber ungeprueft ist. Sie von Hand auf true zu setzen waere
+   genau der Fehler, den Phase 3 abgestellt hat: eine Zusage ohne Beleg.
+
+   Stattdessen hebt der Nachweis sie an. quant/data/market/
+   tiingo-runtime-verification.json entsteht in GitHub Actions, wo der
+   Schluessel liegt, aus echten Anfragen an bekannte Ereignisse - ein
+   4:1-Split, ein Dividendenstichtag. Fehlt die Datei, bleibt alles auf
+   null. Das System laeuft dann mit weniger Zusagen, nicht mit falschen.
+
+   Ein lokal erzeugter Bericht hebt ebenfalls an, aber er traegt seine
+   Herkunft mit sich: nur der Lauf aus Actions ist von aussen nachpruefbar,
+   und das steht in jedem Beleg.
+   ========================================================================== */
+
+const RUNTIME_REPORT_PATH = path.join(
+  __dirname, "..", "..", "quant", "data", "market", "tiingo-runtime-verification.json");
+
+/* Welcher Befund belegt welche Faehigkeit. Was hier nicht steht, hebt
+   nichts an - ein Befund ohne Zuordnung ist eine Beobachtung, keine
+   Zusicherung. apiAccess belegt den Stammdatenzugriff, weil genau dieser
+   Aufruf Name, Boerse und Historienbereich zurueckgab; symbolEncoding hat
+   keine eigene Faehigkeit und bleibt eine Notiz. */
+const EVIDENCE_TO_CAPABILITY = {
+  historyDepth:        { set: "market",    capability: "historicalDaily" },
+  splitAdjustedPrices: { set: "market",    capability: "splitAdjustedPrices" },
+  splits:              { set: "market",    capability: "splits" },
+  adjustedPrices:      { set: "market",    capability: "adjustedPrices" },
+  dividends:           { set: "market",    capability: "dividends" },
+  intraday:            { set: "market",    capability: "intraday" },
+  apiAccess:           { set: "reference", capability: "securityMaster" }
+};
+
+/** Liest den Bericht, wenn es einen gibt. Kein Bericht ist kein Fehler. */
+function loadRuntimeEvidence(file) {
+  const target = file || RUNTIME_REPORT_PATH;
+  try {
+    const fs = require("fs");
+    if (!fs.existsSync(target)) return null;
+    const report = JSON.parse(fs.readFileSync(target, "utf8"));
+    return report && report.provider === PROVIDER_ID ? report : null;
+  } catch (err) {
+    /* Ein unlesbarer Bericht darf den Adapter nicht anhalten - er darf nur
+       nichts anheben. */
+    return null;
+  }
+}
+
+/**
+ * Traegt die Befunde in eine Faehigkeitsdeklaration ein.
+ *
+ * PASSED hebt auf true, FAILED setzt auf false, alles andere laesst den
+ * Wert stehen. Jede Aenderung hinterlaesst einen Beleg mit Lauf und
+ * Zeitpunkt - eine Zusage soll die Frage "woher wisst ihr das?"
+ * beantworten koennen, ohne dass jemand im Protokoll sucht.
+ */
+function applyRuntimeEvidence(spec, report) {
+  if (!report || !Array.isArray(report.findings)) return spec;
+
+  const run = report.run || {};
+  const evidence = Object.assign({}, spec.evidence || {});
+  let verifiedAt = spec.verifiedAt || null;
+
+  report.findings.forEach(function (finding) {
+    const target = EVIDENCE_TO_CAPABILITY[finding.capability];
+    if (!target) return;
+    if (finding.result !== "PASSED" && finding.result !== "FAILED") return;
+
+    const set = spec[target.set] || (spec[target.set] = {});
+    set[target.capability] = finding.result === "PASSED";
+
+    evidence[target.capability] = {
+      verificationLevel: "RUNTIME_VERIFIED",
+      result: finding.result,
+      checkedAt: finding.checkedAt || report.generatedAt || null,
+      source: run.source || "unknown",
+      runId: run.runId || null,
+      commit: run.commit || null,
+      /* Der Befund selbst, nicht seine Zusammenfassung: die Zahlen, an
+         denen die Entscheidung haengt. */
+      observed: finding.evidence || null
+    };
+    if (!verifiedAt || (finding.checkedAt && finding.checkedAt > verifiedAt)) {
+      verifiedAt = finding.checkedAt || verifiedAt;
+    }
+  });
+
+  spec.evidence = evidence;
+  spec.verifiedAt = verifiedAt;
+  return spec;
+}
+
 /**
  * Faehigkeiten des kostenlosen Zugangs.
  *
@@ -80,8 +175,8 @@ const COMMERCIAL_LIMITS = {
  * nicht vorhanden, null ungeprueft. Der wichtigste Eintrag ist
  * adjustedPrices auf null - siehe Modulkopf.
  */
-function freePlanCapabilities(overrides) {
-  return Capabilities.declare(PROVIDER_ID, Object.assign({
+function freePlanCapabilities(overrides, report) {
+  const spec = {
     plan: "free",
     market: {
       historicalDaily: true,
@@ -133,7 +228,29 @@ function freePlanCapabilities(overrides) {
         "50 Anfragen pro Stunde sind der eigentliche Engpass, nicht die 1000 pro Tag. " +
         "Ein Erstimport muss das Stundenfenster einplanen."
     }
-  }, overrides || {}));
+  };
+
+  /* Reihenfolge mit Absicht: erst der Nachweis, dann die ausdruecklichen
+     Overrides. Wer beim Aufruf etwas setzt, weiss mehr als die Datei - und
+     ein Test, der eine Faehigkeit bewusst auf null zwingt, muss das auch
+     koennen, wenn ein Bericht im Baum liegt. */
+  applyRuntimeEvidence(spec, report === undefined ? loadRuntimeEvidence() : report);
+  return Capabilities.declare(PROVIDER_ID, withOverrides(spec, overrides));
+}
+
+/* Legt die Overrides ueber die Deklaration, ohne dem Aufrufer sein Objekt
+   zu veraendern. Faehigkeitsgruppen werden feldweise zusammengefuehrt: wer
+   eine einzelne Faehigkeit setzen will, soll dafuer nicht die ganze Gruppe
+   noch einmal aufschreiben muessen - und was er nicht nennt, behaelt seinen
+   Wert statt still auf null zu fallen. */
+function withOverrides(spec, overrides) {
+  if (!overrides) return spec;
+  const SETS = ["market", "fundamental", "reference", "estimate"];
+  const out = Object.assign({}, spec, overrides);
+  SETS.forEach(function (set) {
+    if (overrides[set]) out[set] = Object.assign({}, spec[set], overrides[set]);
+  });
+  return out;
 }
 
 function commercialPlanCapabilities(overrides) {
@@ -600,5 +717,9 @@ module.exports = {
   COMMERCIAL_LIMITS,
   freePlanCapabilities,
   commercialPlanCapabilities,
+  loadRuntimeEvidence,
+  applyRuntimeEvidence,
+  RUNTIME_REPORT_PATH,
+  EVIDENCE_TO_CAPABILITY,
   createTiingoProvider
 };
