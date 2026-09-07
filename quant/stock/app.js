@@ -24,6 +24,8 @@
         return;
       }
 
+      if (row.quantStatus === "not_listed") return renderDelisted(root, row, data);
+
       return S.loadFactorDna(ticker).then(function (shard) {
         var dna = shard.securities[row.securityId];
         dna.asOf = shard.asOf;
@@ -48,6 +50,34 @@
       });
     }
   });
+
+  /* Ein Titel, der zum Datenstand nicht mehr gelistet ist, hat keinen
+     aktuellen Score — und bekommt auch keinen. Was er hat, ist seine
+     Geschichte, und die bleibt im Universum erhalten (§39). */
+  function renderDelisted(root, row, data) {
+    root.appendChild(el("header", {}, [
+      el("p", { class: "q-kicker", text: row.sector + " · " + row.industry }),
+      el("h1", { class: "q-h1", style: "margin-bottom:4px", text: row.ticker }),
+      el("p", { class: "q-lead", text: row.name })
+    ]));
+    root.appendChild(el("div", { style: "margin-top:18px" }, [
+      S.unavailable(
+        row.status === "acquired" ? "Seit " + S.formatDate(row.lastTradingDate) + " uebernommen"
+                                  : "Seit " + S.formatDate(row.lastTradingDate) + " nicht mehr gelistet",
+        "Fuer diesen Titel gibt es zum aktuellen Datenstand keinen Kurs und damit keinen VU Quant Score. " +
+        "Er bleibt im historischen Universum enthalten und wird in Backtests bis zu seinem letzten Handelstag " +
+        "beruecksichtigt — genau das verhindert Survivorship Bias.")
+    ]));
+    root.appendChild(C.section("Historische Eckdaten", null, C.metricGrid([
+      { label: "Erster Handelstag", value: S.formatDate(row.firstTradingDate) },
+      { label: "Letzter Handelstag", value: S.formatDate(row.lastTradingDate) },
+      { label: "Status", value: statusLabel(row.status) },
+      { label: "Sektor", value: row.sector, hint: row.industry }
+    ])));
+    root.appendChild(el("div", { class: "q-btn-row", style: "margin-top:20px" }, [
+      el("a", { class: "q-btn q-btn--ghost", href: S.BASE + "ranking/", text: "Aktuelles Ranking" })
+    ]));
+  }
 
   function header(row, dna, data) {
     var fixture = row.fixtureId

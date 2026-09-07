@@ -1,0 +1,44 @@
+name: Quant CI
+
+# Prueft den Investment-Intelligence-Bereich: Engine-Logik, die kritischen
+# Acceptance-Kriterien, die Gueltigkeit der praekomputierten Daten und die
+# Uebereinstimmung zwischen Datenstand und Engine.
+
+on:
+  push:
+    branches: [main]
+    paths: ['quant/**', 'scripts/quant/**', '.github/workflows/quant-ci.yml']
+  pull_request:
+    paths: ['quant/**', 'scripts/quant/**', '.github/workflows/quant-ci.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine- und Acceptance-Tests
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Methodik- und Datendateien sind gueltiges JSON
+        run: |
+          for file in quant/methodology/*.json quant/data/*.json quant/data/dna/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(ls quant/methodology/*.json quant/data/*.json quant/data/dna/*.json | wc -l) JSON-Dateien geprueft"
+
+      - name: HTML-Seiten binden die gemeinsame Shell und die Navigation ein
+        run: |
+          for page in $(find quant -name 'index.html'); do
+            grep -q '/quant/ui/shell.js' "$page" || { echo "$page ohne quant/ui/shell.js"; exit 1; }
+            grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+            grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          done
+          echo "$(find quant -name 'index.html' | wc -l) Seiten geprueft"
+
+      - name: Praekomputierte Daten stimmen mit der Engine ueberein
+        run: node scripts/quant/verify-quant-data.mjs

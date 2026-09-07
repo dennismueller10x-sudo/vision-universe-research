@@ -115,6 +115,27 @@ const events = Radar.detectEvents(rows, velocities, quantCfg);
 const radar = Radar.buildRadar(rows, velocities, quantCfg, { limit: 12 });
 console.log(`     ${events.length} Intelligence Events, ${Object.keys(radar.modules).length} Radar-Module`);
 
+/* Historisch existierende, heute nicht mehr gelistete Titel gehoeren als
+   Referenzzeilen in den Datensatz. Sie erscheinen nicht im Screener — die
+   Query Engine filtert status !== "active" heraus —, aber Backtest-Trades
+   und Portfolio-Historien verweisen auf sie, und eine Detailseite, die
+   dafuer ins Leere laeuft, waere ein Loch im Evidenzpfad. Kennzahlen
+   bekommen sie keine: zum Datenstand existiert kein Kurs mehr. */
+const activeIds = new Set(rows.map((r) => r.securityId));
+const inactiveRows = dataset.securities
+  .filter((s) => !activeIds.has(s.securityId))
+  .map((s) => ({
+    securityId: s.securityId, ticker: s.ticker, name: s.name,
+    sector: s.sector, industry: s.industry, country: s.country,
+    assetType: s.assetType, status: s.status, isMock: true,
+    fixtureId: s.fixtureId || null,
+    firstTradingDate: s.firstTradingDate, lastTradingDate: s.lastTradingDate || null,
+    asOf, quantScore: null, quantStatus: "not_listed", coverage: null, confidence: null,
+    methodologyVersion: quantCfg.methodologyVersion, percentiles: {}
+  }));
+rows = rows.concat(inactiveRows);
+console.log(`     ${inactiveRows.length} historische Titel als Referenzzeilen ergaenzt`);
+
 console.log("5/6  Rankings vorberechnen …");
 const RANKINGS = [
   { id: "overall", label: "VU Quant Score", field: "quantScore" },
