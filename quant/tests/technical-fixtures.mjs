@@ -56,7 +56,9 @@ export const fixtures = {
   gap: (n = 400) => {
     const closes = walk(n, 0.001, 0.006, "gap");
     for (let i = 200; i < n; i++) closes[i] *= 1.10;
-    return seriesFromCloses(closes, { seed: "gap", instrumentId: "SYN_GAP" });
+    const base = seriesFromCloses(closes, { seed: "gap", instrumentId: "SYN_GAP" });
+    // Echte OHLC-Luecke: Low der Gap-Bar ueber dem High der Vorbar.
+    return Canonical.revise(base, [{ index: 200, open: closes[200] * 0.997, low: closes[200] * 0.994 }], "fixture-1");
   },
   /** Fake Reversal: Trend, kurzer Rueckschlag unterhalb Schwelle, Trend geht weiter. */
   fakeReversal: () => {
