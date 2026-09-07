@@ -1,9 +1,9 @@
 {
   "cik": "0000034088",
-  "generated_at_utc": "2026-09-07T23:47:12+00:00",
+  "generated_at_utc": "2026-09-07T23:53:39+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.0.0",
+    "normalization_logic": "1.1.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -118,14 +118,14 @@
   },
   "quality_summary": {
     "rules_version": "1.0.0",
-    "total": 17040,
+    "total": 17057,
     "by_severity": {
       "INFO": 16088,
-      "WARNING": 952
+      "WARNING": 969
     },
     "by_code": {
-      "CONCEPT_DISAGREEMENT": 907,
-      "RESTATEMENT_CONFLICT": 43,
+      "CONCEPT_DISAGREEMENT": 918,
+      "RESTATEMENT_CONFLICT": 49,
       "UNKNOWN_CONCEPT": 16088,
       "UNPLACEABLE_PERIOD": 2
     }
@@ -9689,7 +9689,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9710,7 +9711,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9731,7 +9733,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9752,7 +9755,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9773,7 +9777,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9794,7 +9799,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9815,7 +9821,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9836,7 +9843,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9857,7 +9865,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -9878,28 +9887,31 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
       "metric": "shares_outstanding",
       "fiscal_year": 2025,
       "fiscal_period": "FY",
-      "value": 4179000000.0,
+      "value": 4144947162.0,
       "unit": "shares",
       "period_start": null,
-      "period_end": "2025-12-31",
+      "period_end": "2026-03-31",
       "available": true,
       "available_from": "2026-05-04T16:40:35.000Z",
       "filed": "2026-05-04",
       "form": "10-Q",
       "accession": "0000034088-26-000067",
-      "concept": "us-gaap:CommonStockSharesOutstanding",
+      "concept": "dei:EntityCommonStockSharesOutstanding",
       "source": "SEC_EDGAR_XBRL",
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
     },
     {
@@ -9973,8 +9985,7 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "RESTATED"
+        "CONCEPT_DISAGREEMENT"
       ]
     },
     {
@@ -9995,7 +10006,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -10060,8 +10072,7 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "RESTATED"
+        "CONCEPT_DISAGREEMENT"
       ]
     },
     {
@@ -10082,7 +10093,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -10125,8 +10137,7 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "RESTATED"
+        "CONCEPT_DISAGREEMENT"
       ]
     },
     {
@@ -10169,7 +10180,8 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT"
+        "CONCEPT_DISAGREEMENT",
+        "RESTATED"
       ]
     },
     {
@@ -10198,28 +10210,6 @@
       "metric": "shares_outstanding",
       "fiscal_year": 2025,
       "fiscal_period": "Q2",
-      "value": 4263000000.0,
-      "unit": "shares",
-      "period_start": null,
-      "period_end": "2025-06-30",
-      "available": true,
-      "available_from": "2025-11-03T17:45:47.000Z",
-      "filed": "2025-11-03",
-      "form": "10-Q",
-      "accession": "0000034088-25-000061",
-      "concept": "us-gaap:CommonStockSharesOutstanding",
-      "source": "SEC_EDGAR_XBRL",
-      "transformation": "AS_REPORTED",
-      "quality": "MEDIUM",
-      "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "RESTATED"
-      ]
-    },
-    {
-      "metric": "shares_outstanding",
-      "fiscal_year": 2025,
-      "fiscal_period": "Q3",
       "value": 4217165614.0,
       "unit": "shares",
       "period_start": null,
@@ -10235,22 +10225,23 @@
       "quality": "MEDIUM",
       "flags": [
         "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
     },
     {
       "metric": "shares_outstanding",
       "fiscal_year": 2025,
-      "fiscal_period": "Q4",
-      "value": 4179000000.0,
+      "fiscal_period": "Q3",
+      "value": 4217000000.0,
       "unit": "shares",
       "period_start": null,
-      "period_end": "2025-12-31",
+      "period_end": "2025-09-30",
       "available": true,
-      "available_from": "2026-05-04T16:40:35.000Z",
-      "filed": "2026-05-04",
+      "available_from": "2025-11-03T17:45:47.000Z",
+      "filed": "2025-11-03",
       "form": "10-Q",
-      "accession": "0000034088-26-000067",
+      "accession": "0000034088-25-000061",
       "concept": "us-gaap:CommonStockSharesOutstanding",
       "source": "SEC_EDGAR_XBRL",
       "transformation": "AS_REPORTED",
@@ -10261,8 +10252,8 @@
     },
     {
       "metric": "shares_outstanding",
-      "fiscal_year": 2026,
-      "fiscal_period": "Q1",
+      "fiscal_year": 2025,
+      "fiscal_period": "Q4",
       "value": 4144947162.0,
       "unit": "shares",
       "period_start": null,
@@ -10280,6 +10271,27 @@
         "CONCEPT_DISAGREEMENT",
         "COVER_DATE_INSTANT",
         "RESTATED"
+      ]
+    },
+    {
+      "metric": "shares_outstanding",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q1",
+      "value": 4145000000.0,
+      "unit": "shares",
+      "period_start": null,
+      "period_end": "2026-03-31",
+      "available": true,
+      "available_from": "2026-05-04T16:40:35.000Z",
+      "filed": "2026-05-04",
+      "form": "10-Q",
+      "accession": "0000034088-26-000067",
+      "concept": "us-gaap:CommonStockSharesOutstanding",
+      "source": "SEC_EDGAR_XBRL",
+      "transformation": "AS_REPORTED",
+      "quality": "MEDIUM",
+      "flags": [
+        "CONCEPT_DISAGREEMENT"
       ]
     },
     {

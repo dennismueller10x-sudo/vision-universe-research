@@ -1,9 +1,9 @@
 {
   "cik": "0000019617",
-  "generated_at_utc": "2026-09-07T23:47:12+00:00",
+  "generated_at_utc": "2026-09-07T23:53:39+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.0.0",
+    "normalization_logic": "1.1.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -153,14 +153,14 @@
   },
   "quality_summary": {
     "rules_version": "1.0.0",
-    "total": 44585,
+    "total": 44597,
     "by_severity": {
       "INFO": 44172,
-      "WARNING": 413
+      "WARNING": 425
     },
     "by_code": {
-      "CONCEPT_DISAGREEMENT": 380,
-      "RESTATEMENT_CONFLICT": 33,
+      "CONCEPT_DISAGREEMENT": 372,
+      "RESTATEMENT_CONFLICT": 53,
       "UNKNOWN_CONCEPT": 44172
     }
   },
@@ -9430,29 +9430,6 @@
       "metric": "shares_outstanding",
       "fiscal_year": 2022,
       "fiscal_period": "Q1",
-      "value": 2937050466.0,
-      "unit": "shares",
-      "period_start": null,
-      "period_end": "2022-03-31",
-      "available": true,
-      "available_from": "2022-05-03T20:13:30.000Z",
-      "filed": "2022-05-03",
-      "form": "10-Q",
-      "accession": "0000019617-22-000319",
-      "concept": "dei:EntityCommonStockSharesOutstanding",
-      "source": "SEC_EDGAR_XBRL",
-      "transformation": "AS_REPORTED",
-      "quality": "MEDIUM",
-      "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT",
-        "RESTATED"
-      ]
-    },
-    {
-      "metric": "shares_outstanding",
-      "fiscal_year": 2022,
-      "fiscal_period": "Q2",
       "value": 2932572390.0,
       "unit": "shares",
       "period_start": null,
@@ -9467,14 +9444,14 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
     },
     {
       "metric": "shares_outstanding",
       "fiscal_year": 2022,
-      "fiscal_period": "Q3",
+      "fiscal_period": "Q2",
       "value": 2933204888.0,
       "unit": "shares",
       "period_start": null,
@@ -9489,9 +9466,28 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
+    },
+    {
+      "metric": "shares_outstanding",
+      "fiscal_year": 2022,
+      "fiscal_period": "Q3",
+      "value": 4104933895.0,
+      "unit": "shares",
+      "period_start": null,
+      "period_end": "2022-09-30",
+      "available": true,
+      "available_from": "2022-11-03T20:13:37.000Z",
+      "filed": "2022-11-03",
+      "form": "10-Q",
+      "accession": "0000019617-22-000492",
+      "concept": "us-gaap:CommonStockSharesIssued",
+      "source": "SEC_EDGAR_XBRL",
+      "transformation": "AS_REPORTED",
+      "quality": "HIGH",
+      "flags": []
     },
     {
       "metric": "shares_outstanding",
@@ -9518,29 +9514,6 @@
       "metric": "shares_outstanding",
       "fiscal_year": 2023,
       "fiscal_period": "Q1",
-      "value": 2922288509.0,
-      "unit": "shares",
-      "period_start": null,
-      "period_end": "2023-03-31",
-      "available": true,
-      "available_from": "2023-05-03T20:10:19.000Z",
-      "filed": "2023-05-03",
-      "form": "10-Q",
-      "accession": "0000019617-23-000310",
-      "concept": "dei:EntityCommonStockSharesOutstanding",
-      "source": "SEC_EDGAR_XBRL",
-      "transformation": "AS_REPORTED",
-      "quality": "MEDIUM",
-      "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT",
-        "RESTATED"
-      ]
-    },
-    {
-      "metric": "shares_outstanding",
-      "fiscal_year": 2023,
-      "fiscal_period": "Q2",
       "value": 2906085273.0,
       "unit": "shares",
       "period_start": null,
@@ -9555,14 +9528,14 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
     },
     {
       "metric": "shares_outstanding",
       "fiscal_year": 2023,
-      "fiscal_period": "Q3",
+      "fiscal_period": "Q2",
       "value": 2891008341.0,
       "unit": "shares",
       "period_start": null,
@@ -9577,9 +9550,28 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
+    },
+    {
+      "metric": "shares_outstanding",
+      "fiscal_year": 2023,
+      "fiscal_period": "Q3",
+      "value": 4104933895.0,
+      "unit": "shares",
+      "period_start": null,
+      "period_end": "2023-09-30",
+      "available": true,
+      "available_from": "2023-11-01T20:29:55.000Z",
+      "filed": "2023-11-01",
+      "form": "10-Q",
+      "accession": "0000019617-23-000524",
+      "concept": "us-gaap:CommonStockSharesIssued",
+      "source": "SEC_EDGAR_XBRL",
+      "transformation": "AS_REPORTED",
+      "quality": "HIGH",
+      "flags": []
     },
     {
       "metric": "shares_outstanding",
@@ -9607,29 +9599,6 @@
       "metric": "shares_outstanding",
       "fiscal_year": 2024,
       "fiscal_period": "Q1",
-      "value": 2871667879.0,
-      "unit": "shares",
-      "period_start": null,
-      "period_end": "2024-03-31",
-      "available": true,
-      "available_from": "2024-05-01T20:18:10.000Z",
-      "filed": "2024-05-01",
-      "form": "10-Q",
-      "accession": "0000019617-24-000326",
-      "concept": "dei:EntityCommonStockSharesOutstanding",
-      "source": "SEC_EDGAR_XBRL",
-      "transformation": "AS_REPORTED",
-      "quality": "MEDIUM",
-      "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT",
-        "RESTATED"
-      ]
-    },
-    {
-      "metric": "shares_outstanding",
-      "fiscal_year": 2024,
-      "fiscal_period": "Q2",
       "value": 2845164727.0,
       "unit": "shares",
       "period_start": null,
@@ -9644,9 +9613,28 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
+    },
+    {
+      "metric": "shares_outstanding",
+      "fiscal_year": 2024,
+      "fiscal_period": "Q2",
+      "value": 4104933895.0,
+      "unit": "shares",
+      "period_start": null,
+      "period_end": "2024-06-30",
+      "available": true,
+      "available_from": "2024-08-02T20:18:48.000Z",
+      "filed": "2024-08-02",
+      "form": "10-Q",
+      "accession": "0000019617-24-000453",
+      "concept": "us-gaap:CommonStockSharesIssued",
+      "source": "SEC_EDGAR_XBRL",
+      "transformation": "AS_REPORTED",
+      "quality": "HIGH",
+      "flags": []
     },
     {
       "metric": "shares_outstanding",
@@ -9696,29 +9684,6 @@
       "metric": "shares_outstanding",
       "fiscal_year": 2025,
       "fiscal_period": "Q1",
-      "value": 2779094488.0,
-      "unit": "shares",
-      "period_start": null,
-      "period_end": "2025-03-31",
-      "available": true,
-      "available_from": "2025-05-01T20:16:56.000Z",
-      "filed": "2025-05-01",
-      "form": "10-Q",
-      "accession": "0000019617-25-000421",
-      "concept": "dei:EntityCommonStockSharesOutstanding",
-      "source": "SEC_EDGAR_XBRL",
-      "transformation": "AS_REPORTED",
-      "quality": "MEDIUM",
-      "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT",
-        "RESTATED"
-      ]
-    },
-    {
-      "metric": "shares_outstanding",
-      "fiscal_year": 2025,
-      "fiscal_period": "Q2",
       "value": 2749753854.0,
       "unit": "shares",
       "period_start": null,
@@ -9733,14 +9698,14 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
     },
     {
       "metric": "shares_outstanding",
       "fiscal_year": 2025,
-      "fiscal_period": "Q3",
+      "fiscal_period": "Q2",
       "value": 2722262295.0,
       "unit": "shares",
       "period_start": null,
@@ -9755,9 +9720,28 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
+    },
+    {
+      "metric": "shares_outstanding",
+      "fiscal_year": 2025,
+      "fiscal_period": "Q3",
+      "value": 4104933895.0,
+      "unit": "shares",
+      "period_start": null,
+      "period_end": "2025-09-30",
+      "available": true,
+      "available_from": "2025-11-04T21:18:08.000Z",
+      "filed": "2025-11-04",
+      "form": "10-Q",
+      "accession": "0001628280-25-048859",
+      "concept": "us-gaap:CommonStockSharesIssued",
+      "source": "SEC_EDGAR_XBRL",
+      "transformation": "AS_REPORTED",
+      "quality": "HIGH",
+      "flags": []
     },
     {
       "metric": "shares_outstanding",
@@ -9784,29 +9768,6 @@
       "metric": "shares_outstanding",
       "fiscal_year": 2026,
       "fiscal_period": "Q1",
-      "value": 2679511418.0,
-      "unit": "shares",
-      "period_start": null,
-      "period_end": "2026-03-31",
-      "available": true,
-      "available_from": "2026-05-01T20:18:43.000Z",
-      "filed": "2026-05-01",
-      "form": "10-Q",
-      "accession": "0001628280-26-029344",
-      "concept": "dei:EntityCommonStockSharesOutstanding",
-      "source": "SEC_EDGAR_XBRL",
-      "transformation": "AS_REPORTED",
-      "quality": "MEDIUM",
-      "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT",
-        "RESTATED"
-      ]
-    },
-    {
-      "metric": "shares_outstanding",
-      "fiscal_year": 2026,
-      "fiscal_period": "Q2",
       "value": 2658186195.0,
       "unit": "shares",
       "period_start": null,
@@ -9821,9 +9782,28 @@
       "transformation": "AS_REPORTED",
       "quality": "MEDIUM",
       "flags": [
-        "CONCEPT_DISAGREEMENT",
-        "COVER_DATE_INSTANT"
+        "COVER_DATE_INSTANT",
+        "RESTATED"
       ]
+    },
+    {
+      "metric": "shares_outstanding",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q2",
+      "value": 4104933895.0,
+      "unit": "shares",
+      "period_start": null,
+      "period_end": "2026-06-30",
+      "available": true,
+      "available_from": "2026-08-06T20:19:03.000Z",
+      "filed": "2026-08-06",
+      "form": "10-Q",
+      "accession": "0001628280-26-054343",
+      "concept": "us-gaap:CommonStockSharesIssued",
+      "source": "SEC_EDGAR_XBRL",
+      "transformation": "AS_REPORTED",
+      "quality": "HIGH",
+      "flags": []
     },
     {
       "metric": "shares_outstanding",

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-07T23:47:13+00:00",
+  "generated_at_utc": "2026-09-07T23:53:40+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.1.0",
@@ -23,36 +23,36 @@
       "rows": 864,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 44585,
+        "total": 44597,
         "by_severity": {
           "INFO": 44172,
-          "WARNING": 413
+          "WARNING": 425
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 380,
-          "RESTATEMENT_CONFLICT": 33,
+          "CONCEPT_DISAGREEMENT": 372,
+          "RESTATEMENT_CONFLICT": 53,
           "UNKNOWN_CONCEPT": 44172
         }
       }
     },
     {
-      "ticker": "0000034088",
+      "ticker": "XOM",
       "cik": "0000034088",
       "name": "EXXON MOBIL CORP",
       "sic": "2911",
       "sic_description": "Petroleum Refining",
-      "file": "inspector/0000034088.json",
+      "file": "inspector/XOM.json",
       "rows": 864,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 17040,
+        "total": 17057,
         "by_severity": {
           "INFO": 16088,
-          "WARNING": 952
+          "WARNING": 969
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 907,
-          "RESTATEMENT_CONFLICT": 43,
+          "CONCEPT_DISAGREEMENT": 918,
+          "RESTATEMENT_CONFLICT": 49,
           "UNKNOWN_CONCEPT": 16088,
           "UNPLACEABLE_PERIOD": 2
         }
@@ -114,14 +114,14 @@
       "rows": 864,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 22054,
+        "total": 22056,
         "by_severity": {
           "INFO": 21590,
           "ERROR": 5,
-          "WARNING": 459
+          "WARNING": 461
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 295,
+          "CONCEPT_DISAGREEMENT": 297,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 156,

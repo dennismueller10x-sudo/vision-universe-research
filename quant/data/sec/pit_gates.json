@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-07T23:47:11.887Z",
+  "generated_at_utc": "2026-09-07T23:53:39.087Z",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.1.0",
@@ -113,17 +113,17 @@
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
           "status": "PASS",
-          "reason": "all 4054 observations become available on or after their period end",
+          "reason": "all 4060 observations become available on or after their period end",
           "evidence": {
-            "observations_checked": 4054
+            "observations_checked": 4060
           }
         },
         {
           "gate": "PROVENANCE_COMPLETE",
           "status": "PASS",
-          "reason": "all 4054 observations carry concept, accession, form, filing date and availability",
+          "reason": "all 4060 observations carry concept, accession, form, filing date and availability",
           "evidence": {
-            "observations_checked": 4054
+            "observations_checked": 4060
           }
         },
         {
@@ -135,7 +135,7 @@
         {
           "gate": "UNIT_INTEGRITY",
           "status": "PASS",
-          "reason": "all 4054 observations use a registry-allowed unit",
+          "reason": "all 4060 observations use a registry-allowed unit",
           "evidence": {}
         },
         {
@@ -166,7 +166,7 @@
     },
     {
       "cik": "0000034088",
-      "ticker": "0000034088",
+      "ticker": "XOM",
       "results": [
         {
           "gate": "MARKET_DATA_AVAILABLE",
@@ -253,17 +253,17 @@
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
           "status": "PASS",
-          "reason": "all 6304 observations become available on or after their period end",
+          "reason": "all 6286 observations become available on or after their period end",
           "evidence": {
-            "observations_checked": 6304
+            "observations_checked": 6286
           }
         },
         {
           "gate": "PROVENANCE_COMPLETE",
           "status": "PASS",
-          "reason": "all 6304 observations carry concept, accession, form, filing date and availability",
+          "reason": "all 6286 observations carry concept, accession, form, filing date and availability",
           "evidence": {
-            "observations_checked": 6304
+            "observations_checked": 6286
           }
         },
         {
@@ -275,7 +275,7 @@
         {
           "gate": "UNIT_INTEGRITY",
           "status": "PASS",
-          "reason": "all 6304 observations use a registry-allowed unit",
+          "reason": "all 6286 observations use a registry-allowed unit",
           "evidence": {}
         },
         {
@@ -323,17 +323,17 @@
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
           "status": "PASS",
-          "reason": "all 6545 observations become available on or after their period end",
+          "reason": "all 6528 observations become available on or after their period end",
           "evidence": {
-            "observations_checked": 6545
+            "observations_checked": 6528
           }
         },
         {
           "gate": "PROVENANCE_COMPLETE",
           "status": "PASS",
-          "reason": "all 6545 observations carry concept, accession, form, filing date and availability",
+          "reason": "all 6528 observations carry concept, accession, form, filing date and availability",
           "evidence": {
-            "observations_checked": 6545
+            "observations_checked": 6528
           }
         },
         {
@@ -345,7 +345,7 @@
         {
           "gate": "UNIT_INTEGRITY",
           "status": "PASS",
-          "reason": "all 6545 observations use a registry-allowed unit",
+          "reason": "all 6528 observations use a registry-allowed unit",
           "evidence": {}
         },
         {
@@ -356,21 +356,29 @@
         },
         {
           "gate": "DERIVED_SEPARATION",
-          "status": "PASS",
-          "reason": "all 6 derived metrics carry source VISION_UNIVERSE_DERIVED and a formula version",
-          "evidence": {}
+          "status": "FAIL",
+          "reason": "derived metrics are not clearly separated from SEC facts",
+          "evidence": {
+            "examples": [
+              {
+                "metric": "gross_profit",
+                "source": "SEC_EDGAR_XBRL"
+              }
+            ]
+          }
         }
       ],
       "summary": {
         "total": 8,
         "by_status": {
-          "PASS": 6,
-          "FAIL": 1,
+          "PASS": 5,
+          "FAIL": 2,
           "UNKNOWN": 0,
           "NOT_APPLICABLE": 1
         },
         "blocking_failures": [
-          "SURVIVORSHIP_FREE_UNIVERSE"
+          "SURVIVORSHIP_FREE_UNIVERSE",
+          "DERIVED_SEPARATION"
         ]
       }
     },
@@ -393,17 +401,17 @@
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
           "status": "PASS",
-          "reason": "all 5839 observations become available on or after their period end",
+          "reason": "all 5822 observations become available on or after their period end",
           "evidence": {
-            "observations_checked": 5839
+            "observations_checked": 5822
           }
         },
         {
           "gate": "PROVENANCE_COMPLETE",
           "status": "PASS",
-          "reason": "all 5839 observations carry concept, accession, form, filing date and availability",
+          "reason": "all 5822 observations carry concept, accession, form, filing date and availability",
           "evidence": {
-            "observations_checked": 5839
+            "observations_checked": 5822
           }
         },
         {
@@ -415,7 +423,7 @@
         {
           "gate": "UNIT_INTEGRITY",
           "status": "PASS",
-          "reason": "all 5839 observations use a registry-allowed unit",
+          "reason": "all 5822 observations use a registry-allowed unit",
           "evidence": {}
         },
         {
@@ -450,54 +458,6 @@
   "engine": "quant/engines/gate-tests.js (unveraendert)",
   "provider_gates": [
     {
-      "ticker": "0000034088",
-      "securityId": "sec_0000034088",
-      "gates": {
-        "GATE_A_RESTATEMENT": {
-          "gate": "GATE_A_RESTATEMENT",
-          "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (8019), der spaete die Korrektur (4726.92258). Die Korrektur wirkt nicht rueckwaerts.",
-          "evidence": {
-            "beforeValue": 8019,
-            "afterValue": 4726.92258,
-            "beforeStatus": "original",
-            "afterStatus": "restated",
-            "beforeAvailableAt": "2010-02-26",
-            "afterAvailableAt": "2010-05-06"
-          }
-        },
-        "GATE_B_DELISTING": {
-          "gate": "GATE_B_DELISTING",
-          "result": "FAILED",
-          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
-          "evidence": {
-            "inHistoricalUniverse": false,
-            "inCurrentUniverse": false,
-            "fundamentalRecords": 624,
-            "universeSizeDuring": 0,
-            "universeSizeAfter": 0
-          }
-        },
-        "GATE_C_AVAILABILITY": {
-          "gate": "GATE_C_AVAILABILITY",
-          "result": "PASSED",
-          "message": "624 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
-          "evidence": {
-            "total": 624,
-            "withoutTimestamp": 0,
-            "availableAfterAsOf": 0,
-            "timestampNotAfterPeriodEnd": 0,
-            "sampleTimestampField": "availableAt"
-          }
-        }
-      },
-      "passed": 2,
-      "total": 3,
-      "allPassed": false,
-      "verificationLevel": "RUNTIME_VERIFIED",
-      "note": null
-    },
-    {
       "ticker": "AAPL",
       "securityId": "sec_AAPL",
       "gates": {
@@ -521,7 +481,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 837,
+            "fundamentalRecords": 836,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -529,9 +489,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "837 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "836 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 837,
+            "total": 836,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -569,7 +529,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 432,
+            "fundamentalRecords": 409,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -577,9 +537,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "432 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "409 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 432,
+            "total": 409,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -617,7 +577,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 910,
+            "fundamentalRecords": 909,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -625,9 +585,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "910 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "909 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 910,
+            "total": 909,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -648,14 +608,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (567.996734), der spaete die Korrektur (567.997). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (1102.787), der spaete die Korrektur (1103). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 567.996734,
-            "afterValue": 567.997,
+            "beforeValue": 1102.787,
+            "afterValue": 1103,
             "beforeStatus": "original",
             "afterStatus": "restated",
-            "beforeAvailableAt": "2014-03-12",
-            "afterAvailableAt": "2015-03-11"
+            "beforeAvailableAt": "2014-05-21",
+            "afterAvailableAt": "2015-05-20"
           }
         },
         "GATE_B_DELISTING": {
@@ -665,7 +625,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 697,
+            "fundamentalRecords": 700,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -673,9 +633,57 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "697 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "700 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 697,
+            "total": 700,
+            "withoutTimestamp": 0,
+            "availableAfterAsOf": 0,
+            "timestampNotAfterPeriodEnd": 0,
+            "sampleTimestampField": "availableAt"
+          }
+        }
+      },
+      "passed": 2,
+      "total": 3,
+      "allPassed": false,
+      "verificationLevel": "RUNTIME_VERIFIED",
+      "note": null
+    },
+    {
+      "ticker": "XOM",
+      "securityId": "sec_XOM",
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "result": "PASSED",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (112965), der spaete die Korrektur (117523). Die Korrektur wirkt nicht rueckwaerts.",
+          "evidence": {
+            "beforeValue": 112965,
+            "afterValue": 117523,
+            "beforeStatus": "original",
+            "afterStatus": "restated",
+            "beforeAvailableAt": "2009-08-05",
+            "afterAvailableAt": "2010-08-04"
+          }
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "result": "FAILED",
+          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
+          "evidence": {
+            "inHistoricalUniverse": false,
+            "inCurrentUniverse": false,
+            "fundamentalRecords": 596,
+            "universeSizeDuring": 0,
+            "universeSizeAfter": 0
+          }
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "result": "PASSED",
+          "message": "596 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "evidence": {
+            "total": 596,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
