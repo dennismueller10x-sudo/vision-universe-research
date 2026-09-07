@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Kleines Referenzuniversum realer, liquider US-Titel fuer den Test der Market-Data-Integration (Phase 2, §23). Bewusst klein: Ziel ist, die Architektur zu pruefen, nicht ein API-Kontingent zu verbrauchen.",
+  "purpose": "market-data-integration-test",
+  "boundary": "Diese Titel erhalten AUSSCHLIESSLICH echte Kursdaten. Sie bekommen keine Fundamentaldaten und damit auch keinen vollstaendigen VU Quant Score. Reale Unternehmen mit synthetischen Fundamentalzahlen zu verbinden ist ausdruecklich ausgeschlossen - genau davor schuetzt die Trennung zwischen diesem Referenzuniversum und dem synthetischen Modelluniversum.",
+  "exchange": { "name": "NASDAQ/NYSE", "country": "US", "currency": "USD" },
+  "securities": [
+    { "securityId": "ref_AAPL", "ticker": "AAPL", "name": "Apple Inc.", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology" },
+    { "securityId": "ref_MSFT", "ticker": "MSFT", "name": "Microsoft Corporation", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology" },
+    { "securityId": "ref_NVDA", "ticker": "NVDA", "name": "NVIDIA Corporation", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology" },
+    { "securityId": "ref_AMZN", "ticker": "AMZN", "name": "Amazon.com Inc.", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Consumer Discretionary" },
+    { "securityId": "ref_GOOGL", "ticker": "GOOGL", "name": "Alphabet Inc. Class A", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Communication Services" },
+    { "securityId": "ref_META", "ticker": "META", "name": "Meta Platforms Inc.", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Communication Services" },
+    { "securityId": "ref_AVGO", "ticker": "AVGO", "name": "Broadcom Inc.", "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology" },
+    { "securityId": "ref_JPM", "ticker": "JPM", "name": "JPMorgan Chase & Co.", "mic": "XNYS", "exchange": "NYSE", "sector": "Financials" },
+    { "securityId": "ref_JNJ", "ticker": "JNJ", "name": "Johnson & Johnson", "mic": "XNYS", "exchange": "NYSE", "sector": "Health Care" },
+    { "securityId": "ref_XOM", "ticker": "XOM", "name": "Exxon Mobil Corporation", "mic": "XNYS", "exchange": "NYSE", "sector": "Energy" },
+    { "securityId": "ref_PG", "ticker": "PG", "name": "Procter & Gamble Company", "mic": "XNYS", "exchange": "NYSE", "sector": "Consumer Staples" },
+    { "securityId": "ref_CAT", "ticker": "CAT", "name": "Caterpillar Inc.", "mic": "XNYS", "exchange": "NYSE", "sector": "Industrials" },
+    { "securityId": "ref_KO", "ticker": "KO", "name": "Coca-Cola Company", "mic": "XNYS", "exchange": "NYSE", "sector": "Consumer Staples" },
+    { "securityId": "ref_UNH", "ticker": "UNH", "name": "UnitedHealth Group Inc.", "mic": "XNYS", "exchange": "NYSE", "sector": "Health Care" },
+    { "securityId": "ref_SPY", "ticker": "SPY", "name": "SPDR S&P 500 ETF Trust", "mic": "ARCX", "exchange": "NYSE Arca", "assetType": "etf", "sector": "Index" }
+  ],
+  "fetch": {
+    "interval": "1day",
+    "outputsize": 400,
+    "note": "400 Tagesbars decken rund 18 Monate ab - genug fuer 12-Monats-Momentum, 200-Tage-Durchschnitt und Volatilitaet, ohne unnoetig Kontingent zu verbrauchen."
+  }
+}

@@ -2,6 +2,7 @@
 (() => {
   const items = [
     ['News', '/news/'],
+    ['Quant', '/quant/'],
     ['Dashboard', '/dashboard/'], ['Guide', '/guide/'], ['ETF', '/etf/'],
     ['Hedgefonds', '/hedgefonds/'], ['Analysten', '/analysten/'], ['Macro', '/macro/'],
     ['Magazin', '/magazin/'], ['Morning', '/morning/'], ['Reports', '/reports/xpeng/'],

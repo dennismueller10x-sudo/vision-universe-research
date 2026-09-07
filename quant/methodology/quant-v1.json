@@ -1,0 +1,134 @@
+{
+  "methodologyVersion": "quant-v1.0.0",
+  "label": "VU Quant Score V1",
+  "effectiveFrom": "2026-09-06",
+  "summary": "Statische Multi-Faktor-Gewichte mit teilweiser Branchenneutralisierung. Perzentilbasiert, erklaerbar, ohne Factor Timing.",
+  "researchBasis": [
+    "Fama/French (Drei- und Fuenf-Faktoren-Modell): Markt, Size, Value, Profitabilitaet, Investment",
+    "Novy-Marx: Gross Profitability als Querschnittsinformation",
+    "Jegadeesh/Titman: Momentum ueber mittlere Horizonte",
+    "Asness/Frazzini/Pedersen: Quality Minus Junk",
+    "Frazzini/Pedersen: Betting Against Beta (Low-Risk-Dimension)",
+    "George/Hwang: Naehe zum 52-Wochen-Hoch als Momentum-Bestandteil"
+  ],
+  "factorWeights": {
+    "quality": 0.30,
+    "momentum": 0.30,
+    "value": 0.15,
+    "growth": 0.20,
+    "risk": 0.05
+  },
+  "weightRationale": "V1 laeuft ohne lizenzierte historische Analystenschaetzungen. Das im Research vorgesehene Revisions-Gewicht von 15 % wird deshalb NICHT mit erfundenen Konsensdaten gefuellt (§16), sondern auf Quality, Momentum und Growth verteilt. Sobald belastbare PIT-Estimates vorliegen, entsteht quant-v2 mit eigener Version statt einer stillen Aenderung.",
+  "factors": {
+    "quality": {
+      "label": "Quality",
+      "description": "Profitabilitaet, Cash-Erzeugung und Bilanzsicherheit.",
+      "components": {
+        "roic": 0.25,
+        "grossProfitability": 0.20,
+        "fcfMargin": 0.20,
+        "operatingMargin": 0.15,
+        "balanceSheetQuality": 0.10,
+        "leverage": 0.10
+      }
+    },
+    "momentum": {
+      "label": "Momentum",
+      "description": "Relative Kursstaerke ueber mehrere Horizonte plus Trendbestaetigung.",
+      "components": {
+        "momentum12m1m": 0.25,
+        "momentum6m": 0.20,
+        "momentum3m": 0.10,
+        "relativeStrength": 0.15,
+        "distanceTo52wHigh": 0.12,
+        "priceTo50dma": 0.08,
+        "priceTo200dma": 0.10
+      }
+    },
+    "value": {
+      "label": "Value",
+      "description": "Bewertung gegen Ertrag, Cashflow und Unternehmenswert.",
+      "components": {
+        "earningsYield": 0.25,
+        "fcfYield": 0.30,
+        "evToEbitda": 0.20,
+        "evToSales": 0.10,
+        "priceToFcf": 0.15
+      }
+    },
+    "growth": {
+      "label": "Growth",
+      "description": "Wachstum von Umsatz, Ergebnis, Cashflow und Marge.",
+      "note": "Growth wird in Vision Universe NICHT als eigenstaendige, wissenschaftlich etablierte Faktorpraemie behandelt, sondern als Stock-Selection-Komponente in Kombination mit Quality und Value.",
+      "components": {
+        "revenueGrowth": 0.35,
+        "epsGrowth": 0.25,
+        "fcfGrowth": 0.25,
+        "marginExpansion": 0.15
+      }
+    },
+    "risk": {
+      "label": "Risk",
+      "description": "Schwankung, Verlusttiefe und Marktsensitivitaet. Hoeherer Score = geringeres Risiko.",
+      "components": {
+        "volatility": 0.35,
+        "downsideVolatility": 0.25,
+        "maxDrawdown": 0.25,
+        "beta": 0.15
+      }
+    },
+    "revisions": {
+      "label": "Analyst Revisions",
+      "description": "Veraenderung der Analystenschaetzungen.",
+      "available": false,
+      "unavailableReason": "Historische Point-in-Time-Konsensdaten sind nicht lizenziert. Der Faktor existiert im Schema, wird aber nicht mit synthetischen Konsensdaten befuellt und geht nicht in den Composite ein.",
+      "components": {}
+    }
+  },
+  "normalization": {
+    "winsorization": { "lowerPercentile": 2, "upperPercentile": 98 },
+    "peerWeights": { "peer": 0.70, "universe": 0.30 },
+    "peerFallbackChain": ["industry", "sector", "universe"],
+    "minPeerGroupSize": 12,
+    "scoreScale": [0, 100]
+  },
+  "coverage": {
+    "minComponentsPerFactor": 0.50,
+    "minTotalCoverage": 0.60,
+    "maxFactorWeightRenormalization": 0.20,
+    "confidenceBands": [
+      { "min": 0.90, "confidence": "high" },
+      { "min": 0.75, "confidence": "medium" },
+      { "min": 0.60, "confidence": "low" },
+      { "min": 0.00, "confidence": "insufficient" }
+    ]
+  },
+  "scoreMomentum": {
+    "velocityWindowsDays": [30, 60],
+    "accelerationWindowDays": 30,
+    "snapshotIntervalDays": 7,
+    "historyWindowDays": 365
+  },
+  "radar": {
+    "quantUpgradeMinDelta": 6,
+    "quantDowngradeMaxDelta": -6,
+    "momentumLeaderMinScore": 90,
+    "qualityLeaderMinScore": 90,
+    "near52wHighMaxDistancePct": 3,
+    "near52wHighMinQuantScore": 70,
+    "emergingCompounderMinFactorDelta": 4,
+    "factorBreakoutMinFactors": 2,
+    "factorBreakoutMinDelta": 8
+  },
+  "ratingBands": [
+    { "min": 90, "label": "Top 10 %", "tone": "strong" },
+    { "min": 75, "label": "Ueberdurchschnittlich", "tone": "good" },
+    { "min": 45, "label": "Durchschnittlich", "tone": "neutral" },
+    { "min": 25, "label": "Unterdurchschnittlich", "tone": "weak" },
+    { "min": 0, "label": "Unteres Quartil", "tone": "poor" }
+  ],
+  "hysteresis": {
+    "note": "Statuswechsel zwischen Rating-Baendern erfordern eine Mindestbewegung, damit 89,9 -> 90,1 kein neues Signal erzeugt.",
+    "minBandChange": 1.5
+  }
+}

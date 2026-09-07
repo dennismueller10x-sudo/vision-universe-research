@@ -1,8 +1,13 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_at_utc": "2026-09-05T07:03:39.386906+00:00",
   "provider": "Twelve Data",
   "interval": "1day",
+  "adjustment": "SPLIT_ADJUSTED",
+  "adjustment_label": "Splitbereinigt",
+  "adjustment_caveat": "Ohne Dividenden gerechnet. Bei einem Ausschuetter liegt die tatsaechliche Gesamtrendite darueber.",
+  "adjustment_evidence": "Nachtraeglich eingestuft (Phase 3 \u00a72). Belegt an bekannten Splits in der Reihe selbst: an keinem von ihnen steht ein unbereinigter Sprung. Kein adjusted_close-Feld und kein Dividendenendpunkt im kostenlosen Zugang, daher nicht TOTAL_RETURN.",
+  "semantics_version": "price-adjustment-v1.0.0",
   "symbols": {
     "NVDA": [
       {
