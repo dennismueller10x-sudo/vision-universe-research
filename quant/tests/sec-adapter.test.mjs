@@ -174,16 +174,66 @@ test("eine Korrektur ist erst ab ihrer eigenen Veroeffentlichung sichtbar", () =
 });
 
 test("revisionId zaehlt ab 0 und der Originalwert bleibt erhalten", () => {
-  const byCell = new Map();
-  for (const fact of CALENDAR.facts) {
-    const key = `${fact.metricId}|${fact.periodEnd}`;
-    if (!byCell.has(key)) byCell.set(key, []);
-    byCell.get(key).push(fact);
+  /* Regression aus dem Live-Lauf: der Revisionsstand wurde pro Schleifendurchlauf
+     statt pro (metricId, periodEnd) gefuehrt. Bei Instant-Kennzahlen wandert das
+     Periodenende mit jedem Filing (Cover-Datum), also bekam die ERSTE Beobachtung
+     einer neuen Periode revisionId 1 und den Status "restated" — eine Korrektur,
+     die es nie gab. Gemessen an echten SEC-Daten: bis zu sechs solcher Zellen je
+     Unternehmen, alle auf sharesOutstanding. */
+  for (const bundle of BUNDLES) {
+    const byCell = new Map();
+    for (const fact of bundle.facts) {
+      const key = `${fact.metricId}|${fact.fiscalYear}|${fact.fiscalPeriod}|${fact.periodEnd}`;
+      if (!byCell.has(key)) byCell.set(key, []);
+      byCell.get(key).push(fact);
+    }
+    for (const [key, facts] of byCell) {
+      facts.sort((a, b) => a.revisionId - b.revisionId);
+      assert.equal(facts[0].revisionId, 0,
+        `${bundle.security.ticker} ${key}: niedrigste revisionId ist nicht 0`);
+      assert.equal(facts[0].restatementStatus, "original",
+        `${bundle.security.ticker} ${key}: erste Beobachtung ist als restated markiert`);
+      /* Und die Nummerierung darf keine Luecken haben. */
+      facts.forEach((f, i) => assert.equal(f.revisionId, i,
+        `${bundle.security.ticker} ${key}: revisionId springt`));
+    }
   }
-  for (const [, facts] of byCell) {
-    facts.sort((a, b) => a.revisionId - b.revisionId);
-    assert.equal(facts[0].revisionId, 0);
-    assert.equal(facts[0].restatementStatus, "original");
+});
+
+test("eine einzelne Beobachtung ist nie eine Korrektur", () => {
+  for (const bundle of BUNDLES) {
+    const counts = new Map();
+    for (const fact of bundle.facts) {
+      const key = `${fact.metricId}|${fact.fiscalYear}|${fact.fiscalPeriod}|${fact.periodEnd}`;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    for (const fact of bundle.facts) {
+      if (fact.restatementStatus !== "restated") continue;
+      const key = `${fact.metricId}|${fact.fiscalYear}|${fact.fiscalPeriod}|${fact.periodEnd}`;
+      assert.ok(counts.get(key) > 1,
+        `${bundle.security.ticker} ${key}: als restated markiert, aber einzige Beobachtung`);
+    }
+  }
+});
+
+test("aufeinanderfolgende Revisionen einer Zelle wiederholen keinen Wert", () => {
+  /* Derselbe Fehler erzeugte auch Doppel-Revisionen mit identischem Wert
+     (NVDA sharesOutstanding: 2464 -> 2464). Eine unveraenderte Zahl erneut zu
+     melden ist keine neue Revision. */
+  for (const bundle of BUNDLES) {
+    const byCell = new Map();
+    for (const fact of bundle.facts) {
+      const key = `${fact.metricId}|${fact.fiscalYear}|${fact.fiscalPeriod}|${fact.periodEnd}`;
+      if (!byCell.has(key)) byCell.set(key, []);
+      byCell.get(key).push(fact);
+    }
+    for (const [key, facts] of byCell) {
+      facts.sort((a, b) => a.revisionId - b.revisionId);
+      for (let i = 1; i < facts.length; i++) {
+        assert.notEqual(facts[i].value, facts[i - 1].value,
+          `${bundle.security.ticker} ${key}: Revision ${i} wiederholt den Vorwert`);
+      }
+    }
   }
 });
 
@@ -307,6 +357,38 @@ test("das Fact-Panel liefert dieselben Werte wie Einzelabfragen", () => {
   for (const bundle of BUNDLES) {
     const single = provider.getFacts(bundle.security.securityId, { asOf });
     assert.deepEqual(panel.data.rows[bundle.security.securityId], single.data);
+  }
+});
+
+test("periodEnd ist je Kennzahl eindeutig — sonst kollidiert die PIT-Auswahl", () => {
+  /* Der wichtigste Fund des Live-Laufs. quant/engines/schema.js schluesselt eine
+     Kennzahl ueber metricId + periodEnd (latestKnownFact / latestKnownPeriods);
+     fiscalPeriod ist gespeichert, aber NICHT Teil des Schluessels. Ein
+     Jahreswert und der zugehoerige Q4-Wert teilen sich dasselbe periodEnd —
+     zwoelf Monate Umsatz und drei Monate Umsatz im selben Slot. Die Engine
+     wuerde stillschweigend einen von beiden waehlen. Deshalb liefert der
+     kanonische Export ausschliesslich Quartale. */
+  for (const bundle of BUNDLES) {
+    const seen = new Map();
+    for (const fact of bundle.facts) {
+      const key = `${fact.metricId}|${fact.periodEnd}`;
+      const prev = seen.get(key);
+      if (prev !== undefined) {
+        assert.equal(fact.fiscalPeriod, prev,
+          `${bundle.security.ticker} ${key}: ${prev} und ${fact.fiscalPeriod} teilen ein periodEnd`);
+      } else {
+        seen.set(key, fact.fiscalPeriod);
+      }
+    }
+  }
+});
+
+test("der kanonische Export liefert nur Quartale, keine Jahreszeilen", () => {
+  for (const bundle of BUNDLES) {
+    for (const fact of bundle.facts) {
+      assert.match(fact.fiscalPeriod, /^Q[1-4]$/,
+        `${bundle.security.ticker}: fiscalPeriod ${fact.fiscalPeriod} im kanonischen Export`);
+    }
   }
 });
 

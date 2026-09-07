@@ -357,7 +357,8 @@ def cmd_canonical(args):
             "file": f"canonical/{path.name}",
             "factCount": bundle["coverage"]["factCount"],
             "metricIds": bundle["coverage"]["metricIds"],
-            "annualYears": bundle["coverage"]["annualYears"],
+            "annualYearsExamined": bundle["coverage"]["annualYearsExamined"],
+            "quarterlyYears": bundle["coverage"]["quarterlyYears"],
         })
     _write(DATA_DIR / "canonical_index.json", {
         "schema_version": 1,
@@ -473,7 +474,8 @@ def build_parser():
     canonical = subparsers.add_parser(
         "canonical", help="write the canonical FundamentalFact/Filing payload")
     canonical.add_argument("--annual-years", type=int, default=12)
-    canonical.add_argument("--quarterly-years", type=int, default=6)
+    canonical.add_argument("--quarterly-years", type=int, default=None,
+                           help="limit the quarterly window; default is the full history")
     canonical.set_defaults(func=cmd_canonical)
 
     inspect = subparsers.add_parser("inspect", help="print one metric's series")

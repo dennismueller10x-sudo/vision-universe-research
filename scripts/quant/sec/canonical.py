@@ -144,26 +144,38 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
         instants = revision_instants(factbook, sec_metric, fiscal_year, fiscal_period)
         if not instants:
             continue
-        revision = 0
-        previous_value = None
-        first_value = None
+
+        # Revision state is per (metric, periodEnd) CELL, not per loop pass.
+        # Resolving an instant metric at successive as-of dates can return
+        # different balance-sheet dates — a cover-date share count moves with
+        # every filing — so a shared counter numbered the first observation of a
+        # new period as revision 1 and labelled it "restated". Live SEC data
+        # exposed this; the fixtures, which pin one balance-sheet date per
+        # period, could not.
+        state = {}
         for instant in instants:
             fact = _resolve(resolver, sec_metric, fiscal_year, fiscal_period, instant)
             if fact is None or not fact.available or fact.value is None:
                 continue
+            period_end = _date(fact.period_end)
+            if period_end is None:
+                continue
+            cell = state.setdefault(period_end,
+                                    {"revision": 0, "first": None, "previous": None})
             value = round(fact.value * scale, 6)
-            if previous_value is not None and value == previous_value:
+            if cell["previous"] is not None and value == cell["previous"]:
                 continue  # the same number reported again is not a new revision
-            if first_value is None:
-                first_value = value
-            status = STATUS_ORIGINAL if revision == 0 or value == first_value \
+            if cell["first"] is None:
+                cell["first"] = value
+            status = STATUS_ORIGINAL if cell["revision"] == 0 or value == cell["first"] \
                 else STATUS_RESTATED
+            revision = cell["revision"]
             record = {
                 "securityId": security["securityId"],
                 "metricId": metric_id,
                 "fiscalPeriod": fiscal_period,
                 "fiscalYear": int(fiscal_year),
-                "periodEnd": _date(fact.period_end),
+                "periodEnd": period_end,
                 "value": value,
                 "unit": unit,
                 "currency": "USD" if unit == "usd_m" else None,
@@ -178,11 +190,9 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
                 "sourceFilingId": fact.provenance.accession,
                 "dataSourceId": DATA_SOURCE_ID,
             }
-            if record["periodEnd"] is None:
-                continue
             out.append(record)
-            previous_value = value
-            revision += 1
+            cell["previous"] = value
+            cell["revision"] += 1
 
     return out
 
@@ -265,7 +275,7 @@ def security_for_company(document, ticker):
 
 
 def build_company_bundle(document, registry, ticker, annual_years=12,
-                         quarterly_years=6):
+                         quarterly_years=None):
     """The complete canonical payload for one company, ready to serve."""
     from .periods import PeriodResolver
     from .pipeline import _rehydrate
@@ -278,11 +288,28 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
 
     years = factbook.fiscal_years()
     annual_scope = years[-annual_years:] if years else []
-    quarterly_scope = years[-quarterly_years:] if years else []
+    # The quarterly window defaults to EVERY fiscal year the company has, not a
+    # recent slice. Since the canonical layer is quarterly-only (see below), that
+    # window is the entire history a backtester can see — capping it at a handful
+    # of years would silently truncate the usable history to far less than the
+    # coverage matrix reports.
+    quarterly_scope = (years[-quarterly_years:] if quarterly_years else years) if years else []
 
+    # QUARTERLY ONLY — and this is a hard constraint of the existing model, not
+    # a simplification. quant/engines/schema.js resolves a fact by metricId and
+    # periodEnd (latestKnownFact / latestKnownPeriods); fiscalPeriod is stored
+    # but NOT part of the key. An annual figure and a fourth-quarter figure share
+    # the same periodEnd, so emitting both would put twelve months of revenue and
+    # three months of revenue into the same slot and let the engine pick one by
+    # availability order. That is a factor-of-four error in a backtest, arriving
+    # silently. The mock provider emits quarters only for exactly this reason
+    # (a 10-K appears as Q4), and the SEC adapter follows the same rule.
+    #
+    # Nothing is lost: an annual figure is the sum of four quarters, and
+    # latestKnownPeriods() is built to hand a consumer the trailing window it
+    # needs. The full annual series stays available inside the SEC layer and in
+    # the data inspector.
     facts = []
-    for fiscal_year in annual_scope:
-        facts.extend(facts_for_period(resolver, security, fiscal_year, "FY", ingested_at))
     for fiscal_year in quarterly_scope:
         for index in range(1, 5):
             facts.extend(facts_for_period(resolver, security, fiscal_year,
@@ -298,7 +325,10 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
         "facts": facts,
         "unsupportedMetrics": UNSUPPORTED_METRICS,
         "coverage": {
-            "annualYears": annual_scope,
+            "annualYearsExamined": annual_scope,
+            "note": ("facts are quarterly only (Q1..Q4): quant/engines/schema.js keys a "
+                     "fact by metricId and periodEnd, so an annual row would collide "
+                     "with the fourth quarter of the same fiscal year."),
             "quarterlyYears": quarterly_scope,
             "factCount": len(facts),
             "metricIds": sorted({fact["metricId"] for fact in facts}),
