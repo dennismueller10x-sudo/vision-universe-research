@@ -86,6 +86,33 @@ seinen Prüfpunkt und meldet `quotaExceeded`. Der nächste Lauf nimmt die Liste
 dort auf, wo sie liegen geblieben ist. Ein Abbruch ohne Prüfpunkt wäre bei 500
 Titeln der Unterschied zwischen „morgen weiter" und „alles noch einmal".
 
+### Die Zähler sehen einander nicht
+
+Die Fenster leben im Prozess. Ein Lauf in GitHub Actions startet auf einem
+frischen Runner und beginnt bei `0/50`, auch wenn eine Viertelstunde vorher
+schon zwölf Anfragen gestellt wurden. Über mehrere Läufe hinweg ist der Zähler
+also blind.
+
+Genau das ist eingetreten: fünf Läufe in einer Stunde, zusammen 42 Anfragen,
+der sechste bekam vom Anbieter ein Kontingentproblem gemeldet und konnte nichts
+messen.
+
+Der Rückfall funktioniert: ein `429` füllt das Stundenfenster des Clients auf,
+und der Lauf hört auf zu fragen. Aber die verlässliche Grenze ist damit die des
+Anbieters und nicht die eigene. Zwei Folgerungen:
+
+1. Nachweis und Import laufen **nur auf Anforderung**, nicht bei jedem Commit.
+   Eine Fähigkeit, die einmal gemessen ist, ändert sich nicht stündlich.
+2. **Ein Kontingentproblem ist keine fehlende Fähigkeit.** Der Nachweis
+   verbucht es als `INCONCLUSIVE`, nicht als `FAILED`, und schreibt in diesem
+   Fall gar keinen Bericht — sonst ersetzte ein Lauf, der nichts messen konnte,
+   einen, der etwas gemessen hat.
+
+Der zweite Punkt ist der wichtigere. Vor der Korrektur schrieb der Nachweis
+`apiAccess: FAILED`, und der Adapter hätte daraus `securityMaster: false`
+gemacht — eine Widerlegung, die nur besagt, dass gerade niemand nachsehen
+konnte.
+
 ## Der kostenpflichtige Tarif
 
 `COMMERCIAL_LIMITS` steht im Adapter, ist aber **nicht geprüft**: es besteht

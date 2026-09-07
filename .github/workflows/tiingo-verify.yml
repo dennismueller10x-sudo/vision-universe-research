@@ -50,6 +50,16 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # Auch der Nachweis laeuft nur auf Anforderung. Er kostet sechs von 50
+    # Anfragen pro Stunde, und bei jedem Commit an Adapter oder Skript
+    # summiert sich das: fuenf Laeufe in einer Stunde haben genau das
+    # Stundenkontingent aufgebraucht, und der sechste konnte nichts mehr
+    # messen. Eine Faehigkeit, die einmal gemessen ist, aendert sich nicht
+    # bei jedem Commit.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[verify]') ||
+      contains(github.event.head_commit.message, '[ingest]')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

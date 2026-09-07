@@ -50,6 +50,29 @@ function record(capability, result, evidence, requests) {
                   checkedAt: new Date().toISOString() });
 }
 
+/* Gruende, die nichts ueber den Anbieter aussagen.
+   
+   Ein erschoepftes Kontingent ist keine fehlende Faehigkeit. Ein Abbruch
+   der Verbindung auch nicht. Wer das als FAILED verbucht, traegt eine
+   Widerlegung in die Faehigkeitsmatrix ein, die nur besagt, dass gerade
+   niemand nachsehen konnte - und die naechste Anzeige behauptet dann,
+   Tiingo koenne etwas nicht, was es sehr wohl kann.
+   
+   Der Fall ist nicht hypothetisch: nach fuenf Laeufen in einer Stunde
+   hat Tiingo genau das gemeldet, und der Nachweis schrieb prompt
+   apiAccess FAILED. */
+const NICHT_AUSSAGEKRAEFTIG = ["quotaExceeded", "rateLimited", "networkError",
+                               "timeout", "notConfigured"];
+
+function unbrauchbar(reason) {
+  return NICHT_AUSSAGEKRAEFTIG.indexOf(reason) !== -1;
+}
+
+/** FAILED nur, wenn der Anbieter wirklich geantwortet hat. */
+function befund(res) {
+  return unbrauchbar(res && res.reason) ? "INCONCLUSIVE" : "FAILED";
+}
+
 if (!apiKey) {
   console.log("Kein TIINGO_API_KEY gesetzt.");
   console.log("Dieses Skript prueft ausschliesslich zur Laufzeit — ohne Zugang gibt es");
@@ -88,10 +111,14 @@ console.log(`  Kontingent vorher: ${provider.quota().hourUsed}/${provider.quota(
 console.log("  [1/6] Zugang und Stammdaten …");
 const meta = await provider.getMetadata("ref_AAPL");
 if (!meta.available) {
-  record("apiAccess", "FAILED", { reason: meta.reason, message: meta.message }, 1);
-  console.log(`        FEHLGESCHLAGEN: ${meta.reason}`);
+  const art = befund(meta);
+  record("apiAccess", art, { reason: meta.reason, message: meta.message }, 1);
+  console.log(`        ${art === "INCONCLUSIVE" ? "NICHT MESSBAR" : "FEHLGESCHLAGEN"}: ${meta.reason}`);
   console.log("\n  Ohne Zugang sind die uebrigen Pruefungen gegenstandslos.");
-  finish(1);
+  /* Ein Kontingentproblem ist kein Fehlschlag des Nachweises, sondern
+     seine Vertagung. Der Lauf endet dann ohne Fehler - und ohne Bericht,
+     damit ein vorhandener, aussagekraeftiger nicht ueberschrieben wird. */
+  finish(art === "INCONCLUSIVE" ? 0 : 1, art === "INCONCLUSIVE");
 } else {
   record("apiAccess", "PASSED", {
     name: meta.data.name, exchange: meta.data.exchange,
@@ -111,7 +138,7 @@ if (deep.available && deep.data.bars.length) {
   }, 1);
   console.log(`        OK — ${b.length} Bars ab ${b[0].date}`);
 } else {
-  record("historyDepth", deep.available ? "EMPTY" : "FAILED",
+  record("historyDepth", deep.available ? "EMPTY" : befund(deep),
          { reason: deep.reason, message: deep.message }, 1);
   console.log(`        ${deep.available ? "leer" : "FEHLGESCHLAGEN: " + deep.reason}`);
 }
@@ -153,7 +180,7 @@ if (nvda.available && nvda.data.bars.length > 3) {
               `bereinigt ${adjJump ? adjJump.toFixed(3) : "—"}x, ` +
               `splitFactor gesetzt: ${splitFlagged.length ? "ja" : "nein"}`);
 } else {
-  record("splitAdjustedPrices", "FAILED", { reason: nvda.reason }, 1);
+  record("splitAdjustedPrices", befund(nvda), { reason: nvda.reason }, 1);
   record("splits", "UNKNOWN", { reason: "Reihe nicht abrufbar" }, 0);
   console.log(`        FEHLGESCHLAGEN: ${nvda.reason}`);
 }
@@ -196,7 +223,7 @@ if (ko.available && ko.data.bars.length) {
   console.log(`        ${divDays.length} Ausschuettung(en); Total Return: ` +
               `${divDays.length ? (totalReturn ? "ja" : "NEIN") : "unbestimmt"}`);
 } else {
-  record("adjustedPrices", "FAILED", { reason: ko.reason }, 1);
+  record("adjustedPrices", befund(ko), { reason: ko.reason }, 1);
   record("dividends", "UNKNOWN", { reason: "Reihe nicht abrufbar" }, 0);
   console.log(`        FEHLGESCHLAGEN: ${ko.reason}`);
 }
@@ -205,7 +232,7 @@ if (ko.available && ko.data.bars.length) {
 
 console.log("  [5/6] Ticker mit Sonderzeichen (BRK-B) …");
 const brk = await provider.getDailyBars("ref_BRKB", { from: "2026-08-01" });
-record("symbolEncoding", brk.available ? "PASSED" : "FAILED", {
+record("symbolEncoding", brk.available ? "PASSED" : befund(brk), {
   symbol: "BRK-B", bars: brk.available ? brk.data.bars.length : 0,
   reason: brk.available ? null : brk.reason
 }, 1);
@@ -215,7 +242,7 @@ console.log(`        ${brk.available ? "OK — " + brk.data.bars.length + " Bars
 
 console.log("  [6/6] Intraday ueber IEX …");
 const intra = await provider.getIntradayBars("ref_AAPL", { interval: "5min" });
-record("intraday", intra.available ? "PASSED" : "FAILED", {
+record("intraday", intra.available ? "PASSED" : befund(intra), {
   bars: intra.available ? intra.data.bars.length : 0,
   reason: intra.available ? null : intra.reason,
   message: intra.available ? null : String(intra.message || "").slice(0, 200),
@@ -228,7 +255,7 @@ finish(0);
 
 /* ------------------------------------------------------------ Ausgabe */
 
-function finish(code) {
+function finish(code, ohneBericht) {
   const quota = provider.quota();
   const stats = provider.stats();
 
@@ -265,11 +292,24 @@ function finish(code) {
       .map((f) => f.capability),
     refutedCapabilities: findings
       .filter((f) => f.result === "FAILED")
+      .map((f) => f.capability),
+    /* Nicht widerlegt, nur nicht gemessen. Der Unterschied ist der Kern
+       der dreiwertigen Faehigkeitsmatrix und muss bis in den Bericht
+       durchgehalten werden. */
+    inconclusiveCapabilities: findings
+      .filter((f) => f.result === "INCONCLUSIVE")
       .map((f) => f.capability)
   };
 
-  mkdirSync(dirname(OUT), { recursive: true });
-  writeFileSync(OUT, JSON.stringify(report, null, 2));
+  if (ohneBericht) {
+    console.log("\n  Kein Bericht geschrieben: dieser Lauf konnte nichts messen.");
+    console.log("  Ein vorhandener Nachweis bleibt damit unberuehrt - ihn durch einen");
+    console.log("  leeren zu ersetzen hiesse, gemessene Befunde wegen einer");
+    console.log("  Kontingentgrenze zu verlieren.");
+  } else {
+    mkdirSync(dirname(OUT), { recursive: true });
+    writeFileSync(OUT, JSON.stringify(report, null, 2));
+  }
 
   if (AS_JSON) {
     console.log(JSON.stringify(report, null, 2));
@@ -277,7 +317,8 @@ function finish(code) {
     console.log("\n  ─────────────────────────────────────────────");
     console.log("  Ergebnis\n");
     for (const f of findings) {
-      const mark = { PASSED: "+", FAILED: "-", UNKNOWN: "?", EMPTY: "?" }[f.result] || "?";
+      const mark = { PASSED: "+", FAILED: "-", UNKNOWN: "?", EMPTY: "?",
+                     INCONCLUSIVE: "~" }[f.result] || "?";
       console.log(`    ${mark} ${f.capability.padEnd(22)} ${f.result}`);
       if (f.evidence && f.evidence.interpretation) {
         console.log(`        ${f.evidence.interpretation}`);

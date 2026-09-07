@@ -474,3 +474,29 @@ test("T29 · Die Grenzen des kostenpflichtigen Tarifs sind als Annahme gekennzei
   assert.equal(Tiingo.FREE_LIMITS.requestsPerDay, 1000);
   assert.equal(Tiingo.FREE_LIMITS.bytesPerMonth, 2 * 1024 * 1024 * 1024);
 });
+
+test("T30 · Ein Kontingentproblem widerlegt keine Faehigkeit", () => {
+  /* Der Fall aus dem echten Betrieb: nach fuenf Laeufen in einer Stunde
+     hat Tiingo das Stundenkontingent gemeldet. Der Nachweis schrieb
+     daraufhin apiAccess FAILED - und der Adapter haette daraus
+     securityMaster: false gemacht. Eine Widerlegung, die nur besagt,
+     dass gerade niemand nachsehen konnte.
+
+     INCONCLUSIVE darf deshalb nichts anfassen: weder anheben noch
+     absenken. */
+  const caps = Tiingo.freePlanCapabilities(null, {
+    provider: "tiingo",
+    run: { source: "github-actions", runId: "99" },
+    findings: [
+      { capability: "apiAccess", result: "INCONCLUSIVE",
+        evidence: { reason: "quotaExceeded" } },
+      { capability: "intraday", result: "INCONCLUSIVE",
+        evidence: { reason: "rateLimited" } }
+    ]
+  });
+  assert.equal(caps.sets.reference.securityMaster, true,
+    "securityMaster war in der Deklaration true und bleibt es");
+  assert.equal(caps.sets.market.intraday, null,
+    "intraday war ungeprueft und bleibt ungeprueft");
+  assert.deepEqual(caps.evidence, {}, "ein nicht messbarer Lauf ist kein Beleg");
+});
