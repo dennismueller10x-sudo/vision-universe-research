@@ -5,7 +5,7 @@ echten Bedingungen bricht. Nicht: was fehlt. Sondern: was falsch ist, was
 stillschweigend falsch ist, und was falsch wird, sobald echte Daten einlaufen.
 
 Stand: September 2026 · Grundlage: 134 Tests aus V1, alle gruen · Nach dem
-Audit: 176 Tests, alle gruen.
+Audit: 177 Tests, alle gruen.
 
 ---
 

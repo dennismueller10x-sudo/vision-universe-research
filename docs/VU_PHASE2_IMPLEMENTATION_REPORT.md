@@ -3,7 +3,7 @@
 Produktionsaudit, Providerarchitektur und die erste echte Marktdatenanbindung.
 
 Stand: September 2026 · Branch `claude/vision-universe-v1-build-uyp8qp` ·
-176 Tests, alle gruen (134 aus V1 unveraendert, 42 neu)
+177 Tests, alle gruen (134 aus V1 unveraendert, 43 neu)
 
 ---
 
@@ -244,7 +244,7 @@ Ein Befund im Audit: **keiner.** Es lag kein Zugangsdatum im Repository.
 
 | Datei | Umfang |
 |---|---|
-| `quant/tests/market-data.test.mjs` | 34 Tests: Faehigkeiten, Mapping, Transport, Qualitaet, Modus, Adapter, Universum |
+| `quant/tests/market-data.test.mjs` | 35 Tests: Faehigkeiten, Mapping, Transport, Qualitaet, Modus, Adapter, Universum |
 | `quant/tests/secrets.test.mjs` | 8 Tests ueber das gesamte Repository |
 
 ---
@@ -285,7 +285,7 @@ echte Kurse gibt, wo sie liegen, und dass sie hier nicht einfliessen.
 
 ```
 $ node --test "quant/tests/*.test.mjs"
-# tests 176   # pass 176   # fail 0
+# tests 177   # pass 177   # fail 0
 
 $ node scripts/quant/verify-quant-data.mjs
 482 Titel neu berechnet, 0 Abweichungen

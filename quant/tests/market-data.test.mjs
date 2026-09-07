@@ -537,6 +537,29 @@ test("A5 · Ein Anbieterfehler mit HTTP 200 wird trotzdem als Fehler erkannt", a
   assert.equal(res.data, null);
 });
 
+test("A5b · Eine Zeitreihenantwort ohne values ist ein Fehler, keine leere Reihe", async () => {
+  // Eine 200er-Antwort ohne das Feld `values` ist keine leere Zeitreihe,
+  // sondern eine kaputte Antwort. Als Erfolg behandelt landet sie fuer die
+  // volle Cache-Lebensdauer im Speicher — bei Tageshistorie sechs Stunden.
+  // Ein einmaliger Aussetzer waere damit ein halber Tag ohne Daten.
+  const broken = makeProvider(() => fakeResponse({ meta: { currency: "USD" } }));
+  const res = await broken.getDailyBars("ref_AAPL", {});
+  assert.equal(res.available, false);
+  assert.equal(res.data, null);
+
+  // Ein ausdrueckliches values: [] ist dagegen eine gueltige leere Reihe
+  // (etwa ein Zeitraum ohne Handelstage). Sie wird durchgereicht und faellt
+  // erst in der Qualitaetspruefung durch — an der richtigen Stelle.
+  const empty = makeProvider(() => fakeResponse({ meta: { currency: "USD" }, values: [] }));
+  const emptyRes = await empty.getDailyBars("ref_AAPL", {});
+  assert.equal(emptyRes.available, true);
+  assert.equal(emptyRes.data.bars.length, 0);
+
+  const validation = MarketQuality.validateBars(emptyRes.data.bars, { today: "2026-12-31" });
+  assert.equal(validation.ok, false);
+  assert.ok(validation.findings.some((f) => f.code === "too_few_bars"));
+});
+
 test("A6 · Ein nicht zugeordnetes Symbol fuehrt zu keiner Anfrage", async () => {
   let called = false;
   const provider = makeProvider(() => { called = true; return fakeResponse(AAPL_RESPONSE); });

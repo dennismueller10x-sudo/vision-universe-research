@@ -151,6 +151,25 @@ function createTwelveDataProvider(options) {
     return null;
   }
 
+  /**
+   * Wie detectError, aber fuer Zeitreihen-Endpunkte.
+   *
+   * Eine 200er-Antwort ganz ohne `values` ist keine leere Zeitreihe, sondern
+   * eine kaputte Antwort. Als Erfolg behandelt landet sie fuer die volle
+   * Cache-Lebensdauer im Speicher — bei Tageshistorie sechs Stunden — und
+   * jede Anfrage in dieser Zeit bekommt eine leere Reihe zurueck, ohne dass
+   * ein weiterer Abruf versucht wuerde. Ein einmaliger Aussetzer wird so zu
+   * einem halben Tag ohne Daten.
+   */
+  function detectTimeSeriesError(body) {
+    const known = detectError(body);
+    if (known) return known;
+    if (!body || typeof body !== "object" || !Array.isArray(body.values)) {
+      return { status: 502, message: "Antwort enthaelt keine Zeitreihe (Feld 'values' fehlt)." };
+    }
+    return null;
+  }
+
   function provenance(asOf, adjustmentStatus) {
     return Schema.makeProvenance({
       provider: PROVIDER_ID,
@@ -249,7 +268,7 @@ function createTwelveDataProvider(options) {
       if (opts.to) params.end_date = opts.to;
 
       return client.request({
-        kind: "dailyBars", url: url("time_series", params), params: params, detectError: detectError,
+        kind: "dailyBars", url: url("time_series", params), params: params, detectError: detectTimeSeriesError,
         parse: function (body) {
           const currency = (body.meta && body.meta.currency) || "USD";
           const rows = Array.isArray(body.values) ? body.values : [];
@@ -278,7 +297,7 @@ function createTwelveDataProvider(options) {
       const params = { symbol: mapping.symbol, interval: opts.interval || "5min",
                        outputsize: String(opts.outputsize || 100), format: "JSON" };
       return client.request({
-        kind: "intradayBars", url: url("time_series", params), params: params, detectError: detectError,
+        kind: "intradayBars", url: url("time_series", params), params: params, detectError: detectTimeSeriesError,
         parse: function (body) {
           const currency = (body.meta && body.meta.currency) || "USD";
           const rows = Array.isArray(body.values) ? body.values : [];

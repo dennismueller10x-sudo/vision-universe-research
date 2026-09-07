@@ -7,7 +7,7 @@ Marktdatenanbindung vorbereitet.**
 > Providerschicht fuer echte Marktdaten gebaut. Bericht:
 > `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`, Befunde:
 > `docs/VU_PHASE2_PRODUCTION_AUDIT.md`.
-> **176 Tests gruen** (134 aus V1 unveraendert, 42 neu).
+> **177 Tests gruen** (134 aus V1 unveraendert, 43 neu).
 > Das System laeuft weiterhin vollstaendig ohne Anbieterzugang.
 
 ## Completed
@@ -32,7 +32,7 @@ Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
 
 - **11 Produktseiten** (10 aus V1, `/quant/markt/` aus Phase 2), 23 Engine-Module
   (~6.700 Zeilen V1 + ~1.170 Zeilen Providerschicht), 4 versionierte Methodik-Dateien
-- **176 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~37 s), darunter die
+- **177 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~37 s), darunter die
   22 Acceptance-Kriterien aus Abschnitt 76 und die 8 Schluesselpruefungen aus Phase 2
 - **20 Fachdokumente** unter `docs/` (13 aus V1, 7 aus Phase 2), 4 Provider-Vorbereitungen unter `providers/`
 - CI: `.github/workflows/quant-ci.yml` — Tests, JSON-Validitaet, Seitenstruktur,
