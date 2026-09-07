@@ -27,6 +27,12 @@
   // ---------------------------------------------------------------------
   var ASSET_TYPES = ["equity", "etf", "index"];
   var SECURITY_STATUS = ["active", "delisted", "suspended", "acquired"];
+  /* Bereinigungsstufen einer Kursreihe. Deckungsgleich mit
+     quant/methodology/price-adjustment-v1.json; das Schema kennt sie, damit
+     eine Bar ihre Stufe mitfuehren kann, ohne dass jeder Adapter eine
+     eigene Schreibweise erfindet. */
+  var ADJUSTMENT_STATUS = ["raw", "unadjusted", "splitAdjusted", "adjusted", "unknown"];
+
   var CORPORATE_ACTION_TYPES = ["split", "dividend", "special_dividend", "delisting", "merger", "symbol_change", "spinoff"];
   var RESTATEMENT_STATUS = ["original", "restated", "preliminary"];
   var FISCAL_PERIODS = ["Q1", "Q2", "Q3", "Q4", "FY"];
@@ -103,15 +109,46 @@
     PriceBar: {
       securityId: { t: "string", r: true },
       date:       { t: "date", r: true },
+      /* Der unbereinigte Handelskurs: was an dem Tag auf der Tafel stand.
+         Fuer Ordergroessen und Volumenanalyse die einzig richtige Reihe. */
       open:       { t: "number", r: true },
       high:       { t: "number", r: true },
       low:        { t: "number", r: true },
       close:      { t: "number", r: true },
-      /* adjustedClose ist total-return-adjustiert (Splits + Dividenden),
-         close bleibt der unbereinigte Handelskurs. Der Backtest rechnet auf
-         adjustedClose, die UI zeigt close. */
-      adjustedClose: { t: "number", r: true },
       volume:     { t: "number", r: true },
+
+      /* adjustedClose ist total-return-adjustiert (Splits + Dividenden).
+         Der Backtest rechnet darauf, die UI zeigt close.
+
+         NICHT mehr Pflichtfeld. Ein Anbieter, der keine bestaetigte
+         Bereinigung liefert, muss null eintragen duerfen - ein
+         unbereinigter Kurs an dieser Stelle waere kein ungenauer Wert,
+         sondern ein falscher, und ein Pflichtfeld erzwaenge genau das.
+         Welche Stufe tatsaechlich vorliegt, sagt adjustmentStatus. */
+      adjustedClose: { t: "number", r: false },
+
+      /* Die uebrigen bereinigten Werte, sofern der Anbieter sie mitliefert.
+         Tiingo tut das, Twelve Data nicht. Optional, weil ihr Fehlen kein
+         Mangel der Bar ist, sondern eine Eigenschaft der Quelle. */
+      adjustedOpen:   { t: "number", r: false },
+      adjustedHigh:   { t: "number", r: false },
+      adjustedLow:    { t: "number", r: false },
+      adjustedVolume: { t: "number", r: false },
+
+      /* Welche Bereinigung diese Bar traegt. Siehe
+         quant/methodology/price-adjustment-v1.json - das Feld ist die
+         Verbindung zwischen der Providerschicht und der Semantik aus
+         Phase 3 und darum kanonisch, nicht vendor-spezifisch. */
+      adjustmentStatus: { t: "string", r: false, e: ADJUSTMENT_STATUS },
+
+      /* Kapitalmassnahmen an genau diesem Tag, sofern der Anbieter sie in
+         der Kursreihe mitfuehrt. splitFactor 1 und dividend 0 heissen: an
+         diesem Tag ist nichts passiert. Ohne Angabe: unbekannt. Der
+         Unterschied traegt - aus splitFactor laesst sich eine Reihe selbst
+         hochstufen, aus einem fehlenden Feld nicht. */
+      splitFactor: { t: "number", r: false },
+      dividend:    { t: "number", r: false },
+
       currency:   { t: "string", r: true },
       dataSourceId: { t: "string", r: true }
     },
@@ -531,6 +568,7 @@
     ASSET_TYPES: ASSET_TYPES,
     SECURITY_STATUS: SECURITY_STATUS,
     CORPORATE_ACTION_TYPES: CORPORATE_ACTION_TYPES,
+    ADJUSTMENT_STATUS: ADJUSTMENT_STATUS,
     RESTATEMENT_STATUS: RESTATEMENT_STATUS,
     FISCAL_PERIODS: FISCAL_PERIODS,
     FACTOR_IDS: FACTOR_IDS,

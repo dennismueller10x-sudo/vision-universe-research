@@ -1,0 +1,115 @@
+name: Tiingo — Laufzeitnachweis
+
+# Phase 4A §33. Der einzige Ort, an dem der Tiingo-Schluessel existiert.
+#
+# Was dieser Workflow leistet: er misst, was der Adapter bisher nur
+# behauptet. Die Faehigkeitsmatrix steht auf null (ungeprueft) - hier wird
+# entschieden, was davon auf true darf.
+#
+# Der Lauf kostet hoechstens acht Anfragen von 50 pro Stunde. Er laeuft
+# deshalb NICHT nach Zeitplan, sondern nur auf Anforderung: eine
+# Faehigkeit, die einmal gemessen ist, aendert sich nicht stuendlich.
+#
+# Der Schluessel wird ausschliesslich als Umgebungsvariable an ein
+# Node-Skript gereicht. Er erscheint nicht im Log, nicht im Bericht und
+# nicht im Repository - der Adapter setzt ihn in den Authorization-Header,
+# nicht in die URL, und ein Test haelt das fest.
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_report:
+        description: 'Bericht als Artefakt hochladen'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tiingo-runtime
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo 'Secret vorhanden.'
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY hinterlegt. Der Nachweis wird uebersprungen;'
+            echo 'alle Faehigkeiten bleiben ungeprueft. Das ist kein Fehler.'
+          fi
+
+      - name: Laufzeitnachweis
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-tiingo-runtime.mjs
+
+      - name: Der Bericht enthaelt keinen Schluessel
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        # Zweite Verteidigungslinie. Der Adapter reicht den Schluessel nicht
+        # durch, und ein Test prueft das - aber ein Bericht, der ihn doch
+        # enthielte, waere als Artefakt herunterladbar.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/tiingo-runtime-verification.json";
+            if (!fs.existsSync(file)) { console.log("Kein Bericht erzeugt."); process.exit(0); }
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) {
+              console.error("ABBRUCH: der Bericht enthaelt den Zugangsschluessel.");
+              process.exit(1);
+            }
+            if (/[?&]token=/i.test(raw)) {
+              console.error("ABBRUCH: der Bericht enthaelt eine Anfrage-URL mit Token.");
+              process.exit(1);
+            }
+            console.log("Bericht ist frei von Zugangsdaten (" + Math.round(raw.length/1024) + " KB).");
+          '
+
+      - name: Bericht als Artefakt
+        if: steps.secret.outputs.available == 'true' && inputs.publish_report
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-runtime-verification
+          path: quant/data/market/tiingo-runtime-verification.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo — Laufzeitnachweis'
+            echo ''
+            if [ "${{ steps.secret.outputs.available }}" != "true" ]; then
+              echo 'Kein `TIINGO_API_KEY` hinterlegt. Alle Faehigkeiten bleiben ungeprueft.'
+              exit 0
+            fi
+            if [ -f quant/data/market/tiingo-runtime-verification.json ]; then
+              echo '| Faehigkeit | Ergebnis |'
+              echo '|---|---|'
+              node -e '
+                const r = require("./quant/data/market/tiingo-runtime-verification.json");
+                for (const f of r.findings) console.log("| " + f.capability + " | " + f.result + " |");
+                console.log("");
+                console.log("Verbrauch: " + r.quotaUsed.requests + " Anfragen (" + r.quotaUsed.hour + " Stunde).");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

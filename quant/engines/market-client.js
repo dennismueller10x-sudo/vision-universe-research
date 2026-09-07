@@ -62,7 +62,18 @@
 
     var limits = Object.assign({
       requestsPerMinute: 8,      // konservativ; typischer Free-Plan-Wert
+      /* Manche Anbieter begrenzen pro Stunde statt pro Minute - Tiingos
+         kostenloser Zugang etwa auf 50/Stunde. Ohne dieses Fenster
+         verbraucht ein Client sein Stundenkontingent in der ersten Minute
+         und laeuft die restlichen 59 Minuten in 429er. Infinity heisst:
+         dieser Anbieter kennt kein Stundenlimit. */
+      requestsPerHour: Infinity,
       requestsPerDay: 800,
+      /* Monatliche Bandbreite in Byte. Ebenfalls Infinity, wo sie keine
+         Rolle spielt. Wird nur gezaehlt und gemeldet, nie erzwungen: eine
+         Anfrage abzulehnen, weil eine Schaetzung ein Monatsbudget
+         ueberschreitet, waere schlimmer als die Ueberschreitung selbst. */
+      bytesPerMonth: Infinity,
       concurrency: 2,
       maxRetries: 3,
       baseBackoffMs: 500,
@@ -75,7 +86,10 @@
     var cache = Object.create(null);
     var inflight = Object.create(null);
     var minuteWindow = [];
+    var hourWindow = [];
     var dayCount = 0;
+    var monthBytes = 0;
+    var monthStamp = monthKey(now());
     var dayStamp = dayKey(now());
     var queue = [];
     var active = 0;
@@ -83,10 +97,12 @@
     var stats = {
       providerId: providerId, requests: 0, cacheHits: 0, deduplicated: 0,
       errors: 0, retries: 0, quotaBlocks: 0, bytes: 0,
-      latencyTotalMs: 0, latencySamples: 0,
+      latencyTotalMs: 0, latencySamples: 0, bytesReceived: 0,
       lastSuccessAt: null, lastErrorAt: null, lastError: null
     };
     var health = { status: fetchImpl ? "available" : "notConfigured", since: now(), message: fetchImpl ? "" : "Kein fetch konfiguriert." };
+
+    function monthKey(ts) { return new Date(ts).toISOString().slice(0, 7); }
 
     function dayKey(ts) { return new Date(ts).toISOString().slice(0, 10); }
 
@@ -101,6 +117,10 @@
       var t = now();
       var cutoff = t - 60000;
       while (minuteWindow.length && minuteWindow[0] < cutoff) minuteWindow.shift();
+      var hourCutoff = now() - 3600000;
+      while (hourWindow.length && hourWindow[0] < hourCutoff) hourWindow.shift();
+      var month = monthKey(now());
+      if (month !== monthStamp) { monthStamp = month; monthBytes = 0; }
       var today = dayKey(t);
       if (today !== dayStamp) { dayStamp = today; dayCount = 0; }
     }
@@ -109,17 +129,30 @@
       rollWindows();
       return {
         minuteUsed: minuteWindow.length, minuteLimit: limits.requestsPerMinute,
+        hourUsed: hourWindow.length, hourLimit: limits.requestsPerHour,
         dayUsed: dayCount, dayLimit: limits.requestsPerDay,
         minuteRemaining: Math.max(0, limits.requestsPerMinute - minuteWindow.length),
-        dayRemaining: Math.max(0, limits.requestsPerDay - dayCount)
+        hourRemaining: Math.max(0, limits.requestsPerHour - hourWindow.length),
+        dayRemaining: Math.max(0, limits.requestsPerDay - dayCount),
+        bytesUsed: monthBytes, bytesLimit: limits.bytesPerMonth,
+        bytesRemaining: Math.max(0, limits.bytesPerMonth - monthBytes)
       };
     }
 
     /** Wartezeit bis zum naechsten freien Slot im Minutenfenster. */
     function msUntilSlot() {
       rollWindows();
-      if (minuteWindow.length < limits.requestsPerMinute) return 0;
-      return Math.max(0, minuteWindow[0] + 60000 - now()) + 25;
+      var waits = [];
+      if (minuteWindow.length >= limits.requestsPerMinute) {
+        waits.push(Math.max(0, minuteWindow[0] + 60000 - now()) + 25);
+      }
+      if (hourWindow.length >= limits.requestsPerHour) {
+        waits.push(Math.max(0, hourWindow[0] + 3600000 - now()) + 25);
+      }
+      /* Das laengste bindende Fenster bestimmt die Wartezeit. Nur das
+         Minutenfenster zu betrachten hiesse, gegen ein erschoepftes
+         Stundenkontingent anzulaufen. */
+      return waits.length ? Math.max.apply(null, waits) : 0;
     }
 
     function cacheKey(spec) {
@@ -225,6 +258,15 @@
       else return Promise.resolve(res.body);
 
       return text.then(function (raw) {
+        /* Bandbreite mitzaehlen. Manche Anbieter begrenzen sie zusaetzlich
+           zur Anfragezahl - Tiingos kostenloser Zugang etwa auf 2 GB/Monat -
+           und ein Historienabruf ueber 20 Jahre ist um Groessenordnungen
+           groesser als eine Kursabfrage. Wer nur Anfragen zaehlt, sieht
+           dieses Limit erst, wenn es zuschlaegt. */
+        if (typeof raw === "string") {
+          monthBytes += raw.length;
+          stats.bytesReceived += raw.length;
+        }
         if (typeof raw !== "string") return raw;
         try {
           return JSON.parse(raw);
@@ -245,15 +287,26 @@
 
       var wait = msUntilSlot();
       if (wait > 0) {
+        /* Welches Fenster bindet gerade? Die Unterscheidung ist keine
+           Kosmetik: "warte 40 Sekunden" und "warte 51 Minuten" verlangen
+           vom Aufrufer verschiedene Entscheidungen, und eine Meldung, die
+           beides "Minutenkontingent" nennt, nimmt sie ihm ab. */
+        var binding = (isFinite(limits.requestsPerHour) &&
+                       hourWindow.length >= limits.requestsPerHour) ? "Stunden" : "Minuten";
+        var message = binding + "kontingent erschoepft (" +
+                      (binding === "Stunden" ? hourWindow.length + "/" + limits.requestsPerHour
+                                             : minuteWindow.length + "/" + limits.requestsPerMinute) +
+                      "). Naechster freier Platz in " + Math.round(wait / 1000) + " s.";
         if (wait > (spec.maxWaitMs || 65000)) {
           stats.quotaBlocks++;
-          return Promise.resolve(staleFallback(key, "rateLimited", "Minutenkontingent erschoepft.") ||
-            { ok: false, reason: "rateLimited", message: "Minutenkontingent erschoepft." });
+          return Promise.resolve(staleFallback(key, "rateLimited", message) ||
+            { ok: false, reason: "rateLimited", message: message, waitMs: wait });
         }
         return sleep(wait).then(function () { return attempt(spec, key, retryCount); });
       }
 
       minuteWindow.push(now());
+      hourWindow.push(now());
       dayCount++;
       stats.requests++;
       var started = now();
@@ -316,6 +369,9 @@
         /* 429 zaehlt gegen das Minutenfenster, damit der Client von selbst
            langsamer wird statt weiter dagegenzulaufen. */
         for (var i = 0; i < Math.max(1, limits.requestsPerMinute - minuteWindow.length); i++) minuteWindow.push(now());
+        if (isFinite(limits.requestsPerHour)) {
+          for (var h = 0; h < Math.max(1, limits.requestsPerHour - hourWindow.length); h++) hourWindow.push(now());
+        }
         return Promise.resolve(staleFallback(key, "quotaExceeded", message) ||
           { ok: false, reason: "quotaExceeded", status: status, message: message });
       }
