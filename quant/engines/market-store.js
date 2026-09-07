@@ -157,8 +157,45 @@ function createMarketStore(options) {
      * veroeffentlicht wird, sind verschiedene Entscheidungen. Die zweite
      * haengt an der Lizenzlage, nicht an der Datenmenge.
      */
+    /**
+     * Schreibt einen Ausschnitt in die ausgelieferte Ablage.
+     *
+     * Verlangt eine ausdrueckliche Erlaubnis. Ohne sie wird nichts
+     * geschrieben - und zwar nicht als Warnung, sondern als Abbruch.
+     *
+     * Der Grund ist der Weg, den die Datei danach nimmt: quant/data/market
+     * wird von GitHub Pages ausgeliefert und liegt in der Versionierung.
+     * Eine Kursreihe, die dort einmal steht, ist veroeffentlicht - ein
+     * spaeteres Loeschen entfernt sie aus dem Arbeitsbaum, nicht aus der
+     * Historie und nicht aus fremden Klonen. Vorher hing das an einem
+     * einzelnen Aufrufparameter; wer ihn vergass, veroeffentlichte
+     * versehentlich.
+     *
+     * Der Store entscheidet die Erlaubnis nicht selbst - er kennt die
+     * Lizenzlage nicht und soll sie nicht kennen. Er verlangt sie als
+     * Nachweis vom Aufrufer, und ein fehlender Nachweis ist ein Nein.
+     *
+     * @param {string} securityId
+     * @param {object} opts {permission: {allowed, basis, checkedAt}, limit}
+     */
     publish: function (securityId, opts) {
       opts = opts || {};
+
+      const erlaubnis = opts.permission;
+      if (!erlaubnis || erlaubnis.allowed !== true) {
+        return { published: false, reason: "notPermitted",
+                 message: "Ohne ausdrueckliche Anzeigeerlaubnis wird nichts ausgeliefert. " +
+                          ((erlaubnis && erlaubnis.message) ||
+                           "Es wurde keine Erlaubnis uebergeben.") };
+      }
+      /* Eine Erlaubnis ohne Grundlage ist keine. Dieselbe Regel gilt in
+         display-policy.declare() - hier steht sie noch einmal, weil dies
+         die Stelle ist, an der tatsaechlich geschrieben wird. */
+      if (!erlaubnis.basis) {
+        return { published: false, reason: "permissionWithoutBasis",
+                 message: "Die uebergebene Erlaubnis nennt keine Grundlage." };
+      }
+
       const payload = api.readBars(securityId, "working");
       if (!payload) return { published: false, reason: "noWorkingData" };
 
@@ -170,6 +207,11 @@ function createMarketStore(options) {
         first: bars.length ? bars[0].date : null,
         last: bars.length ? bars[bars.length - 1].date : null,
         publishedAt: new Date().toISOString(),
+        /* Wer die Auslieferung erlaubt hat und woraufhin. Steht in der
+           Datei selbst, damit die Frage spaeter nicht rekonstruiert
+           werden muss. */
+        publishBasis: erlaubnis.basis,
+        publishCheckedAt: erlaubnis.checkedAt || null,
         truncatedFrom: payload.barCount,
         note: bars.length < payload.barCount
           ? "Ausschnitt der letzten " + limit + " Handelstage. Die vollstaendige Historie " +

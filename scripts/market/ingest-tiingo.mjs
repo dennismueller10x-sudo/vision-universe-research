@@ -351,11 +351,29 @@ console.log(`    Kontingent: ${quota.hourUsed}/${quota.hourLimit} Stunde, ${quot
 console.log(`    Bandbreite: ${(quota.bytesUsed / 1048576).toFixed(1)} MB`);
 
 if (PUBLISH) {
+  /* Veroeffentlichen ist der einzige Schritt, der Anbieterdaten aus dem
+     Arbeitsbereich in einen ausgelieferten Pfad bewegt. Er wird deshalb
+     an derselben Richtlinie geprueft wie die Anzeige selbst - ein Flag
+     auf der Kommandozeile ist keine Erlaubnis. */
+  const anzeige = DisplayPolicy.check({
+    providerId: "tiingo", dataClass: "marketData", audience: "public", form: "raw", gates
+  });
+  if (!anzeige.allowed) {
+    console.error("\n  ABBRUCH: --publish ist angefordert, aber die Auslieferung ist nicht freigegeben.");
+    console.error(`  ${anzeige.message}`);
+    console.error("\n  Die abgerufenen Reihen bleiben in der Arbeitsablage. Um sie auszuliefern,");
+    console.error("  braucht es einen Eintrag in der MarketDataDisplayPolicy mit Grundlage und");
+    console.error("  Datum - nicht ein Flag auf der Kommandozeile.");
+    process.exit(1);
+  }
   console.log("\n  Veroeffentlichter Ausschnitt:");
+  console.log(`  Grundlage: ${anzeige.basis}`);
   for (const security of CONFIG.securities) {
-    const p = store.publish(security.securityId);
+    const p = store.publish(security.securityId, { permission: anzeige });
     if (p.published) {
       console.log(`    ${security.ticker.padEnd(6)} ${p.bars} von ${p.of} Bars (${Math.round(p.bytes / 1024)} KB)`);
+    } else if (p.reason !== "noWorkingData") {
+      console.error(`    ${security.ticker.padEnd(6)} NICHT ausgeliefert: ${p.message || p.reason}`);
     }
   }
 }

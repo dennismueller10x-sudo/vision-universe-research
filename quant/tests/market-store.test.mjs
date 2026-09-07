@@ -25,6 +25,15 @@ function tempStore() {
   };
 }
 
+/* Eine gueltige Anzeigeerlaubnis fuer Tests, die nicht die Erlaubnis
+   selbst pruefen. Ihr echtes Gegenstueck entsteht aus der
+   MarketDataDisplayPolicy und ist im heutigen Stand ein Nein - siehe P10. */
+const ERLAUBNIS = {
+  allowed: true,
+  basis: "Testfall - steht fuer einen geprueften Lizenzeintrag",
+  checkedAt: "2026-09-07"
+};
+
 function bar(date, close, extra) {
   return Object.assign({
     securityId: "ref_AAPL", date, open: close, high: close * 1.01, low: close * 0.99,
@@ -148,7 +157,10 @@ test("S9 · Die vollstaendige Historie bleibt aus dem Repository heraus", () => 
     }
     t.store.mergeBars("ref_AAPL", viele);
 
-    const p = t.store.publish("ref_AAPL", { limit: 400 });
+    /* Die Erlaubnis ist hier Beiwerk - geprueft wird die Kuerzung. Sie
+       muss trotzdem mit, seit publish() ohne sie nichts schreibt; dass
+       das so ist, sichern P7 bis P10. */
+    const p = t.store.publish("ref_AAPL", { limit: 400, permission: ERLAUBNIS });
     assert.equal(p.published, true);
     assert.equal(p.bars, 400, "nur der Ausschnitt wird ausgeliefert");
     assert.equal(p.of, 600, "die volle Historie bleibt in der Arbeitsablage");
@@ -259,4 +271,96 @@ test("P6 · Die Gates kommen aus der Umgebung und sind standardmaessig aus", () 
   // Gross-/Kleinschreibung von "true" ist dagegen egal.
   assert.equal(DisplayPolicy.gatesFromEnv({ ENABLE_LIVE_MARKET_DATA: "True" })
     .ENABLE_LIVE_MARKET_DATA, true);
+});
+
+/* ===================================================================
+   AUSLIEFERUNG (Release-Audit §4/§5)
+
+   Veroeffentlichen ist der einzige Schritt, der Anbieterdaten aus dem
+   Arbeitsbereich in einen ausgelieferten Pfad bewegt. quant/data/market
+   wird von GitHub Pages ausgeliefert und liegt in der Versionierung:
+   eine Kursreihe, die dort einmal steht, ist veroeffentlicht - ein
+   spaeteres Loeschen entfernt sie aus dem Arbeitsbaum, nicht aus der
+   Historie und nicht aus fremden Klonen.
+
+   Vorher hing das an einem einzelnen Aufrufparameter. Der Release-Audit
+   hat reproduziert, dass publish() 400 Bars schrieb, obwohl beide Gates
+   aus waren und keine Lizenz eingetragen war.
+   =================================================================== */
+
+function mitBars(t, n) {
+  const bars = [];
+  const d = new Date(Date.UTC(2025, 0, 2));
+  for (let i = 0; i < (n || 60); i++) {
+    bars.push(bar(d.toISOString().slice(0, 10), 100 + i * 0.1));
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+  t.store.mergeBars("ref_AAPL", bars, { ticker: "AAPL", currency: "USD",
+                                        adjustmentStatus: "adjusted" });
+  return t;
+}
+
+test("P7 · Ohne Erlaubnis wird nichts ausgeliefert", () => {
+  const t = mitBars(tempStore());
+  try {
+    for (const [name, erlaubnis] of [
+      ["gar keine", undefined],
+      ["ausdrueckliches Nein", { allowed: false, basis: "x" }],
+      ["allowed fehlt", { basis: "x" }]
+    ]) {
+      const r = t.store.publish("ref_AAPL", { permission: erlaubnis });
+      assert.equal(r.published, false, name + " darf nicht ausliefern");
+      assert.equal(r.reason, "notPermitted");
+      assert.equal(t.store.readBars("ref_AAPL", "published"), null,
+        "es darf keine Datei im ausgelieferten Pfad entstehen (" + name + ")");
+    }
+  } finally { t.cleanup(); }
+});
+
+test("P8 · Eine Erlaubnis ohne Grundlage ist keine", () => {
+  // Dieselbe Regel wie in display-policy.declare(). Sie steht hier noch
+  // einmal, weil dies die Stelle ist, an der tatsaechlich geschrieben wird.
+  const t = mitBars(tempStore());
+  try {
+    const r = t.store.publish("ref_AAPL", { permission: { allowed: true } });
+    assert.equal(r.published, false);
+    assert.equal(r.reason, "permissionWithoutBasis");
+    assert.equal(t.store.readBars("ref_AAPL", "published"), null);
+  } finally { t.cleanup(); }
+});
+
+test("P9 · Mit gueltiger Erlaubnis wird ausgeliefert, mit Grundlage in der Datei", () => {
+  const t = mitBars(tempStore());
+  try {
+    const r = t.store.publish("ref_AAPL", { permission: ERLAUBNIS });
+    assert.equal(r.published, true);
+
+    const datei = t.store.readBars("ref_AAPL", "published");
+    assert.ok(datei);
+    // Die Frage "wer hat das erlaubt und woraufhin" soll spaeter nicht
+    // rekonstruiert werden muessen.
+    assert.equal(datei.publishBasis, ERLAUBNIS.basis);
+    assert.equal(datei.publishCheckedAt, "2026-09-07");
+  } finally { t.cleanup(); }
+});
+
+test("P10 · Die ausgelieferte Standardrichtlinie erlaubt keine Auslieferung", () => {
+  /* Die Gegenprobe zur Mechanik: was der Importlauf tatsaechlich als
+     Erlaubnis uebergeben wuerde, ist im heutigen Stand ein Nein. Waere es
+     eines Tages ein Ja, muss dieser Test anschlagen - eine Freigabe soll
+     nie beilaeufig passieren. */
+  DisplayPolicy.reset();
+  const gates = DisplayPolicy.gatesFromConfig(JSON.parse(readFileSync(
+    new URL("../config/feature-gates.json", import.meta.url), "utf8")));
+  const anzeige = DisplayPolicy.check({
+    providerId: "tiingo", dataClass: "marketData", audience: "public", form: "raw", gates
+  });
+  assert.equal(anzeige.allowed, false);
+
+  const t = mitBars(tempStore());
+  try {
+    const r = t.store.publish("ref_AAPL", { permission: anzeige });
+    assert.equal(r.published, false);
+    assert.equal(t.store.readBars("ref_AAPL", "published"), null);
+  } finally { t.cleanup(); }
 });
