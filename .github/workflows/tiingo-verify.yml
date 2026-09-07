@@ -22,6 +22,10 @@ on:
         description: 'Bericht als Artefakt hochladen'
         type: boolean
         default: true
+      run_ingest:
+        description: 'Zusaetzlich den Importweg gegen die echte API pruefen (kostet ~12 Anfragen)'
+        type: boolean
+        default: false
 
   # Waehrend der Entwicklung auf dem Phase-4A-Branch: workflow_dispatch ist
   # erst verfuegbar, wenn der Workflow auf dem Default-Branch liegt. Der
@@ -32,6 +36,7 @@ on:
     branches: [claude/tiingo-phase4a]
     paths:
       - 'scripts/market/verify-tiingo-runtime.mjs'
+      - 'scripts/market/ingest-tiingo.mjs'
       - 'providers/tiingo/adapter.js'
       - '.github/workflows/tiingo-verify.yml' 
 
@@ -136,3 +141,58 @@ jobs:
               '
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------
+  # Der Importweg selbst (§9, §25, §26).
+  #
+  # Der Laufzeitnachweis oben prueft, was Tiingo liefert. Dieser Job
+  # prueft, ob der Weg vom Anbieter in den Bestand funktioniert:
+  # Kontingentzaehlung, Wiederaufnahme nach Abbruch, Qualitaetspruefung,
+  # Gegenprobe der Bereinigung, Zusammenfuehren mit dem Vorstand.
+  #
+  # Er veroeffentlicht nichts. Der Arbeitsstand liegt in .market-cache und
+  # verschwindet mit dem Runner - solange die Lizenzfrage offen ist,
+  # gehoeren echte Kursreihen nicht in ein oeffentliches Repository.
+  # Geprueft wird der Weg, nicht der Bestand.
+  # ---------------------------------------------------------------------
+  ingest:
+    runs-on: ubuntu-latest
+    # Nur auf Anforderung: ein Import kostet zwoelf der 50 Anfragen pro
+    # Stunde und soll nicht bei jedem Commit anfallen. Solange
+    # workflow_dispatch nicht zur Verfuegung steht - es verlangt den
+    # Workflow auf dem Default-Branch - dient dafuer eine Marke in der
+    # Commit-Nachricht.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.run_ingest) ||
+      contains(github.event.head_commit.message, '[ingest]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Importweg gegen die echte API
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/ingest-tiingo.mjs
+
+      - name: Nichts Vertrauliches im Statusbericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Der Bestand bleibt im Arbeitsverzeichnis
+        # Die Gegenprobe zur Absicht: waere unter quant/data/market eine
+        # Kursreihe gelandet, wuerde sie im naechsten Commit
+        # veroeffentlicht. Genau das soll dieser Job nicht tun.
+        run: |
+          if git status --porcelain quant/data/market | grep -q 'daily\|intraday'; then
+            echo 'ABBRUCH: der Import hat Kursreihen in den veroeffentlichten Pfad geschrieben.'
+            git status --porcelain quant/data/market
+            exit 1
+          fi
+          echo 'Keine Kursreihe im veroeffentlichten Pfad.'
+          ls -la .market-cache 2>/dev/null | head -20 || echo 'Kein Arbeitsverzeichnis angelegt.'
+
+      - name: Statusbericht ins Protokoll
+        run: cat quant/data/market/tiingo-status.json
