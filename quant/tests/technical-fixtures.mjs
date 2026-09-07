@@ -43,8 +43,8 @@ function walk(n, drift, vol, seed, start = 100) {
 }
 
 export const fixtures = {
-  cleanUptrend: (n = 400) => seriesFromCloses(walk(n, 0.0025, 0.008, "up"), { seed: "up", instrumentId: "SYN_UP" }),
-  cleanDowntrend: (n = 400) => seriesFromCloses(walk(n, -0.0025, 0.008, "down"), { seed: "down", instrumentId: "SYN_DOWN" }),
+  cleanUptrend: (n = 400) => seriesFromCloses(walk(n, 0.0014, 0.012, "up"), { seed: "up", rangePct: 0.012, instrumentId: "SYN_UP" }),
+  cleanDowntrend: (n = 400) => seriesFromCloses(walk(n, -0.0014, 0.012, "down"), { seed: "down", rangePct: 0.012, instrumentId: "SYN_DOWN" }),
   range: (n = 400) => {
     const closes = [];
     for (let i = 0; i < n; i++) closes.push(100 + 8 * Math.sin(i / 9) + 0.6 * Math.cos(i / 2.3));
@@ -66,13 +66,10 @@ export const fixtures = {
     for (let i = 0; i < 120; i++) closes.push(closes[closes.length - 1] + 0.5);
     return seriesFromCloses(closes, { seed: "fake", rangePct: 0.002, instrumentId: "SYN_FAKE" });
   },
-  /** Confirmed Reversal: Trend, dann klarer Umschwung ueber jede Schwelle. */
-  confirmedReversal: () => {
-    const closes = [];
-    for (let i = 0; i < 150; i++) closes.push(100 + i * 0.5);
-    for (let i = 0; i < 150; i++) closes.push(closes[closes.length - 1] - 0.45);
-    return seriesFromCloses(closes, { seed: "conf", rangePct: 0.002, instrumentId: "SYN_CONF" });
-  },
+  /** Confirmed Reversal: Aufwaertsstruktur mit Pullbacks, dann Umschwung mit LH/LL. */
+  confirmedReversal: () => fixtures.piecewise(
+    [[0, 100], [40, 120], [55, 113], [100, 140], [115, 131], [150, 160], [175, 140], [190, 150], [230, 125], [245, 134], [300, 105]],
+    { seed: "conf", rangePct: 0.002, instrumentId: "SYN_CONF" }),
   /** Stueckweise lineare Pfade aus Pivotpunkten (fuer Elliott/Struktur). */
   piecewise: (points, opts = {}) => {
     const closes = [];
