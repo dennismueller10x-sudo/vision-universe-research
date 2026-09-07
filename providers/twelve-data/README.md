@@ -1,7 +1,34 @@
-# Twelve Data — Provider-Vorbereitung
+# Twelve Data — Provider-Adapter
 
-> **Status: nicht angeschlossen.** Dieses Verzeichnis enthaelt keinen Laufzeitcode und
-> keine Abhaengigkeit. Vision Universe V1 laeuft vollstaendig auf dem MockProvider.
+> **Status: gebaut, nicht scharf geschaltet.** `adapter.js` ist ein
+> vollstaendiger, getesteter Adapter. Er stellt ohne `TWELVE_DATA_API_KEY`
+> keine einzige Anfrage und meldet `notConfigured` — er faellt ausdruecklich
+> **nicht** auf Demo-Daten des Anbieters zurueck.
+>
+> Vision Universe laeuft weiterhin vollstaendig auf dem MockProvider. Der
+> Adapter ist Node-only und wird von keiner ausgelieferten Seite geladen;
+> `quant/tests/secrets.test.mjs` (S3) prueft das.
+>
+> Vollstaendige Beschreibung: **`docs/VU_TWELVE_DATA_ADAPTER.md`**.
+> Faehigkeiten und ihre Belege: **`docs/VU_PROVIDER_CAPABILITIES.md`**.
+
+## Was seit Phase 2 gebaut ist
+
+| Datei | Inhalt |
+|---|---|
+| `adapter.js` | Adapter mit sieben Methoden, Free-Plan-Faehigkeiten, Fehlererkennung bei HTTP 200 |
+| `../../scripts/market/fetch-market-data.mjs` | Abruf, Qualitaetspruefung, JSON-Ausgabe |
+| `../../scripts/market/evaluate-provider.mjs` | Pruefstand — `node scripts/market/evaluate-provider.mjs twelve-data` |
+| `../../.github/workflows/market-data.yml` | taeglicher Abruf, Secret nur im Runner |
+
+Bewertungsstand (ohne Zugang, rein deklariert):
+
+```
+Kursdaten             29 %  eingeschraenkt
+Fundamental-Backtest   0 %  UNGEEIGNET  (fehlt: pointInTime, delistedSecurities)
+Schaetzungen           0 %  ungeprueft
+Referenzdaten         60 %  geeignet
+```
 
 ## Zweck in der Architektur
 
@@ -23,16 +50,27 @@ TWELVE_DATA_API_KEY=      # serverseitig, niemals im Frontend
 TWELVE_DATA_BASE_URL=     # optional, Standard-Endpunkt des Anbieters
 ```
 
-Schluessel gehoeren **ausschliesslich serverseitig**. Kein Schluessel im Repository, kein
-Schluessel im Frontend. Ein Acceptance-Test scannt `quant/**` auf Schluesselmuster.
+Schluessel gehoeren **ausschliesslich serverseitig**. Kein Schluessel im
+Repository, kein Schluessel im Frontend. Seit Phase 2 pruefen das acht Tests
+ueber das **gesamte** Repository (`quant/tests/secrets.test.mjs`) statt nur
+`quant/**`, dazu eine letzte Pruefung vor dem Commit
+(`scripts/market/assert-no-secrets.mjs`).
+
+Vorlage ohne Werte: `.env.example` im Wurzelverzeichnis.
 
 ## Mapping-Strategie
 
 Vendor-Felder existieren ausschliesslich in `providers/twelve-data/adapter.js`. Oberhalb dieser
 Datei gibt es nur das kanonische Modell aus `quant/engines/schema.js`.
 
-Zu klaeren: Symbol-Mapping auf `SecurityIdentifier`, Behandlung von Symbolwechseln,
-Zeitzonen der Handelstage, Trennung von bereinigten und unbereinigten Kursen.
+Umgesetzt: Symbol-Mapping ueber `quant/engines/symbol-mapping.js` — ein
+mehrdeutiges Kuerzel wird gemeldet, nicht geraten. Bereinigte und unbereinigte
+Kurse sind getrennt (`adjustmentStatus`: `adjusted` / `splitAdjusted` /
+`unadjusted`); `adjustedClose` traegt nur bei zugesicherter
+Total-Return-Bereinigung einen Wert.
+
+Zu klaeren bleibt: Behandlung von Symbolwechseln, Zeitzonen der Handelstage
+ausserhalb der US-Boersen.
 
 ## Offene Lizenz-Pruefpunkte
 

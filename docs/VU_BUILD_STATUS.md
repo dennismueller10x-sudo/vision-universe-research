@@ -1,6 +1,14 @@
 # VU INVESTMENT INTELLIGENCE — BUILD STATUS
 
-Letzte Aktualisierung: **Phase 9 abgeschlossen — Build vollstaendig.**
+Letzte Aktualisierung: **Phase 2 abgeschlossen — Produktionsaudit und
+Marktdatenanbindung vorbereitet.**
+
+> **Phase 2** (September 2026) hat das V1-System auditiert und die
+> Providerschicht fuer echte Marktdaten gebaut. Bericht:
+> `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`, Befunde:
+> `docs/VU_PHASE2_PRODUCTION_AUDIT.md`.
+> **176 Tests gruen** (134 aus V1 unveraendert, 42 neu).
+> Das System laeuft weiterhin vollstaendig ohne Anbieterzugang.
 
 ## Completed
 
@@ -22,10 +30,11 @@ Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
 
 ### Umfang
 
-- **10 Produktseiten**, 18 Engine-Module (~6.700 Zeilen), 4 versionierte Methodik-Dateien
-- **134 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~34 s), darunter die
-  22 Acceptance-Kriterien aus Abschnitt 76
-- **13 Fachdokumente** unter `docs/`, 4 Provider-Vorbereitungen unter `providers/`
+- **11 Produktseiten** (10 aus V1, `/quant/markt/` aus Phase 2), 23 Engine-Module
+  (~6.700 Zeilen V1 + ~1.170 Zeilen Providerschicht), 4 versionierte Methodik-Dateien
+- **176 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~37 s), darunter die
+  22 Acceptance-Kriterien aus Abschnitt 76 und die 8 Schluesselpruefungen aus Phase 2
+- **20 Fachdokumente** unter `docs/` (13 aus V1, 7 aus Phase 2), 4 Provider-Vorbereitungen unter `providers/`
 - CI: `.github/workflows/quant-ci.yml` — Tests, JSON-Validitaet, Seitenstruktur,
   Konsistenz zwischen praekomputierten Daten und Engines
 - Am bestehenden Repository geaendert: **zwei Zeilen** (Menuepunkt + Positionierungsregel)
@@ -38,14 +47,36 @@ Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
 - AI-Flow aus Abschnitt 97 (Strategie → Feedback → neue Version)
 - Mobile (390 px): kein Ueberlauf auf einer der Seiten, Touch-Ziele ≥ 40 px
 
+## Phase 2 — Produktionsaudit und Marktdaten
+
+| Teil | Inhalt | Status |
+|---|---|---|
+| Audit | 0 CRITICAL, 2 HIGH, 6 MEDIUM, 4 LOW — beide HIGH und 5 MEDIUM behoben | ✓ |
+| Providerschicht | Faehigkeiten, Symbolzuordnung, Transport, Qualitaet, Betriebsmodus | ✓ |
+| Adapter | Twelve Data, serverseitig, Free Plan | ✓ |
+| Pipeline | Abruf → Pruefung → JSON → GitHub Pages, als Workflow | ✓ |
+| Schluesselsicherheit | 8 Tests ueber das Repository + Pruefung vor dem Commit | ✓ |
+| Oberflaeche | Datenherkunft je Datenklasse, neue Seite `/quant/markt/` | ✓ |
+| Pruefstand | `evaluate-provider.mjs` — dieselben Fragen an jeden Anbieter | ✓ |
+
+**Noch nicht scharf geschaltet.** `quant/data/market/status.json` steht auf
+`configured: false`; es sind keine echten Kursdaten committet. Dafuer fehlen
+zwei Dinge: das Secret `TWELVE_DATA_API_KEY` und die Klaerung der drei
+Veroeffentlichungsfragen aus `docs/VU_PROVIDER_LICENSE_CHECKLIST.md`.
+
 ## In Progress
 
-Nichts. Der Build ist abgeschlossen.
+Nichts. Beide Phasen sind abgeschlossen.
 
 ## Known Limitations
 
-- **Alle Daten sind synthetisch.** Die Ergebnisse belegen die Funktionsweise der Engine,
-  nicht die historische Tragfaehigkeit einer Strategie an realen Maerkten.
+- **Alle Daten sind synthetisch**, solange kein Anbieterzugang konfiguriert ist. Auch
+  mit echten Kursen bleiben die Fundamentaldaten synthetisch: die Ergebnisse belegen die
+  Funktionsweise der Engine, nicht die historische Tragfaehigkeit einer Strategie an
+  realen Maerkten. `backtestEligibility()` gibt dafuer `realEvidence: false` zurueck.
+- **Reale Unternehmen bekommen keinen Quant Score.** Das Referenzuniversum
+  (`ref_*`, 15 Titel) erhaelt ausschliesslich Kursdaten. Ein Score aus Kursdaten allein
+  waere ein Momentum-Signal mit falschem Namen.
 - Analyst Revisions sind im Schema vorgesehen, aber als `available: false` markiert —
   ohne lizenzierte PIT-Konsensdaten wird der Faktor nicht mit erfundenen Daten befuellt.
 - Deflated Sharpe Ratio und Probability of Backtest Overfitting sind nicht implementiert;
@@ -59,13 +90,22 @@ Nichts. Der Build ist abgeschlossen.
 
 ## Next Phase
 
-Keine weiteren Features. Der naechste Schritt ist die erste echte Datenintegration:
+Punkt 1 der urspruenglichen Liste ist mit Phase 2 gebaut. Was bleibt:
 
-1. **Market Data** (Twelve Data oder EODHD) — risikoaermster erster Adapter
-2. **US Point-in-Time Fundamentals** (Intrinio, nach Audit) — davon haengt die
-   Belastbarkeit jedes Backtests ab; vorher sind die drei Mock-Faelle
-   (`MOCK_RESTATEMENT`, `MOCK_DELISTED`, `MOCK_FUTURE_DATA_LEAK`) mit echten Daten
-   nachzubauen
-3. **Parallel**: Data Rights Matrix je Anbieter, insbesondere Derived-Data-Rechte
+1. **Zugang scharf schalten** — Secret hinterlegen, Lizenzfragen klaeren,
+   Workflow mit `dry_run` starten. Konfiguration, kein Bauauftrag.
+2. **Bereinigung verifizieren** — die Tageshistorie ist sehr wahrscheinlich
+   splitbereinigt (Beleg in `VU_PROVIDER_CAPABILITIES.md`), zugesichert ist es
+   nicht. Bis dahin bleibt `splitAdjustedPrices` auf `null`.
+3. **US Point-in-Time Fundamentals** — der eigentliche Engpass. Davon haengt ab,
+   ob ein Backtest jemals mehr belegt als die Funktionsweise der Engine. Der
+   Pruefstand (`scripts/market/evaluate-provider.mjs`) markiert `pointInTime`
+   und `delistedSecurities` als blockierend; Kandidaten stehen in
+   `VU_PROVIDER_CAPABILITIES.md`. Vorher sind die drei Mock-Faelle
+   (`MOCK_RESTATEMENT`, `MOCK_DELISTED`, `MOCK_FUTURE_DATA_LEAK`) mit echten
+   Daten nachzubauen.
+4. **Offen geblieben aus dem Audit**: MEDIUM-7 (die Alt-Pipeline unter
+   `scripts/dashboard/` kennzeichnet ihre Bereinigungsstufe nicht), LOW-2 und
+   LOW-3 (Barrierefreiheit der Tabellen). Begruendungen im Auditbericht.
 
-Details in `docs/VU_IMPLEMENTATION_REPORT.md`, Abschnitt 6.
+Details in `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`.

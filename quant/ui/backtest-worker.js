@@ -35,15 +35,53 @@ importScripts(
 
 var state = { provider: null, dataSnapshotId: null };
 
+/**
+ * Laedt die Methodikdateien.
+ *
+ * Synchron, weil der Worker damit nur sich selbst blockiert und der
+ * gesamte Lauf ohnehin nicht ohne diese Dateien beginnen kann.
+ *
+ * Mit Wiederholung, weil ein einzelner verlorener Abruf sonst den ganzen
+ * Backtest mit einer Meldung abbricht, die nach einem Rechenfehler klingt
+ * ("Methodik nicht ladbar") statt nach dem, was es war: ein Netzhaenger.
+ * Dieselbe Ueberlegung wie bei loadJSON im Hauptthread — nur war der Worker
+ * dort zunaechst uebersehen worden.
+ *
+ * Ein 404 wird nicht wiederholt: eine fehlende Datei kommt nicht zurueck.
+ */
+function loadFile(path, attempts) {
+  var lastError = null;
+  for (var i = 0; i < attempts; i++) {
+    var req = new XMLHttpRequest();
+    req.open("GET", path, false);
+    try {
+      req.send(null);
+    } catch (err) {
+      lastError = new Error("Methodik " + path + " nicht erreichbar: " + ((err && err.message) || err));
+      continue;
+    }
+    /* status 0 gilt bei file:// und bei manchen Worker-Kontexten als Erfolg. */
+    if (req.status === 200 || req.status === 0) {
+      try {
+        return JSON.parse(req.responseText);
+      } catch (err) {
+        /* Kein JSON: fast immer eine Fehlerseite. Wiederholen hilft nicht. */
+        throw new Error("Methodik " + path + " ist kein gueltiges JSON.");
+      }
+    }
+    if (req.status >= 400 && req.status < 500 && req.status !== 408 && req.status !== 429) {
+      throw new Error("Methodik " + path + " nicht gefunden (HTTP " + req.status + ").");
+    }
+    lastError = new Error("Methodik " + path + " nicht ladbar (HTTP " + req.status + ")");
+  }
+  throw lastError;
+}
+
 function loadMethodology() {
   var files = self.VUMethodology.FILES;
   var configs = {};
   Object.keys(files).forEach(function (key) {
-    var req = new XMLHttpRequest();
-    req.open("GET", BASE + "methodology/" + files[key], false);   // synchron: der Worker blockiert nur sich selbst
-    req.send(null);
-    if (req.status !== 200 && req.status !== 0) throw new Error("Methodik " + files[key] + " nicht ladbar (HTTP " + req.status + ")");
-    configs[key] = JSON.parse(req.responseText);
+    configs[key] = loadFile(BASE + "methodology/" + files[key], 3);
   });
   self.VUMethodology.configure(configs);
 }

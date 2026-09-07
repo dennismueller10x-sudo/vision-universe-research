@@ -7,9 +7,11 @@ name: Quant CI
 on:
   push:
     branches: [main]
-    paths: ['quant/**', 'scripts/quant/**', '.github/workflows/quant-ci.yml']
+    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   pull_request:
-    paths: ['quant/**', 'scripts/quant/**', '.github/workflows/quant-ci.yml']
+    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   workflow_dispatch:
 
 jobs:
@@ -26,10 +28,11 @@ jobs:
 
       - name: Methodik- und Datendateien sind gueltiges JSON
         run: |
-          for file in quant/methodology/*.json quant/data/*.json quant/data/dna/*.json; do
+          files=$(find quant/methodology quant/data quant/config -name '*.json')
+          for file in $files; do
             node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
           done
-          echo "$(ls quant/methodology/*.json quant/data/*.json quant/data/dna/*.json | wc -l) JSON-Dateien geprueft"
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
 
       - name: HTML-Seiten binden die gemeinsame Shell und die Navigation ein
         run: |
@@ -42,3 +45,25 @@ jobs:
 
       - name: Praekomputierte Daten stimmen mit der Engine ueberein
         run: node scripts/quant/verify-quant-data.mjs
+
+      - name: Keine Zugangsdaten in ausgelieferten Marktdaten
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Der Marktdatenabruf laeuft ohne Zugang fehlerfrei durch
+        # Die wichtigste Eigenschaft des Abrufs: ein fehlender Schluessel ist
+        # eine Konfigurationsfrage, kein Baufehler. Ohne Secret muss das
+        # Skript den Statusbericht schreiben und mit 0 enden.
+        run: |
+          node scripts/market/fetch-market-data.mjs
+          node -e '
+            const s = require("./quant/data/market/status.json");
+            if (s.configured !== false || s.dataMode !== "mock") {
+              throw new Error("Ohne Schluessel muss der Status mock/unkonfiguriert sein.");
+            }
+            console.log("Statusbericht korrekt: dataMode=" + s.dataMode);
+          '
+          git diff --quiet quant/data/market/status.json || \
+            echo "Hinweis: Zeitstempel im Statusbericht geaendert (erwartet)."
+
+      - name: Anbieterbewertung laeuft
+        run: node scripts/market/evaluate-provider.mjs twelve-data > /dev/null
