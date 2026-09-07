@@ -152,7 +152,8 @@
     { href: BASE + "strategies/", label: "Strategien" },
     { href: BASE + "backtests/", label: "Backtests" },
     { href: BASE + "watchlist/", label: "Watchlist" },
-    { href: BASE + "ai/", label: "Ask Vision Universe" }
+    { href: BASE + "ai/", label: "Ask Vision Universe" },
+    { href: BASE + "markt/", label: "Marktdaten" }
   ];
 
   function renderNav(activeHref) {
@@ -180,6 +181,159 @@
         })
       ])
     ]);
+  }
+
+  // ------------------------------------------------------- Datenherkunft
+  /* Phase 2 §17/§21. Der Statusbericht wird serverseitig geschrieben; das
+     Frontend liest ihn nur. Fehlt er, ist das kein Fehler, sondern der
+     Normalzustand einer Installation ohne Anbieterzugang. */
+
+  var MARKET_STATUS_PATH = BASE + "data/market/status.json";
+
+  var ORIGIN_LABEL = {
+    live:             { text: "Live",           tone: "good",    note: "Echtzeitkurse des Anbieters." },
+    delayed:          { text: "Verzoegert",     tone: "neutral", note: "Kurse mit Anbieterverzoegerung, typisch 15 Minuten." },
+    endOfDay:         { text: "Tagesschluss",   tone: "neutral", note: "Schlusskurse des letzten abgeschlossenen Handelstags." },
+    stale:            { text: "Veraltet",       tone: "warn",    note: "Der letzte Abruf ist fehlgeschlagen; angezeigt wird der zuletzt erfolgreiche Stand." },
+    mock:             { text: "Demo",           tone: "neutral", note: "Synthetische Daten. Keine realen Unternehmen." },
+    unavailable:      { text: "Nicht verfuegbar", tone: "poor",  note: "Fuer diese Datenklasse liegt keine Quelle vor." },
+    capabilityMissing:{ text: "Nicht im Zugang", tone: "poor",   note: "Der angebundene Zugang liefert diese Daten grundsaetzlich nicht." }
+  };
+
+  var CLASS_LABEL = {
+    marketData: "Kurse", fundamentals: "Fundamentaldaten",
+    corporateActions: "Kapitalmassnahmen", estimates: "Schaetzungen",
+    macro: "Makrodaten", news: "Nachrichten"
+  };
+
+  /**
+   * Laedt den Statusbericht. Ein fehlender Bericht bedeutet Mock-Modus —
+   * nicht Fehler. Diese Funktion lehnt darum nie ab.
+   */
+  function loadMarketStatus() {
+    return loadJSON(MARKET_STATUS_PATH, { attempts: 1 }).catch(function () {
+      return { dataMode: "mock", configured: false, provider: null,
+               notice: "Kein Datenstand hinterlegt. Das System laeuft vollstaendig im Demo-Modus." };
+    });
+  }
+
+  /**
+   * Ein Abzeichen je Datenklasse.
+   *
+   * Warum nicht ein einziges Abzeichen fuer die ganze Seite: weil es dann
+   * unweigerlich zu "Live" wuerde, sobald irgendetwas live ist. Genau diese
+   * Verkuerzung ist die Sorte Halbwahrheit, die eine Seite mit echten
+   * Kursen und synthetischen Fundamentaldaten unehrlich macht. Kurse und
+   * Fundamentaldaten haben getrennte Herkuenfte und bekommen getrennte
+   * Abzeichen.
+   */
+  function originBadge(dataClass, origin, extra) {
+    var spec = ORIGIN_LABEL[origin] || ORIGIN_LABEL.unavailable;
+    return el("span", {
+      class: "q-origin q-origin-" + spec.tone,
+      title: (CLASS_LABEL[dataClass] || dataClass) + ": " + spec.note + (extra ? " " + extra : "")
+    }, [
+      el("span", { class: "q-origin-dot", "aria-hidden": "true" }),
+      el("span", { class: "q-origin-class", text: CLASS_LABEL[dataClass] || dataClass }),
+      el("span", { class: "q-origin-value", text: spec.text })
+    ]);
+  }
+
+  /**
+   * Die Datenherkunftsleiste. Zeigt je Datenklasse, woher die Daten
+   * kommen, und benennt jede Einschraenkung im Klartext.
+   */
+  function dataOriginBar(status) {
+    status = status || { dataMode: "mock", configured: false };
+    var mode = status.dataMode || "mock";
+    var classes = [];
+
+    if (mode === "mock") {
+      classes.push(["marketData", "mock"], ["fundamentals", "mock"]);
+    } else {
+      var anyOk = false, anyStale = false;
+      var securities = status.securities || {};
+      Object.keys(securities).forEach(function (k) {
+        if (securities[k].ok) anyOk = true;
+        if (securities[k].stale) anyStale = true;
+      });
+      var marketOrigin = !anyOk ? "mock" : (anyStale ? "stale" : "endOfDay");
+      classes.push(["marketData", marketOrigin]);
+      /* Fundamentaldaten bleiben in dieser Phase ausnahmslos synthetisch.
+         Das ist keine Uebergangsloesung, sondern die bewusste Grenze: ein
+         reales Unternehmen mit erfundenen Bilanzzahlen zu zeigen waere die
+         eine Sorte Fehler, die sich nicht durch einen Hinweis heilen laesst. */
+      classes.push(["fundamentals", "mock"]);
+      if (status.capabilities && status.capabilities.market &&
+          status.capabilities.market.splits === false) {
+        classes.push(["corporateActions", "capabilityMissing"]);
+      }
+    }
+
+    var badges = classes.map(function (pair) { return originBadge(pair[0], pair[1]); });
+    var children = [el("div", { class: "q-origin-row" }, badges)];
+
+    var lines = [];
+    if (status.notice) lines.push(status.notice);
+    if (status.adjustmentStatus === "unadjusted") {
+      lines.push("Die Kursreihen sind nicht um Splits und Dividenden bereinigt. Sie eignen sich zur " +
+                 "Darstellung, nicht als Grundlage fuer Total-Return-Kennzahlen.");
+    } else if (status.adjustmentStatus === "splitAdjusted") {
+      lines.push("Die Kursreihen sind splitbereinigt, aber nicht dividendenbereinigt. Total-Return-" +
+                 "Kennzahlen waeren damit systematisch zu niedrig.");
+    }
+    if (status.generatedAt) {
+      /* "Letzter Abruf" waere gelogen, solange gar nichts abgerufen wurde:
+         der Zeitstempel sagt dann nur, wann der Statusbericht geschrieben
+         wurde. Zwei Zustaende, zwei Beschriftungen. */
+      lines.push((status.configured ? "Letzter Abruf: " : "Stand des Berichts: ") +
+                 formatDateTime(status.generatedAt) +
+                 (status.configured && status.provider ? " · Anbieter: " + status.provider : ""));
+    }
+    lines.forEach(function (line) {
+      children.push(el("p", { class: "q-origin-note", text: line }));
+    });
+
+    return el("section", { class: "q-origin-bar", role: "note",
+                           "aria-label": "Herkunft der angezeigten Daten" }, children);
+  }
+
+  /**
+   * Der Hinweis fuer die Seiten, die auf dem Modelluniversum laufen.
+   *
+   * Wichtig genug fuer einen eigenen Baustein: Ranking, Screener, Radar
+   * und Backtests rechnen ausnahmslos auf dem synthetischen Datensatz.
+   * Auf diesen Seiten die Herkunftsleiste mit "Kurse: Tagesschluss" zu
+   * zeigen, nur weil irgendwo im System echte Kurse abgerufen wurden,
+   * waere schlicht falsch — die Kurse dieser Seite sind es nicht.
+   * Der richtige Zusatz ist ein anderer: dass es echte Daten gibt, wo sie
+   * liegen, und dass sie in diese Auswertung nicht einfliessen.
+   */
+  function datasetOriginNote(status) {
+    if (!status || !status.configured) return null;
+    var securities = status.securities || {};
+    var loaded = Object.keys(securities).filter(function (k) { return securities[k].ok; });
+    if (!loaded.length) return null;
+
+    return el("section", { class: "q-origin-bar", role: "note" }, [
+      el("div", { class: "q-origin-row" }, [
+        originBadge("marketData", "mock", "Diese Seite rechnet auf dem Modelluniversum."),
+        originBadge("fundamentals", "mock")
+      ]),
+      el("p", { class: "q-origin-note" }, [
+        "Die Auswertungen dieser Seite beruhen vollstaendig auf dem synthetischen " +
+        "Modelluniversum. Unabhaengig davon liegen echte Tageskurse fuer " + loaded.length +
+        " reale Referenztitel vor; sie fliessen hier nicht ein. ",
+        el("a", { class: "q-link", href: BASE + "markt/", text: "Zur Datenherkunft" })
+      ])
+    ]);
+  }
+
+  function formatDateTime(iso) {
+    if (!iso) return "unbekannt";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    return d.toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" });
   }
 
   /** Zentrale Disclaimer-Komponente (§82). */
@@ -280,6 +434,22 @@
     return boot(options.need).then(function (data) {
       clear(root);
       if (options.banner !== false) root.appendChild(mockBanner(data.meta));
+
+      /* Die Herkunftsleiste wird nachgereicht, sobald der Statusbericht da
+         ist. Sie darf den Seitenaufbau nicht aufhalten: eine Seite, die auf
+         eine Statusdatei wartet, die es auf den meisten Installationen gar
+         nicht gibt, waere langsamer ohne einen einzigen Gewinn. */
+      var originSlot = el("div", {});
+      if (options.origin !== false) {
+        root.appendChild(originSlot);
+        loadMarketStatus().then(function (status) {
+          /* Im reinen Mock-Modus sagt das Demo-Banner darueber bereits
+             alles; zwei Hinweise nebeneinander stumpfen beide ab. */
+          var note = datasetOriginNote(status);
+          if (note) mount(originSlot, note);
+        });
+      }
+
       var content = el("div", {});
       root.appendChild(content);
       var result = options.render(data, content);
@@ -302,7 +472,11 @@
     formatDate: formatDate, num: num, signed: signed, fmt: fmt,
     toneFor: toneFor, bandLabel: bandLabel,
     CONFIDENCE_LABEL: CONFIDENCE_LABEL, FACTOR_LABEL: FACTOR_LABEL,
-    stateBox: stateBox, loading: loading, errorBox: errorBox, unavailable: unavailable
+    stateBox: stateBox, loading: loading, errorBox: errorBox, unavailable: unavailable,
+    MARKET_STATUS_PATH: MARKET_STATUS_PATH, ORIGIN_LABEL: ORIGIN_LABEL, CLASS_LABEL: CLASS_LABEL,
+    loadMarketStatus: loadMarketStatus, originBadge: originBadge, dataOriginBar: dataOriginBar,
+    datasetOriginNote: datasetOriginNote,
+    formatDateTime: formatDateTime
   };
 
   global.QuantShell = api;
