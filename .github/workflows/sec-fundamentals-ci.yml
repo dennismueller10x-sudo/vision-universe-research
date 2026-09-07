@@ -1,0 +1,135 @@
+name: SEC Fundamentals CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "quant/**"
+      - "scripts/quant/**"
+      - "docs/SEC_*.md"
+      - ".github/workflows/sec-fundamentals-ci.yml"
+  pull_request:
+    paths:
+      - "quant/**"
+      - "scripts/quant/**"
+      - "docs/SEC_*.md"
+      - ".github/workflows/sec-fundamentals-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile every pipeline module
+        run: python3 -m compileall -q scripts/quant
+
+      - name: Run the offline test suite (no network)
+        run: python3 scripts/quant/cli.py test
+
+      - name: Validate configuration files
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.registry import MetricRegistry
+
+          registry = MetricRegistry.load()
+          print("metric registry:", registry.version, len(registry.names()), "metrics")
+
+          universe = json.load(open("quant/config/sec_universe.json"))
+          assert universe["companies"], "universe must not be empty"
+          for entry in universe["companies"]:
+              assert entry["ticker"] and entry["cik"], entry
+          print("universe:", [c["ticker"] for c in universe["companies"]])
+          PY
+
+      - name: Validate seed and generated data JSON
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          for path in sorted(pathlib.Path("quant/data").glob("*.json")):
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              assert "schema_version" in payload or "generated_at_utc" in payload, path
+              print(f"{path}: OK ({path.stat().st_size} bytes)")
+          PY
+
+      - name: Validate the data inspector page
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          path = "quant/data-inspector/index.html"
+          html = open(path, encoding="utf-8").read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          assert "<vu-navigation></vu-navigation>" in html, "shared navigation missing"
+          assert "data.sec.gov" in html, "the page must name its data source"
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Reject company-specific logic in the pipeline
+        shell: bash
+        run: |
+          # The pipeline must stay generic: the five validation companies live in
+          # quant/config/sec_universe.json, never in the code that processes them.
+          if grep -rnE '\b(NVDA|AAPL|MSFT|JPM|XOM|NVIDIA|Apple|Microsoft|JPMorgan|Exxon)\b' scripts/quant/sec/; then
+            echo "::error::company-specific identifiers found in scripts/quant/sec/"
+            exit 1
+          fi
+          if grep -rnE '\b(0001045810|0000320193|0000789019|0000019617|0000034088)\b' scripts/quant/sec/; then
+            echo "::error::hard-coded validation-company CIKs found in scripts/quant/sec/"
+            exit 1
+          fi
+          echo "pipeline is company-agnostic"
+
+      - name: Enforce data hygiene
+        shell: bash
+        run: |
+          # Raw SEC payloads and normalized factbooks must never be committed.
+          for forbidden in quant/data/raw quant/data/facts .sec-cache .quant-state; do
+            if git ls-files --error-unmatch "$forbidden" >/dev/null 2>&1; then
+              echo "::error::$forbidden is tracked but must stay local"
+              exit 1
+            fi
+          done
+          # Committed artifacts stay small enough to review in a diff.
+          oversized="$(find quant/data -type f -size +2M 2>/dev/null || true)"
+          if [ -n "$oversized" ]; then
+            echo "::error::files over 2MB under quant/data:"; echo "$oversized"; exit 1
+          fi
+          total="$(du -sk quant/data | cut -f1)"
+          if [ "$total" -gt 10240 ]; then
+            echo "::error::quant/data is ${total}KB, over the 10MB budget"; exit 1
+          fi
+          echo "data hygiene OK (quant/data: ${total}KB)"
+
+      - name: Reject secrets in the SEC pipeline
+        shell: bash
+        run: |
+          # The SEC APIs need no key. Anything that looks like one is a mistake.
+          if grep -rniE '(api[_-]?key|secret|token|password)[[:space:]]*=[[:space:]]*["'"'"'][A-Za-z0-9_\-]{16,}' scripts/quant/ quant/; then
+            echo "::error::possible credential committed"
+            exit 1
+          fi
+          echo "no credentials found"
+
+      - name: Confirm the existing backtest engine is untouched by the bridge
+        shell: bash
+        run: |
+          # The bridge imports scripts/dashboard/backtest_technicals.py; a change
+          # to that file is a change to the production technical pipeline and
+          # must not arrive through a SEC-pipeline pull request.
+          if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^scripts/dashboard/'; then
+            echo "::error::this pipeline must not modify scripts/dashboard/"
+            exit 1
+          fi
+          echo "scripts/dashboard/ untouched"

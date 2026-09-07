@@ -1,0 +1,117 @@
+name: Update SEC fundamentals
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Re-normalize even when no new filing was found"
+        type: boolean
+        default: false
+      as_of:
+        description: "as-of date for the factor snapshot (YYYY-MM-DD, default: today)"
+        type: string
+        required: false
+  schedule:
+    # Weekly. US issuers file 10-Qs and 10-Ks in waves around earnings season;
+    # a weekly incremental pass picks them up without re-reading history, and
+    # the pipeline skips the large companyfacts fetch for anyone who has not
+    # filed since the last run.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-sec-fundamentals
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache SEC responses between runs
+        uses: actions/cache@v4
+        with:
+          path: .sec-cache
+          key: sec-cache-${{ github.run_id }}
+          restore-keys: sec-cache-
+
+      - name: Restore ingestion state
+        uses: actions/cache@v4
+        with:
+          path: |
+            .quant-state
+            quant/data/facts
+            quant/data/raw
+          key: sec-state-${{ github.run_id }}
+          restore-keys: sec-state-
+
+      - name: Run the offline test suite first
+        run: python3 scripts/quant/cli.py test
+
+      - name: Ingest the SEC universe
+        env:
+          # The SEC requires a declaring User-Agent with a contact address.
+          # This is a public contact address, not a credential.
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: |
+          python3 scripts/quant/cli.py ingest \
+            --universe quant/config/sec_universe.json \
+            ${{ inputs.force && '--force' || '' }}
+
+      - name: Retry anything that failed
+        if: always()
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/cli.py retry
+
+      - name: Build the coverage matrix
+        run: python3 scripts/quant/cli.py coverage
+
+      - name: Run the qualification gates
+        run: python3 scripts/quant/cli.py gates ${{ inputs.as_of && format('--as-of {0}', inputs.as_of) || '' }}
+
+      - name: Export the data inspector views
+        run: python3 scripts/quant/cli.py export
+
+      - name: Build the factor snapshot
+        run: python3 scripts/quant/cli.py snapshot ${{ inputs.as_of && format('--as-of {0}', inputs.as_of) || '' }}
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^quant/data/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "::error::this workflow may only change quant/data/:"
+            echo "$unexpected"
+            exit 1
+          fi
+          for forbidden in quant/data/raw quant/data/facts; do
+            if git status --porcelain | grep -q "$forbidden"; then
+              echo "::error::$forbidden must stay untracked"
+              exit 1
+            fi
+          done
+          oversized="$(find quant/data -type f -size +2M -not -path 'quant/data/raw/*' -not -path 'quant/data/facts/*' || true)"
+          if [ -n "$oversized" ]; then
+            echo "::error::generated artifact over 2MB:"; echo "$oversized"; exit 1
+          fi
+
+      - name: Commit generated data
+        shell: bash
+        run: |
+          git add quant/data
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen an den SEC-Daten – nichts zu committen."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update SEC fundamental data"
+          git push

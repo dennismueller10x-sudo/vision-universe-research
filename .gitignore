@@ -1,2 +1,13 @@
 scripts/hedgefonds/__pycache__/
 scripts/dashboard/__pycache__/
+
+# SEC Financial Data Core (Phase 4)
+# Raw SEC payloads and the fetch cache are large and regenerable - they must
+# never reach the public repository. The normalized factbooks are regenerable
+# too and stay local; only the compact, reviewable artifacts under quant/data/
+# (inspector views, coverage matrix, gate report, factor snapshot) are committed.
+.sec-cache/
+.quant-state/
+quant/data/raw/
+quant/data/facts/
+scripts/quant/**/__pycache__/

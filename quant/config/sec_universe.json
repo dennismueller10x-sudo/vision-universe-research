@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "description": "Validation universe for the SEC Financial Data Core. These five issuers were chosen to cover different accounting structures (semiconductors, hardware, software, banking, energy) and different fiscal calendars. They are inputs, not special cases: nothing in scripts/quant/ branches on a ticker or a CIK. The `cik` field is a hint only - the pipeline resolves the ticker against the SEC ticker map at ingest time and aborts on a mismatch.",
+  "companies": [
+    {"ticker": "NVDA", "name": "NVIDIA Corporation", "cik": "0001045810", "why": "Semiconductors; non-calendar fiscal year ending late January"},
+    {"ticker": "AAPL", "name": "Apple Inc.", "cik": "0000320193", "why": "Hardware; 52/53-week fiscal year ending late September"},
+    {"ticker": "MSFT", "name": "Microsoft Corporation", "cik": "0000789019", "why": "Software; fiscal year ending 30 June"},
+    {"ticker": "JPM", "name": "JPMorgan Chase & Co.", "cik": "0000019617", "why": "Banking; no cost of revenue, sector-dependent metric availability"},
+    {"ticker": "XOM", "name": "Exxon Mobil Corporation", "cik": "0000034088", "why": "Energy; calendar fiscal year, capital intensive"}
+  ]
+}

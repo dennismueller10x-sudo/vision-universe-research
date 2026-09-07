@@ -1,0 +1,333 @@
+"""Ingestion pipeline: five companies today, thousands later, same code path.
+
+Nothing here is parameterised by ticker or by company. `ingest_company` takes a
+CIK; `ingest_universe` takes a list of them. The five validation companies are
+an input file, not a branch in the code.
+
+Incremental updates work off the submissions index: if a company has filed
+nothing new since the last stored run, the (large) companyfacts payload is not
+fetched at all. Checkpointing makes a 2000-company import resumable at the
+company it died on.
+"""
+import logging
+import time
+from datetime import datetime, timezone
+
+from . import quality as quality_module
+from .fiscal import FiscalCalendar
+from .normalize import build_availability_map, normalize_company
+from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
+from .registry import MetricRegistry
+from .restatements import POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN
+from .store import CheckpointStore, JsonFactStore, JsonRawStore
+from .version import version_stamp
+
+LOGGER = logging.getLogger("vu.sec.pipeline")
+
+STATUS_INGESTED = "INGESTED"
+STATUS_UNCHANGED = "UNCHANGED"
+STATUS_FAILED = "FAILED"
+
+
+def _utcnow():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+class IngestionPipeline:
+    def __init__(self, provider=None, registry=None, raw_store=None, fact_store=None,
+                 checkpoint=None, run_id="default"):
+        self.provider = provider or SECProvider()
+        self.registry = registry or MetricRegistry.load()
+        self.raw_store = raw_store or JsonRawStore()
+        self.fact_store = fact_store or JsonFactStore(compress=True)
+        self.checkpoint = checkpoint or CheckpointStore(run_id=run_id)
+
+    # ------------------------------------------------------------ single company
+
+    def latest_filing_signature(self, filing_metadata):
+        """Cheap change detector: newest periodic filing this company has made."""
+        periodic = [row for row in filing_metadata if row["form"] in PERIODIC_FORMS]
+        if not periodic:
+            return None
+        newest = max(periodic, key=lambda row: (row["filing_date"] or "", row["accession"] or ""))
+        return {"accession": newest["accession"], "filing_date": newest["filing_date"],
+                "form": newest["form"], "periodic_filings": len(periodic)}
+
+    def ingest_company(self, cik, force=False):
+        """Fetch, archive, normalize, quality-check and store one company."""
+        cik = normalize_cik(cik)
+        started = time.monotonic()
+
+        submissions = self.provider.get_submissions(cik)
+        submissions_hash = self.raw_store.put(cik, "submissions", submissions)
+        # Stamp the retrieval time from the archive before anything reads it, so
+        # the profile is derived from a stable timestamp too (see below).
+        submissions_snapshot = self.raw_store.snapshot_record(
+            cik, "submissions", submissions_hash)
+        if submissions_snapshot is not None:
+            submissions["_retrieved_at"] = submissions_snapshot["first_seen"]
+        profile = self.provider.get_company_profile(cik, submissions)
+        filing_metadata = self.provider.get_filing_metadata(cik, submissions)
+
+        signature = self.latest_filing_signature(filing_metadata)
+        stored = self.fact_store.read_company(cik)
+        if stored and not force and self._is_current(stored, signature):
+            LOGGER.info("cik=%s unchanged since %s; skipping companyfacts fetch",
+                        cik, signature and signature["filing_date"])
+            return {"cik": cik, "status": STATUS_UNCHANGED, "signature": signature,
+                    "seconds": round(time.monotonic() - started, 2)}
+
+        company_facts = self.provider.get_company_facts(cik)
+        facts_hash = self.raw_store.put(cik, "companyfacts", company_facts)
+
+        # Provenance records when this payload was FIRST retrieved, not when
+        # this run happened. Re-normalizing unchanged SEC data must produce a
+        # byte-identical factbook, or every run would churn the store and no
+        # diff would mean anything.
+        snapshot = self.raw_store.snapshot_record(cik, "companyfacts", facts_hash)
+        if snapshot is not None:
+            company_facts["_retrieved_at"] = snapshot["first_seen"]
+
+        availability = build_availability_map(filing_metadata)
+        raw_facts = list(self.provider.iter_raw_facts(
+            company_facts, availability=availability, forms=PERIODIC_FORMS))
+
+        calendar = FiscalCalendar.from_raw_facts(
+            cik, raw_facts, fiscal_year_end_hint=profile.fiscal_year_end)
+        result = normalize_company(cik, raw_facts, self.registry, profile=profile,
+                                   filing_metadata=filing_metadata, calendar=calendar)
+        findings, summary = quality_module.run_all(
+            raw_facts, result.factbook, self.registry, result.issues)
+
+        document = {
+            "cik": cik,
+            "generated_at_utc": _utcnow(),
+            "versions": version_stamp(self.registry.version),
+            "raw_companyfacts_sha256": facts_hash,
+            "latest_filing": signature,
+            "filing_years": _filing_years(filing_metadata),
+            "profile": profile.to_dict(),
+            "calendar": calendar.to_dict(),
+            "stats": result.stats,
+            "quality": {"summary": summary, "findings": findings},
+            "factbook": result.factbook.to_dict(),
+        }
+        self.fact_store.write_company(cik, document)
+        return {
+            "cik": cik, "status": STATUS_INGESTED, "signature": signature,
+            "stats": result.stats, "quality": summary,
+            "seconds": round(time.monotonic() - started, 2),
+        }
+
+    def _is_current(self, stored, signature):
+        """A stored document is current only if versions AND filings both match."""
+        if signature is None:
+            return False
+        if stored.get("versions") != version_stamp(self.registry.version):
+            # A mapping or formula change invalidates stored output by design.
+            return False
+        return stored.get("latest_filing") == signature
+
+    # ----------------------------------------------------------------- universe
+
+    def ingest_universe(self, entries, resume=True, force=False, limit=None,
+                        max_attempts=3):
+        """Ingest many companies with checkpointing, a failure log and a retry queue."""
+        state = self.checkpoint.load() if resume else {
+            "run_id": self.checkpoint.run_id, "started_at": _utcnow(),
+            "completed": {}, "failed": {}, "retry_queue": [], "last_cik": None,
+        }
+        results = []
+        processed = 0
+
+        for entry in entries:
+            cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
+            if limit is not None and processed >= limit:
+                break
+            if resume and not force and self.checkpoint.is_completed(state, cik):
+                continue
+            attempts = state["failed"].get(cik, {}).get("attempts", 0)
+            if attempts >= max_attempts:
+                LOGGER.warning("cik=%s skipped: %d failed attempts", cik, attempts)
+                continue
+            processed += 1
+            try:
+                outcome = self.ingest_company(cik, force=force)
+                state = self.checkpoint.mark_completed(state, cik, {
+                    "status": outcome["status"],
+                    "latest_filing": (outcome.get("signature") or {}).get("accession"),
+                })
+                results.append(outcome)
+            except Exception as exc:  # noqa: BLE001 - the failure log is the point
+                LOGGER.exception("ingest failed cik=%s", cik)
+                state = self.checkpoint.mark_failed(state, cik, exc)
+                results.append({"cik": cik, "status": STATUS_FAILED, "error": str(exc)})
+            finally:
+                # Written after every company so a crash resumes at the next one.
+                self.checkpoint.save(state)
+
+        manifest = {
+            "generated_at_utc": _utcnow(),
+            "versions": version_stamp(self.registry.version),
+            "provider_adapter": self.provider.ADAPTER_VERSION,
+            "companies": self.fact_store.list_companies(),
+            "run": {
+                "run_id": state["run_id"],
+                "processed": processed,
+                "completed": len(state["completed"]),
+                "failed": len(state["failed"]),
+                "retry_queue": list(state["retry_queue"]),
+            },
+        }
+        self.fact_store.write_manifest(manifest)
+        return {"results": results, "state": state, "manifest": manifest}
+
+    def retry_failed(self, max_attempts=3):
+        state = self.checkpoint.load()
+        queue = list(state.get("retry_queue", []))
+        if not queue:
+            return {"results": [], "state": state, "manifest": self.fact_store.read_manifest()}
+        return self.ingest_universe([{"cik": cik} for cik in queue], resume=True,
+                                    max_attempts=max_attempts)
+
+    def refresh_since(self, since, entries=None):
+        """Re-ingest only companies with a periodic filing on or after `since`."""
+        candidates = entries if entries is not None else [
+            {"cik": cik} for cik in self.fact_store.list_companies()
+        ]
+        due = []
+        for entry in candidates:
+            cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
+            try:
+                submissions = self.provider.get_submissions(cik, include_history=False)
+                filings = self.provider.get_filing_metadata(cik, submissions)
+            except Exception as exc:  # noqa: BLE001
+                LOGGER.warning("refresh check failed cik=%s: %s", cik, exc)
+                due.append({"cik": cik})
+                continue
+            newest = self.latest_filing_signature(filings)
+            if newest and (newest["filing_date"] or "") >= str(since):
+                due.append({"cik": cik})
+        LOGGER.info("refresh_since %s: %d of %d companies due", since, len(due), len(candidates))
+        return self.ingest_universe(due, resume=False)
+
+
+def _filing_years(filing_metadata):
+    """Periodic-filing counts per calendar year of the report date.
+
+    The coverage matrix needs to tell "the company filed but the filing carries
+    no usable XBRL" apart from "the company did not file at all".
+    """
+    years = {}
+    for row in filing_metadata or []:
+        if row["form"] not in PERIODIC_FORMS:
+            continue
+        stamp = row.get("report_date") or row.get("filing_date")
+        if not stamp:
+            continue
+        year = str(stamp)[:4]
+        bucket = years.setdefault(year, {"forms": {}, "count": 0, "xbrl": 0})
+        bucket["forms"][row["form"]] = bucket["forms"].get(row["form"], 0) + 1
+        bucket["count"] += 1
+        if row.get("is_xbrl"):
+            bucket["xbrl"] += 1
+    return dict(sorted(years.items()))
+
+
+def export_inspector_view(document, registry, as_of=None, annual_years=12,
+                          quarterly_years=5, policy=POLICY_LATEST_KNOWN):
+    """A compact, committable view of one company for the data inspector UI.
+
+    The full factbook stays out of the repository; this is the small slice a
+    human needs to eyeball values, periods, availability dates and provenance.
+    """
+    from .periods import PeriodResolver
+    from .restatements import CompanyFactBook, FactTimeline, Observation
+    from .model import Provenance, CompanyProfile
+
+    factbook = _rehydrate(document)
+    resolver = PeriodResolver(factbook, registry)
+    years = factbook.fiscal_years()
+    annual_scope = years[-annual_years:] if years else []
+    quarterly_scope = years[-quarterly_years:] if years else []
+
+    rows = []
+    for metric in registry.names():
+        for fiscal_year in annual_scope:
+            fact = resolver.annual(metric, fiscal_year, as_of, policy=policy)
+            rows.append(_row(fact))
+        for fiscal_year in quarterly_scope:
+            for index in range(1, 5):
+                fact = resolver.quarter(metric, fiscal_year, index, as_of, policy=policy)
+                rows.append(_row(fact))
+
+    return {
+        "cik": document["cik"],
+        "generated_at_utc": _utcnow(),
+        "versions": document["versions"],
+        "profile": document["profile"],
+        "calendar": document["calendar"],
+        "quality_summary": document["quality"]["summary"],
+        "as_of": str(as_of) if as_of else None,
+        "policy": policy,
+        "scope": {"annual_years": annual_scope, "quarterly_years": quarterly_scope},
+        "rows": [row for row in rows if row is not None],
+    }
+
+
+def _row(fact):
+    if fact is None:
+        return None
+    if not fact.available:
+        # Unavailable cells are exported too: the inspector must show WHY a
+        # number is absent, not silently omit the row.
+        return {
+            "metric": fact.metric, "fiscal_year": fact.fiscal_year,
+            "fiscal_period": fact.fiscal_period, "value": None,
+            "available": False, "reason": fact.reason, "flags": fact.flags,
+        }
+    provenance = fact.provenance
+    return {
+        "metric": fact.metric,
+        "fiscal_year": fact.fiscal_year,
+        "fiscal_period": fact.fiscal_period,
+        "value": fact.value,
+        "unit": fact.unit,
+        "period_start": fact.period_start,
+        "period_end": fact.period_end,
+        "available": True,
+        "available_from": provenance.available_from,
+        "filed": provenance.filed,
+        "form": provenance.form,
+        "accession": provenance.accession,
+        "concept": f"{provenance.taxonomy}:{provenance.concept}" if provenance.concept else None,
+        "source": provenance.source,
+        "transformation": provenance.transformation,
+        "quality": fact.quality,
+        "flags": fact.flags,
+    }
+
+
+def _rehydrate(document):
+    """Rebuild a CompanyFactBook from a stored document."""
+    from .model import CompanyProfile, Provenance
+    from .restatements import CompanyFactBook, FactTimeline, Observation
+
+    profile_payload = dict(document.get("profile") or {})
+    profile_payload.pop("is_financial", None)
+    profile = CompanyProfile(**profile_payload) if profile_payload else None
+    factbook = CompanyFactBook(document["cik"], profile=profile)
+    for timeline in document["factbook"]["timelines"]:
+        for observation in timeline["observations"]:
+            provenance = Provenance(**observation["provenance"])
+            factbook.add_observation(
+                timeline["metric"], timeline["fiscal_year"], timeline["fiscal_period"],
+                Observation(
+                    value=observation["value"], unit=observation["unit"],
+                    provenance=provenance, available_from=observation["available_from"],
+                    filed=observation["filed"], quality=observation["quality"],
+                    flags=observation["flags"], period_start=observation["period_start"],
+                    period_end=observation["period_end"],
+                ),
+            )
+    return factbook
