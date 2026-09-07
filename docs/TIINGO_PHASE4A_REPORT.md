@@ -1,6 +1,7 @@
 # TIINGO PHASE 4A — ABSCHLUSSBERICHT
 
-Stand: 2026-09-07 · Branch `claude/tiingo-phase4a` · 324 Tests grün
+Stand: 2026-09-07 · Branch `claude/tiingo-phase4a` · 331 Tests grün
+Release-Audit durchgeführt; zwei zusätzliche HIGH-Befunde gefunden und behoben (Frage 21).
 
 Der Erfolgsmaßstab dieser Phase war nicht die Zahl geänderter Dateien, sondern
 eine Frage: **Kann Tiingo als Market-Data-Layer für Vision Universe
@@ -286,8 +287,9 @@ Monatsbudgets.
 
 ### 21. Welche kritischen Probleme wurden gefunden?
 
-Sieben, in fünf Gruppen. **Drei davon kamen erst durch den Lauf gegen die
-echte API** — keiner der damals 310 Tests hatte sie gefunden.
+Neun, in sieben Gruppen. **Drei kamen durch den Lauf gegen die echte API,
+drei durch adversarisches Nachlesen, zwei durch den Release-Audit** — keiner
+davon durch die Testsuite, die zum jeweiligen Zeitpunkt grün war.
 
 **a) Die Stetigkeitsprüfung lief auf der falschen Spalte.**
 Der erste Import verwarf AAPL, NVDA, AMZN und TSLA — alle vier mit Split, alle
@@ -325,18 +327,39 @@ einem Stichtag mitten in der Reihe zeigte der Chart auch die Tage danach.
 Der zweite und dritte sind die unangenehmeren, weil sie nicht abstürzen,
 sondern still das Falsche zeigen.
 
-Alle sieben sind behoben und durch Tests festgehalten. **CRITICAL oder HIGH
-offen: keine.**
+**f) Veröffentlichen hing an einem Flag statt an einer Erlaubnis** (Release-Audit).
+`publish()` schrieb 400 echte Bars nach `quant/data/market/daily/`, obwohl beide
+Feature-Gates aus waren und keine Lizenz eingetragen war. Zwischen Arbeitsablage
+und Auslieferung lag nichts als `--publish`. Das ist der Weg, auf dem es
+ankommt: der Pfad wird von GitHub Pages ausgeliefert und liegt in der
+Versionierung — was dort einmal steht, ist veröffentlicht, und ein späteres
+Löschen entfernt es nicht aus der Historie.
+
+`publish()` verlangt jetzt eine ausdrückliche Erlaubnis mit Grundlage und
+verweigert ohne sie den Dienst; der Import holt sie aus derselben Richtlinie,
+die die Anzeige regelt.
+
+**g) Intraday-Bars trugen den Handelstag am falschen Feld** (Release-Audit).
+Der Adapter schrieb ihn unter `timestamp`, das Schema kennt nur `date`, und
+alles Nachgelagerte liest von dort. Der 1T-Chart lieferte auf echten
+Adapterbars **null Punkte** — während der Browsertest grün war, weil dessen
+Fixture `date` benutzte. Genau die Lücke zwischen „Test grün" und „läuft".
+
+Möglich wurde das, weil kein Test die Adapterausgabe je gegen das kanonische
+Schema gehalten hat — dieselbe Ursache wie bei Befund (d). Jetzt tun es drei.
+
+Alle sieben Gruppen sind behoben und durch Tests festgehalten. **CRITICAL oder
+HIGH offen: keine.**
 
 ### 22. Wie viele Tests sind grün?
 
-**324 von 324.** Ausgangspunkt Phase 3: 232.
+**331 von 331.** Ausgangspunkt Phase 3: 232.
 
 | Datei | Tests |
 |---|---|
-| `tiingo.test.mjs` | 31 |
+| `tiingo.test.mjs` | 34 |
+| `market-store.test.mjs` | 20 |
 | `adjustment-consistency.test.mjs` | 18 |
-| `market-store.test.mjs` | 16 |
 | `chart-ranges.test.mjs` | 15 |
 | `panel-builder.test.mjs` | 12 |
 | bestehende (Phase 1–3) | 232 |
@@ -394,12 +417,28 @@ Was **nicht** als Nächstes ansteht:
 
 ---
 
+## Für die Master-Dokumentation
+
+Diese Phase legt **keine** Master-Datei an und ändert keine bestehende — die
+zentrale `VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md` läuft über einen eigenen
+Dokumentations-PR. Was nach einem erfolgreichen Merge dort einzuarbeiten wäre:
+
+| Thema | Kernaussage |
+|---|---|
+| Datenanbieter | Tiingo ist als Marktdatenanbieter qualifiziert (`PARTIALLY_QUALIFIED`), nicht als Evidenzquelle. |
+| Preissemantik | Erster zur Laufzeit belegter **TOTAL_RETURN**-Bestand des Projekts, im kostenlosen Tarif. |
+| Fähigkeitsmatrix | Sie wird nicht mehr behauptet, sondern von einem committeten Laufzeitnachweis gehoben — mit Lauf, Commit und Zahlen je Fähigkeit. |
+| Anzeigerichtlinie | Neue Schicht: „können wir abrufen" und „dürfen wir anzeigen" sind getrennt. Öffentliche Anzeige verlangt Gate **und** Lizenz. |
+| Auslieferung | Ein Schreibvorgang in einen ausgelieferten Pfad verlangt eine Erlaubnis mit Grundlage, kein Kommandozeilenflag. |
+| Grenze zu Fundamentaldaten | Unverändert: reale Unternehmen bekommen echte Kurse und keine erfundenen Bilanzen. |
+| Offen | Lizenzfrage, Gates A/B/C, Fundamentaldaten, Realtime, WebSocket. |
+
 ## Was diese Phase über das Vorgehen zeigt
 
-Drei der sieben Befunde kamen aus **sechs echten API-Aufrufen und einem
-Import**. Drei weitere kamen aus dem adversarischen Nachlesen des eigenen,
-frisch geschriebenen Codes. Sechs von sieben also nicht aus den 310 Tests, die
-zu dem Zeitpunkt grün waren.
+Von neun Befunden kamen drei aus **sechs echten API-Aufrufen und einem
+Import**, drei aus dem adversarischen Nachlesen des eigenen frischen Codes und
+zwei aus dem Release-Audit. **Keiner** kam aus der Testsuite, die zum jeweiligen
+Zeitpunkt grün war.
 
 Die Tests waren nicht schlecht. Sie kannten nur keinen Fall, in dem beide
 Spalten mit einem echten Split nebeneinander liegen, und keinen Titel, der eine
