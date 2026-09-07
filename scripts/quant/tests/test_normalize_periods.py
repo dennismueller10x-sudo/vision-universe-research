@@ -117,6 +117,71 @@ class PointInTimeDeaccumulationTests(unittest.TestCase):
         self.assertGreaterEqual(str(fact.provenance.available_from)[:10], "2024-02")
 
 
+class OutOfOrderReconstructionTests(unittest.TestCase):
+    """A quarter is never reconstructed from cumulative periods that are out of order.
+
+    Found on live SEC data: for NVDA the fiscal calendar misplaced a period in
+    the sparse first XBRL years, and Q4 = FY - YTD3 was then computed from an
+    annual figure ending BEFORE the nine-month figure. The result was a
+    confident operating-income number for a "FY2010 Q4" whose period end was
+    2010-10-31 — the same date the same year's Q3 already carried. Two quarters
+    cannot end on the same day; the pipeline must leave a gap instead.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.registry = MetricRegistry.load()
+
+    def _resolver(self, builder, cik):
+        provider = SECProvider(client=_NullClient())
+        raw = list(provider.iter_raw_facts(builder.company_facts()))
+        result = normalize_company(str(cik).zfill(10), raw, self.registry,
+                                   filing_metadata=builder.filings)
+        return PeriodResolver(result.factbook, self.registry), result
+
+    def test_ordered_cumulative_periods_still_reconstruct(self):
+        """The guard must not block the normal case."""
+        fy_ends = build_year_ends(date(2019, 12, 31), 6)
+        builder, expected = standard_company(2000000020, fy_ends, lambda year: 1000.0)
+        resolver, _ = self._resolver(builder, 2000000020)
+        fact = resolver.quarter("revenue", 2023, 4, None, policy=POLICY_LATEST_KNOWN)
+        self.assertTrue(fact.available)
+        self.assertEqual(fact.provenance.transformation, TRANSFORM_FY_MINUS_YTD)
+
+    def test_an_annual_period_ending_before_the_nine_month_one_is_refused(self):
+        from quant.tests.fixtures import FactsBuilder
+        builder = FactsBuilder(2000000021)
+        # A well-formed year, so the calendar has anchors to learn from.
+        for year in (2021, 2022, 2023):
+            builder.add("us-gaap", "Revenues", "USD", 1000.0, f"{year}-12-31",
+                        f"{year}-01-01", f"fy-{year}", "10-K", f"{year + 1}-02-20",
+                        fy=year, fp="FY")
+        # A nine-month figure that ends AFTER the annual figure of the same
+        # labelled year — the shape the misplacement produced on real data.
+        builder.add("us-gaap", "Revenues", "USD", 900.0, "2023-12-31", "2023-04-01",
+                    "ytd3-bad", "10-Q", "2024-01-15", fy=2023, fp="Q3")
+        resolver, _ = self._resolver(builder, 2000000021)
+        grid = resolver.quarter_grid("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
+        for index, observation in grid.items():
+            if observation is None or not observation.period_end:
+                continue
+            with self.subTest(quarter=index):
+                self.assertLessEqual(observation.period_end, "2023-12-31")
+
+    def test_no_two_quarters_of_a_year_share_a_period_end(self):
+        """The property the live data violated, asserted directly."""
+        fy_ends = build_year_ends(date(2019, 12, 31), 6)
+        builder, _ = standard_company(2000000022, fy_ends, lambda year: 1000.0)
+        resolver, _ = self._resolver(builder, 2000000022)
+        for fiscal_year in (2021, 2022, 2023):
+            grid = resolver.quarter_grid("revenue", fiscal_year, None,
+                                         policy=POLICY_LATEST_KNOWN)
+            ends = [o.period_end for o in grid.values() if o is not None and o.period_end]
+            with self.subTest(fiscal_year=fiscal_year):
+                self.assertEqual(len(ends), len(set(ends)),
+                                 f"duplicate period ends in FY{fiscal_year}: {ends}")
+
+
 class TrailingTwelveMonthTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

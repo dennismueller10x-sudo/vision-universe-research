@@ -146,6 +146,22 @@ class PeriodResolver:
                 previous = cumulative[index - 1]
                 if previous is None:
                     continue
+                # The two cumulative points must actually be ordered in time.
+                # If the longer period ends BEFORE the shorter one, they do not
+                # belong to the same fiscal year — the calendar misplaced one of
+                # them, which happens in the sparse first XBRL years. Subtracting
+                # them would produce a confident, wrong number for a quarter that
+                # does not exist (measured on NVDA: operatingIncome for a
+                # "FY2010 Q4" ending 2010-10-31, the same date as Q3). A gap is
+                # the honest answer.
+                if current.period_end and previous.period_end \
+                        and current.period_end <= previous.period_end:
+                    LOGGER.warning(
+                        "cik=%s %s FY%s Q%d: cumulative periods out of order "
+                        "(%s <= %s); refusing to reconstruct",
+                        self.factbook.cik, metric, fiscal_year, index,
+                        current.period_end, previous.period_end)
+                    continue
                 transformation = TRANSFORM_FY_MINUS_YTD if index == 4 else TRANSFORM_YTD_DIFF
                 natives[index] = _combine(
                     [current, previous], current.value - previous.value,
