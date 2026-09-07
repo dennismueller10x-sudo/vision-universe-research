@@ -8,9 +8,13 @@ on:
   push:
     branches: [main]
     paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+            'scripts/dashboard/price_semantics.py',
+            'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   pull_request:
     paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+            'scripts/dashboard/price_semantics.py',
+            'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   workflow_dispatch:
 
@@ -22,6 +26,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
       - name: Engine- und Acceptance-Tests
         run: node --test "quant/tests/*.test.mjs"
@@ -67,3 +74,19 @@ jobs:
 
       - name: Anbieterbewertung laeuft
         run: node scripts/market/evaluate-provider.mjs twelve-data > /dev/null
+
+      - name: Anbieterqualifikation laeuft
+        run: node scripts/market/qualify-providers.mjs > /dev/null
+
+      - name: Bereinigungssemantik ist in beiden Stacks identisch
+        # Die Gefahr bei einer gemeinsamen Definition ohne gemeinsame
+        # Bibliothek: die JSON-Datei wird geaendert, ein Modul zieht nach,
+        # das andere nicht - und der Fehler aus MEDIUM-7 ist zurueck.
+        run: node scripts/market/verify-semantics-parity.mjs
+
+      - name: Die Dashboard-Kette laeuft mit gekennzeichneten Daten
+        run: |
+          python3 scripts/dashboard/migrate_adjustment_semantics.py --check
+          python3 scripts/dashboard/calculate_technicals.py
+          python3 scripts/dashboard/backtest_technicals.py
+          echo 'Kette vollstaendig durchgelaufen.'

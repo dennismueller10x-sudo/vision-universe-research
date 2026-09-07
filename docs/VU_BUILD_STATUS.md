@@ -1,13 +1,22 @@
 # VU INVESTMENT INTELLIGENCE — BUILD STATUS
 
-Letzte Aktualisierung: **Phase 2 abgeschlossen — Produktionsaudit und
-Marktdatenanbindung vorbereitet.**
+Letzte Aktualisierung: **Phase 3 abgeschlossen — Anbieterqualifikation und
+Bereinigungssemantik.**
 
-> **Phase 2** (September 2026) hat das V1-System auditiert und die
-> Providerschicht fuer echte Marktdaten gebaut. Bericht:
-> `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`, Befunde:
+> **Phase 3** (September 2026) hat den offenen Auditbefund MEDIUM-7 behoben
+> und ein Verfahren gebaut, das Datenanbieter auf ihre Eignung fuer
+> historische Auswertungen prueft. Bericht:
+> `docs/VU_PHASE3_IMPLEMENTATION_REPORT.md`, Ergebnis:
+> `docs/VU_PROVIDER_DECISION_MATRIX.md`.
+> **232 Tests gruen** (177 aus Phase 2, 55 neu).
+>
+> Ergebnis der Qualifikation: **kein Anbieter besteht alle drei Gates, kein
+> Befund ist zur Laufzeit geprueft.** Das Verfahren steht, das Urteil fehlt -
+> und das ist die ehrliche Bilanz, nicht ein Zwischenstand.
+>
+> **Phase 2** hatte zuvor die Providerschicht fuer echte Marktdaten gebaut.
+> Bericht: `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`, Befunde:
 > `docs/VU_PHASE2_PRODUCTION_AUDIT.md`.
-> **177 Tests gruen** (134 aus V1 unveraendert, 43 neu).
 > Das System laeuft weiterhin vollstaendig ohne Anbieterzugang.
 
 ## Completed
@@ -32,9 +41,11 @@ Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
 
 - **11 Produktseiten** (10 aus V1, `/quant/markt/` aus Phase 2), 23 Engine-Module
   (~6.700 Zeilen V1 + ~1.170 Zeilen Providerschicht), 4 versionierte Methodik-Dateien
-- **177 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~37 s), darunter die
-  22 Acceptance-Kriterien aus Abschnitt 76 und die 8 Schluesselpruefungen aus Phase 2
-- **20 Fachdokumente** unter `docs/` (13 aus V1, 7 aus Phase 2), 4 Provider-Vorbereitungen unter `providers/`
+- **232 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~40 s), darunter die
+  22 Acceptance-Kriterien aus Abschnitt 76, die 8 Schluesselpruefungen aus Phase 2
+  und die 3 Gate-Tests aus Phase 3
+- **27 Fachdokumente** unter `docs/` (13 aus V1, 7 aus Phase 2, 7 aus Phase 3),
+  4 Provider-Vorbereitungen unter `providers/`
 - CI: `.github/workflows/quant-ci.yml` — Tests, JSON-Validitaet, Seitenstruktur,
   Konsistenz zwischen praekomputierten Daten und Engines
 - Am bestehenden Repository geaendert: **zwei Zeilen** (Menuepunkt + Positionierungsregel)
@@ -64,9 +75,30 @@ Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
 zwei Dinge: das Secret `TWELVE_DATA_API_KEY` und die Klaerung der drei
 Veroeffentlichungsfragen aus `docs/VU_PROVIDER_LICENSE_CHECKLIST.md`.
 
+## Phase 3 — Anbieterqualifikation und Bereinigungssemantik
+
+| Teil | Inhalt | Status |
+|---|---|---|
+| MEDIUM-7 | Zentrale Bereinigungssemantik, Alt-Pipeline migriert ohne Zahlenaenderung | ✓ |
+| Semantik | RAW / SPLIT_ADJUSTED / TOTAL_RETURN / UNKNOWN, von beiden Stacks gelesen | ✓ |
+| Evidenzspezifikation | 3 Gates, 15 Anforderungen, 7 Belegstufen, 3 Rollen | ✓ |
+| Gate-Tests | ausfuehrbar; MockProvider als Referenz, 6 Fehlerfaelle als Gegenprobe | ✓ |
+| Pruefstand | `runProviderQualification()`, Belegstufe getrennt vom Befund | ✓ |
+| Anbieterprofile | Sharadar, Intrinio, Twelve Data, EODHD, FMP, Polygon | ✓ |
+| Mehrere Anbieter | Vorrangregeln, Qualitaetswert, Datenstandskennung | ✓ |
+
+**Kein Urteil, und das ist das Ergebnis.** Kein Anbieter besteht alle drei
+Gates. Kein einziger Befund ist zur Laufzeit geprueft: ein bezahlter Zugang war
+ausgeschlossen, und die Primaerdokumentation der Anbieter war aus der
+Bauumgebung nicht abrufbar (Egress-Proxy). Beides ist ueberall vermerkt, wo
+eine Einstufung steht.
+
+Naechster Schritt kostet nichts: Intrinios Developer Sandbox (Dow 30) schliesst
+Gate A und C. Gate B nicht - die Dow 30 sind per Definition Ueberlebende.
+
 ## In Progress
 
-Nichts. Beide Phasen sind abgeschlossen.
+Nichts. Alle drei Phasen sind abgeschlossen.
 
 ## Known Limitations
 
@@ -77,6 +109,13 @@ Nichts. Beide Phasen sind abgeschlossen.
 - **Reale Unternehmen bekommen keinen Quant Score.** Das Referenzuniversum
   (`ref_*`, 15 Titel) erhaelt ausschliesslich Kursdaten. Ein Score aus Kursdaten allein
   waere ein Momentum-Signal mit falschem Namen.
+- **Kein Anbieter ist als Evidenzquelle qualifiziert.** Solange kein Anbieter die
+  drei Gates besteht, bleibt jeder Backtest eine Vorfuehrung der Rechenlogik.
+  `describeSnapshot()` gibt dafuer `evidenceEligible: false` zurueck und nennt die
+  fehlende Voraussetzung.
+- **Die Kursreihen sind splitbereinigt, nicht total-return-bereinigt.** Damit sind
+  Momentum und Volatilitaet zulaessig, Renditeaussagen nicht. Eine Stufe hoeher
+  kommt man nur mit Dividendenereignissen, nicht mit einer Annahme.
 - Analyst Revisions sind im Schema vorgesehen, aber als `available: false` markiert —
   ohne lizenzierte PIT-Konsensdaten wird der Faktor nicht mit erfundenen Daten befuellt.
 - Deflated Sharpe Ratio und Probability of Backtest Overfitting sind nicht implementiert;
@@ -90,22 +129,28 @@ Nichts. Beide Phasen sind abgeschlossen.
 
 ## Next Phase
 
-Punkt 1 der urspruenglichen Liste ist mit Phase 2 gebaut. Was bleibt:
+Nach Nutzen sortiert, nicht nach Aufwand:
 
-1. **Zugang scharf schalten** — Secret hinterlegen, Lizenzfragen klaeren,
-   Workflow mit `dry_run` starten. Konfiguration, kein Bauauftrag.
-2. **Bereinigung verifizieren** — die Tageshistorie ist sehr wahrscheinlich
-   splitbereinigt (Beleg in `VU_PROVIDER_CAPABILITIES.md`), zugesichert ist es
-   nicht. Bis dahin bleibt `splitAdjustedPrices` auf `null`.
-3. **US Point-in-Time Fundamentals** — der eigentliche Engpass. Davon haengt ab,
-   ob ein Backtest jemals mehr belegt als die Funktionsweise der Engine. Der
-   Pruefstand (`scripts/market/evaluate-provider.mjs`) markiert `pointInTime`
-   und `delistedSecurities` als blockierend; Kandidaten stehen in
-   `VU_PROVIDER_CAPABILITIES.md`. Vorher sind die drei Mock-Faelle
-   (`MOCK_RESTATEMENT`, `MOCK_DELISTED`, `MOCK_FUTURE_DATA_LEAK`) mit echten
-   Daten nachzubauen.
-4. **Offen geblieben aus dem Audit**: MEDIUM-7 (die Alt-Pipeline unter
-   `scripts/dashboard/` kennzeichnet ihre Bereinigungsstufe nicht), LOW-2 und
-   LOW-3 (Barrierefreiheit der Tabellen). Begruendungen im Auditbericht.
+1. **Intrinio Developer Sandbox anfragen** (kostenlos) und Gate A + C gegen
+   echte Dow-30-Daten laufen lassen. Liefert die ersten
+   `RUNTIME_VERIFIED`-Befunde des Projekts und prueft nebenbei, ob der
+   Pruefstand an echten Daten funktioniert.
+2. **Sharadar-Lizenzfrage klaeren.** Professionelle Nutzer muessen ueber
+   Nasdaq Data Link beziehen; eine oeffentliche Website ist mit hoher
+   Wahrscheinlichkeit professionelle Nutzung. Ohne diese Antwort ist jede
+   Kostenrechnung gegenstandslos.
+3. **Primaerdokumentation direkt lesen**, sobald eine Umgebung ohne
+   Egress-Beschraenkung verfuegbar ist. Hebt mehrere Befunde von
+   `THIRD_PARTY_REPORTED` auf `DOCUMENTATION_VERIFIED` und koennte Gate B bei
+   Sharadar schliessen.
+4. **Erst dann** ein bezahlter Sharadar-Monat (Full History Bundle) fuer alle
+   drei Gates. Die 5-Jahres-Variante reicht nicht: Gate A und B brauchen
+   Restatement- und Delisting-Faelle im Zeitraum.
+5. **Danach Kapitalmassnahmen als erste produktive Datenklasse** - nicht
+   Fundamentaldaten. Ohne Dividendenereignisse bleiben die Kursreihen
+   splitbereinigt, und ohne Total Return gibt es keine Renditeaussage.
 
-Details in `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`.
+**Weiterhin offen aus Phase 2:** die drei Veroeffentlichungsfragen der
+Lizenzcheckliste, LOW-2 und LOW-3 (Barrierefreiheit der Tabellen).
+
+Details in `docs/VU_PHASE3_IMPLEMENTATION_REPORT.md`.
