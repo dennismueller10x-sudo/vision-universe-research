@@ -1,7 +1,7 @@
 # TIINGO PHASE 4A — ABSCHLUSSBERICHT
 
-Stand: 2026-09-07 · Branch `claude/tiingo-phase4a` · 331 Tests grün
-Release-Audit durchgeführt; zwei zusätzliche HIGH-Befunde gefunden und behoben (Frage 21).
+Stand: 2026-09-07 · Branch `claude/tiingo-phase4a` · 332 Tests grün
+Release-Audit und Final Sync durchgeführt; zwei zusätzliche HIGH-Befunde gefunden und behoben (Frage 21).
 
 Der Erfolgsmaßstab dieser Phase war nicht die Zahl geänderter Dateien, sondern
 eine Frage: **Kann Tiingo als Market-Data-Layer für Vision Universe
@@ -292,9 +292,10 @@ Monatsbudgets.
 
 ### 21. Welche kritischen Probleme wurden gefunden?
 
-Neun, in sieben Gruppen. **Drei kamen durch den Lauf gegen die echte API,
-drei durch adversarisches Nachlesen, zwei durch den Release-Audit** — keiner
-davon durch die Testsuite, die zum jeweiligen Zeitpunkt grün war.
+Zehn, in acht Gruppen. **Drei kamen durch den Lauf gegen die echte API, drei
+durch adversarisches Nachlesen, zwei durch den Release-Audit, zwei durch den
+Final Sync** — keiner davon durch die Testsuite, die zum jeweiligen Zeitpunkt
+grün war.
 
 **a) Die Stetigkeitsprüfung lief auf der falschen Spalte.**
 Der erste Import verwarf AAPL, NVDA, AMZN und TSLA — alle vier mit Split, alle
@@ -353,18 +354,32 @@ Fixture `date` benutzte. Genau die Lücke zwischen „Test grün" und „läuft"
 Möglich wurde das, weil kein Test die Adapterausgabe je gegen das kanonische
 Schema gehalten hat — dieselbe Ursache wie bei Befund (d). Jetzt tun es drei.
 
-Alle sieben Gruppen sind behoben und durch Tests festgehalten. **CRITICAL oder
+**h) Echte Providerwerte lagen öffentlich** (Final Sync). Der Laufzeitnachweis,
+der Statusbericht, das Anbieterprofil und die Dokumentation führten 14
+beobachtete Tiingo-Werte — Kurse, Ausschüttungsbeträge, Verhältnisse. Da dieses
+Repository öffentlich ist, gilt das auch für Actions-Logs und Artefakte. Alle
+ersetzt durch Aussagen und Anzahlen; die Rohwerte existieren jetzt nur noch
+flüchtig im Speicher des Prüflaufs.
+
+Beim Umformulieren fiel ein Denkfehler in der eigenen Prüfung auf: der Abstand
+zwischen bereinigter und roher Spalte **vor** dem Ex-Tag trägt alle späteren
+Ausschüttungen mit — über zweieinhalb Jahre rund 7 %, während die eine
+Ausschüttung 0,8 % ausmacht. Ein Vergleich mit der Einzelrendite hätte einen
+völlig richtigen Befund als falsch ausgewiesen. Gemessen wird jetzt der
+**Schritt über den Ex-Tag**.
+
+Alle acht Gruppen sind behoben und durch Tests festgehalten. **CRITICAL oder
 HIGH offen: keine.**
 
 ### 22. Wie viele Tests sind grün?
 
-**331 von 331.** Ausgangspunkt Phase 3: 232.
+**332 von 332.** Ausgangspunkt Phase 3: 232.
 
 | Datei | Tests |
 |---|---|
 | `tiingo.test.mjs` | 34 |
 | `market-store.test.mjs` | 20 |
-| `adjustment-consistency.test.mjs` | 18 |
+| `adjustment-consistency.test.mjs` | 19 |
 | `chart-ranges.test.mjs` | 15 |
 | `panel-builder.test.mjs` | 12 |
 | bestehende (Phase 1–3) | 232 |
@@ -440,10 +455,10 @@ Dokumentations-PR. Was nach einem erfolgreichen Merge dort einzuarbeiten wäre:
 
 ## Was diese Phase über das Vorgehen zeigt
 
-Von neun Befunden kamen drei aus **sechs echten API-Aufrufen und einem
-Import**, drei aus dem adversarischen Nachlesen des eigenen frischen Codes und
-zwei aus dem Release-Audit. **Keiner** kam aus der Testsuite, die zum jeweiligen
-Zeitpunkt grün war.
+Von zehn Befunden kamen drei aus **sechs echten API-Aufrufen und einem
+Import**, drei aus dem adversarischen Nachlesen des eigenen frischen Codes, zwei
+aus dem Release-Audit und zwei aus dem Final Sync. **Keiner** kam aus der
+Testsuite, die zum jeweiligen Zeitpunkt grün war.
 
 Die Tests waren nicht schlecht. Sie kannten nur keinen Fall, in dem beide
 Spalten mit einem echten Split nebeneinander liegen, und keinen Titel, der eine
