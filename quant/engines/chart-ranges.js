@@ -51,19 +51,37 @@
     return null;
   }
 
+  /* Der Datumsteil eines Zeitstempels - Intraday-Bars tragen eine Uhrzeit. */
+  function dayOf(bar) { return String((bar && bar.date) || bar || "").slice(0, 10); }
+
   function isoMinusDays(iso, days) {
-    var d = new Date(iso + "T00:00:00Z");
+    /* Auf den Datumsteil kuerzen, bevor gerechnet wird. Ein Aufrufer, der
+       einen vollen Zeitstempel uebergibt, meint denselben Tag - und ohne
+       diese Zeile bekaeme er stattdessen eine Ausnahme mitten im
+       Rendern. */
+    var d = new Date(dayOf(iso) + "T00:00:00Z");
+    if (isNaN(d.getTime())) return null;
     d.setUTCDate(d.getUTCDate() - days);
     return d.toISOString().slice(0, 10);
   }
 
-  /** Der Datumsteil eines Zeitstempels - Intraday-Bars tragen eine Uhrzeit. */
-  function dayOf(bar) { return String(bar.date || "").slice(0, 10); }
-
-  function sliceFrom(bars, fromDate) {
-    if (!fromDate) return bars.slice();
+  /**
+   * Schneidet das Fenster beidseitig.
+   *
+   * Die obere Grenze ist nicht Kosmetik. Ohne sie zeigt ein Chart, dessen
+   * Stichtag in der Mitte der Reihe liegt, auch die Tage danach - und aus
+   * einer Darstellung "Stand 15. Januar" wird eine mit Blick in die
+   * Zukunft. Im Normalfall faellt der Stichtag auf den letzten Bar und die
+   * Grenze greift nicht; sie ist fuer den anderen Fall da.
+   */
+  function schneide(bars, vonDatum, bisDatum) {
     var out = [];
-    for (var i = 0; i < bars.length; i++) if (dayOf(bars[i]) >= fromDate) out.push(bars[i]);
+    for (var i = 0; i < bars.length; i++) {
+      var tag = dayOf(bars[i]);
+      if (vonDatum && tag < vonDatum) continue;
+      if (bisDatum && tag > bisDatum) continue;
+      out.push(bars[i]);
+    }
     return out;
   }
 
@@ -119,12 +137,22 @@
       return fehler("noData", "Fuer diesen Titel liegt keine Kursreihe vor.");
     }
 
+    var bis = dayOf(heute) || null;
     var von = null;
     if (range.all) von = null;
-    else if (range.ytd) von = String(heute).slice(0, 4) + "-01-01";
-    else von = isoMinusDays(heute, range.days);
+    else if (range.ytd) von = dayOf(heute).slice(0, 4) + "-01-01";
+    else {
+      von = isoMinusDays(heute, range.days);
+      if (von === null) {
+        /* Ein unlesbarer Stichtag darf nicht dazu fuehren, dass das
+           Fenster einfach entfaellt - dann zeigte "1 Monat" stillschweigend
+           die ganze Historie. */
+        return fehler("invalidDate",
+          "Der Stichtag \"" + heute + "\" ist kein gueltiges Datum.");
+      }
+    }
 
-    var bars = sliceFrom(quelle, von);
+    var bars = schneide(quelle, von, bis);
     if (bars.length < MIN_BARS) {
       return fehler("tooFewBars",
         "Im gewaehlten Zeitraum liegen nur " + bars.length + " Kurspunkte vor.");

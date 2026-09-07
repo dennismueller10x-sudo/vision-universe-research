@@ -170,3 +170,48 @@ test("R12 · Das Gate allein macht die Anzeige nicht oeffentlich", () => {
   assert.equal(res.allowed, false);
   assert.equal(res.reason, "notLicensed");
 });
+
+test("R13 · Ein voller Zeitstempel als Stichtag ist kein Absturz", () => {
+  // Intraday-Bars tragen eine Uhrzeit, und ein Aufrufer reicht leicht
+  // einen vollen Zeitstempel weiter. Ohne Kuerzung auf den Datumsteil
+  // entstand daraus eine Ausnahme mitten im Rendern.
+  const data = { eod: tagesreihe(400) };
+  const mitZeit = Ranges.selectRange("1M", data, { gates: AUS, today: "2026-06-30T14:30:00.000Z" });
+  const ohneZeit = Ranges.selectRange("1M", data, { gates: AUS, today: "2026-06-30" });
+  assert.equal(mitZeit.ok, true);
+  assert.equal(mitZeit.from, ohneZeit.from);
+  assert.equal(mitZeit.to, ohneZeit.to);
+  assert.equal(mitZeit.bars.length, ohneZeit.bars.length);
+
+  // Auch YTD zieht das Jahr aus dem Datumsteil.
+  assert.equal(Ranges.selectRange("YTD", data, { gates: AUS, today: "2026-03-02T09:00:00Z" })
+    .from.slice(0, 4), "2026");
+});
+
+test("R14 · Ein unlesbarer Stichtag entfernt nicht einfach das Fenster", () => {
+  // Der stille Fall: liefe isoMinusDays auf null hinaus und bliebe das
+  // Fenster damit offen, zeigte "1 Monat" klaglos die ganze Historie.
+  const res = Ranges.selectRange("1M", { eod: tagesreihe(400) },
+    { gates: AUS, today: "kein Datum" });
+  assert.equal(res.ok, false);
+  assert.equal(res.reason, "invalidDate");
+  assert.equal(res.bars.length, 0);
+});
+
+test("R15 · Das Fenster endet am Stichtag, nicht am letzten Bar", () => {
+  /* Ohne obere Grenze zeigt ein Chart mit Stichtag in der Mitte der Reihe
+     auch die Tage danach - aus "Stand 15. Januar" wird eine Darstellung
+     mit Blick in die Zukunft. Im Normalfall faellt der Stichtag auf den
+     letzten Bar und die Grenze greift nicht; sie ist fuer den anderen
+     Fall da. */
+  const data = { eod: tagesreihe(400) };   // endet am 2026-06-30
+  const stichtag = "2026-03-15";
+  for (const id of ["1M", "6M", "YTD", "1Y", "MAX"]) {
+    const res = Ranges.selectRange(id, data, { gates: AUS, today: stichtag });
+    assert.ok(res.ok, id);
+    assert.ok(res.to <= stichtag,
+      `${id} zeigt ${res.to} und damit Tage nach dem Stichtag ${stichtag}`);
+  }
+  // Und ohne Stichtag reicht die Reihe erwartungsgemaess bis zum Ende.
+  assert.equal(Ranges.selectRange("MAX", data, { gates: AUS }).to, "2026-06-30");
+});
