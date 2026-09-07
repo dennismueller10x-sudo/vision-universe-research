@@ -16,12 +16,19 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../hash.js") : global.VUHash;
-  var Timeframe = isNode ? require("./timeframe.js") : global.VUTechnical.Timeframe;
+  /* Timeframe wird nur in buildAnnotations gebraucht (Kalender fuer
+     Projektionsachse). Im Browser lazy, damit die Seite das Schema
+     (forLayer, validate) ohne die Engine-Module laden kann. */
+  var Timeframe = isNode ? require("./timeframe.js") : null;
+  function timeframeModule() { return Timeframe || (global.VUTechnical && global.VUTechnical.Timeframe) || null; }
 
   var SCHEMA_VERSION = "annotation-1.0.0";
   var LAYERS = ["AUTO", "STRUCTURE", "TREND", "MOMENTUM", "SUPPORT_RESISTANCE", "FIBONACCI", "ELLIOTT"];
   var STATUSES = ["CONFIRMED", "DEVELOPING", "PROJECTED", "INVALIDATED", "EXPIRED"];
   var FIELDS = ["annotationId", "type", "layers", "startTime", "endTime", "startPrice", "endPrice", "label", "status", "method", "degree", "scenarioId", "evidenceRef", "confidence", "semanticStyle", "zOrder"];
+
+  var EVENT_LABELS = { BOS_BULLISH: "BOS ↑", BOS_BEARISH: "BOS ↓", STRUCTURE_FAILURE_BULLISH: "Failure ↓", STRUCTURE_FAILURE_BEARISH: "Failure ↑",
+                       STRUCTURE_CHANGE_BULLISH: "Change ↑", STRUCTURE_CHANGE_BEARISH: "Change ↓", BREAKOUT_UP: "Breakout ↑", BREAKOUT_DOWN: "Breakout ↓" };
 
   function make(a) {
     var o = {
@@ -43,7 +50,9 @@
    */
   function buildAnnotations(b, o) {
     o = o || {};
-    var cal = Timeframe.createCalendar(o.calendarDays || []);
+    var TF = timeframeModule();
+    if (!TF) throw new Error("annotations.buildAnnotations: timeframe.js nicht geladen");
+    var cal = TF.createCalendar(o.calendarDays || []);
     var now = b.analysisTime;
     var horizon = (b.scenarios.primary && b.scenarios.primary.projectionHorizonBars) || 60;
     var future = cal.offset(now, horizon);
@@ -64,8 +73,10 @@
                       status: "DEVELOPING", method: "pivot:" + setup, semanticStyle: "developing", zOrder: 10, evidenceRef: devP.pivotId }));
       out.push(make({ type: "PIVOT", layers: ["STRUCTURE"], startTime: devP.pivotTime, startPrice: devP.pivotPrice, label: devP.side === "HIGH" ? "H?" : "L?", status: "DEVELOPING", method: "pivot:" + setup, semanticStyle: "developing", zOrder: 20 }));
     }
-    b.structure.swings.forEach(function (s) {
-      out.push(make({ type: "STRUCTURE_LABEL", layers: ["AUTO", "STRUCTURE"], startTime: s.time, startPrice: s.price, label: s.label || (s.side === "HIGH" ? "H" : "L"), status: "CONFIRMED",
+    var swingCount = b.structure.swings.length;
+    b.structure.swings.forEach(function (s, si) {
+      /* AUTO zeigt nur die juengsten Strukturlabels — weniger Text im Chart. */
+      out.push(make({ type: "STRUCTURE_LABEL", layers: si >= swingCount - 10 ? ["AUTO", "STRUCTURE"] : ["STRUCTURE"], startTime: s.time, startPrice: s.price, label: s.label || (s.side === "HIGH" ? "H" : "L"), status: "CONFIRMED",
                       method: "structure", semanticStyle: s.side === "HIGH" ? "label-high" : "label-low", zOrder: 20, evidenceRef: s.pivotId, meta: { confirmedAt: s.confirmedAt, side: s.side } }));
     });
     b.pivots.scales[ctxScale].pivots.forEach(function (p) {
@@ -73,7 +84,7 @@
     });
     b.structure.events.filter(function (e) { return /BOS|STRUCTURE_CHANGE|STRUCTURE_FAILURE|BREAKOUT/.test(e.type) && e.level; }).slice(-8).forEach(function (e) {
       var ref = b.structure.swings.filter(function (s) { return s.pivotId === e.refPivotId; })[0];
-      out.push(make({ type: "STRUCTURE_EVENT", layers: ["STRUCTURE"], startTime: ref ? ref.time : e.time, endTime: e.time, startPrice: e.level, endPrice: e.level, label: e.type.replace(/_/g, " "), status: "CONFIRMED",
+      out.push(make({ type: "STRUCTURE_EVENT", layers: ["STRUCTURE"], startTime: ref ? ref.time : e.time, endTime: e.time, startPrice: e.level, endPrice: e.level, label: EVENT_LABELS[e.type] || e.type.replace(/_/g, " "), status: "CONFIRMED",
                       method: "structure", semanticStyle: /BULLISH|UP|FAILURE_BEARISH/.test(e.type) ? "event-bullish" : "event-bearish", zOrder: 12, evidenceRef: e.eventId }));
     });
 

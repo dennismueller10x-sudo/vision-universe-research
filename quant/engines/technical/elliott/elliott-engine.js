@@ -97,7 +97,7 @@
   }
 
   /** Trailing: letzte k bestaetigte Legs + developing Leg als Pattern-Anfang. */
-  function trailingCandidates(legs, developing, startFrom, cfg, guidelines, expectMotive) {
+  function trailingCandidates(legs, developing, startFrom, cfg, guidelines, expectMotive, regime) {
     var out = [];
     var tail = legs.slice(startFrom);
     var all = developing ? tail.concat([developing]) : tail;
@@ -116,11 +116,18 @@
       }
     }
     /* Vollstaendigkeit belohnen: mehr erklaerte Legs = hoeherer Rank. */
-    /* Rank: erklaerte Legs (MDL), Grammatik-Prior (nach Korrektur Motive erwartet), Fit. */
+    /* Rank: erklaerte Legs (MDL), Grammatik-Prior (nach Korrektur Motive
+       erwartet), Fit, und Higher-Degree-Konsistenz: ein bearischer Impuls
+       in bullischer Marktstruktur ist zulaessig, aber weniger plausibel als
+       eine trendkonforme Lesart (Research: HigherDegreeConsistency 0.20). */
     out.forEach(function (o) {
       o.rank = 0.5 * o.score + 0.08 * o.legs.length;
       if (o.startOffset === startFrom && expectMotive === true && o.type === "IMPULSE") o.rank += 0.2;
       if (o.startOffset === startFrom && expectMotive === false && o.type === "ZIGZAG") o.rank += 0.2;
+      if (regime === "BULLISH" || regime === "BEARISH") {
+        var patternBull = o.type === "IMPULSE" ? o.sign > 0 : o.sign < 0;
+        o.rank += patternBull === (regime === "BULLISH") ? 0.1 : -0.1;
+      }
     });
     out.sort(function (a, b) { return b.rank - a.rank; });
     return out;
@@ -248,7 +255,7 @@
     /* Das letzte Pattern darf auch als Anfang des Trailing neu interpretiert werden — nur fuer Alternativen. */
     var lastPattern = hist.patterns[hist.patterns.length - 1] || null;
     var expectMotive = lastPattern ? lastPattern.type !== "IMPULSE" : null;
-    var cands = trailingCandidates(legs, graph.developing, trailingStart, ctx.cfg, ctx.guidelines, expectMotive);
+    var cands = trailingCandidates(legs, graph.developing, trailingStart, ctx.cfg, ctx.guidelines, expectMotive, ctx.structure ? ctx.structure.state.regime : null);
     return { graph: graph, legs: legs, offset: offset, history: hist, trailingStart: trailingStart, candidates: cands };
   }
 

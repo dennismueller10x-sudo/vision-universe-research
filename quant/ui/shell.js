@@ -152,6 +152,7 @@
     { href: BASE + "strategies/", label: "Strategien" },
     { href: BASE + "backtests/", label: "Backtests" },
     { href: BASE + "watchlist/", label: "Watchlist" },
+    { href: BASE + "technical/", label: "Technical" },
     { href: BASE + "ai/", label: "Ask Vision Universe" },
     { href: BASE + "markt/", label: "Marktdaten" }
   ];

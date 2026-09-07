@@ -422,3 +422,80 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
   .q-ask input{font-size:16px}   /* verhindert Auto-Zoom in iOS Safari */
   .q-input,.q-select,.q-textarea{font-size:16px}
 }
+
+/* =====================================================================
+   TECHNICAL INTELLIGENCE (quant/technical) — Chart + Layer + Szenarien
+   Farblogik: historisch = Ink/Muted, developing = Blue, projiziert =
+   gestrichelt/transparent, Entry = Green, Target = Blue, Invalidation = Red.
+   Bestehende Tokens, kein neues Designsystem.
+   ===================================================================== */
+.q-tech-hero-grid{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start}
+.q-tech-hero-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+.q-tech-fine{font-size:11px;color:var(--muted-2)}
+.q-tech-plain{margin:16px 0 0;padding:14px 16px;background:var(--surface);border-radius:var(--radius-sm);font-size:15px;line-height:1.5}
+.q-tech-controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:10px}
+.q-tech-controls .q-pillbar{display:flex;flex-wrap:wrap;gap:6px}
+.q-pill--sm{padding:5px 10px;font-size:12px}
+.q-tech-chart-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.q-tchart{min-width:640px;width:100%}
+.q-tchart .future-area{fill:var(--surface-2);opacity:.6}
+.q-tchart .grid{stroke:var(--line);stroke-width:1}
+.q-tchart .axis{fill:var(--muted);font-size:11px;font-family:var(--sans)}
+.q-tchart .line-price{fill:none;stroke:var(--ink);stroke-width:1.6}
+.q-tchart .candle.up{fill:var(--green)} .q-tchart .candle.down{fill:var(--red)}
+.q-tchart .wick.up{stroke:var(--green);stroke-width:1} .q-tchart .wick.down{stroke:var(--red);stroke-width:1}
+.q-tchart .vol{opacity:.35} .q-tchart .vol.up{fill:var(--green)} .q-tchart .vol.down{fill:var(--red)}
+.q-tchart .last-price{stroke:var(--muted-2);stroke-width:1;stroke-dasharray:2 3}
+.q-tchart .last-price-label{fill:var(--ink);font-weight:600}
+.q-tchart .ann-series{fill:none;stroke-width:1.2;opacity:.9}
+.q-tchart .sem-ma-sma20{stroke:var(--purple)} .q-tchart .sem-ma-sma50{stroke:var(--blue)} .q-tchart .sem-ma-sma200{stroke:var(--yellow)}
+.q-tchart .ann-zone{opacity:.16}
+.q-tchart .sem-support{fill:var(--green)} .q-tchart .sem-resistance{fill:var(--red)} .q-tchart .sem-zone-inside{fill:var(--yellow)}
+.q-tchart .sem-entry{fill:var(--green);opacity:.22} .q-tchart .sem-entry-alt{fill:var(--green);opacity:.1}
+.q-tchart .sem-target{fill:var(--blue);opacity:.2}
+.q-tchart .sem-projection-zone{fill:var(--purple);opacity:.14} .q-tchart .sem-fib-cluster{fill:var(--purple);opacity:.14}
+.q-tchart .st-projected.ann-zone{stroke:currentColor;stroke-dasharray:4 3;stroke-width:1;stroke-opacity:.6}
+.q-tchart .ann-level{stroke-width:1.2}
+.q-tchart .sem-invalidation{stroke:var(--red);stroke-width:1.6;stroke-dasharray:6 3}
+.q-tchart .sem-period-level{stroke:var(--muted-2);stroke-dasharray:2 3}
+.q-tchart .sem-fib-retracement{stroke:var(--purple);opacity:.6;stroke-dasharray:3 3} .q-tchart .sem-fib-extension{stroke:var(--purple);opacity:.45;stroke-dasharray:1 3}
+.q-tchart .ann-seg{fill:none;stroke-width:1.6;stroke-linecap:round}
+.q-tchart .sem-historical{stroke:var(--ink)} .q-tchart .sem-developing{stroke:var(--blue);stroke-width:2;stroke-dasharray:1 0}
+.q-tchart .sem-projected-bullish{stroke:var(--green);stroke-dasharray:6 4;opacity:.75} .q-tchart .sem-projected-bearish{stroke:var(--red);stroke-dasharray:6 4;opacity:.75}
+.q-tchart .sem-wave-historical{stroke:var(--ink);stroke-width:1.8} .q-tchart .sem-wave-developing{stroke:var(--blue);stroke-width:2.2}
+.q-tchart .sem-wave-projected{stroke:var(--purple);stroke-dasharray:6 4;opacity:.7}
+.q-tchart .sem-alt{opacity:.45}
+.q-tchart .sem-event-bullish{stroke:var(--green);stroke-dasharray:3 3} .q-tchart .sem-event-bearish{stroke:var(--red);stroke-dasharray:3 3}
+.q-tchart .sem-anchor{stroke:var(--purple);opacity:.5;stroke-dasharray:2 2}
+.q-tchart .ann-pivot{fill:var(--bg);stroke:var(--ink);stroke-width:1.2} .q-tchart .ann-pivot.st-developing{stroke:var(--blue);stroke-dasharray:2 1}
+.q-tchart .ann-pivot.sem-pivot-major{stroke:var(--purple);stroke-width:1.6}
+.q-tchart .ann-label{font-family:var(--sans);font-size:10.5px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+.q-tchart .ann-label.sem-label-high{fill:var(--red-ink)} .q-tchart .ann-label.sem-label-low{fill:var(--green-ink)}
+.q-tchart .ann-label.sem-wave-historical{fill:var(--ink);font-size:12px} .q-tchart .ann-label.sem-wave-developing{fill:var(--blue);font-size:12px} .q-tchart .ann-label.sem-wave-projected{fill:var(--purple);font-size:12px;font-style:italic}
+.q-tchart .ann-label.sem-entry{fill:var(--green-ink)} .q-tchart .ann-label.sem-target{fill:var(--blue)} .q-tchart .ann-label.sem-invalidation{fill:var(--red-ink)}
+.q-tchart .ann-label.sem-support{fill:var(--green-ink)} .q-tchart .ann-label.sem-resistance{fill:var(--red-ink)}
+.q-tchart .ann-label.sem-projection-zone{fill:var(--purple)} .q-tchart .ann-label.sem-fib-retracement,.q-tchart .ann-label.sem-fib-extension,.q-tchart .ann-label.sem-fib-cluster{fill:var(--purple);font-weight:500}
+.q-tchart .ann-label.sem-period-level{fill:var(--muted);font-weight:500}
+.q-tchart .ann-now{stroke:var(--ink);stroke-width:1.2;stroke-dasharray:4 3} .q-tchart .ann-now-label{fill:var(--muted);font-weight:600}
+.q-tech-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.q-tech-legend .lg::before{content:"";display:inline-block;width:18px;height:0;border-top:2px solid var(--ink);margin-right:6px;vertical-align:middle}
+.q-tech-legend .lg-dev::before{border-color:var(--blue)} .q-tech-legend .lg-proj::before{border-top-style:dashed;border-color:var(--purple)}
+.q-tech-legend .lg-entry::before{border:0;height:10px;background:var(--green);opacity:.35} .q-tech-legend .lg-target::before{border:0;height:10px;background:var(--blue);opacity:.35} .q-tech-legend .lg-inv::before{border-top-style:dashed;border-color:var(--red)}
+.q-tech-scenario.is-primary{border-color:var(--ink)}
+.q-tech-scenario .q-h3{margin:6px 0 8px}
+.q-tech-evidence{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted)}
+.q-tech-evidence--good li::marker{color:var(--green)} .q-tech-evidence--poor li::marker{color:var(--red)}
+.q-tech-waves{display:flex;flex-wrap:wrap;gap:6px}
+.q-wave--confirmed{border-color:var(--ink)} .q-wave--developing{border-color:var(--blue);color:var(--blue)} .q-wave--projected{border-style:dashed;color:var(--purple)}
+.q-tech-list{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.5}
+.q-tech-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
+.q-tech-family{display:flex;justify-content:space-between;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface);font-size:12.5px}
+.q-tech-family.is-pos{background:var(--green-bg)} .q-tech-family.is-neg{background:var(--red-bg)} .q-tech-family.is-na{color:var(--muted-2)}
+@media (max-width:720px){
+  .q-tech-hero-grid{grid-template-columns:1fr}
+  .q-tech-hero-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .q-tech-controls{gap:8px}
+  .q-tech-controls .q-pill{min-height:40px}
+  .q-tchart{min-width:720px}
+  .q-tech-families{grid-template-columns:1fr}
+}

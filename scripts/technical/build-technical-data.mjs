@@ -40,10 +40,36 @@ const WALKFORWARD_CUTOFFS = ["2022-01-03", "2023-01-03", "2024-01-02", "2025-01-
 
 function write(rel, data) {
   const file = join(OUT, rel); mkdirSync(dirname(file), { recursive: true });
-  const json = JSON.stringify(data); writeFileSync(file, json);
+  /* Ausgabe-Praezision: 6 Nachkommastellen genuegen jeder Anzeige; Hashes
+     und Provenienz sind Strings und bleiben unveraendert. */
+  const json = JSON.stringify(data, (k, v) => (typeof v === "number" && !Number.isInteger(v) ? Math.round(v * 1e6) / 1e6 : v)); writeFileSync(file, json);
   console.log(`  ${rel.padEnd(44)} ${(Buffer.byteLength(json) / 1024).toFixed(0).padStart(6)} KB`);
 }
-function compactBars(s) { return { timestamps: s.timestamps, open: s.open, high: s.high, low: s.low, close: s.close, volume: s.volume, corporateActionFlags: s.corporateActionFlags }; }
+/* Anzeige-Fenster ≠ Analyse-Lookback: die Analyse laeuft ueber die volle
+   Historie (bundle.analysisLookback), ausgeliefert werden fuer den Chart nur
+   die letzten DISPLAY_BARS Bars und die Objekte, die in dieses Fenster
+   hineinreichen. Snapshot/Provenienz bleiben vollstaendig. */
+const DISPLAY_BARS = 1320;   // ≈ 5.2 Jahre Handelstage
+function compactBars(s, from) {
+  const sl = (a) => a.slice(from);
+  return { from: s.timestamps[from], fromIndex: from, timestamps: sl(s.timestamps), open: sl(s.open), high: sl(s.high), low: sl(s.low), close: sl(s.close), volume: sl(s.volume), corporateActionFlags: sl(s.corporateActionFlags) };
+}
+function compactBundle(b, from, fromTime) {
+  const out = Object.assign({}, b);
+  out.display = { fromIndex: from, from: fromTime, bars: b.dataCutoffIndex - from + 1, note: "Analyse ueber " + b.analysisLookback.bars + " Bars; Anzeige der letzten " + (b.dataCutoffIndex - from + 1) };
+  out.pivots = Object.assign({}, b.pivots, { hierarchy: b.pivots.hierarchy.filter((h) => h.pivotIndex >= from), scales: {} });
+  for (const sid of b.pivots.scaleIds) {
+    const sc = b.pivots.scales[sid];
+    /* scale-1 (fein) dient S/R-Clustering und Hierarchie in der Analyse; fuer
+       die Anzeige reichen Setup-, Kontext- und Major-Skala. */
+    const minIdx = sid === "scale-1" ? Math.max(from, b.dataCutoffIndex - 126) : from;
+    out.pivots.scales[sid] = Object.assign({}, sc, { totalPivots: sc.pivots.length, pivots: sc.pivots.filter((p) => p.pivotIndex >= minIdx).map((p) => { const q = Object.assign({}, p); delete q.sourceBarsHash; return q; }) });
+  }
+  out.structure = Object.assign({}, b.structure, { swings: b.structure.swings.filter((x) => x.index >= from), events: b.structure.events.filter((e) => e.index >= from && !/LEVEL_SWEEP/.test(e.type) || e.index >= b.dataCutoffIndex - 126), totalSwings: b.structure.swings.length, totalEvents: b.structure.events.length });
+  if (b.chartSeries) { out.chartSeries = {}; for (const k of Object.keys(b.chartSeries)) out.chartSeries[k] = b.chartSeries[k].slice(from); }
+  if (b.annotations) out.annotations = Object.assign({}, b.annotations, { totalAnnotations: b.annotations.annotations.length, annotations: b.annotations.annotations.filter((a) => (a.endTime && a.endTime >= fromTime) || (a.startTime && a.startTime >= fromTime) || !a.startTime) });
+  return out;
+}
 
 console.log("Vision Universe Technical Intelligence — Praekomputation\n");
 const started = Date.now();
@@ -74,7 +100,8 @@ for (const sym of Object.keys(realSeries)) {
   const b = Analysis.analyze({ series: s, benchmarkSeries: sym === REAL_BENCHMARK ? null : bench, methodology: METH, options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "5Y" } });
   const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString() });
   store.put(snap);
-  write(`instruments/${sym}.json`, { instrumentId: sym, dataMode: "real", isMock: false, source: s.source, sourceRevision: s.sourceRevision, priceSeriesType: s.priceSeriesType, benchmarkId: sym === REAL_BENCHMARK ? null : REAL_BENCHMARK, bars: compactBars(s), bundle: b, snapshotId: snap.snapshotId });
+  const from = Math.max(0, s.length - DISPLAY_BARS);
+  write(`instruments/${sym}.json`, { instrumentId: sym, dataMode: "real", isMock: false, source: s.source, sourceRevision: s.sourceRevision, priceSeriesType: s.priceSeriesType, benchmarkId: sym === REAL_BENCHMARK ? null : REAL_BENCHMARK, bars: compactBars(s, from), bundle: compactBundle(b, from, s.timestamps[from]), snapshotId: snap.snapshotId });
   index.push({ instrumentId: sym, name: sym, dataMode: "real", isMock: false, asOf: b.analysisTime, bars: s.length, from: s.timestamps[0], opportunityScore: b.opportunityScore.score, trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null, elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
 }
 
@@ -89,8 +116,9 @@ for (const sym of ["NVDA", "MSFT"].filter((k) => realSeries[k])) {
     const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString() });
     store.put(snap);
     const rec = Snapshot.createEvidenceRecord(snap, b.scenarios.primary);
+    const keep = b.annotations.annotations.filter((a) => a.layers.some((l) => l === "AUTO" || l === "ELLIOTT") && a.type !== "SERIES" && a.type !== "ZONE");
     evidence.push({ instrumentId: sym, cutoff: b.dataCutoff, snapshotId: snap.snapshotId, primary: snap.frozen.scenarios[0], elliott: snap.frozen.elliott,
-                    annotations: b.annotations, outcome: rec ? Snapshot.evaluateOutcome(rec, realSeries[sym]) : null });
+                    annotations: Object.assign({}, b.annotations, { annotations: keep }), outcome: rec ? Snapshot.evaluateOutcome(rec, realSeries[sym]) : null });
   }
 }
 write("evidence-walkforward.json", { note: "Historische Snapshots mit damaligem Datenstand; Outcome walk-forward ausgewertet. Stichprobe zu klein fuer Erfolgsquoten.", aggregate: Snapshot.aggregateEvidence(evidence.map((e) => e.outcome).filter(Boolean), METH.technical.evidence.minEffectiveSample), records: evidence });
@@ -115,12 +143,13 @@ console.log(`     ${scan.count} Titel gescannt, ${scan.errors.length} Fehler`);
 
 /* Fixtures + Top-Scan als Instrumentdateien (mit Elliott/Annotationen). */
 const fixtureIds = Generator.FIXTURES.map((f) => f.ticker);
-const topIds = scan.rows.slice(0, 8).map((r) => r.instrumentId);
+const topIds = scan.rows.slice(0, 3).map((r) => r.instrumentId);
 for (const u of universe.filter((x) => fixtureIds.includes(x.instrumentId) || topIds.includes(x.instrumentId))) {
   const b = Analysis.analyze({ series: u.series, benchmarkSeries: benchMock, methodology: METH, options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "5Y" } });
   const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString(), universeVersion: dataset.meta.dataSnapshotId });
   store.put(snap);
-  write(`instruments/${u.instrumentId}.json`, { instrumentId: u.instrumentId, dataMode: "mock", isMock: true, name: u.meta.name, source: "mock", sourceRevision: dataset.meta.dataSnapshotId, priceSeriesType: "SPLIT_ADJUSTED", benchmarkId: Generator.BENCHMARK_ID, bars: compactBars(u.series), bundle: b, snapshotId: snap.snapshotId });
+  const from = Math.max(0, u.series.length - DISPLAY_BARS);
+  write(`instruments/${u.instrumentId}.json`, { instrumentId: u.instrumentId, dataMode: "mock", isMock: true, name: u.meta.name, source: "mock", sourceRevision: dataset.meta.dataSnapshotId, priceSeriesType: "SPLIT_ADJUSTED", benchmarkId: Generator.BENCHMARK_ID, bars: compactBars(u.series, from), bundle: compactBundle(b, from, u.series.timestamps[from]), snapshotId: snap.snapshotId });
   index.push({ instrumentId: u.instrumentId, name: u.meta.name, dataMode: "mock", isMock: true, asOf: b.analysisTime, bars: u.series.length, from: u.series.timestamps[0], opportunityScore: b.opportunityScore.score, trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null, elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
 }
 
