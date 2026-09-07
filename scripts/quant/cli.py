@@ -57,6 +57,25 @@ def _write(path, payload):
     return path
 
 
+def _prune(directory, keep):
+    """Delete artifacts this run did not write.
+
+    A company can change its file name (a ticker appears, or a reorganisation
+    moves one), and a leftover file from the previous name would keep being
+    served as if it were current.
+    """
+    if not directory.is_dir():
+        return
+    for path in sorted(directory.glob("*.json")):
+        if path.name not in keep:
+            path.unlink()
+            try:
+                shown = path.relative_to(ROOT)
+            except ValueError:
+                shown = path
+            print(f"removed stale {shown}")
+
+
 def _load_universe(path):
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     return payload["companies"]
@@ -116,9 +135,46 @@ def _documents(store, ciks=None):
     return documents
 
 
-def _ticker_of(document):
+def _declared_tickers(path=DEFAULT_UNIVERSE):
+    """CIK -> the ticker the universe file declares, for entities the SEC no
+    longer lists one for (a reorganisation moves the ticker to the successor
+    while the filing history stays with the old CIK)."""
+    try:
+        companies = _load_universe(path)
+    except (OSError, ValueError, KeyError):
+        return {}
+    declared = {}
+    for entry in companies:
+        cik, ticker = entry.get("cik"), entry.get("ticker")
+        if cik and ticker:
+            declared[normalize_cik(cik)] = ticker
+    return declared
+
+
+def _ticker_of(document, declared=None):
+    """The SEC's own ticker, else the declared one, else no ticker at all.
+
+    A CIK is not a ticker. Using one as a label -- which is what happened to
+    XOM's pre-reorganisation entity, whose SEC record lists no ticker at all --
+    puts an invented identifier into the canonical Security record.
+    """
     tickers = (document.get("profile") or {}).get("tickers") or []
-    return tickers[0] if tickers else document["cik"]
+    if tickers:
+        return tickers[0]
+    return (declared or {}).get(normalize_cik(document["cik"]))
+
+
+def _canonical_ticker(document, declared):
+    """Like _ticker_of, but a canonical Security may not be published without one."""
+    ticker = _ticker_of(document, declared)
+    if ticker:
+        return ticker
+    raise SystemExit(
+        f"{document['cik']}: neither the SEC submissions record nor "
+        f"{DEFAULT_UNIVERSE.name} names a ticker for this entity. A canonical "
+        f"Security needs a real identifier; the CIK is not one. Add the entity "
+        f"to the universe file with its ticker, or drop it from the store."
+    )
 
 
 # ---------------------------------------------------------------- commands
@@ -161,14 +217,18 @@ def cmd_export(args):
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
-    index = []
+    declared = _declared_tickers()
+    index, written = [], set()
     for document in documents:
         view = export_inspector_view(
             document, registry, as_of=args.as_of,
             annual_years=args.annual_years, quarterly_years=args.quarterly_years,
             policy=args.policy)
-        ticker = _ticker_of(document)
+        # The inspector is a diagnostic view, not a canonical artifact: an
+        # entity without a ticker is still worth looking at, filed under its CIK.
+        ticker = _ticker_of(document, declared) or document["cik"]
         path = _write(INSPECTOR_DIR / f"{ticker}.json", view)
+        written.add(path.name)
         index.append({
             "ticker": ticker, "cik": document["cik"],
             "name": (document.get("profile") or {}).get("name"),
@@ -178,6 +238,7 @@ def cmd_export(args):
             "rows": len(view["rows"]),
             "quality": view["quality_summary"],
         })
+    _prune(INSPECTOR_DIR, written)
     _write(DATA_DIR / "inspector_index.json", {
         "schema_version": 1, "generated_at_utc": _utcnow(),
         "versions": version_stamp(registry.version), "companies": index,
@@ -205,6 +266,7 @@ def cmd_gates(args):
     store = JsonFactStore(compress=True)
     provider = SECProvider()
     documents = _documents(store)
+    declared = _declared_tickers()
 
     per_company = []
     aggregate_inputs = {"factbook": None, "resolved": [], "derived": {}}
@@ -221,7 +283,8 @@ def cmd_gates(args):
         results = gates_module.run_suite(factbook=factbook, registry=registry,
                                          provider=provider, resolved_facts=resolved,
                                          derived_facts=derived)
-        per_company.append({"cik": document["cik"], "ticker": _ticker_of(document),
+        per_company.append({"cik": document["cik"],
+                            "ticker": _ticker_of(document, declared),
                             "results": results,
                             "summary": gates_module.summarize(results)})
 
@@ -342,13 +405,15 @@ def cmd_canonical(args):
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
-    index = []
+    declared = _declared_tickers()
+    index, written = [], set()
     for document in documents:
-        ticker = _ticker_of(document)
+        ticker = _canonical_ticker(document, declared)
         bundle = build_company_bundle(document, registry, ticker,
                                       annual_years=args.annual_years,
                                       quarterly_years=args.quarterly_years)
         path = _write(CANONICAL_DIR / f"{ticker}.json", bundle)
+        written.add(path.name)
         index.append({
             "ticker": ticker,
             "securityId": bundle["security"]["securityId"],
@@ -361,6 +426,7 @@ def cmd_canonical(args):
             "annualYearsExamined": bundle["coverage"]["annualYearsExamined"],
             "quarterlyYears": bundle["coverage"]["quarterlyYears"],
         })
+    _prune(CANONICAL_DIR, written)
     _write(DATA_DIR / "canonical_index.json", {
         "schema_version": 1,
         "generated_at_utc": _utcnow(),

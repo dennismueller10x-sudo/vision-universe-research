@@ -120,12 +120,20 @@ class IngestionPipeline:
             "seconds": round(time.monotonic() - started, 2),
         }
 
+    def _versions_current(self, stored):
+        """Was this document produced by the code that is running now?
+
+        A mapping, formula or normalization change invalidates stored output by
+        design. This needs no network access, so both the resume path and
+        `_is_current` can ask it.
+        """
+        return stored.get("versions") == version_stamp(self.registry.version)
+
     def _is_current(self, stored, signature):
         """A stored document is current only if versions AND filings both match."""
         if signature is None:
             return False
-        if stored.get("versions") != version_stamp(self.registry.version):
-            # A mapping or formula change invalidates stored output by design.
+        if not self._versions_current(stored):
             return False
         return stored.get("latest_filing") == signature
 
@@ -145,17 +153,29 @@ class IngestionPipeline:
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
             if limit is not None and processed >= limit:
                 break
-            if resume and not force and self.checkpoint.is_completed(state, cik) \
-                    and self.fact_store.read_company(cik) is not None:
-                continue
-            if resume and self.checkpoint.is_completed(state, cik) \
-                    and self.fact_store.read_company(cik) is None:
-                # The checkpoint says done but the stored document is gone
-                # (cleared cache, cleaned working copy, failed write). Trusting
-                # the checkpoint alone would silently leave a hole in the store.
-                LOGGER.warning("cik=%s marked completed but not present in the "
-                               "fact store; re-ingesting", cik)
-                state["completed"].pop(cik, None)
+            if resume and self.checkpoint.is_completed(state, cik):
+                stored = self.fact_store.read_company(cik)
+                if stored is None:
+                    # The checkpoint says done but the stored document is gone
+                    # (cleared cache, cleaned working copy, failed write).
+                    # Trusting the checkpoint alone would silently leave a hole
+                    # in the store.
+                    LOGGER.warning("cik=%s marked completed but not present in "
+                                   "the fact store; re-ingesting", cik)
+                    state["completed"].pop(cik, None)
+                elif not self._versions_current(stored):
+                    # The checkpoint answers "did this run already do this
+                    # company", NOT "is the stored document still valid". Only
+                    # _is_current answers the second question, and the skip
+                    # above jumped over it: with a warm cache a changed
+                    # normalization was never applied while every step still
+                    # reported success. The version stamp is local, so this
+                    # costs no request.
+                    LOGGER.info("cik=%s stored under an older version stamp; "
+                                "re-normalizing", cik)
+                    state["completed"].pop(cik, None)
+                elif not force:
+                    continue
             attempts = state["failed"].get(cik, {}).get("attempts", 0)
             if attempts >= max_attempts:
                 LOGGER.warning("cik=%s skipped: %d failed attempts", cik, attempts)

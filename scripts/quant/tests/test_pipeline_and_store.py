@@ -237,6 +237,39 @@ class UniverseTests(PipelineTestCase):
         self.assertEqual(statuses.get(cik), STATUS_INGESTED)
         self.assertIsNotNone(self.fact_store.read_company(cik))
 
+    def test_a_version_change_re_normalizes_a_completed_company(self):
+        """A warm checkpoint must not outrank a changed version stamp.
+
+        Live run #8: the workflow caches .quant-state and the factbooks, the
+        checkpoint said COMPLETED, and the resume path skipped every company
+        before `_is_current` was ever consulted. A changed normalization was
+        therefore never applied while every workflow step reported success.
+        """
+        self.pipe.ingest_universe(self.entries)
+        self.assertEqual(self.pipe.ingest_universe(self.entries)["results"], [])
+
+        for cik in self.fact_store.list_companies():
+            document = self.fact_store.read_company(cik)
+            document["versions"]["normalization_logic"] = "0.0.1-older"
+            self.fact_store.write_company(cik, document)
+
+        outcome = self.pipe.ingest_universe(self.entries)
+        statuses = {result["cik"]: result["status"] for result in outcome["results"]}
+        self.assertEqual(len(statuses), 4)
+        self.assertEqual(set(statuses.values()), {STATUS_INGESTED})
+        for cik in self.fact_store.list_companies():
+            self.assertNotEqual(
+                self.fact_store.read_company(cik)["versions"]["normalization_logic"],
+                "0.0.1-older")
+
+    def test_an_unchanged_version_stamp_still_skips_completed_companies(self):
+        """The counter-check: the checkpoint must keep saving the work it saves."""
+        self.pipe.ingest_universe(self.entries)
+        before = len(self.stub.calls)
+        self.assertEqual(self.pipe.ingest_universe(self.entries)["results"], [])
+        self.assertEqual(len(self.stub.calls), before,
+                         "a skipped company must not cost a single request")
+
     def test_refresh_since_picks_up_recent_filers(self):
         self.pipe.ingest_universe(self.entries)
         outcome = self.pipe.refresh_since("1990-01-01")

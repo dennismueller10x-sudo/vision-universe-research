@@ -22,7 +22,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from quant.cli import _load_universe, _resolve_universe, DEFAULT_UNIVERSE
+from quant.cli import (_canonical_ticker, _declared_tickers, _load_universe,
+                       _prune, _resolve_universe, _ticker_of, DEFAULT_UNIVERSE)
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -124,6 +125,74 @@ class ConfiguredUniverseTests(unittest.TestCase):
                      if c.get("cik_authority") == "config"]
         self.assertEqual(overrides, ["XOM"],
                          "an override is an exception and must stay one")
+
+
+class TickerLabelTests(unittest.TestCase):
+    """A CIK is not a ticker.
+
+    Live run #8: CIK 0000034088 carries the whole Exxon filing history but the
+    SEC lists no ticker on it any more, so the label fell back to the CIK and
+    the canonical Security record went out with ticker "0000034088" — an
+    identifier nobody can look up, and an invented value in a pipeline whose
+    first rule is that there are none.
+    """
+
+    @staticmethod
+    def document(cik, tickers):
+        return {"cik": cik, "profile": {"tickers": tickers}}
+
+    def test_the_sec_ticker_wins_when_the_sec_lists_one(self):
+        declared = {"0000000001": "DECLARED"}
+        self.assertEqual(
+            _ticker_of(self.document("0000000001", ["REAL"]), declared), "REAL")
+
+    def test_an_entity_without_a_sec_ticker_uses_the_declared_one(self):
+        declared = {"0000034088": "XOM"}
+        self.assertEqual(
+            _ticker_of(self.document("0000034088", []), declared), "XOM")
+
+    def test_a_cik_is_never_used_as_a_ticker(self):
+        self.assertIsNone(_ticker_of(self.document("0000034088", []), {}))
+
+    def test_a_canonical_security_without_any_ticker_stops_the_export(self):
+        with self.assertRaises(SystemExit) as raised:
+            _canonical_ticker(self.document("0000000042", []), {})
+        self.assertIn("the CIK is not one", str(raised.exception))
+
+    def test_the_shipped_universe_declares_a_ticker_for_every_cik(self):
+        declared = _declared_tickers()
+        for company in _load_universe(DEFAULT_UNIVERSE):
+            with self.subTest(ticker=company["ticker"]):
+                self.assertEqual(declared.get(company["cik"].zfill(10)),
+                                 company["ticker"])
+
+
+class PruneTests(unittest.TestCase):
+    """An export directory must contain exactly what this run produced."""
+
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.directory = Path(self.tmp.name)
+
+    def test_a_file_from_a_previous_name_is_removed(self):
+        (self.directory / "0000034088.json").write_text("{}")
+        (self.directory / "XOM.json").write_text("{}")
+        with redirect_stdout(io.StringIO()):
+            _prune(self.directory, {"XOM.json"})
+        self.assertEqual([p.name for p in self.directory.glob("*.json")],
+                         ["XOM.json"])
+
+    def test_files_this_run_wrote_survive(self):
+        for name in ("AAPL.json", "MSFT.json"):
+            (self.directory / name).write_text("{}")
+        _prune(self.directory, {"AAPL.json", "MSFT.json"})
+        self.assertEqual(sorted(p.name for p in self.directory.glob("*.json")),
+                         ["AAPL.json", "MSFT.json"])
+
+    def test_a_missing_directory_is_not_an_error(self):
+        _prune(self.directory / "absent", {"AAPL.json"})
 
 
 if __name__ == "__main__":
