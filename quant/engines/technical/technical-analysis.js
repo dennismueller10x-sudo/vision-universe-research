@@ -37,6 +37,14 @@
   /** Optionale Module (Annotationen, Elliott, Snapshot) — registrierbar, damit der Kern ohne sie laeuft. */
   var optional = { annotations: null, elliott: null };
   function registerOptional(name, module) { optional[name] = module; }
+  /* Lazy: in Node per require, im Browser ueber den geladenen Namespace. Ein
+     Fehlen ist kein Fehler — der Kern laeuft ohne Elliott/Annotationen. */
+  function resolveOptional(name, path, key) {
+    if (optional[name]) return optional[name];
+    if (isNode) { try { optional[name] = require(path); } catch (e) { optional[name] = null; } }
+    else optional[name] = (global.VUTechnical && global.VUTechnical[key]) || null;
+    return optional[name];
+  }
 
   function cfgOf(methodology, key, fallback) { return methodology && methodology.technical && methodology.technical[key] ? methodology.technical[key] : fallback; }
 
@@ -70,8 +78,9 @@
     var sr = SR.analyzeSupportResistance(series, features, pivots, cfgOf(meth, "supportResistance", undefined));
     var fib = Fib.analyzeFibonacci(series, features, pivots, cfgOf(meth, "fibonacci", undefined));
     var elliott = null;
-    if (opts.elliott !== false && optional.elliott) {
-      elliott = optional.elliott.analyzeElliott({ series: series, features: features, pivots: pivots, structure: structure, momentum: momentum, volume: volume, supportResistance: sr, methodology: meth.elliott || null });
+    var ElliottMod = opts.elliott !== false ? resolveOptional("elliott", "./elliott/elliott-engine.js", "Elliott") : null;
+    if (ElliottMod) {
+      elliott = ElliottMod.analyzeElliott({ series: series, features: features, pivots: pivots, structure: structure, momentum: momentum, volume: volume, supportResistance: sr, methodology: meth.elliott || null });
     }
     var engines = { pivots: pivots, structure: structure, trend: trend, momentum: momentum, relativeStrength: rs, volatility: volatility, volume: volume, supportResistance: sr, fibonacci: fib, elliott: elliott };
     var scenarios = Scenario.buildScenarios({ series: series, features: features, engines: engines, cfg: cfgOf(meth, "scenario", undefined), setupScaleId: setupScaleId });
@@ -116,7 +125,8 @@
       bundle.chartSeries = { sma20: features.columns.sma20.map(nz), sma50: features.columns.sma50.map(nz), sma200: features.columns.sma200.map(nz),
                              atr: features.columns.atr.map(nz), rsi14: features.columns.rsi14.map(nz), relativeVolume: features.columns.relativeVolume.map(nz) };
     }
-    if (opts.annotations !== false && optional.annotations) bundle.annotations = optional.annotations.buildAnnotations(bundle, { calendarDays: series.timestamps });
+    var AnnMod = opts.annotations !== false ? resolveOptional("annotations", "./annotations.js", "Annotations") : null;
+    if (AnnMod) bundle.annotations = AnnMod.buildAnnotations(bundle, { calendarDays: series.timestamps });
     return bundle;
   }
   function nz(v) { return Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : null; }
