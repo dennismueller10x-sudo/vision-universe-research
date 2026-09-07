@@ -38,6 +38,7 @@ const engines = join(root, "quant", "engines");
 
 const SymbolMapping = require(join(engines, "symbol-mapping.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
+const Semantics = require(join(engines, "price-semantics.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const DisplayPolicy = require(join(engines, "display-policy.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
@@ -209,6 +210,29 @@ for (const security of CONFIG.securities) {
     continue;
   }
 
+  /* §24: die bereinigte Spalte gegen die rohe. Der Adapter deklariert die
+     Stufe aus der Faehigkeitsmatrix; hier wird gemessen, ob die Daten sich
+     auch so verhalten. Ein Widerspruch haelt die Reihe auf - eine falsch
+     ausgezeichnete Reihe im Bestand ist schlimmer als eine fehlende, weil
+     alles Nachgelagerte sie fuer bare Muenze nimmt. */
+  const semantik = MarketQuality.validateAdjustmentConsistency(validation.bars, {
+    claimedStatus: Semantics.normalize(res.data.adjustmentStatus)
+  });
+  if (!semantik.ok) {
+    rejected++;
+    const codes = semantik.findings.filter((f) => f.severity === "error").map((f) => f.code);
+    perSecurity[id] = {
+      ticker: security.ticker, ok: false, reason: "adjustmentContradicted",
+      message: codes.join(", "),
+      claimed: semantik.claimedStatus, inferred: semantik.inferredStatus,
+      findings: semantik.findings.slice(0, 8)
+    };
+    console.log(`${label} ABGELEHNT — deklariert ${semantik.claimedStatus}, ` +
+                `verhaelt sich wie ${semantik.inferredStatus}`);
+    store.saveCheckpoint(checkpoint);
+    continue;
+  }
+
   const merged = store.mergeBars(id, validation.bars, {
     ticker: security.ticker,
     name: security.name,
@@ -228,7 +252,18 @@ for (const security of CONFIG.securities) {
     first: merged.first, last: merged.last,
     warnings: validation.stats.warnings,
     splits: validation.bars.filter((b) => b.splitFactor && b.splitFactor !== 1).length,
-    dividends: validation.bars.filter((b) => b.dividend && b.dividend > 0).length
+    dividends: validation.bars.filter((b) => b.dividend && b.dividend > 0).length,
+    /* Was die Gegenprobe an dieser Reihe tatsaechlich SEHEN konnte. "no_events"
+       heisst: im Zeitraum lag kein Split und keine Ausschuettung, die Stufe
+       ist an diesen Daten nicht pruefbar. Das gehoert in den Statusbericht,
+       sonst liest sich eine ungepruefte Reihe wie eine bestaetigte. */
+    adjustment: {
+      claimed: semantik.claimedStatus,
+      inferred: semantik.inferredStatus,
+      basis: semantik.observed.inferredFrom,
+      splitEvents: semantik.observed.splitEvents.length,
+      dividendEvents: semantik.observed.dividendEvents.length
+    }
   };
   console.log(`${label} +${String(merged.added).padStart(4)} neu, ${String(merged.total).padStart(5)} gesamt  ` +
               `${merged.first} → ${merged.last}` +
