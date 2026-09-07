@@ -35,6 +35,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Cache SEC responses between runs
         uses: actions/cache@v4
         with:
@@ -47,13 +51,15 @@ jobs:
         with:
           path: |
             .quant-state
-            quant/data/facts
-            quant/data/raw
+            quant/data/sec/facts
+            quant/data/sec/raw
           key: sec-state-${{ github.run_id }}
           restore-keys: sec-state-
 
-      - name: Run the offline test suite first
-        run: python3 scripts/quant/cli.py test
+      - name: Run both offline test suites first
+        run: |
+          python3 scripts/quant/cli.py test
+          node --test "quant/tests/*.test.mjs"
 
       - name: Ingest the SEC universe
         env:
@@ -62,7 +68,7 @@ jobs:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
         run: |
           python3 scripts/quant/cli.py ingest \
-            --universe quant/config/sec_universe.json \
+            --universe quant/config/sec-universe.json \
             ${{ inputs.force && '--force' || '' }}
 
       - name: Retry anything that failed
@@ -74,8 +80,21 @@ jobs:
       - name: Build the coverage matrix
         run: python3 scripts/quant/cli.py coverage
 
-      - name: Run the qualification gates
+      - name: Write the canonical FundamentalFact/Filing layer
+        # This is what providers/sec/adapter.js serves to the quant engines.
+        run: python3 scripts/quant/cli.py canonical
+
+      - name: Run the ingestion integrity checks
         run: python3 scripts/quant/cli.py gates ${{ inputs.as_of && format('--as-of {0}', inputs.as_of) || '' }}
+
+      - name: Run the existing qualification gates against the SEC adapter
+        # Gate A/B/C come from quant/engines/gate-tests.js - the same stand every
+        # other provider is judged by. A gate that cannot be run is reported
+        # SKIPPED, never PASSED.
+        run: node scripts/quant/run-sec-gates.mjs
+
+      - name: Re-check the adapter against real ingested data
+        run: node --test "quant/tests/sec-adapter.test.mjs"
 
       - name: Export the data inspector views
         run: python3 scripts/quant/cli.py export
@@ -92,13 +111,13 @@ jobs:
             echo "$unexpected"
             exit 1
           fi
-          for forbidden in quant/data/raw quant/data/facts; do
+          for forbidden in quant/data/sec/raw quant/data/sec/facts; do
             if git status --porcelain | grep -q "$forbidden"; then
               echo "::error::$forbidden must stay untracked"
               exit 1
             fi
           done
-          oversized="$(find quant/data -type f -size +2M -not -path 'quant/data/raw/*' -not -path 'quant/data/facts/*' || true)"
+          oversized="$(find quant/data -type f -size +2M -not -path 'quant/data/sec/raw/*' -not -path 'quant/data/sec/facts/*' || true)"
           if [ -n "$oversized" ]; then
             echo "::error::generated artifact over 2MB:"; echo "$oversized"; exit 1
           fi

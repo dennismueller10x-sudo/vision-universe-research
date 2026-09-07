@@ -26,7 +26,7 @@ block, not a rate limit and not a bug in the client. **GitHub Actions runners ar
 not subject to it** — `scripts/hedgefonds/fetch_edgar_data.py` has been pulling
 13F data from `www.sec.gov` in this repository's workflows for some time.
 
-Rather than fabricate a plausible-looking matrix, `quant/data/coverage_matrix.json`
+Statt eine plausibel aussehende Matrix zu erfinden, trägt `quant/data/sec/coverage_matrix.json`
 ships with `status: "not_generated"`, matching this repository's existing
 convention for generated data (`dashboard/data/*.json`).
 
@@ -38,7 +38,7 @@ convention for generated data (`dashboard/data/*.json`).
 python3 scripts/quant/cli.py coverage
 ```
 
-The workflow writes `quant/data/coverage_matrix.json` and commits it. The data
+The workflow writes `quant/data/sec/coverage_matrix.json` and commits it. The data
 inspector at `/quant/data-inspector/` renders it as soon as it exists.
 
 ## 3. What the measurement means
@@ -120,9 +120,14 @@ from SEC data alone is impossible: you cannot enumerate the companies that were
 listed then and are not now. So a backtest built on SEC alone still carries
 survivorship bias in its membership even with perfectly timed fundamentals.
 
-The `MOCK_DELISTED` and `SURVIVORSHIP_FREE_UNIVERSE` gates both **FAIL** for SEC,
-with that reason recorded. No PASS was awarded for a capability the provider does
-not have.
+Gate B (`GATE_B_DELISTING`) from `quant/engines/gate-tests.js` — the existing
+qualification stand, not a SEC-specific re-implementation — **FAILS**, because
+`providers/sec/adapter.js` returns `unavailable` for `getUniverseAsOf` rather than
+handing back today's universe and letting it pass for a historical one. The
+ingestion check `SURVIVORSHIP_FREE_UNIVERSE` fails for the same reason. No PASS was
+awarded for a capability the provider does not have, and the provider profile
+records `survivorshipBiasControls: false` as an explicit exclusion rather than as
+"unverified".
 
 **What would close the gap** (out of scope for this phase, documented so the
 decision is informed):

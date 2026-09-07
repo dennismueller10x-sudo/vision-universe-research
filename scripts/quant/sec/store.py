@@ -22,8 +22,8 @@ from pathlib import Path
 LOGGER = logging.getLogger("vu.sec.store")
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RAW_DIR = Path(os.environ.get("SEC_RAW_DIR") or (ROOT / "quant" / "data" / "raw"))
-DEFAULT_FACT_DIR = Path(os.environ.get("SEC_FACT_DIR") or (ROOT / "quant" / "data" / "facts"))
+DEFAULT_RAW_DIR = Path(os.environ.get("SEC_RAW_DIR") or (ROOT / "quant" / "data" / "sec" / "raw"))
+DEFAULT_FACT_DIR = Path(os.environ.get("SEC_FACT_DIR") or (ROOT / "quant" / "data" / "sec" / "facts"))
 DEFAULT_STATE_DIR = Path(os.environ.get("SEC_STATE_DIR") or (ROOT / ".quant-state"))
 
 

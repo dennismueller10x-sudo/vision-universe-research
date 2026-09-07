@@ -226,6 +226,17 @@ class UniverseTests(PipelineTestCase):
         outcome = self.pipe.refresh_since("2099-01-01")
         self.assertEqual(outcome["results"], [])
 
+    def test_a_checkpoint_without_a_stored_document_re_ingests(self):
+        """A cleared store must not stay empty just because the checkpoint says done."""
+        self.pipe.ingest_universe(self.entries)
+        cik = self.fact_store.list_companies()[0]
+        self.fact_store._path(cik).unlink()
+        self.assertIsNone(self.fact_store.read_company(cik))
+        outcome = self.pipe.ingest_universe(self.entries)
+        statuses = {r["cik"]: r["status"] for r in outcome["results"]}
+        self.assertEqual(statuses.get(cik), STATUS_INGESTED)
+        self.assertIsNotNone(self.fact_store.read_company(cik))
+
     def test_refresh_since_picks_up_recent_filers(self):
         self.pipe.ingest_universe(self.entries)
         outcome = self.pipe.refresh_since("1990-01-01")

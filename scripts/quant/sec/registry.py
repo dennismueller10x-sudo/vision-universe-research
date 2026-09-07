@@ -1,6 +1,6 @@
 """Canonical Metric Registry loader.
 
-The registry is data, not code (quant/config/metric_registry.json). Adding a
+The registry is data, not code (quant/config/sec-metric-registry.json). Adding a
 metric or accepting another XBRL concept is a config change; the pipeline is
 never edited for a specific company. This module loads, validates and indexes it.
 """
@@ -10,7 +10,7 @@ from pathlib import Path
 from .version import METRIC_REGISTRY_MIN_VERSION
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_REGISTRY_PATH = ROOT / "quant" / "config" / "metric_registry.json"
+DEFAULT_REGISTRY_PATH = ROOT / "quant" / "config" / "sec-metric-registry.json"
 
 KIND_DURATION = "duration"
 KIND_INSTANT = "instant"

@@ -1,0 +1,247 @@
+{
+  "methodologyVersion": "backtest-evidence-v1.0.0",
+  "label": "VU Backtest Evidence Provider Requirements V1",
+  "purpose": "Legt fest, was ein Datenanbieter liefern muss, damit ein Backtest auf seinen Daten als Nachweis gelten darf - und nicht nur als Vorfuehrung der Rechenlogik. Die Frage lautet nicht 'wie viele Endpunkte hat der Anbieter', sondern: 'Kann rekonstruiert werden, was Vision Universe an einem historischen Tag tatsaechlich haette wissen koennen?'",
+  "verificationLevels": {
+    "RUNTIME_VERIFIED": {
+      "rank": 4,
+      "label": "Zur Laufzeit geprueft",
+      "definition": "Es wurde eine echte Anfrage gestellt und die Antwort geprueft.",
+      "note": "Die einzige Stufe, die eine Faehigkeit belegt. Alles darunter ist eine Aussage ueber Aussagen."
+    },
+    "DOCUMENTATION_VERIFIED": {
+      "rank": 3,
+      "label": "Aus Primaerdokumentation",
+      "definition": "Die Anbieterdokumentation wurde selbst gelesen und die Stelle ist zitierbar.",
+      "note": "Dokumentation beschreibt die Absicht des Anbieters, nicht zwingend das Verhalten der Schnittstelle."
+    },
+    "THIRD_PARTY_REPORTED": {
+      "rank": 2,
+      "label": "Aus Sekundaerquelle",
+      "definition": "Eine Quelle ausserhalb des Anbieters berichtet die Faehigkeit; die Primaerdokumentation lag nicht vor.",
+      "note": "Ausdruecklich schwaecher als DOCUMENTATION_VERIFIED. Vergleichsartikel und Blogbeitraege geben Marketingaussagen weiter und altern schlecht."
+    },
+    "RUNTIME_VERIFICATION_REQUIRED": {
+      "rank": 1,
+      "label": "Laufzeitpruefung noetig",
+      "definition": "Die Faehigkeit wird behauptet, aber die Behauptung ist von einer Art, die sich nur an echten Daten pruefen laesst.",
+      "note": "Betrifft vor allem Restatement- und Verfuegbarkeitssemantik: dass ein Feld existiert, sagt nichts darueber, ob es gefuellt und korrekt ist."
+    },
+    "REQUIRES_PAID_VALIDATION": {
+      "rank": 1,
+      "label": "Nur mit bezahltem Zugang pruefbar",
+      "definition": "Eine Laufzeitpruefung ist moeglich, aber nur mit einem kostenpflichtigen Plan.",
+      "note": "Kein Urteil ueber den Anbieter - eine Aussage darueber, was diese Phase nicht leisten kann."
+    },
+    "UNKNOWN": {
+      "rank": 0,
+      "label": "Ungeprueft",
+      "definition": "Niemand hat nachgesehen.",
+      "note": "Ein zulaessiges Endergebnis. Eine erfundene Einstufung ist schlechter als eine fehlende."
+    },
+    "CONTRADICTED": {
+      "rank": -1,
+      "label": "Widerlegt",
+      "definition": "Die Faehigkeit wurde geprueft und ist nicht vorhanden.",
+      "note": "Staerker als UNKNOWN: hier wurde gesucht und nichts gefunden."
+    }
+  },
+  "gates": {
+    "GATE_A_RESTATEMENT": {
+      "label": "Gate A - Restatement",
+      "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+      "failureMode": "Ein Unternehmen meldet 2017 eine Zahl und korrigiert sie 2018 nach unten. Liefert der Anbieter nur den korrigierten Wert, sieht ein Backtest fuer 2017 eine Zahl, die 2017 niemand kannte. Die Strategie trifft ihre Entscheidung mit Wissen aus der Zukunft.",
+      "whyItMatters": "Das ist der unauffaelligste der drei Fehler. Er erzeugt keine Luecke und keine Warnung - nur ein etwas besseres Ergebnis, und zwar systematisch in die Richtung, die dem Betrachter gefaellt.",
+      "fixture": "MOCK_RESTATEMENT",
+      "requiredEvidence": [
+        "Der Anbieter liefert zu einer Kennzahl mehrere Auspraegungen mit unterscheidbaren Zeitstempeln.",
+        "Original und Korrektur sind als solche gekennzeichnet, nicht nur durch das Vorhandensein zweier Zeilen.",
+        "Eine Abfrage laesst sich auf den Wissensstand eines Stichtags einschraenken."
+      ],
+      "acceptanceCriterion": "Zwei Abfragen derselben Kennzahl fuer dasselbe Geschaeftsjahr - eine mit Stichtag vor der Korrektur, eine danach - liefern unterschiedliche Werte, und der fruehere entspricht der Erstmeldung.",
+      "insufficient": [
+        "Ein Feld namens 'restated' ohne pruefbaren Inhalt.",
+        "Eine Aenderungshistorie, die nur den Zeitpunkt der Datenbankaktualisierung fuehrt statt den der Veroeffentlichung.",
+        "Ein Endpunkt fuer Original-Filings, aus dem sich der damalige Standardwert nicht rekonstruieren laesst."
+      ],
+      "blocking": true
+    },
+    "GATE_B_DELISTING": {
+      "label": "Gate B - Delisting",
+      "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+      "failureMode": "Ein Backtest ueber die heute noch existierenden Unternehmen misst die Ueberlebenden. Die Insolvenzen fehlen - also genau die Faelle, die eine Strategie haette vermeiden muessen.",
+      "whyItMatters": "Der Fehler geht immer in dieselbe Richtung und laesst sich nicht durch mehr Daten ausgleichen. Ein Universum ohne Verlierer erzeugt Ergebnisse, die zu gut sind, und niemand sieht es der Kurve an.",
+      "fixture": "MOCK_DELISTED",
+      "requiredEvidence": [
+        "Delistete und insolvente Titel sind ueber dieselbe Schnittstelle abrufbar wie aktive.",
+        "Zu jedem Titel ist erkennbar, wann und warum er ausgeschieden ist.",
+        "Die Kursreihe reicht bis zum letzten Handelstag, mit Delisting-Rendite, wo eine anfaellt.",
+        "Fundamentaldaten der delisteten Titel sind ebenfalls vorhanden - nicht nur Kurse."
+      ],
+      "acceptanceCriterion": "Ein Titel, der im Testzeitraum ausgeschieden ist, laesst sich mit Kursen und Fundamentaldaten bis zu seinem letzten Handelstag abrufen, und sein Ausscheiden ist datiert.",
+      "insufficient": [
+        "Eine Liste delisteter Symbole ohne zugehoerige Daten.",
+        "Kursreihen fuer delistete Titel, aber keine Fundamentaldaten.",
+        "Delisting-Abdeckung erst ab einem Stichtag, der nach dem Backtest-Zeitraum liegt."
+      ],
+      "blocking": true
+    },
+    "GATE_C_AVAILABILITY": {
+      "label": "Gate C - Verfuegbarkeitszeitpunkt",
+      "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+      "failureMode": "Ein Geschaeftsjahr endet am 31.12., der Bericht erscheint am 15.02. Wer periodEnd als Entscheidungsgrenze nimmt, laesst die Strategie sechs Wochen frueher handeln, als es moeglich war.",
+      "whyItMatters": "periodEnd allein reicht nicht, und der Abstand ist nicht konstant: er schwankt zwischen Unternehmen, Quartalen und Rechtsordnungen. Eine pauschale Verzoegerung von 45 Tagen ist eine Annahme, kein Datum.",
+      "fixture": "MOCK_FUTURE_DATA_LEAK",
+      "requiredEvidence": [
+        "Je Kennzahl oder mindestens je Bericht ein Zeitstempel der Veroffentlichung (filedAt, publishedAt, datekey).",
+        "Der Zeitstempel bezieht sich auf die Veroeffentlichung, nicht auf die Aufnahme in die Datenbank des Anbieters.",
+        "Er ist auch fuer die Vergangenheit vorhanden, nicht nur fuer neue Datensaetze."
+      ],
+      "acceptanceCriterion": "Zu einem Geschaeftsjahresabschluss liefert der Anbieter ein Veroeffentlichungsdatum, das nach dem Periodenende liegt und mit dem SEC-Einreichungsdatum uebereinstimmt.",
+      "insufficient": [
+        "Nur periodEnd oder calendarDate.",
+        "Ein Zeitstempel 'lastUpdated', der die Datenbankaktualisierung fuehrt.",
+        "Ein einheitlicher Versatz, den der Anbieter selbst geschaetzt hat."
+      ],
+      "blocking": true
+    }
+  },
+  "requirements": {
+    "pointInTimeFundamentals": {
+      "gate": "GATE_C_AVAILABILITY",
+      "blocking": true,
+      "label": "Point-in-Time-Fundamentaldaten"
+    },
+    "filingTimestamps": {
+      "gate": "GATE_C_AVAILABILITY",
+      "blocking": true,
+      "label": "Einreichungs- bzw. Veroeffentlichungsdatum"
+    },
+    "originalHistoricalValues": {
+      "gate": "GATE_A_RESTATEMENT",
+      "blocking": true,
+      "label": "Originalwerte statt rueckwirkend korrigierter"
+    },
+    "restatementSemantics": {
+      "gate": "GATE_A_RESTATEMENT",
+      "blocking": true,
+      "label": "Unterscheidbarkeit von Korrekturen"
+    },
+    "delistedSecurities": {
+      "gate": "GATE_B_DELISTING",
+      "blocking": true,
+      "label": "Delistete Unternehmen"
+    },
+    "survivorshipBiasControls": {
+      "gate": "GATE_B_DELISTING",
+      "blocking": true,
+      "label": "Survivorship-Bias-Kontrolle"
+    },
+    "corporateActions": {
+      "gate": null,
+      "blocking": true,
+      "label": "Kapitalmassnahmen als Ereignisse"
+    },
+    "splits": {
+      "gate": null,
+      "blocking": true,
+      "label": "Split-Ereignisse"
+    },
+    "dividends": {
+      "gate": null,
+      "blocking": true,
+      "label": "Dividendenereignisse"
+    },
+    "totalReturnPrices": {
+      "gate": null,
+      "blocking": true,
+      "label": "Total-Return-bereinigte Kurse"
+    },
+    "historicalIdentifiers": {
+      "gate": null,
+      "blocking": false,
+      "label": "Historische Wertpapierkennungen"
+    },
+    "historicalExchangeInfo": {
+      "gate": null,
+      "blocking": false,
+      "label": "Historische Handelsplatzangaben"
+    },
+    "historicalUniverseMembership": {
+      "gate": null,
+      "blocking": false,
+      "label": "Historische Universumszugehoerigkeit"
+    },
+    "currentFundamentals": {
+      "gate": null,
+      "blocking": false,
+      "label": "Aktuelle Fundamentaldaten",
+      "note": "Fuer die Research-Rolle noetig, fuer Backtest-Evidenz nicht hinreichend."
+    },
+    "historicalDaily": {
+      "gate": null,
+      "blocking": false,
+      "label": "Tageshistorie",
+      "note": "Grundvoraussetzung der Marktdatenrolle."
+    }
+  },
+  "qualificationRules": [
+    "Ein Anbieter ist QUALIFIED nur, wenn alle drei Gates bestanden sind UND alle blockierenden Anforderungen erfuellt sind UND die Belege mindestens DOCUMENTATION_VERIFIED sind.",
+    "Ein Gate gilt nur als bestanden, wenn der Beleg RUNTIME_VERIFIED oder DOCUMENTATION_VERIFIED ist. THIRD_PARTY_REPORTED reicht fuer ein Gate nicht.",
+    "Fehlt zu einer blockierenden Anforderung jeder Beleg, ist das Ergebnis UNKNOWN, nicht NOT_QUALIFIED. Nichts zu wissen ist etwas anderes als etwas zu widerlegen.",
+    "Ein widerlegtes blockierendes Kriterium fuehrt zu NOT_QUALIFIED, unabhaengig vom Rest.",
+    "PARTIALLY_QUALIFIED bedeutet: fuer eine der drei Rollen geeignet, fuer eine andere nicht. Es ist kein Mittelwert.",
+    "Die Rolle MARKET_DATA_PROVIDER kennt keine Gates - sie stellt keine Anforderung an historische Rekonstruierbarkeit.",
+    "Preise gehen in keine Qualifikationsentscheidung ein. Ein guenstiger Anbieter, der Gate A nicht besteht, ist nicht teilweise geeignet."
+  ],
+  "roles": {
+    "MARKET_DATA_PROVIDER": {
+      "label": "Marktdaten",
+      "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+      "requires": [
+        "historicalDaily"
+      ],
+      "prefers": [
+        "totalReturnPrices",
+        "splits",
+        "dividends",
+        "intraday"
+      ],
+      "gates": []
+    },
+    "RESEARCH_DATA_PROVIDER": {
+      "label": "Research",
+      "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+      "requires": [
+        "currentFundamentals"
+      ],
+      "prefers": [
+        "standardized",
+        "asReported",
+        "estimates",
+        "ratios"
+      ],
+      "gates": [],
+      "note": "Hier zaehlt Aktualitaet und Abdeckung, nicht historische Rekonstruierbarkeit. Ein Anbieter kann hier hervorragend und fuer Backtests unbrauchbar sein."
+    },
+    "BACKTEST_EVIDENCE_PROVIDER": {
+      "label": "Backtest-Evidenz",
+      "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+      "requires": [
+        "pointInTimeFundamentals",
+        "filingTimestamps",
+        "originalHistoricalValues",
+        "restatementSemantics",
+        "delistedSecurities",
+        "corporateActions",
+        "totalReturnPrices"
+      ],
+      "gates": [
+        "GATE_A_RESTATEMENT",
+        "GATE_B_DELISTING",
+        "GATE_C_AVAILABILITY"
+      ],
+      "note": "Die anspruchsvollste Rolle. Ein guter Marktdatenanbieter ist nicht automatisch dafuer geeignet - die beiden Rollen stellen unterschiedliche Fragen an dieselben Daten."
+    }
+  }
+}

@@ -1,76 +1,41 @@
-/* Engineering tool, not a consumer surface: dense, legible, no decoration. */
-:root {
-  --ink: #12161c;
-  --muted: #5b6673;
-  --line: #dde3ea;
-  --bg: #f7f9fb;
-  --panel: #ffffff;
-  --ok: #1a7f4b;
-  --warn: #9a6400;
-  --bad: #a32222;
-  --derived: #4b3ea8;
+/* SEC Data Inspector — nur die Ergaenzungen zum gemeinsamen Designsystem
+   (/quant/ui/quant.css). Kein zweites Designsystem: Farben, Typografie,
+   Abstaende und Zustandsboxen kommen unveraendert von dort. */
+.vu-controls {
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
+  margin: 20px 0 14px;
 }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font: 14px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
-.inspector { max-width: 1500px; margin: 0 auto; padding: 24px 20px 64px; }
-.inspector__kicker { margin: 0 0 4px; color: var(--warn); font-size: 12px;
-  letter-spacing: .08em; text-transform: uppercase; }
-.inspector h1 { margin: 0 0 8px; font-size: 26px; }
-.inspector__lead { margin: 0 0 16px; max-width: 78ch; color: var(--muted); }
-code { background: #eef2f6; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.vu-controls label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.vu-controls select { min-width: 220px; padding: 6px 8px; font-size: 14px; }
+.vu-controls .vu-check { flex-direction: row; align-items: center; gap: 6px; }
 
-.status { padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px;
-  background: var(--panel); }
-.status--error { border-color: var(--bad); color: var(--bad); }
+.vu-scroll { overflow-x: auto; }
+table.vu-facts { border-collapse: collapse; width: 100%; font-size: 13px; }
+table.vu-facts th, table.vu-facts td {
+  padding: 6px 10px; text-align: left; border-bottom: 1px solid currentColor;
+  border-bottom-color: rgba(128, 128, 128, .25); white-space: nowrap;
+}
+table.vu-facts th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+table.vu-facts td.num, table.vu-facts th.num {
+  text-align: right; font-variant-numeric: tabular-nums;
+}
+table.vu-facts tr.is-missing td { opacity: .65; font-style: italic; }
 
-.controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
-  margin: 18px 0; padding: 14px; background: var(--panel);
-  border: 1px solid var(--line); border-radius: 8px; }
-.controls label { display: flex; flex-direction: column; gap: 4px;
-  font-size: 12px; color: var(--muted); }
-.controls select { min-width: 220px; padding: 6px 8px; font-size: 14px;
-  border: 1px solid var(--line); border-radius: 6px; background: #fff; }
-.controls__check { flex-direction: row; align-items: center; gap: 6px; }
-
-.profile { display: flex; flex-wrap: wrap; gap: 20px; padding: 12px 14px;
-  margin-bottom: 14px; background: var(--panel); border: 1px solid var(--line);
-  border-radius: 8px; font-size: 13px; }
-.profile b { display: block; color: var(--muted); font-weight: 500; font-size: 11px;
-  text-transform: uppercase; letter-spacing: .05em; }
-
-.table-wrap { overflow-x: auto; background: var(--panel);
-  border: 1px solid var(--line); border-radius: 8px; }
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--line);
-  white-space: nowrap; }
-th { position: sticky; top: 0; background: #eef2f6; font-size: 11px;
-  text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-tr.is-missing td { color: var(--muted); font-style: italic; }
 .tag { font-size: 11px; padding: 1px 6px; border-radius: 999px; border: 1px solid; }
-.tag--derived { color: var(--derived); border-color: var(--derived); }
-.tag--sec { color: var(--ok); border-color: var(--ok); }
-.tag--HIGH { color: var(--ok); border-color: var(--ok); }
-.tag--MEDIUM { color: var(--warn); border-color: var(--warn); }
-.tag--LOW, .tag--UNKNOWN { color: var(--bad); border-color: var(--bad); }
+.tag--derived { color: #4b3ea8; border-color: #4b3ea8; }
+.tag--sec, .tag--HIGH { color: #1a7f4b; border-color: #1a7f4b; }
+.tag--MEDIUM { color: #9a6400; border-color: #9a6400; }
+.tag--LOW, .tag--UNKNOWN { color: #a32222; border-color: #a32222; }
 
-.panels { display: grid; gap: 16px; margin-top: 22px;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
-.panel { background: var(--panel); border: 1px solid var(--line);
-  border-radius: 8px; padding: 14px; }
-.panel h2 { margin: 0 0 10px; font-size: 15px; }
-.panel__body { font-size: 13px; overflow-x: auto; }
-.gate { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line);
-  align-items: flex-start; }
-.gate:last-child { border-bottom: 0; }
-.gate__status { flex: 0 0 120px; font-weight: 600; font-size: 12px; }
-.gate__status--PASS { color: var(--ok); }
-.gate__status--FAIL { color: var(--bad); }
-.gate__status--UNKNOWN { color: var(--warn); }
-.gate__status--NOT_APPLICABLE { color: var(--muted); }
-.gate__reason { color: var(--muted); }
-.cov--STRUCTURED { background: #d8f0e2; }
-.cov--DERIVABLE { background: #fdf0d0; }
-.cov--FILING_ONLY { background: #fadfdf; }
-.cov--MISSING { background: #eceff2; color: var(--muted); }
+.gate { display: flex; gap: 10px; padding: 6px 0; align-items: flex-start; }
+.gate__status { flex: 0 0 130px; font-weight: 600; font-size: 12px; }
+.gate__status--PASS, .gate__status--PASSED { color: #1a7f4b; }
+.gate__status--FAIL, .gate__status--FAILED { color: #a32222; }
+.gate__status--UNKNOWN, .gate__status--SKIPPED { color: #9a6400; }
+.gate__status--NOT_APPLICABLE { opacity: .7; }
+.gate__reason { opacity: .8; }
+
+.cov--STRUCTURED { background: rgba(26, 127, 75, .16); }
+.cov--DERIVABLE { background: rgba(154, 100, 0, .16); }
+.cov--FILING_ONLY { background: rgba(163, 34, 34, .14); }
+.cov--MISSING { opacity: .55; }

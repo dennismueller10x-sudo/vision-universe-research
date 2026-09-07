@@ -1,85 +1,35 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, nofollow">
-<title>SEC Data Inspector — VISION UNIVERSE® Quant</title>
-<link rel="stylesheet" href="/assets/site-navigation.css">
-<link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-<vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<title>SEC Data Inspector — Vision Universe® Quant</title>
+<meta name="description" content="Internes Validierungswerkzeug: jede normalisierte SEC-Fundamentalzahl mit Herkunft, Verfuegbarkeitsdatum und Transformation.">
+<link rel="stylesheet" href="/quant/ui/quant.css">
+<link rel="stylesheet" href="/quant/data-inspector/styles.css">
+<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
 
-<main class="inspector">
-  <header class="inspector__head">
-    <p class="inspector__kicker">Internes Validierungswerkzeug — kein Konsumenten-Dashboard</p>
-    <h1>SEC Data Inspector</h1>
-    <p class="inspector__lead">
-      Zeigt jede normalisierte Fundamentalzahl mit ihrer Herkunft: SEC-Concept,
-      Accession Number, Formular, Einreichungsdatum und ab wann der Wert im
-      Backtest überhaupt sichtbar sein darf. Alle Daten stammen aus
-      <code>data.sec.gov</code>; abgeleitete Kennzahlen sind als
-      <code>VISION_UNIVERSE_DERIVED</code> markiert.
-    </p>
-    <div id="status" class="status" role="status"></div>
-  </header>
+<header class="q-header vu-tools">
+  <strong>Vision Universe® Quant</strong>
+  <div class="q-header-right">
+    <span id="q-datastamp" class="q-hide-sm"></span>
+    <a class="q-home-link" href="/">Vision Universe</a>
+  </div>
+</header>
 
-  <section class="controls" hidden id="controls">
-    <label>Unternehmen
-      <select id="company"></select>
-    </label>
-    <label>Kennzahl
-      <select id="metric"></select>
-    </label>
-    <label>Periode
-      <select id="period">
-        <option value="all">Alle</option>
-        <option value="FY">Nur Geschäftsjahre</option>
-        <option value="Q">Nur Quartale</option>
-      </select>
-    </label>
-    <label class="controls__check">
-      <input type="checkbox" id="show-missing" checked>
-      Fehlende Werte mit Begründung anzeigen
-    </label>
-  </section>
+<div class="q-tabs-wrap">
+  <nav class="q-tabs" id="q-tabs" aria-label="Quant-Navigation"></nav>
+</div>
 
-  <section id="profile" class="profile" hidden></section>
+<main class="q-shell" id="q-main"></main>
 
-  <section class="table-wrap">
-    <table id="facts">
-      <thead>
-        <tr>
-          <th scope="col">Periode</th>
-          <th scope="col" class="num">Wert</th>
-          <th scope="col">Einheit</th>
-          <th scope="col">Periodenende</th>
-          <th scope="col">Verfügbar ab</th>
-          <th scope="col">Formular</th>
-          <th scope="col">Accession</th>
-          <th scope="col">SEC Concept</th>
-          <th scope="col">Quelle</th>
-          <th scope="col">Transformation</th>
-          <th scope="col">Qualität</th>
-        </tr>
-      </thead>
-      <tbody id="rows"></tbody>
-    </table>
-  </section>
-
-  <section class="panels">
-    <article class="panel">
-      <h2>Coverage Matrix</h2>
-      <div id="coverage" class="panel__body"></div>
-    </article>
-    <article class="panel">
-      <h2>PIT Qualification Gates</h2>
-      <div id="gates" class="panel__body"></div>
-    </article>
-  </section>
-</main>
-
-<script src="./app.js"></script>
+<script src="/quant/engines/hash.js"></script>
+<script src="/quant/engines/schema.js"></script>
+<script src="/quant/engines/provider.js"></script>
+<script src="/quant/ui/shell.js"></script>
+<script src="/quant/data-inspector/app.js"></script>
 </body>
 </html>

@@ -1,29 +1,31 @@
-"""Provider qualification gates.
+"""Ingestion integrity checks for the SEC layer.
 
-These gates are provider-agnostic on purpose: they take a normalized factbook
-and a capability declaration, so the same suite that qualifies SEC will qualify
-any future fundamentals provider. Three of them (MOCK_FUTURE_DATA_LEAK,
-MOCK_RESTATEMENT, MOCK_DELISTED) run against synthetic constructions and need
-no network at all.
+**Not** a second qualification stand. The Vision Universe provider gates —
+Gate A (restatement), Gate B (delisted / historical universe), Gate C (future
+data leak) with the `MOCK_RESTATEMENT` / `MOCK_DELISTED` / `MOCK_FUTURE_DATA_LEAK`
+fixtures — live in `quant/engines/gate-tests.js` and are the single place that
+qualifies a provider. The SEC adapter is run through them like any other
+provider via `getFactsAsOf` / `getUniverseAsOf`
+(`quant/tests/sec-adapter.test.mjs`).
 
-A gate returns exactly one of:
+What is left here are checks that only make sense *inside* the SEC ingestion,
+against the normalized factbook before it ever becomes canonical: they catch a
+broken normalization run, not a weak provider. They deliberately keep the
+stricter of the two semantics where both layers care about the same property —
+`PIT_NO_FUTURE_DATA_LEAK` requires `available_from >= period_end` on every
+stored observation, which is stricter than Gate C's per-query check.
+
+A check returns exactly one of:
   PASS            the property was demonstrated
   FAIL            the property was tested and does not hold
   UNKNOWN         the property could not be tested with the data at hand
-  NOT_APPLICABLE  the property does not apply to this provider
+  NOT_APPLICABLE  the property does not apply here
 
-A gate is never marked PASS because it was not tested. UNKNOWN is a real,
-reportable answer (Phase 4 § 23).
+A check is never marked PASS because it was not tested.
 """
-from datetime import date, timedelta
-
 from .fiscal import parse_date
-from .model import (
-    Provenance, SOURCE_SEC, SOURCE_DERIVED, QUALITY_HIGH, TRANSFORM_NONE,
-)
-from .restatements import (
-    CompanyFactBook, Observation, POLICY_AS_OF_LATEST, POLICY_ORIGINAL, to_instant,
-)
+from .model import SOURCE_DERIVED
+from .restatements import to_instant
 
 PASS = "PASS"
 FAIL = "FAIL"
@@ -36,118 +38,7 @@ def _result(gate_id, status, reason, evidence=None):
             "evidence": evidence or {}}
 
 
-def _observation(value, filed, concept="Revenues", accession="0000000000-00-000000",
-                 form="10-Q", period_start="2018-01-01", period_end="2018-03-31"):
-    provenance = Provenance(
-        source=SOURCE_SEC, taxonomy="us-gaap", concept=concept, accession=accession,
-        form=form, filed=filed, available_from=filed, transformation=TRANSFORM_NONE,
-        inputs=[f"us-gaap:{concept}|USD|{period_start}|{period_end}|{accession}"],
-    )
-    return Observation(value=value, unit="USD", provenance=provenance,
-                       available_from=filed, filed=filed, quality=QUALITY_HIGH,
-                       period_start=period_start, period_end=period_end)
 
-
-# --------------------------------------------------------------- mock gates
-
-def gate_mock_future_data_leak():
-    """A fact must be invisible before the date it was published."""
-    book = CompanyFactBook("0000000000")
-    book.add_observation("revenue", 2018, "Q1", _observation(100.0, "2018-05-04"))
-
-    before = book.resolve("revenue", 2018, "Q1", as_of=date(2018, 5, 3))
-    on_day = book.resolve("revenue", 2018, "Q1", as_of=date(2018, 5, 4))
-    after = book.resolve("revenue", 2018, "Q1", as_of=date(2018, 6, 1))
-    period_end_day = book.resolve("revenue", 2018, "Q1", as_of=date(2018, 3, 31))
-
-    problems = []
-    if before is not None:
-        problems.append("value visible one day before its filing date")
-    if period_end_day is not None:
-        problems.append("value visible on the period end date, before it was filed")
-    if on_day is None or on_day.value != 100.0:
-        problems.append("value not visible on its filing date")
-    if after is None or after.value != 100.0:
-        problems.append("value not visible after its filing date")
-
-    if problems:
-        return _result("MOCK_FUTURE_DATA_LEAK", FAIL, "; ".join(problems))
-    return _result("MOCK_FUTURE_DATA_LEAK", PASS,
-                   "a fact filed 2018-05-04 for the quarter ending 2018-03-31 is "
-                   "invisible on 2018-03-31 and on 2018-05-03, and visible from 2018-05-04",
-                   {"period_end": "2018-03-31", "filed": "2018-05-04"})
-
-
-def gate_mock_restatement():
-    """A later restatement must not travel back into an earlier as_of."""
-    book = CompanyFactBook("0000000000")
-    book.add_observation("revenue", 2018, "FY", _observation(
-        1000.0, "2019-02-15", accession="0000000000-19-000001", form="10-K",
-        period_start="2018-01-01", period_end="2018-12-31"))
-    book.add_observation("revenue", 2018, "FY", _observation(
-        1200.0, "2020-08-10", accession="0000000000-20-000009", form="10-K/A",
-        period_start="2018-01-01", period_end="2018-12-31"))
-
-    in_2019 = book.resolve("revenue", 2018, "FY", as_of=date(2019, 6, 30))
-    after = book.resolve("revenue", 2018, "FY", as_of=date(2021, 1, 1))
-    original_policy = book.resolve("revenue", 2018, "FY", as_of=date(2021, 1, 1),
-                                   policy=POLICY_ORIGINAL)
-
-    problems = []
-    if in_2019 is None or in_2019.value != 1000.0:
-        problems.append("a 2019 backtest does not see the originally reported value")
-    if after is None or after.value != 1200.0:
-        problems.append("the restated value is not visible after its publication")
-    if original_policy is None or original_policy.value != 1000.0:
-        problems.append("the ORIGINAL policy does not return the as-first-reported value")
-    if after is not None and "RESTATED" not in after.flags:
-        problems.append("the restated value is not flagged as restated")
-
-    if problems:
-        return _result("MOCK_RESTATEMENT", FAIL, "; ".join(problems))
-    return _result("MOCK_RESTATEMENT", PASS,
-                   "as_of 2019-06-30 returns the original 1000 filed 2019-02-15; "
-                   "as_of 2021-01-01 returns the restated 1200 filed 2020-08-10 and "
-                   "flags it RESTATED; the ORIGINAL policy still returns 1000",
-                   {"original": 1000.0, "restated": 1200.0})
-
-
-def gate_mock_delisted(provider=None, probe=None):
-    """Can the provider serve a company that no longer trades under a ticker?
-
-    SEC/EDGAR keeps filings by CIK forever, but company_tickers.json lists only
-    current registrants with an assigned ticker. So a delisted issuer is
-    reachable by CIK and not reachable by ticker. That is a real, documented
-    partial capability, and it is reported as such rather than dressed up.
-    """
-    capabilities = getattr(provider, "CAPABILITIES", None) if provider else None
-    if capabilities is None:
-        return _result("MOCK_DELISTED", UNKNOWN,
-                       "no provider capability declaration available to evaluate")
-
-    by_cik = capabilities.get("delisted_by_cik")
-    by_ticker = capabilities.get("delisted_by_ticker")
-    evidence = {"delisted_by_cik": by_cik, "delisted_by_ticker": by_ticker}
-
-    if probe is not None:
-        evidence["probe"] = probe
-
-    if by_cik and not by_ticker:
-        return _result(
-            "MOCK_DELISTED", FAIL,
-            "historical filings for a delisted issuer are retrievable by CIK, but the "
-            "provider cannot map a delisted ticker to a CIK, so a survivorship-free "
-            "universe cannot be built from this provider alone; a separate security "
-            "master is required (see docs/SEC_COVERAGE_REPORT.md)",
-            evidence)
-    if by_cik and by_ticker:
-        return _result("MOCK_DELISTED", PASS,
-                       "delisted issuers are addressable by both CIK and ticker", evidence)
-    return _result("MOCK_DELISTED", FAIL,
-                   "delisted issuers are not retrievable at all", evidence)
-
-
-# ------------------------------------------------------- factbook-based gates
 
 def gate_no_future_data_leak(factbook):
     """No stored observation may claim availability before its period ended."""
@@ -292,35 +183,50 @@ def gate_derived_separation(derived_facts):
                    f"{SOURCE_DERIVED} and a formula version")
 
 
+
+def _declared(provider):
+    """Capability declaration of a provider, or an empty declaration."""
+    return getattr(provider, "DECLARED_CAPABILITIES", {}) if provider else {}
+
+
 def gate_market_data(provider):
-    capabilities = getattr(provider, "CAPABILITIES", {}) if provider else {}
-    if capabilities.get("market_data_ohlcv"):
+    capabilities = _declared(provider)
+    if capabilities.get("marketDataOhlcv"):
         return _result("MARKET_DATA_AVAILABLE", PASS, "provider serves OHLCV")
     return _result("MARKET_DATA_AVAILABLE", NOT_APPLICABLE,
                    "SEC/EDGAR publishes no price data; OHLCV stays the "
-                   "MarketDataProvider's responsibility (Phase 4 § 28)")
+                   "MarketDataProvider's responsibility. Value and Momentum "
+                   "factors are computed by quant/engines/factors.js from market "
+                   "data, never from this provider.")
 
 
 def gate_survivorship_universe(provider):
-    capabilities = getattr(provider, "CAPABILITIES", {}) if provider else {}
-    if capabilities.get("security_master"):
-        return _result("SURVIVORSHIP_FREE_UNIVERSE", PASS, "provider serves a security master")
+    capabilities = _declared(provider)
+    if capabilities.get("survivorshipBiasControls"):
+        return _result("SURVIVORSHIP_FREE_UNIVERSE", PASS,
+                   "provider declares survivorship-bias controls")
+    if capabilities.get("survivorshipBiasControls") is None:
+        return _result("SURVIVORSHIP_FREE_UNIVERSE", UNKNOWN,
+                       "the provider profile does not state whether survivorship-bias "
+                       "controls exist; unverified is not the same as absent")
     return _result("SURVIVORSHIP_FREE_UNIVERSE", FAIL,
                    "SEC/EDGAR has no security master and no delisting event feed; a "
                    "point-in-time index or exchange listing history is required to "
-                   "build a survivorship-free universe")
+                   "build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)")
 
 
 def run_suite(factbook=None, registry=None, provider=None, resolved_facts=(),
-              derived_facts=None):
-    """Run every gate that the supplied inputs allow, and report the rest as UNKNOWN."""
-    results = [
-        gate_mock_future_data_leak(),
-        gate_mock_restatement(),
-        gate_mock_delisted(provider),
-        gate_market_data(provider),
-        gate_survivorship_universe(provider),
-    ]
+              derived_facts=None, provider_gate_results=()):
+    """Run the ingestion checks, and carry through the provider gate results.
+
+    `provider_gate_results` are the Gate A/B/C outcomes produced by
+    `quant/engines/gate-tests.js` against the SEC adapter. They are reported
+    here unchanged so that one report shows both layers; this module never
+    recomputes them and never upgrades a FAIL.
+    """
+    results = list(provider_gate_results)
+    results.append(gate_market_data(provider))
+    results.append(gate_survivorship_universe(provider))
     if factbook is not None:
         results.append(gate_no_future_data_leak(factbook))
         results.append(gate_provenance_complete(factbook))

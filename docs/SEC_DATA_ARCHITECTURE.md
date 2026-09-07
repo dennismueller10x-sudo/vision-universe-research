@@ -2,163 +2,186 @@
 
 Phase 4. Architektur, Integrationspunkte und Betrieb der SEC-/EDGAR-Fundamental-Pipeline.
 
-## 0. Repository-Audit (vor der Implementierung durchgeführt)
+## 0. Repository-Audit und Integrationskorrektur
 
-### CURRENT ARCHITECTURE
+### Der erste Audit war falsch — und warum
 
-Der Auftrag setzte voraus, dass „Phase 1–3 von Vision Universe Quant & AI" mit
-Provider-Abstraction, Capability-Matrix, Data-Provenance, PIT-Gates,
-Qualification-Tests, Quant Engine, Screener, Strategy Engine und Backtest Engine
-bereits im Repository liegen. **Das ist nachweislich nicht der Fall.** Vollständige
-Suche über das Repository (`provider`, `capability`, `provenance`, `qualification`,
-`screener`, `point-in-time`, `trustScore`, `quant`) liefert ausschließlich Treffer in
-redaktionellen Inhalten (`academy/*.json`, `magazin/01/index.html`,
-`macro/data/*.json`, `hedgefonds/data/hedgefonds.json`) — kein Code, keine Interfaces,
-keine Tests, keine Dokumentation.
+Der erste Durchgang dieser Phase kam zu dem Schluss, Phase 1–3 existiere nicht im
+Repository. **Das war falsch.** Die Ursache ist rein zeitlich und im Git-Verlauf
+nachweisbar:
 
-Tatsächlich vorhanden ist eine statische GitHub-Pages-Site mit produktweise
-getrennten, entkoppelten Daten-Pipelines:
-
-| Ebene | Realität im Repo |
+| Zeitpunkt (UTC, 7. Sep. 2026) | Ereignis |
 | --- | --- |
-| Auslieferung | Statisches HTML/CSS/JS über GitHub Pages, kein Build, keine Frameworks |
-| Produktverzeichnisse | `dashboard/`, `macro/`, `academy/`, `hedgefonds/`, `etf/`, `analysten/`, `morning/`, `news/`, `reports/` |
-| Daten-Pipelines | `scripts/<produkt>/*.py`, Python 3, **ausschließlich Standard-Library** |
-| Daten-Artefakte | Generiertes JSON unter `<produkt>/data/`, vom Browser direkt geladen |
-| Orchestrierung | GitHub Actions pro Pipeline, mit Scope-Guard auf die erlaubten Ausgabedateien |
-| Tests | Inline-Python-Assertions in den CI-Workflows + `academy/engines/financial-model-engine.test.mjs` |
-| Marktdaten | Twelve Data → `dashboard/data/market_data.json` |
-| Fundamentaldaten (bestehend) | FMP TTM-Snapshot → `dashboard/data/fundamental_metrics.json` — **kein Point-in-Time, keine Historie, keine Provenance** |
-| Backtest | `scripts/dashboard/backtest_technicals.py` — rein technischer Baseline-Backtest auf Tageskerzen |
-| SEC-Zugriff (bestehend) | `scripts/hedgefonds/fetch_edgar_data.py` — 13F-Holdings, korrekter SEC-User-Agent, Retry, Rate-Delay |
+| 10:11 | `0c4fb06` ist `main`-HEAD. Der SEC-Branch wird hier abgezweigt. |
+| 10:59 | PR **#43** bringt Phase 1–3 (`quant/**`, `providers/**`, `scripts/market/**`) nach `main`. |
+| 17:16 | SEC-Commit `785a9c2` — auf dem Stand von 10:11 gebaut. |
+| 17:25 | PR **#45** bringt `VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md` nach `main`. |
 
-Es gibt also **keine bestehende Provider-Abstraktion, die wiederverwendet werden
-könnte**, und keine PIT-Gates aus einer „Phase 3". Was existiert, sind Konventionen —
-und die werden hier strikt eingehalten (Python-Stdlib-Pipelines unter `scripts/`,
-statisches JSON unter `<produkt>/data/`, CI mit Scope-Guard, `ARCHITECTURE.md` je
-Produkt).
+Phase 1–3 landete **48 Minuten nach dem Abzweig** auf `main`, während die
+SEC-Arbeit bereits lief. Der Container arbeitet auf einem beim Start erzeugten
+Klon; ohne erneutes `git fetch` bleibt dieser Stand eingefroren. `git merge-base
+HEAD origin/main` bestätigt `0c4fb06`, und `git merge-base --is-ancestor 0e32110
+0c4fb06` schlägt fehl — die Phase-3-Commits waren vom Branchpoint aus
+nachweislich nicht erreichbar.
 
-Die Anweisung „nicht neu erfinden, keine Parallelarchitektur" wurde deshalb so
-umgesetzt: **Konventionen** des Repos werden übernommen, die fehlenden
-Quant-Abstraktionen (Provider-Interface, Provenance, PIT, Capability/Gates) werden
-in Phase 4 erstmals gebaut — als *die eine* Quant-Datenschicht, nicht als zweite
-neben einer bestehenden.
+Der Audit war also für den Baum, auf dem er lief, korrekt und für `main` veraltet.
+**Die Lehre für die Arbeitsweise: vor dem Audit `git fetch origin` ausführen, nicht
+nur `git log`.** Ein Audit ohne Fetch beschreibt den Container, nicht das Projekt.
 
-### SEC INTEGRATION POINTS
+### Was tatsächlich auf `main` liegt
 
-1. **Provider-Ebene** — neu: `scripts/quant/sec/provider.py` (`SECProvider`) als einzige
-   Stelle im Repository, die `data.sec.gov` / `www.sec.gov` für Fundamentals anspricht.
-2. **HTTP-Ebene** — neu: `scripts/quant/sec/http_client.py`. Der SEC-konforme
-   User-Agent aus `fetch_edgar_data.py` (`VisionUniverseResearch info@visionuniverse.de`)
-   wird als Konvention übernommen.
-3. **Storage-Ebene** — neu: `scripts/quant/sec/store.py` mit abstraktem `FactStore`,
-   JSON-Implementierung passend zur statischen Pages-Architektur.
-4. **Quant-Ebene** — neu: `scripts/quant/sec/factors.py` konsumiert ausschließlich
-   PIT-aufgelöste Snapshots.
-5. **Backtest-Ebene** — `scripts/quant/sec/backtest_bridge.py` importiert die
-   **bestehende** `scripts/dashboard/backtest_technicals.py` und legt einen
-   PIT-Fundamentalfilter davor. Die bestehende Datei bleibt unverändert.
-6. **UI-Ebene** — `quant/data-inspector/` als internes Validierungswerkzeug, nach dem
-   Muster von `hedgefonds/index.html` (statisch, lädt nur generiertes JSON).
+`VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md` ist die Source of Truth. Relevant für
+diese Phase:
 
-### FILES TO ADD
-
-`scripts/quant/sec/*` (Pipeline), `scripts/quant/tests/*` (Testsuite),
-`quant/config/metric_registry.json`, `quant/config/sec_universe.json`,
-`quant/data-inspector/*`, `quant/ARCHITECTURE.md`, `docs/SEC_*.md`,
-`.github/workflows/sec-fundamentals-ci.yml`, `.github/workflows/update-sec-fundamentals.yml`.
-
-### FILES TO MODIFY
-
-`.gitignore` (Raw-Cache und Laufzeit-State ausschließen). Sonst nichts. Insbesondere
-werden `scripts/dashboard/*`, `dashboard/data/*`, `scripts/hedgefonds/*` und alle
-bestehenden Workflows **nicht** angefasst.
-
-### RISKS
-
-| Risiko | Umgang |
+| Ebene | Ort auf `main` |
 | --- | --- |
-| `fy`/`fp` in `companyfacts` beziehen sich auf die **Filing**-Periode, nicht auf die Faktenperiode | Fiskalperiode wird ausschließlich aus `start`/`end` + gelerntem Fiskalkalender abgeleitet (§ SEC_NORMALIZATION) |
-| YTD-Kumulierung führt zu Double Counting | Period-aware Normalisierung mit YTD-Differenzbildung, nur aus zum Stichtag verfügbaren Filings |
-| Restatements können rückwirkend in Backtests lecken | Fakten werden als versionierte Timeline gespeichert, Auflösung immer `as_of` |
-| Große Raw-Datensätze im öffentlichen Repo | Raw-Layer und Cache sind gitignored, CI erzwingt Größen- und Scope-Guard |
-| Egress-Policy dieser Session blockiert `data.sec.gov` | Live-Validierung läuft über GitHub Actions; alle Offline-Tests laufen ohne Netz |
+| Provider-Abstraction (7 Interfaces, Registry, Vendor-Leakage-Guard) | `quant/engines/provider.js` |
+| Kanonisches Modell (26 Entitäten, Validator, PIT-Zugriff) | `quant/engines/schema.js` |
+| Capability-Matrix (dreiwertig) | `quant/engines/capabilities.js` |
+| Data Mode / Precedence / Price Semantics | `data-mode.js`, `data-precedence.js`, `price-semantics.js` |
+| Qualifikations-Gates A/B/C | `quant/engines/gate-tests.js` |
+| Quant Engine, Strategy Engine, Backtest Engine | `factors.js`, `quant-score.js`, `strategy.js`, `backtest.js`, `trust-score.js` |
+| Provider-Profile (Belegstufen) | `quant/config/provider-profiles.json` |
+| Adaptermuster | `providers/twelve-data/adapter.js` |
+| Tests | `quant/tests/*.test.mjs` — 232 grün vor dieser Phase |
+
+`main` sagt selbst (§21): „Phase 4 / SEC Financial Data Core ist ausdrücklich NICHT
+enthalten". Diese Phase liefert genau das — als **Quelle unterhalb der bestehenden
+Abstraktion**, nicht als zweites System daneben.
+
+### Die zentrale Regel dieser Integration
+
+> **`availableAt <= decisionTime` aus `quant/engines/schema.js` ist die einzige
+> Zugriffsregel auf Fundamentaldaten. Der SEC-Adapter bringt keine eigene mit.**
+
+Die SEC-seitige PIT-Logik bleibt vollständig erhalten, aber sie wirkt dort, wo sie
+hingehört: **beim Ingest**, wo Quartale aus Year-to-date-Werten rekonstruiert
+werden und ein rekonstruierter Wert nie früher verfügbar sein darf als seine
+letzte Zutat. Was den Adapter verlässt, ist kanonisch und wird von der bestehenden
+Regel gelesen.
+
+### Duplikate: Entscheidung je Komponente
+
+| SEC-Komponente | Entscheidung | Begründung |
+| --- | --- | --- |
+| `http_client.py` (SEC Fair Access) | **KEEP AS SEC-SPECIFIC** | `market-client.js` ist die Transportschicht für Marktdaten-Anbieter; SEC-User-Agent-Pflicht und Bulk-ZIP sind quellspezifisch |
+| `provider.py` (Abruf) | **ADAPT** | bleibt Adapter-Unterbau; die eigene `CAPABILITIES`-Konstante wurde **entfernt** |
+| `registry.py`, `fiscal.py`, `periods.py`, `normalize.py` | **KEEP AS SEC-SPECIFIC** | XBRL-Normalisierung, Fiskalkalender, YTD-Rekonstruktion — kein Gegenstück auf `main` |
+| `restatements.py` | **MERGE** | Timeline bleibt für den Ingest; nach außen `revisionId` + `restatementStatus` gemäß `schema.js` |
+| `model.py` | **ADAPT** | `RawFact` bleibt SEC-intern; `NormalizedFact` wird an der Grenze zu `FundamentalFact` |
+| `derived.py` | **REDUCE** | Margen, ROE, ROIC, Growth, CAGR **entfernt** — `engines/factors.js` besitzt sie. Es bleibt die Rekonstruktion kanonischer Kennzahlen (FCF, Gross Profit, Net Debt, Invested Capital, Accruals) |
+| `factors.py` | **REMOVE DUPLICATE** | `engines/factors.js` + `quant-score.js` sind die Quant Engine |
+| `backtest_bridge.py` | **REMOVE DUPLICATE** | `engines/backtest.js` ist die PIT-Backtest-Engine; die Bridge zielte auf den technischen Dashboard-Baseline-Backtest |
+| `gates.py` | **MERGE** | die drei MOCK-Gates **entfernt** (`engines/gate-tests.js` ist die eine Qualifikationsinstanz); es bleiben die Ingest-Integritätsprüfungen |
+| Capability-Deklaration | **MERGE** | steht genau einmal in `quant/config/provider-profiles.json`; Python und JS lesen dieselbe Datei |
+| `store.py`, `pipeline.py`, `coverage.py`, `quality.py` | **KEEP AS SEC-SPECIFIC** | Ingest-Infrastruktur ohne Gegenstück |
+| `canonical.py` | **NEU** | die Grenze: SEC-Fakten → `FundamentalFact` / `Filing` / `Security` |
+| `providers/sec/adapter.js` | **NEU** | implementiert `FundamentalDataProvider` |
+| Data Inspector | **ADAPT** | nutzt jetzt `quant/ui/shell.js` und `quant/ui/quant.css`, kein eigenes Designsystem |
+
+Nach der Integration gibt es **je genau eine** Provider-Abstraction,
+Provenance-Schicht, PIT-Architektur, Capability-Matrix, Quant-Datenstruktur und
+Backtest-Engine.
 
 ## 1. Schichtenmodell
 
 ```
 SEC / EDGAR (data.sec.gov, www.sec.gov)
-        │  http_client.py   Fair Access: UA, Rate-Limit, Retry, Backoff, Cache, Dedup, Logging
+        │  http_client.py    Fair Access: UA, Rate-Limit, Retry, Backoff, Cache, Dedup, Logging
         ▼
-SECProvider (provider.py)          Ticker→CIK, Submissions, CompanyFacts, Filing-Metadaten
-        │
+SECProvider (provider.py)    Ticker→CIK, Submissions, CompanyFacts, Filing-Metadaten
         ▼
-SEC RAW LAYER (raw_store.py)       unveränderliche Rohfakten + Provenance, niemals überschrieben
-        │
+SEC RAW LAYER (store.py)     unveraenderliches Payload-Archiv, inhaltsadressiert
         ▼
-NORMALIZATION LAYER                registry.py (Concept-Mapping) · fiscal.py (Kalender)
-(normalize.py)                     periods.py (YTD/TTM) · restatements.py (Versionierung)
-        │
+NORMALIZATION                registry.py (Concept-Mapping) · fiscal.py (Kalender)
+(normalize.py)               periods.py (YTD/TTM) · restatements.py (Revisionen)
         ▼
-VU FUNDAMENTAL DATA MODEL          model.py — kanonische Metriken, Provenance, Quality-State
-        │
-        ├──► quality.py            Data-Quality-Engine (markiert, verändert nie)
-        │
+SEC FACTBOOK (model.py)      + quality.py — markiert Probleme, veraendert nie Werte
         ▼
-DERIVED METRICS (derived.py)       source = VISION_UNIVERSE_DERIVED, inputs, formula_version
-        │
+canonical.py  ══════════ DIE GRENZE ══════════════════════════════════════════
+        ▼                 ab hier kein SEC-Begriff mehr
+quant/data/sec/canonical/<TICKER>.json    FundamentalFact · Filing · Security
         ▼
-QUANT ENGINE (factors.py)          Growth · Profitability · Quality · Capital Efficiency
-        │
+providers/sec/adapter.js     implementiert FundamentalDataProvider
         ▼
-Screener / Backtest (backtest_bridge.py) · AI · Data Inspector UI
+quant/engines/provider.js    Registry · ok()/unavailable() · Vendor-Leakage-Guard
+quant/engines/schema.js      availableAt <= decisionTime  ← DIE Zugriffsregel
+        ▼
+factors.js · quant-score.js · strategy.js · backtest.js · trust-score.js
+        ▼
+Screener · Ranking · Backtest · AI · Data Inspector
 ```
 
-Jede Ebene kennt nur die darunterliegende. Es gibt **keinen** SEC-Fetch außerhalb von
-`http_client.py`/`provider.py`.
+Zwei Grenzen, die das Ganze tragen:
+
+1. **Kein SEC-Fetch außerhalb von `http_client.py`/`provider.py`.**
+2. **Kein SEC-Feld oberhalb von `canonical.py` / `adapter.js`.** `schema.js`
+   erzwingt das aktiv: der Validator lehnt unbekannte Felder ab, und
+   `findVendorLeakage()` durchsucht Records zusätzlich auf Anbieter-Marker. Beides
+   wird in `quant/tests/sec-adapter.test.mjs` geprüft.
+
+Alles, was `main` schon besitzt — Provider-Abstraction, Capability-Matrix,
+Provenance, PIT-Regel, Quant Engine, Backtest Engine — wird **benutzt**, nicht
+nachgebaut.
 
 ## 2. Module
 
+### Ingest (Python, Standard-Library, `scripts/quant/sec/`)
+
 | Datei | Verantwortung |
 | --- | --- |
-| `version.py` | Versionsstempel für Normalization-Schema, Metric-Mapping, Formeln, Provider-Adapter |
-| `http_client.py` | SEC Fair Access: User-Agent, Token-Bucket-Rate-Limit, Retry mit exponentiellem Backoff + Jitter, Timeouts, HTTP-Fehlerklassifikation, Disk-Cache mit TTL, In-Flight-Deduplizierung, strukturiertes Logging |
-| `provider.py` | `SECProvider`: `resolve_ticker`, `get_submissions`, `get_company_facts`, `get_filing_metadata`, `get_company_profile`, `iter_raw_facts` |
-| `raw_store.py` | Append-only Raw-Layer, ein Snapshot je Abruf, Content-Hash, nie überschrieben |
+| `version.py` | Versionsstempel: Normalization-Schema, Metric-Mapping, Formeln, Adapter, Quality-Regeln |
+| `http_client.py` | SEC Fair Access: sich ausweisender User-Agent, Token-Bucket (5 req/s), Retry mit exponentiellem Backoff + Jitter, Timeouts, Fehlerklassifikation, gzip-Disk-Cache mit TTL, In-Flight-Deduplizierung, strukturiertes Logging |
+| `provider.py` | `SECProvider`: `resolve_ticker`, `get_submissions` (inkl. gemergter älterer Filing-Seiten), `get_company_facts`, `get_filing_metadata`, `get_company_profile`, `iter_raw_facts`, `iter_bulk_company_facts`. Deklariert **keine** eigenen Capabilities |
 | `registry.py` | Canonical Metric Registry: Laden, Validieren, Concept-Auflösung nach Priorität |
-| `fiscal.py` | Fiskalkalender je Unternehmen: FY-Anker aus 10-K-Fakten, Offset-Lernen, 52/53-Wochen, Quartalszuordnung |
-| `periods.py` | Perioden-Klassifikation (instant/quarter/half/ytd3/annual), YTD-Deakkumulation, TTM |
-| `normalize.py` | Roh-XBRL → kanonische Fakten inkl. vollständiger Provenance |
+| `fiscal.py` | Fiskalkalender je Unternehmen: FY-Anker aus 10-K-Fakten, gelernter Label-Offset, 52/53-Wochen, Quartalszuordnung |
+| `periods.py` | Perioden-Klassifikation, YTD-Deakkumulation, TTM — alles innerhalb des PIT-Fensters |
+| `normalize.py` | Roh-XBRL → SEC-Factbook inkl. vollständiger Provenance |
 | `restatements.py` | Versionierte Fact-Timeline, `as_of`-Auflösung, Restatement-Policies |
-| `quality.py` | 12 Prüfungen, markiert Probleme, verändert nie Werte |
-| `derived.py` | VU-Derived-Metriken mit `formula_version` und Input-Referenzen |
-| `store.py` | `FactStore`-Abstraktion + `JsonFactStore` (Migrationspfad DuckDB/Parquet/Postgres) |
-| `pipeline.py` | `ingest_company`, `ingest_universe`, `update_company`, `refresh_since`, Checkpointing, Retry-Queue, Failure-Log |
+| `quality.py` | 12 Prüfungen; markiert Probleme, verändert nie Werte |
+| `derived.py` | Rekonstruktion **kanonischer** Kennzahlen (FCF, Gross Profit, Net Debt, Invested Capital, Accruals). Keine Ratios, kein Growth — das ist `engines/factors.js` |
+| `canonical.py` | Die Grenze: SEC-Fakten → `FundamentalFact` / `Filing` / `Security` nach `schema.js` |
+| `gates.py` | Ingest-Integritätsprüfungen. **Nicht** die Qualifikations-Gates — die stehen in `engines/gate-tests.js` |
+| `store.py` | `RawStore` / `FactStore`-Abstraktion + JSON-Implementierungen + `CheckpointStore` |
+| `pipeline.py` | `ingest_company`, `ingest_universe`, `refresh_since`, `retry_failed`, Checkpointing, Retry-Queue, Failure-Log |
 | `coverage.py` | Coverage-Matrix (STRUCTURED / DERIVABLE / FILING_ONLY / MISSING) |
-| `gates.py` | PIT-Qualification-Gates inkl. `MOCK_FUTURE_DATA_LEAK`, `MOCK_RESTATEMENT`, `MOCK_DELISTED` |
-| `factors.py` | Quant-Faktoren auf PIT-Snapshots |
-| `backtest_bridge.py` | PIT-Fundamentalfilter vor dem bestehenden Backtest, blockiert bei unzureichender Datenlage |
-| `cli.py` | Einziger Einstiegspunkt für alle Kommandos |
+| `cli.py` | Einziger Einstiegspunkt |
+
+### Anbindung (JavaScript)
+
+| Datei | Verantwortung |
+| --- | --- |
+| `providers/sec/adapter.js` | Implementiert `FundamentalDataProvider`; liest die kanonischen Artefakte; `getFactsAsOf`/`getUniverseAsOf` für `gate-tests.js`; Capabilities aus dem gemeinsamen Profil |
+| `scripts/quant/run-sec-gates.mjs` | Fährt Gate A/B/C aus `engines/gate-tests.js` gegen den Adapter und schreibt das Ergebnis |
+| `quant/tests/sec-adapter.test.mjs` | 28 Tests: Interface, Schema-Konformität, Vendor-Leakage, PIT, Restatements, Gates, Capabilities, Sektorregeln |
 
 ## 3. Betrieb
 
 ```bash
-python3 scripts/quant/cli.py ingest       --universe quant/config/sec_universe.json
-python3 scripts/quant/cli.py update       --since 2026-01-01
-python3 scripts/quant/cli.py coverage     --out quant/data/coverage_matrix.json
-python3 scripts/quant/cli.py gates        --out quant/data/pit_gates.json
-python3 scripts/quant/cli.py inspect      --ticker NVDA --metric revenue
-python3 scripts/quant/cli.py snapshot     --as-of 2024-06-30
-python3 scripts/quant/cli.py test
-```
+# Ingest (benoetigt data.sec.gov — laeuft in GitHub Actions)
+python3 scripts/quant/cli.py ingest    --universe quant/config/sec-universe.json
+python3 scripts/quant/cli.py update    --since 2026-01-01
+python3 scripts/quant/cli.py retry
 
-Ohne Netzzugang laufen `test` und alle Offline-Kommandos vollständig; `ingest`,
-`update`, `coverage` und `gates` benötigen Zugriff auf `data.sec.gov` und laufen
-in GitHub Actions (`update-sec-fundamentals.yml`).
+# Ableitungen (offline, aus dem lokalen Factbook)
+python3 scripts/quant/cli.py canonical    # -> quant/data/sec/canonical/*.json
+python3 scripts/quant/cli.py coverage
+python3 scripts/quant/cli.py gates        # Ingest-Pruefungen
+python3 scripts/quant/cli.py export       # Data-Inspector-Sichten
+python3 scripts/quant/cli.py inspect --ticker NVDA --metric revenue
+
+# Qualifikation und Tests (offline)
+node scripts/quant/run-sec-gates.mjs      # Gate A/B/C gegen den Adapter
+python3 scripts/quant/cli.py test         # SEC-Ingest-Suite
+node --test "quant/tests/*.test.mjs"      # gesamte Quant-Suite
+```
 
 ## 4. Datenhygiene
 
-- `.sec-cache/`, `quant/data/raw/`, `.quant-state/` sind gitignored.
+- `.sec-cache/`, `quant/data/sec/raw/`, `quant/data/sec/facts/` und `.quant-state/`
+  sind gitignored: gross und jederzeit reproduzierbar.
+- `quant/data/sec/canonical/` wird **committet** — es ist die Datenschicht, die der
+  Adapter ausliefert, genau wie `quant/data/securities.json`.
 - Die CI erzwingt: keine Datei unter `quant/data/` größer als 2 MB, Summe unter 10 MB.
 - Keine Secrets: die SEC-APIs brauchen keinen API-Key, nur einen Kontakt-User-Agent.
   Dieser ist die bereits öffentliche Repository-Kontaktadresse, konfigurierbar über
@@ -170,5 +193,27 @@ Siehe `docs/SEC_PHASE4_REPORT.md` § Rollout. Kurz: `ingest_universe` ist über 
 parametrisiert und kennt keine Ticker-Sonderfälle; Checkpointing macht Läufe über
 tausende Unternehmen fortsetzbar; ab ~500 Unternehmen ersetzt der Bulk-Pfad
 (`companyfacts.zip`) die Einzelabrufe, ab ~5.000 wird `JsonFactStore` gegen eine
-DuckDB-/Parquet-Implementierung des gleichen `FactStore`-Interfaces getauscht —
-ohne Änderung an Normalisierung, Quant Engine oder Backtest.
+DuckDB-/Parquet-Implementierung des gleichen `FactStore`-Interfaces getauscht.
+Weder Normalisierung noch Adapter noch Quant Engine noch Backtest ändern sich
+dabei — der Adapter kennt nur `loadAll()`, und das Interface dahinter ist
+austauschbar.
+
+## 6. Verhältnis zu Tiingo
+
+`main` führt Tiingo bisher ausschließlich als Eintrag in der
+Vendor-Leakage-Sperrliste (`VENDOR_MARKERS`) — es gibt keinen Adapter. Die
+Zielarchitektur bleibt davon unberührt und ist arbeitsteilig:
+
+```
+SEC     → PIT-Fundamentaldaten, Filings, Restatements   (FundamentalDataProvider)
+Tiingo  → OHLCV, Corporate Actions, soweit validiert     (MarketDataProvider,
+                                                          CorporateActionsProvider)
+VU      → kanonische Schicht, Quant, Strategy, Backtest
+```
+
+Der SEC-Adapter beansprucht `MarketDataProvider`, `EstimateDataProvider` und
+`CorporateActionsProvider` **ausdrücklich nicht**; ein Test prüft das. Damit kann
+ein späterer Tiingo-Adapter dieselben Interfaces belegen, ohne mit SEC zu
+kollidieren, und die Regeln aus `data-precedence.js` entscheiden bei
+Überschneidungen. Es wird hier bewusst keine SEC-Logik für Datenklassen gebaut,
+die von einem Marktdaten-Anbieter kommen sollen.

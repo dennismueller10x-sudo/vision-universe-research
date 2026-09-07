@@ -11,7 +11,7 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 # Semantics of period assignment, YTD de-accumulation and PIT resolution.
 NORMALIZATION_LOGIC_VERSION = "1.0.0"
 
-# Bumped by quant/config/metric_registry.json itself; this is the minimum the
+# Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
 METRIC_REGISTRY_MIN_VERSION = 1
 

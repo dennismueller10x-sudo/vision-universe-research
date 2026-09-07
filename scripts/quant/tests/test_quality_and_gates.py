@@ -168,22 +168,6 @@ class GateTests(unittest.TestCase):
         cls.resolver = PeriodResolver(cls.result.factbook, cls.registry)
         cls.provider = SECProvider(client=_NullClient())
 
-    def test_the_two_mock_pit_gates_pass(self):
-        for result in (gates_module.gate_mock_future_data_leak(),
-                       gates_module.gate_mock_restatement()):
-            with self.subTest(gate=result["gate"]):
-                self.assertEqual(result["status"], gates_module.PASS)
-                self.assertTrue(result["reason"])
-
-    def test_the_delisted_gate_fails_honestly_for_sec(self):
-        result = gates_module.gate_mock_delisted(self.provider)
-        self.assertEqual(result["status"], gates_module.FAIL)
-        self.assertIn("security master", result["reason"])
-
-    def test_the_delisted_gate_is_unknown_without_a_provider(self):
-        self.assertEqual(gates_module.gate_mock_delisted(None)["status"],
-                         gates_module.UNKNOWN)
-
     def test_market_data_is_not_applicable_rather_than_failed(self):
         self.assertEqual(gates_module.gate_market_data(self.provider)["status"],
                          gates_module.NOT_APPLICABLE)
@@ -214,6 +198,29 @@ class GateTests(unittest.TestCase):
         self.assertEqual(statuses["PIT_NO_FUTURE_DATA_LEAK"], gates_module.UNKNOWN)
         self.assertEqual(statuses["NO_INVENTED_VALUES"], gates_module.UNKNOWN)
 
+    def test_the_survivorship_failure_is_preserved_honestly(self):
+        result = gates_module.gate_survivorship_universe(self.provider)
+        self.assertEqual(result["status"], gates_module.FAIL)
+        self.assertIn("security master", result["reason"])
+
+    def test_capabilities_come_from_the_shared_provider_profile(self):
+        """No second capability matrix: the declaration is the shared JSON."""
+        declared = self.provider.DECLARED_CAPABILITIES
+        self.assertIs(declared["marketDataOhlcv"], False)
+        self.assertIs(declared["survivorshipBiasControls"], False)
+        # "not verified" must survive as None, never collapse to False.
+        self.assertIsNone(declared["delistedSecurities"])
+        self.assertIsNone(declared["historicalCoverage"])
+
+    def test_provider_gate_results_are_carried_through_unchanged(self):
+        """Gate A/B/C come from gate-tests.js; this module never rewrites them."""
+        incoming = [{"gate": "GATE_B_DELISTED", "status": gates_module.FAIL,
+                     "reason": "from gate-tests.js", "evidence": {}}]
+        results = gates_module.run_suite(provider=self.provider,
+                                         provider_gate_results=incoming)
+        carried = [row for row in results if row["gate"] == "GATE_B_DELISTED"]
+        self.assertEqual(carried, incoming)
+
     def test_no_invented_values_gate_catches_a_zero_stand_in(self):
         bad = NormalizedFact(cik="1", metric="revenue", value=0.0, unit="USD",
                              fiscal_year=2020, fiscal_period="FY", period_start=None,
@@ -230,9 +237,9 @@ class GateTests(unittest.TestCase):
                          gates_module.FAIL)
 
     def test_a_full_suite_runs_and_summarises(self):
-        from quant.sec.derived import compute_derived
+        from quant.sec.derived import reconstruct
         as_of = date(2026, 3, 1)
-        derived = compute_derived(self.resolver, as_of)
+        derived = reconstruct(self.resolver, 2024, "FY", as_of)
         resolved = [self.resolver.annual(metric, 2024, as_of)
                     for metric in self.registry.names()]
         results = gates_module.run_suite(
@@ -240,9 +247,8 @@ class GateTests(unittest.TestCase):
             provider=self.provider, resolved_facts=resolved, derived_facts=derived)
         summary = gates_module.summarize(results)
         self.assertEqual(summary["total"], len(results))
-        self.assertGreaterEqual(summary["by_status"][gates_module.PASS], 6)
-        # The two gates SEC genuinely cannot satisfy must stay failed.
-        self.assertIn("MOCK_DELISTED", summary["blocking_failures"])
+        self.assertGreaterEqual(summary["by_status"][gates_module.PASS], 4)
+        # The gate SEC genuinely cannot satisfy must stay failed.
         self.assertIn("SURVIVORSHIP_FREE_UNIVERSE", summary["blocking_failures"])
 
 

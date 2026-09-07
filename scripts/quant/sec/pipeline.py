@@ -106,6 +106,7 @@ class IngestionPipeline:
             "raw_companyfacts_sha256": facts_hash,
             "latest_filing": signature,
             "filing_years": _filing_years(filing_metadata),
+            "filing_index": _filing_index(filing_metadata),
             "profile": profile.to_dict(),
             "calendar": calendar.to_dict(),
             "stats": result.stats,
@@ -144,8 +145,17 @@ class IngestionPipeline:
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
             if limit is not None and processed >= limit:
                 break
-            if resume and not force and self.checkpoint.is_completed(state, cik):
+            if resume and not force and self.checkpoint.is_completed(state, cik) \
+                    and self.fact_store.read_company(cik) is not None:
                 continue
+            if resume and self.checkpoint.is_completed(state, cik) \
+                    and self.fact_store.read_company(cik) is None:
+                # The checkpoint says done but the stored document is gone
+                # (cleared cache, cleaned working copy, failed write). Trusting
+                # the checkpoint alone would silently leave a hole in the store.
+                LOGGER.warning("cik=%s marked completed but not present in the "
+                               "fact store; re-ingesting", cik)
+                state["completed"].pop(cik, None)
             attempts = state["failed"].get(cik, {}).get("attempts", 0)
             if attempts >= max_attempts:
                 LOGGER.warning("cik=%s skipped: %d failed attempts", cik, attempts)
@@ -234,6 +244,22 @@ def _filing_years(filing_metadata):
     return dict(sorted(years.items()))
 
 
+def _filing_index(filing_metadata):
+    """Compact periodic-filing index, kept for the canonical Filing records."""
+    return [
+        {
+            "accession": row["accession"],
+            "form": row["form"],
+            "filing_date": row["filing_date"],
+            "report_date": row["report_date"],
+            "acceptance_datetime": row["acceptance_datetime"],
+            "is_amendment": row["is_amendment"],
+        }
+        for row in filing_metadata or []
+        if row["form"] in PERIODIC_FORMS and row.get("report_date")
+    ]
+
+
 def export_inspector_view(document, registry, as_of=None, annual_years=12,
                           quarterly_years=5, policy=POLICY_LATEST_KNOWN):
     """A compact, committable view of one company for the data inspector UI.
@@ -316,7 +342,8 @@ def _rehydrate(document):
     profile_payload = dict(document.get("profile") or {})
     profile_payload.pop("is_financial", None)
     profile = CompanyProfile(**profile_payload) if profile_payload else None
-    factbook = CompanyFactBook(document["cik"], profile=profile)
+    calendar = FiscalCalendar.from_dict(document.get("calendar"))
+    factbook = CompanyFactBook(document["cik"], profile=profile, calendar=calendar)
     for timeline in document["factbook"]["timelines"]:
         for observation in timeline["observations"]:
             provenance = Provenance(**observation["provenance"])

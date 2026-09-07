@@ -14,6 +14,7 @@ Endpoints used (all official, no scraping, no third parties):
 import json
 import logging
 from datetime import date, datetime, timezone
+from pathlib import Path
 
 from .http_client import SECHttpClient, SECHTTPError
 from .model import CompanyProfile, RawFact
@@ -51,6 +52,33 @@ def _utcnow_iso():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+PROVIDER_PROFILES_PATH = (
+    Path(__file__).resolve().parents[3] / "quant" / "config" / "provider-profiles.json"
+)
+
+
+def load_declared_capabilities(provider_id="sec-edgar", path=PROVIDER_PROFILES_PATH):
+    """Capability declaration for a provider, read from the shared profile file.
+
+    Returns {finding: True | False | None}. `None` means "not verified" and must
+    never be collapsed into False — the same three-state rule
+    `quant/engines/capabilities.js` enforces on the JavaScript side.
+    """
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        LOGGER.warning("provider profiles unreadable (%s); treating all capabilities "
+                       "as unverified", exc)
+        return {}
+    profile = (payload.get("providers") or {}).get(provider_id) or {}
+    out = {}
+    for name, finding in (profile.get("findings") or {}).items():
+        value = finding.get("value")
+        out[name] = value if value is True or value is False else None
+    return out
+
+
+
 def _is_iso_date(value):
     """True only for a plausible ISO date. A fact without one has no PIT anchor."""
     if not isinstance(value, str) or len(value) < 10:
@@ -75,29 +103,25 @@ class SECProvider:
 
     ADAPTER_VERSION = PROVIDER_ADAPTER_VERSION
 
-    # Declared capability matrix. Consumers ask this instead of assuming.
-    CAPABILITIES = {
-        "company_identification": True,
-        "ticker_to_cik": True,
-        "company_submissions": True,
-        "company_facts_xbrl": True,
-        "filing_metadata": True,
-        "historical_fundamentals": True,
-        "raw_source_references": True,
-        "point_in_time_filing_dates": True,
-        "restatement_history": True,
-        "bulk_import": True,
-        "delisted_by_cik": True,
-        "delisted_by_ticker": False,   # see TickerNotFound
-        "market_data_ohlcv": False,    # SEC publishes no prices
-        "analyst_estimates": False,
-        "corporate_actions_split_history": False,
-        "security_master": False,
-    }
+    # Capabilities are NOT declared here. `quant/config/provider-profiles.json`
+    # is the repository's single declaration surface for what a provider can and
+    # cannot do, and the JS adapter feeds it into `engines/capabilities.js`.
+    # A second matrix in Python would be exactly the duplicate the integration
+    # audit forbids, and the two would drift.
+    PROVIDER_ID = "sec-edgar"
+
 
     def __init__(self, client=None):
         self.client = client or SECHttpClient()
         self._ticker_map = None
+        self._capabilities = None
+
+    @property
+    def DECLARED_CAPABILITIES(self):  # noqa: N802 - mirrors the JS constant name
+        """Capabilities as declared in quant/config/provider-profiles.json."""
+        if self._capabilities is None:
+            self._capabilities = load_declared_capabilities(self.PROVIDER_ID)
+        return self._capabilities
 
     # ------------------------------------------------------------------ identity
 

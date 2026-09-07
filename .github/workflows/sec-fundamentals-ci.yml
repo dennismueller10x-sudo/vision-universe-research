@@ -26,11 +26,65 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Compile every pipeline module
         run: python3 -m compileall -q scripts/quant
 
-      - name: Run the offline test suite (no network)
+      - name: Run the SEC ingestion test suite (Python, no network)
         run: python3 scripts/quant/cli.py test
+
+      - name: Run the whole quant test suite (JS, no network)
+        # The SEC adapter is part of the existing quant system, so it is not
+        # enough to run its own tests: the Phase 1-3 suite has to stay green too.
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Verify the SEC adapter satisfies the existing provider interface
+        run: |
+          node -e '
+            const path = require("path");
+            const Provider = require("./quant/engines/provider.js");
+            const Adapter = require("./providers/sec/adapter.js");
+            const provider = Adapter.createSecProvider();
+            const missing = Provider.missingMethods("FundamentalDataProvider", provider);
+            if (missing.length) {
+              console.error("SEC adapter does not implement FundamentalDataProvider:", missing);
+              process.exit(1);
+            }
+            // It must NOT claim interfaces it cannot serve.
+            for (const iface of ["MarketDataProvider", "EstimateDataProvider", "CorporateActionsProvider"]) {
+              if (Provider.implementsInterface(iface, provider)) {
+                console.error("SEC adapter must not claim " + iface);
+                process.exit(1);
+              }
+            }
+            console.log("SEC adapter interface contract OK");
+          '
+
+      - name: Reject a second architecture
+        shell: bash
+        run: |
+          # The SEC workstream must not grow its own provider abstraction,
+          # capability matrix, PIT rule, factor engine or backtester alongside
+          # the existing ones. These are the names that would signal it.
+          if grep -rniE "class .*Provider(Registry|Abstraction)|CAPABILITY_SETS|def (run_backtest|backtest_symbol)|def score_universe" scripts/quant/sec/; then
+            echo "::error::scripts/quant/sec/ appears to duplicate an existing quant layer"
+            exit 1
+          fi
+          for gone in scripts/quant/sec/factors.py scripts/quant/sec/backtest_bridge.py; do
+            if [ -f "$gone" ]; then
+              echo "::error::$gone duplicates an existing engine and must stay removed"
+              exit 1
+            fi
+          done
+          # Capabilities are declared once, in the shared profile file.
+          if grep -rn "CAPABILITIES = {" scripts/quant/sec/; then
+            echo "::error::capabilities must be declared in quant/config/provider-profiles.json"
+            exit 1
+          fi
+          echo "no parallel architecture detected"
 
       - name: Validate configuration files
         run: |
@@ -42,7 +96,11 @@ jobs:
           registry = MetricRegistry.load()
           print("metric registry:", registry.version, len(registry.names()), "metrics")
 
-          universe = json.load(open("quant/config/sec_universe.json"))
+          profiles = json.load(open("quant/config/provider-profiles.json"))
+          assert "sec-edgar" in profiles["providers"], "SEC provider profile missing"
+          print("provider profile: sec-edgar present")
+
+          universe = json.load(open("quant/config/sec-universe.json"))
           assert universe["companies"], "universe must not be empty"
           for entry in universe["companies"]:
               assert entry["ticker"] and entry["cik"], entry
@@ -72,7 +130,10 @@ jobs:
 
           Checker().feed(html)
           assert "<vu-navigation></vu-navigation>" in html, "shared navigation missing"
-          assert "data.sec.gov" in html, "the page must name its data source"
+          # The inspector is a quant page and must use the quant shell, not a
+          # second UI stack of its own.
+          assert "/quant/ui/shell.js" in html, "shared quant shell missing"
+          assert "/quant/ui/quant.css" in html, "shared quant design system missing"
           print(f"{path}: OK ({len(html)} bytes)")
           PY
 
@@ -80,7 +141,7 @@ jobs:
         shell: bash
         run: |
           # The pipeline must stay generic: the five validation companies live in
-          # quant/config/sec_universe.json, never in the code that processes them.
+          # quant/config/sec-universe.json, never in the code that processes them.
           if grep -rnE '\b(NVDA|AAPL|MSFT|JPM|XOM|NVIDIA|Apple|Microsoft|JPMorgan|Exxon)\b' scripts/quant/sec/; then
             echo "::error::company-specific identifiers found in scripts/quant/sec/"
             exit 1
@@ -95,7 +156,10 @@ jobs:
         shell: bash
         run: |
           # Raw SEC payloads and normalized factbooks must never be committed.
-          for forbidden in quant/data/raw quant/data/facts .sec-cache .quant-state; do
+          # raw/ and facts/ are large and regenerable and stay local. canonical/
+          # is the opposite: it IS the data layer the adapter serves, so it is
+          # committed like quant/data/securities.json.
+          for forbidden in quant/data/sec/raw quant/data/sec/facts .sec-cache .quant-state; do
             if git ls-files --error-unmatch "$forbidden" >/dev/null 2>&1; then
               echo "::error::$forbidden is tracked but must stay local"
               exit 1

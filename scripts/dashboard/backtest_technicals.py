@@ -1,8 +1,23 @@
 #!/usr/bin/env python3
-"""Run a transparent daily-data baseline backtest for the VISION UNIVERSE pilot."""
+"""Run a transparent daily-data baseline backtest for the VISION UNIVERSE pilot.
+
+Seit Phase 3 (§2) prueft dieses Skript, worauf es rechnet.
+
+Die ausgegebene Zahl war bisher `average_return_pct` - ohne Angabe, dass es
+sich um eine Kursrendite ohne Dividenden handelt. Der Quant-Bereich rechnet
+auf total-return-bereinigten Reihen und nennt sein Ergebnis ebenfalls
+"Rendite". Beide Zahlen sind fuer sich richtig und nebeneinander irrefuehrend.
+
+Die Zahlen aendern sich durch diese Aenderung nicht. Nur ihre Beschriftung.
+Und: fehlt die Bereinigungsangabe in market_data.json, wird der Lauf
+abgebrochen statt eine nicht interpretierbare Zahl zu erzeugen.
+"""
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+import price_semantics
 
 ROOT = Path(__file__).resolve().parents[2]
 MARKET = ROOT / "dashboard" / "data" / "market_data.json"
@@ -54,18 +69,41 @@ def backtest_symbol(rows):
 
 def main():
     market = json.loads(MARKET.read_text(encoding="utf-8"))
+
+    # Was bedeuten diese Kurse? Ohne Antwort wird nicht gerechnet.
+    adjustment = price_semantics.normalize(market.get("adjustment"))
+    gate = price_semantics.check("price_return", adjustment)
+    if not gate["allowed"]:
+        print(f"Abbruch: {gate['message']}", file=sys.stderr)
+        print("  market_data.json traegt kein Feld 'adjustment' oder eine zu niedrige Stufe.",
+              file=sys.stderr)
+        print("  Neu erzeugen mit scripts/dashboard/fetch_market_data.py (schema_version 2).",
+              file=sys.stderr)
+        raise SystemExit(1)
+
     by_symbol = {symbol: backtest_symbol(rows) for symbol, rows in market["symbols"].items()}
     active = [value for symbol, value in by_symbol.items() if symbol not in {"SPY", "QQQ"}]
     weighted = [value for value in active if value["setups"]]
     output = {
-        "schema_version": "0.1-baseline",
+        "schema_version": "0.2-baseline",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "scope": "Daily OHLC pilot only; not an Elliott-wave probability model.",
+        # Die Kennzahl heisst, was sie ist. average_return_pct bleibt als
+        # Feldname erhalten, damit bestehende Leser nicht brechen - aber
+        # daneben steht jetzt, welche Art Rendite gemeint ist.
+        "return_semantics": {
+            **price_semantics.describe(adjustment, metric="price_return"),
+            "field": "average_return_pct",
+            "meaning": price_semantics.return_label(adjustment),
+            "note": ("Nicht mit der Gesamtrendite des Quant-Bereichs vergleichbar: "
+                     "die rechnet auf total-return-bereinigten Reihen."),
+        },
         "method": {
             "entry": "Close above SMA20 above SMA50 and 20-day breakout; entry next daily open.",
             "invalidation": "4% fixed stop.",
             "target": "8% fixed target (2R).",
             "horizon": f"{HORIZON} trading days; stop wins on an intraday tie.",
+            "return_basis": price_semantics.return_label(adjustment),
         },
         "symbols": by_symbol,
         "pilot_aggregate": {

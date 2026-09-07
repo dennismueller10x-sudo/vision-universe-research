@@ -2,52 +2,75 @@
 
 What was built, what works, what does not, and what it cost.
 
-## 1. The premise had to be corrected first
+## 1. Der erste Audit war falsch — Korrektur
 
-The brief instructed: do not rebuild, integrate into the existing Phase 1–3 quant
-architecture (provider abstraction, capability matrix, data provenance, PIT
-gates, qualification tests, quant engine, backtest engine).
+Der erste Durchgang berichtete: „Phase 1–3 existiert in diesem Repository nicht."
+**Das war falsch.** Nachweis im Git-Verlauf:
 
-**None of that exists in this repository.** A full search for `provider`,
-`capability`, `provenance`, `qualification`, `screener`, `point-in-time`,
-`trustScore` and `quant` returns hits only in editorial content
-(`academy/*.json`, `magazin/01/index.html`, `macro/data/*.json`,
-`hedgefonds/data/hedgefonds.json`). No code, no interfaces, no tests.
+- `git merge-base HEAD origin/main` → `0c4fb06` (7. Sep. 2026, 10:11 UTC)
+- PR **#43** mit Phase 1–3 wurde 10:59 UTC nach `main` gemergt — **48 Minuten nach
+  dem Abzweig**, während die SEC-Arbeit lief
+- `git merge-base --is-ancestor 0e32110 0c4fb06` schlägt fehl: die Phase-3-Commits
+  waren vom Branchpoint aus nicht erreichbar
+- PR **#45** (`VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md`) folgte 17:25 UTC, neun
+  Minuten nach dem SEC-Commit `785a9c2`
 
-What does exist is a static GitHub Pages site with product-scoped, decoupled data
-pipelines (`dashboard/`, `macro/`, `academy/`, `hedgefonds/`, …), stdlib-only
-Python under `scripts/`, generated JSON under `<product>/data/`, one GitHub
-Actions workflow per pipeline with a scope guard, and an `ARCHITECTURE.md` per
-product. There is a fundamentals pipeline, but it is an FMP TTM snapshot with no
-history, no point-in-time and no provenance — it cannot serve as a base.
+Der Container arbeitet auf einem beim Sitzungsstart erzeugten Klon. Ohne erneutes
+`git fetch` bleibt dieser Stand eingefroren, und `git log` zeigt genau den
+eingefrorenen Stand — überzeugend und veraltet. Der Audit war für den Baum, auf dem
+er lief, korrekt und für das Projekt falsch.
 
-So "do not build a parallel architecture" was honoured the only way it could be:
-**this phase adopts the repository's conventions exactly**, and builds the missing
-quant data layer once — as *the* layer, not a second one beside an existing one.
-The audit is recorded in `docs/SEC_DATA_ARCHITECTURE.md` § 0.
+**Konsequenz für die Arbeitsweise: ein Repository-Audit beginnt mit `git fetch
+origin`, nicht mit `git log`.** Ohne Fetch beschreibt ein Audit den Container.
 
-## 2. The live-validation blocker
+## 2. Was die Integration geändert hat
 
-`data.sec.gov` and `www.sec.gov` are blocked by the development sandbox's egress
-policy (HTTP 403 on CONNECT). This is an organisation policy on this environment,
-not a SEC block. GitHub Actions runners are unaffected — `scripts/hedgefonds/
-fetch_edgar_data.py` already fetches from `www.sec.gov` in this repo's workflows.
+Die SEC-Arbeit wurde nicht verworfen und nicht neu geschrieben, sondern unter die
+bestehende Architektur gehängt. Vier Duplikate sind dabei entfallen:
 
-Consequence, stated plainly:
+| Entfernt | Weil auf `main` bereits vorhanden |
+| --- | --- |
+| `scripts/quant/sec/factors.py` (Faktor-Scoring) | `quant/engines/factors.js` + `quant-score.js` |
+| `scripts/quant/sec/backtest_bridge.py` | `quant/engines/backtest.js` (PIT-Backtest-Engine) |
+| `MOCK_RESTATEMENT` / `MOCK_DELISTED` / `MOCK_FUTURE_DATA_LEAK` in `gates.py` | `quant/engines/gate-tests.js` (Gate A/B/C) |
+| `SECProvider.CAPABILITIES` | `quant/config/provider-profiles.json` + `engines/capabilities.js` |
 
-- Everything that does not require the network is built, tested and verified:
-  **174 offline tests, all green**, plus a full end-to-end run of every CLI
-  command against stubbed SEC payloads.
-- Everything that requires live SEC data — the coverage matrix, the per-company
-  gate results, the historical reach measurement — is **not measured**. The
-  artifacts ship with `status: "not_generated"`, matching the convention of
-  `dashboard/data/*.json`. Running the "Update SEC fundamentals" workflow
-  produces them.
+Zusätzlich reduziert: `derived.py` hat Margen, ROE, ROIC, Growth und CAGR verloren —
+das sind Faktor-Eingaben, und die Quant Engine besitzt sie. Geblieben ist die
+Rekonstruktion kanonischer Kennzahlen, die kein Emittent als Zeile meldet
+(Free Cash Flow, Gross Profit, Net Debt, Invested Capital, Accruals).
 
-No coverage number, no gate result and no company figure in this repository is
-invented to fill that gap.
+Neu hinzugekommen sind genau zwei Dinge, beide an der Grenze:
 
-## 3. Answers to the closing questions
+- `scripts/quant/sec/canonical.py` — SEC-Fakten → `FundamentalFact` / `Filing` /
+  `Security` nach `quant/engines/schema.js`, mit `revisionId` und
+  `restatementStatus` statt einer eigenen Timeline-Form.
+- `providers/sec/adapter.js` — implementiert `FundamentalDataProvider` nach dem
+  Muster von `providers/twelve-data/adapter.js`.
+
+Der Data Inspector nutzt jetzt `quant/ui/shell.js` und `quant/ui/quant.css` statt
+eines eigenen Designsystems.
+
+**Was bewusst erhalten blieb**, weil es der wertvollste Teil der SEC-Arbeit ist:
+die vollständige PIT-Semantik beim Ingest (Tagesgenauigkeit zwischen Periodenende
+und Veröffentlichung, Restatement-Zeitachse, YTD-Rekonstruktion innerhalb des
+PIT-Fensters, Provenance, Trennung gemeldet/abgeleitet), sämtliche Regressionstests
+dazu, und die ehrlichen FAIL-Zustände bei Delisting und Survivorship.
+
+## 3. Der Live-Validierungs-Blocker (unverändert)
+
+`data.sec.gov` und `www.sec.gov` sind durch die Egress-Policy dieser Umgebung
+blockiert (HTTP 403 auf CONNECT). Das ist eine Organisationsrichtlinie dieser
+Sandbox, keine SEC-Sperre; GitHub-Actions-Runner sind nicht betroffen
+(`scripts/hedgefonds/fetch_edgar_data.py` holt dort seit Längerem 13F-Daten).
+
+Es wurde **keine einzige Anfrage an die SEC gestellt**. Alles, was davon abhängt —
+Coverage-Matrix, gemessene Gate-Ergebnisse je Unternehmen, historische
+Reichweite — trägt `status: "not_generated"` bzw. im Provider-Profil die Belegstufe
+`RUNTIME_VERIFICATION_REQUIRED` oder `UNKNOWN`. Es wurde nichts erfunden, um die
+Lücke zu füllen.
+
+## 4. Antworten auf die Abschlussfragen
 
 **1. Is SECProvider implemented production-near?**
 Yes, with one caveat. `scripts/quant/sec/provider.py` is the single SEC access
@@ -62,7 +85,7 @@ structured logging. Caveat: it has never executed against the live SEC (§2).
 
 **2. Which five companies were actually tested?**
 None against live SEC data. The universe is configured
-(`quant/config/sec_universe.json`: NVDA, AAPL, MSFT, JPM, XOM, with CIK hints the
+(`quant/config/sec-universe.json`: NVDA, AAPL, MSFT, JPM, XOM, with CIK hints the
 pipeline verifies against the SEC ticker map and aborts on mismatch). Validation
 instead ran against synthetic issuers built to reproduce the structural cases
 those five represent: calendar-year, June year-end, 52/53-week September
@@ -109,18 +132,24 @@ Same-instant conflicts: amendment wins, flagged `CONFLICTING_FACTS`, quality
 downgraded to MEDIUM, nothing averaged.
 
 **8. Which gates pass?**
-`MOCK_FUTURE_DATA_LEAK`, `MOCK_RESTATEMENT`, `PIT_NO_FUTURE_DATA_LEAK`,
-`PROVENANCE_COMPLETE`, `PERIOD_INTEGRITY`, `UNIT_INTEGRITY`,
-`NO_INVENTED_VALUES`, `DERIVED_SEPARATION` — all PASS on normalized data.
-`MARKET_DATA_AVAILABLE` is `NOT_APPLICABLE` (SEC publishes no prices).
+Die Qualifikations-Gates sind jetzt die des Systems (`quant/engines/gate-tests.js`),
+gefahren gegen den SEC-Adapter — nicht mehr SEC-eigene Nachbauten. Gegen eine
+synthetische Fixture: **Gate A (Restatement) PASSED**, **Gate C (Verfügbarkeit)
+PASSED**. Dazu die Ingest-Prüfungen `PIT_NO_FUTURE_DATA_LEAK`,
+`PROVENANCE_COMPLETE`, `PERIOD_INTEGRITY`, `UNIT_INTEGRITY`, `NO_INVENTED_VALUES`,
+`DERIVED_SEPARATION` — alle PASS. `MARKET_DATA_AVAILABLE` ist `NOT_APPLICABLE`.
+
+Wichtige Einschränkung: „bestanden gegen eine synthetische Fixture" ist nicht
+„bestanden". Das Provider-Profil führt SEC deshalb durchgängig auf
+`RUNTIME_VERIFICATION_REQUIRED`, und ein eigener Test (Q15) stellt sicher, dass SEC
+dadurch **nicht** als qualifizierte Evidenzquelle gilt.
 
 **9. Which gates fail?**
-`MOCK_DELISTED` — **FAIL**. Delisted issuers are retrievable by CIK but the SEC's
-ticker map lists only current registrants, so a delisted ticker cannot be
-resolved and a survivorship-free universe cannot be built from SEC alone.
-`SURVIVORSHIP_FREE_UNIVERSE` — **FAIL**. No security master, no delisting feed.
-Neither was given a PASS it did not earn. On live data the same gates run
-per company and can produce further findings.
+**Gate B (Delisting) — FAILED**, und zwar erzeugt vom echten Gate: der Adapter
+liefert für ein Universum zum Stichtag ausdrücklich `unavailable`, weil die SEC
+keinen Security Master und keinen Delisting-Ereignisstrom führt. Ebenso
+`SURVIVORSHIP_FREE_UNIVERSE` — **FAIL**. Kein Gate wurde künstlich angehoben; der
+Gate-Runner meldet einen nicht ausführbaren Fall als `SKIPPED`, nie als `PASSED`.
 
 **10. What is still missing for professional backtests?**
 Prices (OHLCV), a point-in-time universe / index constituent history, corporate
@@ -145,7 +174,7 @@ factors are explicitly *not* computed from SEC data and are declared
 `NOT_AVAILABLE_FROM_PROVIDER` rather than approximated.
 
 **13. Rollout from 5 to 500 companies?**
-No code change. Extend `quant/config/sec_universe.json` (or feed CIKs from the
+No code change. Extend `quant/config/sec-universe.json` (or feed CIKs from the
 SEC ticker map directly). ~2 requests per company for the incremental check, ~3
 for a full ingest. At 5 req/s that is roughly 5 minutes of wall time for a full
 pass and far less for an incremental one. Checkpointing already makes the run
@@ -195,43 +224,81 @@ concept disagreement within one filing — are covered by tests but have not yet
 been *observed* on live SEC data, because that data has not been fetched.
 
 **17. What changed in the existing repository?**
-`.gitignore` only. Nothing else that existed before this phase was modified — not
-`scripts/dashboard/`, not `dashboard/data/`, not `scripts/hedgefonds/`, not any
-existing workflow, not any existing page. CI enforces the `scripts/dashboard/`
-half of that. Everything else is new: `scripts/quant/`, `quant/`, `docs/SEC_*.md`,
-and two workflows.
+Nach der Integration vier Dateien, jede mit Grund:
+
+| Datei | Änderung |
+| --- | --- |
+| `.gitignore` | SEC-Cache, Laufzeit-State, Raw- und Factbook-Verzeichnisse ergänzt (additiv; der bestehende Secrets-Block bleibt) |
+| `quant/ARCHITECTURE.md` | ein Abschnitt zum SEC-Core ergänzt; der bestehende Text unverändert |
+| `quant/config/provider-profiles.json` | Provider `sec-edgar` ergänzt |
+| `quant/tests/provider-qualification.test.mjs` | zwei Inventar-Counts 6→7 und ein neuer Test Q15 |
+
+Nicht angefasst: `scripts/dashboard/`, `dashboard/data/`, `scripts/hedgefonds/`,
+`quant/engines/**`, `quant/ui/**`, `providers/twelve-data/`, alle bestehenden
+Workflows und Seiten. Kein bestehender Test wurde gelöscht oder abgeschwächt.
 
 **18. How many tests run?**
-174 new offline tests (`python3 scripts/quant/cli.py test`), plus the
-pre-existing suites.
+429 insgesamt: 160 SEC-Ingest-Tests (Python), 261 Quant-Tests (JS, davon 232
+Phase 1–3 unverändert, 28 neue SEC-Adapter-Tests, 1 neuer
+Provider-Qualifikationstest) und 8 Academy-Tests.
 
 **19. Are all pre-existing tests still green?**
-Yes. `academy/engines/financial-model-engine.test.mjs`: 8/8 pass. The
-`hedgefonds-dashboard-ci.yml` inline logic tests pass. All 25 HTML pages parse,
-all 28 JSON files are valid, all Python under `scripts/` compiles.
+Ja. Die 232 Phase-1–3-Tests laufen unverändert grün — nachgerechnet vor dem Merge
+(232/232 auf `origin/main`) und danach. Academy 8/8, Hedgefonds-Logik grün,
+36 HTML-Seiten parsen, 57 JSON-Dateien valide, alles unter `scripts/` kompiliert.
 
 **20. Exact recommended next step?**
-Run the **"Update SEC fundamentals"** workflow via `workflow_dispatch` on this
-branch. That is the first live SEC contact and the only thing that can produce
-the coverage matrix, the per-company gate results and the historical-reach answer.
-Then read `quant/data/coverage_matrix.json` and decide the backtester's start year
-from measured data. Everything else — a second provider, more metrics, a wider
-universe — should wait until that number exists.
+Den Workflow **„Update SEC fundamentals"** per `workflow_dispatch` auf diesem
+Branch starten. Das ist der erste Live-SEC-Kontakt und das Einzige, was die
+Coverage-Matrix, die gemessenen Gate-Ergebnisse je Unternehmen und die Frage nach
+der historischen Reichweite beantworten kann. Der Lauf erzeugt in dieser
+Reihenfolge: Ingest → `canonical` → `coverage` → Ingest-Prüfungen →
+`run-sec-gates.mjs` (Gate A/B/C gegen echte Daten) → `export`.
 
-## 4. Deliverables
+Danach `quant/data/sec/coverage_matrix.json` und `pit_gates.json` lesen und das
+Startjahr des Backtesters aus gemessenen Daten festlegen. Erst wenn diese Zahlen
+existieren, lohnt der nächste Schritt (Tiingo-Adapter für Marktdaten, damit Value
+und Momentum überhaupt entstehen können).
 
-| Path | What |
+## 5. Deliverables
+
+| Pfad | Was |
 | --- | --- |
-| `scripts/quant/sec/` | 16 modules: provider, fair-access HTTP, model, fiscal calendar, registry, normalization, periods/TTM, restatements/PIT, quality, derived, factors, store, pipeline, coverage, gates, backtest bridge |
-| `scripts/quant/cli.py` | `ingest · update · retry · export · coverage · gates · snapshot · inspect · test` |
-| `scripts/quant/tests/` | 174 offline tests + labelled synthetic fixtures |
-| `quant/config/` | Metric registry, validation universe |
-| `quant/data-inspector/` | Internal validation UI (`noindex`) |
-| `docs/SEC_*.md` | Architecture + audit, normalization, PIT methodology, coverage report, this report |
-| `.github/workflows/sec-fundamentals-ci.yml` | Offline tests, config validation, company-agnosticism guard, data hygiene, secret guard |
-| `.github/workflows/update-sec-fundamentals.yml` | Live SEC ingest with scope guard, weekly + manual |
+| `scripts/quant/sec/` | 15 Module: Fair-Access-HTTP, Provider, Modell, Fiskalkalender, Registry, Normalisierung, Perioden/TTM, Restatements, Quality, kanonische Rekonstruktion, **canonical.py (die Grenze)**, Store, Pipeline, Coverage, Ingest-Prüfungen |
+| `scripts/quant/cli.py` | `ingest · update · retry · canonical · coverage · gates · export · inspect · test` |
+| `scripts/quant/run-sec-gates.mjs` | fährt Gate A/B/C aus `engines/gate-tests.js` gegen den Adapter |
+| `scripts/quant/tests/` | 160 Offline-Tests + als synthetisch gekennzeichnete Fixtures |
+| `providers/sec/adapter.js` | `FundamentalDataProvider`-Implementierung |
+| `quant/tests/sec-adapter.test.mjs` | 28 Integrationstests an der Architekturgrenze |
+| `quant/tests/fixtures/sec-canonical-synthetic.json` | synthetische, aus der Pipeline erzeugte Fixture |
+| `quant/config/sec-metric-registry.json`, `sec-universe.json` | Metric Registry, Validierungsuniversum |
+| `quant/data-inspector/` | internes Validierungswerkzeug auf der gemeinsamen Quant-Shell |
+| `docs/SEC_*.md` | Architektur + Audit, Normalisierung, PIT-Methodik, Coverage-Report, dieser Report |
+| `.github/workflows/sec-fundamentals-ci.yml` | beide Testsuiten, Interface-Vertrag, Guard gegen Parallelarchitektur, Datenhygiene, Secret-Guard |
+| `.github/workflows/update-sec-fundamentals.yml` | Live-SEC-Ingest mit Scope-Guard, wöchentlich + manuell |
 
-## 5. What this phase deliberately did not do
+## 5.1 Gefundene und behobene Fehler
+
+Sechs, jeder mit Regressionstest:
+
+1. **Token-Bucket-Endlosschleife** — ein Refill konnte durch Fließkomma knapp unter
+   einem Token landen; die Schleife wartete in immer kleineren Schritten ewig.
+2. **Sektorregeln nur auf Eingaben angewandt** — Debt/Equity wurde für eine Bank aus
+   vorhandenen Komponenten berechnet. Die Regel gilt jetzt auch für die
+   Ausgabe-Kennzahl.
+3. **Fakten ohne gültiges Einreichungsdatum** — ohne PIT-Anker durchgelassen; der
+   Provider validiert das Feld jetzt.
+4. **Wall-Clock-Zeitstempel im Content-Hash** — unveränderte SEC-Daten sahen bei
+   jedem Lauf neu aus. Das Raw-Archiv wäre wöchentlich gewachsen und kein
+   Factbook-Diff wäre aussagekräftig gewesen. Gefunden nur, weil ein
+   Idempotenz-Test in etwa jedem sechsten Lauf fehlschlug.
+5. **Fiskalkalender ging beim Rehydrieren verloren** — dadurch war die Filing-Liste
+   im kanonischen Export leer.
+6. **Checkpoint ohne Store-Abgleich** — ein „fertig" im Checkpoint übersprang ein
+   Unternehmen, dessen Dokument gar nicht mehr existierte, und hinterließ eine
+   stille Lücke im Store.
+
+## 6. Was diese Phase bewusst nicht gebaut hat
 
 No realtime, no intraday, no Elliott waves, no analyst estimates, no news, no
 portfolio AI, no mobile app, no new frontend design, no new backtester, no data

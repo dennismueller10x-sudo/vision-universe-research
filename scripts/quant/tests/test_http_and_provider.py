@@ -311,10 +311,16 @@ class ProviderTests(unittest.TestCase):
             builder.company_facts(), availability={"acc-1": "2024-02-20T17:05:00.000Z"}))
         self.assertEqual(facts[0].available_from, "2024-02-20T17:05:00.000Z")
 
-    def test_capabilities_do_not_claim_market_data(self):
-        self.assertFalse(SECProvider.CAPABILITIES["market_data_ohlcv"])
-        self.assertFalse(SECProvider.CAPABILITIES["delisted_by_ticker"])
-        self.assertTrue(SECProvider.CAPABILITIES["delisted_by_cik"])
+    def test_capabilities_are_read_from_the_shared_provider_profile(self):
+        """There is no SEC-specific capability matrix; the profile file is it."""
+        declared = self._provider().DECLARED_CAPABILITIES
+        self.assertIs(declared["marketDataOhlcv"], False)
+        self.assertIs(declared["pointInTimeFundamentals"], True)
+        self.assertIsNone(declared["delistedSecurities"])
+
+    def test_an_unreadable_profile_yields_unverified_not_false(self):
+        from quant.sec.provider import load_declared_capabilities
+        self.assertEqual(load_declared_capabilities(path="/nonexistent.json"), {})
 
     def test_amendments_are_recognised_in_the_filing_index(self):
         payload = submissions(1045810, "SYNTHETIC ONE", "3674", "1231", ["SYN1"], [])

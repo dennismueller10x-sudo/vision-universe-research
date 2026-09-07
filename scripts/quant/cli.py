@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Vision Universe SEC Financial Data Core - command line entry point.
 
-    python3 scripts/quant/cli.py ingest    --universe quant/config/sec_universe.json
+    python3 scripts/quant/cli.py ingest    --universe quant/config/sec-universe.json
     python3 scripts/quant/cli.py update    --since 2026-01-01
     python3 scripts/quant/cli.py retry
     python3 scripts/quant/cli.py export    --as-of 2026-09-07
     python3 scripts/quant/cli.py coverage
     python3 scripts/quant/cli.py gates
-    python3 scripts/quant/cli.py snapshot  --as-of 2026-09-07
+    python3 scripts/quant/cli.py canonical
     python3 scripts/quant/cli.py inspect   --ticker NVDA --metric revenue
     python3 scripts/quant/cli.py test
 
@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from quant.sec import coverage as coverage_module
 from quant.sec import gates as gates_module
-from quant.sec.factors import company_factor_inputs, score_universe
+from quant.sec.canonical import DATA_SOURCE, build_company_bundle
 from quant.sec.periods import PeriodResolver
 from quant.sec.pipeline import IngestionPipeline, export_inspector_view, _rehydrate
 from quant.sec.provider import SECProvider, normalize_cik
@@ -35,9 +35,10 @@ from quant.sec.store import JsonFactStore
 from quant.sec.version import version_stamp
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA_DIR = ROOT / "quant" / "data"
+DATA_DIR = ROOT / "quant" / "data" / "sec"
 INSPECTOR_DIR = DATA_DIR / "inspector"
-DEFAULT_UNIVERSE = ROOT / "quant" / "config" / "sec_universe.json"
+CANONICAL_DIR = DATA_DIR / "canonical"
+DEFAULT_UNIVERSE = ROOT / "quant" / "config" / "sec-universe.json"
 
 
 def _utcnow():
@@ -47,7 +48,11 @@ def _utcnow():
 def _write(path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"wrote {path.relative_to(ROOT)} ({path.stat().st_size} bytes)")
+    try:
+        shown = path.relative_to(ROOT)
+    except ValueError:
+        shown = path            # a redirected output directory is not an error
+    print(f"wrote {shown} ({path.stat().st_size} bytes)")
     return path
 
 
@@ -73,7 +78,7 @@ def _resolve_universe(provider, companies, verify=True):
         if verify and hint and normalize_cik(hint) != cik:
             raise SystemExit(
                 f"CIK mismatch for {ticker}: config says {normalize_cik(hint)}, "
-                f"SEC says {cik}. Fix quant/config/sec_universe.json."
+                f"SEC says {cik}. Fix quant/config/sec-universe.json."
             )
         resolved.append({**entry, "cik": cik})
     return resolved
@@ -187,8 +192,9 @@ def cmd_gates(args):
         resolved = [resolver.annual(metric, year, as_of)
                     for metric in registry.names()
                     for year in factbook.fiscal_years()[-3:]]
-        from quant.sec.derived import compute_derived
-        derived = compute_derived(resolver, as_of)
+        from quant.sec.derived import reconstruct
+        latest_year = factbook.fiscal_years()[-1] if factbook.fiscal_years() else None
+        derived = reconstruct(resolver, latest_year, "FY", as_of) if latest_year else {}
         results = gates_module.run_suite(factbook=factbook, registry=registry,
                                          provider=provider, resolved_facts=resolved,
                                          derived_facts=derived)
@@ -201,9 +207,14 @@ def cmd_gates(args):
         "generated_at_utc": _utcnow(),
         "versions": version_stamp(registry.version),
         "provider": provider.ADAPTER_VERSION,
-        "capabilities": provider.CAPABILITIES,
+        "declared_capabilities": provider.DECLARED_CAPABILITIES,
+        "capability_source": "quant/config/provider-profiles.json (providers.sec-edgar)",
         "provider_level": {"results": provider_only,
                            "summary": gates_module.summarize(provider_only)},
+        "note": ("Gate A/B/C stammen aus quant/engines/gate-tests.js und werden von "
+                 "scripts/quant/run-sec-gates.mjs gegen den SEC-Adapter gefahren; "
+                 "sie erscheinen unter provider_gates. Hier stehen ausschliesslich "
+                 "die Pruefungen der SEC-Ingestion."),
         "per_company": per_company,
     }
     _write(DATA_DIR / "pit_gates.json", report)
@@ -212,38 +223,41 @@ def cmd_gates(args):
     return 0
 
 
-def cmd_snapshot(args):
+def cmd_canonical(args):
+    """Emit the canonical Vision Universe payload the JS adapter serves.
+
+    This is the boundary: SEC-specific shapes stop here, and what lands on disk
+    validates against quant/engines/schema.js.
+    """
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
     documents = _documents(store)
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
-    as_of = args.as_of or date.today().isoformat()
-    inputs, meta = {}, {}
+    index = []
     for document in documents:
-        factbook = _rehydrate(document)
-        resolver = PeriodResolver(factbook, registry)
         ticker = _ticker_of(document)
-        payload = company_factor_inputs(resolver, as_of, basis=args.basis,
-                                        policy=args.policy)
-        inputs[ticker] = payload
-        meta[ticker] = {
+        bundle = build_company_bundle(document, registry, ticker,
+                                      annual_years=args.annual_years,
+                                      quarterly_years=args.quarterly_years)
+        path = _write(CANONICAL_DIR / f"{ticker}.json", bundle)
+        index.append({
+            "ticker": ticker,
+            "securityId": bundle["security"]["securityId"],
             "cik": document["cik"],
-            "name": (document.get("profile") or {}).get("name"),
-            "sic": (document.get("profile") or {}).get("sic"),
-            "values": payload["values"],
-            "unavailable": payload["reasons"],
-            "derived": {name: fact.to_dict() for name, fact in payload["derived"].items()},
-        }
-    scored = score_universe(inputs)
-    _write(DATA_DIR / "factor_snapshot.json", {
+            "name": bundle["security"]["name"],
+            "file": f"canonical/{path.name}",
+            "factCount": bundle["coverage"]["factCount"],
+            "metricIds": bundle["coverage"]["metricIds"],
+            "annualYears": bundle["coverage"]["annualYears"],
+        })
+    _write(DATA_DIR / "canonical_index.json", {
+        "schema_version": 1,
         "generated_at_utc": _utcnow(),
-        "as_of": as_of, "basis": args.basis, "restatement_policy": args.policy,
         "versions": version_stamp(registry.version),
-        "companies": meta,
-        "factor_scores": scored["scores"],
-        "universe_size": scored["universe_size"],
+        "dataSource": DATA_SOURCE,
+        "companies": index,
     })
     return 0
 
@@ -342,11 +356,11 @@ def build_parser():
     gate.add_argument("--as-of")
     gate.set_defaults(func=cmd_gates)
 
-    snapshot = subparsers.add_parser("snapshot", help="factor snapshot at a date")
-    snapshot.add_argument("--as-of")
-    snapshot.add_argument("--basis", choices=("TTM", "FY"), default="TTM")
-    snapshot.add_argument("--policy", choices=POLICIES, default=POLICY_AS_OF_LATEST)
-    snapshot.set_defaults(func=cmd_snapshot)
+    canonical = subparsers.add_parser(
+        "canonical", help="write the canonical FundamentalFact/Filing payload")
+    canonical.add_argument("--annual-years", type=int, default=12)
+    canonical.add_argument("--quarterly-years", type=int, default=6)
+    canonical.set_defaults(func=cmd_canonical)
 
     inspect = subparsers.add_parser("inspect", help="print one metric's series")
     inspect.add_argument("--ticker")

@@ -238,6 +238,25 @@ class FiscalCalendar:
             return fiscal_year, f"Q{index}", kind
         return fiscal_year, None, kind
 
+    @classmethod
+    def from_dict(cls, payload):
+        """Rebuild a calendar from its stored form.
+
+        Needed because the canonical export and the data inspector both work
+        from a persisted document; without this the calendar would be silently
+        absent and every Filing record would disappear.
+        """
+        if not payload:
+            return None
+        labels, fy_ends = {}, []
+        for row in payload.get("fiscal_years") or []:
+            end = parse_date(row["period_end"])
+            fy_ends.append(end)
+            labels[end] = row["fiscal_year"]
+        return cls(payload.get("cik"), fy_ends, labels,
+                   payload.get("label_offset", 0),
+                   payload.get("fiscal_year_end_hint"))
+
     def to_dict(self):
         return {
             "cik": self.cik,

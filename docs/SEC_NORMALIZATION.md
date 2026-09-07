@@ -5,7 +5,7 @@ pipeline refuses to do along the way.
 
 ## 1. The Canonical Metric Registry
 
-`quant/config/metric_registry.json` is the single place where a Vision Universe
+`quant/config/sec-metric-registry.json` is the single place where a Vision Universe
 metric is mapped onto SEC concepts. It is data, not code.
 
 ```json

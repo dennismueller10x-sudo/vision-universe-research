@@ -112,22 +112,40 @@ Four independent layers, so that a single mistake cannot produce a leak:
    requires an `as_of` unless `latest_known` is explicitly requested.
 2. **The quality engine** flags any raw fact whose period end is after its filing
    date (`FUTURE_DATA_LEAK`) — data the SEC itself could not have had.
-3. **The gates.** `PIT_NO_FUTURE_DATA_LEAK` re-checks every stored observation:
-   `available_from` must be on or after `period_end`. `MOCK_FUTURE_DATA_LEAK`
-   constructs a known-leaky scenario and asserts the resolver hides it.
-4. **The tests.** 174 offline tests, of which the whole of `FutureDataLeakTests`
-   plus `PointInTimeDeaccumulationTests` exist for this single property.
+3. **The ingestion check.** `PIT_NO_FUTURE_DATA_LEAK` re-checks every stored
+   observation: `available_from` must be on or after `period_end`. This is
+   deliberately stricter than the per-query Gate C, and both are kept.
+4. **The system's own gate.** Gate C (`GATE_C_AVAILABILITY`) from
+   `quant/engines/gate-tests.js` runs against the SEC adapter like against any
+   other provider and asserts that no fact published after the as-of date is
+   returned.
+5. **The tests.** 160 Python ingestion tests plus 28 adapter tests, of which the
+   whole of `FutureDataLeakTests` and `PointInTimeDeaccumulationTests` exist for
+   this single property.
 
-## 6. Backtest integration
+## 6. Wo die Regel gilt — und wo sie nicht doppelt existiert
 
-`backtest_bridge.py` evaluates the fundamental filter **at each candidate signal
-date**, with that date as `as_of`. It does not compute one snapshot and apply it
-across history.
+Nach der Integration in die bestehende Quant-Architektur liegt die
+Zugriffsregel **genau einmal** im System:
 
-A rule whose input is unavailable at that date does **not** pass. `UNKNOWN` is
-never treated as `TRUE`. And a symbol whose fundamental history is too thin is
-blocked outright with `INSUFFICIENT_FUNDAMENTAL_HISTORY` rather than producing a
-precise-looking result on data that cannot support one.
+```
+quant/engines/schema.js   latestKnownFact()   availableAt <= decisionTime
+```
+
+Der SEC-Adapter bringt keine eigene Semantik mit; ein Test vergleicht seine
+Auswahl direkt gegen `Schema.latestKnownFact` und schlägt bei Abweichung fehl.
+
+Die SEC-seitige PIT-Logik bleibt vollständig erhalten, wirkt aber dort, wo sie
+gebraucht wird: **beim Ingest**. Ein Quartal, das nur als kumulierter
+Year-to-date-Wert gemeldet wurde, muss aus zwei Filings rekonstruiert werden — und
+diese Rekonstruktion darf ausschließlich Filings verwenden, die zum jeweiligen
+Zeitpunkt bereits veröffentlicht waren. Das Ergebnis trägt als `availableAt` das
+**späteste** seiner Eingaben. Erst danach wird daraus ein `FundamentalFact`, und
+ab da gilt allein die Regel oben.
+
+Für den Backtest heißt das: `quant/engines/backtest.js` liest Fundamentaldaten
+ausschließlich über diese Regel, und der SEC-Adapter ist für sie eine Quelle wie
+jede andere. Es gibt keinen zweiten Pfad, der mehr sehen könnte.
 
 ## 7. Known limitations
 

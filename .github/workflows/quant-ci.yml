@@ -1,0 +1,94 @@
+name: Quant CI
+
+# Prueft den Investment-Intelligence-Bereich: Engine-Logik, die kritischen
+# Acceptance-Kriterien, die Gueltigkeit der praekomputierten Daten und die
+# Uebereinstimmung zwischen Datenstand und Engine.
+
+on:
+  push:
+    branches: [main]
+    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+            'scripts/dashboard/price_semantics.py',
+            'scripts/dashboard/migrate_adjustment_semantics.py',
+            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
+  pull_request:
+    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+            'scripts/dashboard/price_semantics.py',
+            'scripts/dashboard/migrate_adjustment_semantics.py',
+            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Engine- und Acceptance-Tests
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Methodik- und Datendateien sind gueltiges JSON
+        run: |
+          files=$(find quant/methodology quant/data quant/config -name '*.json')
+          for file in $files; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
+
+      - name: HTML-Seiten binden die gemeinsame Shell und die Navigation ein
+        run: |
+          for page in $(find quant -name 'index.html'); do
+            grep -q '/quant/ui/shell.js' "$page" || { echo "$page ohne quant/ui/shell.js"; exit 1; }
+            grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+            grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          done
+          echo "$(find quant -name 'index.html' | wc -l) Seiten geprueft"
+
+      - name: Praekomputierte Daten stimmen mit der Engine ueberein
+        run: node scripts/quant/verify-quant-data.mjs
+
+      - name: Keine Zugangsdaten in ausgelieferten Marktdaten
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Der Marktdatenabruf laeuft ohne Zugang fehlerfrei durch
+        # Die wichtigste Eigenschaft des Abrufs: ein fehlender Schluessel ist
+        # eine Konfigurationsfrage, kein Baufehler. Ohne Secret muss das
+        # Skript den Statusbericht schreiben und mit 0 enden.
+        run: |
+          node scripts/market/fetch-market-data.mjs
+          node -e '
+            const s = require("./quant/data/market/status.json");
+            if (s.configured !== false || s.dataMode !== "mock") {
+              throw new Error("Ohne Schluessel muss der Status mock/unkonfiguriert sein.");
+            }
+            console.log("Statusbericht korrekt: dataMode=" + s.dataMode);
+          '
+          git diff --quiet quant/data/market/status.json || \
+            echo "Hinweis: Zeitstempel im Statusbericht geaendert (erwartet)."
+
+      - name: Anbieterbewertung laeuft
+        run: node scripts/market/evaluate-provider.mjs twelve-data > /dev/null
+
+      - name: Anbieterqualifikation laeuft
+        run: node scripts/market/qualify-providers.mjs > /dev/null
+
+      - name: Bereinigungssemantik ist in beiden Stacks identisch
+        # Die Gefahr bei einer gemeinsamen Definition ohne gemeinsame
+        # Bibliothek: die JSON-Datei wird geaendert, ein Modul zieht nach,
+        # das andere nicht - und der Fehler aus MEDIUM-7 ist zurueck.
+        run: node scripts/market/verify-semantics-parity.mjs
+
+      - name: Die Bereinigungs-Sperre der Dashboard-Kette greift
+        # Arbeitet auf einer Kopie in einem temporaeren Verzeichnis und loest
+        # beide Faelle aus: mit Stufe muss die Kette laufen, ohne muss sie
+        # abbrechen. Ein Test, der den Fehlerfall nicht ausloest, prueft die
+        # Sperre nicht - und die committeten Datendateien bleiben unberuehrt.
+        run: |
+          python3 scripts/dashboard/migrate_adjustment_semantics.py --check
+          python3 scripts/dashboard/verify_adjustment_gate.py
