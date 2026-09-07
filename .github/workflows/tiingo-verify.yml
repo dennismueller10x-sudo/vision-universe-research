@@ -23,6 +23,18 @@ on:
         type: boolean
         default: true
 
+  # Waehrend der Entwicklung auf dem Phase-4A-Branch: workflow_dispatch ist
+  # erst verfuegbar, wenn der Workflow auf dem Default-Branch liegt. Der
+  # Ausloeser ist bewusst eng - nur dieser Branch, und nur wenn der
+  # Nachweis selbst oder der Adapter sich aendert. Ein Lauf kostet acht von
+  # 50 Anfragen pro Stunde; er soll nicht bei jedem Commit anfallen.
+  push:
+    branches: [claude/tiingo-phase4a]
+    paths:
+      - 'scripts/market/verify-tiingo-runtime.mjs'
+      - 'providers/tiingo/adapter.js'
+      - '.github/workflows/tiingo-verify.yml' 
+
 permissions:
   contents: read
 
@@ -85,7 +97,7 @@ jobs:
           '
 
       - name: Bericht als Artefakt
-        if: steps.secret.outputs.available == 'true' && inputs.publish_report
+        if: steps.secret.outputs.available == 'true' && inputs.publish_report != false
         uses: actions/upload-artifact@v4
         with:
           name: tiingo-runtime-verification
