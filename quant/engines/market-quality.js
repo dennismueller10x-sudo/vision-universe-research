@@ -376,7 +376,12 @@
           observed.splitEvidence.push({ date: cur.date, rawMovePct: round(rohSprung, 2),
                                         adjustedMovePct: round(bereinigtSprung, 2) });
         } else if (rohSprung >= config.splitJumpPct && bereinigtSprung > config.splitResidualPct) {
-          findings.push(finding("error", "split_not_adjusted",
+          /* Eine Beobachtung, kein Fehler. Dass die bereinigte Spalte den
+             Split nicht mitmacht, ist bei einer ehrlich als RAW
+             deklarierten Reihe genau das Erwartete. Zum Fehler wird es
+             erst, wenn die Reihe etwas anderes von sich behauptet - und
+             das entscheidet weiter unten der Widerspruch. */
+          findings.push(finding("warning", "split_not_adjusted",
             "Am " + cur.date + " springen beide Spalten (roh " + round(rohSprung, 1) +
             " %, bereinigt " + round(bereinigtSprung, 1) + " %). Die bereinigte Spalte ist an " +
             "diesem Splittag nicht bereinigt.", { date: cur.date }));
@@ -424,15 +429,35 @@
       : (observed.splitEvidence.length ? "split"
         : (unbereinigtBeobachtet ? "absence" : "no_events"));
 
-    /* Der Widerspruch. Nur nach unten: eine Reihe, die sich besser
-       verhaelt als deklariert, wird nicht angehoben - dafuer ist der
-       Laufzeitnachweis zustaendig, nicht diese Pruefung. */
+    /* Der Widerspruch.
+    
+       Er stuetzt sich auf WIDERLEGUNG, nicht auf die Hoehe des positiven
+       Befunds. Der Unterschied ist nicht akademisch: AMZN und TSLA zahlen
+       keine Dividende. An ihnen laesst sich eine Splitbereinigung zeigen
+       und eine Dividendenbereinigung nicht - nicht weil sie fehlte,
+       sondern weil es nichts zu bereinigen gibt. Bei einem Titel ohne
+       Ausschuettung sind TOTAL_RETURN und SPLIT_ADJUSTED dieselbe Reihe.
+       
+       Ein Rangvergleich haette beide verworfen. Der erste Import gegen die
+       echte API hat genau das getan, und der Fehler lag nicht in den Daten.
+       
+       Widerlegt ist eine Stufe nur, wenn ein Ereignis im Zeitraum lag und
+       die Spalte es nicht mitgemacht hat. */
     var RANG = { UNKNOWN: -1, RAW: 0, SPLIT_ADJUSTED: 1, TOTAL_RETURN: 2 };
-    if (claimed && RANG[claimed] !== undefined && inferred !== "UNKNOWN"
-        && RANG[inferred] < RANG[claimed]) {
+    var hoechsteMoegliche = null;   // null = nichts widerlegt
+    if (findings.some(function (f) { return f.code === "split_not_adjusted"; })) {
+      hoechsteMoegliche = "RAW";
+    } else if (findings.some(function (f) { return f.code === "dividend_not_in_adjusted"; })) {
+      hoechsteMoegliche = "SPLIT_ADJUSTED";
+    }
+    observed.refutedAbove = hoechsteMoegliche;
+
+    if (claimed && hoechsteMoegliche && RANG[claimed] !== undefined
+        && RANG[claimed] > RANG[hoechsteMoegliche]) {
       findings.push(finding("error", "adjustment_status_contradicted",
-        "Die Reihe ist als " + claimed + " deklariert, verhaelt sich aber wie " + inferred +
-        ". Auf dieser Grundlage gerechnete Renditen waeren falsch, nicht nur ungenau."));
+        "Die Reihe ist als " + claimed + " deklariert, hoechstens aber " + hoechsteMoegliche +
+        " - ein Ereignis im Zeitraum ist in der bereinigten Spalte nicht angekommen. Auf dieser " +
+        "Grundlage gerechnete Renditen waeren falsch, nicht nur ungenau."));
     }
 
     var errors = findings.filter(function (f) { return f.severity === "error"; });

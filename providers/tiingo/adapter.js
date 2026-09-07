@@ -62,7 +62,19 @@ const FREE_LIMITS = {
 };
 
 /* Der kostenpflichtige Zugang aendert ausschliesslich diese Zahlen, nicht
-   den Adapter. Genau das ist der Sinn der Trennung (§28). */
+   den Adapter. Genau das ist der Sinn der Trennung (§28).
+   
+   ACHTUNG: Diese Zahlen sind PLATZHALTER. Es besteht kein
+   kostenpflichtiger Zugang, und die Konditionen wurden nicht geprueft -
+   weder in der Anbieterdokumentation noch vertraglich. Sie stehen hier,
+   damit der Umschaltweg gebaut und getestet werden kann, nicht weil
+   jemand sie nachgesehen haette.
+   
+   Wer diesen Tarif in Betrieb nimmt, ersetzt sie durch die zugesagten
+   Werte. Bis dahin gilt: die Zahlen unten sind eine Annahme, und eine
+   Annahme, auf die man ein Kontingent stuetzt, ist ein Ausfall mit
+   Ansage. FREE_LIMITS dagegen sind gemessen - der Import laeuft gegen
+   sie. */
 const COMMERCIAL_LIMITS = {
   requestsPerMinute: 100,
   requestsPerHour: 5000,
@@ -70,7 +82,11 @@ const COMMERCIAL_LIMITS = {
   bytesPerMonth: Infinity,
   concurrency: 4,
   maxRetries: 3,
-  baseBackoffMs: 500
+  baseBackoffMs: 500,
+  /* Die Kennzeichnung ist Teil der Daten, nicht nur des Kommentars: ein
+     Kommentar wird nicht mitgeliefert, wenn jemand das Objekt ausgibt. */
+  verified: false,
+  note: "Platzhalter. Kein kostenpflichtiger Zugang vorhanden, Konditionen ungeprueft."
 };
 
 /* ==========================================================================

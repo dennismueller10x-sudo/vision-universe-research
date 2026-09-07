@@ -288,3 +288,45 @@ test("A15 · Ein echter Kurssturz bleibt ein Befund", () => {
                                      f.code === "suspected_unadjusted_split"),
     "ein Einbruch ohne Erklaerung muss gemeldet werden");
 });
+
+test("A16 · Ein Titel ohne Ausschuettung wird nicht wegen fehlender Dividende verworfen", () => {
+  /* Der zweite Befund aus dem echten Import. AMZN und TSLA zahlen keine
+     Dividende. An ihnen laesst sich eine Splitbereinigung zeigen und eine
+     Dividendenbereinigung nicht - nicht weil sie fehlte, sondern weil es
+     nichts zu bereinigen gibt. Bei einem Titel ohne Ausschuettung sind
+     TOTAL_RETURN und SPLIT_ADJUSTED dieselbe Reihe.
+
+     Ein Rangvergleich hat beide verworfen. Der Fehler lag nicht in den
+     Daten. */
+  const res = Quality.validateAdjustmentConsistency(
+    reihe({ splitAt: 20, mode: "total_return" }), { claimedStatus: "TOTAL_RETURN" });
+
+  assert.equal(res.observed.dividendEvents.length, 0, "der Testfall braucht einen Titel ohne Dividende");
+  assert.equal(res.inferredStatus, "SPLIT_ADJUSTED", "belegt ist nur die Splitbereinigung");
+  assert.equal(res.observed.refutedAbove, null, "widerlegt ist damit gar nichts");
+  assert.equal(res.ok, true, "fehlende Beobachtung ist keine Widerlegung");
+});
+
+test("A17 · Widerlegt wird nur, was ein Ereignis auch zeigen konnte", () => {
+  // Die Grenze zwischen A16 und A6: dort lagen Ausschuettungen im
+  // Zeitraum, und die Spalte hat sie nicht mitgemacht. Hier nicht.
+  const mitDividende = Quality.validateAdjustmentConsistency(
+    reihe({ splitAt: 20, divAt: 15, mode: "split_only" }), { claimedStatus: "TOTAL_RETURN" });
+  assert.equal(mitDividende.observed.refutedAbove, "SPLIT_ADJUSTED");
+  assert.equal(mitDividende.ok, false);
+
+  const ohneDividende = Quality.validateAdjustmentConsistency(
+    reihe({ splitAt: 20, mode: "split_only" }), { claimedStatus: "TOTAL_RETURN" });
+  assert.equal(ohneDividende.observed.refutedAbove, null);
+  assert.equal(ohneDividende.ok, true);
+});
+
+test("A18 · Eine Rohreihe widerlegt jede Bereinigungsbehauptung", () => {
+  const res = Quality.validateAdjustmentConsistency(
+    reihe({ splitAt: 20, divAt: 15, mode: "raw" }), { claimedStatus: "SPLIT_ADJUSTED" });
+  assert.equal(res.observed.refutedAbove, "RAW");
+  assert.equal(res.ok, false);
+  // Und eine Behauptung, die nicht ueber das Widerlegte hinausgeht, steht.
+  assert.equal(Quality.validateAdjustmentConsistency(
+    reihe({ splitAt: 20, divAt: 15, mode: "raw" }), { claimedStatus: "RAW" }).ok, true);
+});
