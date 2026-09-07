@@ -38,8 +38,14 @@
         root.appendChild(formMount);
         root.appendChild(previewMount);
 
-        function refresh() {
-          S.mount(formMount, buildForm(data, refresh));
+        /* Zwei Aktualisierungsstufen. Ein Regler oder Zahlenfeld aendert nur
+           Werte, nicht die Struktur des Formulars — wuerde dabei das ganze
+           Formular neu gebaut, verlieren Regler und Eingabefelder mitten in
+           der Bedienung ihren Fokus und lassen sich nicht mehr ziehen.
+           Neu aufgebaut wird nur, wenn sich die Struktur wirklich aendert:
+           Filter hinzugefuegt, entfernt, Feld, Operator oder Skala gewechselt. */
+        function refresh(scope) {
+          if (scope !== "preview") S.mount(formMount, buildForm(data, refresh));
           S.mount(previewMount, buildPreview(data, refresh));
           persistDraft();
         }
@@ -132,30 +138,30 @@
 
     card.appendChild(sectionTitle("Portfoliokonstruktion", null));
     card.appendChild(el("div", { class: "q-grid q-grid--3" }, [
-      field("Positionen", numberInput(def.portfolio.positions, 5, 200, 1, function (v) { def.portfolio.positions = v; refresh(); })),
+      field("Positionen", numberInput(def.portfolio.positions, 5, 200, 1, function (v) { def.portfolio.positions = v; refresh("preview"); })),
       field("Gewichtung", select([["equal", "Gleichgewichtet"], ["score", "Score-gewichtet"], ["volatility", "Volatilitaetsadjustiert"]],
-        def.portfolio.weighting, function (v) { def.portfolio.weighting = v; refresh(); })),
+        def.portfolio.weighting, function (v) { def.portfolio.weighting = v; refresh("preview"); })),
       field("Max. Einzelposition (%)", numberInput(round1(def.portfolio.maxPositionWeight * 100), 0.5, 100, 0.5,
-        function (v) { def.portfolio.maxPositionWeight = v / 100; refresh(); })),
+        function (v) { def.portfolio.maxPositionWeight = v / 100; refresh("preview"); })),
       field("Max. Sektorgewicht (%)", numberInput(round1(def.portfolio.maxSectorWeight * 100), 5, 100, 1,
-        function (v) { def.portfolio.maxSectorWeight = v / 100; refresh(); })),
+        function (v) { def.portfolio.maxSectorWeight = v / 100; refresh("preview"); })),
       field("Min. Market Cap (Mio. $)", numberInput(def.portfolio.minMarketCapM, 0, 1000000, 50,
-        function (v) { def.portfolio.minMarketCapM = v; refresh(); })),
+        function (v) { def.portfolio.minMarketCapM = v; refresh("preview"); })),
       field("Min. Handelsvolumen (Mio. $/Tag)", numberInput(def.portfolio.minDollarVolumeM, 0, 1000, 1,
-        function (v) { def.portfolio.minDollarVolumeM = v; refresh(); }))
+        function (v) { def.portfolio.minDollarVolumeM = v; refresh("preview"); }))
     ]));
 
     card.appendChild(sectionTitle("Rebalancing und Ausfuehrung",
       "Ein auf dem Schlusskurs berechnetes Signal wird fruehestens am Folgetag ausgefuehrt."));
     card.appendChild(el("div", { class: "q-grid q-grid--3" }, [
       field("Rebalancing", select([["monthly", "Monatlich"], ["quarterly", "Quartalsweise"]], def.rebalance,
-        function (v) { def.rebalance = v; refresh(); })),
+        function (v) { def.rebalance = v; refresh("preview"); })),
       field("Ausfuehrung", select([["next_open", "Naechste Eroeffnung (T+1)"], ["next_close", "Naechster Schluss (T+1)"]],
-        def.execution.timing, function (v) { def.execution.timing = v; refresh(); })),
+        def.execution.timing, function (v) { def.execution.timing = v; refresh("preview"); })),
       field("Transaktionskosten (bps)", numberInput(def.execution.transactionCostsBps, 0, 200, 1,
-        function (v) { def.execution.transactionCostsBps = v; refresh(); })),
+        function (v) { def.execution.transactionCostsBps = v; refresh("preview"); })),
       field("Slippage (bps)", numberInput(def.execution.slippageBps, 0, 200, 1,
-        function (v) { def.execution.slippageBps = v; refresh(); }))
+        function (v) { def.execution.slippageBps = v; refresh("preview"); }))
     ]));
 
     return card;
@@ -208,7 +214,7 @@
     if (filter.scale === "raw" && fieldDef && fieldDef.type === "enum" &&
         filter.operator !== "in" && filter.operator !== "notIn") {
       return select((fieldDef.values || []).map(function (v) { return [v, v]; }), filter.value,
-        function (v) { filter.value = v; refresh(); });
+        function (v) { filter.value = v; refresh("preview"); });
     }
     var input = el("input", { class: "q-input", type: "text",
       value: Array.isArray(filter.value) ? filter.value.join(", ") : String(filter.value),
@@ -222,7 +228,7 @@
           var n = parseFloat(raw.replace(",", "."));
           filter.value = Number.isFinite(n) ? n : raw;
         } else { filter.value = raw; }
-        refresh();
+        refresh("preview");
       }
     });
     return input;
@@ -238,7 +244,11 @@
         type: "range", min: "0", max: "100", step: "5", value: String(weight),
         style: "width:100%", "aria-label": S.FACTOR_LABEL[factorId] + " Gewicht",
         oninput: function () { valueLabel.textContent = slider.value + " %"; },
-        onchange: function () { setFactorWeight(factorId, parseInt(slider.value, 10) / 100); refresh(); }
+        onchange: function () {
+          setFactorWeight(factorId, parseInt(slider.value, 10) / 100);
+          updateSum();
+          refresh("preview");
+        }
       });
       var valueLabel = el("span", { style: "font-weight:800;min-width:48px;text-align:right", text: weight + " %" });
       wrap.appendChild(el("div", { style: "display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:center;margin-bottom:8px" }, [
@@ -247,13 +257,16 @@
       ]));
     });
 
-    var total = def.ranking.factors.reduce(function (s, f) { return s + f.weight; }, 0);
-    wrap.appendChild(el("p", {
-      class: "q-note",
-      style: "margin-top:6px;color:" + (Math.abs(total - 1) < 0.005 ? "var(--muted-2)" : "var(--red-ink)"),
-      text: "Summe: " + Math.round(total * 100) + " %" +
-            (Math.abs(total - 1) < 0.005 ? "" : " — muss 100 % ergeben, sonst wird die Strategie abgelehnt.")
-    }));
+    var sumNote = el("p", { class: "q-note", style: "margin-top:6px" });
+    function updateSum() {
+      var total = def.ranking.factors.reduce(function (acc, f) { return acc + f.weight; }, 0);
+      var ok = Math.abs(total - 1) < 0.005;
+      sumNote.style.color = ok ? "var(--muted-2)" : "var(--red-ink)";
+      sumNote.textContent = "Summe: " + Math.round(total * 100) + " %" +
+        (ok ? "" : " — muss 100 % ergeben, sonst wird die Strategie abgelehnt.");
+    }
+    updateSum();
+    wrap.appendChild(sumNote);
     return wrap;
   }
 

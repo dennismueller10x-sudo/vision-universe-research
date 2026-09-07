@@ -144,6 +144,46 @@ test("Die AI sucht nicht rueckwirkend nach besseren Parametern", () => {
     "Kostenannahmen duerfen nicht heimlich guenstiger werden");
 });
 
+test("Prognosefragen werden abgelehnt statt in den Screener zu fallen (§81)", () => {
+  const forecasts = [
+    "Wie hoch wird der Kurs von VU0001 naechstes Jahr sein?",
+    "Welches Kursziel hat VU0002?",
+    "Soll ich VU0003 kaufen?",
+    "Wird die Aktie steigen?",
+    "Gib mir eine Prognose fuer den Technologiesektor"
+  ];
+  for (const text of forecasts) {
+    const res = ai.interpretQuery(text);
+    assert.equal(res.intent, "forecast", text);
+    assert.equal(res.declined, true, text);
+    assert.equal(res.query, null);
+    assert.deepEqual(res.toolPlan, [], "eine abgelehnte Frage darf kein Werkzeug aufrufen");
+    assert.match(res.declineReason, /keine Kursprognosen|keine Kursziele/);
+  }
+  // Eine gewoehnliche Suche bleibt eine Suche.
+  assert.equal(ai.interpretQuery("Zeige mir Tech-Aktien mit Momentum").intent, "screen");
+});
+
+test("Wiederholtes Drawdown-Feedback konvergiert, statt Scheinaenderungen zu erzeugen", () => {
+  let definition = ai.interpretStrategy(
+    "Baue mir eine Strategie mit viel Quality und Momentum, aber wenig Volatilitaet."
+  ).strategyDefinition;
+
+  const first = ai.interpretStrategy("Der Drawdown ist mir zu hoch.", { baseDefinition: definition });
+  assert.ok(first.changes.length >= 2, "die erste Verschaerfung muss substanziell sein");
+  assert.equal(first.strategyValidation.valid, true);
+  definition = first.strategyDefinition;
+
+  const second = ai.interpretStrategy("Der Drawdown ist mir zu hoch.", { baseDefinition: definition });
+  assert.equal(second.strategyValidation.valid, true);
+  assert.match(second.changes.join(" "), /bereits so defensiv/,
+    "eine bereits maximal defensive Strategie darf keine Scheinaenderung erzeugen");
+
+  const third = ai.interpretStrategy("Der Drawdown ist mir zu hoch.", { baseDefinition: second.strategyDefinition });
+  assert.deepEqual(third.strategyDefinition.ranking.factors, second.strategyDefinition.ranking.factors,
+    "die Faktorgewichte duerfen nicht zwischen zwei Werten oszillieren");
+});
+
 /* --------------------------- Tool-Sicherheitsgrenze ----------------------- */
 
 test("Die AI kann kein SQL und keinen freien Code ausfuehren (§50)", async () => {

@@ -53,7 +53,20 @@
     return AI_PROVIDER_METHODS.every(function (m) { return impl && typeof impl[m] === "function"; });
   }
 
-  var INTENTS = ["screen", "strategy", "backtest", "explain", "compare", "rank", "watchlist", "methodology", "unknown"];
+  var INTENTS = ["screen", "strategy", "backtest", "explain", "compare", "rank", "watchlist", "methodology", "forecast", "unknown"];
+
+  /* Prognosefragen bekommen eine ausdrueckliche Absage. Vision Universe
+     misst relative Position und historische Regelwirkung — es sagt keine
+     Kurse voraus und nennt keine Kursziele (§81). Ohne eigene Erkennung
+     landen solche Fragen im Screener-Fallback und wirken dadurch, als haette
+     das System sie beantwortet. */
+  var FORECAST_PATTERNS = [
+    /wie\s+hoch\s+(?:wird|steht|ist)[^?]*\b(?:naechste|kommende|in\s+\d)/,
+    /\bkursziel\b/, /\bprognose\b/, /\bvorhersage\b/, /\bwird\s+(?:der\s+)?kurs\b/,
+    /\bsteigt\s+(?:die\s+aktie|der\s+kurs)\b/, /\bwie\s+wird\s+sich[^?]*entwickeln\b/,
+    /\bsoll\s+ich\b[^?]{0,40}\b(?:kaufen|verkaufen|einsteigen)\b/, /\blohnt\s+sich\s+der\s+kauf\b/,
+    /\bwelche\s+aktie\s+wird\b/, /\bwird\s+.{0,24}\s+steigen\b/
+  ];
 
   // ---------------------------------------------------------------------
   // Sprachliche Merkmale — die Financial Ontology in Wortform
@@ -117,6 +130,7 @@
   // ---------------------------------------------------------------------
   function detectIntent(text) {
     var t = normalize(text);
+    if (FORECAST_PATTERNS.some(function (re) { return re.test(t); })) return "forecast";
     if (hasAny(t, ["was waere passiert", "was waere gewesen", "haette ich", "backtest", "teste", "getestet", "historisch getestet", "rueckblickend"])) return "backtest";
     if (hasAny(t, ["baue mir eine strategie", "erstelle eine strategie", "strategie mit", "strategie aus", "baue eine strategie", "strategie fuer", "portfolio aus", "positionen halten"])) return "strategy";
     if (hasAny(t, ["warum", "erklaere", "erklaer", "wie kommt", "weshalb", "wodurch", "begruende"])) return "explain";
@@ -311,10 +325,26 @@
     var changes = [];
 
     if (entities.flags.lowerDrawdown || entities.flags.lowRisk) {
-      var hasVolFilter = def.filters.some(function (f) { return f.field === "volatility"; });
-      if (!hasVolFilter) {
+      /* Progressiv verschaerfen: eine bereits defensive Strategie bekommt
+         nicht denselben Filter noch einmal, sondern einen strengeren. Sonst
+         waere die zweite Beschwerde ueber den Drawdown folgenlos. */
+      var volFilter = def.filters.filter(function (f) {
+        return f.field === "volatility" && f.scale === "percentile";
+      })[0];
+      if (!volFilter) {
         def.filters.push({ field: "volatility", operator: "gte", value: 30, scale: "percentile" });
         changes.push("Titel im volatilsten Drittel werden ausgeschlossen.");
+      } else if (volFilter.value < 60) {
+        var previous = volFilter.value;
+        volFilter.value = Math.min(60, previous + 20);
+        changes.push("Volatilitaetsfilter von " + previous + ". auf " + volFilter.value +
+                     ". Perzentil verschaerft.");
+      }
+      if (def.portfolio.maxPositionWeight > 0.05) {
+        var beforeWeight = def.portfolio.maxPositionWeight;
+        def.portfolio.maxPositionWeight = 0.05;
+        changes.push("Maximale Einzelposition von " + Math.round(beforeWeight * 100) +
+                     " % auf 5 % gesenkt — breitere Streuung daempft Einzelwertrisiken.");
       }
       if (def.portfolio.maxSectorWeight > 0.25) {
         def.portfolio.maxSectorWeight = 0.25;
@@ -330,7 +360,31 @@
         def.ranking.factors.push({ factor: "risk", weight: 0.2 });
         changes.push("Risk als Rankingfaktor mit 20 % Gewicht ergaenzt.");
       }
+      else if (riskEntry.weight < 0.34) {
+        /* Die uebrigen Faktoren werden gemeinsam auf den Rest skaliert.
+           Wuerde man nur das Risk-Gewicht anheben und danach alles
+           renormalisieren, faende sich Risk anschliessend wieder unter dem
+           Zielwert — und jede weitere Beschwerde wuerde dieselbe
+           scheinbare Aenderung erzeugen, ohne dass sich etwas bewegt. */
+        var beforeRisk = riskEntry.weight;
+        var others = def.ranking.factors.filter(function (f) { return f.factor !== "risk"; });
+        var othersSum = others.reduce(function (acc, f) { return acc + f.weight; }, 0);
+        if (othersSum > 0) {
+          var scale = 0.65 / othersSum;
+          others.forEach(function (f) { f.weight = round2(f.weight * scale); });
+        }
+        riskEntry.weight = 0.35;
+        changes.push("Gewicht des Risk-Faktors von " + Math.round(beforeRisk * 100) + " % auf 35 % erhoeht.");
+      }
       normalizeWeights(def.ranking.factors);
+
+      /* Die Positionszahl muss zur verschaerften Einzelgewichtsgrenze
+         passen, sonst waere das Portfolio nicht mehr voll investierbar. */
+      var minPositions = Math.ceil(1 / def.portfolio.maxPositionWeight);
+      if (def.portfolio.positions < minPositions) {
+        def.portfolio.positions = minPositions;
+        changes.push("Positionszahl auf " + minPositions + " erhoeht, damit die Gewichtsgrenze erreichbar bleibt.");
+      }
     }
 
     if (entities.flags.quarterly && def.rebalance !== "quarterly") {
@@ -342,6 +396,11 @@
       changes.push("Positionszahl auf " + def.portfolio.positions + " gesetzt.");
     }
 
+    if (!changes.length) {
+      changes.push("Diese Strategie ist bereits so defensiv aufgestellt, wie die verfuegbaren Regeln es zulassen. " +
+                   "Eine weitere Verschaerfung wuerde das Universum so stark verengen, dass die Auswahl kaum noch " +
+                   "aussagekraeftig waere.");
+    }
     return { definition: def, changes: changes };
   }
 
@@ -405,6 +464,19 @@
           if (Number.isFinite(entities.numbers.startYear)) {
             out.startDate = entities.numbers.startYear + "-01-02";
           }
+        }
+
+        if (intent === "forecast") {
+          out.query = null;
+          out.declined = true;
+          out.declineReason =
+            "Vision Universe beantwortet keine Kursprognosen und nennt keine Kursziele. Das System misst die " +
+            "relative Position eines Wertpapiers in seiner Vergleichsgruppe und prueft Regelwerke historisch — " +
+            "beides sagt nichts darueber aus, wie sich ein Kurs kuenftig entwickelt.";
+          out.notes.push("Formuliere die Frage stattdessen als Eigenschaft: „Welche Titel haben hohes Momentum " +
+                         "und positiven Free Cash Flow?“ oder „Wie hat sich diese Regel historisch verhalten?“");
+          out.toolPlan = [];
+          return out;
         }
 
         out.toolPlan = planTools(intent, entities, out);

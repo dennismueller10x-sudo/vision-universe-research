@@ -1,97 +1,71 @@
 # VU INVESTMENT INTELLIGENCE — BUILD STATUS
 
-Letzte Aktualisierung: Phase 6 abgeschlossen.
+Letzte Aktualisierung: **Phase 9 abgeschlossen — Build vollstaendig.**
 
 ## Completed
 
-**Phase 0 — Audit**
-- `docs/VU_INVESTMENT_INTELLIGENCE_IMPLEMENTATION_PLAN.md` (Repository Audit, Gap Analysis,
-  Architektur, Migration, Phasen, Risiken, Dateiliste, dokumentierte Abweichungen)
+Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
+`docs/VU_IMPLEMENTATION_REPORT.md`.
 
-**Phase 1 — Foundation**
-- `quant/engines/hash.js` — deterministischer Hash + PRNG (Reproduzierbarkeit)
-- `quant/engines/schema.js` — kanonisches Financial Data Model, 26 Entitaeten,
-  Laufzeitvalidatoren, Point-in-Time-Zugriff (`latestKnownFact`, `latestKnownSeries`)
-- `quant/engines/catalog.js` — Financial Ontology, 52 Felder, VUQL-Tokens, Einheiten
-- `quant/engines/provider.js` — 7 Provider-Interfaces, Registry, Health, Vendor-Leakage-Guard
-- `quant/engines/methodology.js` — zentrale Methodik-Registry
-- `quant/methodology/quant-v1.json`, `backtest-v1.json`, `trust-score-v1.json`,
-  `strategies-v1.json` — alle Gewichte und Schwellen zentral und versioniert
-- `quant/engines/query.js` — versionierter Query-AST, Validierung, Screener-Engine
-- `quant/engines/vuql.js` — VUQL-Parser und -Serializer
-- `quant/engines/strategy.js` — Strategy Schema, Validierung, Versionierung, Lineage, Diff
+| Phase | Inhalt | Status |
+|---|---|---|
+| 0 | Audit und Implementation Plan | ✓ |
+| 1 | Foundation: Schema, Provider-Interfaces, Methodik, Query-AST, VUQL, Strategy Schema | ✓ |
+| 2 | Mock Core: 500 Securities + 11 Edge-Case-Fixtures, MockProvider | ✓ |
+| 3 | Quant Core: Normalisierung, Faktoren, VU Quant Score, Radar, Praekomputation | ✓ |
+| 4 | Discovery: Quant Home, Ranking, Screener, Radar, Stock Detail, UI-Fundament | ✓ |
+| 5 | Strategy Engine: Bibliothek, Strategy Lab, Versionierung, Lineage, Product API | ✓ |
+| 6 | Backtest Engine: PIT, Ausfuehrung, Kosten, Metriken, Trust Score, Current Holdings | ✓ |
+| 7 | AI Foundation: AIProvider, MockAI, Tool Registry, NL → AST, AI-Seite | ✓ |
+| 8 | Watchlist Intelligence: Deltas, Faktorbewegungen, Events | ✓ |
+| 9 | Quality Pass: Tests, Responsive, Zustaende, Dokumentation, CI | ✓ |
 
-**Phase 2 — Mock Core**
-- `quant/engines/mock-generator.js` — 500 synthetische Securities + 11 Edge-Case-Fixtures,
-  deterministisch aus einem Seed; Preismodell Fundamentalanker x Bewertungsmultiplikator;
-  bitemporale Fundamentaldaten; Corporate Actions; sieben modellierte Krisenfenster
-- `quant/engines/mock-provider.js` — Adapter fuer alle sieben Provider-Interfaces
-- `quant/tests/provider.test.mjs` — 21 Tests (Determinismus, PIT, Fixtures, Provenance)
+### Umfang
 
-**Phase 3 — Quant Core**
-- `quant/engines/normalization.js` — Winsorization, Perzentile, robuste Z-Scores,
-  Peer-Normalisierung mit Fallback-Kette
-- `quant/engines/factors.js` — Quality/Momentum/Value/Growth/Risk aus Kursen und
-  PIT-Fundamentaldaten; eine Funktion fuer Heute und fuer jeden Backtest-Stichtag
-- `quant/engines/quant-score.js` — Composite, Coverage, Confidence, Faktorbeitraege,
-  Universums-Perzentil, Screener-Zeilen
-- `quant/engines/radar.js` — Score-Historie, Velocity, Acceleration, Intelligence Events,
-  sieben Radar-Module
-- `scripts/quant/build-quant-data.mjs` — Praekomputation nach `quant/data/**`
-  (53 wochentliche Score-Snapshots, Rankings, Radar, Events, geshardete Factor DNA)
-- `quant/tests/quant.test.mjs` — 25 Tests
+- **10 Produktseiten**, 18 Engine-Module (~6.700 Zeilen), 4 versionierte Methodik-Dateien
+- **134 Tests gruen** (`node --test "quant/tests/*.test.mjs"`, ~34 s), darunter die
+  22 Acceptance-Kriterien aus Abschnitt 76
+- **13 Fachdokumente** unter `docs/`, 4 Provider-Vorbereitungen unter `providers/`
+- CI: `.github/workflows/quant-ci.yml` — Tests, JSON-Validitaet, Seitenstruktur,
+  Konsistenz zwischen praekomputierten Daten und Engines
+- Am bestehenden Repository geaendert: **zwei Zeilen** (Menuepunkt + Positionierungsregel)
 
-Tests gesamt: **46 / 46 gruen** (`node --test "quant/tests/*.test.mjs"`).
+### Im Browser verifiziert
 
-**Phase 4 — Discovery**
-- `quant/ui/quant.css`, `shell.js`, `charts.js`, `components.js` — Designsystem auf Basis
-  der bestehenden Vision-Universe-Tokens, Datenladen, ein gemeinsames SVG-Chartmodul
-- Seiten: Quant Home, Ranking, Screener (mit VUQL-Editor), Radar, Stock Quant Detail
-- Menuepunkt `Quant` in `assets/site-navigation.js`
-
-**Phase 5 — Strategy Engine (UI)**
-- `quant/api/client.js` — die v1-API-Contracts als Funktionsschicht; Seiten und AI-Tools
-  rufen ausschliesslich diese Grenze auf, nie eine Engine direkt
-- `quant/strategies/` — Bibliothek mit fuenf Strategien, Detailansicht mit Regelwerk,
-  Lineage, VUQL- und JSON-Darstellung
-- `quant/strategies/builder/` — Strategy Lab; erzeugt exakt dasselbe Objekt wie die AI
-
-**Phase 6 — Backtest Engine**
-- `quant/engines/backtest.js` — PIT-Universum je Rebalancing-Termin, Ausfuehrung T+1,
-  Kosten und Slippage, Positions- und Sektorgrenzen, Delisting-Glattstellung,
-  vollstaendige Kennzahlen, Teilperioden, Reproduktionshash, Current Holdings
-- `quant/engines/trust-score.js` — evidenzbasierte Bewertung aus den gemeldeten
-  Kapabilitaeten des Laufs, mit harten Obergrenzen
-- `quant/ui/backtest-worker.js` — Ausfuehrung im Web Worker (ein 20-Jahres-Lauf mit
-  monatlichem Rebalancing rechnet rund 19 Sekunden; im Hauptthread waere die Seite so
-  lange eingefroren)
-- `quant/backtests/` — Ergebnisseite mit Equity-Kurve, Drawdown, Risiko, Jahresrenditen,
-  Trust Score, Robustheit, aktuellem Modellportfolio, Portfolio-Historie, Trades und
-  vollstaendiger Methodik
-
-Tests gesamt: **90 / 90 gruen**.
+- Alle 10 Seiten: keine Konsolenfehler, kein horizontaler Ueberlauf, Leer- und
+  Fehlerzustaende funktionieren
+- Vollstaendige User Journey aus Abschnitt 96 end-to-end
+- AI-Flow aus Abschnitt 97 (Strategie → Feedback → neue Version)
+- Mobile (390 px): kein Ueberlauf auf einer der Seiten, Touch-Ziele ≥ 40 px
 
 ## In Progress
 
-Phase 7 — AI Foundation.
-
-## Pending
-
-Phase 7 AI Foundation · Phase 8 Watchlist Intelligence · Phase 9 Quality Pass
+Nichts. Der Build ist abgeschlossen.
 
 ## Known Limitations
 
-- Analyst Revisions sind im Schema vorgesehen, aber bewusst ohne Daten (§16). Der Faktor
-  ist in `quant-v1.json` als `available: false` markiert und wird von der Strategy-
-  Validierung abgelehnt, solange keine lizenzierten PIT-Estimates vorliegen.
-- Nur ein Universum (`US_EQUITIES`, Mock). Europa ist Extension Point.
+- **Alle Daten sind synthetisch.** Die Ergebnisse belegen die Funktionsweise der Engine,
+  nicht die historische Tragfaehigkeit einer Strategie an realen Maerkten.
+- Analyst Revisions sind im Schema vorgesehen, aber als `available: false` markiert —
+  ohne lizenzierte PIT-Konsensdaten wird der Faktor nicht mit erfundenen Daten befuellt.
 - Deflated Sharpe Ratio und Probability of Backtest Overfitting sind nicht implementiert;
-  der Trust Score vergibt fuer diesen Block bewusst null Punkte statt ihn zu ueberspringen.
-- Backtests werden im `localStorage` des Browsers gespeichert (kein Nutzerkonto).
-- Ein 20-Jahres-Lauf mit monatlichem Rebalancing dauert rund 19 Sekunden. Der Web Worker
-  haelt die Oberflaeche bedienbar, beschleunigt die Rechnung aber nicht.
+  der Trust Score vergibt fuer diesen Block null Punkte statt ihn zu ueberspringen.
+- Ein Universum (`US_EQUITIES`), eine Waehrung, keine Makro-, News- oder Ownership-Daten.
+- Kein Nutzerkonto: Strategien, Backtests und Watchlist liegen im `localStorage`.
+- Ein 20-Jahres-Backtest mit monatlichem Rebalancing dauert rund 19 Sekunden. Der Web
+  Worker haelt die Oberflaeche bedienbar, beschleunigt die Rechnung aber nicht.
+- Regulatorische Pruefung (MiFID II, WpIG, WpHG, MAR, EU AI Act, Datenlizenzen) steht aus
+  und liegt ausserhalb dieses Builds.
 
 ## Next Phase
 
-Phase 7 — AI Foundation: AIProvider-Abstraktion, MockAIProvider, Tool Registry mit
-Sicherheitsgrenze, Natural Language → Query-/Strategy-AST, AI-Oberflaeche.
+Keine weiteren Features. Der naechste Schritt ist die erste echte Datenintegration:
+
+1. **Market Data** (Twelve Data oder EODHD) — risikoaermster erster Adapter
+2. **US Point-in-Time Fundamentals** (Intrinio, nach Audit) — davon haengt die
+   Belastbarkeit jedes Backtests ab; vorher sind die drei Mock-Faelle
+   (`MOCK_RESTATEMENT`, `MOCK_DELISTED`, `MOCK_FUTURE_DATA_LEAK`) mit echten Daten
+   nachzubauen
+3. **Parallel**: Data Rights Matrix je Anbieter, insbesondere Derived-Data-Rechte
+
+Details in `docs/VU_IMPLEMENTATION_REPORT.md`, Abschnitt 6.

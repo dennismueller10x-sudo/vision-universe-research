@@ -350,7 +350,11 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
   .q-grid--2,.q-grid--3,.q-grid--4{grid-template-columns:1fr}
   .q-header{padding:0 15px}
   .q-header-right span.q-hide-sm{display:none}
-  .q-dna-row{grid-template-columns:84px 1fr 42px;gap:9px}
+  /* Touch-Ziele: die Factor-DNA-Zeile ist die zentrale Interaktion der
+     Detailseite und lag mit 27 px deutlich unter der Empfehlung von 44 px. */
+  .q-dna-row{grid-template-columns:84px 1fr 42px;gap:9px;min-height:44px;padding:9px 4px}
+  .q-btn--sm{padding:11px 16px;min-height:40px}
+  .q-disclosure summary{padding:15px 0 14px}
   .q-dna-detail{padding-left:0}
   .q-dna-component{grid-template-columns:1fr auto}
   .q-dna-component .raw{grid-column:2}
