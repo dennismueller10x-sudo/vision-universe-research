@@ -118,6 +118,36 @@ Der Import lehnt eine widersprochene Reihe ab, statt sie zu speichern. Eine
 falsch ausgezeichnete Reihe im Bestand ist schlimmer als eine fehlende: alles
 Nachgelagerte nimmt sie für bare Münze.
 
+## Eignung für eine spätere Wellenanalyse (§20)
+
+Keine Elliott-Wave-Engine in dieser Phase. Aber die Frage, ob die Datenschicht
+eine später überhaupt tragen könnte, lässt sich jetzt beantworten — und sie
+ist eine Datenfrage, keine Algorithmusfrage.
+
+| Gebraucht | Vorhanden | Anmerkung |
+|---|---|---|
+| High | ja | `PriceBar.high`, aus `high` bzw. `adjHigh` |
+| Low | ja | `PriceBar.low` |
+| Close | ja | roh und bereinigt getrennt |
+| Volume | ja | `volume`, zusätzlich `adjVolume` |
+| Ausreichend Historie | ja | AAPL ab 1980-12-12, gemessen 2 936 Bars ab 2015 je Titel |
+| Intraday-Bars | technisch ja | über IEX, 78 Bars je Tag gemessen — hinter dem Gate |
+| Verschiedene Zeitraster | **teilweise** | siehe unten |
+
+Der letzte Punkt ist die eigentliche Einschränkung. Vorhanden sind Tagesbars
+und Intraday-Bars mit einstellbarem `resampleFreq`. **Wochen- und Monatsbars
+liefert der Adapter nicht** — sie ließen sich aus Tagesbars aggregieren, und
+genau das ist die offene Arbeit: eine Aggregation, die Hoch und Tief richtig
+über das Fenster zieht statt Schlusskurse zu mitteln, und die Wochengrenzen
+über Feiertage hinweg stabil hält.
+
+Eine Wellenanalyse auf **bereinigten** Kursen zu rechnen ist dabei nicht
+selbstverständlich, sondern eine Entscheidung: die bereinigte Reihe ist stetig
+und damit für Formanalysen brauchbar, aber ihre absoluten Niveaus sind keine
+historischen Kurse. Wer Retracement-Niveaus an konkreten Kursmarken festmacht,
+braucht die rohe Spalte — und die springt an einem Split. Beide liegen vor;
+die Wahl gehört in die Engine und nicht in den Adapter.
+
 ## Was nicht gemessen wurde
 
 | Frage | Stand | Warum |
