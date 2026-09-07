@@ -539,3 +539,82 @@ test("T31 · Anfragegrenze und Kontingent sind zwei verschiedene Zustaende", asy
   // Nach aussen bleibt es "degraded": der Anbieter antwortet, er drosselt nur.
   assert.equal(p.healthCheck().status, "degraded");
 });
+
+/* ===================================================================
+   ADAPTERAUSGABE GEGEN DAS SCHEMA (Release-Audit §13)
+
+   Der Audit hat gefunden, dass Intraday-Bars den Handelstag unter
+   `timestamp` statt unter `date` trugen. Das Schema kannte `timestamp`
+   nicht, und die Chartschicht las `date` - der 1T-Chart lieferte auf
+   echten Adapterbars null Punkte, waehrend der Browsertest gruen war,
+   weil dessen Fixture `date` benutzte.
+
+   Der Grund, warum das durchging: kein Test hat je die Ausgabe des
+   Adapters gegen das Schema gehalten. Genau das tun die folgenden.
+   =================================================================== */
+
+test("T32 · Jede Bar des Adapters erfuellt das kanonische Schema", async () => {
+  const faelle = [
+    ["EOD (mit Nachweis)", (p) => p.getDailyBars("ref_AAPL", {}), null],
+    ["EOD (ungeprueft)", (p) => p.getDailyBars("ref_AAPL", {}),
+      { market: { adjustedPrices: null, splitAdjustedPrices: null } }],
+    ["Historie", (p) => p.getHistoricalBars("ref_AAPL", { from: "2024-01-01" }), null],
+    ["Intraday", (p) => p.getIntradayBars("ref_AAPL", { interval: "5min" }), null]
+  ];
+
+  for (const [name, aufruf, caps] of faelle) {
+    const p = provider((url) => F.response(url.includes("/iex/") ? F.IEX_INTRADAY : F.AAPL_PLAIN), caps);
+    const res = await aufruf(p);
+    assert.equal(res.available, true, name + " sollte Daten liefern");
+    assert.ok(res.data.bars.length > 0, name + " ohne Bars");
+
+    for (const bar of res.data.bars) {
+      const v = Schema.validate("PriceBar", bar);
+      assert.equal(v.valid, true,
+        name + ": " + JSON.stringify(v.errors) + " in " + JSON.stringify(bar));
+    }
+  }
+});
+
+test("T33 · Der Handelstag steht bei jeder Bar unter date", async () => {
+  // Die konkrete Regression. `timestamp` darf danebenstehen, aber nicht
+  // an die Stelle treten: alles Nachgelagerte - Panel-Bruecke,
+  // Zeitraumwahl, Qualitaetspruefung - liest den Handelstag unter `date`.
+  const p = provider((url) => F.response(url.includes("/iex/") ? F.IEX_INTRADAY : F.AAPL_PLAIN));
+
+  const eod = await p.getDailyBars("ref_AAPL", {});
+  for (const b of eod.data.bars) {
+    assert.match(b.date, /^\d{4}-\d{2}-\d{2}$/, "Tagesbar ohne sauberen Handelstag");
+  }
+
+  const iv = await p.getIntradayBars("ref_AAPL", { interval: "5min" });
+  for (const b of iv.data.bars) {
+    assert.match(b.date, /^\d{4}-\d{2}-\d{2}$/, "Intradaybar ohne sauberen Handelstag");
+    assert.ok(b.timestamp, "die Uhrzeit muss erhalten bleiben");
+    assert.equal(b.timestamp.slice(0, 10), b.date,
+      "Handelstag und Zeitpunkt muessen denselben Tag meinen");
+  }
+});
+
+test("T34 · Die Zeitraumwahl arbeitet auf echten Adapterbars", async () => {
+  /* Die Gegenprobe zum eigentlichen Schaden. Der Browsertest war gruen,
+     weil seine Fixture `date` benutzte - der Adapter tat es nicht. Dieser
+     Test nimmt die Bars, die der Adapter wirklich liefert. */
+  const Ranges = require("../engines/chart-ranges.js");
+  const p = provider(() => F.response(F.IEX_INTRADAY));
+  const iv = await p.getIntradayBars("ref_AAPL", { interval: "5min" });
+
+  const eod = [];
+  const d = new Date(Date.UTC(2025, 0, 2));
+  for (let i = 0; i < 300; i++) {
+    eod.push({ date: d.toISOString().slice(0, 10), open: 100, high: 101, low: 99,
+               close: 100, volume: 1000 });
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+
+  const res = Ranges.selectRange("1D", { eod, intraday: iv.data.bars },
+    { gates: { ENABLE_LIVE_MARKET_DATA: true } });
+  assert.equal(res.ok, true, "der Tageschart muss auf echten Adapterbars zustande kommen");
+  assert.equal(res.source, "intraday");
+  assert.equal(res.bars.length, iv.data.bars.length, "kein Punkt darf verloren gehen");
+});

@@ -149,6 +149,14 @@
       splitFactor: { t: "number", r: false },
       dividend:    { t: "number", r: false },
 
+      /* Der Zeitpunkt innerhalb des Handelstages. Eine Tagesbar hat ihn
+         nicht, eine Intraday-Bar braucht ihn - und `date` bleibt in beiden
+         Faellen der Handelstag. Ohne diese Trennung muesste alles
+         Nachgelagerte zwei Schreibweisen fuer denselben Bezug kennen:
+         genau daran ist der 1T-Chart gescheitert, als der Adapter nur
+         `timestamp` lieferte und die Chartschicht `date` las. */
+      timestamp:  { t: "datetime", r: false },
+
       currency:   { t: "string", r: true },
       dataSourceId: { t: "string", r: true }
     },

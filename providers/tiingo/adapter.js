@@ -594,9 +594,14 @@ function createTiingoProvider(options) {
           return {
             securityId: securityId,
             interval: params.resampleFreq,
+            /* `date` ist der Handelstag, `timestamp` der Zeitpunkt darin.
+               Tiingo liefert beides in einem Feld; die Trennung passiert
+               hier, weil alles Nachgelagerte den Handelstag unter `date`
+               erwartet - bei Tages- wie bei Intradaybars. */
             bars: body.map((r) => ({
               securityId: securityId,
-              timestamp: r.date,
+              date: String(r.date || "").slice(0, 10),
+              timestamp: r.date || null,
               open: num(r.open), high: num(r.high), low: num(r.low), close: num(r.close),
               volume: num(r.volume) === null ? 0 : num(r.volume),
               currency: "USD",
