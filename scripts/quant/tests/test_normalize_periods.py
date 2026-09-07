@@ -292,6 +292,107 @@ class MappingIntegrityTests(unittest.TestCase):
         self.assertEqual(result.stats["mapped"], 0)
 
 
+class CoverDateInstantTests(unittest.TestCase):
+    """A cover date is when the count was taken, not when the period ended.
+
+    `dei:EntityCommonStockSharesOutstanding` is a cover-page disclosure: a 10-K
+    for the year ended 26 September 2009 states the share count as of, say, 16
+    October 2009. Two live defects came out of that single date:
+
+    1. Asking which quarter 16 October falls into gives the FOLLOWING quarter,
+       so the period the number describes got none and the next one got two.
+       Fixed by assigning a cover-date instant to the last CLOSED period.
+    2. Publishing the cover date as the cell's period end then put two end
+       dates under one fiscal quarter -- the cover date, and the balance-sheet
+       date the very next filing reports for the same quarter -- and the
+       canonical layer suppressed the cell as ambiguous. Measured on live SEC
+       data: 136 sharesOutstanding cells across all five companies.
+
+    The period end is taken from what the company itself reported for that
+    period. Nothing is interpolated, and a period with no other fact keeps the
+    cover date, because then no measured end date exists.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.registry = MetricRegistry.load()
+
+    @staticmethod
+    def _builder(cik, *, with_balance_sheet_fact):
+        """One fiscal year ending 2023-12-31, filed 2024-02-20 with a 20-day lag."""
+        builder = FactsBuilder(cik)
+        builder.add("us-gaap", "Revenues", "USD", 1000.0, "2023-12-31", "2023-01-01",
+                    "acc-2023", "10-K", "2024-02-20", fy=2023, fp="FY")
+        builder.add("dei", "EntityCommonStockSharesOutstanding", "shares", 500.0,
+                    "2024-01-20", None, "acc-2023", "10-K", "2024-02-20",
+                    fy=2023, fp="FY")
+        if with_balance_sheet_fact:
+            builder.add("us-gaap", "CommonStockSharesOutstanding", "shares", 495.0,
+                        "2023-12-31", None, "acc-2023", "10-K", "2024-02-20",
+                        fy=2023, fp="FY")
+        return builder
+
+    def test_a_cover_date_instant_lands_on_the_period_it_describes(self):
+        result, _ = normalize(self._builder(2000000021, with_balance_sheet_fact=False),
+                              self.registry, 2000000021)
+        self.assertIsNotNone(result.factbook.get("shares_outstanding", 2023, "FY"))
+
+    def test_the_period_end_comes_from_the_companys_own_report(self):
+        result, _ = normalize(self._builder(2000000022, with_balance_sheet_fact=False),
+                              self.registry, 2000000022)
+        for period in ("FY", "Q4"):
+            timeline = result.factbook.get("shares_outstanding", 2023, period)
+            self.assertTrue(timeline, period)
+            for observation in timeline.observations:
+                self.assertEqual(observation.period_end, "2023-12-31",
+                                 "the cover date 2024-01-20 is not a period end")
+
+    def test_one_fiscal_period_carries_exactly_one_period_end(self):
+        """The property whose violation made the canonical layer drop the cell."""
+        result, _ = normalize(self._builder(2000000023, with_balance_sheet_fact=True),
+                              self.registry, 2000000023)
+        for period in ("FY", "Q4"):
+            timeline = result.factbook.get("shares_outstanding", 2023, period)
+            ends = {observation.period_end
+                    for observation in (timeline.observations if timeline else [])}
+            self.assertEqual(ends, {"2023-12-31"}, period)
+
+    def test_the_cover_date_observation_is_flagged_as_one(self):
+        result, _ = normalize(self._builder(2000000024, with_balance_sheet_fact=False),
+                              self.registry, 2000000024)
+        timeline = result.factbook.get("shares_outstanding", 2023, "FY")
+        self.assertIn("COVER_DATE_INSTANT", timeline.observations[0].flags)
+
+    def test_without_any_other_fact_the_cover_date_stands(self):
+        """No measured period end exists, so none is invented."""
+        builder = FactsBuilder(2000000025)
+        builder.add("us-gaap", "Revenues", "USD", 1000.0, "2023-12-31", "2023-01-01",
+                    "acc-2023", "10-K", "2024-02-20", fy=2023, fp="FY")
+        builder.add("us-gaap", "Revenues", "USD", 1100.0, "2024-12-31", "2024-01-01",
+                    "acc-2024", "10-K", "2025-02-20", fy=2024, fp="FY")
+        # A cover date inside FY2024 whose quarter reports nothing else.
+        builder.add("dei", "EntityCommonStockSharesOutstanding", "shares", 500.0,
+                    "2024-04-25", None, "acc-q1", "10-Q", "2024-04-30",
+                    fy=2024, fp="Q1")
+        result, _ = normalize(builder, self.registry, 2000000025)
+        observations = [observation
+                        for (metric, year, period), timeline
+                        in result.factbook.timelines.items()
+                        if metric == "shares_outstanding"
+                        for observation in timeline.observations]
+        self.assertTrue(observations)
+        for observation in observations:
+            self.assertEqual(observation.period_end, "2024-04-25")
+
+    def test_a_balance_sheet_instant_keeps_its_own_date(self):
+        """Only cover-date instants borrow a period end; nothing else moves."""
+        result, _ = normalize(self._builder(2000000026, with_balance_sheet_fact=True),
+                              self.registry, 2000000026)
+        assets = result.factbook.get("total_assets", 2023, "FY")
+        for observation in (assets.observations if assets else []):
+            self.assertEqual(observation.period_end, "2023-12-31")
+
+
 class SectorAvailabilityTests(unittest.TestCase):
     """A bank has no cost of revenue; the system must say so, not invent one."""
 

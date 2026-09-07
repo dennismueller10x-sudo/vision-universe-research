@@ -14,7 +14,7 @@ Rules this layer obeys without exception:
     and when it became publicly available.
 """
 import logging
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from .fiscal import FiscalCalendar
 from .model import (
@@ -82,6 +82,11 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
 
     # (metric, fy, fp, accession) -> list of (priority, RawFact)
     candidates = defaultdict(list)
+    # (fy, fp) -> Counter of the period end dates the company itself reported
+    # for that period. A cover-date instant is dated AFTER the period it
+    # describes, so it cannot supply its own period end; it borrows the one
+    # the company's other facts for the same period were measured on.
+    observed_period_ends = defaultdict(Counter)
     seen_fact_ids = set()
     stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
 
@@ -117,7 +122,8 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                                      metric=metric_name))
                 continue
 
-            if fact.taxonomy == "dei" and fact.start is None:
+            is_cover_date = fact.taxonomy == "dei" and fact.start is None
+            if is_cover_date:
                 # Cover-date instant: dated after the period it describes.
                 fiscal_year, fiscal_period = calendar.assign_cover_date(fact.end)
                 kind = "instant"
@@ -145,6 +151,14 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                     (priority, fact)
                 )
 
+            if not is_cover_date and fact.end:
+                # The fiscal year end IS the Q4 end, so an annual fact fixes
+                # both -- otherwise a cover-date share count mirrored onto Q4
+                # would find no measured end date there and keep the cover date.
+                for period in ({fiscal_period, "Q4"} if fiscal_period == "FY"
+                               else {fiscal_period}):
+                    observed_period_ends[(fiscal_year, period)][fact.end] += 1
+
     factbook = CompanyFactBook(cik, calendar=calendar, profile=profile)
     registry_version = registry.version
 
@@ -168,8 +182,21 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                         [other.concept for other in rivals], metric_name,
                         fiscal_year, fiscal_period),
                     metric=metric_name))
-        if fact.taxonomy == "dei":
+        period_end = fact.end
+        if fact.taxonomy == "dei" and fact.start is None:
             flags.append(FLAG_COVER_DATE_INSTANT)
+            # The cover date is when the count was taken, not when the period
+            # ended, so it must not be published as this cell's period end: the
+            # same fiscal quarter would then carry two end dates -- the cover
+            # date and the balance-sheet date from the very next filing -- and
+            # the canonical layer suppresses such a cell as ambiguous. Live SEC
+            # data lost 136 sharesOutstanding cells that way. The period end is
+            # taken from what the company itself reported for the same period;
+            # nothing is interpolated. Where no other fact exists for the
+            # period, there is no measured end date and the cover date stands.
+            observed = observed_period_ends.get((fiscal_year, fiscal_period))
+            if observed:
+                period_end = observed.most_common(1)[0][0]
 
         provenance = Provenance(
             source=SOURCE_SEC,
@@ -194,7 +221,7 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             quality=QUALITY_MEDIUM if flags else QUALITY_HIGH,
             flags=flags,
             period_start=fact.start,
-            period_end=fact.end,
+            period_end=period_end,
         )
         factbook.add_observation(metric_name, fiscal_year, fiscal_period, observation)
         stats["mapped"] += 1

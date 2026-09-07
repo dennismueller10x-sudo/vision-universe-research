@@ -14,7 +14,12 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         assigned to the last CLOSED reporting period instead of the period
 #         their cover date falls into; a standalone quarter is no longer
 #         reconstructed from cumulative periods that are out of order.
-NORMALIZATION_LOGIC_VERSION = "1.1.0"
+#
+# 1.2.0 — a cover-date instant no longer publishes its cover date as the cell's
+#         period end. The end date comes from what the company itself reported
+#         for the same fiscal period; only where no such fact exists does the
+#         cover date stand.
+NORMALIZATION_LOGIC_VERSION = "1.2.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -43,7 +48,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "24c65dba1211f05d4854c74b67841b3f1934c4254466f068dfdff28d824cd8c3"
+    "80093954dab81c1c9ea8619ed20ee874656b4468688d540f4a61f245a72ac5c9"
 )
 
 
