@@ -96,6 +96,13 @@ jobs:
             console.log("Bericht ist frei von Zugangsdaten (" + Math.round(raw.length/1024) + " KB).");
           '
 
+      - name: Bericht ins Protokoll
+        if: steps.secret.outputs.available == 'true'
+        # Nach der Schluesselpruefung, nie davor. Das Artefakt ist an eine
+        # Ablage gebunden, die nicht aus jeder Umgebung erreichbar ist; im
+        # Protokoll ist der Befund fuer jeden lesbar, der den Lauf sehen darf.
+        run: cat quant/data/market/tiingo-runtime-verification.json
+
       - name: Bericht als Artefakt
         # Bei einem push-Ausloeser gibt es keine inputs; ein blosser
         # Vergleich gegen false wuerde den Schritt dann ueberspringen -
