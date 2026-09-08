@@ -21,6 +21,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,7 +51,29 @@ def make_workdir(tmp, adjustment):
     shutil.copy(ROOT / "quant" / "methodology" / "price-adjustment-v1.json",
                 work / "quant" / "methodology")
 
-    market = json.loads(MARKET.read_text(encoding="utf-8"))
+    # Der ausgelieferte Phase-0-Datensatz ist absichtlich UNAVAILABLE und besitzt
+    # keine Symbolreihen. Fuer diesen Guard brauchen wir keine Providerdaten,
+    # sondern nur eine ausreichend lange, klar synthetische Reihe, an der beide
+    # Verbraucher ihre Bereinigungspruefung wirklich erreichen.
+    bars = []
+    start = date(2024, 1, 1)
+    for index in range(320):
+        close = 100 + index * 0.1
+        bars.append({
+            "date": (start + timedelta(days=index)).isoformat(),
+            "open": close - 0.05,
+            "high": close + 0.2,
+            "low": close - 0.2,
+            "close": close,
+            "volume": 1000 + index,
+        })
+    market = {
+        "schema_version": 3,
+        "generated_at_utc": "2026-09-08T00:00:00+00:00",
+        "provider": "SYNTHETIC_TEST_FIXTURE",
+        "status": "generated",
+        "symbols": {"VU_TEST": bars},
+    }
     if adjustment:
         market["adjustment"] = adjustment
     else:
@@ -75,7 +98,7 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmp:
         # Fall 1: Stufe vorhanden -> muss durchlaufen.
-        good = make_workdir(tmp, declared or "SPLIT_ADJUSTED")
+        good = make_workdir(tmp, "SPLIT_ADJUSTED")
         print("\n  Mit Bereinigungsstufe:")
         for script in CONSUMERS:
             code, err = run_in(good, script)
