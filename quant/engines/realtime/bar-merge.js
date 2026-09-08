@@ -45,8 +45,10 @@
                      wird abgelehnt. Nicht umgerechnet - abgelehnt.
      R6 SPLIT        Eine Kapitalmassnahme macht die Reihe nachladepflichtig.
                      Es wird nichts weggerechnet und nichts geglaettet.
-     R7 TICK         Ein Tick faltet in die laufende Bar: Hoch, Tief,
-                     Schluss, Volumen. Er erzeugt nie eine bestaetigte Bar.
+     R7 TICK         Ein Tick faltet in die LAUFENDE Bar: Hoch, Tief,
+                     Schluss, Volumen. Ist die Periode abgelaufen, ist er
+                     ein Nachzuegler und wird verworfen - ein
+                     abgeschlossener Schlusskurs bewegt sich nicht mehr.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -194,14 +196,35 @@
 
     /* Baut die kanonische Innenform einer Bar. Vendor-Felder kommen hier
        nicht an - der Adapter hat sie bereits abgeraeumt. */
+    /* Der Eimer, in dem die Gegenwart liegt.
+       Gemerkt je Minute, und das ist keine Naeherung: der Eimer haengt an
+       der Minute der Boersenortszeit, und die wechselt genau dann, wenn
+       auch die Minute seit Epoche wechselt - Zeitzonen versetzen um volle
+       Minuten. Der Schluessel ist damit exakt so fein wie noetig.
+
+       Ohne diese Zeile kostet jeder Tick einen zweiten Kalenderaufruf:
+       einen fuer seinen eigenen Zeitstempel, einen fuer die Gegenwart.
+       Gemessen war das die Haelfte der Zeit, die ein Tick ueberhaupt
+       braucht. */
+    var bucketMemoKey = null;
+    var bucketMemoValue = null;
+    function currentBucket() {
+      var key = Math.floor(now() / 60000);
+      if (key !== bucketMemoKey) {
+        bucketMemoKey = key;
+        bucketMemoValue = bucketOf({ timestamp: now() }, cfg);
+      }
+      return bucketMemoValue;
+    }
+
     /* Ist die Periode dieses Eimers vorbei? Der Vergleich laeuft ueber
        die Eimernamen und nicht ueber Zeitrechnung: die Namen entstehen
        aus der Ortszeit der Boerse und sind darum in derselben Ordnung
        wie die Zeit selbst - auch ueber die Zeitumstellung hinweg. */
-    function bucketClosed(bucket) {
-      var current = bucketOf({ timestamp: now() }, cfg);
-      if (current === null) return true;
-      return bucket < current;
+    function bucketClosed(bucket, current) {
+      var jetzt = current === undefined ? currentBucket() : current;
+      if (jetzt === null) return true;
+      return bucket < jetzt;
     }
 
     function normalize(raw, origin) {
@@ -225,7 +248,13 @@
         splitFactor: isNum(raw.splitFactor) ? raw.splitFactor : null,
         dividend: isNum(raw.dividend) ? raw.dividend : null,
         origin: origin,
-        confirmed: origin !== "REALTIME_DEVELOPING" && bucketClosed(bucket),
+        /* Nur eine Momentaufnahme fuer den internen Gebrauch. Nach aussen
+           wird sie in copy() neu berechnet: eine Kerze wird geschlossen,
+           weil Zeit vergeht, nicht weil jemand sie anfasst. Ein bei der
+           Aufnahme eingefrorener Wert bliebe fuer immer "laufend" - und
+           genau darueber liesse sich ein abgeschlossener Schlusskurs
+           nachtraeglich bewegen. */
+        confirmed: bucketClosed(bucket),
         sessionType: cfg.timeframe === "1D" || cfg.timeframe === "EOD"
           ? "AGGREGATED"
           : (session.phase === "REGULAR" ? "REGULAR" : "EXTENDED"),
@@ -265,7 +294,10 @@
       structuralRevision: function () { return structuralRevision; },
 
       /** Die Reihe. Kopie, damit ein Aufrufer sie nicht von aussen umbaut. */
-      bars: function () { return bars.map(function (b) { return copy(b); }); },
+      bars: function () {
+        var jetzt = currentBucket();
+        return bars.map(function (b) { return copy(b, jetzt); });
+      },
 
       /**
        * Die letzten n Bars. Der uebliche Weg fuer den Chart: er zeichnet
@@ -274,14 +306,19 @@
        */
       tail: function (n) {
         var von = n && n > 0 && n < bars.length ? bars.length - n : 0;
+        var jetzt = currentBucket();
         var out = [];
-        for (var i = von; i < bars.length; i++) out.push(copy(bars[i]));
+        for (var i = von; i < bars.length; i++) out.push(copy(bars[i], jetzt));
         return out;
       },
       length: function () { return bars.length; },
       last: function () { return bars.length ? copy(bars[bars.length - 1]) : null; },
       at: function (i) { return bars[i] ? copy(bars[i]) : null; },
       byBucket: function (b) { return index[b] === undefined ? null : copy(bars[index[b]]); },
+
+      /** Laeuft die Periode dieses Eimers noch? Fuer Aufrufer, die es
+          wissen muessen, ohne die Bar zu holen. */
+      isClosed: function (bucket) { return bucketClosed(bucket); },
 
       /**
        * Setzt die Historie. Ersetzt die Reihe vollstaendig - die Historie
@@ -365,7 +402,7 @@
            dieselben Trades wie wir, und seine Bar ist fuer seine Periode
            die massgebliche. */
         var existing = bars[pos];
-        if (existing.confirmed && originRank(bar.origin) < originRank(existing.origin)) {
+        if (bucketClosed(existing.bucket) && originRank(bar.origin) < originRank(existing.origin)) {
           stats.rejectedConfirmed++;
           return result("ignored", bar, "lowerPrecedence");
         }
@@ -416,14 +453,22 @@
         var bucket = bucketOf({ timestamp: ts }, cfg);
         if (bucket === null) { stats.rejectedMalformed++; return result("rejected", null, "malformed"); }
 
-        var pos = index[bucket];
-        if (pos !== undefined && bars[pos].confirmed) {
-          /* Ein Tick in einen bereits bestaetigten Eimer ist ein
-             Nachzuegler. Er darf einen abgeschlossenen Schlusskurs nicht
-             mehr bewegen. */
+        /* Ein Tick gehoert in die laufende Kerze - und nur dorthin.
+           Ein Nachzuegler, dessen Periode inzwischen abgelaufen ist,
+           wird verworfen und gezaehlt.
+
+           Das kostet an der Intervallgrenze gelegentlich ein paar Stueck
+           Volumen, und das ist der guenstigere der beiden Preise: die
+           Gegenrichtung waere, einen abgeschlossenen Schlusskurs
+           nachtraeglich zu bewegen. VU_REPAINTING_POLICY, Regel 2,
+           schliesst das aus - und alles, was auf bestaetigten Bars
+           rechnet, verliesse sich sonst auf einen Wert, der sich noch
+           aendert. */
+        if (bucketClosed(bucket)) {
           stats.rejectedConfirmed++;
-          return result("ignored", null, "bucketConfirmed");
+          return result("ignored", null, "bucketClosed");
         }
+        var pos = index[bucket];
         stats.ticks++;
 
         if (pos === undefined) {
@@ -500,9 +545,13 @@
              a.close === b.close && a.volume === b.volume && a.origin === b.origin;
     }
 
-    function copy(b) {
+    /* `current` wird einmal je Abruf berechnet und durchgereicht - bei
+       600 Bars je Zeichnung waere ein Kalenderaufruf pro Bar der
+       teuerste Teil der ganzen Schleife. */
+    function copy(b, current) {
       var o = {};
       Object.keys(b).forEach(function (k) { o[k] = b[k]; });
+      o.confirmed = bucketClosed(b.bucket, current);
       return o;
     }
 

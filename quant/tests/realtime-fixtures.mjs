@@ -29,9 +29,15 @@ export const CALENDAR = JSON.parse(
 export const THRESHOLDS = JSON.parse(
   readFileSync(join(ROOT, "quant/config/realtime-thresholds.json"), "utf8"));
 
-/* Dienstag, 8. September 2026, 14:00 New York - mitten im regulaeren
-   Handel und keine Woche mit Feiertag. */
-export const HANDEL = Date.parse("2026-09-08T18:00:00Z");
+/* Dienstag, 8. September 2026, 14:02 New York - mitten im regulaeren
+   Handel und keine Woche mit Feiertag.
+
+   Die zwei Minuten sind Absicht. Auf einer glatten Intervallgrenze
+   laege "vor einer Sekunde" in der bereits geschlossenen Kerze, und der
+   Test pruefte dann einen Nachzuegler statt eines laufenden Ticks - ein
+   Fall, den es im Betrieb kaum gibt und der die uebrigen Zusagen
+   verdeckt. */
+export const HANDEL = Date.parse("2026-09-08T18:02:00Z");
 /* Sonntag. */
 export const GESCHLOSSEN = Date.parse("2026-09-06T18:00:00Z");
 

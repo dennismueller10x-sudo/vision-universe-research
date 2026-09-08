@@ -163,7 +163,7 @@ dieselbe Reihe, unabhängig von der Reihenfolge des Eintreffens.
 | R4 | **Zukunft** — ein Zeitstempel jenseits der Toleranz wird abgelehnt. | Look-ahead, Future Leakage |
 | R5 | **Bereinigung** — eine Bar mit anderer Bereinigungsstufe wird abgelehnt. Nicht umgerechnet — abgelehnt. | Adjusted/Raw-Mischung |
 | R6 | **Split** — eine Kapitalmaßnahme macht die Reihe *nachladepflichtig*. Es wird nichts weggerechnet und nichts geglättet. | Erfundener Kurssprung am Split-Tag |
-| R7 | **Tick** — ein Tick faltet in die laufende Bar: Hoch, Tief, Schluss, Volumen. Er erzeugt nie eine bestätigte Bar. | Indikatoren, die auf einem Wert rechnen, der sich noch ändert |
+| R7 | **Tick** — ein Tick faltet in die *laufende* Bar: Hoch, Tief, Schluss, Volumen. Ist die Periode abgelaufen, ist er ein Nachzügler und wird verworfen. | Indikatoren, die auf einem Wert rechnen, der sich noch ändert; nachträglich bewegte Schlusskurse |
 
 **Zu R2**, weil es beim Bau tatsächlich schiefging: Anfangs galt jede
 abgerufene Bar als bestätigt. Damit sperrte die erste Bar des laufenden
@@ -175,6 +175,19 @@ Angabe; der Anbieter aggregiert dieselben Trades wie wir.
 **Zu R6:** Ein Split ändert jeden Kurs davor. Eine Reihe, in der nur die
 neuen Bars den neuen Maßstab tragen, zeigt einen Absturz, den es nie gab.
 Deshalb wird die Reihe markiert und nachgeladen, statt sie zu glätten.
+
+**Zu R7,** weil der Release-Audit hier einen Fehler fand: „abgeschlossen"
+ist keine gespeicherte Eigenschaft einer Bar, sondern ergibt sich aus dem
+Kalender. **Eine Kerze schließt, weil Zeit vergeht — nicht weil jemand sie
+anfasst.** Ein bei der Aufnahme eingefrorener Wert bliebe für immer
+„laufend", und darüber ließe sich ein längst abgeschlossener Schlusskurs
+noch bewegen. Das verletzt `VU_REPAINTING_POLICY` Regel 2 und würde jede
+Engine untergraben, die auf bestätigten Bars rechnet.
+
+Der Unterschied zu einer *Korrektur*: ein Tick ist ein Nachzügler und wird
+abgewiesen; eine Bar des Anbieters hat höheren Rang und darf eine
+geschlossene Kerze berichtigen (Regel 5 derselben Richtlinie). Der Rang der
+Herkunft entscheidet, in welche Richtung — nie umgekehrt.
 
 ---
 

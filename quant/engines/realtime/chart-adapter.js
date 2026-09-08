@@ -192,8 +192,13 @@
           rendered[u] = { bucket: window_[u].bucket, fp: fingerprint(window_[u]) };
         }
       } else if (fortschreibbar && op === "append") {
-        rendered.length = from;
-        for (var p = from; p < window_.length; p++) {
+        /* Eine Bar zurueck, nicht bei `from`: in dem Moment, in dem eine
+           neue Kerze aufmacht, wechselt die vorherige von "laufend" auf
+           "abgeschlossen". Bliebe ihr Fingerabdruck stehen, faende der
+           naechste vollstaendige Abgleich einen Unterschied in der
+           Vergangenheit und baute die Flaeche grundlos neu auf. */
+        rendered.length = Math.max(0, from - 1);
+        for (var p = rendered.length; p < window_.length; p++) {
           rendered.push({ bucket: window_[p].bucket, fp: fingerprint(window_[p]) });
         }
       } else {

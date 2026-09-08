@@ -199,11 +199,15 @@ test("E14 · Der Verlauf laeuft nicht ueber", () => {
 
 /* ==================================================== Zusammenfuehren === */
 
-const T0 = Date.parse("2026-09-08T18:00:00Z");   // Dienstag 14:00 ET
+/* Dienstag, 14:02 ET. Bewusst nicht 14:00: auf einer Intervallgrenze
+   laege "vor einer Minute" in der bereits geschlossenen Kerze. */
+const T0 = Date.parse("2026-09-08T18:02:00Z");
+/* Beweglich, damit ein Test die laufende Periode ablaufen lassen kann. */
+let jetzt = T0;
 function serie(opts) {
   return BarMerge.createSeries(Object.assign({
     timeframe: "5m", interval: "5min", calendar: CALENDAR,
-    adjustmentStatus: "raw", now: () => T0
+    adjustmentStatus: "raw", now: () => jetzt
   }, opts || {}));
 }
 function bar(minutenVorT0, close, extra) {
@@ -244,19 +248,31 @@ test("E17 · Eine verspaetete Bar wird einsortiert, nicht angehaengt", () => {
 });
 
 test("E18 · Bestaetigt schlaegt vorlaeufig — und nie umgekehrt", () => {
+  /* Die laufende Kerze (14:00-14:05) entsteht aus einem Tick und wird
+     danach von der Bar des Anbieters ersetzt: dessen Aggregation ist
+     fuer seine Periode die massgebliche. */
   const s = serie();
-  s.applyTick({ price: 99, timestamp: new Date(T0 - 60000).toISOString() });
-  assert.equal(s.last().confirmed, false);
+  s.applyTick({ price: 99, timestamp: new Date(T0).toISOString() });
+  assert.equal(s.last().confirmed, false, "Die laufende Periode ist nicht abgeschlossen.");
   const ersetzt = s.applyBar(bar(1, 105), "INTRADAY");
   assert.equal(ersetzt.action, "replaced");
-  assert.equal(s.last().confirmed, true);
   assert.equal(s.last().close, 105);
+  assert.equal(s.last().confirmed, false, "Ersetzt wird sie, abgeschlossen nicht.");
 
-  /* Der Rueckweg ist versperrt: ein Tick bewegt keinen bestaetigten Schluss. */
-  const zurueck = s.applyTick({ price: 88, timestamp: new Date(T0 - 60000).toISOString() });
+  /* Solange die Periode laeuft, verfeinert ein weiterer Tick sie. */
+  const weiter = s.applyTick({ price: 106, timestamp: new Date(T0).toISOString() });
+  assert.equal(weiter.action, "updated");
+  assert.equal(s.last().close, 106);
+
+  /* Sobald sie vorbei ist, ist der Rueckweg versperrt: ein Nachzuegler
+     bewegt keinen abgeschlossenen Schlusskurs (VU_REPAINTING_POLICY §2). */
+  jetzt = T0 + 6 * 60000;
+  assert.equal(s.last().confirmed, true, "Nach Periodenende ist die Kerze abgeschlossen.");
+  const zurueck = s.applyTick({ price: 88, timestamp: new Date(T0).toISOString() });
   assert.equal(zurueck.action, "ignored");
-  assert.equal(zurueck.reason, "bucketConfirmed");
-  assert.equal(s.last().close, 105);
+  assert.equal(zurueck.reason, "bucketClosed");
+  assert.equal(s.last().close, 106);
+  jetzt = T0;
 });
 
 test("E19 · Ein Zeitstempel aus der Zukunft wird abgelehnt (kein Look-ahead)", () => {
@@ -295,7 +311,7 @@ test("E21 · Ein Split macht die Reihe nachladepflichtig statt einen Sprung zu z
 
 test("E22 · Ein Tick faltet Hoch, Tief, Schluss und Volumen", () => {
   const s = serie();
-  const ts = T0 - 120000;
+  const ts = T0;                       // in der laufenden Kerze
   s.applyTick({ price: 100, timestamp: ts, size: 10 });
   s.applyTick({ price: 105, timestamp: ts + 1000, size: 5 });
   s.applyTick({ price: 98, timestamp: ts + 2000, size: 5 });
@@ -306,6 +322,55 @@ test("E22 · Ein Tick faltet Hoch, Tief, Schluss und Volumen", () => {
   assert.equal(b.close, 98);
   assert.equal(b.volume, 20);
   assert.equal(b.confirmed, false);
+});
+
+test("E22b · Eine Kerze schliesst durch Zeitablauf, nicht durch Anfassen", () => {
+  /* Der Befund aus dem Release-Audit. `confirmed` war beim Aufnehmen der
+     Bar eingefroren; eine Kerze, die als "laufend" entstand, blieb es
+     fuer immer - und ein Nachzuegler konnte ihren Schlusskurs Minuten
+     spaeter noch bewegen. VU_REPAINTING_POLICY §2 schliesst genau das
+     aus. */
+  const s = serie();
+  s.applyTick({ price: 100, timestamp: new Date(T0).toISOString(), size: 5 });
+  const bucket = s.last().bucket;
+  assert.equal(s.isClosed(bucket), false);
+  assert.equal(s.last().confirmed, false);
+
+  jetzt = T0 + 6 * 60000;               // die Periode laeuft ab
+  assert.equal(s.isClosed(bucket), true);
+  assert.equal(s.byBucket(bucket).confirmed, true,
+    "Zeitablauf allein schliesst die Kerze.");
+  assert.equal(s.bars()[s.length() - 1].confirmed, true);
+  assert.equal(s.tail(1)[0].confirmed, true);
+
+  const nachzuegler = s.applyTick({ price: 999, timestamp: new Date(T0).toISOString() });
+  assert.equal(nachzuegler.action, "ignored");
+  assert.equal(nachzuegler.reason, "bucketClosed");
+  assert.equal(s.byBucket(bucket).close, 100, "Der abgeschlossene Schluss bleibt.");
+  assert.ok(s.stats().rejectedConfirmed >= 1, "Der Nachzuegler wird gezaehlt, nicht verschwiegen.");
+  jetzt = T0;
+});
+
+test("E22c · Eine abgeschlossene Kerze darf noch korrigiert werden — aber nur nach oben", () => {
+  /* Der Unterschied zu E22b: ein Tick ist ein Nachzuegler, eine Bar des
+     Anbieters ist eine Korrektur (VU_REPAINTING_POLICY §5). Sie darf,
+     weil sie hoeheren Rang hat - der Rueckweg bleibt versperrt. */
+  const s = serie();
+  s.applyTick({ price: 100, timestamp: new Date(T0).toISOString(), size: 5 });
+  const bucket = s.last().bucket;
+  jetzt = T0 + 6 * 60000;
+
+  const korrektur = s.applyBar({ timestamp: new Date(T0).toISOString(), open: 100,
+    high: 102, low: 99, close: 101, volume: 900, adjustmentStatus: "raw" }, "INTRADAY");
+  assert.equal(korrektur.action, "replaced");
+  assert.equal(s.byBucket(bucket).close, 101);
+
+  const zurueck = s.applyBar({ timestamp: new Date(T0).toISOString(), close: 50,
+    adjustmentStatus: "raw" }, "REALTIME_DEVELOPING");
+  assert.equal(zurueck.action, "ignored");
+  assert.equal(zurueck.reason, "lowerPrecedence");
+  assert.equal(s.byBucket(bucket).close, 101);
+  jetzt = T0;
 });
 
 test("E23 · Tagesbars werden nach Handelstag gebuendelt", () => {
@@ -402,6 +467,24 @@ test("E30 · Schnelle Ticks werden zu einer Zeichnung zusammengefasst", () => {
   const nachgereicht = a.flush();
   assert.equal(nachgereicht.op, "append");
   assert.equal(a.stats().coalesced, 1);
+});
+
+test("E30b · Eine neu aufmachende Kerze baut die Flaeche nicht neu auf", () => {
+  /* Beim Wechsel der Periode kippt die vorherige Bar auf "abgeschlossen".
+     Wird ihr Fingerabdruck nicht mitgefuehrt, findet der naechste
+     vollstaendige Abgleich einen Unterschied in der Vergangenheit - und
+     zeichnet grundlos alles neu. */
+  const a = ChartAdapter.createChartAdapter({ coalesceMs: 0 });
+  let bars = [chartBar("a", 1), chartBar("b", 2, false)];
+  assert.equal(a.sync(bars).op, "reset");
+
+  bars = [chartBar("a", 1), chartBar("b", 2, true), chartBar("c", 3, false)];
+  assert.equal(a.sync(bars).op, "append");
+
+  bars = [chartBar("a", 1), chartBar("b", 2, true), chartBar("c", 3.5, false)];
+  const r = a.sync(bars);
+  assert.equal(r.op, "update", "Grund: " + r.reason);
+  assert.equal(a.stats().resets, 1);
 });
 
 test("E31 · Ein Neuaufbau wartet nie", () => {

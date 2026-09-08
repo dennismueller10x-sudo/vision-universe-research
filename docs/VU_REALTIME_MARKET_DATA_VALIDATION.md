@@ -13,7 +13,7 @@ Architektur: `VU_REALTIME_MARKET_DATA_ARCHITECTURE.md`
 
 | | |
 |---|---|
-| Architektur | gebaut, geprüft, 92 neue Tests grün |
+| Architektur | gebaut, geprüft, 95 neue Tests grün |
 | Tiingo EOD / Intraday | belegt (Phase 4A, unverändert gültig) |
 | Tiingo Echtzeit | **UNKNOWN** — nicht messbar in dieser Umgebung |
 | API-Schlüssel-Sicherheit | keine Änderung an der Angriffsfläche, vier zusätzliche Tests |
@@ -125,17 +125,17 @@ dem falschen Etikett ist gefährlicher als einer, der nichts zeigt.
 
 | Suite | vorher | nachher |
 |---|---|---|
-| JS (`quant/tests/*.test.mjs`) | 444 | **536** |
+| JS (`quant/tests/*.test.mjs`) | 444 | **539** |
 | Python (`scripts/quant/cli.py test`) | 249 | **249** |
-| **gesamt** | 693 | **785** |
+| **gesamt** | 693 | **788** |
 | Fehler / übersprungen | 0 / 0 | **0 / 0** |
 
-Neu, 92 Prüfungen:
+Neu, 95 Prüfungen:
 
 | Datei | Anzahl | Gegenstand |
 |---|---|---|
 | `realtime-capability.test.mjs` | 25 | Datenklassen, Verhandlung, Handelszeiten, Verfall |
-| `realtime-engine.test.mjs` | 31 | Fallback-Engine, Automat, Merge, Chart-Adapter |
+| `realtime-engine.test.mjs` | 34 | Fallback-Engine, Automat, Merge, Chart-Adapter |
 | `realtime-matrix.test.mjs` | 15 | Szenarien A–O |
 | `realtime-integration.test.mjs` | 21 | Zusagen: Etikett, Schlüssel, Provenienz, Lizenz |
 
@@ -191,13 +191,32 @@ Gemessen an 5.000 Bars Historie und 100.000 Ticks (Node 22).
 
 | | vorher | nachher |
 |---|---|---|
-| unveränderter Stand, Chartentscheidung | 3.132 µs | **0,11 µs** |
-| Tick + Chartentscheidung (jede Änderung gezeichnet) | 501 µs | 370 µs |
-| Tick + Chartentscheidung (Oberflächenweg, zusammengefasst) | — | **8,45 µs** |
-| Tick in die laufende Kerze falten | 8,3 µs | 8,3 µs |
+| unveränderter Stand, Chartentscheidung | 3.132 µs | **0,12 µs** |
+| Tick + Chartentscheidung (Oberflächenweg, zusammengefasst) | — | **9,5 µs** |
+| Tick + Chartentscheidung (jede Änderung sofort gezeichnet) | 501 µs | 586 µs |
+| Tick in die laufende Kerze falten | 8,3 µs | 9,4 µs |
 | Nachzügler in eine 5.000er-Reihe einsortieren | 165 µs | 165 µs |
-| Heap bei 5.000 Bars | 22,4 MB | **14,6 MB** |
-| Ticks pro Sekunde (Merge) | — | ~120.000 |
+| Heap: 5.000 Bars + 50.000 Ticks | — | **1,7 MB** |
+| Ticks pro Sekunde (Merge) | — | ~107.000 |
+
+Zwei Zahlen brauchen eine Erklärung, weil sie in die falsche Richtung
+gingen:
+
+- **Tick falten 8,3 → 9,4 µs.** Der Preis dafür, dass „abgeschlossen" jetzt
+  am Kalender hängt und nicht am Aufnahmezeitpunkt (siehe Audit-Befund A1).
+  Der zweite Kalenderaufruf je Tick kostete zunächst 18,6 µs; er ist je
+  Minute gemerkt, was exakt und nicht genähert ist — Zeitzonen versetzen um
+  volle Minuten, der Eimer wechselt also genau dann, wenn der Schlüssel
+  wechselt.
+- **Sofort-Zeichnen 370 → 586 µs.** Derselbe Grund, multipliziert mit 600
+  Bars je Fenster. Diesen Weg geht die Oberfläche nicht: sie fasst zusammen
+  und liegt bei 9,5 µs. Die Zahl steht hier für Aufrufer, die je Tick eine
+  Zeichnung erzwingen.
+
+Die Heap-Zahl der ersten Fassung dieses Berichts (22,4 → 14,6 MB) war ohne
+erzwungene Bereinigung gemessen und schwankte zwischen den Läufen um den
+Faktor zwei — sie war wertlos. Der Wert oben ist mit `--expose-gc` gemessen
+und über drei Läufe auf 0,1 MB stabil.
 
 Der Ausgangswert war unhaltbar: 3,1 ms je Tick, nur um festzustellen, dass
 sich nichts geändert hat. Bei hundert Ticks in der Sekunde wäre das ein
@@ -309,6 +328,13 @@ Umgebung nicht stattfinden konnte.
 
 Keine.
 
+### Im Audit gefunden und behoben
+
+| # | Befund | Schwere | Status |
+|---|---|---|---|
+| A1 | Abgeschlossene Kerze war durch Nachzügler-Ticks beweglich | HIGH | **behoben**, 3 Prüfungen |
+| A2 | Grundloser Chart-Neuaufbau beim Kerzenwechsel | MEDIUM | **behoben**, 1 Prüfung |
+
 ### HIGH
 
 | # | Punkt |
@@ -326,6 +352,100 @@ Keine.
 | M3 | Der Standardabstand des Kursabrufs (60 s = 60 Anfragen/h) liegt über dem Stundenkontingent des freien Zugangs (50/h). Für den freien Tarif ist ein größerer Abstand oder der Intraday-Pfad zu wählen; der Kontingentfehler wird aufgefangen, aber besser nicht ausgelöst. |
 | M4 | Der Live-Chart zeichnet über das bestehende SVG-Modul und damit die Fläche neu, wenn gezeichnet wird. Der Adapter entscheidet nur *ob*. Eine inkrementelle Zeichenfunktion lässt sich über `render` hineinreichen, ohne dass sich sonst etwas ändert. |
 | M5 | Die Pre-/After-Market-Zeiten stehen im Kalender, werden aber standardmäßig nicht als „Aktualisierung erwartet" gewertet (`includeExtended`). |
+
+---
+
+## 10a. Der Release-Audit
+
+Nach Abschluss der Implementierung wurde die Architektur ein zweites Mal
+geprüft — gezielt gegen die acht Zusagen, die sie macht, statt gegen die
+Module, aus denen sie besteht. Der Audit hat **einen echten Fehler
+gefunden**.
+
+### A1 — Eine abgeschlossene Kerze war nachträglich beweglich
+
+**Schwere: HIGH. Behoben.**
+
+`confirmed` wurde beim Aufnehmen einer Bar berechnet und danach nie wieder.
+Eine Kerze, die als „laufend" entstand, blieb es für immer — auch Minuten
+nachdem ihre Periode abgelaufen war. Ein verspäteter Tick konnte damit den
+Schlusskurs einer längst geschlossenen Kerze verschieben.
+
+Beobachtet:
+
+```
+14:02:30   Kerze 14:00 entsteht, confirmed = false     (richtig, sie läuft)
+14:06:00   Periode ist vorbei
+14:06:00   Tick mit Zeitstempel 14:04 → angenommen     ← FALSCH
+           Schlusskurs der Kerze 14:00 springt auf 250
+```
+
+Das verletzt die bestehende `VU_REPAINTING_POLICY`, Regel 2: *CONFIRMED wird
+innerhalb derselben `dataVersion` nie still umgeschrieben.* Die Folge wäre
+nicht nur ein falscher Chart gewesen: alles, was auf bestätigten Bars
+rechnet — die gesamte Technical Intelligence —, hätte sich auf einen Wert
+verlassen, der sich noch ändert.
+
+**Behoben** in `bar-merge.js`: „abgeschlossen" ist keine gespeicherte
+Eigenschaft mehr, sondern ergibt sich aus dem Kalender. Eine Kerze schließt,
+weil Zeit vergeht, nicht weil jemand sie anfasst. Ein Tick in eine
+abgelaufene Periode ist ein Nachzügler, wird verworfen und gezählt
+(`rejectedConfirmed`). Eine *Bar des Anbieters* darf eine geschlossene Kerze
+weiterhin korrigieren — das ist Regel 5 derselben Richtlinie, und der Rang
+der Herkunft entscheidet, in welche Richtung.
+
+Der Preis ist bekannt und bewusst: an der Intervallgrenze geht gelegentlich
+ein Nachzügler-Tick verloren. Das ist der günstigere der beiden Preise.
+
+Drei neue Prüfungen halten den Fall fest (`E22b`, `E22c`, `E30b`). Zwei
+bestehende Fixtures wurden dabei korrigiert — nicht abgeschwächt: die
+Testuhr stand exakt auf einer Intervallgrenze, sodass „vor einer Sekunde"
+in der bereits geschlossenen Kerze lag. Jede Zusicherung dieser Tests ist
+unverändert geblieben; `E18` prüft jetzt zusätzlich den vollen Lebenslauf
+einer Kerze.
+
+### A2 — Ein Neuaufbau des Charts beim Kerzenwechsel
+
+**Schwere: MEDIUM (Leistung, keine Falschanzeige). Behoben.**
+
+Aus A1 folgte: wenn eine neue Kerze aufmacht, wechselt die vorherige auf
+„abgeschlossen". Das Gedächtnis des Chart-Adapters führte diesen Wechsel
+nicht mit, sodass der nächste vollständige Abgleich einen Unterschied *in
+der Vergangenheit* fand und die Fläche grundlos neu aufbaute. Behoben,
+geprüft durch `E30b`.
+
+### Die acht Prüfpunkte
+
+| # | Punkt | Ergebnis |
+|---|---|---|
+| 1 | Keine Secrets im Browser oder Repository | ✓ 8 Einzelprüfungen, alle sauber |
+| 2 | Keine Regression in SEC / Tiingo 4A / Technical / Quant | ✓ keine dieser Dateien im Diff; 788 Prüfungen grün |
+| 3 | Fallback REALTIME → DELAYED → INTRADAY → EOD | ✓ volle Leiter durchlaufen, jede Stufe sichtbar |
+| 4 | Laufende Kerze durch Ticks aktualisierbar | ✓ — **und Befund A1** |
+| 5 | Reconnect/Backfill verhindert Lücken | ✓ 24 nachgeladene Bars, 0 Dubletten, 0 Lücken |
+| 6 | Ohne Realtime bleibt der Chart nutzbar | ✓ 41 Bars, `LETZTER SCHLUSSKURS`, kein falsches LIVE |
+| 7 | `REALTIME_READY` nicht ohne Nachweis | ✓ Fähigkeiten `null`, kein Beleg, kein Bericht, Doku sagt NEIN |
+| 8 | Lizenz und Gates unverändert | ✓ `feature-gates.json`, `display-policy.js`, Provider-Profile: 0 Zeilen Diff |
+
+**Prüfpunkt 3 im Detail** — die beobachtete Statusspur einer vollständig
+zerfallenden Datenlage:
+
+```
+CONNECTING (REALTIME_STREAM)
+LIVE       (REALTIME_STREAM)     Strom liefert
+DELAYED    (REALTIME_STREAM)     Strom antwortet, liefert nichts Neues
+RECONNECTING                     Strom fällt ganz aus
+DELAYED    (REALTIME_QUOTE)      Kursabruf übernimmt
+RECONNECTING                     auch der fällt aus
+INTRADAY   (INTRADAY)
+EOD        (EOD)                 letzter belastbarer Stand
+```
+
+Bars sichtbar: durchgehend. Chart leer: nie.
+
+**Prüfpunkt 8 im Detail** — die Gegenprobe, dass Technik keine Erlaubnis
+erzeugt: alle Fähigkeiten belegt, beide Gates offen, Zielgruppe öffentlich →
+jede Datenklasse `BLOCKED_BY_LICENSE`, beste zulässige Klasse `UNAVAILABLE`.
 
 ---
 
