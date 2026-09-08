@@ -28,9 +28,13 @@
   var DAILY = Q.BASE + "data/market/daily/";
   var INTRADAY = Q.BASE + "data/market/intraday/";
   var GATES_FILE = Q.BASE + "config/feature-gates.json";
+  var CALENDAR_FILE = Q.BASE + "config/market-calendar.json";
+  var THRESHOLDS_FILE = Q.BASE + "config/realtime-thresholds.json";
 
   var Ranges = global.VUChartRanges;
   var Policy = global.VUDisplayPolicy;
+  var RT = global.VURealtime || {};
+  var LiveChart = global.VULiveChart;
 
   /* Die Gates werden einmal geladen und dann herumgereicht. Sie kommen aus
      einer Datei im Repository, nicht aus der Umgebung: der Browser hat
@@ -38,6 +42,11 @@
      waere genau die Luecke, durch die Live-Daten oeffentlich werden. */
   var gates = Policy.gatesFromConfig(null);
   var gateConfig = null;
+  /* Kalender und Verfallsschwellen. Fehlen sie, faellt die Engine auf
+     ihre eingebauten Vorgaben zurueck - der Statusbefund traegt dann
+     calendarCoverage=false und behauptet keine Vollstaendigkeit. */
+  var kalender = null;
+  var schwellen = null;
 
   /* --------------------------------------------------------------- Hilfen */
 
@@ -421,6 +430,102 @@
       }));
   }
 
+  /* ------------------------------------------------ Datenstatus (PR #51)
+
+     Die Realtime-Engine haengt hier als BEOBACHTER am Chart, nicht als
+     Torwaechter.
+
+     Sie beantwortet die Frage, die diese Seite bisher nur in einer
+     Fusszeile beantwortet hat: was sehe ich, aus welcher Sitzung, von
+     wann? Dafuer laeuft ein echter Feed - mit einem Abrufweg, der die
+     bereits geladenen statischen Bars ausliefert. Der Browser spricht
+     dabei mit niemandem: es gibt hier keinen Anbieterzugriff und keinen
+     Schluessel, und daran aendert diese Anbindung nichts.
+
+     Was sie ausdruecklich NICHT tut: den Renderpfad an die
+     Anzeigerichtlinie haengen. Die Seite liefert diese Bars heute aus;
+     ob sie das oeffentlich darf, ist eine Lizenzfrage, die vor diesem
+     Workstream entschieden wurde. Sie hier nachtraeglich in den
+     Renderpfad zu legen wuerde den Chart schwarz schalten - eine
+     Produktaenderung, die niemand beauftragt hat und die wie ein Fehler
+     aussaehe. Der Befund gehoert in den Bericht, nicht in einen stillen
+     Seiteneffekt. */
+
+  var feeds = [];
+
+  function stopFeeds() {
+    feeds.forEach(function (f) { try { f.stop(); } catch (e) { /* egal */ } });
+    feeds = [];
+  }
+
+  /* Ein Abrufweg ueber bereits geladene Bars. Kein Netzzugriff. */
+  function statischerTransport(bars, dataClass) {
+    return RT.Transport.createPollingTransport({
+      id: "static-" + String(dataClass).toLowerCase(),
+      kind: dataClass === "EOD" ? "eod" : "barPolling",
+      dataClass: dataClass,
+      /* Der Bestand aendert sich nur mit einem neuen Importlauf, also mit
+         einem neuen Seitenaufruf. Ein kurzer Takt waere Beschaeftigung
+         ohne Erkenntnis. */
+      intervalMs: 3600000,
+      poll: function () {
+        return Promise.resolve({ available: bars.length > 0, data: { bars: bars },
+                                 reason: bars.length ? null : "noData" });
+      },
+      toBars: function (d) { return d.bars; }
+    });
+  }
+
+  /**
+   * Baut den Datenstatus zu einer Reihe.
+   *
+   * Die Faehigkeiten kommen aus dem Statusbericht des Importlaufs - also
+   * aus dem, was gemessen wurde, nicht aus einer Annahme. Die Zielgruppe
+   * ist `internal`, weil hier eine technische Frage beantwortet wird
+   * (welche Datenklasse, wie alt) und keine rechtliche.
+   */
+  function datenStatus(payload, daten, status) {
+    if (!RT.Feed || !LiveChart) return null;
+
+    var caps = global.VUCapabilities.declare(
+      (status && status.provider) || "unknown",
+      { market: (status && status.capabilities && status.capabilities.market) || {} });
+
+    var neg = RT.CapabilityNegotiation.negotiate({
+      capabilities: caps,
+      providerId: (status && status.provider) || "unknown",
+      audience: "internal",
+      gates: gates
+    });
+
+    var transports = {};
+    if ((daten.eod || []).length) transports.EOD = statischerTransport(daten.eod, "EOD");
+    if ((daten.intraday || []).length) {
+      transports.INTRADAY = statischerTransport(daten.intraday, "INTRADAY");
+    }
+
+    var host = el("div", {});
+    var feed = RT.Feed.createLiveFeed({
+      negotiation: neg,
+      capabilities: caps,
+      transports: transports,
+      timeframe: "1D",
+      interval: "1D",
+      adjustmentStatus: payload.adjustmentStatus || null,
+      calendar: kalender,
+      thresholds: schwellen,
+      /* Ein Tagesschluss altert in Tagen. Alle fuenf Sekunden nachzusehen
+         waere sinnlos; einmal pro Minute genuegt, damit der Uebergang in
+         eine andere Sitzung nicht unbemerkt bleibt. */
+      watchdogMs: 60000,
+      onStatus: function (s) { LiveChart.updateBadge(host.firstChild, s); }
+    });
+    feeds.push(feed);
+    feed.start();
+    host.appendChild(LiveChart.dataStatusBadge(feed.status()));
+    return host;
+  }
+
   function chartFor(payload, daten, rangeId) {
     var res = Ranges.selectRange(rangeId, daten, { gates: gates });
 
@@ -455,7 +560,7 @@
     return wrap;
   }
 
-  function seriesSection(payload) {
+  function seriesSection(payload, status) {
     var bars = payload.bars || [];
     var closes = bars.map(function (b) { return b.close; });
 
@@ -485,6 +590,11 @@
     }
     zeichne(aktiv);
 
+    /* Der Datenstatus steht ueber dem Chart und nicht unter ihm: er
+       beantwortet, was man gleich sehen wird. Eine Fusszeile beantwortet
+       es, nachdem man es schon geglaubt hat. */
+    var statusHost = datenStatus(payload, daten, status);
+
     return el("section", { class: "q-section" }, [
       el("div", { class: "q-section-head" }, [
         el("div", {}, [
@@ -492,8 +602,13 @@
           el("p", { text: payload.exchange + " · " + payload.currency + " · " +
                           bars.length + " Handelstage · " + adjustmentNote(payload.adjustmentStatus) })
         ]),
-        el("a", { class: "q-section-link", href: "?", text: "Uebersicht" })
+        statusHost || el("a", { class: "q-section-link", href: "?", text: "Uebersicht" })
       ]),
+      statusHost
+        ? el("p", { style: "margin:0 0 12px" }, [
+            el("a", { class: "q-section-link", href: "?", text: "Uebersicht" })
+          ])
+        : null,
       el("div", { class: "q-metrics" }, metrics.map(function (m) {
         return el("div", { class: "q-metric" }, [
           el("span", { class: "q-metric-label", text: m[0] }),
@@ -517,9 +632,19 @@
 
     /* Die Gates zuerst. Faellt die Datei aus, bleibt es beim strengsten
        Standard - ein fehlgeschlagener Abruf darf nichts freischalten. */
+    stopFeeds();
     Q.loadJSON(GATES_FILE, { attempts: 1 })
       .then(function (cfg) { gateConfig = cfg; gates = Policy.gatesFromConfig(cfg); })
       .catch(function () { gateConfig = null; gates = Policy.gatesFromConfig(null); })
+      .then(function () {
+        /* Beide Dateien sind optional. Ein fehlender Kalender darf die
+           Seite nicht anhalten - er macht die Sitzungsaussage nur
+           unsicherer, und genau das sagt der Befund dann auch. */
+        return Promise.all([
+          Q.loadJSON(CALENDAR_FILE, { attempts: 1 }).catch(function () { return null; }),
+          Q.loadJSON(THRESHOLDS_FILE, { attempts: 1 }).catch(function () { return null; })
+        ]).then(function (beides) { kalender = beides[0]; schwellen = beides[1]; });
+      })
       .then(function () { return Q.loadMarketStatus(); })
       .then(function (status) {
         Q.clear(root);
@@ -549,7 +674,7 @@
               })
               .catch(function () { return payload; });
           }).then(function (payload) {
-            root.appendChild(seriesSection(payload));
+            root.appendChild(seriesSection(payload, status));
             root.appendChild(Q.disclaimer());
           }).catch(function () {
             root.appendChild(Q.stateBox("Reihe nicht verfuegbar",
