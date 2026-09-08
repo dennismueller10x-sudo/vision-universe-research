@@ -17,6 +17,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadGoldenFiveSeries } from "./golden-five-series.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -44,6 +45,11 @@ const marketFile = join(root, "dashboard", "data", "market_data.json");
 const md = existsSync(marketFile) ? JSON.parse(readFileSync(marketFile, "utf8")) : null;
 const realSeries = {};
 if (md) for (const sym of Object.keys(md.symbols)) realSeries[sym] = Canonical.fromRows(md.symbols[sym], { instrumentId: sym, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: md.adjustment, source: "dashboard/data/market_data.json", sourceRevision: md.generated_at_utc, meta: { declaredAdjustment: md.adjustment, semanticsVersion: md.semantics_version } });
+/* Golden Five (Phase 5): eigene, eng begrenzte Real-Quelle neben dem
+   Dashboard-Bestand - dieselbe Ableitung wie build-technical-data.mjs
+   verwendet (golden-five-series.mjs), damit diese Nachrechnungspruefung
+   nicht an einer zweiten, abweichenden Kopie der Logik vorbeirechnet. */
+Object.assign(realSeries, loadGoldenFiveSeries(root, Canonical));
 let dataset = null, provider = null, benchMock = null;
 function mockSeries(ticker) {
   if (!dataset) {

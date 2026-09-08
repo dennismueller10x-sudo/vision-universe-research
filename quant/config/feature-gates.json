@@ -12,6 +12,11 @@
       "enabled": false,
       "reason": "Es liegt keine geprüfte Erlaubnis vor, Tiingo-Kurse oeffentlich anzuzeigen. Der Standard der Anzeigerichtlinie ist der strengste, und er gilt.",
       "changedAt": "2026-09-07"
+    },
+    "ENABLE_DEVELOPMENT_PREVIEW_MARKET_DATA": {
+      "enabled": true,
+      "reason": "Eigentuemerentscheidung Phase 5 (Golden Five): echte Tiingo-EOD-Kurse fuer genau AAPL/MSFT/NVDA/JPM/XOM in der Development Preview, siehe quant/config/development-preview.json fuer die Titel-Allowlist und Begruendung. Hebt ENABLE_PUBLIC_LIVE_MARKET_DATA NICHT an und ist keine Aussage ueber eine geklaerte Redistributionslizenz - research.visionuniverse.de bleibt ein oeffentliches, nicht zugriffsgeschuetztes Repository (siehe docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md).",
+      "changedAt": "2026-09-08"
     }
   }
 }

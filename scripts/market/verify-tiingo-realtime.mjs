@@ -104,6 +104,13 @@ async function main() {
 
   const provider = Tiingo.createTiingoProvider({
     apiKey,
+    /* Ohne diese Zeile bleibt der MarketClient ohne HTTP-Client und meldet
+       jede Anfrage als "notConfigured" - unabhaengig vom Schluessel. Genau
+       der Fehler, den dieser Nachweis eigentlich aufdecken soll: eine
+       Kapazitaet als nicht verfuegbar auszugeben, obwohl sie nie echt
+       angefragt wurde. Dieselbe Verdrahtung wie in ingest-tiingo.mjs,
+       verify-tiingo-runtime.mjs, fetch-market-data.mjs, evaluate-provider.mjs. */
+    fetchImpl: (url, init) => fetch(url, init),
     /* Ausdruecklich ohne Vorbefund: dieser Lauf soll messen, nicht einen
        frueheren Befund bestaetigen. */
     capabilities: Tiingo.freePlanCapabilities(undefined, null)

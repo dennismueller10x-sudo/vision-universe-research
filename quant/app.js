@@ -15,6 +15,7 @@
       rows.forEach(function (r) { byId[r.securityId] = r; });
 
       root.appendChild(hero(data, rows));
+      root.appendChild(goldenFiveSection());
       root.appendChild(overview(data, rows));
       root.appendChild(topQuant(data, rows));
       root.appendChild(movers(data, byId));
@@ -39,6 +40,46 @@
         "Die Anfrage wird in eine strukturierte, sichtbare Abfrage uebersetzt und von derselben Engine " +
         "ausgefuehrt wie der Screener." })
     ]);
+  }
+
+  /* Golden Universe (Phase 5): fuenf reale Titel mit echten SEC- und Tiingo-
+     Daten, ausserhalb des synthetischen 511-Titel-Modelluniversums und damit
+     nicht in data.securities.rows enthalten. Ohne diesen Abschnitt waeren sie
+     nur ueber eine direkte URL erreichbar - das widerspricht dem Ziel, sie
+     ganz normal in Vision Universe Quant zu finden. Laedt sich selbst nach,
+     damit S.page()'s "need" (securities/radar/rankings/...) unveraendert
+     bleibt und diese Seite fuer alle anderen Konsumenten kompatibel ist. */
+  function goldenFiveSection() {
+    var host = el("div", { class: "q-grid q-grid--3" }, [S.loading("Lade Golden-Universe-Titel …")]);
+    S.loadJSON(S.BASE + "data/sec/quant-factor-inputs.json", { attempts: 1 })
+      .then(function (panel) {
+        var cards = Object.keys(panel.securities || {}).map(function (ticker) {
+          var sec = panel.securities[ticker];
+          if (!sec.available) return null;
+          var ref = sec.reference || {};
+          return el("a", { class: "q-strategy", href: S.BASE + "stock/?ticker=" + ticker }, [
+            el("h3", { text: ticker + (ref.name ? " · " + ref.name : "") }),
+            el("p", { text: (ref.sector || "SEC EDGAR") + " · echte SEC-Fundamentaldaten" +
+              (sec.marketData ? " + echte Tiingo-Kurse" : "") + ", kein synthetischer Modelltitel." }),
+            el("div", { class: "q-strategy-meta" }, [
+              el("span", { class: "q-chip tone-strong", text: "REAL · SEC" }),
+              sec.marketData ? el("span", { class: "q-chip tone-strong", text: "REAL · TIINGO" }) : null
+            ])
+          ]);
+        }).filter(Boolean);
+        S.mount(host, cards.length
+          ? cards
+          : [S.stateBox("Golden Universe nicht verfuegbar", "Der Datensatz konnte nicht geladen werden.", "empty")]);
+      })
+      .catch(function () {
+        S.mount(host, [S.stateBox("Golden Universe nicht verfuegbar",
+          "quant/data/sec/quant-factor-inputs.json konnte nicht geladen werden.", "empty")]);
+      });
+    return C.section("Golden Universe — reale Unternehmen",
+      "Fuenf reale Titel mit echten SEC-Fundamentaldaten und (Development Preview) echten Tiingo-Kursen — " +
+      "kein synthetisches Modelluniversum. Anklicken fuer SEC-Daten, Marktdaten, Chart, Quant-Faktoren, " +
+      "Technical Intelligence und Elliott Wave auf einer Seite.",
+      host);
   }
 
   function overview(data, rows) {

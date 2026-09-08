@@ -22,6 +22,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadGoldenFiveSeries } from "./golden-five-series.mjs";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -110,6 +111,44 @@ for (const sym of Object.keys(realSeries)) {
   index.push({ instrumentId: sym, name: sym, dataMode: "real", isMock: false, asOf: b.analysisTime, bars: s.length, from: s.timestamps[0], opportunityScore: b.opportunityScore.score, trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null, elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
 }
 
+/* ------------------------------------------- 1b Golden Five (Phase 5) */
+// Eigene, eng begrenzte Real-Datenquelle neben dashboard/data/market_data.json
+// (die fuer die zehn uebrigen Referenztitel weiterhin UNAVAILABLE bleibt):
+// quant/data/market/golden-preview/daily/, siehe quant/config/development-preview.json
+// fuer die Titel-Allowlist und die Begruendung der Eigentuemerentscheidung.
+// Split-Bereinigung wird hier, wie beim Mock-Universum (Schritt 3), selbst
+// aus den Rohkursen und den in der Kursreihe mitgefuehrten splitFactor-Werten
+// abgeleitet (Canonical.fromPriceBars) - nicht aus Tiingos eigener
+// adjClose-Spalte uebernommen. Kein zweiter Netzwerkaufruf: die
+// Kapitalmassnahmen stehen bereits in den gespeicherten Bars.
+console.log("1b/4 Golden Five (Tiingo EOD, Development Preview) → CanonicalBars …");
+const goldenSeries = loadGoldenFiveSeries(root, Canonical);
+let goldenCount = 0;
+for (const ticker of Object.keys(goldenSeries)) {
+  if (realSeries[ticker]) { console.log(`     ${ticker}: bereits aus dashboard/data/market_data.json geladen — golden-preview uebersprungen`); continue; }
+  const series = goldenSeries[ticker];
+
+  const b = Analysis.analyze({ series, benchmarkSeries: null, methodology: METH,
+    options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "5Y" } });
+  const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString() });
+  store.put(snap);
+  const from = Math.max(0, series.length - DISPLAY_BARS);
+  write(`instruments/${ticker}.json`, {
+    instrumentId: ticker, dataMode: "real", isMock: false, source: "tiingo", sourceRevision: series.sourceRevision,
+    priceSeriesType: series.priceSeriesType, benchmarkId: null,
+    note: "Development Preview (Phase 5, Golden Five) — Eigentuemerentscheidung, siehe " +
+          "quant/config/development-preview.json. Kein Benchmark: relative Staerke bleibt UNAVAILABLE.",
+    bars: compactBars(series, from), bundle: compactBundle(b, from, series.timestamps[from]), snapshotId: snap.snapshotId
+  });
+  index.push({ instrumentId: ticker, name: ticker, dataMode: "real", isMock: false, asOf: b.analysisTime,
+    bars: series.length, from: series.timestamps[0], opportunityScore: b.opportunityScore.score,
+    trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null,
+    elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
+  goldenCount++;
+  console.log(`     ${ticker}: ${series.length} Bars, Elliott ${b.elliott ? b.elliott.status : "n/a"}`);
+}
+console.log(`     ${goldenCount} Golden-Five-Titel verarbeitet`);
+
 /* ------------------------------------------ 2 Walk-Forward: Projected vs Actual */
 console.log("2/4  Walk-Forward-Snapshots (Projected vs Actual) …");
 const evidence = [];
@@ -175,6 +214,15 @@ write("meta.json", {
       ? "Reale Tageskurse aus dem Dashboard-Marktdatenbestand. Oeffentliche Anzeige nur bei dokumentierter Freigabe."
       : "Keine oeffentlich freigegebenen Provider-Kursdaten; Technical wird ausschliesslich aus Mock-Daten erzeugt."
   } : null,
+  goldenFive: {
+    symbols: goldenCount,
+    provider: "tiingo",
+    scope: "development_preview",
+    note: goldenCount
+      ? "Echte Tiingo-EOD-Kurse fuer das Golden-Five-Titel-Set (Phase 5), Eigentuemerentscheidung " +
+        "dokumentiert in quant/config/development-preview.json. Kein Benchmark: relative Staerke bleibt UNAVAILABLE."
+      : "Keine Golden-Five-Kursdaten unter quant/data/market/golden-preview/daily/ gefunden."
+  },
   mockData: { seed: dataset.meta.seed, dataSnapshotId: dataset.meta.dataSnapshotId, securities: universe.length, isMock: true },
   snapshots: store.count(), walkForwardCutoffs: WALKFORWARD_CUTOFFS
 });

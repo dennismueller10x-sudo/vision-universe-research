@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Explizite, datierte Freigabe fuer Phase 5 (Golden Five), gelesen von quant/engines/display-policy.js#declareFromConfig. Dies ist eine bewusste Produktentscheidung des Eigentuemers ueber ein eng begrenztes Titel-Set, KEINE Aussage ueber eine geklaerte Tiingo-/Twelve-Data-Redistributionslizenz und KEIN globales Gate fuer alle Marktdaten. research.visionuniverse.de ist ein oeffentliches, nicht zugriffsgeschuetztes GitHub-Pages-Repository (Repository selbst public, kein Cloudflare Access, kein privater Host) - jede hier freigegebene Datenklasse ist damit fuer jeden im Internet sichtbar, ungeachtet der Bezeichnung 'Development Preview'. Siehe docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md und docs/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md fuer den vollen Befund. ENABLE_PUBLIC_LIVE_MARKET_DATA (quant/config/feature-gates.json) bleibt unveraendert false.",
+  "decidedBy": "Repository owner, 2026-09-08 (explizite, informierte Anweisung im Chat-Verlauf dieser Phase; keine externe Rechtspruefung)",
+  "scope": ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
+  "grants": [
+    {
+      "providerId": "tiingo",
+      "dataClass": "marketData",
+      "developmentPreviewDisplayAllowed": true,
+      "developmentPreviewScope": ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
+      "basis": "Eigentuemerentscheidung, Phase 5 Golden Five: End-of-Day-Kurse dieser fuenf Titel duerfen in der Development Preview sichtbar sein, obwohl provider-profiles.json fuer Tiingo weiterhin licensing.status=LEGAL_REVIEW_REQUIRED trägt und die Seite oeffentlich ohne Zugriffsschutz ausgeliefert wird. Realtime bleibt ausgeschlossen (kein Laufzeitbeleg fuer dieses Konto).",
+      "checkedAt": "2026-09-08"
+    }
+  ]
+}

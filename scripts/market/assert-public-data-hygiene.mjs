@@ -7,7 +7,15 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+/* --root=<path> is test-only: it lets DH3/DH4 point this guard at a
+   throwaway fixture tree instead of the real repository, so a test that
+   exercises "does the guard actually catch a leak" never has to write into
+   quant/data/market itself (DO-NOT-BREAK #10 - verification runs on
+   copies, never on committed production data). Without it, root is always
+   this file's real location, exactly as before. */
+const rootArg = process.argv.find((a) => a.startsWith("--root="));
+const root = rootArg ? rootArg.slice("--root=".length)
+  : join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const findings = [];
 
 function json(relativePath) {
@@ -28,6 +36,32 @@ if (existsSync(publicDaily)) {
   for (const name of readdirSync(publicDaily).filter((name) => name.endsWith(".json"))) {
     const payload = json(join("quant", "data", "market", "daily", name));
     if (hasBars(payload)) findings.push(`quant/data/market/daily/${name}: raw bars in public tree`);
+  }
+}
+
+/* Phase 5, Golden Five: the ONE narrow, explicit exception, not a blind
+   spot. quant/data/market/golden-preview/daily/ may carry real bars, but
+   only for the exact tickers named in development-preview.json's scope -
+   this block re-derives that scope and fails loudly if a bar for any other
+   ticker (or any file without a resolvable ticker) shows up there. The
+   general quant/data/market/daily/ check above is unaffected and still
+   blocks everything, including these same five tickers under that path. */
+const previewConfig = json("quant/config/development-preview.json");
+const previewScope = new Set((previewConfig && previewConfig.scope) || []);
+const previewDaily = join(root, "quant", "data", "market", "golden-preview", "daily");
+if (existsSync(previewDaily)) {
+  if (!previewScope.size) {
+    findings.push("quant/data/market/golden-preview/daily/ exists but quant/config/development-preview.json " +
+                  "declares no scope - remove the directory or restore the declared allowlist.");
+  }
+  for (const name of readdirSync(previewDaily).filter((name) => name.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "golden-preview", "daily", name));
+    if (!hasBars(payload)) continue;
+    if (!payload.ticker || !previewScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/golden-preview/daily/${name}: real bars for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared Golden Five scope ` +
+                    `(${[...previewScope].join(", ")})`);
+    }
   }
 }
 
@@ -58,14 +92,38 @@ for (const relativePath of [
   }
 }
 
+/* Phase 5, Golden Five: the same narrow, explicit exception as the raw-bar
+   check above. A real (isMock:false) technical instrument bundle may only
+   exist for a ticker in development-preview.json's declared scope - any
+   other real bundle here is a leak, not a feature. */
 const instruments = join(root, "quant", "data", "technical", "instruments");
 if (existsSync(instruments)) {
   for (const name of readdirSync(instruments).filter((name) => name.endsWith(".json"))) {
     const payload = json(join("quant", "data", "technical", "instruments", name));
     if (payload && payload.isMock === false && hasBars(payload)) {
-      findings.push(`quant/data/technical/instruments/${name}: provider-derived raw bars in public bundle`);
+      const instrumentId = payload.instrumentId || name.replace(/\.json$/, "");
+      if (!previewScope.has(instrumentId)) {
+        findings.push(`quant/data/technical/instruments/${name}: real bars for '${instrumentId}' ` +
+                      `outside the declared Golden Five scope (${[...previewScope].join(", ")})`);
+      }
     }
   }
+}
+
+/* quant/data/market/tiingo-realtime-verification.json is the SHARED,
+   global path Tiingo.freePlanCapabilities() reads (with no report
+   override) to raise realtime/websocket/delayed/intraday/extendedHours
+   from "unverified" to a measured value for the WHOLE application - not
+   just the Golden Five. .github/workflows/tiingo-verify.yml's own
+   realtime job deliberately treats it as artifact-only and never commits
+   it ("Er veroeffentlicht nichts"). A committed copy would silently
+   promote whichever single ticker last wrote it into an account-wide
+   capability claim, and would make providers/tiingo/adapter.js's own
+   test suite (I01/Q in quant/tests/realtime-*.test.mjs) depend on
+   whatever happens to be checked in. It must never be committed. */
+if (existsSync(join(root, "quant", "data", "market", "tiingo-realtime-verification.json"))) {
+  findings.push("quant/data/market/tiingo-realtime-verification.json: this shared evidence file must stay " +
+                "artifact-only (see .github/workflows/tiingo-verify.yml) - it must never be committed to the repository.");
 }
 
 if (findings.length) {
