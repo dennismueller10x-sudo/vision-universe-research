@@ -1,8 +1,8 @@
 {
-  "generated_at_utc": "2026-09-08T04:11:15.918Z",
+  "generated_at_utc": "2026-09-08T04:19:20.017Z",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.4.0",
+    "normalization_logic": "1.5.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -393,29 +393,29 @@
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
           "status": "PASS",
-          "reason": "all 5822 observations become available on or after their period end",
+          "reason": "all 5976 observations become available on or after their period end",
           "evidence": {
-            "observations_checked": 5822
+            "observations_checked": 5976
           }
         },
         {
           "gate": "PROVENANCE_COMPLETE",
           "status": "PASS",
-          "reason": "all 5822 observations carry concept, accession, form, filing date and availability",
+          "reason": "all 5976 observations carry concept, accession, form, filing date and availability",
           "evidence": {
-            "observations_checked": 5822
+            "observations_checked": 5976
           }
         },
         {
           "gate": "PERIOD_INTEGRITY",
           "status": "PASS",
-          "reason": "all 2063 quarterly observations span a single quarter",
+          "reason": "all 2127 quarterly observations span a single quarter",
           "evidence": {}
         },
         {
           "gate": "UNIT_INTEGRITY",
           "status": "PASS",
-          "reason": "all 5822 observations use a registry-allowed unit",
+          "reason": "all 5976 observations use a registry-allowed unit",
           "evidence": {}
         },
         {
@@ -600,14 +600,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (616.028107), der spaete die Korrektur (612.191412). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (566.5), der spaete die Korrektur (561.465851). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 616.028107,
-            "afterValue": 612.191412,
+            "beforeValue": 566.5,
+            "afterValue": 561.465851,
             "beforeStatus": "original",
             "afterStatus": "restated",
-            "beforeAvailableAt": "2012-03-13",
-            "afterAvailableAt": "2013-03-12"
+            "beforeAvailableAt": "2010-03-18",
+            "afterAvailableAt": "2011-03-16"
           }
         },
         "GATE_B_DELISTING": {
@@ -617,7 +617,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 714,
+            "fundamentalRecords": 767,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -625,9 +625,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "714 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "767 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 714,
+            "total": 767,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,

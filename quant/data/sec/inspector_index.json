@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-08T04:11:19+00:00",
+  "generated_at_utc": "2026-09-08T04:19:23+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.4.0",
+    "normalization_logic": "1.5.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -114,17 +114,17 @@
       "rows": 864,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 22056,
+        "total": 21847,
         "by_severity": {
           "INFO": 21590,
           "ERROR": 5,
-          "WARNING": 461
+          "WARNING": 252
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 297,
+          "CONCEPT_DISAGREEMENT": 151,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 156,
+          "RESTATEMENT_CONFLICT": 93,
           "UNKNOWN_CONCEPT": 21590,
           "UNPLACEABLE_PERIOD": 2
         }
