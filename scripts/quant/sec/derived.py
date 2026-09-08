@@ -38,6 +38,13 @@ FORMULAS = {
     "accruals": "(net_income - operating_cash_flow) / total_assets",
 }
 
+# Canonical metrics a filer may report directly. `reconstruct` prefers the
+# reported line for these and computes only when it is absent, so a fact for one
+# of them may legitimately carry source SEC_EDGAR_XBRL. Every other metric here
+# exists only as a computation, and an SEC label on one would be a false claim
+# about where the number came from -- which is what DERIVED_SEPARATION checks.
+PASS_THROUGH_METRICS = ("gross_profit", "total_debt")
+
 
 def _quality(inputs):
     order = (QUALITY_HIGH, QUALITY_MEDIUM, QUALITY_LOW)

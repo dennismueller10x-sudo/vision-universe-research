@@ -329,6 +329,24 @@ class CoverageTests(PipelineTestCase):
         coverage = company_coverage(self.document, self.registry)
         self.assertEqual(coverage["years"][2023]["status"], STRUCTURED)
 
+    def test_the_grid_is_headed_by_the_declared_ticker_when_the_sec_names_none(self):
+        """The XOM case: the filing history's CIK carries no ticker any more."""
+        cik = normalize_cik(4000000030)
+        stripped = dict(self.document)
+        stripped["profile"] = {**self.document["profile"], "tickers": []}
+        matrix = build_matrix([stripped], self.registry, labels={cik: "SYN8"})
+        for year in matrix["grid"].values():
+            self.assertIn("SYN8", year)
+            self.assertNotIn(cik, year)
+
+    def test_the_grid_falls_back_to_the_cik_when_nothing_names_a_ticker(self):
+        cik = normalize_cik(4000000030)
+        stripped = dict(self.document)
+        stripped["profile"] = {**self.document["profile"], "tickers": []}
+        matrix = build_matrix([stripped], self.registry)
+        for year in matrix["grid"].values():
+            self.assertIn(cik, year)
+
     def test_the_first_usable_year_is_reported(self):
         coverage = company_coverage(self.document, self.registry)
         self.assertIsNotNone(coverage["first_usable_year"])

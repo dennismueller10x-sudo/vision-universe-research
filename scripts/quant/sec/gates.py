@@ -24,7 +24,7 @@ A check returns exactly one of:
 A check is never marked PASS because it was not tested.
 """
 from .fiscal import parse_date
-from .model import SOURCE_DERIVED
+from .model import SOURCE_DERIVED, TRANSFORM_FORMULA
 from .restatements import to_instant
 
 PASS = "PASS"
@@ -165,12 +165,34 @@ def gate_no_invented_values(facts):
 
 
 def gate_derived_separation(derived_facts):
-    """VU-computed numbers must never be labelled as SEC data."""
+    """VU-computed numbers must never be labelled as SEC data.
+
+    `derived.reconstruct` returns a canonical set of metrics, not a set of
+    computations: where the company reports gross profit or total debt itself,
+    the reported fact is passed through rather than recomputed. Such a fact is
+    SEC data correctly labelled as SEC data -- which is what this gate is for,
+    so it must not be counted against it. Live SEC data made the distinction
+    matter: MSFT reports gross profit natively and the gate failed on it.
+
+    Only the metrics `derived.PASS_THROUGH_METRICS` names may arrive that way.
+    Every other metric here exists only as a computation, so an SEC label on one
+    stays a failure -- and source and transformation must agree either way.
+    """
+    from .derived import PASS_THROUGH_METRICS
+
     offenders = []
+    computed = 0
     for name, fact in derived_facts.items():
-        if fact.provenance.source != SOURCE_DERIVED:
-            offenders.append({"metric": name, "source": fact.provenance.source})
-        elif fact.available and not fact.provenance.formula_version:
+        is_formula = fact.provenance.transformation == TRANSFORM_FORMULA
+        claims_derived = fact.provenance.source == SOURCE_DERIVED
+        if not is_formula and not claims_derived and name in PASS_THROUGH_METRICS:
+            continue                       # a reported fact, passed through
+        if not (is_formula and claims_derived):
+            offenders.append({"metric": name, "source": fact.provenance.source,
+                              "transformation": fact.provenance.transformation})
+            continue
+        computed += 1
+        if fact.available and not fact.provenance.formula_version:
             offenders.append({"metric": name, "source": "missing formula_version"})
     if not derived_facts:
         return _result("DERIVED_SEPARATION", UNKNOWN, "no derived metrics supplied")
@@ -179,8 +201,10 @@ def gate_derived_separation(derived_facts):
                        "derived metrics are not clearly separated from SEC facts",
                        {"examples": offenders[:10]})
     return _result("DERIVED_SEPARATION", PASS,
-                   f"all {len(derived_facts)} derived metrics carry source "
-                   f"{SOURCE_DERIVED} and a formula version")
+                   f"{computed} of {len(derived_facts)} canonical metrics were "
+                   f"computed here; each carries source {SOURCE_DERIVED} and a "
+                   f"formula version, and the rest are reported facts passed "
+                   f"through unchanged")
 
 
 

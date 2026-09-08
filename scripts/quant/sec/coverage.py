@@ -108,13 +108,21 @@ def company_coverage(document, registry, factbook=None, core_metrics=CORE_METRIC
     }
 
 
-def build_matrix(documents, registry, probe_years=(2025, 2020, 2015, 2010, 2005, 2000, 1995)):
-    """Coverage for a set of companies, plus the compact probe-year grid."""
+def build_matrix(documents, registry, probe_years=(2025, 2020, 2015, 2010, 2005, 2000, 1995),
+                 labels=None):
+    """Coverage for a set of companies, plus the compact probe-year grid.
+
+    `labels` maps CIK to the ticker to head the column with, for entities the
+    SEC's own record no longer names one for. Without it the CIK is used, which
+    is readable in a diagnostic grid but is not a ticker.
+    """
+    labels = labels or {}
     companies = [company_coverage(document, registry) for document in documents]
     grid = {}
     for year in probe_years:
         grid[str(year)] = {
-            (company["tickers"][0] if company["tickers"] else company["cik"]):
+            (company["tickers"][0] if company["tickers"]
+             else labels.get(company["cik"]) or company["cik"]):
                 (company["years"].get(year) or {}).get("status", MISSING)
             for company in companies
         }

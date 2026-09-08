@@ -44,6 +44,34 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
 
 
+def period_end_for_cover_date(cover_date, observed_ends):
+    """The end date of the period a cover-date instant describes.
+
+    A cover date is when the share count was taken, not when the period ended,
+    so it must not be published as the cell's period end -- the same fiscal
+    quarter would then carry two end dates, the cover date and the
+    balance-sheet date the next filing reports, and the canonical layer
+    suppresses such a cell as ambiguous. Live SEC data lost 136
+    sharesOutstanding cells that way.
+
+    `observed_ends` counts the end dates the company itself reported for the
+    same fiscal period. Nothing is interpolated, and two candidates are refused:
+
+      - a date AFTER the cover date, because a cover date follows the period it
+        describes. Live NVDA data offered one -- an early year whose periods the
+        fiscal calendar cannot place unambiguously held a date a full year
+        later, and borrowing it made a 2009 filing look like it knew a 2010
+        balance sheet. The PIT gate caught it.
+      - nothing at all, when the period has no other fact: then no measured end
+        date exists and the cover date stands.
+
+    Among the remaining candidates the latest wins: it is the most recent period
+    end the cover date can be following.
+    """
+    usable = [end for end in (observed_ends or {}) if end and end <= cover_date]
+    return max(usable) if usable else cover_date
+
+
 def build_availability_map(filing_metadata):
     """accession -> ISO datetime the filing became publicly available.
 
@@ -194,9 +222,8 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             # taken from what the company itself reported for the same period;
             # nothing is interpolated. Where no other fact exists for the
             # period, there is no measured end date and the cover date stands.
-            observed = observed_period_ends.get((fiscal_year, fiscal_period))
-            if observed:
-                period_end = observed.most_common(1)[0][0]
+            period_end = period_end_for_cover_date(
+                fact.end, observed_period_ends.get((fiscal_year, fiscal_period)))
 
         provenance = Provenance(
             source=SOURCE_SEC,

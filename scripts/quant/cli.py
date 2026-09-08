@@ -253,7 +253,8 @@ def cmd_coverage(args):
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
-    matrix = coverage_module.build_matrix(documents, registry)
+    matrix = coverage_module.build_matrix(documents, registry,
+                                          labels=_declared_tickers())
     matrix["generated_at_utc"] = _utcnow()
     matrix["versions"] = version_stamp(registry.version)
     _write(DATA_DIR / "coverage_matrix.json", matrix)

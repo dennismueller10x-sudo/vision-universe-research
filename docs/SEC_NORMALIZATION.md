@@ -100,6 +100,36 @@ A balance sheet dated on the fiscal year end is emitted under both `FY` and `Q4`
 because it is genuinely both, and a quarterly balance-sheet series should not
 have a hole every fourth quarter.
 
+### 4.1 Cover-date instants
+
+`dei:EntityCommonStockSharesOutstanding` is a **cover-page** disclosure: the
+share count as of the latest practicable date before filing, not as of the
+balance-sheet date. Apple's 10-K for the year ended 26 September 2009 states it
+as of 16 October 2009. Two separate mistakes follow from that one date, and live
+SEC data produced both:
+
+1. *Which period does it describe?* Asking which fiscal quarter 16 October falls
+   into gives the **following** quarter. The period the number describes then
+   holds none and the next one holds two. `FiscalCalendar.assign_cover_date`
+   places a cover-date instant on the last period that had already **closed**.
+2. *What is that period's end date?* Not the cover date. Publishing 2009-10-16
+   as the period end put two end dates under one fiscal quarter — the cover
+   date, and the balance-sheet date 2009-09-26 that the very next filing reports
+   for the same quarter — and the canonical layer suppressed the cell as
+   ambiguous. The period end is taken instead from what the company itself
+   reported for that fiscal period. Nothing is interpolated: where no other fact
+   exists for the period, no measured end date exists either and the cover date
+   stands.
+
+The observation keeps the flag `COVER_DATE_INSTANT` and quality `MEDIUM`, so a
+consumer can always tell that the measurement date is a few weeks after the
+period end. That is a property of the SEC's disclosure, not of this pipeline.
+
+Measured effect on the five validation companies: 136 `sharesOutstanding` cells
+were being suppressed for this reason before the second fix — one per fiscal year
+for AAPL, MSFT and NVDA, two to three for JPM and XOM, across every year from
+2009.
+
 ## 5. Year-to-date de-accumulation
 
 A typical filer reports Q1 standalone, then Q2 and Q3 only as cumulative
@@ -207,7 +237,7 @@ rather than omitting them, so a gap is visible rather than invisible.
 Every stored document carries `versions`:
 
 ```json
-{"normalization_schema": "1.0.0", "normalization_logic": "1.0.0",
+{"normalization_schema": "1.0.0", "normalization_logic": "1.2.0",
  "formula": "1.0.0", "provider_adapter": "sec-edgar-1.0.0",
  "quality_rules": "1.0.0",
  "metric_registry": {"schema_version": 1, "mapping_version": "1.0.0"}}
@@ -217,3 +247,20 @@ A change to any of them invalidates stored output: the pipeline's "unchanged,
 skip" path compares versions as well as the latest filing, so changing a revenue
 mapping re-normalizes everything rather than leaving a mixed-vintage store. This
 is tested (`test_a_registry_version_change_invalidates_stored_output`).
+
+Two live runs were lost to this mechanism failing quietly, and both holes are now
+tests:
+
+- **The version was not bumped.** A cover-date fix was deployed, every workflow
+  step reported success, and nothing was re-normalized — the stamp still matched.
+  `NORMALIZATION_SOURCE_DIGEST` is a sha256 over the modules that define
+  normalization semantics (`normalize`, `fiscal`, `periods`, `derived`,
+  `canonical`); `test_version_discipline.py` fails if one of them changes without
+  the version moving, and names the digest to record.
+- **The checkpoint outranked the version.** `ingest_universe` skipped every
+  company the checkpoint marked COMPLETED, jumping over `_is_current` entirely.
+  The checkpoint answers "did this run already do this company", not "is the
+  stored result still valid"; the resume shortcut now also requires the stored
+  version stamp to match the running code. The stamp is local, so this costs no
+  request (`test_a_version_change_re_normalizes_a_completed_company`, with a
+  counter-test that an unchanged stamp still saves the fetches).

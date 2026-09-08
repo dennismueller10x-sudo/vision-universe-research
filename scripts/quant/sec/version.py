@@ -17,9 +17,14 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #
 # 1.2.0 — a cover-date instant no longer publishes its cover date as the cell's
 #         period end. The end date comes from what the company itself reported
-#         for the same fiscal period; only where no such fact exists does the
-#         cover date stand.
-NORMALIZATION_LOGIC_VERSION = "1.2.0"
+#         for the same fiscal period.
+#
+# 1.3.0 — a borrowed period end must not fall after the cover date. Version
+#         1.2.0 shipped without that guard, and in the early years the fiscal
+#         calendar cannot place unambiguously it borrowed a date a full year
+#         later, so a filing appeared to know a balance sheet that had not
+#         happened yet.
+NORMALIZATION_LOGIC_VERSION = "1.3.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -48,7 +53,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "80093954dab81c1c9ea8619ed20ee874656b4468688d540f4a61f245a72ac5c9"
+    "a35cc307c7b0a739c441c1ee9a043ef957ea32f90664937f8aa893870287c2dc"
 )
 
 

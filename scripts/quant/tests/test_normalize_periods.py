@@ -10,7 +10,7 @@ from quant.sec.model import (
     TRANSFORM_YTD_DIFF, TRANSFORM_FY_MINUS_YTD, TRANSFORM_NONE, TRANSFORM_SUM,
     SOURCE_SEC, NOT_APPLICABLE_FOR_SECTOR, MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY,
 )
-from quant.sec.normalize import normalize_company
+from quant.sec.normalize import normalize_company, period_end_for_cover_date
 from quant.sec.periods import PeriodResolver
 from quant.sec.provider import SECProvider
 from quant.sec.registry import MetricRegistry
@@ -383,6 +383,47 @@ class CoverDateInstantTests(unittest.TestCase):
         self.assertTrue(observations)
         for observation in observations:
             self.assertEqual(observation.period_end, "2024-04-25")
+
+    def test_the_latest_qualifying_period_end_is_taken(self):
+        self.assertEqual(
+            period_end_for_cover_date("2024-01-20",
+                                      {"2023-12-31": 4, "2023-09-30": 1}),
+            "2023-12-31")
+
+    def test_a_period_end_after_the_cover_date_is_never_borrowed(self):
+        """The live NVDA numbers, exactly as the PIT gate reported them.
+
+        NVDA FY2010 Q2: a cover-date instant from a filing available
+        2009-08-20 was given the period end 2010-08-01 -- a full year later,
+        because the early years of NVDA's XBRL history are the ones the fiscal
+        calendar cannot place unambiguously. The result was an observation
+        available a year before its period ended, which the
+        PIT_NO_FUTURE_DATA_LEAK gate failed on with 4 offenders.
+        """
+        self.assertEqual(
+            period_end_for_cover_date("2009-08-20", {"2010-08-01": 3}),
+            "2009-08-20",
+            "a date after the cover date belongs to a different period")
+
+    def test_without_a_measured_end_date_the_cover_date_stands(self):
+        self.assertEqual(period_end_for_cover_date("2024-01-20", {}), "2024-01-20")
+        self.assertEqual(period_end_for_cover_date("2024-01-20", None), "2024-01-20")
+
+    def test_a_period_end_equal_to_the_cover_date_qualifies(self):
+        self.assertEqual(
+            period_end_for_cover_date("2023-12-31", {"2023-12-31": 1}), "2023-12-31")
+
+    def test_no_observation_is_available_before_its_period_ended(self):
+        """The invariant the PIT gate checks, asserted at the source."""
+        result, _ = normalize(self._builder(2000000028, with_balance_sheet_fact=True),
+                              self.registry, 2000000028)
+        for (metric, year, period), timeline in result.factbook.timelines.items():
+            for observation in timeline.observations:
+                if observation.period_end is None:
+                    continue
+                self.assertLessEqual(observation.period_end,
+                                     (observation.available_from or "9999")[:10],
+                                     f"{metric} {year} {period}")
 
     def test_a_balance_sheet_instant_keeps_its_own_date(self):
         """Only cover-date instants borrow a period end; nothing else moves."""
