@@ -1,0 +1,1318 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAtUtc": "2026-09-08T16:04:02.917Z",
+  "note": "Praekomputierte SEC-basierte Faktor-Rohwerte fuer das Golden Universe (Phase 5). Kein VU Quant Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier Sektoren waere scheinpraezise, keine echte Kennzahl (normalization.js verlangt eine Mindest-Peergroesse von 12). Value/Momentum/Risk sind ausschliesslich marktdatenbasiert und bleiben UNAVAILABLE, solange auf research.visionuniverse.de keine lizenzierten Kurse ausgeliefert werden.",
+  "methodologyReference": "quant/methodology/quant-v1.json",
+  "source": "providers/sec/adapter.js -> quant/engines/sec-fact-panel.js -> quant/engines/factors.js",
+  "versions": {
+    "buildScript": "sec-quant-panel-1.0.0",
+    "factPanelBridge": "sec-fact-panel-1.0.0"
+  },
+  "securities": {
+    "AAPL": {
+      "ticker": "AAPL",
+      "securityId": "sec_AAPL",
+      "reference": {
+        "name": "Apple Inc.",
+        "sector": "Electronic Computers",
+        "industry": "Electronic Computers",
+        "factsCount": 962,
+        "filingsCount": 93,
+        "unsupportedMetrics": {
+          "ebitda": "requires depreciation and amortisation, which the metric registry does not yet map from a reliably-tagged XBRL concept",
+          "dividendPerShare": "SEC cash-flow statements report total dividends paid, not a per-share amount"
+        }
+      },
+      "available": true,
+      "reason": null,
+      "asOfPeriodEnd": "2026-06-27",
+      "restatementStatus": "original",
+      "fundamentals": {
+        "revenue": 466823,
+        "freeCashFlow": 136683,
+        "netIncome": 128930,
+        "marketCap": null,
+        "roic": 81.384,
+        "grossProfitability": 0.5926,
+        "fcfMargin": 29.279,
+        "operatingMargin": 33.173,
+        "balanceSheetQuality": 70.65,
+        "leverage": null,
+        "earningsYield": null,
+        "fcfYield": null,
+        "evToEbitda": null,
+        "evToSales": null,
+        "priceToFcf": null,
+        "revenueGrowth": 14.242,
+        "epsGrowth": 32.056,
+        "fcfGrowth": 42.106,
+        "marginExpansion": 1.307,
+        "dividendYield": null,
+        "consecutiveDividendGrowthYears": null,
+        "_asOfPeriodEnd": "2026-06-27",
+        "_asOfAvailableAt": "2026-07-31",
+        "_restatementStatus": "original",
+        "_revisionId": 0
+      },
+      "coverage": {
+        "quality": {
+          "components": [
+            {
+              "fieldId": "roic",
+              "real": true,
+              "value": 81.384,
+              "reason": null
+            },
+            {
+              "fieldId": "grossProfitability",
+              "real": true,
+              "value": 0.5926,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfMargin",
+              "real": true,
+              "value": 29.279,
+              "reason": null
+            },
+            {
+              "fieldId": "operatingMargin",
+              "real": true,
+              "value": 33.173,
+              "reason": null
+            },
+            {
+              "fieldId": "balanceSheetQuality",
+              "real": true,
+              "value": 70.65,
+              "reason": null
+            },
+            {
+              "fieldId": "leverage",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 5,
+          "totalCount": 6,
+          "status": "PARTIAL"
+        },
+        "growth": {
+          "components": [
+            {
+              "fieldId": "revenueGrowth",
+              "real": true,
+              "value": 14.242,
+              "reason": null
+            },
+            {
+              "fieldId": "epsGrowth",
+              "real": true,
+              "value": 32.056,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfGrowth",
+              "real": true,
+              "value": 42.106,
+              "reason": null
+            },
+            {
+              "fieldId": "marginExpansion",
+              "real": true,
+              "value": 1.307,
+              "reason": null
+            }
+          ],
+          "realCount": 4,
+          "totalCount": 4,
+          "status": "REAL"
+        },
+        "value": {
+          "components": [
+            {
+              "fieldId": "earningsYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "fcfYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToEbitda",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToSales",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "priceToFcf",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "dividendYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 6,
+          "status": "UNAVAILABLE"
+        },
+        "momentum": {
+          "components": [
+            {
+              "fieldId": "momentum12m1m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum6m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum3m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "relativeStrength",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "distanceTo52wHigh",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo50dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo200dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 7,
+          "status": "UNAVAILABLE"
+        },
+        "risk": {
+          "components": [
+            {
+              "fieldId": "volatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "downsideVolatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "maxDrawdown",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "beta",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 4,
+          "status": "UNAVAILABLE"
+        },
+        "revisions": {
+          "components": [],
+          "realCount": 0,
+          "totalCount": 0,
+          "status": "UNAVAILABLE"
+        }
+      },
+      "provenance": {
+        "provider": "sec-edgar",
+        "source": "sec_edgar_companyfacts_xbrl",
+        "asOf": "2026-06-27",
+        "availableAt": "2026-07-31",
+        "ingestedAt": "2026-09-08T04:19:02+00:00",
+        "methodologyVersion": "sec-1.5.0",
+        "dataSnapshotId": "sec-quant-inputs-AAPL",
+        "isMock": false
+      }
+    },
+    "MSFT": {
+      "ticker": "MSFT",
+      "securityId": "sec_MSFT",
+      "reference": {
+        "name": "MICROSOFT CORP",
+        "sector": "Services-Prepackaged Software",
+        "industry": "Services-Prepackaged Software",
+        "factsCount": 998,
+        "filingsCount": 91,
+        "unsupportedMetrics": {
+          "ebitda": "requires depreciation and amortisation, which the metric registry does not yet map from a reliably-tagged XBRL concept",
+          "dividendPerShare": "SEC cash-flow statements report total dividends paid, not a per-share amount"
+        }
+      },
+      "available": true,
+      "reason": null,
+      "asOfPeriodEnd": "2026-06-30",
+      "restatementStatus": "original",
+      "fundamentals": {
+        "revenue": 331839,
+        "freeCashFlow": 66987,
+        "netIncome": 133749,
+        "marketCap": null,
+        "roic": 26.559,
+        "grossProfitability": 0.2973,
+        "fcfMargin": 20.187,
+        "operatingMargin": 46.781,
+        "balanceSheetQuality": 75.31,
+        "leverage": null,
+        "earningsYield": null,
+        "fcfYield": null,
+        "evToEbitda": null,
+        "evToSales": null,
+        "priceToFcf": null,
+        "revenueGrowth": 17.789,
+        "epsGrowth": 31.492,
+        "fcfGrowth": -6.457,
+        "marginExpansion": 1.159,
+        "dividendYield": null,
+        "consecutiveDividendGrowthYears": null,
+        "_asOfPeriodEnd": "2026-06-30",
+        "_asOfAvailableAt": "2026-07-29",
+        "_restatementStatus": "original",
+        "_revisionId": 0
+      },
+      "coverage": {
+        "quality": {
+          "components": [
+            {
+              "fieldId": "roic",
+              "real": true,
+              "value": 26.559,
+              "reason": null
+            },
+            {
+              "fieldId": "grossProfitability",
+              "real": true,
+              "value": 0.2973,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfMargin",
+              "real": true,
+              "value": 20.187,
+              "reason": null
+            },
+            {
+              "fieldId": "operatingMargin",
+              "real": true,
+              "value": 46.781,
+              "reason": null
+            },
+            {
+              "fieldId": "balanceSheetQuality",
+              "real": true,
+              "value": 75.31,
+              "reason": null
+            },
+            {
+              "fieldId": "leverage",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 5,
+          "totalCount": 6,
+          "status": "PARTIAL"
+        },
+        "growth": {
+          "components": [
+            {
+              "fieldId": "revenueGrowth",
+              "real": true,
+              "value": 17.789,
+              "reason": null
+            },
+            {
+              "fieldId": "epsGrowth",
+              "real": true,
+              "value": 31.492,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfGrowth",
+              "real": true,
+              "value": -6.457,
+              "reason": null
+            },
+            {
+              "fieldId": "marginExpansion",
+              "real": true,
+              "value": 1.159,
+              "reason": null
+            }
+          ],
+          "realCount": 4,
+          "totalCount": 4,
+          "status": "REAL"
+        },
+        "value": {
+          "components": [
+            {
+              "fieldId": "earningsYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "fcfYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToEbitda",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToSales",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "priceToFcf",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "dividendYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 6,
+          "status": "UNAVAILABLE"
+        },
+        "momentum": {
+          "components": [
+            {
+              "fieldId": "momentum12m1m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum6m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum3m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "relativeStrength",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "distanceTo52wHigh",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo50dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo200dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 7,
+          "status": "UNAVAILABLE"
+        },
+        "risk": {
+          "components": [
+            {
+              "fieldId": "volatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "downsideVolatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "maxDrawdown",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "beta",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 4,
+          "status": "UNAVAILABLE"
+        },
+        "revisions": {
+          "components": [],
+          "realCount": 0,
+          "totalCount": 0,
+          "status": "UNAVAILABLE"
+        }
+      },
+      "provenance": {
+        "provider": "sec-edgar",
+        "source": "sec_edgar_companyfacts_xbrl",
+        "asOf": "2026-06-30",
+        "availableAt": "2026-07-29",
+        "ingestedAt": "2026-09-08T04:19:02+00:00",
+        "methodologyVersion": "sec-1.5.0",
+        "dataSnapshotId": "sec-quant-inputs-MSFT",
+        "isMock": false
+      }
+    },
+    "NVDA": {
+      "ticker": "NVDA",
+      "securityId": "sec_NVDA",
+      "reference": {
+        "name": "NVIDIA CORP",
+        "sector": "Semiconductors & Related Devices",
+        "industry": "Semiconductors & Related Devices",
+        "factsCount": 846,
+        "filingsCount": 86,
+        "unsupportedMetrics": {
+          "ebitda": "requires depreciation and amortisation, which the metric registry does not yet map from a reliably-tagged XBRL concept",
+          "dividendPerShare": "SEC cash-flow statements report total dividends paid, not a per-share amount"
+        }
+      },
+      "available": true,
+      "reason": null,
+      "asOfPeriodEnd": "2026-07-26",
+      "restatementStatus": "original",
+      "fundamentals": {
+        "revenue": 302969,
+        "freeCashFlow": 127006,
+        "netIncome": 192879,
+        "marketCap": null,
+        "roic": 65.062,
+        "grossProfitability": 0.7064,
+        "fcfMargin": 41.92,
+        "operatingMargin": 65.214,
+        "balanceSheetQuality": 29.6,
+        "leverage": null,
+        "earningsYield": null,
+        "fcfYield": null,
+        "evToEbitda": null,
+        "evToSales": null,
+        "priceToFcf": null,
+        "revenueGrowth": 83.375,
+        "epsGrowth": 124.58,
+        "fcfGrowth": 76.341,
+        "marginExpansion": 7.121,
+        "dividendYield": null,
+        "consecutiveDividendGrowthYears": null,
+        "_asOfPeriodEnd": "2026-07-26",
+        "_asOfAvailableAt": "2026-08-26",
+        "_restatementStatus": "original",
+        "_revisionId": 0
+      },
+      "coverage": {
+        "quality": {
+          "components": [
+            {
+              "fieldId": "roic",
+              "real": true,
+              "value": 65.062,
+              "reason": null
+            },
+            {
+              "fieldId": "grossProfitability",
+              "real": true,
+              "value": 0.7064,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfMargin",
+              "real": true,
+              "value": 41.92,
+              "reason": null
+            },
+            {
+              "fieldId": "operatingMargin",
+              "real": true,
+              "value": 65.214,
+              "reason": null
+            },
+            {
+              "fieldId": "balanceSheetQuality",
+              "real": true,
+              "value": 29.6,
+              "reason": null
+            },
+            {
+              "fieldId": "leverage",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 5,
+          "totalCount": 6,
+          "status": "PARTIAL"
+        },
+        "growth": {
+          "components": [
+            {
+              "fieldId": "revenueGrowth",
+              "real": true,
+              "value": 83.375,
+              "reason": null
+            },
+            {
+              "fieldId": "epsGrowth",
+              "real": true,
+              "value": 124.58,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfGrowth",
+              "real": true,
+              "value": 76.341,
+              "reason": null
+            },
+            {
+              "fieldId": "marginExpansion",
+              "real": true,
+              "value": 7.121,
+              "reason": null
+            }
+          ],
+          "realCount": 4,
+          "totalCount": 4,
+          "status": "REAL"
+        },
+        "value": {
+          "components": [
+            {
+              "fieldId": "earningsYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "fcfYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToEbitda",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToSales",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "priceToFcf",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "dividendYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 6,
+          "status": "UNAVAILABLE"
+        },
+        "momentum": {
+          "components": [
+            {
+              "fieldId": "momentum12m1m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum6m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum3m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "relativeStrength",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "distanceTo52wHigh",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo50dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo200dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 7,
+          "status": "UNAVAILABLE"
+        },
+        "risk": {
+          "components": [
+            {
+              "fieldId": "volatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "downsideVolatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "maxDrawdown",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "beta",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 4,
+          "status": "UNAVAILABLE"
+        },
+        "revisions": {
+          "components": [],
+          "realCount": 0,
+          "totalCount": 0,
+          "status": "UNAVAILABLE"
+        }
+      },
+      "provenance": {
+        "provider": "sec-edgar",
+        "source": "sec_edgar_companyfacts_xbrl",
+        "asOf": "2026-07-26",
+        "availableAt": "2026-08-26",
+        "ingestedAt": "2026-09-08T04:19:02+00:00",
+        "methodologyVersion": "sec-1.5.0",
+        "dataSnapshotId": "sec-quant-inputs-NVDA",
+        "isMock": false
+      }
+    },
+    "JPM": {
+      "ticker": "JPM",
+      "securityId": "sec_JPM",
+      "reference": {
+        "name": "JPMORGAN CHASE & CO",
+        "sector": "National Commercial Banks",
+        "industry": "National Commercial Banks",
+        "factsCount": 619,
+        "filingsCount": 97,
+        "unsupportedMetrics": {
+          "ebitda": "requires depreciation and amortisation, which the metric registry does not yet map from a reliably-tagged XBRL concept",
+          "dividendPerShare": "SEC cash-flow statements report total dividends paid, not a per-share amount"
+        }
+      },
+      "available": true,
+      "reason": null,
+      "asOfPeriodEnd": "2026-06-30",
+      "restatementStatus": "original",
+      "fundamentals": {
+        "revenue": null,
+        "freeCashFlow": null,
+        "netIncome": 65067,
+        "marketCap": null,
+        "roic": null,
+        "grossProfitability": null,
+        "fcfMargin": null,
+        "operatingMargin": null,
+        "balanceSheetQuality": 63.58,
+        "leverage": null,
+        "earningsYield": null,
+        "fcfYield": null,
+        "evToEbitda": null,
+        "evToSales": null,
+        "priceToFcf": null,
+        "revenueGrowth": null,
+        "epsGrowth": -23.672,
+        "fcfGrowth": null,
+        "marginExpansion": null,
+        "dividendYield": null,
+        "consecutiveDividendGrowthYears": null,
+        "_asOfPeriodEnd": "2026-06-30",
+        "_asOfAvailableAt": "2026-08-06",
+        "_restatementStatus": "original",
+        "_revisionId": 0
+      },
+      "coverage": {
+        "quality": {
+          "components": [
+            {
+              "fieldId": "roic",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "grossProfitability",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "fcfMargin",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "operatingMargin",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "balanceSheetQuality",
+              "real": true,
+              "value": 63.58,
+              "reason": null
+            },
+            {
+              "fieldId": "leverage",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 1,
+          "totalCount": 6,
+          "status": "PARTIAL"
+        },
+        "growth": {
+          "components": [
+            {
+              "fieldId": "revenueGrowth",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "epsGrowth",
+              "real": true,
+              "value": -23.672,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfGrowth",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "marginExpansion",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 1,
+          "totalCount": 4,
+          "status": "PARTIAL"
+        },
+        "value": {
+          "components": [
+            {
+              "fieldId": "earningsYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "fcfYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToEbitda",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToSales",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "priceToFcf",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "dividendYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 6,
+          "status": "UNAVAILABLE"
+        },
+        "momentum": {
+          "components": [
+            {
+              "fieldId": "momentum12m1m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum6m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum3m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "relativeStrength",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "distanceTo52wHigh",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo50dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo200dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 7,
+          "status": "UNAVAILABLE"
+        },
+        "risk": {
+          "components": [
+            {
+              "fieldId": "volatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "downsideVolatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "maxDrawdown",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "beta",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 4,
+          "status": "UNAVAILABLE"
+        },
+        "revisions": {
+          "components": [],
+          "realCount": 0,
+          "totalCount": 0,
+          "status": "UNAVAILABLE"
+        }
+      },
+      "provenance": {
+        "provider": "sec-edgar",
+        "source": "sec_edgar_companyfacts_xbrl",
+        "asOf": "2026-06-30",
+        "availableAt": "2026-08-06",
+        "ingestedAt": "2026-09-08T04:19:02+00:00",
+        "methodologyVersion": "sec-1.5.0",
+        "dataSnapshotId": "sec-quant-inputs-JPM",
+        "isMock": false
+      }
+    },
+    "XOM": {
+      "ticker": "XOM",
+      "securityId": "sec_XOM",
+      "reference": {
+        "name": "EXXON MOBIL CORP",
+        "sector": "Petroleum Refining",
+        "industry": "Petroleum Refining",
+        "factsCount": 846,
+        "filingsCount": 91,
+        "unsupportedMetrics": {
+          "ebitda": "requires depreciation and amortisation, which the metric registry does not yet map from a reliably-tagged XBRL concept",
+          "dividendPerShare": "SEC cash-flow statements report total dividends paid, not a per-share amount"
+        }
+      },
+      "available": true,
+      "reason": null,
+      "asOfPeriodEnd": "2026-03-31",
+      "restatementStatus": "original",
+      "fundamentals": {
+        "revenue": 334246,
+        "freeCashFlow": 18792,
+        "netIncome": 25314,
+        "marketCap": null,
+        "roic": null,
+        "grossProfitability": null,
+        "fcfMargin": 5.622,
+        "operatingMargin": null,
+        "balanceSheetQuality": 69.91,
+        "leverage": null,
+        "earningsYield": null,
+        "fcfYield": null,
+        "evToEbitda": null,
+        "evToSales": null,
+        "priceToFcf": null,
+        "revenueGrowth": -4.401,
+        "epsGrowth": -20.653,
+        "fcfGrowth": -33.317,
+        "marginExpansion": null,
+        "dividendYield": null,
+        "consecutiveDividendGrowthYears": null,
+        "_asOfPeriodEnd": "2026-03-31",
+        "_asOfAvailableAt": "2026-05-04",
+        "_restatementStatus": "original",
+        "_revisionId": 0
+      },
+      "coverage": {
+        "quality": {
+          "components": [
+            {
+              "fieldId": "roic",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "grossProfitability",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "fcfMargin",
+              "real": true,
+              "value": 5.622,
+              "reason": null
+            },
+            {
+              "fieldId": "operatingMargin",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            },
+            {
+              "fieldId": "balanceSheetQuality",
+              "real": true,
+              "value": 69.91,
+              "reason": null
+            },
+            {
+              "fieldId": "leverage",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 2,
+          "totalCount": 6,
+          "status": "PARTIAL"
+        },
+        "growth": {
+          "components": [
+            {
+              "fieldId": "revenueGrowth",
+              "real": true,
+              "value": -4.401,
+              "reason": null
+            },
+            {
+              "fieldId": "epsGrowth",
+              "real": true,
+              "value": -20.653,
+              "reason": null
+            },
+            {
+              "fieldId": "fcfGrowth",
+              "real": true,
+              "value": -33.317,
+              "reason": null
+            },
+            {
+              "fieldId": "marginExpansion",
+              "real": false,
+              "value": null,
+              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+            }
+          ],
+          "realCount": 3,
+          "totalCount": 4,
+          "status": "PARTIAL"
+        },
+        "value": {
+          "components": [
+            {
+              "fieldId": "earningsYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "fcfYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToEbitda",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "evToSales",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "priceToFcf",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            },
+            {
+              "fieldId": "dividendYield",
+              "real": false,
+              "value": null,
+              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert)."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 6,
+          "status": "UNAVAILABLE"
+        },
+        "momentum": {
+          "components": [
+            {
+              "fieldId": "momentum12m1m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum6m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "momentum3m",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "relativeStrength",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "distanceTo52wHigh",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo50dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "priceTo200dma",
+              "real": false,
+              "value": null,
+              "reason": "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 7,
+          "status": "UNAVAILABLE"
+        },
+        "risk": {
+          "components": [
+            {
+              "fieldId": "volatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "downsideVolatility",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "maxDrawdown",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            },
+            {
+              "fieldId": "beta",
+              "real": false,
+              "value": null,
+              "reason": "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar."
+            }
+          ],
+          "realCount": 0,
+          "totalCount": 4,
+          "status": "UNAVAILABLE"
+        },
+        "revisions": {
+          "components": [],
+          "realCount": 0,
+          "totalCount": 0,
+          "status": "UNAVAILABLE"
+        }
+      },
+      "provenance": {
+        "provider": "sec-edgar",
+        "source": "sec_edgar_companyfacts_xbrl",
+        "asOf": "2026-03-31",
+        "availableAt": "2026-05-04",
+        "ingestedAt": "2026-09-08T04:19:02+00:00",
+        "methodologyVersion": "sec-1.5.0",
+        "dataSnapshotId": "sec-quant-inputs-XOM",
+        "isMock": false
+      }
+    }
+  }
+}

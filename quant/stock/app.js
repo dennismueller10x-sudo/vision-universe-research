@@ -7,23 +7,31 @@
   "use strict";
   var S = window.QuantShell, C = window.QuantComponents, Charts = window.QuantCharts, el = S.el;
 
+  /* Golden Universe (Phase 5): fuenf reale Titel mit echten SEC-Fundamentaldaten
+     ausserhalb des synthetischen Modelluniversums. Sie tragen deshalb NIE das
+     Mock-Banner dieser Seite — dasselbe Prinzip wie beim SEC Data Inspector,
+     der aus demselben Grund S.page() gar nicht benutzt. Diese Seite behaelt
+     S.page() (banner:false, siehe unten) und entscheidet selbst pro Zweig. */
+  var GOLDEN_FIVE_PANEL = S.BASE + "data/sec/quant-factor-inputs.json";
+
   S.page({
     nav: S.BASE,
     need: ["securities", "scoreHistory", "events"],
+    banner: false,
     render: function (data, root) {
       var ticker = (S.param("ticker") || "").toUpperCase();
       var row = data.securities.rows.filter(function (r) { return r.ticker === ticker; })[0];
 
       if (!row) {
-        root.appendChild(S.stateBox("Wertpapier nicht gefunden",
-          ticker ? "Im Modelluniversum existiert kein Titel mit dem Ticker " + ticker + "." :
-                   "Es wurde kein Ticker uebergeben.", "empty"));
-        root.appendChild(el("p", { style: "margin-top:16px" }, [
-          el("a", { class: "q-btn q-btn--ghost q-btn--sm", href: S.BASE + "ranking/", text: "Zum Ranking" })
-        ]));
-        return;
+        return S.loadJSON(GOLDEN_FIVE_PANEL, { attempts: 1 }).catch(function () { return null; })
+          .then(function (panel) {
+            var sec = panel && panel.securities && panel.securities[ticker];
+            if (sec && sec.available) return renderGoldenFive(root, ticker, sec);
+            return renderNotFound(root, ticker);
+          });
       }
 
+      root.appendChild(S.mockBanner(data.meta));
       if (row.quantStatus === "not_listed") return renderDelisted(root, row, data);
 
       return S.loadFactorDna(ticker).then(function (shard) {
@@ -50,6 +58,112 @@
       });
     }
   });
+
+  function renderNotFound(root, ticker) {
+    root.appendChild(S.stateBox("Wertpapier nicht gefunden",
+      ticker ? "Im Modelluniversum existiert kein Titel mit dem Ticker " + ticker + "." :
+               "Es wurde kein Ticker uebergeben.", "empty"));
+    root.appendChild(el("p", { style: "margin-top:16px" }, [
+      el("a", { class: "q-btn q-btn--ghost q-btn--sm", href: S.BASE + "ranking/", text: "Zum Ranking" })
+    ]));
+  }
+
+  var FACTOR_LABEL = { quality: "Quality", growth: "Growth", value: "Value",
+    momentum: "Momentum", risk: "Risk", revisions: "Revisions" };
+  /* q-chip kennt nur drei Toene (tone-strong/tone-neutral/tone-poor,
+     quant.css:225-227) — dieselben, die die Ranking-Tabelle fuer
+     Faktor-Chips benutzt. Keine neue CSS-Klasse fuer diese Seite. */
+  var COVERAGE_TONE = { REAL: "strong", PARTIAL: "neutral", UNAVAILABLE: "poor" };
+  var COVERAGE_TEXT = { REAL: "REAL · SEC", PARTIAL: "TEILWEISE REAL · SEC", UNAVAILABLE: "UNAVAILABLE" };
+  var STATUS_TONE = { good: "strong", warn: "neutral", poor: "poor" };
+
+  /* Golden Universe (Phase 5) — ein realer Titel mit echten SEC-Fundamental-
+     daten, praekomputiert von scripts/quant/build-sec-quant-panel.mjs
+     (providers/sec/adapter.js -> sec-fact-panel.js -> factors.js). Kein VU
+     Quant Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier
+     Sektoren waere scheinpraezise (siehe Kopf-Kommentar des Build-Skripts).
+     Was hier steht, sind reale Faktor-KOMPONENTEN mit Provenance je Feld —
+     nie eine erfundene Ersatzzahl fuer das, was fehlt. */
+  function renderGoldenFive(root, ticker, sec) {
+    var ref = sec.reference || {};
+    root.appendChild(el("header", {}, [
+      el("p", { class: "q-kicker", text: (ref.sector || "SEC EDGAR") + " · Golden Universe · Real Data" }),
+      el("h1", { class: "q-h1", style: "margin-bottom:4px", text: ticker }),
+      el("p", { class: "q-lead", style: "margin-bottom:6px", text: ref.name || ticker }),
+      el("p", { class: "q-note", text:
+        "Kein synthetischer Titel des Modelluniversums. Fundamentaldaten sind echte, primaerquellen-" +
+        "geprüfte SEC/EDGAR-Daten (" + S.num(ref.factsCount, 0) + " Fakten aus " + S.num(ref.filingsCount, 0) +
+        " Filings). Es gibt fuer diesen Titel keinen VU Quant Score — dazu unten mehr." })
+    ]));
+
+    root.appendChild(C.section("Datenstatus",
+      "Jede Datenklasse einzeln, nicht pauschal fuers ganze Produkt (DO-NOT-BREAK-Regel #4).",
+      el("div", { class: "q-metrics" }, [
+        statusTile("Fundamentaldaten", "REAL · SEC EDGAR", "good",
+          "Periode bis " + S.formatDate(sec.asOfPeriodEnd) + (sec.restatementStatus === "restated" ? " · restated" : "")),
+        statusTile("Marktdaten / Chart", "UNAVAILABLE", "poor",
+          "Lizenzpruefung fuer Twelve-Data-/Tiingo-Kurse steht aus — keine echten Kurse auf dieser " +
+          "oeffentlichen Development Preview (siehe Data-Provenance unten)."),
+        statusTile("Technical Intelligence", "UNAVAILABLE", "poor",
+          "Braucht dieselbe Kursreihe wie Marktdaten oben — aus demselben Grund noch nicht real fuer " + ticker + "."),
+        statusTile("Elliott Wave (Beta)", "UNAVAILABLE", "poor",
+          "Baut auf Technical Intelligence auf und teilt dieselbe Voraussetzung.")
+      ])));
+
+    root.appendChild(C.section("Factor DNA — reale SEC-Komponenten, kein Score",
+      "Jede Komponente einzeln REAL oder UNAVAILABLE mit Begruendung. Kein Perzentilrang: fuenf Titel " +
+      "aus vier Sektoren sind keine brauchbare Vergleichsgruppe (normalization.js verlangt mindestens 12 Peers).",
+      el("div", {}, Object.keys(FACTOR_LABEL).map(function (factorId) {
+        return factorBlock(factorId, sec.coverage[factorId]);
+      }))));
+
+    root.appendChild(el("div", { style: "margin-top:32px" }, [
+      C.disclosure("Datenherkunft (Provenance)", [
+        el("div", { class: "q-metrics" }, [
+          S.provenanceTag("Provider", sec.provenance.provider),
+          S.provenanceTag("Quelle", sec.provenance.source),
+          S.provenanceTag("Snapshot", sec.provenance.dataSnapshotId),
+          S.provenanceTag("Verfuegbar ab", S.formatDate(sec.provenance.availableAt)),
+          S.provenanceTag("Mock", sec.provenance.isMock ? "ja" : "nein", sec.provenance.isMock ? "warn" : "good")
+        ]),
+        el("p", { class: "q-note", style: "margin-top:10px", text:
+          "SEC/EDGAR ist eine oeffentliche Behoerdenquelle ohne Lizenzblock (kein LEGAL_REVIEW_REQUIRED). " +
+          "Marktdaten (Twelve Data/Tiingo) sind technisch vollstaendig implementiert und laufzeitgeprueft, " +
+          "aber ihre oeffentliche Anzeige ist ungeklaert und deshalb auf dieser oeffentlichen Preview " +
+          "abgeschaltet — nicht dieselbe Quelle, nicht derselbe Rechtsstatus." })
+      ])
+    ]));
+  }
+
+  function statusTile(label, value, tone, hint) {
+    return el("div", { class: "q-metric" }, [
+      el("span", { text: label }),
+      el("b", {}, [el("span", { class: "q-chip tone-" + (STATUS_TONE[tone] || "neutral"), text: value })]),
+      hint ? el("em", { text: hint }) : null
+    ]);
+  }
+
+  function factorBlock(factorId, coverage) {
+    if (!coverage) return null;
+    return el("div", { class: "q-card", style: "margin-bottom:12px;padding:14px" }, [
+      el("div", { style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px" }, [
+        el("b", { text: FACTOR_LABEL[factorId] }),
+        el("span", { class: "q-chip tone-" + (COVERAGE_TONE[coverage.status] || "neutral"),
+          text: COVERAGE_TEXT[coverage.status] + " · " + coverage.realCount + "/" + coverage.totalCount })
+      ]),
+      coverage.components.length
+        ? el("div", { class: "q-metrics" }, coverage.components.map(function (c) {
+            var field = window.VUCatalog.field(c.fieldId);
+            var label = field ? field.label : c.fieldId;
+            return C.metricTile(label,
+              c.real ? S.fmt(c.fieldId, c.value) : null,
+              c.real ? null : c.reason);
+          }))
+        : el("p", { class: "q-note", text:
+            "Keine Komponente moeglich: available:false in quant/methodology/quant-v1.json seit Phase 1 " +
+            "— es liegen keine lizenzierten Analystenschaetzungen vor." })
+    ]);
+  }
 
   /* Ein Titel, der zum Datenstand nicht mehr gelistet ist, hat keinen
      aktuellen Score — und bekommt auch keinen. Was er hat, ist seine
