@@ -18,6 +18,8 @@ Hygiene-Commit wurde konfliktfrei darauf rebased; der aktuelle technische
 Referenzstand dieses Berichts ist deshalb
 `origin/main @ e737ace` plus der nachgelagerte Hygiene-Commit.
 
+Die Data-Hygiene-Implementierung wurde als `25ae803` nach `main` veröffentlicht.
+
 ## 1. Aktueller Hostingstatus und öffentliche Bypässe
 
 | Prüffeld | Befund |
@@ -271,6 +273,17 @@ Build erneut bereitstellen. Keine andere Subdomain ist Teil des Rollbacks.
 - Browser 390 px: Chart-Unavailable und Technical/Elliott gerendert, keine
   horizontale Body-Überbreite und keine Console Errors.
 
+### Nach Veröffentlichung von `25ae803`
+
+- `research.visionuniverse.de/quant/data/market/daily/ref_AAPL.json`: HTTP 404.
+- derselbe Pfad über `raw.githubusercontent.com/.../main/...`: HTTP 404.
+- `dashboard/data/market_data.json`: HTTP 200, `not_generated`, 0 Symbole,
+  `UNAVAILABLE`, `display_allowed=false`.
+- `dashboard/data/technical_scores.json`: derselbe sichere Status.
+- `dashboard/data/backtest_results.json`: derselbe sichere Status.
+- Die Website selbst bleibt ohne Authentifizierung öffentlich erreichbar; dies
+  ist der unveränderte CRITICAL Decision Gate, kein geschütztes Preview.
+
 ## 12. Abschluss nach Priorität
 
 ### CRITICAL offen
@@ -301,12 +314,12 @@ Build erneut bereitstellen. Keine andere Subdomain ist Teil des Rollbacks.
 
 ## 13. Geforderter 24-Punkte-Status
 
-1. origin/main: gestartet bei `39335ad3e7fefbc93a0916ccae1b3c42c9790388`, final integriert auf `e737ace`.
+1. origin/main: gestartet bei `39335ad3`, vor Integration aktualisiert auf `e737ace`; Data-Hygiene veröffentlicht als `25ae803`.
 2. Hosting: öffentliche GitHub Pages aus öffentlichem Repository.
 3. Bypässe: Custom Domain, Raw, API, Clone/Download und Git-Historie.
 4. Twelve Data öffentliche Dateien: ja, selbst bestätigt.
 5. Dateien: 15 Quant-EOD-Dateien, Dashboard-Market-JSON, 13 reale Technical-Bundles/Snapshots sowie abgeleitete Dashboard-Ausgaben.
-6. Bereinigt: ja, im aktuellen Arbeitsbaum; Veröffentlichung und History-Remediation getrennt.
+6. Bereinigt: ja, als `25ae803` veröffentlicht; History-Remediation bleibt getrennt.
 7. Tiingo Public Leakage: keine Rohkursreihe/kein Secret gefunden; nur Capability-Metadaten.
 8. SEC Public Data: Canonical + Inspector für fünf Symbole; Raw/Cache nicht committed.
 9. Provenance Bug: behoben.
