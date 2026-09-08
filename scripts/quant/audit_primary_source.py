@@ -74,6 +74,11 @@ def audit_company(provider, registry, document, canonical, per_company):
         canonical_by_cell.setdefault(
             (row["metricId"], row["fiscalYear"], row["fiscalPeriod"]), []).append(row)
 
+    # Cells the canonical layer withheld on purpose, so "not exported" can name
+    # its reason instead of leaving an auditor to work it out by hand.
+    suppressed = {(row["metricId"], row["fiscalYear"], row["fiscalPeriod"])
+                  for row in canonical.get("periodEndConflicts", [])}
+
     checks = []
     for metric in AUDITED:
         canonical_id, _, scale = METRIC_MAP.get(metric, (None, None, None))
@@ -133,7 +138,17 @@ def audit_company(provider, registry, document, canonical, per_company):
                     elif canonical_id is None:
                         verdict = "MATCH_NO_CANONICAL_COUNTERPART"
                     elif not canonical_rows:
-                        verdict = "NOT_EXPORTED"
+                        # Three different things, and only the third would be a
+                        # defect: the canonical layer is quarterly-only (an FY
+                        # row would collide with Q4 on periodEnd, which is the
+                        # key the resolver uses); a cell can be withheld as
+                        # AMBIGUOUS_PERIOD_END; anything else is unexplained.
+                        if fiscal_period == "FY":
+                            verdict = "NOT_EXPORTED_QUARTERLY_ONLY"
+                        elif (canonical_id, fiscal_year, fiscal_period) in suppressed:
+                            verdict = "NOT_EXPORTED_SUPPRESSED_AMBIGUOUS"
+                        else:
+                            verdict = "NOT_EXPORTED_UNEXPLAINED"
                     elif canonical_match is None:
                         verdict = "MISMATCH_NORMALIZED_VS_CANONICAL"
 
@@ -197,7 +212,13 @@ def main(argv=None):
     summary = {}
     for check in checks:
         summary[check["verdict"]] = summary.get(check["verdict"], 0) + 1
-    mismatches = [check for check in checks if check["verdict"].startswith("MISMATCH")]
+    # An unexplained non-export is as much a defect as a mismatch: a value the
+    # pipeline holds, that agrees with the SEC, and that silently never reaches
+    # a consumer.
+    mismatches = [check for check in checks
+                  if check["verdict"].startswith("MISMATCH")
+                  or check["verdict"] == "NOT_EXPORTED_UNEXPLAINED"
+                  or check["verdict"] == "RAW_FACT_NOT_FOUND"]
 
     payload = {
         "schema_version": 1,

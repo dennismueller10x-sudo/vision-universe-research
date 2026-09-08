@@ -29,7 +29,13 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         filing date (an acceptance timestamp legitimately falls on the
 #         previous day), and a derived fact cites the filing that made it
 #         knowable rather than the first of its inputs.
-NORMALIZATION_LOGIC_VERSION = "1.4.0"
+#
+# 1.5.0 — a fiscal-year label taken from an annual filing's own `fy` field is
+#         refused when it would repeat or precede the previous fiscal year.
+#         NVDA's 10-Ks for the years ending January 2011 to January 2014 tag it
+#         one year low, which produced two fiscal years labelled 2010, no 2014,
+#         and four years off by one.
+NORMALIZATION_LOGIC_VERSION = "1.5.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -58,7 +64,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "dcdfb3aa895452e3477ef615b5b8493778139d73c1781e69a0d7340e20ccf928"
+    "2afb58fcf5a4f9bdf9d463ec3abc58694452b757a47da85d0c700a5637cef3cd"
 )
 
 

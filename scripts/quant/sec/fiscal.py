@@ -85,6 +85,9 @@ class FiscalCalendar:
         self.label_offset = label_offset            # fiscal_year - end.year
         self.fiscal_year_end_hint = fiscal_year_end_hint
         self._extrapolated = set()
+        # Filled by from_raw_facts: annual filings whose own `fy` field was
+        # refused because it would repeat or precede the previous fiscal year.
+        self.rejected_anchors = []
 
     # ------------------------------------------------------------------ building
 
@@ -124,18 +127,52 @@ class FiscalCalendar:
             label_offset = 0
 
         fy_ends = cls._cluster(annual_ends)
-        labels = {}
-        for end in fy_ends:
-            if end in anchors:
-                labels[end] = anchors[end]
-            else:
-                labels[end] = end.year + label_offset
+        labels, rejected = cls._label_years(fy_ends, anchors, label_offset)
         calendar = cls(cik, fy_ends, labels, label_offset, fiscal_year_end_hint)
+        calendar.rejected_anchors = rejected
         LOGGER.info(
-            "fiscal calendar cik=%s years=%d offset=%+d anchors=%d",
-            cik, len(fy_ends), label_offset, len(anchors),
+            "fiscal calendar cik=%s years=%d offset=%+d anchors=%d rejected=%d",
+            cik, len(fy_ends), label_offset, len(anchors), len(rejected),
         )
+        for end, claimed, used in rejected:
+            LOGGER.warning(
+                "cik=%s fiscal year ending %s is tagged fy=%s by its own 10-K, which "
+                "would repeat or precede the previous fiscal year; using %s",
+                cik, end, claimed, used,
+            )
         return calendar
+
+    @staticmethod
+    def _label_years(fy_ends, anchors, label_offset):
+        """Fiscal-year labels, refusing anchors that cannot be true.
+
+        The label comes from the annual filing's own `fy` field where one
+        exists. But `fy` describes the FILING, not the fact -- the trap this
+        pipeline avoids everywhere else -- and NVDA's 10-Ks for the years ending
+        January 2011 through January 2014 tag it one year low. Taken at face
+        value that produced two fiscal years labelled 2010, no fiscal year 2014,
+        and four years whose label was off by one. It also produced most of
+        NVDA's ambiguous-period-end suppressions, so the symptom was visible
+        while the cause was not.
+
+        Two fiscal years cannot share a label and a later one cannot have a
+        lower label, so an anchor that breaks either is not a naming convention
+        to be respected -- it is impossible. Those fall back to the learned
+        offset and are reported. An anchor that merely disagrees with the
+        majority is still honoured: a filer may legitimately change convention.
+        """
+        labels = {}
+        rejected = []
+        previous = None
+        for end in fy_ends:
+            fallback = end.year + label_offset
+            label = anchors.get(end, fallback)
+            if previous is not None and label <= previous:
+                rejected.append((end.isoformat(), label, fallback))
+                label = fallback
+            labels[end] = label
+            previous = label
+        return labels, rejected
 
     @staticmethod
     def _cluster(ends):
@@ -299,5 +336,9 @@ class FiscalCalendar:
             "fiscal_years": [
                 {"fiscal_year": self.labels[end], "period_end": end.isoformat()}
                 for end in self.fy_ends
+            ],
+            "rejected_anchors": [
+                {"period_end": end, "filing_claimed_fy": claimed, "used_fy": used}
+                for end, claimed, used in self.rejected_anchors
             ],
         }

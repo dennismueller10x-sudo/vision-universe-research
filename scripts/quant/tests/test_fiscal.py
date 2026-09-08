@@ -121,5 +121,85 @@ class _NullClient:
         raise AssertionError(f"unexpected network call to {url}")
 
 
+class FiscalYearLabelTests(unittest.TestCase):
+    """A fiscal-year label that cannot be true must not be trusted.
+
+    Found in the release audit against real NVDA data. The label comes from the
+    annual filing's own `fy` field, but `fy` describes the FILING, not the fact
+    — the trap this pipeline avoids everywhere else. NVDA's 10-Ks for the years
+    ending January 2011 through January 2014 tag it one year low, and taking
+    that at face value produced:
+
+      2008-01-27 -> FY2008    2012-01-29 -> FY2011  (should be 2012)
+      2009-01-25 -> FY2009    2013-01-27 -> FY2012  (should be 2013)
+      2010-01-31 -> FY2010    2014-01-26 -> FY2013  (should be 2014)
+      2011-01-30 -> FY2010 <- repeated       2015-01-25 -> FY2015
+
+    Two fiscal years labelled 2010, no fiscal year 2014, four years off by one
+    — and most of NVDA's ambiguous-period-end suppressions as the visible
+    symptom of an invisible cause.
+    """
+
+    NVDA_ENDS = [date(2008, 1, 27), date(2009, 1, 25), date(2010, 1, 31),
+                 date(2011, 1, 30), date(2012, 1, 29), date(2013, 1, 27),
+                 date(2014, 1, 26), date(2015, 1, 25), date(2016, 1, 31)]
+    # Exactly what NVDA's filings claim, measured 2026-09-08.
+    NVDA_ANCHORS = dict(zip(NVDA_ENDS,
+                            [2008, 2009, 2010, 2010, 2011, 2012, 2013, 2015, 2016]))
+
+    def test_the_measured_nvda_sequence_is_repaired(self):
+        labels, rejected = FiscalCalendar._label_years(
+            self.NVDA_ENDS, self.NVDA_ANCHORS, 0)
+        self.assertEqual([labels[end] for end in self.NVDA_ENDS],
+                         [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016])
+        self.assertEqual([row[0] for row in rejected],
+                         ["2011-01-30", "2012-01-29", "2013-01-27", "2014-01-26"])
+
+    def test_no_two_fiscal_years_share_a_label(self):
+        labels, _ = FiscalCalendar._label_years(
+            self.NVDA_ENDS, self.NVDA_ANCHORS, 0)
+        values = list(labels.values())
+        self.assertEqual(len(values), len(set(values)))
+
+    def test_labels_increase_with_the_period_end(self):
+        labels, _ = FiscalCalendar._label_years(
+            self.NVDA_ENDS, self.NVDA_ANCHORS, 0)
+        ordered = [labels[end] for end in self.NVDA_ENDS]
+        self.assertEqual(ordered, sorted(ordered))
+        self.assertTrue(all(b > a for a, b in zip(ordered, ordered[1:])))
+
+    def test_a_rejected_anchor_is_reported_not_silently_replaced(self):
+        _, rejected = FiscalCalendar._label_years(
+            self.NVDA_ENDS, self.NVDA_ANCHORS, 0)
+        self.assertEqual(rejected[0], ("2011-01-30", 2010, 2011),
+                         "the report must name what the filing claimed and what was used")
+
+    def test_a_consistent_anchor_set_is_left_alone(self):
+        """The four other validation companies must be unaffected."""
+        ends = [date(year, 12, 31) for year in range(2015, 2021)]
+        anchors = {end: end.year for end in ends}
+        labels, rejected = FiscalCalendar._label_years(ends, anchors, 0)
+        self.assertEqual(rejected, [])
+        self.assertEqual([labels[end] for end in ends], [e.year for e in ends])
+
+    def test_a_genuine_convention_that_stays_monotonic_is_honoured(self):
+        """An anchor disagreeing with the majority offset is still respected.
+
+        A filer may legitimately label the year ending June 2020 as FY2021.
+        Only an impossible label is refused, never merely an unusual one.
+        """
+        ends = [date(2018, 6, 30), date(2019, 6, 30), date(2020, 6, 30)]
+        anchors = {ends[0]: 2018, ends[1]: 2019, ends[2]: 2021}
+        labels, rejected = FiscalCalendar._label_years(ends, anchors, 0)
+        self.assertEqual(rejected, [])
+        self.assertEqual(labels[ends[2]], 2021)
+
+    def test_ends_without_an_anchor_use_the_learned_offset(self):
+        ends = [date(2018, 6, 30), date(2019, 6, 30), date(2020, 6, 30)]
+        labels, rejected = FiscalCalendar._label_years(ends, {}, 1)
+        self.assertEqual([labels[end] for end in ends], [2019, 2020, 2021])
+        self.assertEqual(rejected, [])
+
+
 if __name__ == "__main__":
     unittest.main()
