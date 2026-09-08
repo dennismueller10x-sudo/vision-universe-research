@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-07T18:43:06.047Z",
+  "generatedAt": "2026-09-08T16:57:04.308Z",
   "provider": "tiingo",
   "universeId": "TIINGO_PHASE4A_TESTSET",
   "boundary": "Diese Titel erhalten AUSSCHLIESSLICH echte Kursdaten von Tiingo. Sie bekommen keine Fundamentaldaten und damit keinen vollstaendigen VU Quant Score. Reale Unternehmen mit synthetischen Fundamentalzahlen zu verbinden bleibt ausgeschlossen - das ist seit Phase 1 die Grenze und aendert sich hier nicht.",
@@ -13,6 +13,11 @@
       "enabled": false,
       "label": "Live-Marktdaten oeffentlich",
       "reason": "Es liegt keine geprüfte Erlaubnis vor, Tiingo-Kurse oeffentlich anzuzeigen. Der Standard der Anzeigerichtlinie ist der strengste, und er gilt."
+    },
+    "ENABLE_DEVELOPMENT_PREVIEW_MARKET_DATA": {
+      "enabled": true,
+      "label": "Marktdaten in der Development Preview (eng begrenztes Titel-Set)",
+      "reason": "Eigentuemerentscheidung Phase 5 (Golden Five): echte Tiingo-EOD-Kurse fuer genau AAPL/MSFT/NVDA/JPM/XOM in der Development Preview, siehe quant/config/development-preview.json fuer die Titel-Allowlist und Begruendung. Hebt ENABLE_PUBLIC_LIVE_MARKET_DATA NICHT an und ist keine Aussage ueber eine geklaerte Redistributionslizenz - research.visionuniverse.de bleibt ein oeffentliches, nicht zugriffsgeschuetztes Repository (siehe docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md)."
     }
   },
   "policy": {
@@ -25,10 +30,10 @@
       "public": {
         "allowed": false,
         "reason": "notLicensed",
-        "message": "Fuer tiingo/marketData ist die oeffentliche Anzeige (raw) nicht freigegeben. Kein Eintrag vorhanden. Es gilt der strengste Standard."
+        "message": "Fuer tiingo/marketData ist die oeffentliche Anzeige (raw) nicht freigegeben. Eigentuemerentscheidung, Phase 5 Golden Five: End-of-Day-Kurse dieser fuenf Titel duerfen in der Development Preview sichtbar sein, obwohl provider-profiles.json fuer Tiingo weiterhin licensing.status=LEGAL_REVIEW_REQUIRED trägt und die Seite oeffentlich ohne Zugriffsschutz ausgeliefert wird. Realtime bleibt ausgeschlossen (kein Laufzeitbeleg fuer dieses Konto)."
       },
-      "basis": "Kein Eintrag vorhanden. Es gilt der strengste Standard.",
-      "checkedAt": null
+      "basis": "Eigentuemerentscheidung, Phase 5 Golden Five: End-of-Day-Kurse dieser fuenf Titel duerfen in der Development Preview sichtbar sein, obwohl provider-profiles.json fuer Tiingo weiterhin licensing.status=LEGAL_REVIEW_REQUIRED trägt und die Seite oeffentlich ohne Zugriffsschutz ausgeliefert wird. Realtime bleibt ausgeschlossen (kein Laufzeitbeleg fuer dieses Konto).",
+      "checkedAt": "2026-09-08"
     },
     "intraday": {
       "internal": {
@@ -73,8 +78,8 @@
       "checkedAt": null
     }
   },
-  "configured": false,
-  "dataMode": "mock",
+  "configured": true,
+  "dataMode": "hybrid",
   "capabilities": {
     "market": {
       "realtime": null,
@@ -90,7 +95,9 @@
       "splitAdjustedPrices": true,
       "symbolSearch": null,
       "marketStatus": false,
-      "bulkQuotes": null
+      "bulkQuotes": null,
+      "extendedHours": null,
+      "extendedHoursRealtime": null
     },
     "fundamental": {
       "annual": null,
@@ -235,6 +242,271 @@
     "maxRetries": 3,
     "baseBackoffMs": 1000
   },
-  "securities": {},
-  "notice": "Kein Tiingo-Zugang konfiguriert. Der Quant-Bereich laeuft unveraendert im Modelldatenmodus. Setze TIINGO_API_KEY als Repository-Secret, um echte Kursdaten zu laden."
+  "adjustmentStatus": "adjusted",
+  "health": {
+    "status": "ok",
+    "message": "Status: available"
+  },
+  "quota": {
+    "minuteUsed": 12,
+    "minuteLimit": 20,
+    "hourUsed": 12,
+    "hourLimit": 50,
+    "dayUsed": 12,
+    "dayLimit": 1000,
+    "minuteRemaining": 8,
+    "hourRemaining": 38,
+    "dayRemaining": 988,
+    "bytesUsed": 8907844,
+    "bytesLimit": 2147483648,
+    "bytesRemaining": 2138575804
+  },
+  "summary": {
+    "requested": 12,
+    "ok": 12,
+    "failed": 0,
+    "rejected": 0,
+    "skipped": 0,
+    "requests": 12,
+    "cacheHits": 0,
+    "retries": 0,
+    "bytesReceived": 8907844
+  },
+  "securities": {
+    "ref_NVDA": {
+      "ticker": "NVDA",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 2,
+      "dividends": 46,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 2,
+        "dividendEvents": 46
+      }
+    },
+    "ref_AAPL": {
+      "ticker": "AAPL",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 1,
+      "dividends": 47,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 1,
+        "dividendEvents": 47
+      }
+    },
+    "ref_MSFT": {
+      "ticker": "MSFT",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 47,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 47
+      }
+    },
+    "ref_AMZN": {
+      "ticker": "AMZN",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 1,
+      "dividends": 0,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "SPLIT_ADJUSTED",
+        "basis": "split",
+        "splitEvents": 1,
+        "dividendEvents": 0
+      }
+    },
+    "ref_META": {
+      "ticker": "META",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 10,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 10
+      }
+    },
+    "ref_TSLA": {
+      "ticker": "TSLA",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 2,
+      "dividends": 0,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "SPLIT_ADJUSTED",
+        "basis": "split",
+        "splitEvents": 2,
+        "dividendEvents": 0
+      }
+    },
+    "ref_JPM": {
+      "ticker": "JPM",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 47,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 46
+      }
+    },
+    "ref_XOM": {
+      "ticker": "XOM",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 47,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 47
+      }
+    },
+    "ref_KO": {
+      "ticker": "KO",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 46,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 46
+      }
+    },
+    "ref_JNJ": {
+      "ticker": "JNJ",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 47,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 47
+      }
+    },
+    "ref_SPY": {
+      "ticker": "SPY",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 46,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "TOTAL_RETURN",
+        "basis": "dividend",
+        "splitEvents": 0,
+        "dividendEvents": 46
+      }
+    },
+    "ref_BRKB": {
+      "ticker": "BRK-B",
+      "ok": true,
+      "added": 2936,
+      "replaced": 0,
+      "total": 2936,
+      "first": "2015-01-02",
+      "last": "2026-09-04",
+      "warnings": 0,
+      "splits": 0,
+      "dividends": 0,
+      "adjustment": {
+        "claimed": "TOTAL_RETURN",
+        "inferred": "UNKNOWN",
+        "basis": "no_events",
+        "splitEvents": 0,
+        "dividendEvents": 0
+      }
+    }
+  },
+  "checkpoint": {
+    "runId": "incremental",
+    "done": 12,
+    "failed": 0,
+    "requests": 12
+  },
+  "notice": "Echte Tageskurse von Tiingo fuer das Testuniversum. Fundamentaldaten bleiben synthetisch. Die Bereinigungsstufe ist TOTAL_RETURN."
 }
