@@ -558,7 +558,13 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
   .vu-datastatus--live .vu-datastatus__dot{animation:none}
 }
 .vu-livechart__head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.vu-livechart__canvas{min-height:120px}
+/* Dieselbe Eindaemmung wie .q-chart-wrap. Ohne sie schiebt ein
+   Kerzenstrich am Rand die Seite auf einem schmalen Bildschirm
+   waagerecht auf - .q-chart traegt overflow:visible, und was ausserhalb
+   gemalt wird, zaehlt zur Scrollbreite. Auf dem Mobiltest war das ein
+   sichtbarer Fehler. */
+.vu-livechart__canvas{min-height:120px;width:100%;overflow:hidden}
+.vu-livechart__canvas .q-chart{max-width:100%}
 @media (max-width:720px){
   .vu-datastatus{font-size:11px;padding:3px 8px}
 }

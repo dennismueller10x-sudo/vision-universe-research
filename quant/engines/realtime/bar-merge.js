@@ -155,6 +155,23 @@
     var requiresReload = false;
     var reloadReason = null;
 
+    /* Zwei Zaehler statt eines. `revision` steigt bei jeder Aenderung an
+       der Reihe; `structuralRevision` nur, wenn sich etwas anderes als
+       die letzte Bar geaendert hat.
+
+       Der Unterschied ist der ganze Grund, warum ein Live-Chart bei
+       hoher Tickfrequenz nicht einbricht: die Chartschicht muss dann
+       nicht 600 Bars vergleichen, um festzustellen, dass sich nur der
+       Schlusskurs der laufenden Kerze bewegt hat - und schon gar nicht
+       bei jedem Tick eine Kopie der ganzen Reihe anfertigen. */
+    var revision = 0;
+    var structuralRevision = 0;
+
+    function touch(strukturell) {
+      revision++;
+      if (strukturell) structuralRevision++;
+    }
+
     function minutesOf(hhmm) {
       var p = String(hhmm || "0:0").split(":");
       return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
@@ -242,8 +259,25 @@
       reloadReason: function () { return reloadReason; },
       clearReload: function () { requiresReload = false; reloadReason = null; },
 
+      /* Zwei Zaehler fuer die Chartschicht: hat sich etwas geaendert, und
+         war es mehr als die letzte Bar? Beides ohne die Reihe anzufassen. */
+      revision: function () { return revision; },
+      structuralRevision: function () { return structuralRevision; },
+
       /** Die Reihe. Kopie, damit ein Aufrufer sie nicht von aussen umbaut. */
       bars: function () { return bars.map(function (b) { return copy(b); }); },
+
+      /**
+       * Die letzten n Bars. Der uebliche Weg fuer den Chart: er zeichnet
+       * ein Fenster, keine zwanzig Jahre - und eine Kopie der ganzen
+       * Reihe bei jedem Tick ist genau der Aufwand, den §23 ausschliesst.
+       */
+      tail: function (n) {
+        var von = n && n > 0 && n < bars.length ? bars.length - n : 0;
+        var out = [];
+        for (var i = von; i < bars.length; i++) out.push(copy(bars[i]));
+        return out;
+      },
       length: function () { return bars.length; },
       last: function () { return bars.length ? copy(bars[bars.length - 1]) : null; },
       at: function (i) { return bars[i] ? copy(bars[i]) : null; },
@@ -268,6 +302,7 @@
         bars.sort(function (a, b) { return a.bucket < b.bucket ? -1 : a.bucket > b.bucket ? 1 : 0; });
         reindex(0);
         stats.accepted += bars.length;
+        touch(true);
         return bars.length;
       },
 
@@ -308,7 +343,10 @@
             bars.push(bar);
             index[bar.bucket] = at;
             stats.accepted++;
-            trim();
+            var beschnitten = trim();
+            /* Anhaengen ist nicht strukturell - es sei denn, vorne fiel
+               dabei etwas heraus. */
+            touch(beschnitten);
             return result("appended", bar);
           }
           /* R3 - verspaetet, aber neu: einsortieren. */
@@ -317,6 +355,7 @@
           stats.accepted++;
           stats.outOfOrder++;
           trim();
+          touch(true);
           return result("inserted", bar);
         }
 
@@ -337,6 +376,7 @@
         bar.receivedAt = bar.receivedAt || existing.receivedAt;
         bars[pos] = bar;
         stats.replaced++;
+        touch(pos !== bars.length - 1);
         return result("replaced", bar);
       },
 
@@ -400,7 +440,8 @@
           bars.splice(at, 0, seed);
           reindex(at);
           stats.accepted++;
-          trim();
+          var beschnitten2 = trim();
+          touch(at !== bars.length - 1 || beschnitten2);
           return result("appended", seed);
         }
 
@@ -412,6 +453,7 @@
         b.receivedAt = toMs(tick.receivedAt) === null ? now() : toMs(tick.receivedAt);
         if (isNum(tick.size)) b.volume += tick.size;
         else if (isNum(tick.cumulativeVolume)) b.volume = tick.cumulativeVolume;
+        touch(pos !== bars.length - 1);
         return result("updated", b);
       },
 
@@ -445,11 +487,12 @@
     };
 
     function trim() {
-      if (bars.length <= cfg.maxBars) return;
+      if (bars.length <= cfg.maxBars) return false;
       var drop = bars.length - cfg.maxBars;
       bars.splice(0, drop);
       index = Object.create(null);
       reindex(0);
+      return true;
     }
 
     function identical(a, b) {

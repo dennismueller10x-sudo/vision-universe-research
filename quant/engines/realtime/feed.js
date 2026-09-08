@@ -459,6 +459,15 @@
 
       status: function () { return lastStatus || publish(); },
       bars: function () { return series.bars(); },
+
+      /* Der Weg fuer die Chartschicht: ein Fenster statt der ganzen
+         Reihe, dazu die beiden Zaehler, mit denen sich ein unveraenderter
+         Stand ohne Vergleich erkennen laesst (§23). */
+      tail: function (n) { return series.tail(n); },
+      renderContext: function () {
+        return { revision: series.revision(),
+                 structuralRevision: series.structuralRevision() };
+      },
       series: function () { return series; },
       selection: function () { return selection; },
       connection: function () { return machine.snapshot(); },

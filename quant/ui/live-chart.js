@@ -154,7 +154,16 @@
     }
 
     function sync(force) {
-      var op = adapter.syncCoalesced(feed.bars(), { force: force === true });
+      /* Nur das Fenster, das gezeichnet wird - und die Zaehler, mit
+         denen der Adapter einen unveraenderten Stand erkennt, ohne die
+         Bars ueberhaupt anzusehen. */
+      var ctx = typeof feed.renderContext === "function" ? feed.renderContext() : {};
+      ctx.force = force === true;
+      var fenster = function () {
+        return typeof feed.tail === "function"
+          ? feed.tail(opts.maxPoints || 600) : feed.bars();
+      };
+      var op = adapter.syncCoalesced(fenster, ctx);
       if (op.shouldRender) { draw(op); return op; }
       if (op.dueInMs && flushTimer === null) {
         flushTimer = global.setTimeout(function () {
