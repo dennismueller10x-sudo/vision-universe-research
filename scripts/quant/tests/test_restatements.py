@@ -160,5 +160,59 @@ class InstantConversionTests(unittest.TestCase):
         self.assertEqual(to_instant("2024-05-05T10:00:00Z").hour, 10)
 
 
+class AvailabilityDateReductionTests(unittest.TestCase):
+    """Reducing an acceptance timestamp to a date must never move it earlier.
+
+    Found in the release audit: 252 of 4216 canonical facts (6 %) carried an
+    `availableAt` BEFORE their own `filedAt`, by one to three days. The cause is
+    real SEC behaviour -- a filing accepted after 17:30 ET carries the next
+    business day as its official filing date, so `acceptanceDateTime` legitimately
+    falls on the previous calendar day, and a weekend stretches the gap to three.
+
+    Truncating such a timestamp to its own date claims the filing was public from
+    00:00 that day, when it appeared that evening. `availableAt` is typed `date`
+    in the canonical schema, so a reduction has to happen; only the later of the
+    two dates is never early.
+    """
+
+    def test_an_evening_acceptance_is_reduced_to_the_filing_date(self):
+        from quant.sec.canonical import available_date
+        self.assertEqual(
+            available_date("2019-10-30T18:07:12.000Z", "2019-10-31"), "2019-10-31")
+
+    def test_a_weekend_gap_is_reduced_to_the_filing_date(self):
+        from quant.sec.canonical import available_date
+        self.assertEqual(
+            available_date("2013-05-03T20:14:00.000Z", "2013-05-06"), "2013-05-06")
+
+    def test_a_same_day_acceptance_keeps_its_own_date(self):
+        from quant.sec.canonical import available_date
+        self.assertEqual(
+            available_date("2019-10-31T09:00:00.000Z", "2019-10-31"), "2019-10-31")
+
+    def test_an_acceptance_after_the_filing_date_is_not_pulled_back(self):
+        from quant.sec.canonical import available_date
+        self.assertEqual(
+            available_date("2019-11-04T09:00:00.000Z", "2019-10-31"), "2019-11-04")
+
+    def test_a_missing_acceptance_falls_back_to_the_filing_date(self):
+        from quant.sec.canonical import available_date
+        self.assertEqual(available_date(None, "2019-10-31"), "2019-10-31")
+
+    def test_a_missing_filing_date_keeps_the_acceptance_date(self):
+        from quant.sec.canonical import available_date
+        self.assertEqual(available_date("2019-10-30T18:07:00Z", None), "2019-10-30")
+
+    def test_the_invariant_the_audit_checks(self):
+        """availableAt >= filedAt, for every combination the SEC can produce."""
+        from quant.sec.canonical import available_date
+        for acceptance, filed in (("2019-10-30T18:07:00Z", "2019-10-31"),
+                                  ("2019-10-31T09:00:00Z", "2019-10-31"),
+                                  ("2013-05-03T20:14:00Z", "2013-05-06"),
+                                  ("2020-01-02T11:00:00Z", "2020-01-02")):
+            with self.subTest(acceptance=acceptance):
+                self.assertGreaterEqual(available_date(acceptance, filed), filed)
+
+
 if __name__ == "__main__":
     unittest.main()

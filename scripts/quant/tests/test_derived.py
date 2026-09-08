@@ -101,6 +101,65 @@ class ReconstructionTests(unittest.TestCase):
         self.assertGreaterEqual(str(fcf.provenance.available_from),
                                 str(ocf.provenance.available_from))
 
+    def test_provenance_points_at_the_filing_that_made_the_value_knowable(self):
+        """Found in the release audit: availability and accession disagreed.
+
+        A derived value becomes available when its LAST input does, but the
+        accession was taken from the FIRST input. Where a later restatement of
+        one input changed the result, the canonical fact then cited a filing
+        that predated its own value — 77 cells across the five validation
+        companies carried two revisions under one accession.
+        """
+        from quant.sec.derived import _determining_input
+        fcf = self.derived["free_cash_flow"]
+        inputs = [self.resolver.annual(name, 2025, self.as_of)
+                  for name in ("operating_cash_flow", "capital_expenditures")]
+        determining = _determining_input(inputs)
+        self.assertEqual(fcf.provenance.accession, determining.provenance.accession)
+        self.assertEqual(fcf.provenance.form, determining.provenance.form)
+        self.assertEqual(str(fcf.provenance.available_from),
+                         str(determining.provenance.available_from))
+
+    def test_the_determining_input_is_the_last_one_to_become_available(self):
+        from quant.sec.derived import _determining_input
+
+        class _Fact:
+            def __init__(self, accession, available_from):
+                self.provenance = type("P", (), {
+                    "accession": accession, "available_from": available_from,
+                    "filed": available_from, "form": "10-Q", "retrieved_at": None,
+                })()
+
+        early, late = _Fact("acc-early", "2017-11-03"), _Fact("acc-late", "2018-08-01")
+        self.assertEqual(_determining_input([early, late]).provenance.accession,
+                         "acc-late")
+        self.assertEqual(_determining_input([late, early]).provenance.accession,
+                         "acc-late",
+                         "input order must not decide which filing is cited")
+
+    def test_the_built_fact_cites_the_determining_input_not_the_first(self):
+        """The wiring, not just the rule: _derived_fact must use the anchor."""
+        from quant.sec.derived import _derived_fact
+        first = self.resolver.annual("operating_cash_flow", 2025, self.as_of)
+        later = self.resolver.annual("capital_expenditures", 2025, self.as_of)
+        # Make the SECOND input the determining one by giving it a later
+        # availability and a different accession, then pass it second.
+        later.provenance.available_from = "2099-01-01"
+        later.provenance.filed = "2099-01-01"
+        later.provenance.accession = "acc-determining"
+        built = _derived_fact("0000000001", "free_cash_flow", 1.0, "USD",
+                              [first, later], 2025, "FY", first)
+        self.assertEqual(built.provenance.accession, "acc-determining")
+        self.assertEqual(str(built.provenance.available_from), "2099-01-01")
+
+    def test_the_cited_filing_is_never_older_than_the_availability_it_claims(self):
+        for name, fact in self.derived.items():
+            if not fact.available:
+                continue
+            with self.subTest(metric=name):
+                self.assertLessEqual(str(fact.provenance.filed)[:10],
+                                     str(fact.provenance.available_from)[:10])
+
     def test_every_formula_is_documented(self):
         for metric in RECONSTRUCTED:
             self.assertIn(metric, FORMULAS)

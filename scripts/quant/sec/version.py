@@ -24,7 +24,12 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         calendar cannot place unambiguously it borrowed a date a full year
 #         later, so a filing appeared to know a balance sheet that had not
 #         happened yet.
-NORMALIZATION_LOGIC_VERSION = "1.3.0"
+#
+# 1.4.0 — availability reduced to a date never moves earlier than the official
+#         filing date (an acceptance timestamp legitimately falls on the
+#         previous day), and a derived fact cites the filing that made it
+#         knowable rather than the first of its inputs.
+NORMALIZATION_LOGIC_VERSION = "1.4.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -53,7 +58,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "a35cc307c7b0a739c441c1ee9a043ef957ea32f90664937f8aa893870287c2dc"
+    "dcdfb3aa895452e3477ef615b5b8493778139d73c1781e69a0d7340e20ccf928"
 )
 
 

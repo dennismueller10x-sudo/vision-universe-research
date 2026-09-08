@@ -39,13 +39,25 @@ class CliCommandTests(unittest.TestCase):
         self.assertTrue(self.commands)
 
     def test_every_cli_command_used_by_a_workflow_exists(self):
-        pattern = re.compile(r"cli\.py\s+([a-z-]+)")
+        # Only an actual invocation counts. `python3` in front, and the command
+        # must not be the head of a path: a step that merely LISTS
+        # `scripts/quant/cli.py providers/sec/adapter.js` as files to check is
+        # not calling `cli.py providers`, and reporting it as a missing command
+        # would send the next reader after a bug that does not exist.
+        pattern = re.compile(r"python3?\s+\S*cli\.py\s+([a-z][a-z-]*)(?![\w./-])")
         for name in SEC_WORKFLOWS:
             for command in pattern.findall(workflow_text(name)):
                 with self.subTest(workflow=name, command=command):
                     self.assertIn(command, self.commands,
                                   f"{name} calls `cli.py {command}`, which the CLI "
                                   f"does not define. Known: {sorted(self.commands)}")
+
+    def test_every_python_script_a_workflow_calls_exists(self):
+        pattern = re.compile(r"python3?\s+(scripts/[\w./-]+\.py)")
+        for name in SEC_WORKFLOWS:
+            for script in set(pattern.findall(workflow_text(name))):
+                with self.subTest(workflow=name, script=script):
+                    self.assertTrue((ROOT / script).exists(), f"{script} missing")
 
     def test_every_node_script_a_workflow_calls_exists(self):
         pattern = re.compile(r"node\s+(scripts/[\w./-]+\.mjs)")

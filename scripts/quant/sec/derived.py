@@ -56,17 +56,45 @@ def _quality(inputs):
     return worst
 
 
-def _latest_availability(inputs):
-    latest = None
+def _determining_input(inputs):
+    """The input whose filing made this derived value knowable.
+
+    A derived value becomes available when its LAST input does, so that input
+    is also the one its provenance must point at. Taking availability from the
+    latest input but the accession from the first produced canonical facts that
+    cited a filing predating their own value: 77 cells across the five
+    validation companies carried two revisions under one accession, because a
+    later restatement of one input changed the result while the accession stayed
+    on the original filing.
+    """
+    determining = None
     for fact in inputs:
         stamp = fact.provenance.available_from or fact.provenance.filed
-        if stamp and (latest is None or to_instant(stamp) > to_instant(latest)):
-            latest = stamp
-    return latest
+        if stamp is None:
+            continue
+        if determining is None:
+            determining = fact
+            continue
+        current = (determining.provenance.available_from
+                   or determining.provenance.filed)
+        if to_instant(stamp) > to_instant(current):
+            determining = fact
+    return determining or (inputs[0] if inputs else None)
+
+
+def _latest_availability(inputs):
+    determining = _determining_input(inputs)
+    if determining is None:
+        return None
+    return determining.provenance.available_from or determining.provenance.filed
 
 
 def _derived_fact(cik, metric, value, unit, inputs, fiscal_year, fiscal_period,
                   reference):
+    # Provenance follows availability: the filing that made this value knowable
+    # is the one the canonical fact cites. `reference` still supplies the period
+    # shape, which is a property of the cell rather than of any one input.
+    anchor = _determining_input(inputs) or reference
     available_from = _latest_availability(inputs)
     provenance = Provenance(
         source=SOURCE_DERIVED,
@@ -74,10 +102,10 @@ def _derived_fact(cik, metric, value, unit, inputs, fiscal_year, fiscal_period,
         inputs=[f"{fact.metric}@FY{fact.fiscal_year}{fact.fiscal_period}" for fact in inputs],
         formula_version=FORMULA_VERSION,
         available_from=available_from,
-        filed=available_from,
-        form=reference.provenance.form,
-        accession=reference.provenance.accession,
-        retrieved_at=reference.provenance.retrieved_at,
+        filed=anchor.provenance.filed or available_from,
+        form=anchor.provenance.form,
+        accession=anchor.provenance.accession,
+        retrieved_at=anchor.provenance.retrieved_at,
         registry_version=reference.provenance.registry_version,
         normalization_version=reference.provenance.normalization_version,
     )

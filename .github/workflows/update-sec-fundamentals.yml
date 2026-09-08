@@ -31,6 +31,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Ensure the SEC pipeline exists on this ref
+        shell: bash
+        run: |
+          # Der Workflow ist auf main registriert, damit workflow_dispatch ihn
+          # ueberhaupt anbietet. Wird er auf einem Ref gestartet, der die
+          # Pipeline nicht enthaelt, soll er das sagen statt undurchsichtig
+          # mitten im Lauf zu scheitern.
+          missing=0
+          for required in scripts/quant/cli.py providers/sec/adapter.js \
+                          quant/config/sec-universe.json scripts/quant/run-sec-gates.mjs; do
+            if [ ! -e "$required" ]; then echo "fehlt: $required"; missing=1; fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Die SEC-Pipeline liegt auf diesem Ref (${{ github.ref_name }}) nicht vor."
+            exit 1
+          fi
+          echo "SEC-Pipeline auf ${{ github.ref_name }} vorhanden."
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -131,6 +149,18 @@ jobs:
       - name: Re-check the adapter against real ingested data
         run: node --test "quant/tests/sec-adapter.test.mjs"
 
+      - name: Cross-check canonical values against SEC primary data
+        id: primary_source
+        # The only check that leaves the pipeline: it re-fetches companyfacts and
+        # compares raw SEC entries against the normalized and canonical values,
+        # recording concept, accession, filing date and period end for each one.
+        # continue-on-error so the evidence file still gets committed; the run is
+        # failed at the end if anything mismatched.
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/audit_primary_source.py --per-company 8
+
       - name: Export the data inspector views
         run: python3 scripts/quant/cli.py export
 
@@ -173,6 +203,29 @@ jobs:
           if [ -n "$oversized" ]; then
             echo "::error::generated artifact over 2MB:"; echo "$oversized"; exit 1
           fi
+
+      - name: Fail the run if any value disagrees with SEC primary data
+        shell: bash
+        run: |
+          report=quant/data/sec/primary_source_audit.json
+          if [ ! -f "$report" ]; then
+            echo "::error::the primary-source cross-check produced no report"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json, pathlib, sys
+          payload = json.loads(pathlib.Path("quant/data/sec/primary_source_audit.json").read_text())
+          print(json.dumps(payload["summary"], indent=2))
+          if payload["mismatchCount"]:
+              print(f"::error::{payload['mismatchCount']} canonical values disagree "
+                    f"with SEC primary data")
+              for check in payload["checks"]:
+                  if check["verdict"].startswith("MISMATCH"):
+                      print(f"  {check['ticker']} {check['metric']} "
+                            f"{check['fiscalYear']} {check['fiscalPeriod']}: "
+                            f"{check['verdict']}")
+              sys.exit(1)
+          PY
 
       - name: Commit generated data
         shell: bash

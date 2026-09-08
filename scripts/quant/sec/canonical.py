@@ -106,6 +106,29 @@ def _date(value):
     return str(value)[:10] if value else None
 
 
+def available_date(available_from, filed):
+    """Reduce an availability moment to a date without ever moving it earlier.
+
+    `acceptanceDateTime` is the exact moment a filing was disseminated, and it
+    can fall on the day BEFORE the official filing date: anything the SEC
+    accepts after 17:30 ET carries the next business day as its filing date.
+    Truncating such a timestamp to its own date says the filing was public from
+    00:00 that day, when in fact it appeared that evening -- up to a full
+    session of look-ahead, measured on 252 of 4216 canonical facts (6 %), by
+    one to three days where a weekend intervened.
+
+    Date granularity is forced by the canonical schema (`availableAt` is typed
+    `date` in quant/engines/schema.js) and the SEC factbook keeps the exact
+    timestamp. But the reduction has a safe direction and an unsafe one, and
+    only the later of acceptance date and filing date is never early.
+    """
+    available = _date(available_from)
+    filed = _date(filed)
+    if available and filed and available < filed:
+        return filed
+    return available or filed
+
+
 def revision_instants(factbook, metric, fiscal_year, fiscal_period):
     """Every date on which this canonical metric's value could have changed."""
     instants = set()
@@ -115,7 +138,7 @@ def revision_instants(factbook, metric, fiscal_year, fiscal_period):
             if timeline is None:
                 continue
             for observation in timeline.observations:
-                stamp = _date(observation.available_from or observation.filed)
+                stamp = available_date(observation.available_from, observation.filed)
                 if stamp:
                     instants.add(stamp)
     return sorted(instants)
