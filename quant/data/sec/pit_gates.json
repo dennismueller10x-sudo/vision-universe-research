@@ -1,8 +1,8 @@
 {
-  "generated_at_utc": "2026-09-08T00:01:02.210Z",
+  "generated_at_utc": "2026-09-08T00:08:43.391Z",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.2.0",
+    "normalization_logic": "1.3.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -147,7 +147,7 @@
         {
           "gate": "DERIVED_SEPARATION",
           "status": "PASS",
-          "reason": "all 6 derived metrics carry source VISION_UNIVERSE_DERIVED and a formula version",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
           "evidence": {}
         }
       ],
@@ -217,7 +217,7 @@
         {
           "gate": "DERIVED_SEPARATION",
           "status": "PASS",
-          "reason": "all 6 derived metrics carry source VISION_UNIVERSE_DERIVED and a formula version",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
           "evidence": {}
         }
       ],
@@ -287,7 +287,7 @@
         {
           "gate": "DERIVED_SEPARATION",
           "status": "PASS",
-          "reason": "all 6 derived metrics carry source VISION_UNIVERSE_DERIVED and a formula version",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
           "evidence": {}
         }
       ],
@@ -356,29 +356,21 @@
         },
         {
           "gate": "DERIVED_SEPARATION",
-          "status": "FAIL",
-          "reason": "derived metrics are not clearly separated from SEC facts",
-          "evidence": {
-            "examples": [
-              {
-                "metric": "gross_profit",
-                "source": "SEC_EDGAR_XBRL"
-              }
-            ]
-          }
+          "status": "PASS",
+          "reason": "5 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
+          "evidence": {}
         }
       ],
       "summary": {
         "total": 8,
         "by_status": {
-          "PASS": 5,
-          "FAIL": 2,
+          "PASS": 6,
+          "FAIL": 1,
           "UNKNOWN": 0,
           "NOT_APPLICABLE": 1
         },
         "blocking_failures": [
-          "SURVIVORSHIP_FREE_UNIVERSE",
-          "DERIVED_SEPARATION"
+          "SURVIVORSHIP_FREE_UNIVERSE"
         ]
       }
     },
@@ -400,44 +392,10 @@
         },
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
-          "status": "FAIL",
-          "reason": "4 observation(s) are available before their period ended",
+          "status": "PASS",
+          "reason": "all 5822 observations become available on or after their period end",
           "evidence": {
-            "observations_checked": 5822,
-            "offenders": [
-              {
-                "metric": "shares_outstanding",
-                "fiscal_year": 2010,
-                "fiscal_period": "Q2",
-                "period_end": "2010-08-01",
-                "available_from": "2009-08-20T20:59:23.000Z",
-                "accession": "0001045810-09-000024"
-              },
-              {
-                "metric": "shares_outstanding",
-                "fiscal_year": 2010,
-                "fiscal_period": "Q3",
-                "period_end": "2010-10-31",
-                "available_from": "2009-11-19T14:03:13.000Z",
-                "accession": "0001045810-09-000036"
-              },
-              {
-                "metric": "shares_outstanding",
-                "fiscal_year": 2010,
-                "fiscal_period": "FY",
-                "period_end": "2011-01-30",
-                "available_from": "2010-03-17T23:16:55.000Z",
-                "accession": "0001045810-10-000006"
-              },
-              {
-                "metric": "shares_outstanding",
-                "fiscal_year": 2010,
-                "fiscal_period": "Q4",
-                "period_end": "2011-01-30",
-                "available_from": "2010-03-17T23:16:55.000Z",
-                "accession": "0001045810-10-000006"
-              }
-            ]
+            "observations_checked": 5822
           }
         },
         {
@@ -469,21 +427,20 @@
         {
           "gate": "DERIVED_SEPARATION",
           "status": "PASS",
-          "reason": "all 6 derived metrics carry source VISION_UNIVERSE_DERIVED and a formula version",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
           "evidence": {}
         }
       ],
       "summary": {
         "total": 8,
         "by_status": {
-          "PASS": 5,
-          "FAIL": 2,
+          "PASS": 6,
+          "FAIL": 1,
           "UNKNOWN": 0,
           "NOT_APPLICABLE": 1
         },
         "blocking_failures": [
-          "SURVIVORSHIP_FREE_UNIVERSE",
-          "PIT_NO_FUTURE_DATA_LEAK"
+          "SURVIVORSHIP_FREE_UNIVERSE"
         ]
       }
     }
@@ -643,14 +600,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (547.8), der spaete die Korrektur (574.028479). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (616.028107), der spaete die Korrektur (612.191412). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 547.8,
-            "afterValue": 574.028479,
+            "beforeValue": 616.028107,
+            "afterValue": 612.191412,
             "beforeStatus": "original",
             "afterStatus": "restated",
-            "beforeAvailableAt": "2009-08-20",
-            "afterAvailableAt": "2010-08-30"
+            "beforeAvailableAt": "2012-03-13",
+            "afterAvailableAt": "2013-03-12"
           }
         },
         "GATE_B_DELISTING": {
@@ -660,7 +617,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 717,
+            "fundamentalRecords": 714,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -668,9 +625,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "717 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "714 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 717,
+            "total": 714,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
