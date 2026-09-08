@@ -1,9 +1,10 @@
 # SEC Live Validation — Ergebnisbericht
 
-**Stand: 2026-09-08. Normalisierungslogik 1.3.0. GitHub-Actions-Lauf #11 auf
+**Stand: 2026-09-08. Normalisierungslogik 1.3.0. GitHub-Actions-Lauf #12 auf
 `claude/sec-financial-data-core-qiizhj`.**
 
-Elf Läufe gegen `data.sec.gov`, in denen elf Fehler gefunden wurden. Jede Zahl in
+Zwölf Läufe gegen `data.sec.gov`, in denen elf Fehler gefunden wurden; Lauf #12
+ist der Bestätigungslauf, dessen Artefakte hier zitiert werden. Jede Zahl in
 diesem Dokument stammt aus committeten Artefakten unter `quant/data/sec/` und ist
 mit dem erzeugenden Lauf reproduzierbar. Nichts ist geschätzt, nichts ist aus
 Dokumentation zitiert, und kein Gate wurde nachträglich angehoben.
@@ -17,8 +18,7 @@ Phase-4-Code selbst liegt weiterhin ausschließlich auf dem Feature-Branch.
 
 ## 1. Konnten alle fünf Unternehmen erfolgreich geladen werden?
 
-**Ja, alle fünf.** Nach elf Läufen: 5 von 5 ingestiert, 0 Fehlschläge, Retry-Queue
-leer.
+**Ja, alle fünf.** 5 von 5 ingestiert, 0 Fehlschläge, Retry-Queue leer.
 
 In den ersten Läufen sind zwei davon *nicht* durchgelaufen, und beides waren
 echte Befunde, keine Infrastrukturprobleme:
@@ -47,7 +47,7 @@ für fünf Unternehmen ist der Einzelabruf schneller.
 
 Fair-Access-Verhalten: deklarierter User-Agent mit Kontaktadresse,
 Token-Bucket auf 5 req/s, exponentielles Backoff mit Jitter,
-Request-Deduplizierung und gzip-Plattencache. Keine Rate-Limit-Antwort in elf
+Request-Deduplizierung und gzip-Plattencache. Keine Rate-Limit-Antwort in zwölf
 Läufen.
 
 ## 3. Wie weit reicht die gemessene Historie je Unternehmen zurück?
@@ -248,9 +248,9 @@ jeweils lückenlos bis zum aktuellen Geschäftsjahr. Details in
 
 ## 12. Gefundene Datenqualitätsprobleme
 
-Die Qualitätsengine markiert, sie korrigiert nie. Befunde aus Lauf #11
+Die Qualitätsengine markiert, sie korrigiert nie. Befunde aus Lauf #12
 (WARNING/INFO stehen im nicht-committeten Factbook, ERROR-Befunde reisen seit
-diesem Lauf mit der Inspector-Ansicht mit):
+Lauf #12 mit der Inspector-Ansicht mit):
 
 | Unternehmen | ERROR | WARNING | INFO |
 | --- | --- | --- | --- |
@@ -272,11 +272,28 @@ Nach Code:
 - **`RESTATEMENT_CONFLICT` (WARNING, 434)** — eine Korrektur bewegt einen Wert
   über die Schwelle. Das ist ein Befund, kein Fehler: die Kette bleibt vollständig.
 - **`FUTURE_DATA_LEAK` (ERROR, 5, nur NVDA)** — Rohfakten, deren Periodenende
-  **nach ihrem eigenen Einreichungsdatum** liegt. Das ist eine Anomalie in NVDAs
-  SEC-Daten, nicht in unserer Verarbeitung: die Zahl ist über alle vier
-  Normalisierungsversionen (1.0.0 bis 1.3.0) konstant 5 geblieben. Die Fakten
-  werden markiert und nicht verändert; das PIT-Gate auf den kanonischen Daten
-  besteht trotzdem, weil die betroffenen Zellen die Auflösung nicht überstehen.
+  **nach ihrem eigenen Einreichungsdatum** liegt. Seit Lauf #12 stehen die
+  Befunde selbst in `quant/data/sec/inspector/NVDA.json`, und damit ist die
+  Einordnung nachprüfbar statt vermutet:
+
+  | Concept | Periodenende | Eingereicht |
+  | --- | --- | --- |
+  | `EntityPublicFloat` | 2011-08-01 | 2011-05-27 |
+  | `AcceleratedShareRepurchasesSettlementPaymentOrReceipt` | 2013-07-28 | 2013-05-22 |
+  | `CommonStockDividendsPerShareDeclared` | 2014-01-26 | 2013-11-19 |
+  | `StockRepurchaseProgramRemainingAuthorizedRepurchaseAmount` | 2014-01-26 | 2013-11-19 |
+  | `StockRepurchasedDuringPeriodShares` | 2014-04-27 | 2014-03-13 |
+
+  **Keines dieser fünf Konzepte bildet die Registry auf eine kanonische Kennzahl
+  ab.** Sie erreichen die kanonische Schicht nie, weshalb das PIT-Gate dort
+  besteht — das ist überprüfbar an der Konzeptliste, keine Annahme über die
+  Auflösung. Inhaltlich sind es überwiegend zukunftsgerichtete Angaben (eine
+  erklärte, später zahlbare Dividende; die Restautorisierung eines
+  Rückkaufprogramms), bei denen ein in der Zukunft liegendes Periodenende
+  normale SEC-Praxis ist. Die Regel prüft Rohfakten und meldet korrekt, was sie
+  sieht; die Fakten werden markiert und nicht verändert. Die Zahl ist über alle
+  vier Normalisierungsversionen (1.0.0 bis 1.3.0) konstant 5 geblieben, also
+  eine Eigenschaft der SEC-Daten und nicht unserer Verarbeitung.
 - **`FISCAL_PERIOD_CONFLICT` (WARNING, 6, nur NVDA)** und
   **`UNPLACEABLE_PERIOD` (WARNING, 10)** — die dünnen frühen XBRL-Jahre, in denen
   der gelernte Fiskalkalender Perioden nicht eindeutig zuordnen kann. Genau diese
@@ -290,8 +307,8 @@ Lücke mit sichtbarem Befund statt einer mehrdeutigen Zahl.
 
 ## 13. Gefundene Bugs
 
-Elf Live-Läufe, elf Fehler — alle nur durch echte SEC-Daten sichtbar, keiner durch
-die Fixtures.
+Elf Fehler in zwölf Live-Läufen — alle nur durch echte SEC-Daten sichtbar, keiner
+durch die Fixtures.
 
 1. **`get_filing_metadata` quadratisch.** JPMs 71 Submissions-Seiten mit rund
    100 000 Filings ließen den Lauf nach acht Sekunden Download zehn Minuten still
@@ -374,6 +391,7 @@ Wirkung der Korrekturen (7)–(11a) in Zahlen, Lauf für Lauf:
 | #9  | 1.1.0 (angewandt) | 3 865 | 163 |
 | #10 | 1.2.0 | 4 223 | 27 |
 | #11 | 1.3.0 | 4 216 | 30 |
+| #12 | 1.3.0 | 4 216 | 30 |
 
 Lauf #9 machte es schlimmer, bevor es besser wurde: die richtige Zuordnung des
 Deckblattdatums brachte Cover-Date- und Bilanz-Instant erst in dieselbe Zelle und
@@ -468,8 +486,12 @@ Fakt.
 6. **30 unterdrückte Zellen** in den frühen XBRL-Jahren (NVDA 2010–2013, XOM 1).
    Bekannt, benannt, mit Grund gemeldet — kein stiller Verlust.
 7. **5 `FUTURE_DATA_LEAK`-Rohfakten bei NVDA**, deren Periodenende nach dem
-   eigenen Einreichungsdatum liegt. Anomalie in den SEC-Daten; markiert, nicht
-   korrigiert.
+   eigenen Einreichungsdatum liegt — durchweg auf Konzepten, die die Registry
+   nicht abbildet (Dividendenerklärungen, Rückkaufautorisierungen, Public
+   Float). Markiert, nicht korrigiert; sie erreichen die kanonische Schicht
+   nicht. Die ERROR-Severity ist für zukunftsgerichtete Angaben streng
+   angesetzt — bewusst nicht abgesenkt, weil eine Regel nicht nachjustiert wird,
+   damit eine Zahl besser aussieht.
 8. **Nur fünf Unternehmen gemessen.** Die Architektur ist nicht nach Ticker
    parametrisiert und der Bulk-Pfad für ~500+ Unternehmen ist implementiert und
    getestet — aber *gemessen* ist der Durchsatz bei fünf. Der nächste
@@ -485,7 +507,7 @@ Fakt.
 
 Begründung:
 
-- Alle fünf Unternehmen laden fehlerfrei, elf Läufe, keine offenen Fehlschläge.
+- Alle fünf Unternehmen laden fehlerfrei, zwölf Läufe, keine offenen Fehlschläge.
 - Jeder durch echte SEC-Daten gefundene Fehler ist analysiert, minimal behoben
   und durch einen Regressionstest abgesichert — elf Stück.
 - 492 Tests grün, keiner gelöscht, keiner abgeschwächt.

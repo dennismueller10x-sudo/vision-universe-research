@@ -1,6 +1,6 @@
 # SEC Coverage Report
 
-**Status: measured against live SEC data on 2026-09-08** (GitHub Actions run #11
+**Status: measured against live SEC data on 2026-09-08** (GitHub Actions run #12
 on `claude/sec-financial-data-core-qiizhj`, normalization logic 1.3.0).
 
 Every number below comes from `quant/data/sec/coverage_matrix.json`, which
@@ -51,7 +51,7 @@ four of the five.
 
 ## 2. Canonical output per company
 
-From `quant/data/sec/canonical_index.json` (run #11):
+From `quant/data/sec/canonical_index.json` (run #12):
 
 | Company | Canonical facts | Metrics | Suppressed cells | Quarterly years |
 | --- | --- | --- | --- | --- |
