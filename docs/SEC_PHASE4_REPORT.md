@@ -57,7 +57,18 @@ und Veröffentlichung, Restatement-Zeitachse, YTD-Rekonstruktion innerhalb des
 PIT-Fensters, Provenance, Trennung gemeldet/abgeleitet), sämtliche Regressionstests
 dazu, und die ehrlichen FAIL-Zustände bei Delisting und Survivorship.
 
-## 3. Der Live-Validierungs-Blocker (unverändert)
+## 3. Der Live-Validierungs-Blocker (inzwischen aufgelöst)
+
+> **Nachtrag, 2026-09-08.** Dieser Abschnitt beschreibt den Stand *vor* der
+> Live-Validierung und bleibt als Beleg stehen, warum damals nichts gemessen
+> war. Inzwischen ist gemessen worden: elf Läufe in GitHub Actions gegen
+> `data.sec.gov`, fünf von fünf Unternehmen geladen, elf gefundene und behobene
+> Fehler, 4 216 kanonische Fakten, 27 231 PIT-geprüfte Beobachtungen. Die
+> Ergebnisse stehen in **`docs/SEC_LIVE_VALIDATION.md`**, die gemessene
+> Coverage-Matrix in `docs/SEC_COVERAGE_REPORT.md`. Die Aussagen unten über
+> `status: "not_generated"` gelten entsprechend nicht mehr.
+
+### Der ursprüngliche Stand
 
 `data.sec.gov` und `www.sec.gov` sind durch die Egress-Policy dieser Umgebung
 blockiert (HTTP 403 auf CONNECT). Das ist eine Organisationsrichtlinie dieser

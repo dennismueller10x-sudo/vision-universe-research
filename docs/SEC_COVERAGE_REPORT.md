@@ -1,47 +1,94 @@
 # SEC Coverage Report
 
-**Status: the coverage matrix has NOT yet been measured against live SEC data.**
+**Status: measured against live SEC data on 2026-09-08** (GitHub Actions run #11
+on `claude/sec-financial-data-core-qiizhj`, normalization logic 1.3.0).
 
-This document explains why, what the measurement will produce, and how to run it.
-It deliberately contains no invented numbers.
+Every number below comes from `quant/data/sec/coverage_matrix.json`, which
+`scripts/quant/sec/coverage.py` computes from ingested facts. Nothing here is
+hand-written or quoted from documentation.
 
-## 1. Why the matrix is empty
+## 1. The measured grid
 
-The brief asks for a measured coverage matrix over NVDA, AAPL, MSFT, JPM and XOM
-— explicitly *not* a quotation of SEC documentation. That measurement requires
-network access to `data.sec.gov`.
+| Fiscal year | NVDA | AAPL | MSFT | JPM | XOM |
+| --- | --- | --- | --- | --- | --- |
+| 2025 | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED |
+| 2020 | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED |
+| 2015 | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED |
+| 2010 | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED | STRUCTURED |
+| 2005 | FILING_ONLY | FILING_ONLY | FILING_ONLY | FILING_ONLY | FILING_ONLY |
+| 2000 | FILING_ONLY | FILING_ONLY | FILING_ONLY | FILING_ONLY | FILING_ONLY |
+| 1995 | **MISSING** | FILING_ONLY | FILING_ONLY | FILING_ONLY | FILING_ONLY |
 
-The environment this phase was implemented in cannot reach the SEC:
+| Company | First structured year | First usable year | Filing years found |
+| --- | --- | --- | --- |
+| NVDA | 2008 | 2008 | 1999–2026 |
+| AAPL | 2007 | 2007 | 1993–2026 |
+| MSFT | 2008 | 2008 | 1993–2026 |
+| JPM  | 2007 | 2007 | 1993–2026 |
+| XOM  | 2008 | 2007 | 1993–2026 |
 
-```
-$ curl -sS -A "VisionUniverseResearch info@visionuniverse.de" \
-    https://data.sec.gov/api/xbrl/companyfacts/CIK0001045810.json
-curl: (56) CONNECT tunnel failed, response 403
-  data.sec.gov:443 - connect_rejected (egress policy denied the CONNECT)
-  www.sec.gov:443  - connect_rejected (egress policy denied the CONNECT)
-```
+`earliest_usable_year: 2007`, `latest_first_usable_year: 2008`.
 
-This is an organisation egress policy on the development sandbox, not a SEC
-block, not a rate limit and not a bug in the client. **GitHub Actions runners are
-not subject to it** — `scripts/hedgefonds/fetch_edgar_data.py` has been pulling
-13F data from `www.sec.gov` in this repository's workflows for some time.
+Two results are worth stating plainly:
 
-Statt eine plausibel aussehende Matrix zu erfinden, trägt `quant/data/sec/coverage_matrix.json`
-ships with `status: "not_generated"`, matching this repository's existing
-convention for generated data (`dashboard/data/*.json`).
+- **Structured coverage predates the XBRL mandate.** The mandate phased in from
+  mid-2009, yet FY2007 and FY2008 come back STRUCTURED. That is the comparative
+  effect: an FY2009 or FY2010 filing carries the two prior years as tagged
+  comparatives. It was an open empirical question in the pre-live version of this
+  document; the answer is roughly two years of reach behind the first XBRL filing.
+- **NVDA 1995 is MISSING, not FILING_ONLY**, because NVDA's first periodic filing
+  in EDGAR is from 1999 — the company IPO'd in 1999. The distinction is the point
+  of the four-state scale: nothing was filed, so nothing can be recovered by
+  parsing documents later.
 
-## 2. How to produce it
+`FILING_ONLY` for 1995–2005 across the other four means EDGAR holds the 10-K but
+it carries no machine-readable facts. Those years are recoverable in principle
+(document parsing), at a cost this measurement now quantifies: roughly 14 years
+per company.
 
-```bash
-# In GitHub Actions: run the "Update SEC fundamentals" workflow (workflow_dispatch).
-# It ingests the universe, then:
-python3 scripts/quant/cli.py coverage
-```
+**A backtest on this universe can start in fiscal 2008**, with 2007 available for
+four of the five.
 
-The workflow writes `quant/data/sec/coverage_matrix.json` and commits it. The data
-inspector at `/quant/data-inspector/` renders it as soon as it exists.
+## 2. Canonical output per company
 
-## 3. What the measurement means
+From `quant/data/sec/canonical_index.json` (run #11):
+
+| Company | Canonical facts | Metrics | Suppressed cells | Quarterly years |
+| --- | --- | --- | --- | --- |
+| AAPL | 962 | 13 | 0 | 2007–2026 |
+| MSFT | 998 | 13 | 0 | 2008–2026 |
+| NVDA | 791 | 13 | 29 | 2008–2027 (fiscal) |
+| XOM  | 846 | 11 | 1 | 2007–2026 |
+| JPM  | 619 | 7  | 0 | 2007–2026 |
+
+Total: 4216 canonical `FundamentalFact` records.
+
+**JPM has 7 metrics, not 13, and that is correct** — and the two reasons for the
+gap are kept apart, which is the point:
+
+- `cost_of_revenue`, `gross_profit` and `total_debt` come back
+  `NOT_APPLICABLE_FOR_SECTOR` with a rule id. A bank has no cost of revenue, so
+  no gross profit exists to report or to reconstruct; the sector rule also blocks
+  the debt aggregate rather than summing components that do not mean the same
+  thing on a bank balance sheet.
+- `capital_expenditures`, `long_term_debt` and `operating_income` come back
+  `MISSING_XBRL_CONCEPT`: the concept could exist for this filer but is not in
+  the tagged data.
+
+Neither is zero and neither is silently absent. XOM has 11 for the second reason
+only: `gross_profit`, `cost_of_revenue` and `operating_income` are simply not
+tagged in its filings — an oil major reports a different income-statement shape,
+and that is `MISSING_XBRL_CONCEPT`, not a sector rule.
+
+**Suppressed cells** are cells where the same (metric, fiscal year, quarter)
+resolved to more than one period end. A fiscal quarter has exactly one end date,
+so rather than publish an ambiguous number the cell is withheld and reported
+under `periodEndConflicts` with reason `AMBIGUOUS_PERIOD_END`. All 30 remaining
+are in the thin early XBRL years — 29 for NVDA (2010–2013), 1 for XOM — where the
+learned fiscal calendar cannot place the periods unambiguously. An honest gap
+with a stated reason, not a guess.
+
+## 3. What the states mean
 
 Per company and fiscal year, one of four states, computed from real ingested data
 by `coverage.py` — never hand-written:
@@ -56,46 +103,19 @@ by `coverage.py` — never hand-written:
 Core metrics: `revenue`, `net_income`, `operating_cash_flow`, `total_assets`,
 `stockholders_equity`. A fundamental backtest cannot run without them.
 
-The distinction between `FILING_ONLY` and `MISSING` is the point of the exercise:
-it separates "the SEC has the company but not in a machine-readable form" from
-"the SEC has nothing", and only the former is recoverable by future work
-(document parsing), at a cost worth knowing before committing to it.
+## 4. How to reproduce it
 
-Output shape:
-
-```json
-{"probe_years": [2025, 2020, 2015, 2010, 2005, 2000, 1995],
- "grid": {"2015": {"NVDA": "STRUCTURED", "JPM": "STRUCTURED", ...}, ...},
- "companies": [{"cik": "...", "first_structured_year": 2010,
-                "first_usable_year": 2009, "years": {...}}],
- "summary": {"earliest_usable_year": ..., "latest_first_usable_year": ...}}
+```bash
+# In GitHub Actions: run the "Update SEC fundamentals" workflow (workflow_dispatch).
+python3 scripts/quant/cli.py ingest
+python3 scripts/quant/cli.py coverage
+python3 scripts/quant/cli.py canonical
+python3 scripts/quant/cli.py gates
 ```
 
-`first_usable_year` per company is the number that actually answers "from which
-year is SEC data good enough for our quant backtester?".
-
-## 4. What is already known — and what is not
-
-The following is SEC **policy**, from the XBRL mandate's published phase-in, and
-is stated here as context, not as a measurement:
-
-- XBRL financial statement tagging phased in for US filers between mid-2009 and
-  mid-2011, largest filers first.
-- Before that, filings exist in EDGAR as documents, without structured facts.
-
-What this does **not** tell us, and only the measurement can:
-
-- Whether early XBRL years are complete enough to pass the core-metric threshold,
-  or land in `DERIVABLE` / `FILING_ONLY`.
-- How far back each company's *comparatives* reach. A FY2011 10-K carries FY2009
-  and FY2010 figures as tagged comparatives, so structured coverage can predate
-  a company's first XBRL filing — by how much is an empirical question per filer.
-- Whether JPM's bank income statement leaves enough core metrics to qualify at
-  all in the early years.
-- How much of the quarterly grid survives de-accumulation in the early years,
-  which is what a quarterly-rebalanced strategy actually needs.
-
-Do not quote a start year for the backtester until the matrix has been generated.
+The development sandbox this code was written in cannot reach `data.sec.gov`
+(egress policy, HTTP 403 on CONNECT); GitHub Actions runners can, which is why
+every measurement in this document was produced there.
 
 ## 5. Delisted securities and survivorship bias
 

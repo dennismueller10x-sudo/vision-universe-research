@@ -184,6 +184,46 @@
     ]);
   }
 
+  function qualityPanel(view) {
+    var summary = (view && view.quality_summary) || null;
+    var errors = (view && view.quality_errors) || { total: 0, shown: 0, findings: [] };
+    if (!summary) {
+      return S.stateBox("Datenqualitaet", "Noch nicht gemessen.", "warn");
+    }
+    var severity = summary.by_severity || {};
+    var head = el("p", { class: "q-lead", text:
+      "Regelwerk " + (summary.rules_version || "—") + " · "
+      + (severity.ERROR || 0) + " ERROR · " + (severity.WARNING || 0) + " WARNING · "
+      + (severity.INFO || 0) + " INFO. Befunde werden markiert, nie korrigiert." });
+    if (!errors.total) {
+      return el("div", {}, [head, el("div", { class: "q-state" }, [
+        el("b", { text: "Keine ERROR-Befunde" }),
+        el("span", { text: "Die verbleibenden Befunde sind WARNING oder INFO und "
+          + "stehen im (nicht committeten) Factbook." })
+      ])]);
+    }
+    var rows = errors.findings.map(function (finding) {
+      return el("tr", {}, [
+        el("td", { text: finding.code || "" }),
+        el("td", { text: finding.metric || finding.concept || "" }),
+        el("td", { text: finding.message || "" }),
+        el("td", { text: finding.accession || "" })
+      ]);
+    });
+    var table = el("div", { class: "vu-scroll" }, [
+      el("table", { class: "vu-facts" }, [
+        el("thead", {}, [el("tr", {}, ["Code", "Kennzahl / Concept", "Befund", "Accession"]
+          .map(function (label) { return el("th", { scope: "col", text: label }); }))]),
+        el("tbody", {}, rows)
+      ])
+    ]);
+    var note = errors.shown < errors.total
+      ? el("p", { class: "q-lead", text: errors.shown + " von " + errors.total
+          + " ERROR-Befunden gezeigt." })
+      : null;
+    return el("div", {}, note ? [head, note, table] : [head, table]);
+  }
+
   function gatesPanel(report) {
     var results = (report && report.provider_level && report.provider_level.results) || [];
     if (!results.length) {
@@ -221,6 +261,11 @@
       root.appendChild(originNote(state.view));
       root.appendChild(controls(root));
       root.appendChild(factTable(state.view));
+    }
+
+    if (state.view) {
+      root.appendChild(el("h2", { class: "q-h2", text: "Datenqualitaet" }));
+      root.appendChild(qualityPanel(state.view));
     }
 
     root.appendChild(el("h2", { class: "q-h2", text: "Coverage-Matrix" }));

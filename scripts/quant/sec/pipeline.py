@@ -314,10 +314,25 @@ def export_inspector_view(document, registry, as_of=None, annual_years=12,
         "profile": document["profile"],
         "calendar": document["calendar"],
         "quality_summary": document["quality"]["summary"],
+        # A count of errors without the errors is half a report. ERROR-severity
+        # findings are few by design, so they travel with the view; WARNING and
+        # INFO stay in the (untracked) factbook, where UNKNOWN_CONCEPT alone runs
+        # to tens of thousands per company.
+        "quality_errors": _error_findings(document),
         "as_of": str(as_of) if as_of else None,
         "policy": policy,
         "scope": {"annual_years": annual_scope, "quarterly_years": quarterly_scope},
         "rows": [row for row in rows if row is not None],
+    }
+
+
+def _error_findings(document, limit=50):
+    findings = [finding for finding in document["quality"]["findings"]
+                if finding.get("severity") == "ERROR"]
+    return {
+        "total": len(findings),
+        "shown": min(len(findings), limit),
+        "findings": findings[:limit],
     }
 
 

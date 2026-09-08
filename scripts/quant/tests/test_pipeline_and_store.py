@@ -303,6 +303,30 @@ class InspectorExportTests(PipelineTestCase):
             self.assertIsNone(row["value"])
             self.assertTrue(row["reason"])
 
+    def test_error_findings_travel_with_the_view(self):
+        """A count of 5 ERRORs that names none of them is half a report."""
+        document = self.fact_store.read_company(normalize_cik(4000000020))
+        document["quality"]["findings"] = [
+            {"code": "FUTURE_DATA_LEAK", "severity": "ERROR", "message": "m1"},
+            {"code": "UNKNOWN_CONCEPT", "severity": "INFO", "message": "m2"},
+            {"code": "CONCEPT_DISAGREEMENT", "severity": "WARNING", "message": "m3"},
+        ]
+        view = export_inspector_view(document, self.registry)
+        errors = view["quality_errors"]
+        self.assertEqual(errors["total"], 1)
+        self.assertEqual([f["code"] for f in errors["findings"]], ["FUTURE_DATA_LEAK"])
+
+    def test_error_findings_are_capped_so_the_view_stays_committable(self):
+        document = self.fact_store.read_company(normalize_cik(4000000020))
+        document["quality"]["findings"] = [
+            {"code": "FUTURE_DATA_LEAK", "severity": "ERROR", "message": str(index)}
+            for index in range(120)
+        ]
+        errors = export_inspector_view(document, self.registry)["quality_errors"]
+        self.assertEqual(errors["total"], 120)
+        self.assertEqual(errors["shown"], 50)
+        self.assertEqual(len(errors["findings"]), 50)
+
     def test_the_export_stays_small_enough_to_commit(self):
         view = export_inspector_view(self.document, self.registry)
         payload = json.dumps(view)
