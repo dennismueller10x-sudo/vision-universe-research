@@ -91,6 +91,17 @@ test("DH7 · quant/data/technical/instruments lehnt ein reales Bundle ausserhalb
   });
 });
 
+test("DH8 · quant/data/market/tiingo-realtime-verification.json darf nie committet sein " +
+     "(artefaktgebunden, siehe tiingo-verify.yml)", () => {
+  withFixture((dir) => {
+    writeFileSync(join(dir, "quant", "data", "market", "tiingo-realtime-verification.json"),
+      JSON.stringify({ provider: "tiingo", findings: [] }));
+    const result = runGuardAgainst(dir);
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.match(result.stderr, /tiingo-realtime-verification\.json.*must never be committed/);
+  });
+});
+
 test("DH2 · Provider-Abrufe schreiben standardmaessig nur in die private Arbeitsablage", () => {
   const source = join(root, "scripts", "market", "fetch-market-data.mjs");
   const result = spawnSync(process.execPath, [source], { cwd: root, encoding: "utf8" });

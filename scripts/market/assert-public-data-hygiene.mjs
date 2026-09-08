@@ -110,6 +110,22 @@ if (existsSync(instruments)) {
   }
 }
 
+/* quant/data/market/tiingo-realtime-verification.json is the SHARED,
+   global path Tiingo.freePlanCapabilities() reads (with no report
+   override) to raise realtime/websocket/delayed/intraday/extendedHours
+   from "unverified" to a measured value for the WHOLE application - not
+   just the Golden Five. .github/workflows/tiingo-verify.yml's own
+   realtime job deliberately treats it as artifact-only and never commits
+   it ("Er veroeffentlicht nichts"). A committed copy would silently
+   promote whichever single ticker last wrote it into an account-wide
+   capability claim, and would make providers/tiingo/adapter.js's own
+   test suite (I01/Q in quant/tests/realtime-*.test.mjs) depend on
+   whatever happens to be checked in. It must never be committed. */
+if (existsSync(join(root, "quant", "data", "market", "tiingo-realtime-verification.json"))) {
+  findings.push("quant/data/market/tiingo-realtime-verification.json: this shared evidence file must stay " +
+                "artifact-only (see .github/workflows/tiingo-verify.yml) - it must never be committed to the repository.");
+}
+
 if (findings.length) {
   console.error("PUBLIC DATA HYGIENE FAILED");
   findings.forEach((finding) => console.error(`  - ${finding}`));

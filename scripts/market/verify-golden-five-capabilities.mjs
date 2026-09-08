@@ -17,7 +17,7 @@
      TIINGO_API_KEY=... node scripts/market/verify-golden-five-capabilities.mjs
    ========================================================================= */
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, copyFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, copyFileSync, mkdirSync, existsSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -85,6 +85,17 @@ for (let i = 0; i < GOLDEN_FIVE.length; i++) {
       unknownCapabilities: report.unknownCapabilities,
       findings: report.findings
     };
+    /* REALTIME_OUT ist der geteilte, globale Pfad, den verify-tiingo-
+       realtime.mjs fuer JEDES Konto schreibt (tiingo-verify.yml's eigener
+       realtime-Job liest ihn absichtlich nur als Artefakt, committet ihn
+       nie - siehe dessen Kopf-Kommentar "Er veroeffentlicht nichts").
+       Stehen liesse ihn hier wuerde das Ergebnis EINES Titels (zuletzt
+       XOM) so aussehen, als sei es eine Kontoaussage, und Tiingo.
+       freePlanCapabilities() (ohne Report-Override) wuerde sie global
+       fuer die gesamte Anwendung uebernehmen - nicht nur fuer die Golden
+       Five. Nach dem Kopieren in die eigene, titelbezogene Datei wird er
+       deshalb wieder entfernt. */
+    unlinkSync(REALTIME_OUT);
   } else {
     perTicker[ticker] = { symbol: ticker, webSocketTested: withStream, findings: null,
       note: "Kein Bericht erzeugt (siehe Konsolenausgabe oben)." };
