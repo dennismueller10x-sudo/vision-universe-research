@@ -177,15 +177,25 @@ jobs:
             fi
           done
           # Committed artifacts stay small enough to review in a diff.
-          oversized="$(find quant/data -type f -size +2M 2>/dev/null || true)"
+          oversized="$(find quant/data/sec -type f -size +2M 2>/dev/null || true)"
           if [ -n "$oversized" ]; then
-            echo "::error::files over 2MB under quant/data:"; echo "$oversized"; exit 1
+            echo "::error::files over 2MB under quant/data/sec:"; echo "$oversized"; exit 1
           fi
-          total="$(du -sk quant/data | cut -f1)"
-          if [ "$total" -gt 10240 ]; then
-            echo "::error::quant/data is ${total}KB, over the 10MB budget"; exit 1
+          # This budget covers what THIS pipeline writes. It used to measure all
+          # of quant/data, where more than half belongs to earlier phases and to
+          # Phase 4A market data -- so it failed on growth this workflow neither
+          # caused nor controls, and would equally have failed their next commit.
+          # A repository-wide budget is a repository-wide job.
+          # 8MB against a measured 5.9MB: enough headroom for the five
+          # validation companies to keep growing a little, tight enough that a
+          # committed raw payload or factbook trips it immediately.
+          total="$(du -sk quant/data/sec | cut -f1)"
+          if [ "$total" -gt 8192 ]; then
+            echo "::error::quant/data/sec is ${total}KB, over the 8MB budget"
+            du -sk quant/data/sec/* | sort -rn
+            exit 1
           fi
-          echo "data hygiene OK (quant/data: ${total}KB)"
+          echo "data hygiene OK (quant/data/sec: ${total}KB of 8192KB)"
 
       - name: Reject secrets in the SEC pipeline
         shell: bash

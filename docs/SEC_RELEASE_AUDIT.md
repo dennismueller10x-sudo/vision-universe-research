@@ -287,6 +287,31 @@ streng angesetzt und wurde **nicht** abgesenkt.
   Datei daraus getrackt. Zusätzlich bricht ein Workflow-Guard ab, wenn etwas
   außerhalb `quant/data/` verändert oder ein Artefakt größer als 2 MB wird.
 
+### 4.10a Committete Datenmenge skaliert linear — bekannt, nicht gelöst
+
+Der Größen-Guard dieses Workflows schlug beim ersten Pull Request an und hat
+dabei zwei Dinge gezeigt.
+
+Erstens war er falsch zugeschnitten: Er maß ganz `quant/data`, wovon mehr als die
+Hälfte früheren Phasen und den Phase-4A-Marktdaten gehört. Er scheiterte an
+Wachstum, das dieser Workflow weder verursacht noch kontrolliert — und hätte
+denselben Fehlschlag beim nächsten Commit des anderen Arbeitsstrangs erzeugt. Er
+misst jetzt `quant/data/sec`, also was diese Pipeline selbst schreibt: 5,9 MB
+gegen ein Budget von 8 MB.
+
+Zweitens, und das bleibt offen: **5,9 MB für fünf Unternehmen skalieren linear.**
+Bei 500 Unternehmen wären das rund 590 MB committeter Artefakte — für ein
+öffentliches Repository nicht tragbar. Die Hälfte davon sind die
+Inspector-Ansichten (2,9 MB), die Diagnose sind und nicht Datenschicht; die
+kanonische Schicht selbst sind 2,4 MB.
+
+Das ist keine Aussage über die Ingestion — die skaliert über Checkpointing und
+den Bulk-Pfad — sondern über den *Auslieferungsweg*. Ein größeres Universum
+braucht einen anderen: die kanonische Schicht als Parquet oder DuckDB neben dem
+Repository, den Inspector auf Abruf statt vorberechnet, oder committete
+Artefakte nur für ein Referenzuniversum. Diese Entscheidung gehört in die
+Skalierungsphase und wird hier nur benannt, nicht getroffen.
+
 ### 4.11 Erzeugte Dateien
 
 Committet werden 5,8 MB unter `quant/data/sec/`: die kanonische Schicht
@@ -360,6 +385,9 @@ keine Codeänderung.
    Emittenten mit Tickerwechsel nicht — bekannt, nicht in dieser Phase geändert,
    weil es die Konvention des bestehenden Systems ist.
 8. **Nur fünf Unternehmen gemessen** (§4.13).
+9. **Der committete Auslieferungsweg skaliert linear** (§4.10a): 5,9 MB für fünf
+   Unternehmen, also rund 590 MB für 500. Die Ingestion skaliert, die
+   Auslieferung über committete Artefakte nicht.
 
 ## 6. Ergebnis
 

@@ -185,6 +185,57 @@ class GeneratedArtifactTests(unittest.TestCase):
             self.assertIn("data/sec/", path.as_posix())
 
 
+class DataBudgetTests(unittest.TestCase):
+    """What this pipeline commits stays small enough to review.
+
+    The CI budget used to measure all of quant/data, where more than half
+    belongs to earlier phases and to Phase 4A market data. It failed on growth
+    this workflow neither caused nor controls -- the third check in a row that
+    policed something outside its own scope. It now measures quant/data/sec.
+
+    The limit is 8MB against a measured 5.9MB: room for the five validation
+    companies to grow a little, tight enough that a committed raw payload or
+    factbook trips it at once.
+    """
+
+    BUDGET_KB = 8192
+    MAX_FILE_BYTES = 2 * 1024 * 1024
+
+    @classmethod
+    def files(cls):
+        return [p for p in (ROOT / "quant" / "data" / "sec").rglob("*")
+                if p.is_file()]
+
+    def test_no_single_artifact_is_too_large_to_review(self):
+        for path in self.files():
+            with self.subTest(path=path.name):
+                self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES,
+                                     f"{path.name} is too large for a diff")
+
+    def test_the_committed_footprint_is_within_budget(self):
+        total = sum(p.stat().st_size for p in self.files()) // 1024
+        self.assertLessEqual(
+            total, self.BUDGET_KB,
+            f"quant/data/sec is {total}KB, over the {self.BUDGET_KB}KB budget")
+
+    def test_the_budget_matches_the_workflow(self):
+        """One number, in two places, must not drift apart."""
+        text = workflow_text("sec-fundamentals-ci.yml")
+        self.assertIn(str(self.BUDGET_KB), text)
+        self.assertIn("quant/data/sec", text)
+
+    def test_raw_payloads_and_factbooks_are_not_committed(self):
+        import subprocess
+        for forbidden in ("quant/data/sec/raw", "quant/data/sec/facts",
+                          ".sec-cache", ".quant-state"):
+            with self.subTest(path=forbidden):
+                result = subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", forbidden],
+                    cwd=ROOT, capture_output=True)
+                self.assertNotEqual(result.returncode, 0,
+                                    f"{forbidden} is tracked but must stay local")
+
+
 class CompanyAgnosticTests(unittest.TestCase):
     """The pipeline may not branch on a specific company — checked on CODE.
 
