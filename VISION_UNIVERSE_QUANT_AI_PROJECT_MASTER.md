@@ -1,18 +1,49 @@
 # VISION UNIVERSE® QUANT & AI — PROJECT MASTER
 ## Zentrale technische und fachliche Source of Truth
 
-**Stand: 7. September 2026 · Branch `main` (Commit `9878cdc`) · PR #43 gemerged**
-**232/232 Tests grün (`node --test "quant/tests/*.test.mjs"`, eigenständig nachgerechnet)**
+**Stand: 8. September 2026 · geprüft gegen `origin/main` Commit `252dec5` (PR #49 gemerged)**
+**Node: 444/444 · SEC Python: 249/249 · Academy: 8/8 — alle drei Runner eigenständig
+neu ausgeführt, nicht aus einer PR-Beschreibung übernommen**
 
 > Dieses Dokument ist für einen neuen Claude-Code-, Codex- oder ChatGPT-Chat geschrieben,
 > der das Projekt fortsetzen soll, ohne die bisherige Chat-Historie zu kennen. Es ist
-> eine Verdichtung, keine Kopie der 27 Fachdokumente unter `docs/`. Wo Doku und
+> eine Verdichtung, keine Kopie der Fachdokumente unter `docs/`. Wo Doku und
 > tatsächlicher Code/Git-Stand auseinanderlaufen, gilt **Code + Tests + Git vor Prosa** —
 > jeder gefundene Widerspruch ist unten explizit vermerkt, nicht stillschweigend
 > aufgelöst.
 >
-> Diese Datei ist reine Dokumentation. Bei ihrer Erstellung wurde kein produktiver Code,
+> Diese Datei ist reine Dokumentation. Bei ihrer Bearbeitung wurde kein produktiver Code,
 > keine Architektur und keine Produktionsdaten verändert.
+
+### Source-of-Truth-Regeln — vor jeder Nutzung dieser Datei lesen
+
+1. **`origin/main` ist die technische Source of Truth** — nicht diese Datei, nicht ein
+   alter Chat-Report, nicht ein lokal veralteter `main`-Branch.
+2. **Vor jedem größeren Audit: `git fetch origin`.** Ein lokaler `main` ohne Fetch ist
+   eine Falle — genau dieser Fehler (§0 dieses Audits) hätte beinahe zu einem falschen
+   Ausgangs-Commit geführt.
+3. Branches dürfen nie anhand eines veralteten lokalen `main` bewertet werden.
+4. **Generierte Daten sind nicht automatisch gleichbedeutend mit lizenzierter
+   öffentlicher Distribution.** Ein funktionierender Adapter mit echten Testdaten ist
+   keine Freigabe — siehe `LEGAL_REVIEW_REQUIRED` bei Tiingo ([§22](#22-tiingo-market-data)).
+5. **Tests beweisen nur das, was sie tatsächlich testen.** 444/444 grün heißt nicht
+   „alles funktioniert", es heißt „444 konkrete Behauptungen wurden nicht widerlegt".
+6. **Synthetische Fixtures sind kein Ersatz für Live-Provider-Validierung.** Wo eine
+   Behauptung nur gegen den MockProvider bzw. eine Fixture geprüft ist, steht das
+   ausdrücklich dabei — Beispiel: SEC Gate A/C sind `RUNTIME_VERIFIED` gegen echte
+   `data.sec.gov`-Antworten, das ist der Unterschied zu einer bloßen Fixture-Prüfung.
+7. **Point-in-Time und Survivorship Bias sind getrennte Probleme.** SEC liefert PIT-korrekte
+   Fundamentaldaten (Gate A/C bestehen) und trotzdem kein survivorship-freies Universum
+   (Gate B fällt durch) — das eine repariert das andere nicht.
+8. **UNKNOWN bleibt UNKNOWN.** Eine ungeprüfte Fähigkeit wird nie zu `false` (nicht
+   vorhanden) und nie zu `true` (vorhanden) umgedeutet.
+9. **FAIL darf nicht in PASS umformuliert werden.** Gate B (SEC, Survivorship) ist FAIL,
+   5/5, dauerhaft — das ist ein strukturelles Merkmal von SEC/EDGAR als Quelle, keine
+   offene Baustelle, die diese Datei schönreden darf.
+10. **Dokumentation muss nach großen Merge-Phasen synchronisiert werden.** Dieses
+    Dokument selbst war nach PR #46/#47/#48/#49 vier Merges im Rückstand, bevor dieser
+    Audit es nachgezogen hat — siehe [Master Document Changelog](#37-master-document-changelog)
+    am Dateiende.
 
 ---
 
@@ -25,7 +56,7 @@
 5. [Phase 1 — Foundation](#5-phase-1--foundation)
 6. [Phase 2 — Production Audit](#6-phase-2--production-audit)
 7. [Phase 3 — Data Qualification](#7-phase-3--data-qualification)
-8. [Release-Status: PR #43](#8-release-status-pr-43)
+8. [Release-Status](#8-release-status)
 9. [Release-Audit-Funde und Guardrails](#9-release-audit-funde-und-guardrails)
 10. [Quant Engine — VU Quant Score](#10-quant-engine--vu-quant-score)
 11. [Factor DNA](#11-factor-dna)
@@ -38,8 +69,8 @@
 18. [VUQL](#18-vuql)
 19. [Provider Abstraction](#19-provider-abstraction)
 20. [Aktuelle Data Strategy](#20-aktuelle-data-strategy)
-21. [SEC-Workstream](#21-sec-workstream)
-22. [Tiingo-Workstream](#22-tiingo-workstream)
+21. [SEC Financial Data Core](#21-sec-financial-data-core)
+22. [Tiingo Market Data](#22-tiingo-market-data)
 23. [Technical Intelligence & Elliott Wave](#23-technical-intelligence--elliott-wave)
 24. [Data Licensing](#24-data-licensing)
 25. [Mock / Hybrid / Live](#25-mock--hybrid--live)
@@ -54,6 +85,7 @@
 34. [Decision Gates](#34-decision-gates)
 35. [How to Continue This Project](#35-how-to-continue-this-project)
 36. [Changelog](#36-changelog)
+37. [Master Document Changelog](#37-master-document-changelog)
 
 ---
 
@@ -62,14 +94,27 @@
 `/quant/` ist der Investment-Intelligence-Bereich von Vision Universe: eine
 faktorbasierte Aktienanalyse (VU Quant Score), ein Screener mit eigener Abfragesprache
 (VUQL), eine Strategy Engine mit versionierten Regelwerken, eine Point-in-Time-Backtest-
-Engine mit methodischem Trust Score, eine Watchlist Intelligence und eine AI-Oberfläche,
-die alle diese Bausteine als Werkzeuge aufruft, ohne selbst eine einzige Finanzkennzahl
-zu erzeugen.
+Engine mit methodischem Trust Score, eine Watchlist Intelligence, eine Technical-
+Intelligence-Schicht mit Elliott-Wave-Beta und eine AI-Oberfläche, die alle diese
+Bausteine als Werkzeuge aufruft, ohne selbst eine einzige Finanzkennzahl zu erzeugen.
 
-Er wurde in drei Phasen zwischen dem 6. und 7. September 2026 gebaut (siehe
-[Changelog](#36-changelog)) und ist seit PR #43 Teil von `main`. **Alle Daten sind
-synthetisch** — es handelt sich um einen funktionsfähigen, vollständig getesteten
-Vorbau, nicht um ein produktives Analyseergebnis über reale Wertpapiere.
+Gebaut in fünf großen, nacheinander gemergten Arbeitssträngen zwischen dem 6. und
+8. September 2026 (siehe [Changelog](#36-changelog)): Quant & AI V1 (PR #43, Phase 1–3),
+Tiingo Market Data (PR #46, Phase 4A), SEC Financial Data Core (PR #48), Technical
+Intelligence V1 mit Elliott-Wave-Beta (PR #49). **Der Datenstand ist gemischt, nicht
+mehr einheitlich synthetisch:**
+
+| Datenklasse | Stand |
+|---|---|
+| Quant Score, Factor DNA, Ranking, Screener, Strategy Lab, Backtest | **synthetisch** (511 Mock-Securities) |
+| Marktdaten (Tiingo) | **echt, laufzeitgeprüft** — aber intern, nicht öffentlich ausgeliefert ([§22](#22-tiingo-market-data)) |
+| Fundamentaldaten (SEC) | **echt, laufzeitgeprüft**, 5 Unternehmen (NVDA, AAPL, MSFT, JPM, XOM) — PIT-korrekt, aber nicht survivorship-frei ([§21](#21-sec-financial-data-core)) |
+| Technical Intelligence, Elliott Wave | **echte Kursreihen** (13 Symbole aus dem bestehenden Dashboard-Bestand), Engine-Ausgabe production-grade bzw. Beta ([§23](#23-technical-intelligence--elliott-wave)) |
+
+Die Quant Engine selbst (Score, Faktoren, Strategien, Backtest) bleibt auf dem
+synthetischen 511-Titel-Universum — SEC und Tiingo sind bislang **parallele, geprüfte
+Datenquellen**, noch nicht in den Quant-Score-Pfad integriert (siehe Roadmap,
+[§33](#33-roadmap)).
 
 ---
 
@@ -103,7 +148,7 @@ Bestehende Bereiche (zentrale Navigation in `assets/site-navigation.js`, 13 Eint
 | Dashboard | `/dashboard/` | Aktien-Dashboard: Research, Charting, Discover, Watchlist (V6.3, echte Twelve-Data-Kurse) |
 | Guide | `/guide/` | — |
 | ETF | `/etf/` | ETF-Dashboard |
-| Hedgefonds | `/hedgefonds/` | 13F-Auswertung aus SEC EDGAR (eigenständig, siehe [§21](#21-sec-workstream)) |
+| Hedgefonds | `/hedgefonds/` | 13F-Auswertung aus SEC EDGAR (eigenständig, siehe [§21](#21-sec-financial-data-core)) |
 | Analysten | `/analysten/` | Analystenbewertungen/Kursziele |
 | Macro | `/macro/` | Macro-Intelligence-Dashboard, ~52 Indikatoren, sauberste Referenzarchitektur |
 | Magazin | `/magazin/` | redaktionelle Ausgaben |
@@ -112,11 +157,21 @@ Bestehende Bereiche (zentrale Navigation in `assets/site-navigation.js`, 13 Eint
 | Academy | `/academy/` | Experience-System (Lernstrecken), eigene Engines + Node-Tests |
 | Budget | `/budget/` | Platzhalter |
 
+Innerhalb von `/quant/` sind mittlerweile **12 Produktseiten** erreichbar (Navigation in
+`quant/ui/shell.js`): Quant Home, Ranking, Screener, Radar, Stock Detail, Strategien,
+Strategy Lab, Backtests, Watchlist, Ask Vision Universe, Marktdaten (`/quant/markt/`)
+und seit PR #49 **Technical** (`/quant/technical/?symbol=NVDA`) — Charts, Marktstruktur,
+Szenarien und Elliott-Wave-Beta für ein reales, wenn auch kleines Symbol-Universum.
+
 Quant & AI ist **kein isolierter Bereich**, sondern langfristig die gemeinsame
 Intelligence-Schicht: dieselbe Faktor-, Score- und Backtest-Logik soll perspektivisch
-auch Dashboard, Hedgefonds-Bereich und Reports speisen. Aktuell (V1) ist die Trennung
+auch Dashboard, Hedgefonds-Bereich und Reports speisen. Aktuell ist die Trennung
 noch strikt: **`quant/` liest keine Daten aus `dashboard/`, `macro/`, `hedgefonds/` oder
-`academy/` und schreibt dort nichts hinein** — außer den zwei Zeilen Navigation.
+`academy/` und schreibt dort nichts hinein** — außer den zwei Zeilen Navigation. Die
+einzige Ausnahme ist eine **lesende** Übernahme: Technical Intelligence importiert reale
+OHLCV-Reihen aus dem bestehenden, bereits splitbereinigten Dashboard-Datenbestand (13
+Symbole) über einen generischen `MarketDataProvider`-Adapter — kein Schreibzugriff,
+keine zweite Vendor-Anbindung.
 
 ---
 
@@ -190,20 +245,38 @@ direkt auf, immer `quant/api/client.js`.
 
 ### 4.4 Verzeichnisse
 
+Stand nach PR #46 (Tiingo), #48 (SEC) und #49 (Technical Intelligence):
+
 ```
 quant/
-  engines/       reine Logik, Browser + Node, UMD (globalThis statt window), ohne DOM
-  methodology/   versionierte Konfiguration (Gewichte, Schwellen, Strategien) — 6 JSON-Dateien
-  api/           Product-API-Schicht (v1-Contracts)
-  ui/            Designsystem, Shell, gemeinsames SVG-Chartmodul, Backtest-Web-Worker
-  data/          präkomputierte Artefakte — generiert, NICHT von Hand pflegen
-  config/        market-universe.json, provider-profiles.json
-  tests/         12 Testdateien, node:test
-  <seite>/       index.html + app.js je Produktseite (10 Seiten)
-providers/       Adapter + Lizenz-/PIT-Prüfpunkte je Anbieter (mock, twelve-data, intrinio, eodhd)
-scripts/quant/   build-quant-data.mjs (Präkomputation), verify-quant-data.mjs (Konsistenzprüfung)
-scripts/market/  Marktdatenabruf, Provider-Bewertung, Secrets-Prüfung
-docs/            27 VU_*.md Fachdokumente (Detailtiefe zu jedem Thema unten)
+  engines/            reine Logik, Browser + Node, UMD (globalThis statt window), ohne DOM
+    technical/         27 Engine-Module Technical Intelligence (siehe §23), inkl.
+                        technical/elliott/ (elliott-engine.js, rules.js, wave-graph.js)
+  methodology/        versionierte Konfiguration (Gewichte, Schwellen, Strategien)
+  api/                Product-API-Schicht (v1-Contracts)
+  ui/                 Designsystem, Shell, SVG-Chartmodul (+ technical-chart.js), Backtest-Worker
+  data/               präkomputierte Artefakte — generiert, NICHT von Hand pflegen
+    sec/               kanonische SEC-Fundamentaldaten, Coverage-/Gate-Berichte (5,8 MB, 5 Firmen)
+    technical/         Snapshots, Evidence Records (~17 MB, 26 Instrumente)
+    market/            Tiingo-Cache-Status, Marktdatenherkunft
+  config/             market-universe.json, provider-profiles.json (8 Anbieter),
+                      feature-gates.json, sec-metric-registry.json
+  data-inspector/     interne Prüfoberfläche für jede normalisierte SEC-Kennzahl mit
+                      Herkunft (SEC-Concept, Accession Number, Filing-Datum)
+  tests/              27 Testdateien (JS) + Fixture-Helfer, node:test — 444 Tests
+  technical/          index.html + app.js — Produktseite Technical Intelligence
+  <seite>/            index.html + app.js je weitere Produktseite (11 Seiten)
+providers/            Adapter je Anbieter: mock/ (aktiv), twelve-data/ (aktiv, Adapter),
+                      tiingo/ (aktiv, Adapter, echte Daten), sec/ (aktiv, Adapter, echte
+                      Daten), intrinio/, eodhd/ (nur Vorbereitung, kein Adapter)
+scripts/quant/        build-quant-data.mjs, verify-quant-data.mjs (Mock-Konsistenz),
+                      sec/ (14 Python-Module, siehe §21), cli.py, run-sec-gates.mjs,
+                      audit_primary_source.py, check_company_agnostic.py,
+                      tests/ (249 Python-Tests, unittest)
+scripts/market/       Marktdatenabruf, ingest-tiingo.mjs, verify-tiingo-runtime.mjs,
+                      Provider-Bewertung, Secrets-Prüfung
+docs/                 54 Fachdokumente: VU_*.md (V1–V3), SEC_*.md, TIINGO_*.md,
+                      VU_TECHNICAL_*.md (Detailtiefe zu jedem Thema unten)
 ```
 
 ### 4.5 Zwei Datenpfade — dieselbe Quelle
@@ -224,11 +297,18 @@ Systems.** Ein 20-Jahres-Backtest mit monatlichem Rebalancing über 511 Titel da
 ```bash
 node scripts/quant/build-quant-data.mjs      # Mock-Daten erzeugen (~6 s)
 node scripts/quant/verify-quant-data.mjs     # gegen Engines prüfen
-node --test "quant/tests/*.test.mjs"         # Tests (~29 s, 232 grün)
+node --test "quant/tests/*.test.mjs"         # JS-Tests (~26 s, 444 grün)
+python3 -m unittest discover -s scripts/quant/tests -p "test_*.py"   # SEC-Python (~9 s, 249 grün)
+node --test "academy/**/*.test.mjs"          # Academy (8 grün)
 python3 -m http.server 8765                  # Website lokal
 ```
 
-Kein API-Key nötig. Kein `npm install` — kein `package.json` im Repository.
+Kein API-Key nötig, um die Website oder die Mock-Engines lokal zu betreiben. Die
+Tiingo- und SEC-**Live**-Abrufe brauchen einen echten Zugang (`TIINGO_API_KEY` per
+GitHub Secret bzw. gar keinen Key für SEC, siehe [§21](#21-sec-financial-data-core)/
+[§22](#22-tiingo-market-data)) und laufen ausschließlich in GitHub Actions
+(`workflow_dispatch`), nie lokal gegen die echte API in der Testsuite. Kein
+`npm install` — kein `package.json` im Repository.
 
 ### 4.7 Bewusst nicht gebaut
 
@@ -273,9 +353,10 @@ modellierte Krisenfenster; Benchmark ~12 % CAGR bei ~−54 % Max Drawdown.
 **Watchlist Intelligence**: Deltas und Faktorbewegungen auf der Watchlist,
 Intelligence Events (siehe [§12](#12-score-momentum--quant-radar)).
 
-**11 Produktseiten** (10 aus V1 + `/quant/markt/` aus Phase 2): Quant Home, Ranking,
-Screener, Radar, Stock Detail, Strategien, Strategy Lab, Backtests, Watchlist, Ask
-Vision Universe, Marktdaten.
+**11 Produktseiten nach Phase 1–3** (10 aus V1 + `/quant/markt/` aus Phase 2): Quant Home,
+Ranking, Screener, Radar, Stock Detail, Strategien, Strategy Lab, Backtests, Watchlist,
+Ask Vision Universe, Marktdaten. Eine zwölfte Seite (`/quant/technical/`) kam mit PR #49
+dazu — siehe [§3](#3-das-gesamtprodukt-vision-universe) für den aktuellen Gesamtstand.
 
 **Vier Entscheidungen, die das gesamte System tragen** (aus dem Implementation Report,
 weiterhin gültig und Teil der [DO-NOT-BREAK-Regeln](#31-do-not-break-these-rules)):
@@ -470,32 +551,44 @@ präziser, als sie ist) und `dataSnapshotId` mit kalendarischer Prüfung.
 
 **Intrinio Developer Sandbox** (Dow 30) anfragen und Gate A + C gegen echte Daten laufen
 lassen — schließt zwei von drei Gates kostenlos. **Gate B nicht**: die Dow 30 sind per
-Definition Überlebende. Details und Kostenmodell: [§21](#21-sec-workstream),
+Definition Überlebende. Details und Kostenmodell: [§21](#21-sec-financial-data-core),
 [§28](#28-cost-philosophy).
+
+**Tatsächlich gewählter Weg (Phase 4, siehe [§21](#21-sec-financial-data-core)):** nicht
+Intrinio, sondern eine direkte, generische SEC/EDGAR-Anbindung — kostenlos, weil SEC
+keinen API-Key verlangt. Ergebnis deckt sich mit der hier getroffenen Vorhersage: Gate A
+und C bestehen (jetzt sogar `RUNTIME_VERIFIED` gegen echte Daten), Gate B fällt weiterhin
+durch, aus demselben Grund — fehlende Survivorship-Historie.
 
 ---
 
-## 8. Release-Status: PR #43
+## 8. Release-Status
 
-| Feld | Wert |
-|---|---|
-| Titel | „Vision Universe® Quant & AI — V1 Preview" |
-| Quell-Branch | `claude/vision-universe-v1-build-uyp8qp` |
-| Ziel-Branch | `main` |
-| **Status** | **gemerged** (7. September 2026, 10:59 UTC, durch `dennismueller10x-sudo`) |
-| Merge-Commit | `0499868` |
-| Umfang | 152 geänderte Dateien, +29.873 / −99 Zeilen, 17 Commits |
-| Teststatus zum Merge-Zeitpunkt | 232/232 grün |
-| Enthält | Phase 1, 2, 3 |
-| **Enthält ausdrücklich nicht** | Phase 4 / SEC Financial Data Core (siehe [§21](#21-sec-workstream)) |
+Fünf Pull Requests, alle gemerged, alle innerhalb von 24 Stunden (7.–8. September 2026):
 
-Nach dem Merge liefen zwei weitere Commits auf `main` (`410df85` — Rücknahme einer
-unbeabsichtigten Dashboard-Änderung vor dem Merge, dann reguläre
-`chore: update dashboard news`-Läufe). Der aktuelle `main`-Stand (`9878cdc`) enthält
-den vollständigen Quant-&-AI-Bereich; dieses Dokument wurde gegen genau diesen Stand
-verifiziert (`git status` sauber, `origin/main` == lokaler Branch, 0 Commits Differenz).
+| PR | Titel | Merge (UTC) | Umfang | Tests bei Merge |
+|---|---|---|---|---|
+| **#43** | Vision Universe® Quant & AI — V1 Preview | 07.09. 10:59 | 152 Dateien, +29.873/−99, 17 Commits | 232/232 |
+| **#45** | Project Master Documentation (diese Datei, Erstfassung) | 07.09. ~18:00 | 1 Datei | 232/232 |
+| **#46** | Phase 4A Tiingo Market Data PoC | 08.09. 04:03 | 37 Dateien, +7.928/−271, 23 Commits | 332/332 |
+| **#47** | SEC-Fundamentals-Workflow auf `main` registrieren (nur Workflow-Datei) | 07.09. 18:37 | 1 Datei, rein additiv | — (keine Codeänderung) |
+| **#48** | SEC Financial Data Core | 08.09. 05:02 | 73 Dateien, +242.000/−44, 36 Commits | 612 grün (237 Py, 367 JS, 8 Academy — Zwischenstand vor #49) |
+| **#49** | Technical Intelligence V1 — Elliott Wave Beta | 08.09. 05:32 | 127 Dateien, +7.807/−2, 12 Commits | 444 JS + 249 Py + 8 Academy = 701 |
 
-**Änderungen an bestehenden Bereichen laut PR**, bewusst minimal:
+**Aktueller `main`-Stand: `252dec5`.** Dieses Dokument wurde gegen genau diesen Commit
+verifiziert (`git fetch origin`, `git status` sauber, `origin/main` == geprüfter
+Branch-Stand, 0 Commits Differenz zum Zeitpunkt des Audits).
+
+**Reihenfolge-Besonderheit:** PR #48 (SEC) hat #46 (Tiingo) in seinen eigenen Branch
+gemerged, bevor er selbst nach `main` gemerged wurde — beide Arbeitsstränge sind daher
+vollständig in `main` enthalten, ohne dass einer den anderen überschrieben hat (drei
+additive Konflikte in `.gitignore`, `provider-profiles.json`,
+`provider-qualification.test.mjs`, laut PR #48 sauber aufgelöst). PR #47 war eine reine
+Freischaltung der Workflow-Datei auf `main`, damit `workflow_dispatch` für den
+SEC-Live-Lauf überhaupt startbar wurde (GitHub erlaubt das nur für Workflows, die auf
+dem Default-Branch liegen) — sie enthielt noch keine Pipeline.
+
+**Änderungen an bestehenden Bereichen laut PR #43**, bewusst minimal:
 
 | Datei | Änderung |
 |---|---|
@@ -507,6 +600,16 @@ verifiziert (`git status` sauber, `origin/main` == lokaler Branch, 0 Commits Dif
 
 Unverändert: ETF, Macro, Academy, Magazin, Reports, News, Morning, Hedgefonds,
 Analysten, Budget, Guide, Content.
+
+**PR #46/#48/#49 blieben bei diesem Grundsatz.** Einzige bestehende Dateien, die PR #49
+(Technical Intelligence) anfasste: `quant/ui/shell.js` (ein Tab-Eintrag),
+`quant/ui/quant.css` (angehängte Styles), `quant/ARCHITECTURE.md` (ein Abschnitt),
+`.github/workflows/quant-ci.yml` (ein Verify-Schritt) — keine Änderung an Quant-,
+Tiingo- oder SEC-Engines. PR #46 änderte 32 Zeilen in `backtest.js`
+(`capabilities.isMock` wird seither aus der tatsächlichen Titelherkunft abgeleitet statt
+fest auf `true` zu stehen); `factors.js`, `quant-score.js`, `strategy.js` blieben
+unverändert. PR #48 führte keine Änderung an bestehenden Kern-Engines durch, sondern
+ausschließlich Ergänzung (achtes Provider-Profil neben den bestehenden sieben).
 
 ---
 
@@ -995,11 +1098,13 @@ Begründung.
 `findVendorLeakage(value, path, out)` durchsucht rekursiv (bis 50 Array-Elemente tief)
 ein kanonisches Objekt/Array nach Schlüsseln, deren kleingeschriebener Name eine
 `VENDOR_MARKERS`-Teilzeichenkette enthält: `twelve_data`, `intrinio`, `eodhd`,
-**`tiingo`**, `polygon`, `alphavantage`, `refinitiv`, `lseg`, `factset`, `bloomberg`,
-`capitaliq`, `morningstar`, `yfinance` u. a. — **Tiingo taucht im gesamten Quant-Code
-ausschließlich als Eintrag in dieser Sperrliste auf**, nirgends als Adapter (siehe
-[§22](#22-tiingo-workstream)). Ein Acceptance-Test lässt diesen Scanner über Product
-Layer und UI laufen.
+`tiingo`, `polygon`, `alphavantage`, `refinitiv`, `lseg`, `factset`, `bloomberg`,
+`capitaliq`, `morningstar`, `yfinance` u. a. Ein Acceptance-Test lässt diesen Scanner
+über Product Layer und UI laufen. **Seit PR #46 ist Tiingo kein reiner Sperrlisteneintrag
+mehr** — der reale Adapter (`providers/tiingo/adapter.js`) liefert jetzt echte Bars, und
+`tiingo.test.mjs` (T4) prüft genau diese Ausgabe explizit gegen `findVendorLeakage()`:
+`assert.deepEqual(Provider.findVendorLeakage(bar), [])`. Der Guard wird also nicht mehr
+nur gegen synthetische Daten, sondern gegen echte Vendor-Antworten scharf getestet.
 
 ### Capability-Matrix, Data Modes, Precedence
 
@@ -1057,31 +1162,39 @@ Quant (`FactorDefinition`, `FactorSnapshot`, `QuantScoreSnapshot`) · Universe
 `IntelligenceEvent`) · Provenance (`DataSource`, `DataProvenance`). Der
 Validator lehnt unbekannte Felder ab.
 
-### Provider-Vorbereitung unter `providers/` — tatsächlicher Stand
+### Provider-Vorbereitung unter `providers/` — tatsächlicher Stand (aktualisiert nach PR #46/#48)
 
-| Anbieter | README-Status | Realer Code |
+| Anbieter | Status | Realer Code |
 |---|---|---|
-| `mock/` | „nicht angeschlossen" (irreführende Kopfzeile) | **einzig aktiver, laufender Adapter** der gesamten App in V1 |
-| `twelve-data/` | „gebaut, nicht scharf geschaltet" | vollständiger, getesteter 7-Methoden-Adapter (`adapter.js`) + Fetch-/Bewertungsskripte + Workflow; macht ohne `TWELVE_DATA_API_KEY` keine Anfrage; Node-only, aus ausgelieferten Seiten ausgeschlossen (Secrets-Test) |
-| `intrinio/` | „nicht angeschlossen" | nur README/Vorbereitung, kein Adapter-Code |
-| `eodhd/` | „nicht angeschlossen" | nur README/Vorbereitung, kein Adapter-Code |
-| FMP, Finnhub, Polygon, **Tiingo** | — | **kein `providers/`-Ordner, kein Adapter, keine README** — trotz vorbereiteter `.env.example`-Variable |
+| `mock/` | aktiv | einziger vollsynthetische-Daten-Adapter, Grundlage der gesamten Quant-Engine-Oberfläche |
+| `twelve-data/` | aktiv, intern | vollständiger, getesteter 7-Methoden-Adapter (`adapter.js`); macht ohne `TWELVE_DATA_API_KEY` keine Anfrage; Node-only |
+| **`tiingo/`** | **aktiv, laufzeitgeprüft, intern** | `adapter.js` erfüllt `MarketDataProvider` **und** `CorporateActionsProvider`; echte Daten in CI gemessen (Historical EOD, RAW/SPLIT_ADJUSTED/TOTAL_RETURN, Splits, Dividenden, Intraday/IEX); **kein öffentlicher Ausgabepfad** ([§22](#22-tiingo-market-data)) |
+| **`sec/`** | **aktiv, laufzeitgeprüft** | `adapter.js` erfüllt ausschließlich `FundamentalDataProvider` (CI erzwingt, dass er `MarketDataProvider`/`EstimateDataProvider`/`CorporateActionsProvider` NICHT beansprucht); echte Daten aus `data.sec.gov` für 5 Unternehmen ([§21](#21-sec-financial-data-core)) |
+| `intrinio/` | nicht angeschlossen | nur README/Vorbereitung, kein Adapter-Code |
+| `eodhd/` | nicht angeschlossen | nur README/Vorbereitung, kein Adapter-Code |
+| FMP, Finnhub, Polygon | — | kein `providers/`-Ordner, kein Adapter, keine README — trotz vorbereiteter `.env.example`-Variable |
+
+**Acht Provider-Profile** in `quant/config/provider-profiles.json`: `sharadar`,
+`intrinio`, `twelve-data`, `eodhd`, `fmp`, `polygon`, `tiingo`, `sec-edgar`. Sieben davon
+tragen `licensing.status: LEGAL_REVIEW_REQUIRED`. **`sec-edgar` allein hat keinen
+Lizenzblock** — SEC/EDGAR ist US-Behördendaten ohne die kommerzielle
+Nutzungsbeschränkung, die bei den übrigen sieben offen ist.
 
 Twelve Datas Selbstauskunft in der Fähigkeitsmatrix: Kurse 29 % (eingeschränkt),
 Fundamentaldaten-für-Backtest 0 % (ungeeignet — kein PIT/Delisted-Support), Estimates
 0 % (ungeprüft), Referenzdaten 60 % (geeignet). Kandidat für die Live-Produktschicht,
 nicht für Backtests.
 
-**Kleiner Doku-Widerspruch gefunden:** `providers/intrinio/README.md` dokumentiert
-`INTRINIO_API_KEY` als benötigte Umgebungsvariable — sie fehlt in `.env.example`
-vollständig (dort stattdessen `TWELVE_DATA_API_KEY`, `EODHD_API_KEY`,
+**Kleiner, weiterhin bestehender Doku-Widerspruch:** `providers/intrinio/README.md`
+dokumentiert `INTRINIO_API_KEY` als benötigte Umgebungsvariable — sie fehlt in
+`.env.example` vollständig (dort stattdessen `TWELVE_DATA_API_KEY`, `EODHD_API_KEY`,
 `TIINGO_API_KEY`, `FMP_API_KEY`, `FINNHUB_API_KEY`, `POLYGON_API_KEY`).
 
 ---
 
 ## 20. Aktuelle Data Strategy
 
-Strategischer Datenplan (Planungsstand, noch nicht umgesetzt — siehe [§21](#21-sec-workstream)/[§22](#22-tiingo-workstream) für den Realitätsabgleich):
+Strategischer Datenplan aus dem ursprünglichen Research:
 
 ```
 SEC          → US Fundamentals, Filings, PIT, 13F / weitere öffentliche SEC-Daten
@@ -1091,173 +1204,371 @@ Tiingo       → Market Data, Historical EOD, Raw/Adjusted Prices, Splits, Divid
 Vision Universe → Derived Metrics: Quant, Technical Indicators, Backtests, Signals, Rankings
 ```
 
-**Tatsächlich angebunden ist heute nur Twelve Data** (Marktdaten, Free-Plan, Phase 2),
-und das ausschließlich für ein kleines Referenzuniversum im Hybrid-Modus. SEC- und
-Tiingo-Anbindung existieren nicht als Code — siehe die beiden folgenden Abschnitte.
+**Realitätsabgleich (8. September 2026): Dieser Plan ist inzwischen weitgehend
+umgesetzt — mit einer wichtigen Einschränkung.**
+
+| Baustein | Stand |
+|---|---|
+| SEC → US Fundamentals, Filings, PIT | **implementiert, laufzeitgeprüft**, 5 Unternehmen — kein 13F (das bleibt der separate `hedgefonds/`-Scraper) ([§21](#21-sec-financial-data-core)) |
+| Tiingo → Market Data, EOD, Raw/Adjusted, Splits, Dividenden, Intraday | **implementiert, laufzeitgeprüft** — aber intern, nicht öffentlich ausgeliefert ([§22](#22-tiingo-market-data)) |
+| FRED/ECB → Macro | weiterhin nicht angebunden; `/macro/` bleibt ein eigenständiges Produkt mit eigener, redaktionell gepflegter Datenbasis |
+| Vision Universe → Derived Metrics: Technical Indicators | **implementiert** ([§23](#23-technical-intelligence--elliott-wave)) |
+| Vision Universe → Derived Metrics: Quant, Backtests, Signals, Rankings aus echten Daten | **noch nicht verbunden** — SEC und Tiingo sind geprüfte, aber parallele Datenquellen; der Quant-Score-/Backtest-Pfad läuft weiterhin ausschließlich auf dem synthetischen 511-Titel-Mock-Universum |
+
+Die **wichtigste verbleibende Lücke** ist nicht mehr „fehlender Anbieter", sondern
+**fehlende Integration**: SEC liefert echte PIT-Fundamentaldaten, Tiingo liefert echte
+Kurse mit belegtem `TOTAL_RETURN` — aber `factors.js`, `quant-score.js` und
+`backtest.js` lesen davon noch nichts. Das ist eine bewusste, nicht eine versehentliche
+Lücke (siehe [§21](#21-sec-financial-data-core), „Kein Duplikat entstanden").
 
 ---
 
-## 21. SEC-Workstream
+## 21. SEC Financial Data Core
 
-**Stand nach Phase 4 (Branch `claude/sec-financial-data-core-qiizhj`, noch nicht
-gemergt).** Der frühere Stand dieses Abschnitts — „es existiert kein dediziertes
-SEC Financial Data Core-Modul" — galt für `main` zum Zeitpunkt von PR #43 und ist
-durch Phase 4 überholt.
+**Status: IMPLEMENTED für Einzeltitel-Fundamentaldaten — BLOCKED für survivorship-freie
+Universumskonstruktion.** Gemerged PR #48 (8. September 2026, `7630e6c`). Live gegen
+`data.sec.gov` validiert (16 GitHub-Actions-Läufe), nicht nur gegen Fixtures.
 
-### Was gebaut wurde
-
-Eine generische SEC/XBRL-Ingestion **unterhalb** der bestehenden
-Provider-Abstraction, keine zweite Architektur daneben:
+### Architektur — ein weiterer Provider, keine zweite Architektur
 
 ```
-data.sec.gov → scripts/quant/sec/**  →  quant/data/sec/canonical/*.json
-                (Python, Stdlib)         FundamentalFact · Filing · Security
-                                                  ↓
-                                    providers/sec/adapter.js
-                                    FundamentalDataProvider (engines/provider.js)
-                                                  ↓
-                                    engines/schema.js · factors.js · backtest.js
+data.sec.gov → scripts/quant/sec/** (14 Python-Module, Stdlib) → quant/data/sec/canonical/*.json
+                                                                          ↓
+                                            providers/sec/adapter.js
+                                            FundamentalDataProvider (engines/provider.js) — GENAU
+                                            dieses eine Interface, CI erzwingt „nicht mehr"
+                                                                          ↓
+                                            engines/schema.js (PIT-Regel) · factors.js · gate-tests.js
 ```
 
-- **`providers/sec/adapter.js`** implementiert `FundamentalDataProvider`
-  (`getFacts`, `getFilings`, `getFactPanel`, `healthCheck`) plus
-  `getFactsAsOf`/`getUniverseAsOf` für `gate-tests.js`. Serverseitig wie der
-  Twelve-Data-Adapter; die SEC verlangt einen sich ausweisenden User-Agent, den ein
-  Browser nicht setzen darf.
-- **Die PIT-Regel bleibt `availableAt <= decisionTime` aus `engines/schema.js`.**
-  Der Adapter bringt keine eigene mit; ein Test vergleicht seine Auswahl direkt
-  gegen `Schema.latestKnownFact`.
-- **Kein Duplikat entstanden.** Ein SEC-eigenes Faktor-Scoring, eine SEC-eigene
-  Backtest-Bridge, SEC-eigene MOCK-Gates und eine SEC-eigene Capability-Konstante
-  wurden im Zuge der Integration wieder **entfernt**; `factors.js`,
-  `quant-score.js`, `backtest.js`, `gate-tests.js` und
-  `quant/config/provider-profiles.json` sind und bleiben die jeweils einzige
-  Instanz.
-- **Was die Ingestion leistet:** Ticker→CIK, Submissions inkl. älterer
-  Filing-Seiten, Company Facts, Fiskalkalender je Unternehmen (nicht-kalendarisch,
-  52/53 Wochen, gelernter Label-Offset — die Felder `fy`/`fp` werden bewusst nie
-  als Faktenperiode gelesen), Rekonstruktion von Standalone-Quartalen aus
-  kumulierten Year-to-date-Werten innerhalb des PIT-Fensters, Revisionsreihen mit
-  `revisionId`/`restatementStatus`, Provenance bis zur Accession Number,
-  Data-Quality-Engine, Coverage-Matrix, Checkpointing und inkrementelle Updates.
+- **`providers/sec/adapter.js`** implementiert `FundamentalDataProvider` (`getFacts`,
+  `getFilings`, `getFactPanel`, `healthCheck`) plus `getFactsAsOf`/`getUniverseAsOf` für
+  `gate-tests.js`. `sec-fundamentals-ci.yml` prüft aktiv, dass der Adapter **nicht**
+  `MarketDataProvider`, `EstimateDataProvider` oder `CorporateActionsProvider`
+  beansprucht — SEC liefert keine Kurse, keine Marktkapitalisierung, keine Corporate
+  Actions.
+- **Die PIT-Regel ist die des Systems**, nicht mitgebracht: `availableAt <=
+  decisionTime` aus `engines/schema.js`.
+- **Kein Duplikat.** `factors.js`, `quant-score.js` und `backtest.js` enthalten keine
+  einzige SEC-spezifische Referenz. Die SEC-Schicht berechnet ausschließlich sechs
+  Bilanzaggregate aus gemeldeten Positionen (`derived.py`) — ROE, ROIC, Margen, Growth,
+  Value, Momentum bleiben ausschließlich in `factors.js`/`quant-score.js`. `quant/config/
+  provider-profiles.json` bekam ein **achtes** Profil (`sec-edgar`) neben den
+  bestehenden sieben, ohne diese zu verändern.
+- **Pipeline** (`scripts/quant/sec/`, 14 Module): Fair-Access-HTTP mit deklariertem
+  User-Agent, gelernte Fiskalkalender (nie `fy`/`fp` blind als Periode übernommen —
+  genau das war ein realer Bug, siehe unten), YTD-De-Akkumulation innerhalb des
+  PIT-Fensters, bitemporale Restatement-Historie (`revisionId`/`restatementStatus`),
+  Data-Quality-Engine (12 Regeln, die **markieren, nie korrigieren**), Checkpointing,
+  Coverage-Matrix, CLI (`ingest · update · retry · resolve · export · coverage · gates ·
+  canonical · inspect · test`).
+- **Data Inspector** (`quant/data-inspector/`): interne Prüfoberfläche, kein
+  Konsumenten-Dashboard — zeigt jede normalisierte Kennzahl mit SEC-Concept, Accession
+  Number, Filing-Datum und dem Zeitpunkt, ab dem sie im Backtest sichtbar sein darf.
 
-### Was ausdrücklich NICHT belegt ist
+### Gate-Ergebnisse — Lauf #16, Normalisierungslogik 1.5.0, echte Daten
 
-**Es wurde keine einzige Anfrage an data.sec.gov gestellt.** Die Egress-Policy der
-Entwicklungsumgebung blockiert die SEC-Domains (403 auf CONNECT); GitHub-Actions-
-Runner sind nicht betroffen. Folglich:
+| Gate | Ergebnis | Bedeutung |
+|---|---|---|
+| **A — Restatement** | **PASS 5/5, `RUNTIME_VERIFIED`** | gegen echte, im Live-Lauf beobachtete Korrekturen |
+| **B — Delisting/Survivorship** | **FAIL 5/5** | `universeSizeDuring: 0` — strukturell, nicht behebbar aus SEC-Daten allein |
+| **C — Verfügbarkeitszeitpunkt** | **PASS 5/5** | 27.385 PIT-Beobachtungen geprüft, 3.636 Datensätze, 0 ohne Zeitstempel |
 
-- Gate A und Gate C bestehen **gegen eine synthetische Fixture**, nicht gegen echte
-  Daten. Gate B fällt durch — richtigerweise, siehe unten.
-- Coverage-Matrix, historische Reichweite und gemessene Gate-Ergebnisse je
-  Unternehmen tragen `status: "not_generated"`.
-- Das Provider-Profil `sec-edgar` steht durchgängig auf
-  `RUNTIME_VERIFICATION_REQUIRED` oder `UNKNOWN`, nie auf `DOCUMENTATION_VERIFIED`
-  oder `RUNTIME_VERIFIED`. Test Q15 stellt sicher, dass SEC dadurch **nicht** als
-  qualifizierte Evidenzquelle gilt.
+**Gate B bleibt FAIL — das ist ein dauerhaftes strukturelles Merkmal der Quelle, keine
+zu behebende Baustelle.** SEC/EDGAR führt keinen Security Master und keinen
+Delisting-Feed; `company_tickers.json` listet nur Registranten mit *aktuell*
+zugeteiltem Ticker. `getUniverseAsOf()` gibt deshalb bewusst `unavailable` zurück,
+statt das heutige Universum stillschweigend als historisches auszugeben — genau der
+Survivorship Bias, den Gate B aufdecken soll. **Für ein survivorship-freies
+Backtest-Universum bleibt eine externe Indexhistorie (Sharadar, CRSP oder gleichwertig)
+notwendig.** Point-in-Time-Korrektheit (Gate A/C) und Survivorship-Freiheit (Gate B)
+sind zwei getrennte Probleme — SEC löst nur das erste.
 
-### Der ehrliche Negativbefund
+**Primärquellen-Abgleich:** `audit_primary_source.py` holt `companyfacts` erneut ab und
+vergleicht gegen die kanonischen Werte — 240 Prüfungen über 6 Kennzahlen, **0
+Abweichungen**. 5/5 Unternehmen (NVDA, AAPL, MSFT, JPM, XOM) geladen, 4.271 kanonische
+Fakten, 604 Restatements mit vollständiger Revisionskette, 5,8 MB committete Artefakte
+unter `quant/data/sec/` (keine `status: "not_generated"`-Platzhalter mehr — die Daten
+existieren real, geprüft am 8. September 2026).
 
-SEC/EDGAR führt **keinen Security Master und keinen Delisting-Ereignisstrom**.
-`company_tickers.json` listet nur Registranten mit aktuell zugeteiltem Ticker; ein
-historischer Ticker lässt sich nicht auflösen. Der Adapter liefert für
-`getUniverseAsOf` deshalb `unavailable`, und **Gate B fällt durch** statt das
-heutige Universum als historisches auszugeben. Fundamentaldaten sind
-PIT-korrekt — die Universumszugehörigkeit ist es nicht. Für ein
-survivorship-freies Universum bleibt eine Indexhistorie (Sharadar, CRSP oder
-gleichwertig) erforderlich.
+**Elf reale Fehler in dieser Phase gefunden und mit Regressionstest behoben**, keiner
+davon in einer zuvor grünen Testsuite entdeckt. Die schwersten zwei: (1) FY- und
+Q4-Zeilen kollidierten in derselben Zelle, weil `fiscalPeriod` nicht Teil des
+Schlüssels war — ein Backtest wäre um Faktor vier danebengelegen; (2) 252 Fakten (6 %)
+waren bis zu eine Handelssitzung zu früh sichtbar, weil `acceptanceDateTime` regulär am
+Vortag des offiziellen Filing-Datums liegt.
+
+### Bekannte Grenzen (wörtlich aus `docs/SEC_RELEASE_AUDIT.md`)
+
+1. **Survivorship-Bias — Gate B bleibt FAIL, 5/5** (siehe oben, unveränderlich ohne
+   externe Indexhistorie).
+2. Strukturierte Daten erst ab 2007/2008; 1993–2006 ist `FILING_ONLY` (Zahlen existieren
+   nur im Dokument, nicht normalisiert).
+3. 5 unterdrückte Zellen (NVDA 4, XOM 1), Grund `AMBIGUOUS_PERIOD_END` — gemeldet, nicht
+   geraten.
+4. **`ebitda` und `dividendPerShare` sind aus SEC-XBRL nicht verlustfrei ableitbar** und
+   stehen in `UNSUPPORTED_METRICS`. `factors.js` nutzt `ebitda` an 15 Stellen: **EV/EBITDA,
+   Leverage und Balance-Sheet-Quality bleiben damit unvollständig, solange nur SEC als
+   Quelle dient.**
+5. 5 `FUTURE_DATA_LEAK`-Rohfakten bei NVDA (Dividendenerklärungen,
+   Rückkaufautorisierungen, Public Float) — markiert, nicht korrigiert, erreichen nicht
+   die kanonische Schicht.
+6. `securityId = sec_<TICKER>` — ein Tickerwechsel ändert die ID.
+7. **Nur fünf Unternehmen gemessen.** Die Pipeline ist CIK-parametrisiert und per
+   AST-Guard (`check_company_agnostic.py`) gegen Ticker-Branching abgesichert — Skalierung
+   ist ein größerer Lauf, keine Codeänderung.
+8. **Speicher-/Skalierungsgrenze, ausdrücklich ungelöst:** 5,8 MB für fünf Unternehmen
+   skalieren linear; bei 500 Unternehmen wären das rund 590 MB committete Artefakte —
+   „für ein öffentliches Repository nicht tragbar" (`SEC_RELEASE_AUDIT.md`). Lösungsansätze
+   (Parquet/DuckDB, On-demand-Inspector) sind benannt, nicht implementiert.
+
+**Nicht unterstützt:** OHLCV, Marktkapitalisierung (bleibt `MarketDataProvider`-Domäne),
+Corporate Actions/Split-Historie, Analystenschätzungen/Revisionen, Realtime/Intraday,
+europäische Fundamentaldaten, historisches Universum.
 
 ### Nächster Schritt
 
-Workflow **„Update SEC fundamentals"** per `workflow_dispatch` starten: Ingest →
-`canonical` → `coverage` → Ingest-Prüfungen → `run-sec-gates.mjs` → `export`. Erst
-danach lässt sich das Startjahr des Backtesters aus gemessenen Daten festlegen.
-
-Details: `docs/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
+Skalierung über 5 Unternehmen hinaus setzt zuerst eine Lösung für die
+Speicherskalierung voraus (Punkt 8 oben), nicht umgekehrt. Details:
+`docs/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
 `docs/SEC_PIT_METHODOLOGY.md`, `docs/SEC_COVERAGE_REPORT.md`,
-`docs/SEC_PHASE4_REPORT.md`.
+`docs/SEC_LIVE_VALIDATION.md`, `docs/SEC_RELEASE_AUDIT.md`, `docs/SEC_PHASE4_REPORT.md`.
 
 Unberührt bleibt `scripts/hedgefonds/fetch_edgar_data.py`: ein 13F-Scraper für den
-eigenständigen `hedgefonds/`-Produktbereich, kein Teil der Quant-Provider-
-Architektur.
+eigenständigen `hedgefonds/`-Produktbereich — dieselbe Primärquelle (SEC EDGAR),
+kein gemeinsamer Code, kein Teil der Quant-Provider-Architektur.
 
-## 22. Tiingo-Workstream
+---
 
-**Realitätsabgleich: Tiingo existiert im Repository ausschließlich als (a) eine leere
-Platzhalter-Umgebungsvariable und (b) ein Eintrag in der Vendor-Leakage-Sperrliste.**
+## 22. Tiingo Market Data
 
-`grep` über das gesamte Repository (`docs/`, `quant/`, `providers/`) findet **keine
-Doku- oder Adapter-Erwähnung von "Tiingo"** außer:
+**Status: IMPLEMENTED (technisch vollständig) — LEGAL REVIEW REQUIRED für öffentliche
+Anzeige.** Gemerged PR #46 (8. September 2026, `1a6e49e`). Live gegen die echte Tiingo-API
+validiert (55 Anfragen, 20 MB über die gesamte Phase — 0,98 % des Monatsbudgets).
 
-1. der Zeile `TIINGO_API_KEY=` in `.env.example` (zusammen mit `EODHD_API_KEY`,
-   `FMP_API_KEY`, `FINNHUB_API_KEY`, `POLYGON_API_KEY` als „spätere Kandidaten, Phase 2
-   nur dokumentiert, nicht angebunden"), und
-2. dem String `"tiingo"` in `provider.js`s `VENDOR_MARKERS` — der Liste von
-   Anbieter-Namensfragmenten, die der Vendor-Leakage-Scanner erkennt, falls sie
-   *jemals* in einem kanonischen Objekt auftauchen (siehe [§19](#19-provider-abstraction)).
-   Das ist vorsorgliche Sperrlisten-Pflege, **kein** Hinweis auf eine begonnene
-   Integration.
+### Was gebaut und laufzeitgeprüft wurde
 
-Es gibt:
+`providers/tiingo/adapter.js` (Node-only, CommonJS, im Browser nicht ladbar) erfüllt
+**`MarketDataProvider`** (inkl. `getIntradayBars`, `adjustmentStatus`, `quota`) und
+**`CorporateActionsProvider`** (Splits/Dividenden werden aus `splitFactor`/`divCash`
+derselben Tagesreihe abgeleitet, kein separater Endpunkt). Dazu:
+`quant/engines/panel-builder.js` (Brücke Bars → Panelformat), `market-store.js`
+(Arbeitsablage getrennt von ausgeliefertem Ausschnitt), `display-policy.js`
+(„abrufbar" ≠ „anzeigbar" — siehe Lizenz unten), `chart-ranges.js`,
+`quant/ui/charts.js` (Kerzenchart ohne Chartbibliothek).
 
-- **keinen** `providers/tiingo/`-Ordner,
-- **keinen** Tiingo-Adapter,
-- **keine** Tiingo-Erwähnung in einem `docs/VU_*.md`-Dokument,
-- **keinen** Eintrag in `provider-profiles.json` (die sechs qualifizierten Kandidaten
-  sind Sharadar, Intrinio, Twelve Data, EODHD, FMP, Polygon — Tiingo ist nicht
-  darunter).
+| Fähigkeit | Live-Messung |
+|---|---|
+| Historical EOD | AAPL-Historie ab 1980-12-12, 2.936 Bars ab 2015, eine Anfrage je Titel |
+| RAW / SPLIT_ADJUSTED | beide Spalten liegen nebeneinander vor; NVDA-4:1-Split (2021-07-20) bestätigt: rohe Reihe springt, bereinigte bleibt stetig |
+| **TOTAL_RETURN** | KO Ex-Tag 2024-03-14 — **erster laufzeitbelegter Total-Return-Bestand des Projekts**, kostenlos |
+| Splits / Dividenden | 3 Split-Ereignisse, 46–47 Ausschüttungen je Dividendentitel im Testuniversum |
+| Intraday (IEX) | 78 Bars gemessen — technisch funktionsfähig, aber per Feature-Gate abgeschaltet (siehe unten) |
+| Rate-Limit-Verhalten | Stundengrenze real erreicht (5 Läufe/Stunde, 42 Anfragen, 6. Lauf erhielt 429) und korrekt behandelt |
 
-**GitHub Secret `TIINGO_API_KEY`:** Der Name der Umgebungsvariable ist in
-`.env.example` als Vorlage vorgesehen. **Ob das Secret in den GitHub-Repository-Settings
-tatsächlich hinterlegt ist, kann von hier aus nicht geprüft werden** — dieses Dokument
-nennt ausschließlich den Namen, niemals einen Wert.
+Free-Tier-Limits, aus dem Adapter (`FREE_LIMITS`) und `docs/TIINGO_FREE_LIMITS.md`:
+**20/Minute, 50/Stunde (die eigentliche Bindungsgrenze, nicht die Tagesgrenze),
+1.000/Tag, 2 GB/Monat, Concurrency 1.** Kommerzielle Tarifwerte (`COMMERCIAL_LIMITS`)
+sind ausdrücklich als **ungeprüfter Platzhalter** markiert (`verified: false`).
 
-**Bekannte Free-Limits laut Planungsannahme** (nicht aus Repository-Dokumentation
-verifiziert, nur als aktuelle Planungsannahme kennzeichnen): 50 Requests/Stunde, 1.000
-Requests/Tag, 2 GB Bandbreite/Monat. Möglicher späterer Umstieg: „Commercial Internal"
-Tarif, laut bisherigem (nicht im Repository verifiziertem) Stand ca. 50 USD/Monat.
+### Was ausdrücklich NICHT öffentlich freigeschaltet ist
 
-**Ziel laut Planung** (noch nicht begonnen): Historical EOD, Raw/Adjusted Prices,
-Volume, Splits, Dividenden, Intraday, IEX/Realtime soweit verfügbar, WebSocket soweit
-verfügbar. Live-/Intraday-Chart darf intern entwickelt werden; Public Display ist ein
-separates Licensing Gate mit eigenem Feature-Flag/Policy-Layer.
+**`quant/config/feature-gates.json` — beide Gates auf `false`:**
 
-> **Für den nächsten Agenten:** Diese Diskrepanz zwischen der in Chat-Historie/Planung
-> beschriebenen Tiingo-Aktivität und dem tatsächlichen Repository-Stand ist real und
-> nicht dieses Dokument, das sich irrt. Vor jeder Tiingo-Arbeit: prüfen, ob seit diesem
-> Stand (`9878cdc`, 7. September 2026) bereits Code entstanden ist.
+```
+ENABLE_LIVE_MARKET_DATA:        false  (Intraday/IEX-Nutzungsbedingungen ungeprüft)
+ENABLE_PUBLIC_LIVE_MARKET_DATA: false  (keine geprüfte Erlaubnis zur öffentlichen Anzeige)
+```
+
+**Ein Feature-Gate allein genügt nicht** — `display-policy.js`
+(`MarketDataDisplayPolicy`) verlangt zusätzlich einen eingetragenen, datierten
+Lizenzeintrag; ohne ihn gilt der strengste Standard, unabhängig vom Gate-Zustand.
+`licensing.status` in `provider-profiles.json` steht unverändert auf
+**`LEGAL_REVIEW_REQUIRED`**, mit praktisch jeder Nutzungsfrage (externe Anzeige,
+Redistribution, öffentliche GitHub-Speicherung, Caching) auf `UNKNOWN`. **Kein
+Tiingo-Kurs liegt heute in einem ausgelieferten Pfad** — ein CI-Schritt in
+`tiingo-verify.yml` lässt den Build aktiv fehlschlagen, falls echte Bars in
+`quant/data/market` landen. Der Schlüssel existiert nur als GitHub-Secret
+(`TIINGO_API_KEY`, Name hier dokumentiert, niemals ein Wert), geht per
+`Authorization: Token <key>`-Header, nie in der URL.
+
+**Weiterhin unbekannt/ungeprüft:** Fundamentaldaten (bleiben synthetisch), PIT-
+Fundamentaldaten, Gates A/B/C für Backtest-Evidenz (alle `UNKNOWN` — Tiingo ist
+Marktdaten-, kein Evidenzanbieter), delistete Wertpapiere, Realtime, WebSocket (nicht
+implementiert), wöchentliche/monatliche Bar-Aggregation.
+
+### Gefundene und behobene Fehler (aus `TIINGO_PHASE4A_REPORT.md`, 10 Befunde in 8 Gruppen)
+
+Zwei mit Produktrisiko: **`publish()` schrieb ursprünglich echte Bars in den
+ausgelieferten Pfad, gesteuert nur über ein CLI-Flag statt eine echte Lizenzprüfung** —
+behoben, verlangt jetzt eine explizite, begründete Erlaubnis. Und: **Intraday-Bars
+trugen den Handelstag unter `timestamp` statt dem kanonischen `date`-Feld** — der
+1-Tages-Chart zeigte auf echten Adapterdaten null Punkte, während der Browsertest grün
+blieb, weil seine Fixture zufällig `date` benutzte; jetzt validieren drei Tests jede
+Adapterausgabe gegen das kanonische Schema.
+
+### Nächster Schritt
+
+**Technisch ist alles fertig — was fehlt, ist keine Codeänderung, sondern die
+Lizenzfrage.** Details: `docs/TIINGO_PHASE4A_REPORT.md`, `docs/TIINGO_INTEGRATION.md`,
+`docs/TIINGO_DATA_SEMANTICS.md`, `docs/TIINGO_LIVE_ARCHITECTURE.md`,
+`docs/TIINGO_SCALING_PLAN.md`.
 
 ---
 
 ## 23. Technical Intelligence & Elliott Wave
 
-Vision Universe besitzt bereits einen Technical-/Chart-Bereich (`dashboard/charting`,
-technische Scores im Dashboard). Langfristiges Ziel: **ein gemeinsamer Market Data
-Core** für Charts, Technical Tool, Quant, Screener, Stock Detail, Reports und
-Backtesting — Vision Universe berechnet selbst SMA, EMA, RSI, MACD, ATR, Bollinger,
-Momentum, 52W High/Low, Volatilität, Drawdown, Trend Strength; der Provider liefert nur
-Rohdaten (siehe auch [§29](#29-was-vu-kauft-vs-selbst-berechnet)).
+**Status Technical Intelligence V1 (Kern-Engines): IMPLEMENTED.**
+**Status Elliott Wave: IMPLEMENTED — BETA** (Code selbst trägt `elliott-1.0.0-beta`,
+`role: "BETA"`). Gemerged PR #49 (8. September 2026, `252dec5`). Release-Audit-Urteil:
+**„SAFE TO MERGE AS BETA"** (`docs/VU_TECHNICAL_RELEASE_AUDIT.md`).
 
-**VU Elliott Wave / Technical Intelligence Engine** — Future Workstream, **nicht
-begonnen**. Ziel jenseits reiner Linien: Pivot Detection, Swing High/Low, ZigZag,
-Impulse 1–5, ABC-Korrektur, Fibonacci-Retracements/-Extensions, Invalidierungsregeln,
-alternative Wellenzählungen, Confidence Score. Kein Code hierzu im Repository.
+Reale, wenn auch begrenzte Datenbasis: 13 Symbole aus dem bestehenden, bereits
+splitbereinigten Dashboard-Kursbestand — keine zweite Vendor-Anbindung, ein generischer
+`MarketDataProvider`-Adapter liest den vorhandenen Bestand einmalig ein.
+
+### Architektur — kanonische Bars → Engines → Szenarien → Evidenz → Rendering
+
+27 Engine-Module unter `quant/engines/technical/`, production-grade und Beta getrennt
+gekennzeichnet:
+
+**Production-grade Kern:**
+- **`canonical-bars.js`** — RAW/SPLIT_ADJUSTED/TOTAL_RETURN, leitet Split-Bereinigung
+  selbst aus Corporate-Action-Daten ab.
+- **`timeframe.js`** — kalenderbewusste Aggregation 1D→1W/1M, sessionverankertes
+  Intraday; die letzte Bar trägt immer `DEVELOPING`.
+- **`feature-store.js`** — deterministische, kausale, versionierte Kennzahlen (Returns,
+  ATR, gleitende Durchschnitte, RSI, MACD, 52W, RVOL); fehlend = `NaN`, nie 0.
+- **`pivot-engine.js`** — kausale, volatilitätsadaptive Multi-Scale-ZigZag-Engine
+  (4 Skalen); **`pivotTime ≠ confirmedAt`** — die Grundlage jeder Anti-Repainting-
+  Garantie im System.
+- **`market-structure.js`** — HH/HL/LH/LL, close-basierter Break of Structure,
+  Structure Failure, Range, Compression.
+- **`trend-engine.js`, `momentum-engine.js`, `relative-strength-engine.js`,
+  `volatility-engine.js`, `volume-engine.js`** — je ein 0–100-Score aus mehreren
+  Komponenten; `relative-strength` und `volume` geben explizit `UNAVAILABLE` zurück
+  statt eines Ersatzwerts, wenn Benchmark bzw. Volumen fehlen.
+- **`support-resistance.js`** — Preiszonen aus gewichtetem Pivot-Clustering (Zonen,
+  keine Einzellinien).
+- **`fibonacci.js`** — nur Hilfsgröße, ausschließlich an bestätigten Pivots verankert.
+- **`scenario-engine.js`** — PRIMARY/ALTERNATIVE/BEAR mit Entry Zone, struktureller
+  Invalidation, Zielzonen mit Quellenangabe.
+- **`trade-setup.js`** — Risk/Reward als Spanne plus Setup-Quality-Gate;
+  `INCOMPLETE`, wenn Entry/Invalidation/Target fehlen.
+- **`confluence.js`** — familienbasierte, abhängigkeitsbewusste Signalaggregation ohne
+  Doppelzählung.
+- **`technical-score.js`** — VU Technical Opportunity Score 0–100, ausdrücklich
+  `isProbability: false`.
+- **`snapshot.js`/`storage.js`** — unveränderliche Snapshots mit Supersedes-Kette,
+  Evidence-Records (projiziert vs. tatsächlich eingetreten).
+- **`annotations.js`** — renderer-neutrales `ChartAnnotation`-Schema (Zeit/Preis, keine
+  Pixel/SVG).
+- **`scanner.js`** — Universe-Scan mit strukturiertem Filter-DSL.
+- **`technical-tools.js`** — registriert 12 AI-Werkzeuge auf **derselben**
+  Tool-Registry wie `ai-tools.js` (`FORBIDDEN_TOOL_NAMES`, `validateArgs` — dieselbe
+  Sicherheitsgrenze, kein Sondermechanismus).
+- **`strategy-packs.js`** — nur ein Plugin-Interface für künftige benannte Strategien
+  (z. B. Minervini/VCP/Darvas); **keine einzige Regel implementiert** —
+  regulatorisch noch zu prüfen.
+
+**Renderer:** `quant/ui/technical-chart.js` — reines SVG, interpretiert ausschließlich
+`ChartAnnotation`-Objekte, keine Berechnungslogik. **Produktseite:**
+`quant/technical/{index.html,app.js}`, eingebunden in Shell/Navigation wie jede andere
+Quant-Seite (`?symbol=NVDA`).
+
+### Elliott Wave — Beta, was real implementiert ist
+
+`quant/engines/technical/elliott/{elliott-engine.js, rules.js, wave-graph.js}`:
+
+- **Grammatik:** ausschließlich **Standard-Impuls (5 Beine) und einfacher Zigzag
+  (3 Beine)** — Flats, Triangles, Diagonals, W-X-Y-Kombinationen sind **nicht
+  implementiert**, kein Codepfad erzeugt sie.
+- **Harte Regeln (Gates, keine weichen Scores):** Impuls —
+  Richtungswechsel-Alternierung, `W2_NOT_BEYOND_W1_ORIGIN`, `W3_BEYOND_W1_END`,
+  `W4_NO_W1_OVERLAP`, `W4_NOT_BEYOND_W3_ORIGIN`, `W3_NOT_SHORTEST`. Zigzag —
+  Alternierung, `B_NOT_BEYOND_A_ORIGIN`, `C_BEYOND_B_END`. Eine verletzte harte Regel
+  setzt `score = 0, valid: false` — geprüft in Tests R1/R2.
+- **Weiche Richtlinien** (Fibonacci-Verhältnisse für W2/W3/W4/W5, Kanal-Fit,
+  Momentum/Volumen auf W3) fließen in `guidelineFit`, **überschreiben nie** eine harte
+  Regel.
+- **Kausale historische Wave Map:** Labels ausschließlich an bereits bestätigten
+  Pivots; eine einmal bestätigte Welle wird **nie umgeschrieben** — durch Konstruktion,
+  nicht durch nachträgliche Prüfung.
+- **Primary/Alternative Count, objektive Invalidation** (direkt aus den harten Regeln
+  abgeleitet, nicht diskretionär), **Projection Zones** (Zieldichte-Clustering,
+  ATR-toleranzbasiert, auf ~3 Phasen begrenzt, immer als `PROJECTED` markiert).
+- **Confidence = Method Fit** (`ECS = 0,8 × fit + 0,2 × stability`), ausdrücklich
+  `isProbability: false` — Counts sind häufig `AMBIGUOUS`/`LOW_CONFIDENCE` und werden
+  so ausgewiesen, nicht beschönigt.
+- **Stabilitätsmetrik:** real — testet, ob eine ±10-%-Störung der Pivot-Schwellen den
+  aktuellen Count ändert. Testet nur Pivot-Schwellen, nicht zusätzliche Bars — bekannte
+  Einschränkung.
+- **Ein Feld existiert, ohne real berechnet zu werden:** `abortConditions.dataGap` ist
+  in jedem Ergebnisobjekt vorhanden, aber in allen Pfaden fest auf `false` gesetzt —
+  nicht tatsächlich ausgewertet.
+
+### Anti-Repainting — real getestet, nicht nur behauptet
+
+Bei einer musterbasierten Engine ist Repainting (ein Signal, das sich rückwirkend
+ändert) das klassische Warnsignal. Hier real geprüft: `technical-pivots.test.mjs` P2
+(„Präfix-Lauf und geschnittener Voll-Lauf sind bit-identisch") und P6
+(Repainting-Policy); `technical-elliott.test.mjs` E3 (Walk-Forward-Hash-Identität) und
+**E6** — ein Bar-für-Bar-Walk-Forward über >40 Beine, gezielt dimensioniert, um einen
+**echten, gefundenen und behobenen Repainting-Bug** zu reproduzieren: ein gleitendes
+40-Leg-Fenster und eine verfrühte 3-Leg-Zigzag-Entscheidung schrieben zuvor bestätigte
+Labels um. Gemessen an NVDA über 300 Schritte: **vorher 3, nachher 0 Umschreibungen.**
+Dieser Fund-und-Fix-Zyklus steht offen im Release-Audit, nicht verschwiegen.
+
+### Bekannte Grenzen (wörtlich, nicht beschönigt)
+
+- **„Elliott-Grammatik V1 ist zweimustrig"** — auf feinen Skalen fragmentiert die
+  Historie mancher Titel (z. B. NVDA, PLTR) in Zigzag-Ketten mit unlabeled Spans, weil
+  Impulse die Overlap-Regel verletzen. Multi-Degree-Nesting ist als **V1.5-„MUST"**
+  benannt, nicht implementiert.
+- **Flats, Triangles, Diagonals, Kombinationen: nicht implementiert und nicht als
+  erfüllt behauptet.**
+- **Projection Clipping:** bei weit entfernten Zielzonen (z. B. SPY, W3 > 1.000) stößt
+  die Darstellung an die Preisskala.
+- **JSON-Größe:** ~0,49 MB je Instrument, ~15 MB für 26 Instrumente; für 500+ Titel
+  fehlen On-demand-Auslieferung und Columnar Storage (Interface vorbereitet, nicht
+  angebunden).
+- **Volles Neuberechnen statt inkrementell:** V1 rechnet bei jedem Build die komplette
+  Historie neu.
+- **Regulatorisches Review (MAR/MiFID) der Szenario-Darstellung steht aus** — separates
+  Gate vor jedem öffentlichen Launch, unabhängig vom technischen Status.
+- AI-Werkzeuge sind registriert und getestet, aber **noch nicht an die laufende
+  `/quant/ai/`-Seite angebunden**.
+
+Details: `docs/VU_TECHNICAL_PHASE1_REPORT.md`, `docs/VU_TECHNICAL_RELEASE_AUDIT.md`,
+`docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md`, `docs/VU_TECHNICAL_OPPORTUNITY_SCORE.md`,
+`docs/VU_TECHNICAL_SNAPSHOT_SPEC.md`, `docs/VU_TECHNICAL_DATA_SEMANTICS.md`,
+`docs/VU_TECHNICAL_VALIDATION.md`.
 
 ---
 
 ## 24. Data Licensing
 
-**Aktuelle Provider-Lizenzfragen sind bei allen sechs geprüften Anbietern offen**
-(`LEGAL_REVIEW_REQUIRED`, siehe [§7](#7-phase-3--data-qualification)). Zu
-unterscheiden: Internal Use, External Display, Redistribution, Derived Data, Storage,
-Post-Termination, Commercial Use. Die häufigste teure Überraschung: Sobald Daten
-öffentlich angezeigt werden, gilt der Betreiber bei vielen Anbietern/Börsen als
-professioneller Nutzer — unabhängig davon, ob damit Geld verdient wird
-([§28](#28-cost-philosophy)).
+**Aktuelle Provider-Lizenzfragen sind bei sieben von acht geprüften Anbietern offen**
+(`LEGAL_REVIEW_REQUIRED`) — die ursprünglichen sechs aus Phase 3 (siehe
+[§7](#7-phase-3--data-qualification)) plus Tiingo, seit Phase 4A ebenfalls geprüft und
+ebenfalls offen ([§22](#22-tiingo-market-data)). **Einzige Ausnahme: SEC/EDGAR.** Als
+US-Behördendatenquelle trägt `sec-edgar` in `provider-profiles.json` keinen
+Lizenzblock — das ist kein Freibrief für beliebige Weiterverwendung, aber ein anderer
+rechtlicher Ausgangspunkt als bei den sieben kommerziellen Anbietern. Zu unterscheiden
+bei den kommerziellen Anbietern: Internal Use, External Display, Redistribution,
+Derived Data, Storage, Post-Termination, Commercial Use. Die häufigste teure
+Überraschung: Sobald Daten öffentlich angezeigt werden, gilt der Betreiber bei vielen
+Anbietern/Börsen als professioneller Nutzer — unabhängig davon, ob damit Geld verdient
+wird ([§28](#28-cost-philosophy)).
 
-**Aktuelle Strategie:** erst intern entwickeln, Public Display erst nach entsprechender
-Lizenzentscheidung. Konkret bei Sharadar: professionelle Nutzer müssen über Nasdaq Data
-Link beziehen; eine öffentliche Website ist mit hoher Wahrscheinlichkeit professionelle
+**Aktuelle Strategie, jetzt mit einem funktionierenden Beispiel:** erst intern
+entwickeln, Public Display erst nach entsprechender Lizenzentscheidung. Tiingo zeigt,
+wie das in der Praxis aussieht — ein technisch vollständiger, laufzeitgeprüfter Adapter,
+zwei Feature-Gates (`ENABLE_LIVE_MARKET_DATA`, `ENABLE_PUBLIC_LIVE_MARKET_DATA`) beide
+auf `false`, plus ein CI-Guard, der den Build fehlschlagen lässt, falls trotzdem echte
+Daten in einen ausgelieferten Pfad gelangen ([§22](#22-tiingo-market-data)). Konkret bei
+Sharadar (weiterhin unverändert): professionelle Nutzer müssen über Nasdaq Data Link
+beziehen; eine öffentliche Website ist mit hoher Wahrscheinlichkeit professionelle
 Nutzung — die recherchierten 29/69 USD/Monat sind damit vermutlich **nicht** der
 zutreffende Tarif.
 
@@ -1297,30 +1608,53 @@ Securities (482 aktiv, 29 historisch delistet), 5.395 Handelstage (2006-01-02 bi
   Acht dauerhafte Tests plus eine Pre-Commit-Prüfung erzwingen das (Details in
   [§6](#6-phase-2--production-audit)).
 - **Provider-Zugriff ausschließlich serverseitig/workflow-/proxyseitig.**
-- **GitHub Secret `TWELVE_DATA_API_KEY`** ist aktiv genutzt (Phase 2), korrekt über
-  `secrets.` in den Workflow gereicht. **GitHub Secret `TIINGO_API_KEY`** ist im
-  `.env.example`-Template vorgesehen, aber im Code nirgends referenziert (siehe
-  [§22](#22-tiingo-workstream)). **In diesem Dokument wird ausschließlich der Name
-  dokumentiert, niemals ein Wert.**
+- **GitHub Secrets `TWELVE_DATA_API_KEY` und `TIINGO_API_KEY`** sind aktiv genutzt
+  (Phase 2 bzw. Phase 4A), korrekt über `secrets.` in den jeweiligen Workflow gereicht.
+  Der Tiingo-Schlüssel geht per `Authorization: Token <key>`-Header, nie in der URL; ein
+  Test (`tiingo.test.mjs` T13) prüft, dass er in keiner Antwort oder Diagnosemeldung
+  gespiegelt wird — dieselbe S8-Disziplin wie beim Twelve-Data-Adapter (siehe
+  [§6](#6-phase-2--production-audit)). **SEC/EDGAR braucht keinen API-Key** — nur einen
+  sich ausweisenden User-Agent mit der öffentlichen Repository-Kontaktadresse, wie es
+  die Fair-Access-Policy der Behörde verlangt. **In diesem Dokument wird ausschließlich
+  der Name eines Secrets dokumentiert, niemals ein Wert.**
 - Kein `eval`, kein `document.write`, kein `new Function` im gesamten Quant-Bereich
   (geprüft).
+- **Tiingo-Publish-Guard:** `tiingo-verify.yml` lässt den Build aktiv fehlschlagen,
+  falls ein echter Kurs-Bar in den ausgelieferten Pfad (`quant/data/market`) gelangt —
+  eine zusätzliche, spezifisch für Phase 4A gebaute Absicherung gegen versehentliche
+  Veröffentlichung nicht lizenzierter Daten (vgl. die `technical_scenarios.json`-Lehre
+  in [§9](#9-release-audit-funde-und-guardrails)).
 
 ---
 
 ## 27. Storage Strategy
 
-**Aktueller Stand:** Alle Daten liegen als präkomputiertes, committetes JSON in
-`quant/data/**` bzw. `dashboard/data/**` — kein Datenbanksystem. `quant/data/securities.json`
-ist 945 KB unkomprimiert, 175 KB gzip-komprimiert (GitHub Pages liefert komprimiert
-aus) — für 511 Titel × 60 Felder angemessen, ab ca. 2.000 Titeln wäre eine Aufteilung
-wie bei der Factor DNA (`quant/data/dna/0.json`…`4.json`, geshardet) fällig.
+**Aktueller Stand:** Alle Daten liegen als präkomputiertes, committetes JSON —
+kein Datenbanksystem, weder für Mock- noch für echte Daten.
 
-**Prinzip für echte Daten (noch nicht umgesetzt):** einmal importieren → speichern/
-cachen → danach nur Incremental Updates, keine tägliche Komplett-Neuladung.
+| Datensatz | Größe | Umfang | Skalierungsstatus |
+|---|---|---|---|
+| `quant/data/securities.json` (Mock) | 945 KB (175 KB gzip) | 511 Titel × 60 Felder | angemessen bis ~2.000 Titel, danach Sharding wie Factor DNA |
+| `quant/data/sec/` (echte SEC-Daten) | 5,8 MB | 5 Unternehmen | **ausdrücklich ungelöst:** skaliert linear, ~590 MB bei 500 Unternehmen — laut `SEC_RELEASE_AUDIT.md` „für ein öffentliches Repository nicht tragbar" |
+| `quant/data/technical/` (echte Kurse) | ~17 MB | 26 Instrumente, ~0,5 MB/Instrument | für 500+ Titel fehlen On-demand-Auslieferung und Columnar Storage (Interface vorbereitet) |
 
-**Langfristig mögliche Storage-Systeme** (Planung, nicht umgesetzt): Parquet, DuckDB,
-PostgreSQL, Object Storage — passend zur in [§4](#4-repository-architektur)
-beschriebenen späteren Migration.
+**Das ist die konkreteste, unmittelbarste Storage-Frage des gesamten Projekts** — nicht
+mehr eine ferne Migrationsüberlegung: SEC und Technical Intelligence liefern bereits
+heute echte Daten, und ihre Speicherform skaliert nachweislich nicht auf ein
+produktionsreifes Universum. Eine Lösung (Parquet/DuckDB, Object Storage,
+On-demand-Auslieferung statt Full-Commit) ist Voraussetzung für jede Skalierung über die
+heutigen 5 Unternehmen bzw. 26 Instrumente hinaus — nicht optional, nicht „später".
+
+**Prinzip für echte Daten (Ingestion-Seite bereits umgesetzt):** SEC und Tiingo
+importieren einmal, cachen (Checkpointing bzw. `.market-cache`) und aktualisieren
+inkrementell über die Filing-Signatur bzw. Quota-bewusste Wiederaufnahme — keine
+tägliche Komplett-Neuladung. Technical Intelligence rechnet dagegen **noch die volle
+Historie bei jedem Build neu** ([§23](#23-technical-intelligence--elliott-wave)),
+inkrementelle Berechnung ist dort offen.
+
+**Langfristig mögliche Storage-Systeme** (weiterhin Planung, für den *committeten
+Endzustand* nicht umgesetzt): Parquet, DuckDB, PostgreSQL, Object Storage — passend zur
+in [§4](#4-repository-architektur) beschriebenen späteren Migration.
 
 ---
 
@@ -1357,6 +1691,17 @@ Nutzerzahlen, Anzeigeart, Rechtsordnung und Verhandlung ab und werden praktisch 
 öffentlich genannt. Nicht enthalten in den obigen Zahlen: Börsengebühren,
 Professionell-Einstufung, Redistribution, abgeleitete Werte, Enterprise-Zwang.
 
+### Erste reale Verbrauchszahlen (Phase 4A, Tiingo Free Plan)
+
+Über die gesamte Tiingo-Validierungsphase gemessen: **55 Anfragen, 20 MB — 0,98 % des
+monatlichen Free-Plan-Kontingents (2 GB).** Das ist der erste Beleg im Projekt, dass die
+Kostenphilosophie aus §28 in der Praxis hält: eine vollständige Laufzeitvalidierung
+inklusive Historical EOD, Splits, Dividenden und Intraday-Stichproben für ein kleines
+Testuniversum passt bequem in einen kostenlosen Tarif. SEC/EDGAR verlangt ohnehin keinen
+kostenpflichtigen Zugang. **Beide bislang produktiv genutzten echten Datenquellen (SEC,
+Tiingo) liegen damit weiterhin bei 0 USD/Monat** — die 50–100-EUR/USD-Zielmarke aus
+diesem Abschnitt ist bislang nicht einmal erreicht, geschweige denn überschritten.
+
 ---
 
 ## 29. Was VU kauft vs. selbst berechnet
@@ -1374,44 +1719,79 @@ Rohkennzahlen und Kursreihen; jede Kennzahl (Faktoren, Score, Momentum, Radar-Ev
 wird von den Engines aus diesen Rohdaten abgeleitet — genau der Pfad, der für echte
 Anbieterdaten identisch bleiben soll.
 
+**Seit Phase 4 gilt dieser Grundsatz auch für echte Daten, nicht mehr nur als Prinzip
+für später:** SEC liefert ausschließlich gemeldete Bilanzpositionen — die sechs
+abgeleiteten Aggregate (u. a. `freeCashFlow`, `accruals`) berechnet `derived.py`
+selbst, jede als `VISION_UNIVERSE_DERIVED` mit Formelversion gekennzeichnet; ROE, ROIC,
+Margen, Growth, Value, Momentum bleiben ausschließlich in `factors.js`/`quant-score.js`.
+Tiingo liefert ausschließlich Kurs-Rohdaten (inkl. Split-/Dividenden-Ereignisse) — SMA,
+EMA, RSI, MACD, ATR, Bollinger, Trend Strength, Marktstruktur und die gesamte
+Elliott-Wave-Analyse berechnet die Technical-Intelligence-Schicht selbst
+([§23](#23-technical-intelligence--elliott-wave)). Kein Provider liefert einen
+fertigen Score, eine fertige Struktur oder ein fertiges Signal.
+
 ---
 
 ## 30. Known Limitations
 
-Ehrliche Liste, Stand 7. September 2026 — nichts beschönigt:
+Ehrliche Liste, Stand 8. September 2026 — nichts beschönigt:
 
-- **Alle Daten sind synthetisch**, solange kein Anbieterzugang konfiguriert ist. Auch
-  mit echten Kursen blieben die Fundamentaldaten synthetisch, solange kein Anbieter Gate
-  A/B besteht. `backtestEligibility()` gibt dafür `realEvidence: false` zurück.
-- **Kein Anbieter ist als Evidenzquelle qualifiziert.** Jeder heutige Backtest ist eine
-  Vorführung der Rechenlogik, kein Belastbarkeitsnachweis.
-- **Die Kursreihen sind splitbereinigt, nicht total-return-bereinigt.** Momentum und
-  Volatilität sind zulässig, Renditeaussagen nicht.
+**Quant Engine (Score, Screener, Strategy, Backtest)**
+- **Der Quant-Score-/Backtest-Pfad läuft weiterhin ausschließlich auf dem synthetischen
+  511-Titel-Mock-Universum.** SEC und Tiingo liefern seit Phase 4 echte, laufzeitgeprüfte
+  Daten — aber `factors.js`, `quant-score.js` und `backtest.js` lesen davon noch nichts.
+  `backtestEligibility()` gibt für jeden heutigen Quant-Backtest weiterhin
+  `realEvidence: false` zurück.
+- **Kein Anbieter ist als vollständige Backtest-Evidenzquelle qualifiziert.** SEC besteht
+  Gate A/C, fällt aber strukturell bei Gate B durch ([§21](#21-sec-financial-data-core));
+  Tiingo ist Marktdaten-, kein Evidenzanbieter (Gates A/B/C bei Tiingo alle `UNKNOWN`,
+  [§22](#22-tiingo-market-data)).
 - **Revisions-Faktor ohne echte Daten** — Schema vorhanden, `available: false`.
-- **Keine vollständige historische Analysten-Estimate-Datenbank.**
-- **Kein professionell qualifizierter PIT-Market-Data-Provider.**
-- **Delisting-/Universe-Coverage** ist im Mock-Datensatz sauber gelöst, bei echten
-  Anbietern noch nicht (Gate B bei keinem Kandidaten bestanden).
-- **SEC-Pipeline für den Quant-Bereich existiert nicht** — nur der unabhängige
-  13F-Hedgefonds-Scraper (siehe [§21](#21-sec-workstream)).
-- **Tiingo ist nicht mehr als eine Platzhalter-Umgebungsvariable** (siehe
-  [§22](#22-tiingo-workstream)).
-- **Public Live Chart Licensing ist offen.**
-- **Elliott Wave Engine existiert nicht** (siehe [§23](#23-technical-intelligence--elliott-wave)).
-- **Deflated Sharpe Ratio und PBO nicht implementiert** — Trust Score vergibt dafür 0
-  Punkte statt die Prüfung zu überspringen.
-- Ein Universum (`US_EQUITIES`), eine Währung, keine Makro-, News- oder
-  Ownership-Daten im Quant-Bereich.
-- Kein Nutzerkonto: Strategien, Backtests und Watchlist liegen im `localStorage`.
-- Ein 20-Jahres-Backtest dauert ~19 Sekunden; der Web Worker hält die Oberfläche
-  bedienbar, beschleunigt die Rechnung nicht.
+- Deflated Sharpe Ratio und PBO nicht implementiert — Trust Score vergibt dafür 0 Punkte
+  statt die Prüfung zu überspringen.
+- Ein Universum (`US_EQUITIES`), eine Währung im Quant-Score-Pfad. Kein Nutzerkonto:
+  Strategien, Backtests und Watchlist liegen im `localStorage`.
+
+**SEC Financial Data Core**
+- **Gate B (Survivorship) bleibt FAIL, 5/5 — strukturell, nicht behebbar aus SEC-Daten
+  allein.** Kein Security Master, kein Delisting-Feed bei SEC/EDGAR.
+- Nur 5 Unternehmen gemessen (NVDA, AAPL, MSFT, JPM, XOM); Skalierung ist ein größerer
+  Lauf, aber die Speicherskalierung (linear, ~590 MB bei 500 Unternehmen) ist
+  ausdrücklich ungelöst.
+- `ebitda` und `dividendPerShare` aus SEC-XBRL nicht verlustfrei ableitbar —
+  EV/EBITDA, Leverage und Balance-Sheet-Quality bleiben unvollständig, solange nur SEC
+  als Quelle dient.
+- Strukturierte Daten erst ab 2007/2008; keine Corporate Actions, keine Analysten-
+  schätzungen, kein OHLCV aus dieser Quelle (bleibt bewusst `MarketDataProvider`-Domäne).
+
+**Tiingo Market Data**
+- **Öffentliche Anzeige ist rechtlich nicht geklärt** (`LEGAL_REVIEW_REQUIRED`,
+  beide Feature-Gates `false`) — technisch vollständig, aber intern.
+- Fundamentaldaten bleiben synthetisch; Realtime/WebSocket nicht implementiert;
+  delistete Wertpapiere ungeprüft; kommerzielle Tarifzahlen sind Platzhalter.
+
+**Technical Intelligence & Elliott Wave**
+- **Elliott-Grammatik ist V1-BETA und zweimustrig** (nur Impuls + Zigzag) — Flats,
+  Triangles, Diagonals, Kombinationen fehlen; Multi-Degree-Nesting ist V1.5, nicht
+  implementiert.
+- Reale Datenbasis auf 13 Symbole begrenzt (bestehender Dashboard-Kursbestand).
+- Volles Neuberechnen statt inkrementell; JSON-Größe (~0,5 MB/Instrument) skaliert nicht
+  ohne Weiteres auf 500+ Titel.
+- **Regulatorisches Review (MAR/MiFID) der Szenario-Darstellung steht vollständig aus** —
+  eigenes Gate vor jedem öffentlichen Launch.
+- AI-Werkzeuge registriert und getestet, aber noch nicht an `/quant/ai/` angebunden.
+
+**Übergreifend**
+- **Public Live Chart/Market-Data-Licensing ist bei sieben von acht Providern offen**
+  (`LEGAL_REVIEW_REQUIRED`); nur SEC/EDGAR hat als Behördendatenquelle keinen
+  Lizenzblock.
 - Ticker-Links in Datentabellen liegen bei Textzeilenhöhe (~15 px) — auf dem Telefon
-  klein (LOW-3, nicht behoben).
-- Tabellen ohne `<caption>`-Elemente (LOW-2, nicht behoben — keine Falschaussage).
-- Regulatorische Prüfung (MiFID II, WpIG, WpHG, MAR, EU AI Act, Datenlizenzen) steht
-  vollständig aus.
-- **Dokumentationslücke:** `VU_BACKTEST_TRUST_SCORE.md` listet nur 3 der 5 Hard Caps
-  (siehe [§16](#16-backtest-trust-score)) — im Code vorhanden und korrekt, im Prosadokument
+  klein (LOW-3, nicht behoben). Tabellen ohne `<caption>`-Elemente (LOW-2, nicht
+  behoben — keine Falschaussage).
+- Regulatorische Prüfung (MiFID II, WpIG, WpHG, MAR, EU AI Act, Datenlizenzen) steht für
+  das Gesamtprodukt weiterhin vollständig aus.
+- **Dokumentationslücke, weiterhin offen:** `docs/VU_BACKTEST_TRUST_SCORE.md` listet nur
+  3 der 5 Hard Caps ([§16](#16-backtest-trust-score)) — im Code korrekt, im Prosadokument
   unvollständig.
 
 ---
@@ -1451,86 +1831,136 @@ sind keine Stilfragen.
 14. **Provider-Abstraction erhalten.** Sieben Provider-Interfaces, eine Registry, ein
     Vendor-Leakage-Guard — nicht umgehen, auch nicht „nur für einen Test".
 15. **Public Data Licensing getrennt von Internal Development betrachten.** Eine
-    Fähigkeit intern zu nutzen heißt nicht, sie anzeigen zu dürfen.
+    Fähigkeit intern zu nutzen heißt nicht, sie anzeigen zu dürfen — siehe Tiingo:
+    technisch fertig, beide Feature-Gates trotzdem `false` ([§22](#22-tiingo-market-data)).
+16. **Ein Feature-Gate allein ist keine Freigabe.** `ENABLE_PUBLIC_LIVE_MARKET_DATA:
+    true` würde ohne einen zusätzlichen, eingetragenen Lizenzeintrag in der
+    `MarketDataDisplayPolicy` trotzdem nichts freischalten — die Anzeigerichtlinie
+    verlangt beides. Ein CI-Guard (`tiingo-verify.yml`) lässt den Build fehlschlagen,
+    falls trotzdem echte Kurse in einen ausgelieferten Pfad gelangen.
+17. **Ein Adapter beansprucht nur die Interfaces, die er tatsächlich erfüllt.** Der
+    SEC-Adapter implementiert ausschließlich `FundamentalDataProvider`; CI
+    (`sec-fundamentals-ci.yml`) prüft aktiv, dass er kein `MarketDataProvider`,
+    `EstimateDataProvider` oder `CorporateActionsProvider` vortäuscht.
+18. **Ein durchgefallenes Gate bleibt durchgefallen, bis eine externe Datenquelle es
+    löst — es wird nicht als Formulierungsfrage behandelt.** SEC Gate B (Survivorship)
+    ist FAIL, 5/5, dauerhaft, weil SEC/EDGAR strukturell keinen Security Master führt;
+    das ist keine offene Aufgabe für die SEC-Pipeline selbst, sondern eine Grenze der
+    Quelle, die nur eine zusätzliche Indexhistorie beheben kann.
+19. **Company-Agnostik in Datenpipelines ist erzwungen, nicht Konvention.** Die
+    SEC-Pipeline ist CIK-parametrisiert; `check_company_agnostic.py` prüft per
+    AST-Analyse, dass kein Ticker/CIK im ausführbaren Code verzweigt (Kommentare/
+    Docstrings ausgenommen) — eine Skalierung auf mehr Unternehmen ist ein Datenlauf,
+    keine Codeänderung, und das muss so bleiben.
+20. **Kausalität (No-Look-Ahead) bei musterbasierten Engines ist testpflichtig, nicht
+    optional.** Die Technical-/Elliott-Engine hatte einen realen Repainting-Bug
+    (rückwirkend umgeschriebene Wellen-Labels); der Regressionstest dafür
+    (`technical-elliott.test.mjs` E6, Bar-für-Bar-Walk-Forward über >40 Beine) darf
+    nie entfernt oder abgeschwächt werden.
 
 ---
 
 ## 32. Aktueller Status je Modul
 
+**Statussystem** (konsistent verwendet): `IMPLEMENTED` · `IMPLEMENTED — BETA` ·
+`PARTIALLY IMPLEMENTED` · `ARCHITECTURE READY` · `RESEARCH COMPLETE` · `PLANNED` ·
+`BLOCKED` · `LEGAL REVIEW REQUIRED` · `NOT IMPLEMENTED`.
+
 | Modul | Status | Datenmodus | Teststatus | Bekannte Einschränkung | Nächster Schritt |
 |---|---|---|---|---|---|
-| Quant Score / Ranking | fertig (V1) | Mock | grün (`quant.test.mjs`, 25 Fälle) | Revisions-Faktor `available:false` | quant-v2 nach lizenzierten Estimates |
-| Screener / VUQL | fertig (V1) | Mock | grün (`acceptance.test.mjs`, u. a.) | ein Universum, eine Währung | Universe-Modell ist bereits mehrmandantenfähig angelegt |
-| Factor DNA | fertig (V1) | Mock | grün | — | — |
-| Quant Radar | fertig (V1) | Mock | grün | — | — |
-| Strategy Lab | fertig (V1) | Mock | grün (`strategy.test.mjs`, 22 Fälle) | 5 vordefinierte Strategien, kein User-Konto | Persistenz jenseits `localStorage` |
-| Backtest Engine | fertig (V1), methodisch vollständig, evidenziell nicht belastbar | Mock | grün (`backtest.test.mjs`, 32 Fälle) | kein Deflated Sharpe/PBO; kein qualifizierter Evidenzanbieter | Kapitalmaßnahmen als erste produktive Datenklasse |
-| AI (Ask Vision Universe) | fertig (V1), deterministisch | Mock | grün (`ai.test.mjs`, 24 Fälle) | kein reales LLM angebunden | `AI_PROVIDER_METHODS`-Interface steht für LLM-Anbindung bereit |
-| Watchlist Intelligence | fertig (V1) | Mock | grün | `localStorage`-basiert | — |
-| Technical (Quant-intern) | nicht begonnen | — | — | kein gemeinsamer Market Data Core | Elliott Wave / Technical Intelligence Engine |
-| SEC Provider (Quant) | **nicht begonnen** | — | — | nur unabhängiger 13F-Scraper existiert | Intrinio-Sandbox, dann Sharadar-Lizenzfrage |
-| Tiingo Provider | **nicht begonnen** (nur `.env`-Platzhalter) | — | — | kein Adapter, keine Doku im Repo | Realitätsabgleich vor jeder Aufnahme der Arbeit |
-| Marktdaten (Twelve Data) | aktiv, Phase 2 | Hybrid (Referenzuniversum) | grün (`market-data.test.mjs`, 42 Fälle) | Free-Plan-Limits, nicht scharf geschaltet (`configured:false`) | Lizenzfragen klären |
-| Macro (Quant-Anbindung) | nicht begonnen | eigenständig (`/macro/`, echte Daten) | — | kein `MacroDataProvider` angebunden | Interface bereits definiert |
-| Hedgefonds (Quant-Anbindung) | nicht begonnen | eigenständig (`/hedgefonds/`, echte SEC-13F-Daten) | eigene CI (`hedgefonds-dashboard-ci.yml`) | völlig getrennt vom Quant-Bereich | keiner geplant vor SEC-Workstream |
+| Quant Score / Ranking | **IMPLEMENTED** (auf Mock-Universum) | Mock | grün (`quant.test.mjs`, 25) | Revisions-Faktor `available:false`; läuft nicht auf SEC/Tiingo-Daten | Integration mit realen Fundamentaldaten ist eine bewusste Entscheidung, kein Automatismus |
+| Screener / VUQL | **IMPLEMENTED** | Mock | grün (`acceptance.test.mjs` u. a.) | ein Universum, eine Währung | Universe-Modell ist bereits mehrmandantenfähig angelegt |
+| Factor DNA / Quant Radar | **IMPLEMENTED** | Mock | grün | — | — |
+| Strategy Lab | **IMPLEMENTED** | Mock | grün (`strategy.test.mjs`, 22) | 5 vordefinierte Strategien, kein User-Konto | Persistenz jenseits `localStorage` |
+| Backtest Engine | **IMPLEMENTED**, methodisch vollständig, **BLOCKED** für evidenzbasierte Aussagen | Mock | grün (`backtest.test.mjs`, 22) | kein Deflated Sharpe/PBO; kein Anbieter besteht alle drei Gates | Kapitalmaßnahmen als erste produktive Datenklasse in den Backtest-Pfad |
+| AI (Ask Vision Universe) | **IMPLEMENTED**, deterministisch | Mock | grün (`ai.test.mjs`, 22) | kein reales LLM angebunden | `AI_PROVIDER_METHODS`-Interface bereit |
+| Watchlist Intelligence | **IMPLEMENTED** | Mock | grün | `localStorage`-basiert | — |
+| **SEC Financial Data Core** | **IMPLEMENTED** (Einzeltitel-Fundamentaldaten) · **BLOCKED** (survivorship-freies Universum) | echt, 5 Unternehmen | grün (`sec-adapter.test.mjs` 34 JS + 249 Python) | Gate B FAIL 5/5 strukturell; `ebitda`/`dividendPerShare` unsupported; Speicherskalierung ungelöst | externe Indexhistorie für Gate B; Speicherlösung vor Skalierung >5 Unternehmen |
+| **Tiingo Market Data** | **IMPLEMENTED** (technisch) · **LEGAL REVIEW REQUIRED** (öffentliche Anzeige) | echt, intern | grün (`tiingo.test.mjs` 34 + 4 weitere Dateien, 100 gesamt) | beide Feature-Gates `false`; Fundamentaldaten synthetisch; Gates A/B/C `UNKNOWN` | Lizenzfrage klären — keine Codearbeit offen |
+| **Technical Intelligence V1** (Kern) | **IMPLEMENTED** | echt, 13 Symbole | grün (77 Tests über 9 Dateien) | volle Neuberechnung, JSON-Skalierung, Regulatory Review aus | Skalierung auf mehr Symbole, AI-Anbindung an `/quant/ai/` |
+| **Elliott Wave** | **IMPLEMENTED — BETA** | echt, 13 Symbole | grün (`technical-elliott.test.mjs`, 11, inkl. Anti-Repainting-Audit E6) | nur Impuls+Zigzag; kein Multi-Degree; keine komplexen Korrekturen | V1.5: Multi-Degree-Nesting (als „MUST" benannt) |
+| Marktdaten (Twelve Data) | **IMPLEMENTED**, Phase 2 | Hybrid (Referenzuniversum) | grün (`market-data.test.mjs`, 35) | Free-Plan-Limits, `configured:false` | Lizenzfragen klären |
+| Macro (Quant-Anbindung) | **NOT IMPLEMENTED** | eigenständig (`/macro/`, echte Daten) | — | kein `MacroDataProvider` angebunden | Interface bereits definiert (`ARCHITECTURE READY`) |
+| Hedgefonds (Quant-Anbindung) | **NOT IMPLEMENTED**, bewusst getrennt | eigenständig (`/hedgefonds/`, echte SEC-13F-Daten) | eigene CI (`hedgefonds-dashboard-ci.yml`) | völlig getrennt vom Quant-Bereich, teilt nur die Primärquelle SEC EDGAR | kein Zusammenführen geplant |
 
-Gesamt-Teststand: **232/232 grün**, verteilt auf 12 Dateien: `market-data.test.mjs` 42,
-`backtest.test.mjs` 32, `acceptance.test.mjs` 31, `quant.test.mjs` 25, `ai.test.mjs` 24,
-`strategy.test.mjs` 22, `provider.test.mjs` 21, `provider-qualification.test.mjs` 16,
-`data-precedence.test.mjs` 16, `secrets.test.mjs` 15, `price-semantics.test.mjs` 13,
-`gate-tests.test.mjs` 12.
+### Gesamt-Teststand (drei unabhängige Runner, eigenständig nachgerechnet — keine Zahl aus einer PR-Beschreibung übernommen)
+
+| Runner | Ergebnis | Aufschlüsselung |
+|---|---|---|
+| **Node** (`node --test "quant/tests/*.test.mjs"`) | **444/444** | Quant-Kern 232 (unverändert seit Phase 3) + Tiingo 100 (`tiingo.test.mjs` 34, `market-store.test.mjs` 20, `adjustment-consistency.test.mjs` 19, `chart-ranges.test.mjs` 15, `panel-builder.test.mjs` 12) + SEC 35 (`sec-adapter.test.mjs` 34 + 1 Gate-Ergänzung) + Technical 77 (9 Dateien: audit 11, canonical 11, elliott 11, engines 7, pivots 10, scenario 9, snapshot 7, ui 5, zones 6) |
+| **SEC Python** (`unittest discover scripts/quant/tests`) | **249/249** | eigenständiger Runner, kein Überlapp mit Node — testet die Python-Ingestion-Pipeline |
+| **Academy** (`node --test academy/**/*.test.mjs`) | **8/8** | unverändert, unabhängig vom Quant-Bereich |
+| **Gesamt über alle drei Runner** | **701/701**, keine Doppelzählung (drei getrennte Codebasen: JS-Quant-Engines, Python-SEC-Pipeline, Academy-Engine) | |
 
 ---
 
 ## 33. Roadmap
 
 **COMPLETED**
-- Phase 1 — Foundation (6.–7. September 2026)
-- Phase 2 — Production Audit (7. September 2026)
-- Phase 3 — Data Qualification (7. September 2026)
-- Preview Release, PR #43, gemerged
+- Phase 1–3 — Foundation, Production Audit, Data Qualification (PR #43, 6.–7.09.2026)
+- Project Master Documentation, Erstfassung (PR #45)
+- **Tiingo Market Data — Phase 4A** (PR #46, 8.09.2026) — technisch fertig, real
+  laufzeitgeprüft, intern
+- **SEC Financial Data Core** (PR #48, 8.09.2026) — Gate A/C real bestanden, Gate B
+  strukturell durchgefallen
+- **Technical Intelligence V1 + Elliott Wave Beta** (PR #49, 8.09.2026)
 
-**CURRENT — nichts in Arbeit.** Alle drei geplanten Phasen sind abgeschlossen und
-gemerged; der nächste Schritt ist eine bewusste neue Entscheidung (siehe
-[§34](#34-decision-gates)), kein laufender Workstream.
+**CURRENT FOUNDATION — nichts in aktiver Entwicklung.** Fünf große Arbeitsstränge sind
+abgeschlossen und gemerged. Der nächste Schritt ist eine bewusste Entscheidung an einem
+der [Decision Gates](#34-decision-gates), keine automatische Fortsetzung — insbesondere
+**kein Phase 4B, kein Technical Intelligence V1.5, kein neuer Provider** ohne
+ausdrücklichen separaten Auftrag.
 
-**NEXT (nach Nutzen, nicht nach Aufwand sortiert)**
-1. Intrinio Developer Sandbox anfragen, Gate A + C real verifizieren (kostenlos)
-2. Sharadar-Lizenzfrage klären (kostenlos, nicht technisch)
-3. Primärdokumentation ohne Egress-Beschränkung direkt lesen
-4. Bezahlter Sharadar-Zugang für alle drei Gates (erst nach 1–3)
-5. Kapitalmaßnahmen (Splits/Dividenden) als erste produktive Datenklasse
-6. SEC Financial Data Core V1 (generische XBRL-Pipeline, Testuniversum NVDA/AAPL/MSFT/JPM/XOM)
-7. Tiingo Market-Data-PoC (aktuell: 0 Code, siehe [§22](#22-tiingo-workstream))
-8. Technical Engine Integration (gemeinsamer Market Data Core)
-9. Live Chart intern
-10. SEC → Quant Integration, Tiingo → Quant Integration
-11. Backtest mit echten Daten
+**NEXT (nach Nutzen, nicht nach Aufwand sortiert — was jeweils tatsächlich noch fehlt)**
+1. **Lizenzfrage Tiingo klären** — reine Rechtsfrage, keine Codearbeit; ohne Klärung
+   bleibt jede weitere Marktdatenarbeit intern.
+2. **SEC-Speicherskalierung lösen** (Parquet/DuckDB oder On-demand-Inspector), *bevor*
+   über 5 Unternehmen hinaus skaliert wird — sonst wächst das Repository unkontrolliert.
+3. **Externe Indexhistorie für Gate B evaluieren** (Sharadar/CRSP oder gleichwertig) —
+   der einzige Weg zu einem survivorship-freien Backtest-Universum.
+4. **SEC/Tiingo → Quant-Score-Integration** — beide Datenquellen sind geprüft und liegen
+   bisher parallel zur Quant Engine, nicht darin.
+5. **Technical Intelligence: AI-Anbindung an `/quant/ai/`** — Werkzeuge sind registriert
+   und getestet, aber nicht verdrahtet.
+6. **Elliott Wave V1.5** — Multi-Degree-Nesting, danach komplexe Korrekturen (Flats,
+   Triangles, Diagonals, Kombinationen).
+7. Regulatorisches Review (MAR/MiFID) der Technical-Szenario-Darstellung vor jedem
+   öffentlichen Launch.
 
 **LATER**
 - AI-Anbindung an ein reales LLM
 - Analyst Revisions (nach lizenzierten PIT-Konsensdaten)
 - Europäische Fundamentaldaten
 - Portfolio Intelligence
-- Public Live Market Data
+- Public Live Market Data (setzt Gate 4 unten voraus)
 - Native Apps
-- Advanced Elliott Wave
+
+**BLOCKED / EXTERNAL DEPENDENCY**
+- **Survivorship-freies historisches Universum** — blockiert auf eine externe
+  Indexhistorie; SEC allein kann das strukturell nicht liefern (Gate B).
+- **Öffentliche Anzeige von Tiingo- oder anderen Vendor-Daten** — blockiert auf eine
+  externe Rechtsentscheidung, nicht auf Code.
+- **Regulatorische Freigabe der Technical-Szenarien** — blockiert auf Kapitalmarktrecht-
+  Prüfung (MAR/MiFID), außerhalb dieses Repositories.
 
 ---
 
 ## 34. Decision Gates
 
-Konkrete Entscheidungspunkte, an denen ein Mensch (nicht ein Agent) entscheiden muss:
+Konkrete Entscheidungspunkte, an denen ein Mensch (nicht ein Agent) entscheiden muss —
+aktualisiert gegenüber dem Stand nach Phase 3, mehrere sind jetzt präziser beantwortbar:
 
 | Gate | Frage | Heutiger Stand |
 |---|---|---|
-| **1** | Ist die SEC-Pipeline-Qualität ausreichend? | Pipeline existiert noch nicht |
-| **2** | Ist Tiingo technisch geeignet? | Nicht evaluiert, kein Code |
-| **3** | Tiingo Commercial-Internal-Upgrade? | Verfrüht — Free-Tier noch nicht getestet |
-| **4** | Ist Derived-/Public-Display-Licensing geklärt? | Nein, bei allen 6 geprüften Anbietern offen |
-| **5** | Sind Quant Scores mit echten Daten validiert? | Nein — kein Anbieter besteht Gate A/B |
-| **6** | Sind Backtests mit echten Daten belastbar? | Nein — `realEvidence: false` bei jedem heutigen Lauf |
-| **7** | Public Beta? | Verfrüht vor Gate 4–6 |
+| **1** | Ist die SEC-Pipeline-Qualität ausreichend? | **Teilweise beantwortet:** Ja für PIT-korrekte Einzeltitel-Fundamentaldaten (Gate A/C `RUNTIME_VERIFIED`). Nein für survivorship-freie Universumskonstruktion (Gate B FAIL, strukturell). |
+| **2** | Ist Tiingo technisch geeignet? | **Ja, laufzeitbelegt** — Historical EOD, Splits, Dividenden, `TOTAL_RETURN`. Nicht mehr offen. |
+| **3** | Tiingo Commercial-Internal-Upgrade? | Weiterhin verfrüht — die Lizenzfrage (Gate 4) steht davor, unabhängig vom Tarif. |
+| **4** | Ist Derived-/Public-Display-Licensing geklärt? | **Nein** — bei 7 von 8 Anbietern `LEGAL_REVIEW_REQUIRED`, inkl. Tiingo trotz vollständiger technischer Umsetzung. |
+| **5** | Sind Quant Scores mit echten Daten validiert? | **Nein** — der Quant-Score-Pfad läuft weiterhin nur auf dem Mock-Universum; SEC/Tiingo sind noch nicht integriert. |
+| **6** | Sind Backtests mit echten Daten belastbar? | **Nein** — `realEvidence: false` bei jedem heutigen Lauf; SEC besteht nicht alle drei Gates (Gate B strukturell offen). |
+| **7** | Ist die Survivorship-Bias-Frage für ein historisches Universum gelöst? *(neu)* | **Nein, strukturell blockiert** — SEC/EDGAR kann das nicht liefern; externe Indexhistorie nötig. |
+| **8** | Ist Technical Intelligence/Elliott Wave regulatorisch für einen öffentlichen Launch geprüft? *(neu)* | **Nein** — MAR/MiFID-Review steht vollständig aus, unabhängig vom technischen BETA-Status. |
+| **9** | Public Beta? | Weiterhin verfrüht vor Gate 4–8. |
 
 ---
 
@@ -1538,26 +1968,36 @@ Konkrete Entscheidungspunkte, an denen ein Mensch (nicht ein Agent) entscheiden 
 
 Ein neuer Claude/Codex/ChatGPT-Agent soll, in dieser Reihenfolge:
 
-1. **Diese Master-Datei vollständig lesen** — sie ersetzt nicht die 27 Fachdokumente
+1. **`git fetch origin` zuerst, immer.** Ein lokal veralteter `main` war der Grund,
+   warum diese Datei nach PR #46/#47/#48/#49 vier Merges im Rückstand geriet, bevor der
+   Audit vom 8. September 2026 sie nachgezogen hat (siehe
+   [Master Document Changelog](#37-master-document-changelog)).
+2. **Diese Master-Datei vollständig lesen** — sie ersetzt nicht die 54 Fachdokumente
    unter `docs/`, verweist aber darauf, wo Detailtiefe gebraucht wird.
-2. **Repository analysieren**, insbesondere `git log`, `git status`, aktuellen
-   Branch-Stand gegen `origin/main`.
-3. **Tatsächlichen Status verifizieren** — `node --test "quant/tests/*.test.mjs"`
-   laufen lassen, nicht die hier genannte Zahl blind übernehmen, falls seither Zeit
-   vergangen ist.
-4. **Bestehende Architektur respektieren** — siehe [§31](#31-do-not-break-these-rules).
+3. **Repository analysieren**, insbesondere `git log --oneline --merges`, `git status`,
+   aktuellen Branch-Stand gegen `origin/main`.
+4. **Tatsächlichen Status verifizieren, nicht aus dieser Datei übernehmen:**
+   `node --test "quant/tests/*.test.mjs"`, `python3 -m unittest discover -s
+   scripts/quant/tests -p "test_*.py"`, `node --test "academy/**/*.test.mjs"` — alle
+   drei Runner, nicht nur den ersten.
+5. **Bestehende Architektur respektieren** — siehe [§31](#31-do-not-break-these-rules).
    Kein Next.js-/FastAPI-Umbau ohne expliziten, separaten Beschluss.
-5. **Nur die aktuelle Phase bearbeiten.** Alle drei geplanten Phasen (Foundation,
-   Production Audit, Data Qualification) sind fertig — der nächste Schritt ist einer der
-   Decision Gates in [§34](#34-decision-gates), nicht eine Wiederholung von Phase 1–3.
-6. **Keine alte Phase blind erneut implementieren.**
-7. **Tests vor und nach jeder Änderung laufen lassen.** `verify-quant-data.mjs` nicht
-   vergessen — er ist der Schutz gegen die gefährlichste Klasse von Datenfehlern in
-   diesem System (Drift zwischen Übersicht und Backtest).
-8. **Abschlussbericht erzeugen**, wie es die bisherigen Phasenberichte unter `docs/`
-   vorgemacht haben.
-9. **Diese Master-Datei nach wesentlichen Meilensteinen aktualisieren** — insbesondere
-   nach jedem Decision Gate, jeder neuen Provider-Anbindung, jeder neuen Phase.
+6. **Nur den aktuellen Decision Gate bearbeiten** (siehe [§34](#34-decision-gates)),
+   keine bereits abgeschlossene Phase wiederholen, kein noch nicht beauftragtes Gate
+   vorwegnehmen (kein Phase 4B, kein Technical Intelligence V1.5, kein neuer Provider
+   ohne ausdrücklichen Auftrag).
+7. **Ein FAIL bleibt ein FAIL**, bis eine externe Datenquelle es tatsächlich löst — SEC
+   Gate B ist ein strukturelles Merkmal der Quelle, keine Formulierungsfrage.
+8. **Tests vor und nach jeder Änderung laufen lassen.** `verify-quant-data.mjs` für den
+   Mock-Pfad, `run-sec-gates.mjs` für SEC, die Anti-Repainting-Tests
+   (`technical-elliott.test.mjs` E6 u. a.) für Technical Intelligence — keiner davon
+   ist optional.
+9. **Abschlussbericht erzeugen**, wie es PR #43/#46/#48/#49 vorgemacht haben (jede
+   dieser PR-Beschreibungen ist selbst ein Muster für Ehrlichkeit über Grenzen und
+   offene Punkte).
+10. **Diese Master-Datei nach wesentlichen Meilensteinen aktualisieren** — insbesondere
+    nach jedem Decision Gate, jeder neuen Provider-Anbindung, jedem großen Merge. Nicht
+    erst, wenn vier PRs Rückstand aufgelaufen sind.
 
 ---
 
@@ -1585,14 +2025,32 @@ Ausschließlich aus `git log` rekonstruiert — keine erfundenen Daten.
 | 2026-09-07 | `0e32110` | Phase 3 §25: sieben Dokumente, Paritätsprüfung, CI-Erweiterung |
 | 2026-09-07 | `410df85` | Release-Vorbereitung: unbeabsichtigte Dashboard-Änderung zurückgenommen (`technical_scenarios.json`) |
 | 2026-09-07 10:59 UTC | `0499868` | **Merge PR #43** „Vision Universe® Quant & AI — V1 Preview" nach `main` |
-| 2026-09-07 | `9878cdc` | `main` aktuell (Stand dieses Dokuments), + reguläre `chore: update dashboard news` |
+| 2026-09-07 | `9878cdc` | `main`, + reguläre `chore: update dashboard news` |
+| 2026-09-07 ~18:00 UTC | `da69113` | **Merge PR #45** — Project Master Documentation, Erstfassung |
+| 2026-09-07 18:37 UTC | `bfccd50` | **Merge PR #47** — SEC-Fundamentals-Workflow-Datei auf `main` registriert (noch keine Pipeline) |
+| 2026-09-08 04:03 UTC | `1a6e49e` | **Merge PR #46** — Phase 4A Tiingo Market Data PoC: Adapter, echte Laufzeitvalidierung, 332/332 Tests |
+| 2026-09-08 05:02 UTC | `7630e6c` | **Merge PR #48** — SEC Financial Data Core: 14-Modul-Python-Pipeline, Adapter, Gate A/C `RUNTIME_VERIFIED`, Gate B FAIL |
+| 2026-09-08 05:32 UTC | `252dec5` | **Merge PR #49** — Technical Intelligence V1 + Elliott Wave Beta: 27 Engine-Module, 444/444 JS + 249/249 Python + 8/8 Academy |
 
-**SEC-Workstream:** kein Commit — nicht begonnen (siehe [§21](#21-sec-workstream)).
-**Tiingo-Workstream:** kein Commit außer der `.env.example`-Vorlagenzeile — nicht
-begonnen (siehe [§22](#22-tiingo-workstream)).
+**SEC-Workstream:** implementiert seit PR #48 — siehe [§21](#21-sec-financial-data-core).
+**Tiingo-Workstream:** implementiert seit PR #46 — siehe [§22](#22-tiingo-market-data).
+**Technical-Intelligence-Workstream:** implementiert seit PR #49 — siehe
+[§23](#23-technical-intelligence--elliott-wave).
+
+---
+
+## 37. Master Document Changelog
+
+Nur strategisch relevante Änderungen an dieser Datei selbst — kein Commit-Tagebuch.
+
+| Datum | Änderung |
+|---|---|
+| 2026-09-07 | Erstfassung (PR #45): Quant-Phase-1–3 synchronisiert, PR #43 dokumentiert, Provider-Architektur, PIT/Trust-Score/AI/VUQL, Known Limitations, DO-NOT-BREAK-Regeln, Roadmap, Decision Gates. |
+| 2026-09-08 | **Vollständiger Audit gegen `origin/main @ 252dec5`** (dieser Durchgang): vier gemergte PRs (#46 Tiingo, #47 SEC-Workflow-Registrierung, #48 SEC Financial Data Core, #49 Technical Intelligence + Elliott Wave) nachgezogen, die die Datei zuvor nicht kannte oder — im Fall von §21 — nur teilweise und mit einem veralteten „noch nicht gemerged"-Stand beschrieb. Im Einzelnen: §21 (SEC) und §22 (Tiingo) vollständig neu geschrieben — beide waren als „nicht begonnen" dokumentiert, sind aber tatsächlich implementiert und laufzeitgeprüft; §23 (Technical Intelligence & Elliott Wave) von „kein Code" auf den tatsächlichen, umfangreichen Implementierungsstand korrigiert; Testinventar neu gemessen statt übernommen (Node 444, SEC-Python 249, Academy 8 — alle drei Runner selbst ausgeführt); §32-Statustabelle auf das neue neunteilige Statussystem umgestellt; §33 Roadmap konsolidiert (erledigte Punkte entfernt, neue BLOCKED/EXTERNAL-DEPENDENCY-Kategorie ergänzt); §34 Decision Gates aktualisiert (Gates 1–2 teilweise beantwortet, Gates 7–8 neu); §19 Provider Abstraction um SEC-/Tiingo-Adapter und das achte Provider-Profil ergänzt; §31 DO-NOT-BREAK-Regeln um fünf neue, aus dieser Phase gelernte Regeln erweitert (Feature-Gate ≠ Freigabe, Adapter-Interface-Ehrlichkeit, FAIL bleibt FAIL, Company-Agnostik erzwungen, Anti-Repainting-Tests sind Pflicht); neue Source-of-Truth-Regeln direkt nach dem Dateikopf ergänzt. Zwei dokumentierte, weiterhin ungelöste Diskrepanzen aus der Vorfassung (`VU_BACKTEST_TRUST_SCORE.md` Hard-Cap-Lücke) unverändert übernommen, da sie weiterhin zutreffen. |
 
 ---
 
 *Ende der Master-Dokumentation. Bei Widersprüchen zwischen diesem Dokument und dem
 tatsächlichen Repository-Stand gilt immer: Code + Tests + Git vor diesem Dokument. Bitte
-diese Datei nach jeder wesentlichen Änderung aktualisieren.*
+diese Datei nach jeder wesentlichen Änderung — insbesondere nach jedem großen
+Merge — aktualisieren.*
