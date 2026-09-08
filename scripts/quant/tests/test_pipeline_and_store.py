@@ -291,8 +291,34 @@ class InspectorExportTests(PipelineTestCase):
         self.assertTrue(available)
         for row in available:
             with self.subTest(metric=row["metric"], period=row["fiscal_period"]):
-                for field in ("available_from", "form", "accession", "concept", "source"):
+                for field in ("available_from", "form", "accession", "source"):
                     self.assertTrue(row[field], f"{field} missing")
+                # Provenance means something different for the two kinds of
+                # number, and each must carry its own kind in full. A derived
+                # value has no SEC concept -- claiming one would be the exact
+                # confusion DERIVED_SEPARATION exists to prevent -- but it does
+                # have a formula version and the inputs it was built from.
+                if row["source"] == "VISION_UNIVERSE_DERIVED":
+                    self.assertIsNone(row["concept"],
+                                      "a computed number must not cite an SEC concept")
+                    self.assertTrue(row["formula_version"], "formula_version missing")
+                    self.assertTrue(row["inputs"], "inputs missing")
+                else:
+                    self.assertTrue(row["concept"], "concept missing")
+
+    def test_the_view_covers_every_canonical_metric_including_derived(self):
+        """freeCashFlow, netDebt, investedCapital and accruals reach a consumer.
+
+        Found in the release audit: the inspector iterated the metric registry
+        only, so four of the thirteen published canonical metrics never appeared
+        in the tool built to inspect them -- and they are the four whose
+        provenance is the subtlest.
+        """
+        view = export_inspector_view(self.document, self.registry, annual_years=3,
+                                     quarterly_years=1)
+        metrics = {row["metric"] for row in view["rows"]}
+        for derived in ("free_cash_flow", "net_debt", "invested_capital", "accruals"):
+            self.assertIn(derived, metrics)
 
     def test_unavailable_rows_state_a_reason_instead_of_disappearing(self):
         view = export_inspector_view(self.document, self.registry, annual_years=3,

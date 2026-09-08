@@ -297,6 +297,8 @@ def export_inspector_view(document, registry, as_of=None, annual_years=12,
     annual_scope = years[-annual_years:] if years else []
     quarterly_scope = years[-quarterly_years:] if years else []
 
+    from .derived import reconstruct
+
     rows = []
     for metric in registry.names():
         for fiscal_year in annual_scope:
@@ -305,6 +307,21 @@ def export_inspector_view(document, registry, as_of=None, annual_years=12,
         for fiscal_year in quarterly_scope:
             for index in range(1, 5):
                 fact = resolver.quarter(metric, fiscal_year, index, as_of, policy=policy)
+                rows.append(_row(fact))
+
+    # Derived metrics are canonical output too -- freeCashFlow, netDebt,
+    # investedCapital and accruals all reach a consumer -- but they come from
+    # derived.reconstruct rather than the registry, so iterating the registry
+    # alone left four of the thirteen published metrics invisible in the very
+    # tool built to inspect them. Their provenance is the subtlest of the lot,
+    # which is exactly why it has to be visible.
+    for fiscal_year in annual_scope:
+        for fact in reconstruct(resolver, fiscal_year, "FY", as_of, policy=policy).values():
+            rows.append(_row(fact))
+    for fiscal_year in quarterly_scope:
+        for index in range(1, 5):
+            derived = reconstruct(resolver, fiscal_year, f"Q{index}", as_of, policy=policy)
+            for fact in derived.values():
                 rows.append(_row(fact))
 
     return {
@@ -364,6 +381,10 @@ def _row(fact):
         "concept": f"{provenance.taxonomy}:{provenance.concept}" if provenance.concept else None,
         "source": provenance.source,
         "transformation": provenance.transformation,
+        # A derived number has no SEC concept and must not pretend to one; what
+        # it has instead is a formula version and the inputs it was built from.
+        "formula_version": provenance.formula_version,
+        "inputs": list(provenance.inputs or []),
         "quality": fact.quality,
         "flags": fact.flags,
     }
