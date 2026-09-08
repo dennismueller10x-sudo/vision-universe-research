@@ -21,6 +21,14 @@
      audience:"development_preview") — die Seite liest hier nur, was legitim
      bereits veroeffentlicht wurde, wie jede andere praekomputierte Datei. */
   function goldenMarketPath(ticker) { return S.BASE + "data/market/golden-preview/daily/ref_" + ticker + ".json"; }
+  /* Echte Laufzeitmessung je Titel (scripts/market/verify-golden-five-
+     capabilities.mjs, ueber das bereits laufzeitgepruefte verify-tiingo-
+     realtime.mjs) - was dieser Zugang fuer Intraday/Kursabfrage/Delayed/
+     Erweiterte-Handelszeiten/WebSocket TATSAECHLICH liefert, nicht was
+     behauptet wird. Getrennt von goldenMarketPath: der Chart oben bleibt
+     bei der veroeffentlichten EOD-Reihe (siehe chartSection) - diese Datei
+     ist rein informativ. */
+  function goldenCapabilitiesPath(ticker) { return S.BASE + "data/market/golden-preview/capabilities/" + ticker + ".json"; }
   var TECHNICAL_INDEX = S.BASE + "data/technical/index.json";
 
   S.page({
@@ -148,13 +156,18 @@
        die Golden-Five-Kursreihe fuer diesen Titel tatsaechlich veroeffentlicht?
        Ein Ladefehler ist hier kein Fehlerzustand, sondern die ehrliche
        Antwort UNAVAILABLE - genau das faengt der .catch(null) ab. */
+    var capHost = el("div", {});
+    root.appendChild(capHost);
+
     return Promise.all([
       S.loadJSON(goldenMarketPath(ticker), { attempts: 1 }).catch(function () { return null; }),
-      S.loadJSON(TECHNICAL_INDEX, { attempts: 1 }).catch(function () { return null; })
+      S.loadJSON(TECHNICAL_INDEX, { attempts: 1 }).catch(function () { return null; }),
+      S.loadJSON(goldenCapabilitiesPath(ticker), { attempts: 1 }).catch(function () { return null; })
     ]).then(function (res) {
       var market = res[0];
       var techEntry = res[1] && res[1].instruments
         ? res[1].instruments.filter(function (r) { return r.instrumentId === ticker && !r.isMock; })[0] : null;
+      var cap = res[2];
 
       S.mount(statusHost, el("div", { class: "q-metrics" }, [
         statusTile("Fundamentaldaten", "REAL · SEC EDGAR", "good",
@@ -182,7 +195,74 @@
           el("a", { href: S.BASE + "technical/?symbol=" + ticker, text: "Vollstaendige Technical-Intelligence- und Elliott-Wave-Analyse fuer " + ticker + " ansehen →" })
         ]));
       }
+      S.mount(capHost, capabilitySection(ticker, cap));
     });
+  }
+
+  /* Capability-Label je gemessener Faehigkeit — dieselbe Reihenfolge und
+     dieselben Faehigkeitsnamen wie EVIDENCE_TO_CAPABILITY in providers/
+     tiingo/adapter.js, damit hier nichts umbenannt oder umgedeutet wird.
+     latestQuote ist absichtlich dabei, obwohl es (wie im Adapter) KEINE
+     Faehigkeit im Capabilities-Sinn ist: es ist der einzige Beleg dafuer,
+     ob das Preisfeld selbst befuellt ist - realtimeQuote belegt nur den
+     Zeitstempel. */
+  var CAPABILITY_LABEL = {
+    historicalIntraday: "Intraday (5-Minuten-Bars)",
+    latestQuote: "Kursabfrage — Preisfeld befuellt?",
+    realtimeQuote: "Kursabfrage — Zeitstempel aktuell?",
+    delayedQuote: "Kursabfrage — verzoegert?",
+    extendedHoursBars: "Erweiterte Handelszeiten — Kursverlauf",
+    extendedHoursRealtime: "Erweiterte Handelszeiten — aktuell?",
+    realtimeStream: "WebSocket-Strom (IEX Realtime)"
+  };
+  var CAPABILITY_ORDER = ["historicalIntraday", "latestQuote", "realtimeQuote", "delayedQuote",
+                          "extendedHoursBars", "extendedHoursRealtime", "realtimeStream"];
+
+  /* Der rohe Befund (PASSED/FAILED/UNKNOWN/ERROR) entscheidet den Ton, aber
+     nicht "gut" oder "schlecht" im Produktsinn - z. B. ist delayedQuote:
+     FAILED hier eine gute Nachricht (der Kurs ist NICHT verzoegert). Der
+     Interpretationstext von verify-tiingo-realtime.mjs, unveraendert
+     uebernommen, sagt das - dieser Code erfindet keine eigene Deutung. */
+  function toneForResult(result) {
+    if (result === "PASSED") return "good";
+    if (result === "ERROR") return "poor";
+    return "warn";
+  }
+
+  function capabilitySection(ticker, cap) {
+    if (!cap || !cap.findings) {
+      return C.disclosure("Marktdaten-Kapazitaeten (Laufzeitmessung)", [
+        el("p", { class: "q-note", text:
+          "Fuer " + ticker + " liegt keine Kapazitaetsmessung vor. Das ist kein Fehlerzustand — " +
+          "gemessen wird ausschliesslich in scripts/market/verify-golden-five-capabilities.mjs " +
+          "(GitHub Actions, mit dem echten Tiingo-Zugang)." })
+      ]);
+    }
+    var rows = CAPABILITY_ORDER.map(function (key) {
+      var f = cap.findings.filter(function (x) { return x.capability === key; })[0];
+      if (!f) return null;
+      var detail = (f.evidence && (f.evidence.interpretation || f.evidence.reason)) || "";
+      return el("div", { class: "q-metric" }, [
+        el("span", { text: CAPABILITY_LABEL[key] }),
+        el("b", {}, [el("span", { class: "q-chip tone-" + STATUS_TONE[toneForResult(f.result)], text: f.result })]),
+        detail ? el("em", { text: detail }) : null
+      ]);
+    }).filter(Boolean);
+    return C.disclosure("Marktdaten-Kapazitaeten (Laufzeitmessung " + S.formatDateTime(cap.generatedAt) + ")", [
+      el("p", { class: "q-note", style: "margin-bottom:10px", text:
+        "Echter Laufzeittest gegen den bestehenden Tiingo-Zugang, einmal fuer diesen Titel " +
+        "(scripts/market/verify-tiingo-realtime.mjs). UNKNOWN ist ein Ergebnis, keine Luecke — es heisst, " +
+        "dass zum Testzeitpunkt nicht gemessen werden konnte (z. B. ausserhalb der erweiterten " +
+        "Handelszeiten). Der Kursverlauf oben verwendet unabhaengig davon ausschliesslich die " +
+        "tatsaechlich veroeffentlichte EOD-Reihe — diese Messung behauptet keine zusaetzliche " +
+        "Chart-Faehigkeit, sie dokumentiert nur, was der Zugang liefert." }),
+      el("div", { class: "q-metrics" }, rows),
+      !cap.webSocketTested
+        ? el("p", { class: "q-note", style: "margin-top:8px", text:
+            "WebSocket-Verbindungsaufbau ist eine Konto-, keine Titelfaehigkeit und wurde deshalb nur " +
+            "einmal je Lauf geprueft (nicht an diesem Titel); der Befund gilt kontobezogen fuer alle fuenf." })
+        : null
+    ]);
   }
 
   var CHART_RANGES = (Ranges ? Ranges.RANGES : []).filter(function (r) { return r.source === "eod"; });
