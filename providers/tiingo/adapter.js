@@ -110,6 +110,19 @@ const COMMERCIAL_LIMITS = {
 const RUNTIME_REPORT_PATH = path.join(
   __dirname, "..", "..", "quant", "data", "market", "tiingo-runtime-verification.json");
 
+/* Der zweite Bericht: die Echtzeitpfade. Bewusst eine eigene Datei und
+   nicht ein Anhang an den ersten.
+
+   Die Faehigkeiten aus Phase 4A - Historie, Splits, Dividenden,
+   Bereinigung - aendern sich mit dem Tarif nicht. Die Echtzeitpfade sind
+   genau die, die sich mit ihm aendern, und sie werden zu einem anderen
+   Zeitpunkt, unter anderen Bedingungen (die Boerse muss offen sein) und
+   moeglicherweise mit einem anderen Konto gemessen. Zwei Fragen, zwei
+   Berichte, zwei Zeitstempel - sonst ueberschreibt ein Realtime-Lauf am
+   Sonntag die Befunde vom Dienstag. */
+const REALTIME_REPORT_PATH = path.join(
+  __dirname, "..", "..", "quant", "data", "market", "tiingo-realtime-verification.json");
+
 /* Welcher Befund belegt welche Faehigkeit. Was hier nicht steht, hebt
    nichts an - ein Befund ohne Zuordnung ist eine Beobachtung, keine
    Zusicherung. apiAccess belegt den Stammdatenzugriff, weil genau dieser
@@ -122,7 +135,34 @@ const EVIDENCE_TO_CAPABILITY = {
   adjustedPrices:      { set: "market",    capability: "adjustedPrices" },
   dividends:           { set: "market",    capability: "dividends" },
   intraday:            { set: "market",    capability: "intraday" },
-  apiAccess:           { set: "reference", capability: "securityMaster" }
+  apiAccess:           { set: "reference", capability: "securityMaster" },
+
+  /* Die Echtzeitbefunde. Sie stehen in derselben Tabelle, weil sie
+     denselben Weg gehen: ohne gemessenen Befund bleibt die Faehigkeit
+     null, und keine Zeile Code hebt sie von Hand an.
+
+     latestQuote ist absichtlich KEINE Faehigkeit. Dass der Kursendpunkt
+     antwortet, sagt nichts darueber, ob die Zahl von jetzt ist - genau
+     diese Verwechslung ist der Grund, warum es diesen Workstream gibt.
+     Was zaehlt, ist realtimeQuote: der Befund, dass der Zeitstempel bei
+     offener Boerse tatsaechlich aktuell war. */
+  realtimeQuote:       { set: "market",    capability: "realtime" },
+  delayedQuote:        { set: "market",    capability: "delayed" },
+  realtimeStream:      { set: "market",    capability: "websocket" },
+  historicalIntraday:  { set: "market",    capability: "historicalIntraday" },
+
+  /* Erweiterte Handelszeiten, zwei getrennte Befunde.
+
+     extendedHoursBars belegt, dass der IEX-Endpunkt mit afterHours=true
+     ueberhaupt Bars ausserhalb 09:30-16:00 zurueckgibt. Das ist eine
+     Aussage ueber den Bestand.
+
+     extendedHoursRealtime belegt, dass diese Bars WAEHREND der
+     erweiterten Sitzung aktuell sind. Das ist eine Aussage ueber den
+     Tarif, und sie laesst sich nur zwischen 04:00 und 09:30 oder
+     zwischen 16:00 und 20:00 New Yorker Zeit ueberhaupt treffen. */
+  extendedHoursBars:     { set: "market",  capability: "extendedHours" },
+  extendedHoursRealtime: { set: "market",  capability: "extendedHoursRealtime" }
 };
 
 /** Liest den Bericht, wenn es einen gibt. Kein Bericht ist kein Fehler. */
@@ -207,6 +247,15 @@ function freePlanCapabilities(overrides, report) {
 
       intraday: null,          // IEX, Verfuegbarkeit im Free-Tarif offen
       historicalIntraday: null,
+
+      /* Der IEX-Endpunkt kennt einen Schalter fuer erweiterte Zeiten.
+         Dass es ihn gibt, ist keine Zusage, dass dieser Zugang Daten
+         dahinter hat - und schon gar nicht, dass sie waehrend der
+         Vorboerse aktuell sind. Beide bleiben ungeprueft, bis
+         scripts/market/verify-tiingo-realtime.mjs sie in einer echten
+         erweiterten Sitzung gemessen hat. */
+      extendedHours: null,
+      extendedHoursRealtime: null,
       realtime: null,
       websocket: null,
       delayed: null,
@@ -240,6 +289,11 @@ function freePlanCapabilities(overrides, report) {
         "IEX-Daten sind laut Anbieter im Free-Tarif fuer nicht-anzeigende Nutzung enthalten. " +
         "Was das konkret zulaesst, ist eine Lizenz- und keine technische Frage - siehe " +
         "MarketDataDisplayPolicy.",
+      extendedHours:
+        "Der IEX-Endpunkt nimmt afterHours entgegen. Ob dieser Zugang dahinter Daten hat und " +
+        "ob sie waehrend der erweiterten Sitzung aktuell sind, sind zwei verschiedene Fragen " +
+        "und beide ungeprueft. Der Nachweis laesst sich nur zwischen 04:00 und 09:30 oder " +
+        "zwischen 16:00 und 20:00 New Yorker Zeit fuehren.",
       requestsPerHour:
         "50 Anfragen pro Stunde sind der eigentliche Engpass, nicht die 1000 pro Tag. " +
         "Ein Erstimport muss das Stundenfenster einplanen."
@@ -251,6 +305,11 @@ function freePlanCapabilities(overrides, report) {
      ein Test, der eine Faehigkeit bewusst auf null zwingt, muss das auch
      koennen, wenn ein Bericht im Baum liegt. */
   applyRuntimeEvidence(spec, report === undefined ? loadRuntimeEvidence() : report);
+  /* Der Echtzeitbericht danach und getrennt. Fehlt er - und das ist der
+     Normalfall -, bleiben realtime, delayed und websocket auf null. Kein
+     Bericht ist kein Fehler; er ist der Grund, warum die Anzeige nicht
+     LIVE sagt. */
+  if (report === undefined) applyRuntimeEvidence(spec, loadRuntimeEvidence(REALTIME_REPORT_PATH));
   return Capabilities.declare(PROVIDER_ID, withOverrides(spec, overrides));
 }
 
@@ -584,6 +643,17 @@ function createTiingoProvider(options) {
       if (opts.from) params.startDate = opts.from;
       if (opts.to) params.endDate = opts.to;
 
+      /* Erweiterte Zeiten werden angefragt, wenn der Aufrufer sie
+         ausdruecklich will (Nachweislauf) oder die Faehigkeit belegt ist.
+         Nicht auf Verdacht: eine Anfrage mit afterHours=true gegen einen
+         Zugang, der das nicht hat, kostet Kontingent und liefert im
+         besten Fall dieselben Bars - im schlechteren eine Fehlermeldung,
+         die dann faelschlich nach "Intraday geht nicht" aussieht. */
+      const willExtended = opts.extendedHours === true ||
+        (opts.extendedHours !== false &&
+         Capabilities.supports(capabilities, "market", "extendedHours"));
+      if (willExtended) params.afterHours = "true";
+
       return client.request({
         kind: "intradayBars",
         url: url("/iex/" + encodeURIComponent(mapping.symbol) + "/prices", params),
@@ -594,6 +664,10 @@ function createTiingoProvider(options) {
           return {
             securityId: securityId,
             interval: params.resampleFreq,
+            /* Was angefragt wurde, nicht was vermutet wird. Der
+               Nachweislauf vergleicht genau das gegen die Zeitstempel,
+               die zurueckkamen. */
+            extendedHoursRequested: willExtended,
             /* `date` ist der Handelstag, `timestamp` der Zeitpunkt darin.
                Tiingo liefert beides in einem Feld; die Trennung passiert
                hier, weil alles Nachgelagerte den Handelstag unter `date`
@@ -741,6 +815,7 @@ module.exports = {
   loadRuntimeEvidence,
   applyRuntimeEvidence,
   RUNTIME_REPORT_PATH,
+  REALTIME_REPORT_PATH,
   EVIDENCE_TO_CAPABILITY,
   createTiingoProvider
 };

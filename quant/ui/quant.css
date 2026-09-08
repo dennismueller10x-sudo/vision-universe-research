@@ -532,3 +532,44 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
   .q-tchart{min-width:720px}
   .q-tech-families{grid-template-columns:1fr}
 }
+
+/* --- Datenstatus des Live-Charts (realtime/data-status.js) ---------------
+   Vier Toene fuer vier Aussagen. Der Punkt links pulsiert ausschliesslich
+   bei "live" - eine Bewegung ist ein Versprechen, und es gilt nur fuer den
+   einen Zustand, in dem tatsaechlich Daten nachlaufen. */
+.vu-datastatus{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:4px 10px;border-radius:999px;
+  font-size:11.5px;font-weight:600;letter-spacing:.04em;
+  background:var(--surface-2);color:var(--muted);
+  white-space:nowrap;
+}
+.vu-datastatus__dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.vu-datastatus__detail{font-weight:500;letter-spacing:0;opacity:.85}
+/* Die Sitzung traegt dasselbe Gewicht wie das Etikett davor: sie ist
+   Teil der Aussage, nicht ein Zusatz zum Zeitstempel. */
+.vu-datastatus__session{font-weight:600;letter-spacing:.04em;opacity:.75}
+.vu-datastatus__session::before{content:"·";margin-right:6px;opacity:.5}
+.vu-datastatus__detail::before{content:"·";margin-right:6px;opacity:.5}
+.vu-datastatus--live{background:var(--green-bg);color:var(--green-ink)}
+.vu-datastatus--live .vu-datastatus__dot{animation:vu-datastatus-pulse 2s ease-in-out infinite}
+.vu-datastatus--warn{background:var(--yellow-bg);color:var(--yellow)}
+.vu-datastatus--neutral{background:var(--blue-bg);color:var(--blue)}
+.vu-datastatus--muted{background:var(--surface-2);color:var(--muted)}
+@keyframes vu-datastatus-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+/* Wer Bewegung abbestellt hat, bekommt keine. Der Zustand bleibt an der
+   Farbe und am Text ablesbar - die Animation war nie der Traeger. */
+@media (prefers-reduced-motion:reduce){
+  .vu-datastatus--live .vu-datastatus__dot{animation:none}
+}
+.vu-livechart__head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+/* Dieselbe Eindaemmung wie .q-chart-wrap. Ohne sie schiebt ein
+   Kerzenstrich am Rand die Seite auf einem schmalen Bildschirm
+   waagerecht auf - .q-chart traegt overflow:visible, und was ausserhalb
+   gemalt wird, zaehlt zur Scrollbreite. Auf dem Mobiltest war das ein
+   sichtbarer Fehler. */
+.vu-livechart__canvas{min-height:120px;width:100%;overflow:hidden}
+.vu-livechart__canvas .q-chart{max-width:100%}
+@media (max-width:720px){
+  .vu-datastatus{font-size:11px;padding:3px 8px}
+}

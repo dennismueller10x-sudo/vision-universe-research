@@ -152,3 +152,14 @@ auch — mit einem Herkunftsabzeichen je Datenklasse, nicht mit einem einzigen
 für die ganze Seite. Ein Gesamtabzeichen würde unweigerlich „Live", sobald
 irgendetwas live ist, und genau diese Verkürzung ist die Halbwahrheit, die eine
 Seite mit echten Kursen und synthetischen Fundamentaldaten unehrlich macht.
+
+---
+
+## Fortsetzung
+
+Diese Seite beschreibt den Stand von Phase 4A: „live" heißt hier so aktuell,
+wie der letzte Importlauf ist. Die Frage, was ein Chart tut, wenn echte
+Realtime-Daten dazukommen — und was er tut, wenn sie ausbleiben —, beantwortet
+`VU_REALTIME_MARKET_DATA_ARCHITECTURE.md`. Die Fähigkeitsmatrix,
+die Feature-Gates und die Regel, dass der Schlüssel den Browser nie erreicht,
+gelten dort unverändert weiter.
