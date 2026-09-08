@@ -1,7 +1,7 @@
 # VU Technical Intelligence V1 — Phase-1-Report
 
 **Branch:** `claude/technical-intelligence-v1-mfjkd3` · **Basis:** `origin/main` @ `da69113` (PR #45)
-**Stand:** 7. September 2026 · **Tests:** 297/297 grün (`node --test "quant/tests/*.test.mjs"`), davon 232 bestehende unverändert und 65 neue
+**Stand:** 7. September 2026 · **Release-Audit:** 8. September 2026 → `VU_TECHNICAL_RELEASE_AUDIT.md` (14 Befunde behoben, 309/309 Tests) · **Tests (vor Audit):** 297/297 grün (`node --test "quant/tests/*.test.mjs"`), davon 232 bestehende unverändert und 65 neue
 **Datenprüfung:** `node scripts/technical/verify-technical-data.mjs` → 26 Instrumente gegen die Engines nachgerechnet, OK
 
 Fachliche Quelle: *VISION UNIVERSE® TECHNICAL INTELLIGENCE ENGINE — RESEARCH & METHODOLOGY MASTER* · Technische Quelle: `VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md` (nicht verändert, siehe §44 Update-Vorschlag).

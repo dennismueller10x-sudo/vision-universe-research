@@ -39,20 +39,31 @@ einer kausal beobachtbaren Pivot-Skala, verwirf harte Regelverletzungen, ranke t
 Alternation (Tiefe/Dauer), Channel-Fit, B-Retracement, C/A. **Heuristiken**: W3-Momentum,
 W3-Volumen. Alle Bänder in `elliott-v1.json → guidelines`.
 
+„Überschreitet“-Regeln (`W3_BEYOND_W1_END`, `C_BEYOND_B_END`) sind für ein **laufendes** Leg
+noch nicht entscheidbar (`passed: null`); „nicht-über“-Regeln sind sofort prüfbar (einmal
+verletzt, immer verletzt) — Audit-Fix AU9.
+
 **Invalidation** aus Hard Rules je laufender Welle: W2 → unter W1-Ursprung; W3 → unter W2-Ende;
 W4 → Eintritt ins W1-Gebiet; W5 → unter W4-Ende; B → über A-Ursprung; C → Bruch des B-Endes
 gegen die C-Richtung. Die Regel „W3 nie die kürzeste“ liefert bewusst keinen Stop-Level.
 
 ## 4. V1 Beta — Historical Wave Map (Pflicht)
 
-Die Engine erklärt zuerst die Vergangenheit. `parseHistory` läuft links nach rechts über die
-Legs (max. 40, ältere bleiben unlabeled) und entscheidet **lokal**: Impuls (5 Legs) oder Zigzag
-(3 Legs), wenn valide und `score ≥ 0.35`; sonst unlabeled Leg.
+Die Engine erklärt zuerst die Vergangenheit. `parseHistory` läuft links nach rechts über **alle**
+Legs ab Leg 0 (Release-Audit: das frühere gleitende 40-Leg-Fenster verschob den Startpunkt und
+re-segmentierte die Historie — entfernt) und entscheidet **lokal**: Impuls (5 Legs) oder Zigzag
+(3 Legs), wenn valide; sonst unlabeled Leg. Eine Entscheidung an Position `pos` ist erst
+endgültig, wenn auch die längste Alternative bewertbar ist (`pos + 5 ≤ legs.length`); die letzten
+< 5 bestätigten Legs gehören zur Trailing-Region (DEVELOPING). Der Konfigurationswert
+`minPatternScoreForMap` (0.35) ist mit der Score-Formel `0.4 + 0.6·fit` faktisch nie wirksam
+(Audit-Befund INFO).
 
 Rank = 0.5 × Score + 0.08 × Legs (Coverage/MDL-Präferenz) + 0.2 Grammatik-Prior (nach Motive
 Corrective erwartet und umgekehrt). Weil jede Entscheidung nur die Legs des eigenen Musters
-sieht, ändert ein neuer Pivot keine früheren Labels → CONFIRMED-Wellen sind **non-repainting by
-construction** (Test E3). Jedes Label hängt an einem realen `pivotId` (Test E1).
+sieht und nur dann entscheidet, wenn keine längere Alternative mehr offen ist, ändert ein neuer
+Pivot keine früheren Labels → CONFIRMED-Wellen sind **non-repainting by construction** (Tests E3,
+E6, AU2; NVDA Bar-für-Bar 300 Schritte: 0 Umschreibungen). Jedes Label hängt an einem realen
+`pivotId` (Test E1).
 
 `coverage` = Σ significance erklärter Pivots / Σ significance aller Pivots im Fenster.
 
@@ -75,8 +86,8 @@ Aus der laufenden Welle: W2-Zone 50–61.8 % W1; W3 = W2-Ende + 1.618/2.618 × W
 W3; W5 = W4-Ende + 0.618/1.0 × W1; B = 38.2–61.8 % A; C = B-Ende + 1.0/1.618 × A. Kandidaten
 `(price, weight, source)` werden ATR-toleranzbasiert geclustert (`clusterTargets`), überlappende
 S/R-Zonen erhöhen das Gewicht und erscheinen als Quelle. Output: Zonen mit `zoneLow/zoneHigh/
-sources/status: PROJECTED/methodologyVersion` und ein Pfad (max. 3 Phasen, Dauern aus
-`durationRatios`, Kalender-Offsets). **Keine Projektion ohne Invalidation.** Nach abgeschlossenem
+sources/status: PROJECTED/methodologyVersion` und ein Pfad (max. 3 Phasen, Preis = höchstgewichtete
+Relation `ratios[0]`, Dauern aus `durationRatios`, Kalender-Offsets). **Keine Projektion ohne Invalidation.** Nach abgeschlossenem
 Muster: Korrekturzone 38.2–61.8 % des Musters.
 
 ## 7. Confidence
