@@ -77,6 +77,21 @@ jobs:
         run: |
           node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} --publish-preview
 
+      # Frische Kurse ohne Nachbau sind der genaue Fehler, den
+      # verify-technical-data.mjs aufdecken soll: Technical Intelligence,
+      # Elliott und der SEC+Tiingo-Faktor-Panel wuerden sonst still gegen
+      # einen aelteren Kursstand rechnen, sobald dieser Job neue EOD-Bars
+      # veroeffentlicht. Beide werden deshalb hier, im selben Lauf, aus den
+      # eben veroeffentlichten Bars neu gebaut - dieselben Skripte, die auch
+      # lokal benutzt wurden, keine zweite Ableitung.
+      - name: Technical Intelligence + Elliott + SEC-Quant-Panel neu bauen (frische Kurse)
+        run: |
+          node scripts/technical/build-technical-data.mjs
+          node scripts/quant/build-sec-quant-panel.mjs
+
+      - name: Neu gebaute Daten stimmen mit den Engines ueberein
+        run: node scripts/technical/verify-technical-data.mjs
+
       - name: Kein Schluessel im Statusbericht
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -87,14 +102,21 @@ jobs:
 
       - name: Nur die erwarteten Pfade duerfen sich aendern
         run: |
-          changed="$(git status --porcelain quant/data/market)"
+          erlaubt='^quant/data/market/golden-preview/|^quant/data/market/tiingo-status\.json$|^quant/data/technical/instruments/(AAPL|MSFT|NVDA|JPM|XOM)\.json$|^quant/data/technical/(index|meta)\.json$|^quant/data/technical/snapshots/|^quant/data/sec/quant-factor-inputs\.json$'
+          changed="$(git status --porcelain -- quant/data/market quant/data/technical quant/data/sec)"
           echo "$changed"
-          unerwartet="$(echo "$changed" | grep -v 'golden-preview' | grep -v 'tiingo-status.json' || true)"
+          unerwartet="$(echo "$changed" | awk '{print $2}' | grep -vE "$erlaubt" || true)"
           if [ -n "$unerwartet" ]; then
-            echo "ABBRUCH: unerwartete Aenderung ausserhalb von golden-preview/ bzw. tiingo-status.json:"
+            echo "ABBRUCH: unerwartete Aenderung ausserhalb des Golden-Five-Umfangs:"
             echo "$unerwartet"
             exit 1
           fi
+          # Kein Verbot fuer "M" auf bestehenden Snapshot-Dateien: build-technical-
+          # data.mjs baut das gesamte Universum neu (keinen Golden-Five-Modus) und
+          # setzt bei jedem Lauf ein frisches createdAt - die Kennung (Dateiname,
+          # contentHash) bleibt fuer unveraendertes Mock-Universum stabil, nur das
+          # Zeitfeld aendert sich. verify-technical-data.mjs oben hat bereits
+          # bestaetigt, dass Score/Szenario/dataVersion je Instrument uebereinstimmen.
 
       - name: Regressionssuite
         run: node --test "quant/tests/*.test.mjs"
@@ -103,11 +125,12 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/golden-preview quant/data/market/tiingo-status.json
+          git add quant/data/market/golden-preview quant/data/market/tiingo-status.json \
+                  quant/data/technical quant/data/sec/quant-factor-inputs.json
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Golden-Five-Daten."
           else
-            git commit -m "Golden Five: Development-Preview-Marktdaten aktualisiert (Tiingo EOD, AAPL/MSFT/NVDA/JPM/XOM)"
+            git commit -m "Golden Five: Development-Preview-Marktdaten + Technical/Elliott/Quant-Panel aktualisiert (Tiingo EOD, AAPL/MSFT/NVDA/JPM/XOM)"
             git push
           fi
 
