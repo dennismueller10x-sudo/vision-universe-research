@@ -107,13 +107,31 @@ jobs:
           print("universe:", [c["ticker"] for c in universe["companies"]])
           PY
 
-      - name: Validate seed and generated data JSON
+      - name: Validate the generated SEC data JSON
         run: |
           python3 - <<'PY'
           import json, pathlib
-          for path in sorted(pathlib.Path("quant/data").glob("*.json")):
+          # Only what THIS pipeline generates. quant/data/*.json belongs to the
+          # earlier phases and follows their own convention (asOf,
+          # methodologyVersion, dataSnapshotId); asserting the SEC convention
+          # over the whole directory failed on eight files this branch never
+          # wrote. The check had never run before the first pull request, which
+          # is exactly how it survived that long.
+          root = pathlib.Path("quant/data/sec")
+          paths = sorted(root.glob("*.json")) + sorted(root.glob("*/*.json"))
+          assert paths, "no generated SEC artifacts found"
+          # Two naming conventions, on purpose. Below the canonical boundary the
+          # SEC layer uses snake_case; at and above it the payload follows
+          # quant/engines/schema.js, which is camelCase. An artifact must carry
+          # its provenance in one of the two, never in neither.
+          SNAKE = ("schema_version", "generated_at_utc")
+          CAMEL = ("schema", "generatedAtUtc")
+          for path in paths:
               payload = json.loads(path.read_text(encoding="utf-8"))
-              assert "schema_version" in payload or "generated_at_utc" in payload, path
+              assert isinstance(payload, dict), path
+              stamped = any(key in payload for key in SNAKE + CAMEL)
+              assert stamped, f"{path} carries neither {SNAKE} nor {CAMEL}"
+              assert "versions" in payload, f"{path} has no version stamp"
               print(f"{path}: OK ({path.stat().st_size} bytes)")
           PY
 

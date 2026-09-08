@@ -1,6 +1,17 @@
 {
   "schema_version": 1,
   "generated_at_utc": "2026-09-08T04:32:19+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.5.0",
+    "formula": "1.0.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.0.0"
+    }
+  },
   "note": "Diagnostic. Shows what each configured ticker resolves to in the SEC ticker map and what each candidate CIK actually contains. The SEC is the authority; the config CIK is only a hint.",
   "companies": [
     {

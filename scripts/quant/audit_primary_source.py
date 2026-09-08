@@ -19,6 +19,7 @@ consistent-but-wrong pipeline.
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -28,6 +29,7 @@ from quant.sec.pipeline import _rehydrate
 from quant.sec.provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from quant.sec.registry import MetricRegistry
 from quant.sec.store import JsonFactStore
+from quant.sec.version import version_stamp
 
 ROOT = Path(__file__).resolve().parents[2]
 CANONICAL_DIR = ROOT / "quant" / "data" / "sec" / "canonical"
@@ -222,6 +224,10 @@ def main(argv=None):
 
     payload = {
         "schema_version": 1,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # Which code produced this comparison. Every other generated artifact
+        # carries it; this one did not until the CI check asked for it.
+        "versions": version_stamp(registry.version),
         "note": "Canonical VU values compared against re-fetched SEC primary data. "
                 "Each row carries the SEC concept, accession, filing date and period "
                 "end so the comparison can be repeated by hand against EDGAR.",

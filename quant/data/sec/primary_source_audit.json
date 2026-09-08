@@ -1,5 +1,17 @@
 {
   "schema_version": 1,
+  "generated_at_utc": "2026-09-08T04:38:35+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.5.0",
+    "formula": "1.0.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.0.0"
+    }
+  },
   "note": "Canonical VU values compared against re-fetched SEC primary data. Each row carries the SEC concept, accession, filing date and period end so the comparison can be repeated by hand against EDGAR.",
   "tolerance": 1e-06,
   "auditedMetrics": [

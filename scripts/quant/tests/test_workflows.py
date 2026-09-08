@@ -9,6 +9,7 @@ last step, after the expensive SEC ingest had already happened.
 These tests read the workflow files as data and check every command they invoke
 against the real CLI parser.
 """
+import json
 import re
 import subprocess
 import sys
@@ -139,6 +140,49 @@ class WorkflowSyntaxTests(unittest.TestCase):
                 with self.subTest(workflow=name):
                     compile(dedented, f"<{name}>", "exec")
         self.assertGreater(found, 0, "no embedded python blocks found to check")
+
+
+class GeneratedArtifactTests(unittest.TestCase):
+    """Every artifact this pipeline writes must say what produced it.
+
+    The CI step that checks this had never run before the first pull request —
+    it triggers on `pull_request`, and this branch had none. Its first run
+    failed, and for the wrong reason: it globbed `quant/data/*.json` and
+    asserted the SEC convention over eight files from earlier phases that use
+    `asOf` / `methodologyVersion` instead. Narrowing it to this pipeline's own
+    output then surfaced two artifacts of ours that genuinely carried no version
+    stamp.
+
+    A CI check that only ever runs in CI is a check nobody can run before
+    pushing, so the rule lives here too.
+    """
+
+    SNAKE = ("schema_version", "generated_at_utc")   # below the boundary
+    CAMEL = ("schema", "generatedAtUtc")             # canonical, per schema.js
+
+    @classmethod
+    def paths(cls):
+        root = ROOT / "quant" / "data" / "sec"
+        return sorted(root.glob("*.json")) + sorted(root.glob("*/*.json"))
+
+    def test_generated_artifacts_exist(self):
+        self.assertTrue(self.paths(), "no generated SEC artifacts to check")
+
+    def test_every_artifact_is_stamped_and_versioned(self):
+        for path in self.paths():
+            with self.subTest(path=path.name):
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                self.assertIsInstance(payload, dict)
+                self.assertTrue(
+                    any(key in payload for key in self.SNAKE + self.CAMEL),
+                    f"{path.name} carries neither {self.SNAKE} nor {self.CAMEL}")
+                self.assertIn("versions", payload,
+                              f"{path.name} does not say which code produced it")
+
+    def test_the_check_does_not_reach_into_earlier_phases(self):
+        """quant/data/*.json follows its own convention and is not ours to police."""
+        for path in self.paths():
+            self.assertIn("data/sec/", path.as_posix())
 
 
 if __name__ == "__main__":

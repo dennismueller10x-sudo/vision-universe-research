@@ -383,6 +383,7 @@ def cmd_resolve(args):
     _write(DATA_DIR / "universe_resolution.json", {
         "schema_version": 1,
         "generated_at_utc": _utcnow(),
+        "versions": version_stamp(MetricRegistry.load().version),
         "note": ("Diagnostic. Shows what each configured ticker resolves to in the "
                  "SEC ticker map and what each candidate CIK actually contains. "
                  "The SEC is the authority; the config CIK is only a hint."),
