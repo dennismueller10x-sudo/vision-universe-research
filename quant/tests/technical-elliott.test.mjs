@@ -93,7 +93,8 @@ test("E3 · Walk-Forward: bestaetigte historische Wellen bleiben stabil, Develop
   const b = Analysis.analyzeAsOf({ series: full, methodology: METH, options: { setupScaleId: "scale-2" } }, T1).elliott;
   const conf = (e) => e.primaryCount.waves.filter((w) => w.status === "CONFIRMED" && w.patternId !== "pat_trailing").map((w) => [w.label, w.toPivotId]);
   const ca = conf(a), cb = conf(b);
-  assert.ok(ca.length >= 8);
+  assert.ok(ca.length >= 5, "bei T0 ist der erste Impuls bestaetigt (" + ca.length + ")");
+  assert.ok(cb.length >= 8, "bei T1 ist auch der Zigzag bestaetigt (" + cb.length + ")");
   assert.deepEqual(cb.slice(0, ca.length), ca, "bestaetigte Wellen wurden umgeschrieben");
   assert.equal(a.primaryCount.currentWave.status, "DEVELOPING");
   // Bit-identisch: Analyse bei T0 aus dem Praefix vs. aus der vollen Serie mit Cutoff.
@@ -160,4 +161,23 @@ test("A3 · Visual Regression: Positions-Hash ist stabil und aendert sich bei Da
   assert.equal(h1, h2);
   const rev = Canonical.revise(s, [{ index: 250, close: s.close[250] * 0.9, low: s.low[250] * 0.88 }], "r2");
   assert.notEqual(Ann.positionHash(run(rev, { setupScaleId: "scale-2" }).annotations), h1);
+});
+
+test("E6 · AUDIT: Bar-fuer-Bar-Walk-Forward ueber >40 Legs schreibt keine bestaetigte Welle um (kein gleitendes Fenster)", () => {
+  // 60+ Legs, damit ein gleitendes Fenster (maxLegsConsidered = 40) greifen wuerde.
+  const pts = [[0, 100]]; let v = 100;
+  for (let k = 1; k <= 64; k++) { v = k % 2 ? v * 1.14 : v * 0.93; pts.push([k * 12, v]); }
+  const full = fixtures.piecewise(pts, { seed: "wf", rangePct: 0.003, instrumentId: "SYN_WF" });
+  let prev = null, rewrites = 0, steps = 0;
+  for (let T = 560; T < full.length; T += 3) {
+    const e = Analysis.analyzeAsOf({ series: full, methodology: METH, options: { annotations: false, setupScaleId: "scale-2" } }, T).elliott;
+    if (e.status === "UNAVAILABLE") continue;
+    const conf = e.primaryCount.waves.filter((w) => w.status === "CONFIRMED" && w.patternId !== "pat_trailing").map((w) => w.label + "@" + w.toPivotId);
+    if (prev && prev.degree === e.degreeScale) { const now = new Set(conf); if (prev.conf.some((c) => !now.has(c))) rewrites++; }
+    prev = { conf, degree: e.degreeScale }; steps++;
+  }
+  assert.ok(steps > 40, "genug Schritte: " + steps);
+  assert.ok(prev.conf.length >= 30, "genug bestaetigte Wellen: " + prev.conf.length);
+  assert.equal(rewrites, 0, "bestaetigte Wellen wurden rueckwirkend umgeschrieben");
+  assert.equal(Analysis.analyze({ series: full, methodology: METH, options: { annotations: false } }).elliott.segmentGraph.legsSkipped, 0);
 });

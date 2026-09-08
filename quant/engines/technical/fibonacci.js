@@ -101,7 +101,8 @@
       var A = primary.from.price, B = primary.to.price;
       retraceNow = C.round((B - close) / (B - A), 3);
       inPocket = retraceNow >= 0.382 && retraceNow <= 0.618;
-      ev.push(C.evidence(ENGINE_VERSION, "PROJECTION_AUXILIARY", "retracement", "Aktuelles Retracement des letzten " + primary.scaleId + "-Swings: " + C.round(retraceNow * 100, 1) + " %" + (inPocket ? " (38.2–61.8-Bereich)" : ""), retraceNow, inPocket ? 1 : 0, 0.5));
+      /* AUDIT-FIX: Polaritaet folgt der Swing-Richtung — ein Retracement eines Abwaertsswings ist bearische Kontinuationslage. */
+      ev.push(C.evidence(ENGINE_VERSION, "PROJECTION_AUXILIARY", "retracement", "Aktuelles Retracement des letzten " + primary.scaleId + "-Swings (" + primary.direction + "): " + C.round(retraceNow * 100, 1) + " %" + (inPocket ? " (38.2–61.8-Bereich)" : ""), retraceNow, inPocket ? (primary.direction === "UP" ? 1 : -1) : 0, 0.5));
     }
     clusters.slice(0, 3).forEach(function (cl) {
       ev.push(C.evidence(ENGINE_VERSION, "PROJECTION_AUXILIARY", cl.clusterId, "Fib-Cluster " + C.round(cl.zoneLow, 2) + "–" + C.round(cl.zoneHigh, 2) + " aus " + cl.anchorCount + " Ankern", cl.anchorCount, 0, 0.25));
@@ -110,7 +111,7 @@
       engineVersion: ENGINE_VERSION, repaintingPolicy: "CONFIRMS_WITH_DELAY", family: "PROJECTION_AUXILIARY", role: "AUXILIARY",
       parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: cfg }),
       anchors: anchors, levels: levels, clusters: clusters, currentRetracement: retraceNow, inRetracementPocket: inPocket,
-      value: inPocket ? 0.3 : 0, evidence: ev, asOfIndex: i, asOf: series.timestamps[i]
+      value: inPocket ? (primary.direction === "UP" ? 0.3 : -0.3) : 0, evidence: ev, asOfIndex: i, asOf: series.timestamps[i]
     };
   }
 

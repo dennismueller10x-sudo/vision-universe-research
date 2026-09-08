@@ -33,7 +33,10 @@
       rule("MOTIVE_ALTERNATION", dirOk, "5 alternierende Segmente in Trendrichtung");
     }
     if (w2) rule("W2_NOT_BEYOND_W1_ORIGIN", (w2.toPrice - w1.fromPrice) * sign > 0, "W2-Ende " + w2.toPrice + " vs. W1-Ursprung " + w1.fromPrice);
-    if (w3) rule("W3_BEYOND_W1_END", (w3.toPrice - w1.toPrice) * sign > 0, "W3-Ende " + w3.toPrice + " vs. W1-Ende " + w1.toPrice);
+    /* AUDIT-FIX: "ueberschreitet"-Regeln sind fuer ein laufendes (DEVELOPING) Leg
+       noch nicht entscheidbar — erst wenn es bestaetigt ist. "Nicht-ueber"-Regeln
+       bleiben sofort pruefbar (einmal verletzt, immer verletzt). */
+    if (w3) { var w3Ok = (w3.toPrice - w1.toPrice) * sign > 0; if (w3Ok || w3.status !== "DEVELOPING") rule("W3_BEYOND_W1_END", w3Ok, "W3-Ende " + w3.toPrice + " vs. W1-Ende " + w1.toPrice); else res.push({ ruleId: "W3_BEYOND_W1_END", type: "HARD", passed: null, detail: "W3 laeuft noch (" + w3.toPrice + " vs. W1-Ende " + w1.toPrice + ")" }); }
     if (w4) {
       rule("W4_NO_W1_OVERLAP", (w4.toPrice - w1.toPrice) * sign > 0, "W4-Ende " + w4.toPrice + " vs. W1-Ende " + w1.toPrice);
       rule("W4_NOT_BEYOND_W3_ORIGIN", (w4.toPrice - w3.fromPrice) * sign > 0, "W4-Ende " + w4.toPrice + " vs. W3-Ursprung " + w3.fromPrice);
@@ -55,7 +58,7 @@
       rule("ZIGZAG_ALTERNATION", dirOk, "A und C in Korrekturrichtung, B dagegen");
     }
     if (b) rule("B_NOT_BEYOND_A_ORIGIN", (b.toPrice - a.fromPrice) * sign > 0, "B-Ende " + b.toPrice + " vs. A-Ursprung " + a.fromPrice);
-    if (c) rule("C_BEYOND_B_END", (c.toPrice - b.toPrice) * sign > 0, "C bewegt sich ueber B hinaus");
+    if (c) { var cOk = (c.toPrice - b.toPrice) * sign > 0; if (cOk || c.status !== "DEVELOPING") rule("C_BEYOND_B_END", cOk, "C bewegt sich ueber B hinaus"); else res.push({ ruleId: "C_BEYOND_B_END", type: "HARD", passed: null, detail: "C laeuft noch" }); }
     return res;
   }
 

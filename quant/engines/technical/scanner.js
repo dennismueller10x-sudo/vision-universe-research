@@ -54,7 +54,7 @@
     rows.forEach(function (r, i) { r.scorePercentile = scorePct[i]; r.rsPercentile = rsPct[i]; r.universeId = input.universeId || null; });
     rows.sort(function (a, b) { return (b.opportunityScore || 0) - (a.opportunityScore || 0); });
     return { scannerVersion: SCANNER_VERSION, universeId: input.universeId || null, universeVersion: input.universeVersion || null,
-             asOf: rows.length ? rows[0].analysisTime : null, count: rows.length, errors: errors,
+             asOf: rows.length ? rows.map(function (r) { return r.analysisTime; }).sort().pop() : null, count: rows.length, errors: errors,
              methodologyVersion: input.methodology && input.methodology.technical ? input.methodology.technical.methodologyVersion : null,
              scanHash: Hash.hashValue(rows.map(function (r) { return [r.instrumentId, r.opportunityScore, r.parametersHash]; })), rows: rows };
   }

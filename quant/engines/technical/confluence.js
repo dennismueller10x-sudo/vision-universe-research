@@ -36,14 +36,15 @@
     var e = engines;
     var aux = (e.fibonacci ? e.fibonacci.value : 0) + (e.elliott && C.isNum(e.elliott.value) ? e.elliott.value : 0);
     var families = {
-      STRUCTURE: fam(e.structure && e.structure.state ? e.structure.state.structureScore : NaN, e.structure, "structure"),
-      TREND: fam(e.trend ? e.trend.value : NaN, e.trend, "trend"),
-      MOMENTUM: fam(e.momentum ? e.momentum.value : NaN, e.momentum, "momentum"),
+      STRUCTURE: fam(e.structure && e.structure.state && e.structure.state.regime !== "UNDETERMINED" ? e.structure.state.structureScore : NaN, e.structure, "structure"),
+      /* AUDIT-FIX: UNDETERMINED (zu wenig Historie) ist "nicht verfuegbar", kein Vote. */
+      TREND: fam(e.trend && e.trend.direction !== "UNDETERMINED" ? e.trend.value : NaN, e.trend, "trend"),
+      MOMENTUM: fam(e.momentum && e.momentum.state !== "UNDETERMINED" ? e.momentum.value : NaN, e.momentum, "momentum"),
       RELATIVE_STRENGTH: fam(e.relativeStrength && e.relativeStrength.state !== "UNAVAILABLE" ? e.relativeStrength.value : NaN, e.relativeStrength, "relativeStrength"),
       VOLATILITY: fam(e.volatility ? e.volatility.value : NaN, e.volatility, "volatility"),
       VOLUME: fam(e.volume && e.volume.state !== "UNAVAILABLE" ? e.volume.value : NaN, e.volume, "volume"),
       PRICE_ZONES: fam(e.supportResistance ? e.supportResistance.value : NaN, e.supportResistance, "supportResistance"),
-      PROJECTION_AUXILIARY: fam(C.clamp(aux, -AUX_CAP, AUX_CAP), e.fibonacci, "fibonacci+elliott")
+      PROJECTION_AUXILIARY: fam((e.fibonacci && e.fibonacci.value !== 0) || (e.elliott && C.isNum(e.elliott.value) && e.elliott.value !== 0) ? C.clamp(aux, -AUX_CAP, AUX_CAP) : NaN, e.fibonacci, "fibonacci+elliott")
     };
     function fam(value, engine, name) {
       return { value: C.isNum(value) ? C.round(value, 4) : null, available: C.isNum(value), engine: name,

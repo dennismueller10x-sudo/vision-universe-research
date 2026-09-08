@@ -64,7 +64,8 @@
     var st = engines.structure;
     if (st) {
       st.events.slice(-4).forEach(function (evn) {
-        var pol = /BULLISH|UP|FAILURE_BEARISH/.test(evn.type) ? 1 : /BEARISH|DOWN|FAILURE_BULLISH/.test(evn.type) ? -1 : 0;
+        /* AUDIT-FIX: FAILURE_BULLISH ist ein bearischer Bruch — zuerst pruefen, sonst matcht "BULLISH". */
+        var pol = /FAILURE_BULLISH|BEARISH|DOWN/.test(evn.type) ? -1 : /FAILURE_BEARISH|BULLISH|UP/.test(evn.type) ? 1 : 0;
         if (!pol || dirSign === 0) return;
         var item = C.evidence(st.engineVersion, "STRUCTURE", evn.eventId, evn.type.replace(/_/g, " ") + " am " + evn.time + (evn.level ? " (Level " + C.round(evn.level, 2) + ")" : ""), evn.level, pol, 1);
         if (pol * dirSign > 0) sup.push(item); else con.push(item);
@@ -163,7 +164,7 @@
 
     /* Breakout-Template, wenn gerade ein close-basierter Strukturbruch stattfand. */
     var template = "PULLBACK_TO_" + (sign > 0 ? "SUPPORT" : "RESISTANCE");
-    var recentBos = e.structure.events.filter(function (evn) { return evn.index > i - cfg.breakoutLookbackBars && (sign > 0 ? /BOS_BULLISH|BREAKOUT_UP|STRUCTURE_CHANGE_BULLISH/ : /BOS_BEARISH|BREAKOUT_DOWN|STRUCTURE_CHANGE_BEARISH/).test(evn.type); })[0];
+    var recentBos = e.structure.events.filter(function (evn) { return evn.index > i - cfg.breakoutLookbackBars && (sign > 0 ? /^(BOS_BULLISH|BREAKOUT_UP|STRUCTURE_CHANGE_BULLISH|STRUCTURE_FAILURE_BEARISH)$/ : /^(BOS_BEARISH|BREAKOUT_DOWN|STRUCTURE_CHANGE_BEARISH|STRUCTURE_FAILURE_BULLISH)$/).test(evn.type); })[0];
     if (recentBos && C.isNum(recentBos.level) && Math.abs(close - recentBos.level) < 1.5 * atr) {
       template = "BREAKOUT_" + (sign > 0 ? "RETEST" : "RETEST");
       entry = zone(recentBos.level - (sign > 0 ? 0.25 : 0.75) * atr, recentBos.level + (sign > 0 ? 0.75 : 0.25) * atr, step,
@@ -193,7 +194,7 @@
     if (beyond[0] && overlap(t1, measured1) > -atr) t1.sources.push(measured1.sources[0]);
     var t2 = beyond[1] && (sign > 0 ? beyond[1].zoneLow > t1.zoneHigh : beyond[1].zoneHigh < t1.zoneLow) ? zone(beyond[1].zoneLow, beyond[1].zoneHigh, step, [{ type: beyond[1].currentRole === "RESISTANCE" ? "RESISTANCE_ZONE" : "SUPPORT_ZONE", ref: beyond[1].zoneId, strength: beyond[1].strength }]) : measured2;
     if (sign > 0 ? t2.zoneLow <= t1.zoneHigh : t2.zoneHigh >= t1.zoneLow) t2 = measured2;
-    if (sign > 0 ? t2.zoneLow <= t1.zoneHigh : t2.zoneHigh >= t1.zoneLow) t2 = zone(t1.zoneHigh + sign * atr, t1.zoneHigh + sign * 2 * atr, step, [{ type: "VOLATILITY", ref: "ATR-Projektion" }]);
+    if (sign > 0 ? t2.zoneLow <= t1.zoneHigh : t2.zoneHigh >= t1.zoneLow) { var farEdge = sign > 0 ? t1.zoneHigh : t1.zoneLow; t2 = zone(farEdge + sign * atr, farEdge + sign * 2 * atr, step, [{ type: "VOLATILITY", ref: "ATR-Projektion" }]); }
     [t1, t2].forEach(function (tz) {
       (e.fibonacci ? e.fibonacci.clusters : []).forEach(function (cl) { if (overlap(tz, cl) > 0) tz.sources.push({ type: "FIB_CLUSTER", ref: cl.clusterId }); });
       (e.elliott && e.elliott.projection ? e.elliott.projection.zones : []).forEach(function (pz) { if (overlap(tz, pz) > 0) tz.sources.push({ type: "ELLIOTT_PROJECTION", ref: pz.zoneId }); });
@@ -255,10 +256,12 @@
     var bottom = st.range ? st.range.bottom : (st.lastStructuralLow ? st.lastStructuralLow.price : close - 2 * atr);
     var ev = splitEvidence(e, 0);
     var primary = Object.assign({}, base, {
-      type: "PRIMARY", direction: "NEUTRAL", template: "RANGE", status: "ACTIVE",
+      type: "PRIMARY", direction: "NEUTRAL", template: "RANGE",
+      status: (close < bottom - cfg.invalidationBufferAtr * atr || close > top + cfg.invalidationBufferAtr * atr) ? "INVALIDATED" : "ACTIVE",
       rangeBounds: { top: C.round(top, 4), bottom: C.round(bottom, 4) },
       entryZone: null, entryStatus: "NONE",
-      invalidation: { price: C.round(roundTo(bottom - cfg.invalidationBufferAtr * atr, step), 6), rule: "Close unter der Range-Unterkante (" + C.round(bottom, 2) + ")", refPivotId: st.lastStructuralLow ? st.lastStructuralLow.pivotId : null, basis: "STRUCTURE", kind: "analysisInvalidation" },
+      /* AUDIT-FIX: zweiseitig — die Range-Hypothese endet oben wie unten. */
+      invalidation: { price: C.round(roundTo(bottom - cfg.invalidationBufferAtr * atr, step), 6), upperPrice: C.round(roundTo(top + cfg.invalidationBufferAtr * atr, step), 6), rule: "Close unter der Range-Unterkante (" + C.round(bottom, 2) + ") oder ueber der Oberkante (" + C.round(top, 2) + ")", refPivotId: st.lastStructuralLow ? st.lastStructuralLow.pivotId : null, basis: "STRUCTURE", kind: "analysisInvalidation" },
       tradeStop: null, targetZones: [],
       supportingEvidence: ev.supporting, conflictingEvidence: ev.conflicting,
       whatMustHappen: "Ein Close ueber " + C.round(top, 2) + " oder unter " + C.round(bottom, 2) + " beendet die Range; bis dahin keine richtungsgebende Hypothese.",

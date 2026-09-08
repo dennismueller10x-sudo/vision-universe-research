@@ -136,7 +136,10 @@
 
     /* Annotationen — Zonen und Serien unter dem Kurs, Linien/Labels darueber. */
     var anns = (opts.annotations || []).slice().sort(function (a, b) { return a.zOrder - b.zOrder; });
-    var under = svgEl("g", { class: "ann-under" }), over = svgEl("g", { class: "ann-over" }), labels = svgEl("g", { class: "ann-labels" });
+    /* Zeichenbereich clippen: nichts ragt in Achsen oder Volumen. */
+    var clipId = "tclip-" + Math.random().toString(36).slice(2, 8);
+    svg.appendChild(svgEl("clipPath", { id: clipId }, [svgEl("rect", { x: PAD.left, y: PAD.top, width: w - PAD.left - PAD.right, height: h - PAD.top - PAD.bottom })]));
+    var under = svgEl("g", { class: "ann-under", "clip-path": "url(#" + clipId + ")" }), over = svgEl("g", { class: "ann-over", "clip-path": "url(#" + clipId + ")" }), labels = svgEl("g", { class: "ann-labels" });
     svg.appendChild(under);
 
     /* Kurs */
@@ -158,11 +161,13 @@
 
     var placed = [];   // Kollisionsvermeidung fuer Labels
     function placeLabel(x, y, text, cls, anchor) {
-      var yy = y;
+      /* Labels bleiben im Zeichenbereich: nie ueber dem oberen Rand, nie im Volumen. */
+      var yy = Math.min(h - PAD.bottom - 4, Math.max(PAD.top + 10, y));
       for (var tries = 0; tries < 6; tries++) {
         var clash = placed.some(function (p) { return Math.abs(p.x - x) < 30 && Math.abs(p.y - yy) < 12; });
         if (!clash) break;
         yy += (tries % 2 ? 1 : -1) * 12 * (tries + 1);
+        yy = Math.min(h - PAD.bottom - 4, Math.max(PAD.top + 10, yy));
       }
       placed.push({ x: x, y: yy });
       labels.appendChild(svgEl("text", { class: "ann-label " + cls, x: x, y: yy, "text-anchor": anchor || "middle", text: text }));
@@ -202,7 +207,11 @@
         case "SWING_SEGMENT": case "WAVE_SEGMENT": case "PROJECTION_PATH": case "STRUCTURE_EVENT": case "FIB_ANCHOR": {
           if (xa === null || xb === null || !isNum(a.startPrice) || !isNum(a.endPrice)) return;
           if (xb < i0) return;
-          over.appendChild(svgEl("line", { class: "ann-seg " + cls, x1: xs(Math.max(i0, xa)), y1: ys(a.startPrice), x2: xs(xb), y2: ys(a.endPrice) }));
+          /* AUDIT-FIX: beginnt das Segment vor dem Fenster, wird der Startpreis
+             am Fensterrand interpoliert — sonst stimmt die Steigung nicht. */
+          var sx = xa, sp = a.startPrice;
+          if (xa < i0 && xb > xa) { sp = a.startPrice + (a.endPrice - a.startPrice) * ((i0 - xa) / (xb - xa)); sx = i0; }
+          over.appendChild(svgEl("line", { class: "ann-seg " + cls, x1: xs(sx), y1: ys(sp), x2: xs(xb), y2: ys(a.endPrice) }));
           if (a.type === "STRUCTURE_EVENT" && a.label && a.layers.indexOf("STRUCTURE") !== -1) placeLabel(xs(xb), ys(a.endPrice) - 4, a.label, cls, "end");
           return;
         }

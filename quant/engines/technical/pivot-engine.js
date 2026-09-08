@@ -103,14 +103,20 @@
       if (dir === 1) {
         if (high[t] > extPrice) { extPrice = high[t]; extIdx = t; }
         else if (extPrice - low[t] >= D && extIdx < t) {
+          var hiIdx = extIdx;
           confirm("HIGH", extIdx, extPrice, t);
+          /* AUDIT-FIX: das neue Extrem ist das tiefste Low zwischen Pivot und
+             Bestaetigungsbar (alle Bars <= t, kausal), nicht nur low[t]. */
           dir = -1; extIdx = t; extPrice = low[t];
+          for (var k3 = hiIdx + 1; k3 < t; k3++) if (low[k3] < extPrice) { extPrice = low[k3]; extIdx = k3; }
         }
       } else {
         if (low[t] < extPrice) { extPrice = low[t]; extIdx = t; }
         else if (high[t] - extPrice >= D && extIdx < t) {
+          var loIdx = extIdx;
           confirm("LOW", extIdx, extPrice, t);
           dir = 1; extIdx = t; extPrice = high[t];
+          for (var k4 = loIdx + 1; k4 < t; k4++) if (high[k4] > extPrice) { extPrice = high[k4]; extIdx = k4; }
         }
       }
     }

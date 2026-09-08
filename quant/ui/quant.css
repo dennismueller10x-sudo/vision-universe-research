@@ -491,6 +491,9 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
 .q-tech-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
 .q-tech-family{display:flex;justify-content:space-between;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface);font-size:12.5px}
 .q-tech-family.is-pos{background:var(--green-bg)} .q-tech-family.is-neg{background:var(--red-bg)} .q-tech-family.is-na{color:var(--muted-2)}
+@media (max-width:1024px){
+  .q-tech-controls .q-pill{min-height:40px}
+}
 @media (max-width:720px){
   .q-tech-hero-grid{grid-template-columns:1fr}
   .q-tech-hero-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}

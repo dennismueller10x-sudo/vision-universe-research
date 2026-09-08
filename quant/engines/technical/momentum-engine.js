@@ -41,7 +41,7 @@
       engineVersion: ENGINE_VERSION, repaintingPolicy: "NON_REPAINTING", family: "MOMENTUM",
       parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: cfg }),
       state: state, momentumScore: score, scoreType: "methodology_score",
-      value: score === null ? 0 : C.round((score - 50) / 50, 4), coverage: C.round(ws.coverage, 2),
+      value: score === null || state === "UNDETERMINED" ? 0 : C.round((score - 50) / 50, 4), coverage: C.round(ws.coverage, 2),
       composite: composite === null ? null : C.round(composite, 3), acceleration: accel, horizons: horizons,
       momentum12m1m: C.isNum(f.momentum12m1m[i]) ? C.round(Math.exp(f.momentum12m1m[i]) - 1, 4) : null,
       /* Explanatory-Indikatoren: dargestellt, nicht gewertet. */

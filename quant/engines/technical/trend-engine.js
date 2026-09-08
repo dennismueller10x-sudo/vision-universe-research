@@ -87,7 +87,7 @@
       engineVersion: ENGINE_VERSION, repaintingPolicy: "NON_REPAINTING", family: "TREND",
       parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: cfg }),
       direction: direction, trendScore: score, scoreType: "methodology_score",
-      value: score === null ? 0 : C.round((score - 50) / 50, 4),
+      value: score === null || direction === "UNDETERMINED" ? 0 : C.round((score - 50) / 50, 4),
       coverage: C.round(ws.coverage, 2), components: components, evidence: ev,
       metrics: { close: close, sma20: C.orNull(f.sma20[i]), sma50: C.orNull(f.sma50[i]), sma200: C.orNull(f.sma200[i]),
                  ema20: C.orNull(f.ema20[i]), ema50: C.orNull(f.ema50[i]), distanceTo52wHigh: C.orNull(d52), distanceTo52wLow: C.orNull(f.distanceTo52wLow[i]),

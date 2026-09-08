@@ -55,13 +55,16 @@
     });
     var t1 = targets[0];
     var riskAtr = C.isNum(atr) && atr > 0 ? riskHigh / atr : NaN;
-    var entryDist = C.isNum(atr) && atr > 0 ? (sign > 0 ? Math.max(0, close - entry.zoneHigh) : Math.max(0, entry.zoneLow - close)) / atr : NaN;
+    /* AUDIT-FIX: Distanz zur Zone auf beiden Seiten; liegt der Kurs jenseits der
+       Zone Richtung Stop, ist die Entry-Naehe keine Qualitaet (0). */
+    var beyondTowardStop = sign > 0 ? close < entry.zoneLow : close > entry.zoneHigh;
+    var entryDist = C.isNum(atr) && atr > 0 ? (close >= entry.zoneLow && close <= entry.zoneHigh ? 0 : Math.min(Math.abs(close - entry.zoneLow), Math.abs(close - entry.zoneHigh)) / atr) : NaN;
 
     /* Setup Quality 0–100: RR, Stop-Distanz-Sanity, Entry-Naehe, Liquiditaet. */
     var q = {};
     q.riskReward = C.clamp((t1.rrLow - 0.5) / 3, 0, 1) * 100;
     q.stopDistance = !C.isNum(riskAtr) ? NaN : riskAtr < cfg.minRiskAtr ? 40 : riskAtr > cfg.maxRiskAtr ? 30 : 100;
-    q.entryProximity = !C.isNum(entryDist) ? NaN : 100 * C.clamp(1 - entryDist / cfg.maxEntryDistanceAtr, 0, 1);
+    q.entryProximity = !C.isNum(entryDist) ? NaN : beyondTowardStop ? 0 : 100 * C.clamp(1 - entryDist / cfg.maxEntryDistanceAtr, 0, 1);
     q.liquidity = C.isNum(ctx.averageVolume) ? (ctx.averageVolume > 0 ? 100 : 0) : NaN;
     var ws = C.weightedScore(q, { riskReward: 0.45, stopDistance: 0.2, entryProximity: 0.25, liquidity: 0.1 });
     var quality = C.isNum(ws.score) ? C.round(ws.score, 1) : null;

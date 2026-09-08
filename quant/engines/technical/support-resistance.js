@@ -102,13 +102,13 @@
         if (!filled) gaps.push({ zoneId: "gap_" + series.timestamps[g], origin: "GAP_UP", zoneLow: series.high[g - 1], zoneHigh: series.low[g], centerPrice: C.round((series.high[g - 1] + series.low[g]) / 2, 4),
           strength: 40, touchCount: 0, firstSeen: series.timestamps[g], lastSeen: null, recency: C.round(Math.pow(0.5, (i - g) / cfg.recencyHalfLifeBars), 3), timeframeCoverage: ["1D"], pivotIds: [],
           currentRole: close > series.low[g] ? "SUPPORT" : close < series.high[g - 1] ? "RESISTANCE" : "INSIDE", flipped: false, status: "ACTIVE",
-          distanceAtr: C.round((close - series.low[g]) / atr, 2) });
+          distanceAtr: C.round(close > series.low[g] ? (close - series.low[g]) / atr : close < series.high[g - 1] ? (series.high[g - 1] - close) / atr : 0, 2) });
       } else if (series.high[g] < series.low[g - 1] - cfg.gapMinAtr * a) {
         var filled2 = false; for (var q2 = g + 1; q2 < n; q2++) if (series.high[q2] >= series.low[g - 1]) { filled2 = true; break; }
         if (!filled2) gaps.push({ zoneId: "gap_" + series.timestamps[g], origin: "GAP_DOWN", zoneLow: series.high[g], zoneHigh: series.low[g - 1], centerPrice: C.round((series.high[g] + series.low[g - 1]) / 2, 4),
           strength: 40, touchCount: 0, firstSeen: series.timestamps[g], lastSeen: null, recency: C.round(Math.pow(0.5, (i - g) / cfg.recencyHalfLifeBars), 3), timeframeCoverage: ["1D"], pivotIds: [],
           currentRole: close > series.low[g - 1] ? "SUPPORT" : close < series.high[g] ? "RESISTANCE" : "INSIDE", flipped: false, status: "ACTIVE",
-          distanceAtr: C.round((series.high[g] - close) / atr, 2) });
+          distanceAtr: C.round(close < series.high[g] ? (series.high[g] - close) / atr : close > series.low[g - 1] ? (close - series.low[g - 1]) / atr : 0, 2) });
       }
     }
 

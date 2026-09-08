@@ -85,7 +85,7 @@
     b.structure.events.filter(function (e) { return /BOS|STRUCTURE_CHANGE|STRUCTURE_FAILURE|BREAKOUT/.test(e.type) && e.level; }).slice(-8).forEach(function (e) {
       var ref = b.structure.swings.filter(function (s) { return s.pivotId === e.refPivotId; })[0];
       out.push(make({ type: "STRUCTURE_EVENT", layers: ["STRUCTURE"], startTime: ref ? ref.time : e.time, endTime: e.time, startPrice: e.level, endPrice: e.level, label: EVENT_LABELS[e.type] || e.type.replace(/_/g, " "), status: "CONFIRMED",
-                      method: "structure", semanticStyle: /BULLISH|UP|FAILURE_BEARISH/.test(e.type) ? "event-bullish" : "event-bearish", zOrder: 12, evidenceRef: e.eventId }));
+                      method: "structure", semanticStyle: /FAILURE_BULLISH|BEARISH|DOWN/.test(e.type) ? "event-bearish" : "event-bullish", zOrder: 12, evidenceRef: e.eventId }));
     });
 
     /* --- Trend: Serienreferenzen + Zustand --- */

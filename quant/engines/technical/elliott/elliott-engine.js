@@ -72,7 +72,12 @@
    */
   function parseHistory(legs, cfg, guidelines) {
     var patterns = [], pos = 0, expectMotive = null, unlabeled = [], lastPatternEnd = 0;
-    while (pos < legs.length) {
+    /* AUDIT-FIX: Eine Entscheidung an Position pos ist erst endgueltig, wenn
+       auch die laengste Alternative (Impuls, 5 Legs) bewertbar ist. Sonst
+       wuerde ein 3-Leg-Zigzag als CONFIRMED gelabelt und spaeter — sobald
+       5 Legs vorliegen — zu 1-2-3 umgeschrieben (Repainting). Die letzten
+       < 5 Legs gehoeren zur Trailing-Region (DEVELOPING). */
+    while (pos + 5 <= legs.length) {
       var options = [];
       if (pos + 5 <= legs.length) { var imp = evaluate("IMPULSE", legs.slice(pos, pos + 5), guidelines); if (imp.valid && imp.score >= cfg.minPatternScoreForMap) options.push(imp); }
       if (pos + 3 <= legs.length) { var zz = evaluate("ZIGZAG", legs.slice(pos, pos + 3), guidelines); if (zz.valid && zz.score >= cfg.minPatternScoreForMap) options.push(zz); }
@@ -161,9 +166,10 @@
     var lastPrice = legs[legs.length - 1].toPrice, lastTime = now;
     function push(label, base, lenRef, ratios, dir, weightBase, durRef, durRatios) {
       ratios.forEach(function (r, k) { cands.push({ label: label, price: base + dir * lenRef * r, ratio: r, weight: weightBase * (k === 0 ? 1 : 0.7), source: label + " = " + r + " × Referenz" }); });
-      var midRatio = (ratios[0] + ratios[ratios.length - 1]) / 2;
+      /* AUDIT-FIX: der Pfad folgt der hoechstgewichteten Relation (ratios[0]),
+         nicht dem Bandmittelwert — sonst zeigt der Pfad neben die staerkste Zone. */
       var dur = Math.max(2, Math.round(durRef * (durRatios[0] + durRatios[1]) / 2));
-      steps.push({ label: label, price: base + dir * lenRef * midRatio, bars: dur });
+      steps.push({ label: label, price: base + dir * lenRef * ratios[0], bars: dur });
     }
     if (cand.type === "IMPULSE") {
       var w1len = L(0), d1 = legs[0].duration || 10;
@@ -247,9 +253,14 @@
   /** Vollstaendige Analyse fuer eine Skala (wird auch fuer Stability-Perturbationen benutzt). */
   function analyzeScale(ctx, pivotsResult, scaleId, calendar, now) {
     var graph = WaveGraph.buildSegmentGraph(ctx.series, ctx.features, pivotsResult, scaleId, ctx.cfg.degreeMapping);
+    /* AUDIT-FIX: Der historische Parser laeuft IMMER ab Leg 0. Ein gleitendes
+       Fenster (maxLegsConsidered) verschob den Startpunkt mit jedem neuen
+       Pivot und re-segmentierte damit die gesamte Historie — bestaetigte
+       Labels wurden rueckwirkend umgeschrieben (Repainting). Das Fenster
+       begrenzt jetzt nur noch die Trailing-Suche, nicht die Historie. */
     var legsAll = graph.segments;
-    var offset = Math.max(0, legsAll.length - ctx.cfg.maxLegsConsidered);
-    var legs = legsAll.slice(offset);
+    var offset = 0;
+    var legs = legsAll;
     var hist = parseHistory(legs, ctx.cfg, ctx.guidelines);
     var trailingStart = hist.consumed;
     /* Das letzte Pattern darf auch als Anfang des Trailing neu interpretiert werden — nur fuer Alternativen. */

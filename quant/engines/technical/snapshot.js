@@ -113,7 +113,9 @@
         if (lo <= record.entry.zoneHigh && hi >= record.entry.zoneLow) { entered = t; entryPrice = Math.min(Math.max(series.open[t], record.entry.zoneLow), record.entry.zoneHigh); out.entryTime = series.timestamps[t]; }
         else if (sign > 0 ? lo <= record.invalidation : hi >= record.invalidation) { out.eventualOutcome = "INVALIDATED_BEFORE_ENTRY"; out.timeToInvalidation = t - start; out.evaluatedThrough = series.timestamps[t]; return out; }
         else if (sign > 0 ? hi >= record.targets[0].zoneLow : lo <= record.targets[0].zoneHigh) { out.eventualOutcome = "TARGET_WITHOUT_ENTRY"; out.evaluatedThrough = series.timestamps[t]; return out; }
-        if (entered === null) continue;
+        /* AUDIT-FIX: Entry-Bar wird nicht sofort auf Target/Stop ausgewertet
+           (Reihenfolge innerhalb der Bar unbekannt) — konservativ ab t+1. */
+        continue;
       }
       var fav = sign > 0 ? hi - entryPrice : entryPrice - lo, adv = sign > 0 ? entryPrice - lo : hi - entryPrice;
       if (fav > mfe) mfe = fav; if (adv > mae) mae = adv;
