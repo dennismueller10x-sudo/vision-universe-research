@@ -26,6 +26,14 @@ on:
         description: 'Zusaetzlich den Importweg gegen die echte API pruefen (kostet ~12 Anfragen)'
         type: boolean
         default: false
+      run_realtime:
+        description: 'Echtzeitpfade pruefen (Kursabfrage + Intraday, ~2 Anfragen). Nur bei offener Boerse aussagekraeftig.'
+        type: boolean
+        default: false
+      realtime_stream:
+        description: 'Zusaetzlich den IEX-WebSocket pruefen (oeffnet eine Verbindung, wartet bis zu 45 Sekunden)'
+        type: boolean
+        default: false
 
   # Nach dem Merge ist workflow_dispatch der vorgesehene Weg: der Workflow
   # liegt dann auf dem Default-Branch und laesst sich dort mit den beiden
@@ -45,6 +53,7 @@ on:
       - 'claude/**'
     paths:
       - 'scripts/market/verify-tiingo-runtime.mjs'
+      - 'scripts/market/verify-tiingo-realtime.mjs'
       - 'scripts/market/ingest-tiingo.mjs'
       - 'providers/tiingo/adapter.js'
       - '.github/workflows/tiingo-verify.yml' 
@@ -215,3 +224,121 @@ jobs:
 
       - name: Statusbericht ins Protokoll
         run: cat quant/data/market/tiingo-status.json
+
+  # ---------------------------------------------------------------------
+  # Die Echtzeitpfade (§19, §28).
+  #
+  # Zwei Fragen, die der Nachweis aus Phase 4A nicht beantworten konnte:
+  # liefert dieses Konto Kurse von jetzt, und laesst sich der IEX-Strom
+  # ueberhaupt oeffnen?
+  #
+  # Der Job laeuft ausschliesslich auf Anforderung, und das hat einen
+  # zweiten Grund neben dem Kontingent: der Befund haengt an der Uhrzeit.
+  # Ein Lauf bei geschlossener Boerse misst die Boersenpause und meldet
+  # folgerichtig UNKNOWN. Ein Zeitplan wuerde also verlaesslich Berichte
+  # erzeugen, die nichts aussagen - und die den vorherigen ueberschreiben.
+  # ---------------------------------------------------------------------
+  realtime:
+    runs-on: ubuntu-latest
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.run_realtime) ||
+      contains(github.event.head_commit.message, '[realtime]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY hinterlegt. Die Echtzeitpfade bleiben ungeprueft.'
+          fi
+
+      - name: Echtzeit-Laufzeitnachweis
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.realtime_stream }}" = "true" ]; then
+            node scripts/market/verify-tiingo-realtime.mjs --with-stream
+          else
+            node scripts/market/verify-tiingo-realtime.mjs
+          fi
+
+      - name: Der Bericht enthaelt keinen Schluessel und keine Kurse
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/tiingo-realtime-verification.json";
+            if (!fs.existsSync(file)) { console.log("Kein Bericht erzeugt."); process.exit(0); }
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) {
+              console.error("ABBRUCH: der Bericht enthaelt den Zugangsschluessel.");
+              process.exit(1);
+            }
+            if (/[?&]token=/i.test(raw)) {
+              console.error("ABBRUCH: der Bericht enthaelt eine Anfrage-URL mit Token.");
+              process.exit(1);
+            }
+            // Gegenprobe zur Absicht des Skripts: keine Preisfelder im Bericht.
+            const report = JSON.parse(raw);
+            const verboten = ["price", "last", "close", "open", "high", "low", "bid", "ask"];
+            const treffer = [];
+            (function walk(v, p) {
+              if (!v || typeof v !== "object") return;
+              Object.keys(v).forEach(function (k) {
+                if (verboten.indexOf(k.toLowerCase()) !== -1) treffer.push(p + "." + k);
+                walk(v[k], p + "." + k);
+              });
+            })(report, "$");
+            if (treffer.length) {
+              console.error("ABBRUCH: Kursfelder im Bericht: " + treffer.join(", "));
+              process.exit(1);
+            }
+            console.log("Bericht ist frei von Zugangsdaten und Kursen.");
+          '
+
+      - name: Bericht ins Protokoll
+        if: steps.secret.outputs.available == 'true'
+        run: cat quant/data/market/tiingo-realtime-verification.json
+
+      - name: Bericht als Artefakt
+        if: steps.secret.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-realtime-verification
+          path: quant/data/market/tiingo-realtime-verification.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo — Echtzeitpfade'
+            echo ''
+            if [ "${{ steps.secret.outputs.available }}" != "true" ]; then
+              echo 'Kein `TIINGO_API_KEY` hinterlegt. Alle Echtzeitfaehigkeiten bleiben ungeprueft.'
+              exit 0
+            fi
+            if [ -f quant/data/market/tiingo-realtime-verification.json ]; then
+              echo '| Faehigkeit | Ergebnis |'
+              echo '|---|---|'
+              node -e '
+                const r = require("./quant/data/market/tiingo-realtime-verification.json");
+                for (const f of r.findings) console.log("| " + f.capability + " | " + f.result + " |");
+                console.log("");
+                console.log("UNKNOWN ist ein Ergebnis: es heisst, dass nicht gemessen werden konnte.");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

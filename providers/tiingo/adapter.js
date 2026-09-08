@@ -110,6 +110,19 @@ const COMMERCIAL_LIMITS = {
 const RUNTIME_REPORT_PATH = path.join(
   __dirname, "..", "..", "quant", "data", "market", "tiingo-runtime-verification.json");
 
+/* Der zweite Bericht: die Echtzeitpfade. Bewusst eine eigene Datei und
+   nicht ein Anhang an den ersten.
+
+   Die Faehigkeiten aus Phase 4A - Historie, Splits, Dividenden,
+   Bereinigung - aendern sich mit dem Tarif nicht. Die Echtzeitpfade sind
+   genau die, die sich mit ihm aendern, und sie werden zu einem anderen
+   Zeitpunkt, unter anderen Bedingungen (die Boerse muss offen sein) und
+   moeglicherweise mit einem anderen Konto gemessen. Zwei Fragen, zwei
+   Berichte, zwei Zeitstempel - sonst ueberschreibt ein Realtime-Lauf am
+   Sonntag die Befunde vom Dienstag. */
+const REALTIME_REPORT_PATH = path.join(
+  __dirname, "..", "..", "quant", "data", "market", "tiingo-realtime-verification.json");
+
 /* Welcher Befund belegt welche Faehigkeit. Was hier nicht steht, hebt
    nichts an - ein Befund ohne Zuordnung ist eine Beobachtung, keine
    Zusicherung. apiAccess belegt den Stammdatenzugriff, weil genau dieser
@@ -122,7 +135,21 @@ const EVIDENCE_TO_CAPABILITY = {
   adjustedPrices:      { set: "market",    capability: "adjustedPrices" },
   dividends:           { set: "market",    capability: "dividends" },
   intraday:            { set: "market",    capability: "intraday" },
-  apiAccess:           { set: "reference", capability: "securityMaster" }
+  apiAccess:           { set: "reference", capability: "securityMaster" },
+
+  /* Die Echtzeitbefunde. Sie stehen in derselben Tabelle, weil sie
+     denselben Weg gehen: ohne gemessenen Befund bleibt die Faehigkeit
+     null, und keine Zeile Code hebt sie von Hand an.
+
+     latestQuote ist absichtlich KEINE Faehigkeit. Dass der Kursendpunkt
+     antwortet, sagt nichts darueber, ob die Zahl von jetzt ist - genau
+     diese Verwechslung ist der Grund, warum es diesen Workstream gibt.
+     Was zaehlt, ist realtimeQuote: der Befund, dass der Zeitstempel bei
+     offener Boerse tatsaechlich aktuell war. */
+  realtimeQuote:       { set: "market",    capability: "realtime" },
+  delayedQuote:        { set: "market",    capability: "delayed" },
+  realtimeStream:      { set: "market",    capability: "websocket" },
+  historicalIntraday:  { set: "market",    capability: "historicalIntraday" }
 };
 
 /** Liest den Bericht, wenn es einen gibt. Kein Bericht ist kein Fehler. */
@@ -251,6 +278,11 @@ function freePlanCapabilities(overrides, report) {
      ein Test, der eine Faehigkeit bewusst auf null zwingt, muss das auch
      koennen, wenn ein Bericht im Baum liegt. */
   applyRuntimeEvidence(spec, report === undefined ? loadRuntimeEvidence() : report);
+  /* Der Echtzeitbericht danach und getrennt. Fehlt er - und das ist der
+     Normalfall -, bleiben realtime, delayed und websocket auf null. Kein
+     Bericht ist kein Fehler; er ist der Grund, warum die Anzeige nicht
+     LIVE sagt. */
+  if (report === undefined) applyRuntimeEvidence(spec, loadRuntimeEvidence(REALTIME_REPORT_PATH));
   return Capabilities.declare(PROVIDER_ID, withOverrides(spec, overrides));
 }
 
@@ -741,6 +773,7 @@ module.exports = {
   loadRuntimeEvidence,
   applyRuntimeEvidence,
   RUNTIME_REPORT_PATH,
+  REALTIME_REPORT_PATH,
   EVIDENCE_TO_CAPABILITY,
   createTiingoProvider
 };
