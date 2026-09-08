@@ -122,3 +122,21 @@ Broker-Integration, Orderausfuehrung, autonomes AI-Trading, native Apps, Realtim
 Optionen, Krypto, Intraday-Backtesting, Portfolio-Optimierer, historische
 Analystenrevisionen ohne lizenzierte Daten. Die Architektur ist so geschnitten, dass all
 das spaeter moeglich bleibt — siehe „Erweiterungspunkte“ in `docs/VU_ARCHITECTURE.md`.
+
+## Technical Intelligence (Workstream `claude/technical-intelligence-v1`)
+
+`engines/technical/**` enthaelt die Technical-Intelligence-Engines (Canonical Bars, Feature
+Store, kausale Pivots, Marktstruktur, Trend/Momentum/RS/Volatilitaet/Volumen, Support/
+Resistance, Fibonacci, Szenarien, Trade Setup, Confluence, Opportunity Score, Snapshots,
+Annotationen, Elliott Beta, Scanner, AI-Tools). Dieselben Schichtenregeln gelten: reine
+Logik ohne DOM, UMD, `node --test`. Die Seite `technical/` liest ausschliesslich
+`data/technical/**`, erzeugt von `scripts/technical/build-technical-data.mjs` und in der CI
+durch `scripts/technical/verify-technical-data.mjs` gegen die Engines geprueft.
+
+```bash
+node scripts/technical/build-technical-data.mjs     # ~60 s, reale Referenztitel + Mock-Universum
+node scripts/technical/verify-technical-data.mjs    # Drift-Pruefung
+```
+
+Detail: `docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md` und die dort verlinkten
+Methodikdokumente.

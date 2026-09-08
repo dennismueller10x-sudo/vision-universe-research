@@ -1,0 +1,254 @@
+{
+  "methodologyVersion": "elliott-v1.0.0-beta",
+  "label": "VU Elliott Core V1 Beta",
+  "status": "BETA",
+  "purpose": "Regelbasierte strukturale Hypothesenmaschine ueber einer kausalen Pivot-Hierarchie. Kein bewiesenes Prognosemodell. Confidence ist Method Fit, keine Wahrscheinlichkeit.",
+  "degreeMapping": {
+    "scale-1": "D0",
+    "scale-2": "D1",
+    "scale-3": "D2",
+    "scale-4": "D3",
+    "note": "Degrees sind strukturelle Stufen der Pivot-Hierarchie, keine Kalenderzeitraeume. Die UI darf D1..D3 relativ zur Ansicht als Minor/Intermediate/Major bezeichnen."
+  },
+  "primaryDegreeScale": "scale-3",
+  "minConfirmedPivots": 6,
+  "maxLegsConsidered": 40,
+  "patterns": {
+    "v1": [
+      "IMPULSE",
+      "ZIGZAG"
+    ],
+    "later": [
+      "FLAT",
+      "TRIANGLE",
+      "DIAGONAL",
+      "WXY",
+      "WXYXZ"
+    ]
+  },
+  "hardRules": {
+    "ruleSetVersion": "elliott-rules-1.0.0",
+    "IMPULSE": [
+      {
+        "ruleId": "W2_NOT_BEYOND_W1_ORIGIN",
+        "type": "HARD",
+        "statement": "Wave 2 retraced nie mehr als 100 % von Wave 1 (bullish: low(W2) > origin(W1))."
+      },
+      {
+        "ruleId": "W3_BEYOND_W1_END",
+        "type": "HARD",
+        "statement": "Wave 3 ueberschreitet das Ende von Wave 1."
+      },
+      {
+        "ruleId": "W3_NOT_SHORTEST",
+        "type": "HARD",
+        "statement": "Wave 3 ist nie die kuerzeste der Wellen 1, 3, 5 (pruefbar, sobald W5 vorliegt)."
+      },
+      {
+        "ruleId": "W4_NO_W1_OVERLAP",
+        "type": "HARD",
+        "statement": "Im Standardimpuls betritt Wave 4 nicht das Preisgebiet von Wave 1 (bullish: low(W4) > end(W1))."
+      },
+      {
+        "ruleId": "W4_NOT_BEYOND_W3_ORIGIN",
+        "type": "HARD",
+        "statement": "Wave 4 retraced Wave 3 nicht vollstaendig."
+      }
+    ],
+    "ZIGZAG": [
+      {
+        "ruleId": "B_NOT_BEYOND_A_ORIGIN",
+        "type": "HARD",
+        "statement": "Wave B retraced nie mehr als 100 % von Wave A."
+      },
+      {
+        "ruleId": "C_BEYOND_B_END",
+        "type": "HARD",
+        "statement": "Wave C bewegt sich ueber das Ende von B hinaus in Richtung A."
+      }
+    ]
+  },
+  "guidelines": {
+    "IMPULSE": [
+      {
+        "guidelineId": "W2_RETRACE_RATIO",
+        "type": "GUIDELINE",
+        "ideal": [
+          0.5,
+          0.618
+        ],
+        "acceptable": [
+          0.236,
+          0.9
+        ]
+      },
+      {
+        "guidelineId": "W3_EXTENSION_RATIO",
+        "type": "GUIDELINE",
+        "ideal": [
+          1.618,
+          2.618
+        ],
+        "acceptable": [
+          1.0,
+          4.236
+        ]
+      },
+      {
+        "guidelineId": "W4_RETRACE_RATIO",
+        "type": "GUIDELINE",
+        "ideal": [
+          0.236,
+          0.382
+        ],
+        "acceptable": [
+          0.1,
+          0.618
+        ]
+      },
+      {
+        "guidelineId": "W5_RATIO_TO_W1",
+        "type": "GUIDELINE",
+        "ideal": [
+          0.618,
+          1.0
+        ],
+        "acceptable": [
+          0.382,
+          1.618
+        ]
+      },
+      {
+        "guidelineId": "ALTERNATION",
+        "type": "GUIDELINE",
+        "statement": "W2 und W4 unterscheiden sich in Tiefe und/oder Dauer."
+      },
+      {
+        "guidelineId": "CHANNEL_FIT",
+        "type": "GUIDELINE"
+      },
+      {
+        "guidelineId": "MOMENTUM_W3",
+        "type": "HEURISTIC",
+        "statement": "W3 zeigt das staerkste Momentum."
+      },
+      {
+        "guidelineId": "VOLUME_W3",
+        "type": "HEURISTIC",
+        "statement": "W3 zeigt hoeheres Volumen als W1."
+      }
+    ],
+    "ZIGZAG": [
+      {
+        "guidelineId": "B_RETRACE_RATIO",
+        "type": "GUIDELINE",
+        "ideal": [
+          0.382,
+          0.786
+        ],
+        "acceptable": [
+          0.1,
+          0.99
+        ]
+      },
+      {
+        "guidelineId": "C_RATIO_TO_A",
+        "type": "GUIDELINE",
+        "ideal": [
+          0.618,
+          1.618
+        ],
+        "acceptable": [
+          0.382,
+          2.618
+        ]
+      }
+    ]
+  },
+  "scoring": {
+    "fitWeights": {
+      "internalStructure": 0.25,
+      "higherDegreeConsistency": 0.2,
+      "pivotQuality": 0.15,
+      "proportionality": 0.1,
+      "marketStructure": 0.1,
+      "momentumVolume": 0.1,
+      "alternationChannel": 0.05,
+      "fibonacciFit": 0.05
+    },
+    "confidence": {
+      "fit": 0.8,
+      "stability": 0.2
+    },
+    "stabilityPerturbations": [
+      0.9,
+      1.0,
+      1.1
+    ],
+    "minPatternScoreForMap": 0.35,
+    "alternativeMinSeparation": 0.05,
+    "lowConfidenceBelow": 40,
+    "note": "Harte Regeln sind Gates, keine Punkte. Gewichte sind V0 Methodology Contract."
+  },
+  "projection": {
+    "w3Targets": [
+      1.618,
+      2.618
+    ],
+    "w4Retracements": [
+      0.236,
+      0.382
+    ],
+    "w5Targets": [
+      0.618,
+      1.0
+    ],
+    "cTargets": [
+      1.0,
+      1.618
+    ],
+    "durationRatios": {
+      "w2": [
+        0.5,
+        1.0
+      ],
+      "w3": [
+        1.0,
+        1.618
+      ],
+      "w4": [
+        0.618,
+        1.0
+      ],
+      "w5": [
+        0.618,
+        1.0
+      ],
+      "b": [
+        0.5,
+        1.0
+      ],
+      "c": [
+        0.618,
+        1.0
+      ]
+    },
+    "clusterToleranceAtr": 0.75,
+    "minZoneHalfWidthAtr": 0.5,
+    "note": "Projektion ist ein gewichtetes Target-Density-Problem aus Wellenrelationen, S/R, Volatilitaet. Zonen, keine Einzelwerte. Keine Projektion ohne Invalidation.",
+    "w2Retracements": [
+      0.5,
+      0.618
+    ],
+    "bRetracements": [
+      0.382,
+      0.618
+    ]
+  },
+  "abortConditions": [
+    "TOO_FEW_PIVOTS",
+    "NO_VALID_STRUCTURE",
+    "AMBIGUOUS",
+    "DATA_GAP"
+  ]
+}

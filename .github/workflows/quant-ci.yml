@@ -7,12 +7,12 @@ name: Quant CI
 on:
   push:
     branches: [main]
-    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   pull_request:
-    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**',
+    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
@@ -52,6 +52,9 @@ jobs:
 
       - name: Praekomputierte Daten stimmen mit der Engine ueberein
         run: node scripts/quant/verify-quant-data.mjs
+
+      - name: Praekomputierte Technical-Intelligence-Daten stimmen mit den Engines ueberein
+        run: node scripts/technical/verify-technical-data.mjs
 
       - name: Keine Zugangsdaten in ausgelieferten Marktdaten
         run: node scripts/market/assert-no-secrets.mjs
