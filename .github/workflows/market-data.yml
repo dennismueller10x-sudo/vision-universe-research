@@ -3,7 +3,7 @@ name: Marktdaten aktualisieren
 # Phase 2, §13/§14 — der einzige Ort, an dem ein Anbieter-Schluessel existiert.
 #
 #   GitHub Secret  ->  Runner  ->  Abruf  ->  Normalisierung  ->
-#   Qualitaetspruefung  ->  JSON im Repository  ->  GitHub Pages
+#   Qualitaetspruefung  ->  .market-cache im ephemeren Runner
 #
 # Der Schluessel liegt ausschliesslich in `secrets.TWELVE_DATA_API_KEY` und
 # wird nur als Umgebungsvariable an ein Node-Skript gereicht. Er erscheint
@@ -14,10 +14,6 @@ name: Marktdaten aktualisieren
 # laeuft dann unveraendert im Mock-Modus weiter.
 
 on:
-  schedule:
-    # 22:30 UTC an Handelstagen — nach dem US-Schluss (21:00/22:00 UTC),
-    # mit Puffer fuer die Konsolidierung der Schlusskurse beim Anbieter.
-    - cron: '30 22 * * 1-5'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -30,7 +26,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   fetch:
@@ -50,41 +46,27 @@ jobs:
             ${{ inputs.dry_run && '--dry-run' || '' }}
 
       - name: Ausgelieferte Daten enthalten keinen Schluessel
-        # Zweite Verteidigungslinie: selbst wenn ein Anbieter den Schluessel
-        # in einer Antwort spiegeln wuerde, darf er das Repository nicht
-        # erreichen. Der Test in quant/tests/secrets.test.mjs prueft das
-        # Repository, dieser Schritt prueft die frisch geschriebenen Dateien.
+        # Der dauerhafte Guard prueft den Repository-/Pages-Bestand. Die
+        # interne Arbeitsablage wird weder committed noch als Artefakt
+        # hochgeladen.
         run: node scripts/market/assert-no-secrets.mjs
 
       - name: Vollstaendige Pruefung der Marktdaten
         run: node --test "quant/tests/market-data.test.mjs" "quant/tests/secrets.test.mjs"
 
-      - name: Aenderungen uebernehmen
-        if: ${{ !inputs.dry_run }}
+      - name: Oeffentliche Datenpfade bleiben unveraendert
         run: |
-          git config user.name  'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add quant/data/market
-          if git diff --cached --quiet; then
-            echo 'Keine Aenderung am Datenstand.'
-            exit 0
-          fi
-          git commit -m 'chore(market): Tageskurse des Referenzuniversums aktualisiert'
-          for attempt in 1 2 3 4; do
-            git push && break
-            echo "Push fehlgeschlagen (Versuch $attempt)"
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            sleep $((2 ** attempt))
-          done
+          git diff --exit-code -- quant/data/market dashboard/data/market_data.json quant/data/technical
+          node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Statusbericht in der Zusammenfassung
         if: always()
         run: |
-          if [ -f quant/data/market/status.json ]; then
+          if [ -f .market-cache/twelve-data/status.json ]; then
             {
               echo '### Datenstand'
               echo '```json'
-              node -e 'const j=require("./quant/data/market/status.json");console.log(JSON.stringify({dataMode:j.dataMode,configured:j.configured,provider:j.provider,generatedAt:j.generatedAt,adjustmentStatus:j.adjustmentStatus,summary:j.summary},null,2))'
+              node -e 'const j=require("./.market-cache/twelve-data/status.json");console.log(JSON.stringify({dataMode:j.dataMode,configured:j.configured,provider:j.provider,generatedAt:j.generatedAt,adjustmentStatus:j.adjustmentStatus,summary:j.summary},null,2))'
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           fi

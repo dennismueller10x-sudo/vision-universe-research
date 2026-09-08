@@ -83,22 +83,20 @@
          Herkunftsleiste darueber. Hier steht, was das praktisch bedeutet —
          nicht dasselbe noch einmal. */
       Q.stateBox(
-        "Kein Anbieterzugang konfiguriert",
-        "Alle Auswertungen dieser Anwendung beruhen auf dem synthetischen Modelluniversum. " +
-        "Das ist ein vollstaendig funktionsfaehiger Zustand und keine Einschraenkung der " +
-        "Auswertungslogik — es fehlen echte Kurse, nicht Funktionen.",
+        "Oeffentliche Marktdaten nicht verfuegbar",
+        "Kommerzielle Provider-Rohdaten bleiben bis zur geklaerten Redistribution ausserhalb " +
+        "des statisch ausgelieferten Pfads. Der Quant-Kern arbeitet sichtbar auf dem " +
+        "synthetischen Modelluniversum; reale Titel erhalten keine Mock-Kurse.",
         "empty"
       ),
       el("section", { class: "q-section" }, [
         el("div", { class: "q-section-head" }, [
-          el("h2", { class: "q-h2", text: "Was dafuer noetig waere" })
+          el("h2", { class: "q-h2", text: "Interner Datenpfad" })
         ]),
         el("ol", { class: "q-steps" }, [
-          el("li", { text: "Einen kostenlosen Zugang beim Anbieter anlegen (Twelve Data, Free Plan)." }),
-          el("li", { text: "Den Schluessel als Repository-Secret TWELVE_DATA_API_KEY hinterlegen — " +
-                           "nicht in einer Datei, nicht im Frontend." }),
-          el("li", { text: "Den Workflow ‚Marktdaten aktualisieren‘ starten. Er ruft ab, prueft " +
-                           "die Reihen und committet das Ergebnis." })
+          el("li", { text: "Provider-Zugang bleibt als Repository-Secret hinterlegt — nicht in einer Datei und nicht im Frontend." }),
+          el("li", { text: "Der manuelle Workflow schreibt ausschliesslich in .market-cache des ephemeren Runners." }),
+          el("li", { text: "Eine spaetere Anzeige setzt einen geschuetzten Host und eine dokumentierte Lizenzfreigabe voraus." })
         ]),
         el("p", { class: "q-note",
           text: "Der Schluessel bleibt dabei im Runner der GitHub Action. Diese Seite wird statisch " +
@@ -526,7 +524,10 @@
         root.appendChild(head());
         root.appendChild(Q.dataOriginBar(status));
 
-        if (!status.configured) {
+        var publicMarketAllowed = status.publicDataState && status.publicDataState.displayAllowed === true &&
+          status.policy && status.policy.marketData && status.policy.marketData.public &&
+          status.policy.marketData.public.allowed === true;
+        if (!status.configured || !publicMarketAllowed) {
           root.appendChild(notConfigured(status));
           root.appendChild(status.capabilities ? capabilityTable(status) : el("div", {}));
           root.appendChild(Q.disclaimer());

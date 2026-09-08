@@ -143,7 +143,14 @@ test("P10 · Die Dashboard-Marktdaten tragen ihre Bereinigungsstufe", () => {
   assert.equal(Semantics.normalize(market.adjustment), market.adjustment,
     "die Angabe muss eine der vier Stufen sein");
   assert.ok(market.schema_version >= 2, "schema_version muss die Migration widerspiegeln");
-  assert.ok(market.adjustment_evidence, "eine Einstufung ohne Beleg ist eine Behauptung");
+  if (market.status === "generated") {
+    assert.ok(market.adjustment_evidence, "eine Einstufung ohne Beleg ist eine Behauptung");
+  } else {
+    assert.equal(market.adjustment, "UNKNOWN",
+      "ein nicht erzeugter oeffentlicher Platzhalter darf keine Bereinigungsstufe behaupten");
+    assert.equal(Object.keys(market.symbols || {}).length, 0,
+      "ein nicht erzeugter oeffentlicher Platzhalter darf keine Kursreihen enthalten");
+  }
 });
 
 test("P11 · Die Dashboard-Kennzahlen sind als Kursrendite benannt", () => {

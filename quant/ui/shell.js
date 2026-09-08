@@ -175,6 +175,11 @@
       el("span", { class: "q-mock-dot", "aria-hidden": "true" }),
       el("div", {}, [
         el("b", { text: "Demo-Daten · synthetisches Universum" }),
+        el("div", { class: "q-provenance-tags" }, [
+          provenanceTag("MODE", "MOCK", "neutral"),
+          provenanceTag("FORM", "PRECOMPUTED", "neutral"),
+          provenanceTag("SOURCE", "MOCK", "neutral")
+        ]),
         el("span", {
           text: meta.securityCount + " synthetische Wertpapiere (VU0001 …), erzeugt aus Seed „" + meta.seed +
                 "“. Keine realen Unternehmen, keine realen Marktdaten, keine reale Wertentwicklung. " +
@@ -206,6 +211,11 @@
     corporateActions: "Kapitalmassnahmen", estimates: "Schaetzungen",
     macro: "Makrodaten", news: "Nachrichten"
   };
+
+  function provenanceTag(label, value, tone) {
+    return el("span", { class: "q-chip" + (tone ? " tone-" + tone : ""),
+                        text: label + " · " + value });
+  }
 
   /**
    * Laedt den Statusbericht. Ein fehlender Bericht bedeutet Mock-Modus —
@@ -247,9 +257,12 @@
   function dataOriginBar(status) {
     status = status || { dataMode: "mock", configured: false };
     var mode = status.dataMode || "mock";
+    var publicUnavailable = status.publicDataState && status.publicDataState.mode === "UNAVAILABLE";
     var classes = [];
 
-    if (mode === "mock") {
+    if (publicUnavailable) {
+      classes.push(["marketData", "unavailable"], ["fundamentals", "mock"]);
+    } else if (mode === "mock") {
       classes.push(["marketData", "mock"], ["fundamentals", "mock"]);
     } else {
       var anyOk = false, anyStale = false;
@@ -280,7 +293,15 @@
     }
 
     var badges = classes.map(function (pair) { return originBadge(pair[0], pair[1]); });
-    var children = [el("div", { class: "q-origin-row" }, badges)];
+    var source = publicUnavailable ? "NONE" : (status.provider ? String(status.provider).replace(/-/g, " ").toUpperCase() : "MOCK");
+    var children = [
+      el("div", { class: "q-provenance-tags" }, [
+        provenanceTag("MODE", publicUnavailable ? "UNAVAILABLE" : (mode === "mock" ? "MOCK" : "HYBRID"), mode === "mock" ? "neutral" : "strong"),
+        provenanceTag("FORM", "PRECOMPUTED", "neutral"),
+        provenanceTag("SOURCE", source, "neutral")
+      ]),
+      el("div", { class: "q-origin-row" }, badges)
+    ];
 
     var lines = [];
     if (status.notice) lines.push(status.notice);
@@ -359,8 +380,9 @@
         style: "margin:0 0 8px"
       }),
       el("p", {
-        text: "Saemtliche Daten in diesem Bereich sind synthetisch und dienen ausschliesslich der Entwicklung und " +
-              "Demonstration des Systems.",
+        text: "Datenherkunft und Verarbeitungsform werden auf jeder Seite anhand der geladenen Metadaten ausgewiesen. " +
+              "MOCK, REAL, HYBRID, PRECOMPUTED und BETA sind getrennte Zustaende; fehlende Daten werden nicht " +
+              "stillschweigend durch Demo-Daten ersetzt.",
         style: "margin:0"
       })
     ]);
@@ -484,7 +506,7 @@
     stateBox: stateBox, loading: loading, errorBox: errorBox, unavailable: unavailable,
     MARKET_STATUS_PATH: MARKET_STATUS_PATH, ORIGIN_LABEL: ORIGIN_LABEL, CLASS_LABEL: CLASS_LABEL,
     loadMarketStatus: loadMarketStatus, originBadge: originBadge, dataOriginBar: dataOriginBar,
-    datasetOriginNote: datasetOriginNote,
+    datasetOriginNote: datasetOriginNote, provenanceTag: provenanceTag,
     formatDateTime: formatDateTime
   };
 

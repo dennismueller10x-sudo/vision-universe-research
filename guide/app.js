@@ -11,6 +11,7 @@
   const fmtPct = (v) => v == null || !Number.isFinite(Number(v)) ? '—' : fmt(v, 1) + ' %';
   const fmtChange = (v) => v == null || !Number.isFinite(Number(v)) ? '' : (v >= 0 ? '+' : '') + fmt(v, 2) + ' %';
   const pick = (tdValue, legacyValue, formatter) => (tdValue != null && Number.isFinite(Number(tdValue))) ? formatter(tdValue) : (legacyValue != null ? norm(legacyValue) : '—');
+  const provenance = (items) => `<section class="data-provenance" aria-label="Datenherkunft">${items.map(([label, value]) => `<span><small>${esc(label)}</small><b>${esc(value)}</b></span>`).join('')}</section>`;
 
   try {
     const [u, market, fundamentals] = await Promise.all([get('config/universe.json'), get('data/market_data.json'), get('data/fundamental_metrics.json')]);
@@ -50,7 +51,7 @@
         }
         chartHtml = `<div class="chart-wrap"><svg class="chart" viewBox="0 0 ${W} ${H}">${grid}${mcapAxis}${overlayOn ? `<path class="mcap" d="${mcapPath}"/>` : ''}<path class="price ${priceDir}" d="${pathWith(rowCloses, y)}"/></svg></div>`;
       } else {
-        chartHtml = `<article class="notice">Für ${esc(stock.symbol)} liegen noch keine Kursdaten vor. Diese werden über den bestehenden wöchentlichen Dashboard-Workflow befüllt, sobald das Symbol dort mit läuft.</article>`;
+        chartHtml = `<article class="notice">Für ${esc(stock.symbol)} liegen keine öffentlich freigegebenen Kursdaten vor. Es wird kein Mock-Kurs eingesetzt; ein Chart erfordert den geschützten internen Datenpfad.</article>`;
       }
       return { chartHtml, legendHtml, noteHtml, pctChange, priceDir };
     };
@@ -84,7 +85,7 @@
       ['Free Cashflow (TTM)', fmtMoney(metric.free_cash_flow_ttm)]
     ];
 
-    app.innerHTML = `<div class="kicker">Aktien Guide</div><h1 class="heading">Guide</h1>${picker}<div class="stock-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2>${lastClose != null ? `<b>${fmt(lastClose, 2)} USD</b><span id="priceBadge">${initial.pctChange != null ? `<span class="change-badge ${initial.priceDir}">${initial.priceDir === 'up' ? '▲' : '▼'} ${fmtChange(initial.pctChange)}</span>` : ''}</span>` : ''}</div>${rangeNav}</div><div id="chartArea">${initial.chartHtml}</div><div class="legend" id="legendArea"><span class="lg-price">Kurs</span>${initial.legendHtml}</div><div id="noteArea">${initial.noteHtml}</div><h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${metricRows.map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><p class="data-note">Datenstand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : esc(fundamentals.legacy_data_as_of || 'unbekannt')} · Twelve-Data-Felder manuell angestoßen, übrige Kennzahlen recherchiert (${esc(fundamentals.legacy_sources || '—')}). Nicht verfügbare Werte werden nicht geschätzt.</p>`;
+    app.innerHTML = `${provenance([['MODE', 'HYBRID'], ['MARKET DATA', candles.length ? 'REAL' : 'UNAVAILABLE'], ['FUNDAMENTALS', metric.data_as_of ? 'REAL' : 'STATIC'], ['FORM', 'PRECOMPUTED'], ['SOURCE', (fundamentals.provider || 'STATIC') + (candles.length ? ' / MARKET PROVIDER' : '')]])}<div class="kicker">Aktien Guide</div><h1 class="heading">Guide</h1>${picker}<div class="stock-head"><div><h2>${stock.symbol} · ${esc(stock.name)}</h2>${lastClose != null ? `<b>${fmt(lastClose, 2)} USD</b><span id="priceBadge">${initial.pctChange != null ? `<span class="change-badge ${initial.priceDir}">${initial.priceDir === 'up' ? '▲' : '▼'} ${fmtChange(initial.pctChange)}</span>` : ''}</span>` : ''}</div>${rangeNav}</div><div id="chartArea">${initial.chartHtml}</div><div class="legend" id="legendArea"><span class="lg-price">Kurs</span>${initial.legendHtml}</div><div id="noteArea">${initial.noteHtml}</div><h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${metricRows.map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><p class="data-note">Datenstand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : esc(fundamentals.legacy_data_as_of || 'unbekannt')} · Quelle laut Datensatz: ${esc(fundamentals.provider || 'STATIC')}; ergänzende Bestandswerte: ${esc(fundamentals.legacy_sources || '—')}. Nicht verfügbare Werte werden nicht geschätzt.</p>`;
 
     const input = document.getElementById('guideSearch');
     if (input) input.oninput = () => document.querySelectorAll('.stock-button').forEach((el) => { el.hidden = !el.dataset.search.includes(input.value.toLowerCase()); });

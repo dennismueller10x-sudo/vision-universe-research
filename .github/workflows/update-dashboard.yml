@@ -2,11 +2,9 @@ name: Update VISION UNIVERSE dashboard data
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 7 * * 6"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   update-dashboard-data:
@@ -18,38 +16,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Fetch market data
+      - name: Fetch market data into private runner cache
         env:
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
-        run: python scripts/dashboard/fetch_market_data.py
+        run: python scripts/dashboard/fetch_market_data.py --output .market-cache/dashboard/market_data.json
 
-      - name: Calculate technical scores
-        run: python scripts/dashboard/calculate_technicals.py
-
-      - name: Generate technical scenarios
-        run: python scripts/dashboard/calculate_scenarios.py
-
-      - name: Run technical baseline backtest
-        run: python scripts/dashboard/backtest_technicals.py
-
-      - name: Verify generated-file-only scope
+      - name: Verify public paths stay untouched
         shell: bash
         run: |
-          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/(market_data|technical_scores|technical_scenarios|backtest_results)\.json$' || true)"
-          if [ -n "$unexpected" ]; then
-            echo "Unexpected modified files:"
-            echo "$unexpected"
-            exit 1
-          fi
-
-      - name: Commit generated data
-        shell: bash
-        run: |
-          if git diff --quiet -- dashboard/data/market_data.json dashboard/data/technical_scores.json dashboard/data/technical_scenarios.json dashboard/data/backtest_results.json; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/data/market_data.json dashboard/data/technical_scores.json dashboard/data/backtest_results.json
-          git commit -m "chore: update dashboard market data"
-          git push
+          git diff --exit-code -- dashboard/data quant/data/market quant/data/technical
+          node scripts/market/assert-public-data-hygiene.mjs

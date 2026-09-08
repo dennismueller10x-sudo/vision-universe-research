@@ -2,7 +2,8 @@
    VISION UNIVERSE — fetch-market-data.mjs   (Phase 2, §12, §14, §15)
 
    Holt echte Tageskurse fuer das kleine Referenzuniversum, prueft sie und
-   schreibt normalisiertes JSON nach quant/data/market/.
+   schreibt normalisiertes JSON in die nicht ausgelieferte Arbeitsablage
+   .market-cache/twelve-data/.
 
    WO DAS LAEUFT: serverseitig — in der GitHub Action oder lokal. Der
    API-Schluessel kommt aus der Umgebung und verlaesst sie nie. Vision
@@ -10,7 +11,7 @@
    Browser waere ein oeffentlicher Schluessel. Deshalb dieser Weg:
 
        GitHub Action (Secret)  ->  Abruf  ->  Normalisierung  ->
-       Qualitaetspruefung      ->  JSON im Repository  ->  GitHub Pages
+       Qualitaetspruefung      ->  interne Arbeitsablage
 
    OHNE SCHLUESSEL bricht das Skript NICHT ab. Es schreibt einen
    Statusbericht mit `notConfigured` und beendet sich erfolgreich — der
@@ -22,7 +23,7 @@
      node scripts/market/fetch-market-data.mjs --dry-run
    ========================================================================= */
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -35,13 +36,23 @@ const MarketQuality = require(join(engines, "market-quality.js"));
 const DataMode = require(join(engines, "data-mode.js"));
 const TwelveData = require(join(root, "providers", "twelve-data", "adapter.js"));
 
-const OUT_DIR = join(root, "quant", "data", "market");
+const CACHE_ROOT = resolve(root, ".market-cache");
+const outputArg = process.argv.slice(2).find((arg) => arg.startsWith("--output-dir="));
+const OUT_DIR = resolve(outputArg ? outputArg.slice("--output-dir=".length) : join(CACHE_ROOT, "twelve-data"));
 const CONFIG = JSON.parse(readFileSync(join(root, "quant", "config", "market-universe.json"), "utf8"));
 
 const args = new Set(process.argv.slice(2));
 const DRY_RUN = args.has("--dry-run");
 const apiKey = process.env.TWELVE_DATA_API_KEY || null;
 const mode = DataMode.resolveMode(process.env);
+
+/* Vendor-Rohdaten duerfen bei offener Redistribution nie in einen von der
+   statischen Site ausgelieferten Pfad geschrieben werden. Auch ein
+   versehentlich gesetztes CLI-Ziel darf diese Grenze nicht umgehen. */
+const cacheRelative = relative(CACHE_ROOT, OUT_DIR);
+if (cacheRelative.startsWith("..") || (cacheRelative === "" && OUT_DIR !== CACHE_ROOT)) {
+  throw new Error("Ausgabe abgelehnt: Twelve-Data-Rohdaten muessen unter .market-cache/ bleiben.");
+}
 
 function write(relativePath, data) {
   const file = join(OUT_DIR, relativePath);
@@ -53,9 +64,9 @@ function write(relativePath, data) {
 
 function today() { return new Date().toISOString().slice(0, 10); }
 
-/* Statusbericht — die einzige Datei, die IMMER geschrieben wird. Das
-   Frontend liest sie, um die Datenherkunft anzuzeigen. Fehlt sie, faellt
-   das Frontend auf den reinen Mock-Modus zurueck. */
+/* Interner Statusbericht — die einzige Datei, die IMMER geschrieben wird.
+   Die oeffentliche UI liest ausschliesslich den bewusst eingecheckten
+   UNAVAILABLE-Status unter quant/data/market/status.json. */
 function writeStatus(fields) {
   const status = {
     generatedAt: new Date().toISOString(),

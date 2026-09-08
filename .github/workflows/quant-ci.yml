@@ -59,6 +59,9 @@ jobs:
       - name: Keine Zugangsdaten in ausgelieferten Marktdaten
         run: node scripts/market/assert-no-secrets.mjs
 
+      - name: Keine ungeklärten Provider-Rohdaten in oeffentlichen Pfaden
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
       - name: Der Marktdatenabruf laeuft ohne Zugang fehlerfrei durch
         # Die wichtigste Eigenschaft des Abrufs: ein fehlender Schluessel ist
         # eine Konfigurationsfrage, kein Baufehler. Ohne Secret muss das
@@ -66,14 +69,13 @@ jobs:
         run: |
           node scripts/market/fetch-market-data.mjs
           node -e '
-            const s = require("./quant/data/market/status.json");
+            const s = require("./.market-cache/twelve-data/status.json");
             if (s.configured !== false || s.dataMode !== "mock") {
               throw new Error("Ohne Schluessel muss der Status mock/unkonfiguriert sein.");
             }
             console.log("Statusbericht korrekt: dataMode=" + s.dataMode);
           '
-          git diff --quiet quant/data/market/status.json || \
-            echo "Hinweis: Zeitstempel im Statusbericht geaendert (erwartet)."
+          git diff --exit-code -- quant/data/market
 
       - name: Anbieterbewertung laeuft
         run: node scripts/market/evaluate-provider.mjs twelve-data > /dev/null

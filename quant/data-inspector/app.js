@@ -37,6 +37,11 @@
     var profile = (view && view.profile) || {};
     return el("div", { class: "q-state" }, [
       el("b", { text: "Echte SEC-Daten · Primaerquelle" }),
+      el("div", { class: "q-provenance-tags" }, [
+        S.provenanceTag("MODE", "REAL", "strong"),
+        S.provenanceTag("FORM", "PRECOMPUTED", "neutral"),
+        S.provenanceTag("SOURCE", "SEC", "neutral")
+      ]),
       el("span", { text:
         "Alle Werte stammen aus data.sec.gov (Company Facts, XBRL). Abgeleitete "
         + "Kennzahlen sind in der Spalte Quelle als VU DERIVED gekennzeichnet und "

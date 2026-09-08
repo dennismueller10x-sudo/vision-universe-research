@@ -45,7 +45,11 @@
     ]));
     if (symbol) root.appendChild(S.stateBox("Kein Analysestand fuer " + symbol, "Fuer dieses Symbol liegt keine praekomputierte technische Analyse vor.", "empty"));
     var real = index.instruments.filter(function (r) { return !r.isMock; }), mock = index.instruments.filter(function (r) { return r.isMock; });
-    root.appendChild(C.section("Referenztitel (reale Tageskurse)", "Splitbereinigte Tageskurse aus dem Marktdatenbestand des Dashboards; Analyse-Lookback = gesamte verfuegbare Historie.", listOf(real)));
+    if (real.length) {
+      root.appendChild(C.section("Referenztitel (reale Tageskurse)", "Splitbereinigte Tageskurse aus dem Marktdatenbestand des Dashboards; Analyse-Lookback = gesamte verfuegbare Historie.", listOf(real)));
+    } else {
+      root.appendChild(S.stateBox("Reale Technical-Daten nicht oeffentlich verfuegbar", "Provider-Rohdaten bleiben bis zur geklaerten Redistribution im geschuetzten internen Datenpfad. Es wird nicht auf reale Ticker mit Mock-Kursen zurueckgefallen.", "warn"));
+    }
     root.appendChild(C.section("Synthetische Fixtures und Scan-Spitzen (Demo-Daten)", "Modelluniversum mit 20 Jahren Historie, u. a. die 4:1-Split-Fixture VUF011.", listOf(mock)));
     root.appendChild(scanSection());
   }
@@ -105,6 +109,12 @@
       ? ["Demo-Daten: synthetisches Universum (Seed „" + (meta.mockData ? meta.mockData.seed : "") + "“). Keine realen Unternehmen, keine realen Marktdaten."]
       : ["Reale Tageskurse (" + (file.priceSeriesType === "SPLIT_ADJUSTED" ? "splitbereinigt" : file.priceSeriesType) + ") aus dem Marktdatenbestand des Dashboards, Stand " + S.formatDateTime(file.sourceRevision) + ". Tagesschluss, keine Realtime-Daten."];
     return el("section", { class: "q-origin-bar", role: "note" }, [
+      el("div", { class: "q-provenance-tags" }, [
+        S.provenanceTag("MODE", file.isMock ? "MOCK" : "REAL", file.isMock ? "neutral" : "strong"),
+        S.provenanceTag("FORM", "PRECOMPUTED", "neutral"),
+        S.provenanceTag("SOURCE", file.isMock ? "MOCK" : String((meta.realData && meta.realData.provider) || "UNKNOWN").toUpperCase(), "neutral"),
+        S.provenanceTag("ELLIOTT", "BETA", "neutral")
+      ]),
       el("div", { class: "q-origin-row" }, [S.originBadge("marketData", file.isMock ? "mock" : "endOfDay"), el("span", { class: "q-chip", text: "Analyse-Lookback " + file.bundle.analysisLookback.bars + " Bars ab " + S.formatDate(file.bundle.analysisLookback.from) }), el("span", { class: "q-chip", text: "Anzeige ab " + S.formatDate(file.bars.from) })]),
       el("p", { class: "q-origin-note", text: lines[0] })
     ]);

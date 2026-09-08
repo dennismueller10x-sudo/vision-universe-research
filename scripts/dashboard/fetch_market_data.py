@@ -29,7 +29,8 @@ import price_semantics
 
 ROOT = Path(__file__).resolve().parents[2]
 UNIVERSE = ROOT / "dashboard" / "config" / "universe.json"
-OUTPUT = ROOT / "dashboard" / "data" / "market_data.json"
+PRIVATE_CACHE = ROOT / ".market-cache"
+OUTPUT = PRIVATE_CACHE / "dashboard" / "market_data.json"
 BASE_URL = "https://api.twelvedata.com/time_series"
 REQUEST_PAUSE_SECONDS = 8
 
@@ -91,6 +92,13 @@ def main():
     args = parser.parse_args()
     if not args.api_key:
         raise SystemExit("TWELVE_DATA_API_KEY is required.")
+    output = args.output.resolve()
+    try:
+        output.relative_to(PRIVATE_CACHE.resolve())
+    except ValueError as error:
+        raise SystemExit(
+            "Output rejected: Twelve Data raw bars must stay under .market-cache/."
+        ) from error
     symbols = load_symbols()
     data = {}
     for index, symbol in enumerate(symbols):
@@ -114,8 +122,8 @@ def main():
         "symbols": data,
         "status": "generated",
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
 
 if __name__ == "__main__":
     main()

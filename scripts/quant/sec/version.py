@@ -69,7 +69,12 @@ NORMALIZATION_SOURCE_DIGEST = (
 
 
 def normalization_source_digest():
-    """Hash of the modules that define normalization semantics."""
+    """Hash of the modules that define normalization semantics.
+
+    Git stores these Python sources with LF. A Windows checkout may expose the
+    identical blobs as CRLF through core.autocrlf; line-ending conversion does
+    not change Python semantics and must not look like a normalization change.
+    """
     import hashlib
     from pathlib import Path
 
@@ -77,7 +82,7 @@ def normalization_source_digest():
     digest = hashlib.sha256()
     for name in NORMALIZATION_SOURCES:
         digest.update(name.encode("utf-8"))
-        digest.update((here / name).read_bytes())
+        digest.update((here / name).read_bytes().replace(b"\r\n", b"\n"))
     return digest.hexdigest()
 
 

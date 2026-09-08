@@ -86,9 +86,14 @@ if (existsSync(marketFile)) {
   const md = JSON.parse(readFileSync(marketFile, "utf8"));
   realMeta = { adjustment: md.adjustment, semanticsVersion: md.semantics_version, generatedAt: md.generated_at_utc, interval: md.interval, provider: md.provider };
   const level = md.adjustment === "SPLIT_ADJUSTED" ? "SPLIT_ADJUSTED" : md.adjustment === "TOTAL_RETURN" ? "TOTAL_RETURN" : "RAW";
-  for (const sym of Object.keys(md.symbols)) {
-    realSeries[sym] = Canonical.fromRows(md.symbols[sym], { instrumentId: sym, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: level,
-      source: "dashboard/data/market_data.json", sourceRevision: md.generated_at_utc, meta: { declaredAdjustment: md.adjustment, semanticsVersion: md.semantics_version } });
+  const publicDisplayAllowed = md.public_data_state && md.public_data_state.display_allowed === true;
+  if (publicDisplayAllowed) {
+    for (const sym of Object.keys(md.symbols)) {
+      realSeries[sym] = Canonical.fromRows(md.symbols[sym], { instrumentId: sym, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: level,
+        source: "dashboard/data/market_data.json", sourceRevision: md.generated_at_utc, meta: { declaredAdjustment: md.adjustment, semanticsVersion: md.semantics_version } });
+    }
+  } else if (Object.keys(md.symbols || {}).length) {
+    console.log("     Provider-Reihen vorhanden, aber ohne explizite Public-Display-Freigabe — uebersprungen");
   }
   console.log(`     ${Object.keys(realSeries).length} Symbole, Bereinigung deklariert: ${md.adjustment}`);
 } else console.log("     keine Dashboard-Marktdaten vorhanden — reale Titel werden uebersprungen");
@@ -159,7 +164,17 @@ write("index.json", { generatedAt: new Date().toISOString(), instruments: index.
 write("meta.json", {
   generatedAt: new Date().toISOString(), bundleVersion: Analysis.ENGINE_BUNDLE_VERSION,
   methodologyVersions: { technical: METH.technical.methodologyVersion, elliott: METH.elliott.methodologyVersion },
-  methodologyHash: Hash.hashValue(METH), realData: realMeta ? { symbols: Object.keys(realSeries).length, adjustment: realMeta.adjustment, semanticsVersion: realMeta.semanticsVersion, sourceGeneratedAt: realMeta.generatedAt, benchmark: REAL_BENCHMARK, note: "Reale Tageskurse aus dem Dashboard-Marktdatenbestand, deklariert splitbereinigt. Anzeige gemaess bestehender Dashboard-Freigabe." } : null,
+  methodologyHash: Hash.hashValue(METH), realData: realMeta ? {
+    symbols: Object.keys(realSeries).length,
+    adjustment: realMeta.adjustment,
+    semanticsVersion: realMeta.semanticsVersion,
+    sourceGeneratedAt: realMeta.generatedAt,
+    provider: realMeta.provider || null,
+    benchmark: REAL_BENCHMARK,
+    note: Object.keys(realSeries).length
+      ? "Reale Tageskurse aus dem Dashboard-Marktdatenbestand. Oeffentliche Anzeige nur bei dokumentierter Freigabe."
+      : "Keine oeffentlich freigegebenen Provider-Kursdaten; Technical wird ausschliesslich aus Mock-Daten erzeugt."
+  } : null,
   mockData: { seed: dataset.meta.seed, dataSnapshotId: dataset.meta.dataSnapshotId, securities: universe.length, isMock: true },
   snapshots: store.count(), walkForwardCutoffs: WALKFORWARD_CUTOFFS
 });

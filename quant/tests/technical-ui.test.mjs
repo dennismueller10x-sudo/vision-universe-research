@@ -41,16 +41,24 @@ test("UI4 · Mobile: 390px-Breakpoint, horizontal scrollbarer Chart, touch-freun
   assert.match(css, /\.q-tchart \.sem-wave-developing\{[^}]*stroke:var\(--blue\)/, "Developing eigener Stil");
 });
 
-test("UI5 · Navigation fuehrt einen Technical-Tab; ausgelieferte Daten sind versioniert und als real/mock gekennzeichnet", () => {
+test("UI5 · Navigation fuehrt einen Technical-Tab; oeffentliche Technical-Daten sind versionierte Mock-Bundles", () => {
   assert.ok(read("ui/shell.js").includes('BASE + "technical/"'));
   const meta = JSON.parse(read("data/technical/meta.json")), index = JSON.parse(read("data/technical/index.json"));
   assert.equal(meta.methodologyVersions.technical, JSON.parse(read("methodology/technical-v1.json")).methodologyVersion);
   assert.ok(index.instruments.every((r) => typeof r.isMock === "boolean" && r.snapshotId && r.asOf));
-  assert.ok(index.instruments.some((r) => r.instrumentId === "NVDA" && !r.isMock), "NVDA Golden Case vorhanden");
-  const nvda = JSON.parse(read("data/technical/instruments/NVDA.json"));
-  assert.equal(nvda.bundle.priceSeriesType, "SPLIT_ADJUSTED");
-  assert.ok(nvda.bundle.analysisLookback.bars >= nvda.bars.timestamps.length, "Analyse-Lookback ≥ Anzeigefenster");
-  assert.ok(nvda.bundle.annotations.annotations.some((a) => a.type === "NOW_DIVIDER"));
-  assert.ok(nvda.bundle.elliott && nvda.bundle.elliott.primaryCount, "Elliott-Ergebnis fuer NVDA");
-  assert.ok(nvda.bundle.elliott.primaryCount.waves.some((w) => w.status === "CONFIRMED"), "historische Wave Map, nicht nur Zukunft");
+  assert.ok(index.instruments.length > 0 && index.instruments.every((r) => r.isMock),
+    "ohne freigegebene Providerdaten duerfen nur Mock-Bundles ausgeliefert werden");
+  const fixture = JSON.parse(read("data/technical/instruments/VUF011.json"));
+  assert.equal(fixture.isMock, true);
+  assert.equal(fixture.bundle.priceSeriesType, "SPLIT_ADJUSTED");
+  assert.ok(fixture.bundle.analysisLookback.bars >= fixture.bars.timestamps.length, "Analyse-Lookback ≥ Anzeigefenster");
+  assert.ok(fixture.bundle.annotations.annotations.some((a) => a.type === "NOW_DIVIDER"));
+  assert.ok(fixture.bundle.elliott, "Elliott-Beta-Ergebnis fuer synthetische Fixture");
+});
+
+test("UI6 · Provenienz nennt Modus, Form, Quelle und Beta ohne globalen Synthetik-Widerspruch", () => {
+  const shell = read("ui/shell.js"), app = read("technical/app.js");
+  for (const label of ["MODE", "FORM", "SOURCE", "PRECOMPUTED"]) assert.ok(shell.includes(label) || app.includes(label), label);
+  assert.ok(app.includes('provenanceTag("ELLIOTT", "BETA"'));
+  assert.doesNotMatch(shell, /Saemtliche Daten in diesem Bereich sind synthetisch/);
 });
