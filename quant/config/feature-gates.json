@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Feature-Gates fuer die statische Auslieferung. Die Anwendung laeuft auf GitHub Pages und hat keine Umgebungsvariablen; diese Datei ist ihr Gegenstueck. Sie steht im Repository und ist damit nachvollziehbar - eine Freischaltung ist ein Commit, kein Klick.",
+  "warning": "ENABLE_PUBLIC_LIVE_MARKET_DATA allein genuegt nicht. Die oeffentliche Anzeige verlangt zusaetzlich eine eingetragene Lizenzgrundlage in der MarketDataDisplayPolicy. Das Gate schaltet keine Erlaubnis frei, es setzt nur eine bereits erteilte um.",
+  "gates": {
+    "ENABLE_LIVE_MARKET_DATA": {
+      "enabled": false,
+      "reason": "Intraday-Daten stammen bei Tiingo aus dem IEX-Bestand des Free-Tarifs. Die Nutzungsbedingungen dafuer sind ungeprueft (provider-profiles.json: licensing.status = LEGAL_REVIEW_REQUIRED). Bis das geklaert ist, bleiben Intraday-Abrufe auch intern aus.",
+      "changedAt": "2026-09-07"
+    },
+    "ENABLE_PUBLIC_LIVE_MARKET_DATA": {
+      "enabled": false,
+      "reason": "Es liegt keine geprüfte Erlaubnis vor, Tiingo-Kurse oeffentlich anzuzeigen. Der Standard der Anzeigerichtlinie ist der strengste, und er gilt.",
+      "changedAt": "2026-09-07"
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "generatedAt": "2026-09-07T15:04:23.403Z",
+  "provider": "tiingo",
+  "plan": "free",
+  "verificationLevel": "RUNTIME_VERIFIED",
+  "note": "Jeder Befund in dieser Datei stammt aus einer echten Anfrage. Was hier nicht steht, wurde nicht gemessen. Die Belege sind bewusst als Aussagen und Anzahlen gefasst und nicht als Kurse, Betraege oder Verhaeltnisse: dieses Repository ist oeffentlich, und Marktdaten des Anbieters gehoeren nicht hinein. Die Rohwerte existieren nur fluechtig im Speicher des Pruflaufs.",
+  "run": {
+    "source": "github-actions",
+    "repository": "dennismueller10x-sudo/vision-universe-research",
+    "runId": "34136349043",
+    "runAttempt": "1",
+    "commit": "8cd2e0d05e14416e604ce046fc340e683b613539",
+    "ref": "claude/tiingo-phase4a"
+  },
+  "findings": [
+    {
+      "capability": "apiAccess",
+      "result": "PASSED",
+      "evidence": {
+        "name": "Apple Inc",
+        "exchange": "NASDAQ",
+        "historyFrom": "1980-12-12",
+        "historyTo": "2026-09-04"
+      },
+      "requests": 1,
+      "checkedAt": "2026-09-07T15:04:22.929Z"
+    },
+    {
+      "capability": "historyDepth",
+      "result": "PASSED",
+      "evidence": {
+        "requestedFrom": "1990-01-01",
+        "actualFrom": "1990-01-02",
+        "bars": 1517
+      },
+      "requests": 1,
+      "checkedAt": "2026-09-07T15:04:23.101Z"
+    },
+    {
+      "capability": "splitAdjustedPrices",
+      "result": "PASSED",
+      "evidence": {
+        "splitDay": "2021-07-20",
+        "rawSeriesJumpsAtSplitDay": true,
+        "rawJumpMatchesKnownSplitRatio": true,
+        "adjustedSeriesContinuousAtSplitDay": true,
+        "interpretation": "Der unbereinigte Kurs springt um den Splitfaktor, der bereinigte nicht. Splitbereinigung bestaetigt."
+      },
+      "requests": 1,
+      "checkedAt": "2026-09-07T15:04:23.171Z"
+    },
+    {
+      "capability": "splits",
+      "result": "PASSED",
+      "evidence": {
+        "flaggedDayCount": 1,
+        "flaggedDates": [
+          "2021-07-20"
+        ],
+        "allFlagsDifferFromOne": true,
+        "interpretation": "splitFactor kennzeichnet den Splittag in der Kursreihe."
+      },
+      "requests": 0,
+      "checkedAt": "2026-09-07T15:04:23.171Z"
+    },
+    {
+      "capability": "adjustedPrices",
+      "result": "PASSED",
+      "evidence": {
+        "exDate": "2024-03-14",
+        "priorDay": "2024-03-07",
+        "adjustedBelowRawBeforeExDate": true,
+        "factorStepAtExDateMatchesDividend": true,
+        "toleranceNote": "Abweichung des Faktorschritts unter 5 Basispunkten oder 35 % der Ausschuettungsrendite.",
+        "interpretation": "Der bereinigte Kurs vor dem Ex-Tag liegt unter dem unbereinigten. Die Dividende ist eingerechnet — das ist TOTAL_RETURN."
+      },
+      "requests": 1,
+      "checkedAt": "2026-09-07T15:04:23.250Z"
+    },
+    {
+      "capability": "dividends",
+      "result": "PASSED",
+      "evidence": {
+        "count": 4,
+        "exDates": [
+          "2024-03-14",
+          "2024-06-14",
+          "2024-09-13",
+          "2024-11-29"
+        ],
+        "allAmountsPositive": true
+      },
+      "requests": 0,
+      "checkedAt": "2026-09-07T15:04:23.250Z"
+    },
+    {
+      "capability": "symbolEncoding",
+      "result": "PASSED",
+      "evidence": {
+        "symbol": "BRK-B",
+        "bars": 25,
+        "reason": null
+      },
+      "requests": 1,
+      "checkedAt": "2026-09-07T15:04:23.315Z"
+    },
+    {
+      "capability": "intraday",
+      "result": "PASSED",
+      "evidence": {
+        "bars": 78,
+        "reason": null,
+        "message": null,
+        "note": "Technische Verfuegbarkeit. Ob die Daten oeffentlich angezeigt werden duerfen, ist eine Lizenzfrage und wird von MarketDataDisplayPolicy getrennt behandelt."
+      },
+      "requests": 1,
+      "checkedAt": "2026-09-07T15:04:23.403Z"
+    }
+  ],
+  "quotaUsed": {
+    "requests": 6,
+    "hour": "6/50",
+    "day": "6/1000",
+    "bytes": 457984
+  },
+  "confirmedCapabilities": [
+    "apiAccess",
+    "historyDepth",
+    "splitAdjustedPrices",
+    "splits",
+    "adjustedPrices",
+    "dividends",
+    "symbolEncoding",
+    "intraday"
+  ],
+  "refutedCapabilities": []
+}

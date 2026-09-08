@@ -26,7 +26,14 @@
     splitRatios: [2, 3, 4, 5, 6, 7, 8, 10, 20, 1.5],
     splitTolerance: 0.04,
     maxGapTradingDays: 5,       // fehlende Handelstage in Folge
-    minBars: 2
+    minBars: 2,
+
+    /* Schwellen fuer die Gegenprobe zwischen roher und bereinigter Spalte
+       (§24). Sie sind bewusst grosszuegig: der Test soll einen falsch
+       deklarierten Datenbestand finden, nicht Rundungsrauschen melden. */
+    adjustmentRatioTolerance: 0.001,  // ab wann gilt der Faktor als veraendert
+    splitJumpPct: 30,                 // ab wann gilt ein Rohsprung als Split
+    splitResidualPct: 15              // so viel darf die bereinigte Reihe dabei bewegen
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -70,6 +77,36 @@
     var previous = null;
     var suspectedSplits = [];
     var gaps = [];
+
+    /* Auf welcher Spalte wird die Stetigkeit geprueft?
+    
+       Diese Frage stellte sich nicht, solange eine Reihe nur eine Spalte
+       hatte. Tiingo liefert beide, und dann ist die Antwort entscheidend:
+       die ROHE Spalte springt an einem Split - das ist ihre Aufgabe, nicht
+       ihr Fehler. Wer sie auf Stetigkeit prueft, lehnt genau die Titel ab,
+       die eine Kapitalmassnahme hatten.
+
+       Das ist nicht hypothetisch: der erste Import gegen die echte API hat
+       AAPL, NVDA, AMZN und TSLA verworfen - alle vier mit Split im
+       Zeitraum, alle vier mit tadellos bereinigter Reihe daneben.
+
+       Traegt die Reihe eine belastbare bereinigte Spalte, wird auf ihr
+       geprueft. Sonst auf der rohen, und dann gilt der Verdacht wieder. */
+    var stufe = String(options.adjustmentStatus || "").toUpperCase();
+    var bereinigtBelastbar = stufe === "TOTAL_RETURN" || stufe === "SPLIT_ADJUSTED" ||
+                             options.adjustmentStatus === "adjusted" ||
+                             options.adjustmentStatus === "splitAdjusted";
+    var pruefeBereinigt = bereinigtBelastbar && bars.some(function (b) {
+      return b && isNum(b.adjustedClose) && b.adjustedClose > 0;
+    });
+
+    /** Der Wert, an dem die Stetigkeit gemessen wird. */
+    function verlaufswert(bar) {
+      if (pruefeBereinigt && isNum(bar.adjustedClose) && bar.adjustedClose > 0) {
+        return bar.adjustedClose;
+      }
+      return bar.close;
+    }
 
     for (var i = 0; i < bars.length; i++) {
       var bar = bars[i];
@@ -126,14 +163,27 @@
         findings.push(finding("warning", "non_positive_open", "Eroeffnungskurs nicht positiv.", where));
       }
 
-      if (previous && isNum(previous.close) && previous.close > 0) {
-        var change = c / previous.close - 1;
+      var vorher = previous ? verlaufswert(previous) : null;
+      var jetzt = verlaufswert(bar);
+      if (previous && isNum(vorher) && vorher > 0 && isNum(jetzt) && jetzt > 0) {
+        var change = jetzt / vorher - 1;
         var movePct = Math.abs(change) * 100;
         if (movePct > config.maxDailyMovePct) {
-          var split = looksLikeSplit(previous.close / c, config);
-          if (split) {
+          var split = looksLikeSplit(vorher / jetzt, config);
+          /* Ein Tag, den der Anbieter selbst als Splittag kennzeichnet,
+             erklaert seinen eigenen Sprung. Das ist eine dokumentierte
+             Kapitalmassnahme und kein Verdachtsfall - auch dann nicht, wenn
+             nur die rohe Spalte vorliegt. */
+          var angekuendigt = isNum(bar.splitFactor) && Math.abs(bar.splitFactor - 1) > 1e-9;
+          if (angekuendigt) {
+            findings.push(finding("info", "announced_split",
+              "Kurssprung von " + round(movePct, 1) + " % am " + bar.date + " faellt mit einem " +
+              "vom Anbieter gekennzeichneten Split zusammen (Faktor " + bar.splitFactor + ")." +
+              (pruefeBereinigt ? "" : " Die Reihe traegt keine belastbare bereinigte Spalte; " +
+               "fuer Kennzahlen ist sie damit nur eingeschraenkt brauchbar."), where));
+          } else if (split) {
             suspectedSplits.push({ date: bar.date, ratio: split.ratio, direction: split.direction,
-                                   from: previous.close, to: c });
+                                   from: vorher, to: jetzt });
             findings.push(finding("error", "suspected_unadjusted_split",
               "Kurssprung von " + round(movePct, 1) + " % am " + bar.date + " entspricht einem " +
               split.ratio + ":1-Verhaeltnis. Das ist mit hoher Wahrscheinlichkeit ein nicht bereinigter " +
@@ -183,6 +233,10 @@
     var errors = findings.filter(function (f) { return f.severity === "error"; });
     var stats = {
       bars: bars.length, usable: usable.length,
+      /* Worauf die Stetigkeitspruefung lief. Ohne diese Angabe laesst sich
+         ein Befund nicht einordnen: "kein Sprung gefunden" bedeutet auf der
+         bereinigten Spalte etwas anderes als auf der rohen. */
+      continuityBasis: pruefeBereinigt ? "adjustedClose" : "close",
       first: usable.length ? usable[0].date : null,
       last: usable.length ? usable[usable.length - 1].date : null,
       suspectedSplits: suspectedSplits.length,
@@ -220,7 +274,200 @@
     return { results: results, summary: summary };
   }
 
-  var api = { DEFAULTS: DEFAULTS, validateBars: validateBars, validateBatch: validateBatch, looksLikeSplit: looksLikeSplit };
+  /* =====================================================================
+     GEGENPROBE ZWISCHEN ROHER UND BEREINIGTER SPALTE (Phase 4A, §24)
+
+     Bis hierher prueft die Datei eine Reihe gegen sich selbst. Tiingo
+     liefert beide Spalten nebeneinander - und damit laesst sich etwas
+     pruefen, was vorher nicht ging: ob die bereinigte Spalte wirklich
+     bereinigt ist.
+
+     Das ist kein akademischer Punkt. Der gefaehrliche Fall ist nicht die
+     fehlende Bereinigung, sondern die behauptete: eine Reihe, die
+     "adjClose" heisst und in Wahrheit nur die Rohwerte kopiert, sieht
+     sauber aus und erzeugt trotzdem falsche Renditen.
+
+     Die Pruefung leitet die Stufe AUS DEN DATEN ab und vergleicht sie mit
+     der behaupteten. Sie hebt nie an - eine Reihe, die sich besser
+     verhaelt als deklariert, bleibt deklariert. Sie widerspricht nur.
+     ===================================================================== */
+
+  /**
+   * Der kumulierte Bereinigungsfaktor je Tag: bereinigt / roh.
+   *
+   * Er aendert sich genau an Split- und Ausschuettungstagen und ist
+   * dazwischen konstant. Das macht ihn zum eigentlichen Messinstrument:
+   * eine Spalte, die sich an einem Dividendenstichtag nicht ruehrt, hat
+   * die Dividende nicht eingerechnet - egal wie sie heisst.
+   */
+  function adjustmentFactors(bars) {
+    var out = [];
+    for (var i = 0; i < bars.length; i++) {
+      var b = bars[i];
+      var f = (isNum(b.close) && b.close > 0 && isNum(b.adjustedClose) && b.adjustedClose > 0)
+        ? b.adjustedClose / b.close : null;
+      out.push({ date: b.date, factor: f, close: b.close, adjustedClose: b.adjustedClose,
+                 splitFactor: isNum(b.splitFactor) ? b.splitFactor : null,
+                 dividend: isNum(b.dividend) ? b.dividend : null });
+    }
+    return out;
+  }
+
+  /**
+   * Prueft die bereinigte Spalte gegen die rohe.
+   *
+   * @param {Array}  bars    aufsteigend, mit close und adjustedClose
+   * @param {object} options {claimedStatus, config}
+   * @returns {{ok, inferredStatus, claimedStatus, findings, observed}}
+   *
+   * inferredStatus ist bewusst zurueckhaltend: ohne ein Ereignis im
+   * Zeitraum sind alle Stufen ununterscheidbar, und dann lautet die
+   * Antwort UNKNOWN. Eine Reihe ohne Split und ohne Dividende beweist
+   * nichts - auch nicht das Gegenteil.
+   */
+  function validateAdjustmentConsistency(bars, options) {
+    options = options || {};
+    var config = Object.assign({}, DEFAULTS, options.config || {});
+    var claimed = options.claimedStatus || null;
+    var findings = [];
+
+    var factors = adjustmentFactors(bars || []);
+    var withFactor = factors.filter(function (f) { return f.factor !== null; });
+
+    var observed = {
+      bars: factors.length,
+      barsWithBothColumns: withFactor.length,
+      splitEvents: [], dividendEvents: [],
+      splitEvidence: [], dividendEvidence: [],
+      factorFirst: null, factorLast: null, factorChanges: 0
+    };
+
+    if (withFactor.length < 2) {
+      findings.push(finding("info", "no_adjusted_column",
+        "Keine bereinigte Spalte vorhanden. Ohne sie ist die Bereinigungsstufe aus den " +
+        "Daten nicht ableitbar - das ist kein Fehler, nur eine Grenze der Pruefung."));
+      return { ok: true, inferredStatus: "UNKNOWN", claimedStatus: claimed,
+               findings: findings, observed: observed };
+    }
+
+    observed.factorFirst = round(withFactor[0].factor, 6);
+    observed.factorLast = round(withFactor[withFactor.length - 1].factor, 6);
+
+    for (var i = 1; i < factors.length; i++) {
+      var prev = factors[i - 1], cur = factors[i];
+
+      var istSplittag = cur.splitFactor !== null && Math.abs(cur.splitFactor - 1) > 1e-9;
+      var istDividendentag = cur.dividend !== null && cur.dividend > 0;
+      if (istSplittag) observed.splitEvents.push({ date: cur.date, factor: cur.splitFactor });
+      if (istDividendentag) observed.dividendEvents.push({ date: cur.date, amount: cur.dividend });
+
+      if (prev.factor === null || cur.factor === null) continue;
+
+      var faktorAenderung = Math.abs(cur.factor / prev.factor - 1);
+      if (faktorAenderung > config.adjustmentRatioTolerance) observed.factorChanges++;
+
+      /* Split: die rohe Reihe springt, die bereinigte nicht. Die Richtung
+         der Konvention ist dabei gleichgueltig - geprueft wird der
+         Unterschied zwischen den Spalten, nicht ihr Vorzeichen. */
+      if (istSplittag && isNum(prev.close) && prev.close > 0) {
+        var rohSprung = Math.abs(cur.close / prev.close - 1) * 100;
+        var bereinigtSprung = Math.abs(cur.adjustedClose / prev.adjustedClose - 1) * 100;
+        if (rohSprung >= config.splitJumpPct && bereinigtSprung <= config.splitResidualPct) {
+          observed.splitEvidence.push({ date: cur.date, rawMovePct: round(rohSprung, 2),
+                                        adjustedMovePct: round(bereinigtSprung, 2) });
+        } else if (rohSprung >= config.splitJumpPct && bereinigtSprung > config.splitResidualPct) {
+          /* Eine Beobachtung, kein Fehler. Dass die bereinigte Spalte den
+             Split nicht mitmacht, ist bei einer ehrlich als RAW
+             deklarierten Reihe genau das Erwartete. Zum Fehler wird es
+             erst, wenn die Reihe etwas anderes von sich behauptet - und
+             das entscheidet weiter unten der Widerspruch. */
+          findings.push(finding("warning", "split_not_adjusted",
+            "Am " + cur.date + " springen beide Spalten (roh " + round(rohSprung, 1) +
+            " %, bereinigt " + round(bereinigtSprung, 1) + " %). Die bereinigte Spalte ist an " +
+            "diesem Splittag nicht bereinigt.", { date: cur.date }));
+        }
+      }
+
+      /* Ausschuettung: der Faktor muss sich bewegen. Tut er es nicht, ist
+         die Dividende nicht eingerechnet - die Spalte ist dann hoechstens
+         splitbereinigt, egal wie sie heisst. */
+      if (istDividendentag && isNum(prev.close) && prev.close > 0) {
+        var erwartet = cur.dividend / prev.close;
+        if (faktorAenderung > config.adjustmentRatioTolerance) {
+          observed.dividendEvidence.push({
+            date: cur.date, amount: cur.dividend,
+            expectedFactorStep: round(erwartet, 6),
+            observedFactorStep: round(faktorAenderung, 6)
+          });
+        } else if (erwartet > config.adjustmentRatioTolerance) {
+          findings.push(finding("warning", "dividend_not_in_adjusted",
+            "Am Ex-Tag " + cur.date + " (" + cur.dividend + ") aendert sich das Verhaeltnis " +
+            "zwischen bereinigter und roher Spalte nicht. Die Ausschuettung ist nicht " +
+            "eingerechnet.", { date: cur.date }));
+        }
+      }
+    }
+
+    /* Die Ableitung. Reihenfolge zaehlt: eine Dividende belegt die hoehere
+       Stufe, ein Split nur die mittlere. */
+    var unbereinigtBeobachtet = findings.some(function (f) {
+      return f.code === "split_not_adjusted" || f.code === "dividend_not_in_adjusted";
+    });
+
+    var inferred = "UNKNOWN";
+    if (observed.dividendEvidence.length > 0) inferred = "TOTAL_RETURN";
+    else if (observed.splitEvidence.length > 0) inferred = "SPLIT_ADJUSTED";
+    else if (unbereinigtBeobachtet && observed.factorChanges === 0) {
+      /* Ein Ereignis lag im Zeitraum, die Spalte hat es nicht mitgemacht,
+         und der Faktor stand ueber die ganze Reihe still: die bereinigte
+         Spalte bereinigt nichts. Das ist eine Aussage, kein fehlender
+         Befund - und sie stuetzt sich auf eine Beobachtung, nicht auf die
+         blosse Anwesenheit eines Ereignisses im Kalender. */
+      inferred = "RAW";
+    }
+    observed.inferredFrom = observed.dividendEvidence.length ? "dividend"
+      : (observed.splitEvidence.length ? "split"
+        : (unbereinigtBeobachtet ? "absence" : "no_events"));
+
+    /* Der Widerspruch.
+    
+       Er stuetzt sich auf WIDERLEGUNG, nicht auf die Hoehe des positiven
+       Befunds. Der Unterschied ist nicht akademisch: AMZN und TSLA zahlen
+       keine Dividende. An ihnen laesst sich eine Splitbereinigung zeigen
+       und eine Dividendenbereinigung nicht - nicht weil sie fehlte,
+       sondern weil es nichts zu bereinigen gibt. Bei einem Titel ohne
+       Ausschuettung sind TOTAL_RETURN und SPLIT_ADJUSTED dieselbe Reihe.
+       
+       Ein Rangvergleich haette beide verworfen. Der erste Import gegen die
+       echte API hat genau das getan, und der Fehler lag nicht in den Daten.
+       
+       Widerlegt ist eine Stufe nur, wenn ein Ereignis im Zeitraum lag und
+       die Spalte es nicht mitgemacht hat. */
+    var RANG = { UNKNOWN: -1, RAW: 0, SPLIT_ADJUSTED: 1, TOTAL_RETURN: 2 };
+    var hoechsteMoegliche = null;   // null = nichts widerlegt
+    if (findings.some(function (f) { return f.code === "split_not_adjusted"; })) {
+      hoechsteMoegliche = "RAW";
+    } else if (findings.some(function (f) { return f.code === "dividend_not_in_adjusted"; })) {
+      hoechsteMoegliche = "SPLIT_ADJUSTED";
+    }
+    observed.refutedAbove = hoechsteMoegliche;
+
+    if (claimed && hoechsteMoegliche && RANG[claimed] !== undefined
+        && RANG[claimed] > RANG[hoechsteMoegliche]) {
+      findings.push(finding("error", "adjustment_status_contradicted",
+        "Die Reihe ist als " + claimed + " deklariert, hoechstens aber " + hoechsteMoegliche +
+        " - ein Ereignis im Zeitraum ist in der bereinigten Spalte nicht angekommen. Auf dieser " +
+        "Grundlage gerechnete Renditen waeren falsch, nicht nur ungenau."));
+    }
+
+    var errors = findings.filter(function (f) { return f.severity === "error"; });
+    return { ok: errors.length === 0, inferredStatus: inferred, claimedStatus: claimed,
+             findings: findings, observed: observed };
+  }
+
+  var api = { DEFAULTS: DEFAULTS, validateBars: validateBars, validateBatch: validateBatch,
+              looksLikeSplit: looksLikeSplit, adjustmentFactors: adjustmentFactors,
+              validateAdjustmentConsistency: validateAdjustmentConsistency };
 
   if (isNode) module.exports = api;
   else global.VUMarketQuality = api;
