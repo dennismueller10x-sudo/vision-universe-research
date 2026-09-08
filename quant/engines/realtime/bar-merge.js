@@ -28,7 +28,11 @@
      R1 IDENTITAET   Eine Bar wird durch ihren Zeiteimer bestimmt, nicht
                      durch ihren Zeitstempel. Der Eimer entsteht aus der
                      Ortszeit der Boerse - deshalb ueberlebt er die
-                     Zeitumstellung.
+                     Zeitumstellung UND den Sitzungswechsel: 09:30 ist
+                     derselbe Eimer, ob die Bar aus der Vorboerse
+                     hereinlief oder aus der Eroeffnung. Eine zweite
+                     Kerze an der Sitzungsgrenze kann dadurch nicht
+                     entstehen.
      R2 VORRANG      Bestaetigt schlaegt vorlaeufig. Eine historische Bar
                      ersetzt eine Live-Bar im selben Eimer, nie umgekehrt.
                      Bestaetigt ist eine Bar aber erst, wenn ihre Periode
@@ -56,6 +60,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var MarketHours = isNode ? require("./market-hours.js") : global.VURealtime.MarketHours;
   var Staleness = isNode ? require("./staleness.js") : global.VURealtime.Staleness;
+  var SessionPolicy = isNode ? require("./session-policy.js") : global.VURealtime.SessionPolicy;
 
   var MERGE_VERSION = "bar-merge-1.0.0";
 
@@ -255,9 +260,24 @@
            genau darueber liesse sich ein abgeschlossener Schlusskurs
            nachtraeglich bewegen. */
         confirmed: bucketClosed(bucket),
+        /* Zwei Felder, weil zwei Leser.
+
+           `sessionType` ist die Schreibweise des kanonischen
+           Technical-Modells (canonical-bars.js) und kennt genau drei
+           Werte. Daran haengt der Filter, der erweiterte Bars aus der
+           technischen Analyse heraushaelt - er wird hier bedient und
+           nicht neu erfunden.
+
+           `session` ist die feinere Auskunft fuer Chart und Anzeige:
+           Vorboerse und Nachboerse sind fuer den Nutzer verschiedene
+           Dinge, fuer den Timeframe-Aggregator dagegen beide schlicht
+           "nicht regulaer". */
         sessionType: cfg.timeframe === "1D" || cfg.timeframe === "EOD"
           ? "AGGREGATED"
           : (session.phase === "REGULAR" ? "REGULAR" : "EXTENDED"),
+        session: SessionPolicy.sessionOf(session.phase),
+        isExtendedHours: cfg.timeframe === "1D" || cfg.timeframe === "EOD"
+          ? false : SessionPolicy.isExtended(SessionPolicy.sessionOf(session.phase)),
         receivedAt: toMs(raw.receivedAt) === null ? now() : toMs(raw.receivedAt),
         source: raw.source || null,
         dataClass: raw.dataClass || null

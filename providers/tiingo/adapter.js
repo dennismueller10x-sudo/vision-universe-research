@@ -149,7 +149,20 @@ const EVIDENCE_TO_CAPABILITY = {
   realtimeQuote:       { set: "market",    capability: "realtime" },
   delayedQuote:        { set: "market",    capability: "delayed" },
   realtimeStream:      { set: "market",    capability: "websocket" },
-  historicalIntraday:  { set: "market",    capability: "historicalIntraday" }
+  historicalIntraday:  { set: "market",    capability: "historicalIntraday" },
+
+  /* Erweiterte Handelszeiten, zwei getrennte Befunde.
+
+     extendedHoursBars belegt, dass der IEX-Endpunkt mit afterHours=true
+     ueberhaupt Bars ausserhalb 09:30-16:00 zurueckgibt. Das ist eine
+     Aussage ueber den Bestand.
+
+     extendedHoursRealtime belegt, dass diese Bars WAEHREND der
+     erweiterten Sitzung aktuell sind. Das ist eine Aussage ueber den
+     Tarif, und sie laesst sich nur zwischen 04:00 und 09:30 oder
+     zwischen 16:00 und 20:00 New Yorker Zeit ueberhaupt treffen. */
+  extendedHoursBars:     { set: "market",  capability: "extendedHours" },
+  extendedHoursRealtime: { set: "market",  capability: "extendedHoursRealtime" }
 };
 
 /** Liest den Bericht, wenn es einen gibt. Kein Bericht ist kein Fehler. */
@@ -234,6 +247,15 @@ function freePlanCapabilities(overrides, report) {
 
       intraday: null,          // IEX, Verfuegbarkeit im Free-Tarif offen
       historicalIntraday: null,
+
+      /* Der IEX-Endpunkt kennt einen Schalter fuer erweiterte Zeiten.
+         Dass es ihn gibt, ist keine Zusage, dass dieser Zugang Daten
+         dahinter hat - und schon gar nicht, dass sie waehrend der
+         Vorboerse aktuell sind. Beide bleiben ungeprueft, bis
+         scripts/market/verify-tiingo-realtime.mjs sie in einer echten
+         erweiterten Sitzung gemessen hat. */
+      extendedHours: null,
+      extendedHoursRealtime: null,
       realtime: null,
       websocket: null,
       delayed: null,
@@ -267,6 +289,11 @@ function freePlanCapabilities(overrides, report) {
         "IEX-Daten sind laut Anbieter im Free-Tarif fuer nicht-anzeigende Nutzung enthalten. " +
         "Was das konkret zulaesst, ist eine Lizenz- und keine technische Frage - siehe " +
         "MarketDataDisplayPolicy.",
+      extendedHours:
+        "Der IEX-Endpunkt nimmt afterHours entgegen. Ob dieser Zugang dahinter Daten hat und " +
+        "ob sie waehrend der erweiterten Sitzung aktuell sind, sind zwei verschiedene Fragen " +
+        "und beide ungeprueft. Der Nachweis laesst sich nur zwischen 04:00 und 09:30 oder " +
+        "zwischen 16:00 und 20:00 New Yorker Zeit fuehren.",
       requestsPerHour:
         "50 Anfragen pro Stunde sind der eigentliche Engpass, nicht die 1000 pro Tag. " +
         "Ein Erstimport muss das Stundenfenster einplanen."
@@ -616,6 +643,17 @@ function createTiingoProvider(options) {
       if (opts.from) params.startDate = opts.from;
       if (opts.to) params.endDate = opts.to;
 
+      /* Erweiterte Zeiten werden angefragt, wenn der Aufrufer sie
+         ausdruecklich will (Nachweislauf) oder die Faehigkeit belegt ist.
+         Nicht auf Verdacht: eine Anfrage mit afterHours=true gegen einen
+         Zugang, der das nicht hat, kostet Kontingent und liefert im
+         besten Fall dieselben Bars - im schlechteren eine Fehlermeldung,
+         die dann faelschlich nach "Intraday geht nicht" aussieht. */
+      const willExtended = opts.extendedHours === true ||
+        (opts.extendedHours !== false &&
+         Capabilities.supports(capabilities, "market", "extendedHours"));
+      if (willExtended) params.afterHours = "true";
+
       return client.request({
         kind: "intradayBars",
         url: url("/iex/" + encodeURIComponent(mapping.symbol) + "/prices", params),
@@ -626,6 +664,10 @@ function createTiingoProvider(options) {
           return {
             securityId: securityId,
             interval: params.resampleFreq,
+            /* Was angefragt wurde, nicht was vermutet wird. Der
+               Nachweislauf vergleicht genau das gegen die Zeitstempel,
+               die zurueckkamen. */
+            extendedHoursRequested: willExtended,
             /* `date` ist der Handelstag, `timestamp` der Zeitpunkt darin.
                Tiingo liefert beides in einem Feld; die Trennung passiert
                hier, weil alles Nachgelagerte den Handelstag unter `date`

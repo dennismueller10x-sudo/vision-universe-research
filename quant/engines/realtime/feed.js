@@ -42,6 +42,7 @@
   var BarMerge = isNode ? require("./bar-merge.js") : global.VURealtime.BarMerge;
   var DataStatus = isNode ? require("./data-status.js") : global.VURealtime.DataStatus;
   var Transport = isNode ? require("./transport.js") : global.VURealtime.Transport;
+  var SessionPolicy = isNode ? require("./session-policy.js") : global.VURealtime.SessionPolicy;
 
   var FEED_VERSION = "live-feed-1.0.0";
 
@@ -93,6 +94,7 @@
     var activeTransport = null;
     var lastStatus = null;
     var lastSuccessfulUpdate = null;
+    var lastSession = null;
     var watchdog = null;
     var stopped = true;
     var backfillInFlight = false;
@@ -100,6 +102,7 @@
     var diag = {
       selections: 0, downgrades: 0, upgrades: 0, backfills: 0,
       barsApplied: 0, ticksApplied: 0, statusChanges: 0,
+      sessionTransitions: 0, lastSessionTransition: null,
       lastFallbackReason: null, lastError: null
     };
 
@@ -115,6 +118,27 @@
       return inv;
     }
 
+    /* Erwarten wir in der laufenden Sitzung ueberhaupt neue Daten?
+       
+       Die Frage entscheidet, ob ein stiller Kurs ein Befund ist. Sie an
+       einem festen Schalter haengen zu lassen war falsch: waehrend der
+       Nachboerse wurde dann nie etwas erwartet - auch dann nicht, wenn
+       der Zugang nachweislich Echtzeit in erweiterten Zeiten liefert.
+       Die Folge war ein Feed, der Daten bekam, sie einsortierte und
+       trotzdem "BOERSE GESCHLOSSEN" darueber schrieb.
+       
+       Richtig ist die Kopplung an die Faehigkeit: wir erwarten in einer
+       erweiterten Sitzung genau dann Aktualisierungen, wenn der Zugang
+       belegt hat, dass er sie dort liefert. Ist das ungeprueft, gibt es
+       keine Erwartung - und damit auch keinen falschen Alarm. */
+    function expectsExtendedUpdates() {
+      if (opts.includeExtended === true) return true;
+      if (opts.includeExtended === false) return false;
+      return SessionPolicy.allowsLiveLabel(
+        currentSession().session,
+        negotiation.capabilities || opts.capabilities || null);
+    }
+
     function currentStaleness(dataClass) {
       return Staleness.evaluate({
         dataClass: dataClass || activeClass || DataClass.TERMINAL_CLASS,
@@ -122,18 +146,59 @@
         receivedAt: series.lastReceivedAt(),
         now: now(), interval: interval,
         calendar: calendar, exchange: exchange,
+        /* Den bereits ermittelten Sitzungsbefund weiterreichen, statt ihn
+           dort ein zweites Mal berechnen zu lassen. */
+        session: currentSession(),
         thresholds: thresholds,
-        includeExtended: opts.includeExtended === true
+        includeExtended: expectsExtendedUpdates()
       });
+    }
+
+    /* Die laufende Sitzung, in Produktschreibweise.
+
+       Je Minute gemerkt, aus demselben Grund wie der Zeiteimer in
+       bar-merge.js und mit derselben Begruendung: eine Sitzungsgrenze
+       liegt immer auf einer vollen Minute, und Zeitzonen versetzen um
+       volle Minuten - der Schluessel ist damit exakt und nicht genaehert.
+
+       Ohne den Merker kostete jeder Tick drei Kalenderabfragen: eine fuer
+       die Sitzung, eine fuer die Erwartungshaltung der Verfallspruefung,
+       eine in der Verfallspruefung selbst. Gemessen waren das 22 statt 9
+       Mikrosekunden je Tick - fuer dreimal dieselbe Antwort. */
+    var sessionMemoKey = null;
+    var sessionMemoValue = null;
+    function currentSession() {
+      var key = Math.floor(now() / 60000);
+      if (key !== sessionMemoKey) {
+        sessionMemoKey = key;
+        sessionMemoValue = SessionPolicy.sessionAt(now(), { calendar: calendar, exchange: exchange });
+      }
+      return sessionMemoValue;
+    }
+
+    /* Welche Sprossen faellt die aktuelle Sitzung weg?
+       Das Ergebnis geht als `suppress` in dieselbe Auswahl wie ein
+       Netzfehler - die Fallback-Engine bleibt die eine Stelle, an der
+       entschieden wird, welche Datenklasse gezeichnet wird. */
+    function sessionRestriction(session) {
+      if (opts.extendedHours === "ignore") return { suppress: [], reason: null };
+      return SessionPolicy.restrict(
+        (session || currentSession()).session,
+        negotiation.capabilities || opts.capabilities || null);
     }
 
     function reselect(reasonLabel) {
       var st = {};
       if (activeClass) st[activeClass] = currentStaleness(activeClass);
+      var session = currentSession();
+      var restriction = sessionRestriction(session);
       var next = Fallback.select({
         negotiation: negotiation, runtime: runtime,
-        inventory: inventory(), staleness: st
+        inventory: inventory(), staleness: st,
+        suppress: restriction.suppress
       });
+      next.session = session;
+      next.sessionReason = restriction.reason;
       var cmp = Fallback.compare(selection, next);
       selection = next;
       diag.selections++;
@@ -362,6 +427,26 @@
 
     function tickWatchdog() {
       if (stopped) return;
+
+      /* Ein Sitzungswechsel folgt aus keinem Datenpunkt: um 16:00 New
+         Yorker Zeit kommt nichts herein, es hoert nur etwas auf. Ohne
+         diese Pruefung stuende "LIVE · REGULAR" noch um 22:30 deutscher
+         Zeit da - und genau das ist der Fehler, den dieser Workstream
+         verhindern soll. */
+      var session = currentSession();
+      var wechsel = SessionPolicy.transition(lastSession, session);
+      lastSession = session;
+      if (wechsel) {
+        diag.sessionTransitions++;
+        diag.lastSessionTransition = wechsel.from + "->" + wechsel.to;
+        var neu = reselect("sessionChange:" + wechsel.to);
+        if (neu.selection.selected !== activeClass) {
+          startFor(neu.selection.selected);
+        } else {
+          publish();
+        }
+      }
+
       if (activeClass && activeClass !== DataClass.TERMINAL_CLASS) {
         var st = currentStaleness(activeClass);
         if (Staleness.shouldFallback(st)) {
@@ -405,11 +490,19 @@
 
     function buildStatus() {
       var st = currentStaleness(activeClass);
+      var session = currentSession();
       return DataStatus.derive({
         connection: machine.snapshot(),
         selection: selection || { selected: activeClass || DataClass.TERMINAL_CLASS },
         negotiation: negotiation,
         staleness: st,
+        session: session,
+        /* Ob in dieser Sitzung ueberhaupt "LIVE" stehen darf, entscheidet
+           die Sitzungsrichtlinie - nicht die Anzeige. Waehrend der
+           Nachboerse ohne belegte Echtzeit ist die Antwort nein, auch
+           wenn Daten hereinkommen. */
+        sessionAllowsLive: SessionPolicy.allowsLiveLabel(
+          session.session, negotiation.capabilities || opts.capabilities || null),
         lastTimestamp: series.lastTimestamp(),
         timezone: opts.displayTimezone
       });
@@ -441,6 +534,7 @@
 
       start: function () {
         stopped = false;
+        lastSession = currentSession();
         var res = reselect("start");
         startFor(res.selection.selected);
         arm();
@@ -474,6 +568,7 @@
       machine: function () { return machine; },
       staleness: function () { return currentStaleness(activeClass); },
       activeDataClass: function () { return activeClass; },
+      session: function () { return currentSession(); },
 
       /** §24 - Diagnose. Enthaelt keinen Schluessel und keine Kurse. */
       diagnostics: function () {
@@ -500,6 +595,9 @@
           stalenessLevel: st.level,
           ageMs: st.ageMs,
           sessionPhase: st.session ? st.session.phase : null,
+          session: lastSession ? lastSession.session : null,
+          sessionIsExtended: lastSession ? lastSession.isExtended : null,
+          sessionRestriction: selection ? selection.sessionReason || null : null,
           mergeStats: series.stats(),
           requiresReload: series.requiresReload(),
           counters: JSON.parse(JSON.stringify(diag)),

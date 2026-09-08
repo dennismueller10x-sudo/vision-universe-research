@@ -546,6 +546,11 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
 }
 .vu-datastatus__dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
 .vu-datastatus__detail{font-weight:500;letter-spacing:0;opacity:.85}
+/* Die Sitzung traegt dasselbe Gewicht wie das Etikett davor: sie ist
+   Teil der Aussage, nicht ein Zusatz zum Zeitstempel. */
+.vu-datastatus__session{font-weight:600;letter-spacing:.04em;opacity:.75}
+.vu-datastatus__session::before{content:"·";margin-right:6px;opacity:.5}
+.vu-datastatus__detail::before{content:"·";margin-right:6px;opacity:.5}
 .vu-datastatus--live{background:var(--green-bg);color:var(--green-ink)}
 .vu-datastatus--live .vu-datastatus__dot{animation:vu-datastatus-pulse 2s ease-in-out infinite}
 .vu-datastatus--warn{background:var(--yellow-bg);color:var(--yellow)}

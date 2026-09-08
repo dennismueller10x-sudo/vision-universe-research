@@ -47,6 +47,7 @@ const engines = join(root, "quant", "engines");
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
 const TiingoRealtime = require(join(root, "providers", "tiingo", "realtime.js"));
 const MarketHours = require(join(engines, "realtime", "market-hours.js"));
+const SessionPolicy = require(join(engines, "realtime", "session-policy.js"));
 
 const AS_JSON = process.argv.includes("--json");
 const WITH_STREAM = process.argv.includes("--with-stream");
@@ -225,6 +226,92 @@ async function main() {
     }, 0);
   }
 
+  /* ------------------------------- 2b. Erweiterte Handelszeiten */
+
+  /* Zwei Fragen, zwei Befunde - und die zweite laesst sich nur in einer
+     erweiterten Sitzung beantworten.
+
+     Der Vergleich laeuft ueber die Zeitstempel: kommen mit
+     afterHours=true Bars zurueck, die ausserhalb 09:30-16:00 New Yorker
+     Zeit liegen? Das ist eine Aussage ueber den Bestand und jederzeit
+     messbar. Ob diese Bars waehrend der Vorboerse auch AKTUELL sind,
+     zeigt nur ein Lauf zwischen 04:00 und 09:30 bzw. 16:00 und 20:00. */
+  const jetzt = SessionPolicy.sessionAt(Date.now(), { calendar, exchange: "XNYS" });
+  const extra = await provider.getIntradayBars(SYMBOL, {
+    interval: "5min", from: von, extendedHours: true
+  });
+
+  if (!extra.available) {
+    record("extendedHoursBars", befund(extra), { reason: extra.reason || null }, 1);
+    record("extendedHoursRealtime", "UNKNOWN", { reason: "Abruf nicht verfuegbar." }, 0);
+  } else {
+    const eBars = extra.data?.bars || [];
+    /* Welche Bars liegen ausserhalb der regulaeren Sitzung? Gemessen an
+       der Boersenortszeit, nicht an UTC - sonst zaehlte die halbe
+       regulaere Sitzung als erweitert. */
+    const sessionsJeBar = eBars.map((b) =>
+      SessionPolicy.sessionAt(b.timestamp || b.date, { calendar, exchange: "XNYS" }).session);
+    const preCount = sessionsJeBar.filter((x) => x === "PRE_MARKET").length;
+    const afterCount = sessionsJeBar.filter((x) => x === "AFTER_HOURS").length;
+    const regularCount = sessionsJeBar.filter((x) => x === "REGULAR").length;
+    const hatErweiterte = preCount + afterCount > 0;
+
+    record("extendedHoursBars", hatErweiterte ? "PASSED" : "FAILED", {
+      requested: extra.data?.extendedHoursRequested === true,
+      bars: eBars.length,
+      preMarketBars: preCount,
+      afterHoursBars: afterCount,
+      regularBars: regularCount,
+      /* Die Gegenprobe: liefert derselbe Zeitraum ohne den Schalter
+         weniger Bars? Sonst waere der Schalter wirkungslos und der
+         Befund eine Selbsttaeuschung. */
+      interpretation: hatErweiterte
+        ? "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
+        : "Keine Bar ausserhalb 09:30-16:00 Ortszeit. Dieser Zugang liefert im " +
+          "geprueften Zeitraum keine erweiterten Handelszeiten."
+    }, 1);
+
+    /* Die Aktualitaetsfrage. */
+    if (!jetzt.isExtended) {
+      record("extendedHoursRealtime", "UNKNOWN", {
+        sessionAtRun: jetzt.session,
+        localTime: jetzt.localTime,
+        reason: "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort " +
+                "aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 " +
+                "und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
+      }, 0);
+    } else if (!hatErweiterte) {
+      record("extendedHoursRealtime", "FAILED", {
+        sessionAtRun: jetzt.session,
+        reason: "Erweiterte Sitzung laeuft, aber es kam keine Bar ausserhalb der " +
+                "regulaeren Zeiten zurueck."
+      }, 0);
+    } else {
+      const letzte = eBars[eBars.length - 1];
+      const lag = lagSeconds(letzte?.timestamp, Date.now());
+      const letzteSession = letzte
+        ? SessionPolicy.sessionAt(letzte.timestamp, { calendar, exchange: "XNYS" }).session
+        : null;
+      /* Waehrend einer erweiterten Sitzung darf die juengste Bar nicht
+         aelter sein als ein paar Intervalle. Grosszuegig gerechnet:
+         erweiterte Zeiten sind duenn gehandelt, und eine Luecke von
+         zwanzig Minuten kann schlicht heissen, dass niemand gehandelt
+         hat. */
+      const frisch = lag !== null && lag <= 20 * 60;
+      record("extendedHoursRealtime", frisch ? "PASSED" : "UNKNOWN", {
+        sessionAtRun: jetzt.session,
+        lastBarSession: letzteSession,
+        lastBarLagSeconds: lag,
+        thresholdSeconds: 20 * 60,
+        interpretation: frisch
+          ? "Waehrend laufender erweiterter Sitzung lag die juengste Bar innerhalb der " +
+            "Schwelle. Erweiterte Handelszeiten werden aktuell bedient."
+          : "Die juengste Bar ist aelter als die Schwelle. Moeglich sind duenner Handel " +
+            "oder ein Tarif ohne aktuelle erweiterte Daten - der Lauf ist zu wiederholen."
+      }, 0);
+    }
+  }
+
   /* ------------------------------------- 3. WebSocket-Strom */
   if (!WITH_STREAM) {
     record("realtimeStream", "UNKNOWN", {
@@ -355,6 +442,11 @@ function finish(code, ohneBericht) {
       streamTested: WITH_STREAM
     },
     symbol: SYMBOL,
+    sessionAtRun: {
+      session: SessionPolicy.sessionAt(Date.now(), { calendar, exchange: "XNYS" }).session,
+      localTime: SessionPolicy.sessionAt(Date.now(), { calendar, exchange: "XNYS" }).localTime,
+      note: "Welche Befunde ueberhaupt moeglich waren, haengt an dieser Zeile."
+    },
     thresholds: {
       realtimeMaxLagSeconds: REALTIME_MAX_LAG_S,
       delayedMinLagSeconds: DELAYED_MIN_LAG_S

@@ -81,6 +81,11 @@
       providerId: providerId,
       audience: audience,
       plan: (caps && caps.plan) || "unknown",
+      /* Die Deklaration reist mit. Nachgelagerte Schichten - etwa die
+         Sitzungsrichtlinie - brauchen sie, und sie ein zweites Mal
+         durchzureichen waere die Sorte Doppelung, bei der irgendwann
+         beide Wege verschiedene Antworten geben. */
+      capabilities: caps,
       classes: classes,
       order: NEGOTIABLE.slice(),
       available: available,

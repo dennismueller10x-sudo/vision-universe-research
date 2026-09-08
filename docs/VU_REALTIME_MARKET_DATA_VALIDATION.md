@@ -23,6 +23,94 @@ Architektur: `VU_REALTIME_MARKET_DATA_ARCHITECTURE.md`
 
 ---
 
+## 0. Erweiterte Handelszeiten
+
+Nachgereicht nach dem Release-Audit von PR #51, auf demselben Branch.
+
+### Was verifiziert ist, und was nicht
+
+| Sitzung | ET | Kalender | Tiingo-Bars | Tiingo aktuell |
+|---|---|---|---|---|
+| `PRE_MARKET` | 04:00–09:30 | **VERIFIED** | **UNKNOWN** | **UNKNOWN** |
+| `REGULAR` | 09:30–16:00 | **VERIFIED** | **VERIFIED** (78 Bars, Phase 4A) | **UNKNOWN** |
+| `AFTER_HOURS` | 16:00–20:00 | **VERIFIED** | **UNKNOWN** | **UNKNOWN** |
+| `CLOSED` | sonst | **VERIFIED** | — | — |
+
+„Kalender VERIFIED" heißt: die Sitzungserkennung ist an echten Daten
+geprüft — Zeitzone, Umstellung, Feiertage, verkürzte Schlusstage. Das ist
+eine Aussage über **unseren** Code und braucht keinen Anbieter.
+
+„Tiingo UNKNOWN" heißt: ob dieser Zugang außerhalb 09:30–16:00 überhaupt
+Bars liefert, und ob sie während der erweiterten Sitzung aktuell sind, ist
+**nicht gemessen**. In dieser Umgebung ist kein `TIINGO_API_KEY`
+hinterlegt, und die zweite Frage ließe sich ohnehin nur zwischen 04:00 und
+09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit beantworten.
+
+### Zwei Fähigkeiten statt einer
+
+`extendedHours` (gibt es die Bars?) und `extendedHoursRealtime` (sind sie
+dort aktuell?) sind getrennt, weil sie verschiedene Antworten haben
+können. Beide stehen auf `null`.
+
+Verhalten je Belegstand — geprüft, nicht behauptet:
+
+| Beleg | PRE/AFTER |
+|---|---|
+| beides `AVAILABLE` | volle Leiter, `LIVE · AFTER-HOURS` |
+| nur `extendedHours` | `INTRADAY · AFTER-HOURS`, kein LIVE |
+| keines (**heute**) | letzter bestätigter Stand, sichtbar benannt |
+
+### Der Nachweis
+
+`scripts/market/verify-tiingo-realtime.mjs` prüft zusätzlich:
+
+| Prüfung | Wie |
+|---|---|
+| `extendedHoursBars` | Kommen mit `afterHours=true` Bars zurück, deren Zeitstempel in Börsenortszeit außerhalb 09:30–16:00 liegen? Jederzeit messbar. |
+| `extendedHoursRealtime` | Ist die jüngste solche Bar *während* einer laufenden erweiterten Sitzung frisch (≤ 20 min)? Nur in PRE/AFTER messbar, sonst `UNKNOWN`. |
+
+Der Bericht trägt die Sitzung, in der er entstand — ohne sie ließe sich
+nicht beurteilen, welche Befunde überhaupt möglich waren.
+
+### Der Befund aus dieser Phase
+
+**E1 — Erwartung folgte nicht dem Beleg (HIGH, behoben).**
+
+Die Verfallsprüfung erwartete in erweiterten Sitzungen grundsätzlich keine
+Aktualisierungen — der Schalter dafür war statisch. Damit wurde ein Feed,
+der nachweislich Echtzeitdaten aus der Nachbörse bekam, nie `FRESH`:
+
+```
+Sitzung:   AFTER_HOURS          Fähigkeiten: extendedHoursRealtime = true
+Daten:     Tick eingetroffen, Bar angelegt
+Staleness: MARKET_CLOSED        ← falsch
+Anzeige:   BÖRSE GESCHLOSSEN    ← über Daten, die gerade hereinliefen
+```
+
+Behoben: die Erwartung folgt jetzt der Fähigkeit. Wir erwarten in einer
+erweiterten Sitzung genau dann neue Daten, wenn der Zugang belegt hat,
+dass er sie dort liefert. Danach: `LIVE · AFTER-HOURS · 17:31:59` — im
+Test *und* im echten Browser.
+
+**E2 — Das Statusabzeichen zeigte die Sitzung nicht (MEDIUM, behoben).**
+Im Browsertest aufgefallen: der Sitzungsname stand im Statustext, aber
+nicht im DOM. Behoben.
+
+### Was sich für bestehendes Verhalten geändert hat
+
+Zwei Zusicherungen der Fallback-Matrix wurden nachgezogen — weil das
+spezifizierte Verhalten sich geändert hat, nicht um grün zu werden:
+
+| | vorher | jetzt | warum |
+|---|---|---|---|
+| Szenario A | `LIVE · 14:01:59` | `LIVE · REGULAR · 14:01:59` | Die Sitzung gehört ins Etikett (Phase 4). |
+| Szenario H | `MARKET_CLOSED`, Klasse `REALTIME_QUOTE` | `LAST_CLOSE`, Klasse `EOD` | Bei geschlossener Börse fällt der Feed jetzt ausdrücklich auf den Tagesschluss zurück, statt eine Echtzeitklasse zu halten, die nichts liefern kann. Die Anzeige sagt, **was** zu sehen ist, statt nur, dass nichts läuft. |
+
+Beide Szenarien behalten jede substanzielle Prüfung: kein falsches LIVE,
+kein Wiederaufbau, `retryCount = 0`, Chart nicht leer.
+
+---
+
 ## 1. Die Capability-Matrix
 
 `AVAILABLE` heißt: an echten Daten belegt. `UNKNOWN` heißt: niemand hat
@@ -123,14 +211,14 @@ dem falschen Etikett ist gefährlicher als einer, der nichts zeigt.
 
 ## 3. Testzahlen
 
-| Suite | vorher | nachher |
-|---|---|---|
-| JS (`quant/tests/*.test.mjs`) | 444 | **539** |
-| Python (`scripts/quant/cli.py test`) | 249 | **249** |
-| **gesamt** | 693 | **788** |
-| Fehler / übersprungen | 0 / 0 | **0 / 0** |
+| Suite | Ausgangslage | nach PR #51 | mit Extended Hours |
+|---|---|---|---|
+| JS (`quant/tests/*.test.mjs`) | 444 | 539 | **568** |
+| Python (`scripts/quant/cli.py test`) | 249 | 249 | **249** |
+| **gesamt** | 693 | 788 | **817** |
+| Fehler / übersprungen | 0 / 0 | 0 / 0 | **0 / 0** |
 
-Neu, 95 Prüfungen:
+Neu, 124 Prüfungen:
 
 | Datei | Anzahl | Gegenstand |
 |---|---|---|
@@ -138,6 +226,30 @@ Neu, 95 Prüfungen:
 | `realtime-engine.test.mjs` | 34 | Fallback-Engine, Automat, Merge, Chart-Adapter |
 | `realtime-matrix.test.mjs` | 15 | Szenarien A–O |
 | `realtime-integration.test.mjs` | 21 | Zusagen: Etikett, Schlüssel, Provenienz, Lizenz |
+| `realtime-sessions.test.mjs` | **29** | Szenarien A–R der Extended-Hours-Phase |
+
+Die Szenarien A–R:
+
+| | Szenario | Ergebnis |
+|---|---|---|
+| A | Pre-Market-Tick | ✓ Kerze trägt `PRE_MARKET`, vorläufig |
+| B | Regular-Tick | ✓ nicht erweitert |
+| C | After-Hours-Tick | ✓ faltet in die laufende Kerze, 3 Ticks → 1 Kerze |
+| D | PRE → REGULAR | ✓ erkannt, benannt |
+| E | REGULAR → AFTER | ✓ erkannt |
+| F | AFTER → CLOSED | ✓ erkannt (02:00 deutscher Zeit) |
+| G | Wochenende | ✓ keine erweiterte Sitzung |
+| H | US-Feiertag | ✓ auch um 08:30 ET keine Vorbörse |
+| I | Early Close | ✓ Nachbörse beginnt drei Stunden früher |
+| J | DST USA/Deutschland | ✓ 6 Zeitpunkte, auch im Übergangsfenster |
+| K | verspäteter Tick | ✓ prallt an geschlossener Extended-Kerze ab |
+| L | Reconnect in After-Hours | ✓ kein falsches LIVE, Chart bleibt gefüllt |
+| M | Backfill über Sessiongrenze | ✓ keine Dubletten, Reihe geordnet |
+| N | Extended nicht verfügbar | ✓ dreistufig geprüft |
+| O | Realtime nicht verfügbar | ✓ kein LIVE in der Vorbörse |
+| P | Tiingo-Ausfall / Börse zu | ✓ `LETZTER SCHLUSSKURS`, Chart nicht leer |
+| Q | kein API-Key | ✓ keine Sitzungsbehauptung |
+| R | Session-Grenze | ✓ eine Kerze, nicht zwei |
 
 **Keine bestehende Prüfung wurde geändert, entfernt oder abgeschwächt.**
 Der Vergleich gegen `origin/main` zeigt unter `quant/tests/` ausschließlich
@@ -160,6 +272,28 @@ Beides waren echte Fehler, keine Testartefakte:
 
 ---
 
+## 3a. Verhalten für deutsche Nutzer
+
+Ein Tag aus Berliner Sicht, mit heutigem Belegstand (Extended `UNKNOWN`):
+
+| Berlin | ET | Sitzung | Anzeige heute | mit Beleg |
+|---|---|---|---|---|
+| 10:00–15:30 | 04:00–09:30 | `PRE_MARKET` | `LETZTER SCHLUSSKURS` | `LIVE · PRE-MARKET` |
+| 15:30–22:00 | 09:30–16:00 | `REGULAR` | volle Leiter | volle Leiter |
+| 22:00–02:00 | 16:00–20:00 | `AFTER_HOURS` | `LETZTER SCHLUSSKURS` | `LIVE · AFTER-HOURS` |
+| 02:00–10:00 | 20:00–04:00 | `CLOSED` | `LETZTER SCHLUSSKURS` | `LETZTER SCHLUSSKURS` |
+
+Der vom Auftrag genannte Fall — **23:30 deutscher Zeit** — ist 17:30 ET
+und damit Nachbörse. Heute zeigt der Chart dort den letzten bestätigten
+Kurs mit `LETZTER SCHLUSSKURS`; mit belegten erweiterten Zeiten würde er
+`LIVE · AFTER-HOURS` zeigen. In **keinem** der beiden Fälle wird er leer.
+
+Zur DST: beide Zeitzonen stellen um, aber an verschiedenen Tagen — in den
+zwei bis drei Wochen dazwischen verschiebt sich die Berliner Spalte um
+eine Stunde. Getestet mit sechs Zeitpunkten, darunter zwei im
+Übergangsfenster (Szenario J). Deutsche Ortszeit wird nirgends als
+Marktzeit gelesen; ein eigener Test hält das fest (J2).
+
 ## 4. Browsertests
 
 Echter Chromium, echte Viewports, die Module aus dem Repository über HTTP
@@ -167,12 +301,18 @@ geladen — kein Bündler, keine Attrappe.
 
 | | Desktop 1440×900 | Mobil 390×844 (Touch, DPR 3) |
 |---|---|---|
-| Module laden | ✓ | ✓ |
+| Module laden (13 + UI) | ✓ | ✓ |
 | JS-Fehler | 0 | 0 |
-| Statusfolge | `AUFGEBAUT → VERZÖGERT → LIVE → VERZÖGERT` | identisch |
+| Sitzung erkannt | `AFTER_HOURS` | `AFTER_HOURS` |
+| Statusfolge | `AUFGEBAUT → VERZÖGERT · AFTER-HOURS → LIVE · AFTER-HOURS · 17:31:59 → VERZÖGERT · AFTER-HOURS` | identisch |
 | SVG gezeichnet | ✓ 41 Bars | ✓ |
+| Technical-Brücke | 22 von 41 durchgelassen, 18 erweiterte + 1 laufende zurückgehalten, Ergebnis sauber | identisch |
 | Waagerechter Überlauf | nein | nein |
-| Statusanzeige | korrekter Ton und Farbe | korrekter Ton und Farbe |
+| Statusanzeige | `VERZÖGERT · AFTER-HOURS · Stand 17:31` | identisch |
+
+Der Lauf stand bewusst in der **Nachbörse** — der Fall, um den es in
+dieser Phase geht. Die Technical-Brücke wurde dabei im echten Browser
+geprüft, nicht nur in Node.
 
 Der Adapter meldete für den Ablauf `1 reset, 1 append, 3 übersprungen` —
 inkrementelles Verhalten in der echten Oberfläche bestätigt.
@@ -217,6 +357,31 @@ Die Heap-Zahl der ersten Fassung dieses Berichts (22,4 → 14,6 MB) war ohne
 erzwungene Bereinigung gemessen und schwankte zwischen den Läufen um den
 Faktor zwei — sie war wertlos. Der Wert oben ist mit `--expose-gc` gemessen
 und über drei Läufe auf 0,1 MB stabil.
+
+### Extended Hours (Phase 9)
+
+Gemessen an 5.000 Bars über alle vier Sitzungen und 100.000 Ticks in einer
+Nachbörsen-Kerze:
+
+| | vorher | nachher |
+|---|---|---|
+| Tick falten (Nachbörse) | — | **8,6 µs** |
+| Tick + Chartentscheidung (Oberflächenweg) | — | **8,4 µs** |
+| `feed.staleness()` je Tick | 22,2 µs | **2,1 µs** |
+| `feed.session()` | 9,7 µs | **0,04 µs** |
+| Technical-Brücke über 5.001 Bars | — | 0,46 ms (nicht je Tick) |
+| Historie einspielen, alle Sitzungen | — | 140 ms, einmalig |
+
+Die Sitzungserkennung kostet einen Kalenderaufruf (~10 µs) und lief
+anfangs **dreimal je Tick** — einmal für die Sitzung, einmal für die
+Erwartungshaltung der Verfallsprüfung, einmal in der Verfallsprüfung
+selbst. Sie ist jetzt je Minute gemerkt, und das ist exakt und nicht
+genähert: eine Sitzungsgrenze liegt immer auf einer vollen Minute, und
+Zeitzonen versetzen um volle Minuten.
+
+**Keine O(n)-Vollkopie der Historie je Tick.** Der Sitzungswechsel ist
+eine Zeichenkettenprüfung, kein Neuaufbau der Reihe; die Technical-Brücke
+läuft auf Anforderung, nicht im Tick-Pfad.
 
 Der Ausgangswert war unhaltbar: 3,1 ms je Tick, nur um festzustellen, dass
 sich nichts geändert hat. Bei hundert Ticks in der Sekunde wäre das ein
@@ -308,7 +473,8 @@ bereits erteilte um.
 | Gate | Status | Begründung |
 |---|---|---|
 | `ARCHITECTURE_READY` | **JA** | 11 Module, 92 Tests, A–O vollständig, Browser Desktop und Mobil |
-| `FREE_TIER_VALIDATED` | **TEILWEISE** | EOD, Intraday, Splits, Dividenden, Bereinigung belegt (Phase 4A). Echtzeitpfade nicht messbar |
+| `FREE_TIER_VALIDATED` | **TEILWEISE** | EOD, Intraday, Splits, Dividenden, Bereinigung belegt (Phase 4A). Echtzeitpfade und erweiterte Zeiten nicht messbar |
+| `EXTENDED_HOURS_READY` | **ARCHITEKTUR JA, DATEN NEIN** | Sitzungsmodell, Fallback, Isolation und Anzeige gebaut und geprüft. Ob Tiingo die Daten liefert, ist ungemessen |
 | `INTRADAY_READY` | **JA, technisch** | Fähigkeit belegt, Pfad gebaut und geprüft. Gate aus, Lizenz offen |
 | `REALTIME_READY` | **NEIN** | Der echte Echtzeitpfad wurde mit dem vorliegenden Konto nicht verifiziert |
 | `REALTIME_UNKNOWN` | **JA** | genau der Zustand, in dem der Workstream endet — und der so benannt wird |
@@ -334,6 +500,8 @@ Keine.
 |---|---|---|---|
 | A1 | Abgeschlossene Kerze war durch Nachzügler-Ticks beweglich | HIGH | **behoben**, 3 Prüfungen |
 | A2 | Grundloser Chart-Neuaufbau beim Kerzenwechsel | MEDIUM | **behoben**, 1 Prüfung |
+| E1 | Erwartung folgte nicht dem Beleg — kein LIVE in belegter erweiterter Sitzung | HIGH | **behoben**, Szenario L |
+| E2 | Statusabzeichen zeigte die Sitzung nicht im DOM | MEDIUM | **behoben**, Browsertest |
 
 ### HIGH
 
@@ -342,6 +510,7 @@ Keine.
 | H1 | **Echtzeit ist ungeprüft.** Keine Aussage darüber, ob der vorliegende Tiingo-Zugang Kurse von jetzt liefert. Nächster Schritt: `tiingo-verify.yml` → `run_realtime` bei offener US-Börse. |
 | H2 | **Die WebSocket-Nachrichtenform ist an keinem echten Strom geprüft.** Der Parser ist der dokumentierten Form nachgebaut und defensiv: was nicht passt, ergibt `null` statt eines geratenen Kurses. Erst `--with-stream` klärt das. |
 | H3 | **Der Live-Chart ist an keine Seite angebunden.** Der Adapter existiert und ist im Browser geprüft, aber keine ausgelieferte Seite benutzt ihn. Das ist Absicht — die Anbindung wäre eine Produktentscheidung mit Lizenzfolge. |
+| H4 | **Erweiterte Handelszeiten sind ungeprüft.** Ob dieser Zugang außerhalb 09:30–16:00 Bars liefert und ob sie dort aktuell sind, ist nicht gemessen. Nächster Schritt: `run_realtime` **während** einer erweiterten Sitzung — also zwischen 10:00 und 15:30 oder zwischen 22:00 und 02:00 deutscher Zeit. |
 
 ### MEDIUM
 
@@ -351,7 +520,9 @@ Keine.
 | M2 | Die Verfallsschwellen sind begründete Betriebsannahmen, nicht vom Anbieter zugesicherte Frequenzen. Versioniert, damit eine Änderung ein Commit ist. |
 | M3 | Der Standardabstand des Kursabrufs (60 s = 60 Anfragen/h) liegt über dem Stundenkontingent des freien Zugangs (50/h). Für den freien Tarif ist ein größerer Abstand oder der Intraday-Pfad zu wählen; der Kontingentfehler wird aufgefangen, aber besser nicht ausgelöst. |
 | M4 | Der Live-Chart zeichnet über das bestehende SVG-Modul und damit die Fläche neu, wenn gezeichnet wird. Der Adapter entscheidet nur *ob*. Eine inkrementelle Zeichenfunktion lässt sich über `render` hineinreichen, ohne dass sich sonst etwas ändert. |
-| M5 | Die Pre-/After-Market-Zeiten stehen im Kalender, werden aber standardmäßig nicht als „Aktualisierung erwartet" gewertet (`includeExtended`). |
+| M5 | Die Pre-/After-Market-Zeiten werden nur dann als „Aktualisierung erwartet" gewertet, wenn `extendedHoursRealtime` belegt ist. Das ist beabsichtigt — es heißt aber, dass ein Beleg zwingend ist, bevor Staleness in erweiterten Zeiten überhaupt greift. |
+| M6 | Die Sitzungszeiten 04:00–09:30 und 16:00–20:00 stammen aus dem Kalender, nicht vom Anbieter. Liefert Tiingo einen engeren Ausschnitt, fällt das erst im Nachweislauf auf. |
+| M7 | Der IEX-Parameter `afterHours` wird nur bei belegter Fähigkeit gesendet. Bis zum Nachweis holt der Intraday-Pfad also weiterhin ausschließlich reguläre Bars — richtig, aber es heißt, dass die erweiterte Historie ungenutzt bleibt. |
 
 ---
 
@@ -466,7 +637,8 @@ Auftragsgemäß:
 
 ## 12. Empfehlung
 
-**READY FOR PRIVATE REALTIME TEST**
+**READY FOR PRIVATE REALTIME TEST** (unverändert, jetzt einschließlich
+erweiterter Handelszeiten)
 
 Die Architektur trägt. Sie wählt die beste tatsächlich verfügbare
 Datenklasse, benennt jeden Abstieg, sagt „LIVE" nur unter fünf gleichzeitig
@@ -476,6 +648,11 @@ Mobil sind im echten Browser geprüft, und der Bestand ist unberührt.
 
 Was fehlt, ist genau eine Messung: **läuft `verify-tiingo-realtime.mjs` bei
 offener US-Börse mit dem hinterlegten Schlüssel, und was sagt er?**
+
+Mit den erweiterten Handelszeiten sind es zwei Messungen, und die zweite
+hat ein Zeitfenster: der Lauf muss **in** einer erweiterten Sitzung
+stattfinden — zwischen 10:00 und 15:30 oder zwischen 22:00 und 02:00
+deutscher Zeit. Außerhalb meldet er `UNKNOWN`, und das ist richtig so.
 
 Danach gibt es drei mögliche Wege, und die Architektur trägt alle drei ohne
 Codeänderung:

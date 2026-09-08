@@ -35,7 +35,16 @@
     "splitAdjustedPrices", // nur splitbereinigt - reicht fuer Charts, nicht fuer Total Return
     "symbolSearch",        // Symbolsuche
     "marketStatus",        // Boersenstatus
-    "bulkQuotes"           // mehrere Symbole je Anfrage
+    "bulkQuotes",          // mehrere Symbole je Anfrage
+
+    /* Erweiterte Handelszeiten. Bewusst zwei getrennte Faehigkeiten und
+       nicht eine: dass ein Anbieter Vorboersen-Bars in der Historie
+       fuehrt, heisst nicht, dass er sie waehrend der Vorboerse auch
+       aktuell liefert. Das erste ist eine Frage des Bestands, das zweite
+       eine des Tarifs - und wer beides zusammenwirft, zeigt um 11 Uhr
+       deutscher Zeit einen Kurs von gestern Abend als aktuell. */
+    "extendedHours",         // Pre-/After-Market-Bars ueberhaupt vorhanden
+    "extendedHoursRealtime"  // und zwar aktuell, waehrend der erweiterten Session
   ];
 
   var FUNDAMENTAL_CAPABILITIES = [

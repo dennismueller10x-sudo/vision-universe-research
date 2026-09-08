@@ -104,7 +104,7 @@ nachsehen konnte.
 
 ## Die Bausteine
 
-Elf Module, jedes mit einer Aufgabe. Keines rechnet in einem anderen mit.
+Dreizehn Module, jedes mit einer Aufgabe. Keines rechnet in einem anderen mit.
 
 ```
                     ┌─────────────────────────┐
@@ -136,6 +136,8 @@ Elf Module, jedes mit einer Aufgabe. Keines rechnet in einem anderen mit.
 | `data-class.js` | Die Leiter und die sechs Zustände |
 | `capability-negotiation.js` | Anbieter, Gate, Lizenz — drei Gutachter |
 | `market-hours.js` | Läuft gerade Handel? |
+| `session-policy.js` | Welche Sitzung — und bedienen wir sie? |
+| `technical-bridge.js` | Was darf aus dem Live-Feed in die Analyse? |
 | `staleness.js` | Ist der Stand noch aktuell? |
 | `connection-state.js` | In welchem Zustand ist die Verbindung? |
 | `bar-merge.js` | Wie wird aus Historie und Live eine Reihe? |
@@ -266,6 +268,83 @@ Verbindung, die zweite die Anzeige — und die Rückfallschwelle liegt höher.
 
 ---
 
+## Sitzungen und erweiterte Handelszeiten
+
+Vier Sitzungen, weil ein deutscher Nutzer für US-Aktien mehr als die
+regulären sechseinhalb Stunden braucht:
+
+| Sitzung | ET | Berlin (Sommer) | Berlin (Winter) |
+|---|---|---|---|
+| `PRE_MARKET` | 04:00–09:30 | 10:00–15:30 | 10:00–15:30 |
+| `REGULAR` | 09:30–16:00 | 15:30–22:00 | 15:30–22:00 |
+| `AFTER_HOURS` | 16:00–20:00 | 22:00–02:00 | 22:00–02:00 |
+| `CLOSED` | sonst | | |
+
+Die Berliner Spalten sind identisch, und das ist kein Fehler: beide
+Zeitzonen stellen um, nur an verschiedenen Tagen. In den zwei bis drei
+Wochen dazwischen verschiebt sich alles um eine Stunde — genau das
+Fenster, in dem eine fest verdrahtete Verschiebung falsche Sitzungen
+ergäbe. Deshalb rechnet nichts in diesem System mit Offsets.
+
+### Die Sitzung ist keine Datenklasse
+
+Die naheliegende Lösung wäre gewesen, die Leiter zu spiegeln:
+`REALTIME_STREAM_EXTENDED`, `REALTIME_QUOTE_EXTENDED` und so weiter. Das
+wäre ein zweiter Stapel neben dem bestehenden, mit doppelten Übergängen,
+doppelten Tests und der Gewissheit, dass die Hälften irgendwann
+auseinanderlaufen.
+
+Die Sitzung ist eine **zweite Achse**:
+
+```
+                 PRE_MARKET   REGULAR   AFTER_HOURS   CLOSED
+  REALTIME_*         ?           ✓            ?          –
+  INTRADAY           ?           ✓            ?          –
+  EOD                ✓           ✓            ✓          ✓
+```
+
+Die Leiter bleibt unverändert. `session-policy.js` sagt der Auswahl nur,
+welche Sprossen in der **gerade laufenden** Sitzung in Frage kommen — als
+`suppress`-Liste, die denselben Weg geht wie ein Netzfehler. Fällt eine
+Sprosse dadurch weg, greift derselbe Rückfall und derselbe Test.
+
+### Zwei Fähigkeiten, nicht eine
+
+| Fähigkeit | Frage | Heute |
+|---|---|---|
+| `extendedHours` | Liefert der Zugang überhaupt Bars außerhalb 09:30–16:00? | **UNKNOWN** |
+| `extendedHoursRealtime` | Sind sie *während* der erweiterten Sitzung aktuell? | **UNKNOWN** |
+
+Der Unterschied trägt. Dass ein Anbieter Vorbörsen-Bars in der Historie
+führt, heißt nicht, dass er sie während der Vorbörse auch aktuell
+liefert. Das erste ist eine Frage des Bestands, das zweite eine des
+Tarifs — und wer beides zusammenwirft, zeigt um 11 Uhr deutscher Zeit
+einen Kurs von gestern Abend als aktuell.
+
+Daraus folgen drei Zustände:
+
+| Beleg | Verhalten in PRE/AFTER |
+|---|---|
+| beides `AVAILABLE` | volle Leiter, `LIVE · PRE-MARKET` möglich |
+| nur `extendedHours` | Intraday bleibt, Echtzeitklassen fallen weg → `INTRADAY · AFTER-HOURS` |
+| keines (**heute**) | keine Live-Klasse; letzter bestätigter Stand, sichtbar benannt |
+
+Im dritten Fall wird der Chart **nicht leer**. Er zeigt, was da ist, und
+sagt dazu, was es ist.
+
+### Erwartung folgt dem Beleg
+
+Ein Detail, das beim Bauen falsch war und im Test auffiel: die
+Verfallsprüfung erwartete in erweiterten Sitzungen grundsätzlich keine
+Aktualisierungen. Damit wurde ein Feed, der nachweislich Echtzeitdaten
+aus der Nachbörse bekam, nie `FRESH` — und schrieb „BÖRSE GESCHLOSSEN"
+über Daten, die gerade hereinliefen.
+
+Richtig ist die Kopplung an die Fähigkeit: **wir erwarten in einer
+erweiterten Sitzung genau dann neue Daten, wenn der Zugang belegt hat,
+dass er sie dort liefert.** Ist das ungeprüft, gibt es keine Erwartung —
+und damit auch keinen Fehlalarm.
+
 ## Handelszeiten
 
 Bei geschlossener Börse gibt es keinen Verfall. Ein Kurs von Freitag 17:00
@@ -299,25 +378,38 @@ hat, wird nicht behauptet.
 das einzige in dieser Anwendung, das eine Zusicherung über die Gegenwart
 macht — alle anderen Etiketten sagen, wie alt etwas ist.
 
-**Fünf Bedingungen, alle nötig:**
+**Sechs Bedingungen, alle nötig:**
 
 1. Die Verbindung ist im Zustand `LIVE` (Automat, nicht Flag).
 2. Die gezeichnete Datenklasse ist eine Echtzeitklasse.
 3. Diese Klasse ist `AVAILABLE` — belegt, nicht ungeprüft.
 4. Der Datenstand ist `FRESH` nach den versionierten Schwellen.
 5. Es wird nicht gerade zurückgefallen.
+6. **Die Sitzung gibt das Wort her** — in einer erweiterten Sitzung nur
+   mit belegtem `extendedHoursRealtime`.
 
-Fällt eine davon, fällt das Wort.
+Fällt eine davon, fällt das Wort. Die sechste kam mit den erweiterten
+Handelszeiten dazu: während der Nachbörse können Daten hereinkommen und
+trotzdem nicht „live" sein — sie sind dann das, was der Zugang in dieser
+Sitzung eben liefert.
 
 | Zustand | Anzeige |
 |---|---|
-| Echtzeit, frisch, belegt | `LIVE · 14:32:18` |
-| Echtzeitpfad, aber alternd | `VERZÖGERT · Stand 14:15` |
-| Intraday-Bars | `INTRADAY · Stand 14:30` |
-| Tagesschluss | `LETZTER SCHLUSSKURS · 07.09.2026` |
+| Echtzeit, frisch, belegt, regulär | `LIVE · REGULAR · 14:32:18` |
+| dasselbe in der Vorbörse | `LIVE · PRE-MARKET · 08:30:00` |
+| dasselbe in der Nachbörse | `LIVE · AFTER-HOURS · 17:31:59` |
+| Echtzeitpfad, aber alternd | `VERZÖGERT · AFTER-HOURS · Stand 17:15` |
+| Intraday-Bars | `INTRADAY · AFTER-HOURS · Stand 17:30` |
+| Tagesschluss während des Handels | `LETZTER SCHLUSSKURS · 07.09.2026` |
+| Tagesschluss nach Handelsschluss | `LETZTER SCHLUSSKURS · 08.09.2026` (`LAST_CLOSE`) |
 | Wiederaufbau läuft | `VERBINDUNG WIRD WIEDERHERGESTELLT · Stand 14:20` |
-| Börse zu | `BÖRSE GESCHLOSSEN · Stand 05.09.2026 16:00` |
+| Börse zu, kein Schlusskurs | `BÖRSE GESCHLOSSEN · Stand 05.09.2026 16:00` |
 | nichts da | `MARKTDATEN DERZEIT NICHT VERFÜGBAR` |
+
+Die Sitzung steht zwischen Etikett und Zeitstempel, weil sie in dieser
+Reihenfolge gelesen wird: **was sehe ich, aus welchem Handel, von wann.**
+„LIVE" allein beantwortet für einen deutschen Nutzer um 23:00 nicht die
+Frage, die er hat.
 
 Der Abstieg aus §22 als Ablauf — und so auch im Browsertest beobachtet:
 
@@ -472,12 +564,33 @@ bei jedem Tick neu gerechnet. Vorbereitet ist die Trennung, mehr nicht:
 | Incremental Technical Layer | Bar-Schluss | nicht gebaut |
 | EOD / confirmed Technical State | Tagesschluss | bestehend, unberührt |
 
-Die Brücke ist `bar.confirmed` aus R2/R7: eine laufende Kerze ist vorläufig,
-und alles, was Signale erzeugt, darf ausschließlich auf bestätigten Bars
-rechnen. Wer das verwechselt, bekommt Signale, die wieder verschwinden.
+### Die Brücke
 
-Kein Modul der Technical Intelligence wurde geändert. Die 249 Python- und
-alle bestehenden JS-Prüfungen laufen unverändert.
+Mit den erweiterten Handelszeiten wird die Trennung wichtiger, denn jetzt
+gibt es zwei Sorten Daten, die nicht hinüberdürfen. `technical-bridge.js`
+macht daraus eine Entscheidung mit Namen statt eines Vorgabewerts in einer
+Konfigurationsdatei:
+
+| # | Regel | Warum |
+|---|---|---|
+| T1 | Nur **bestätigte** Bars | Eine laufende Kerze ist eine Momentaufnahme; ein Indikator darauf erzeugt Signale, die wieder verschwinden. |
+| T2 | Nur die **reguläre** Sitzung | Vor- und Nachbörse sind dünn gehandelt. Ein Support-Level aus einem Nachbörsen-Ausschlag von 200 Stück wäre eine Linie, die niemand verteidigt hat. |
+| T3 | **Keine stille Änderung** | Was zurückgehalten wird, steht im Ergebnis. Eine Brücke, die still filtert, lässt irgendwann still etwas durch. |
+
+Die Filterung selbst existierte schon: `technical-v1.json` schreibt
+`includeExtended: false` fest, und `timeframe.js` verwirft erweiterte Bars
+entsprechend. Das ist die richtige Stelle und sie bleibt. Was fehlte, war
+die Gegenrichtung — eine Stelle, an der ausdrücklich steht, **was aus dem
+Live-Feed überhaupt hinüberdarf**, mit einem Test, der anschlägt.
+
+Eine Abweichung ist möglich (`includeExtended: true`), aber niemals
+stillschweigend: der abweichende Vertrag steht im Ergebnis und verlangt
+eine neue Methodikversion.
+
+Kein Modul der Technical Intelligence wurde geändert — `timeframe.js`,
+`canonical-bars.js` und `technical-v1.json` sind Zeile für Zeile
+unverändert. Die 249 Python- und alle bestehenden JS-Prüfungen laufen
+unverändert.
 
 ---
 

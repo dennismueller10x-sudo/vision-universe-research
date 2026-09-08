@@ -37,6 +37,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var DataClass = isNode ? require("./data-class.js") : global.VURealtime.DataClass;
   var MarketHours = isNode ? require("./market-hours.js") : global.VURealtime.MarketHours;
+  var SessionPolicy = isNode ? require("./session-policy.js") : global.VURealtime.SessionPolicy;
 
   /* Die Etiketten. Deutsch, weil die Oberflaeche deutsch ist; der Code
      bleibt englisch. `tone` steuert die Farbe, nicht den Inhalt. */
@@ -46,6 +47,11 @@
     INTRADAY:      { label: "INTRADAY", tone: "neutral", detail: "asOfTime" },
     EOD:           { label: "LETZTER SCHLUSSKURS", tone: "neutral", detail: "asOfDate" },
     MARKET_CLOSED: { label: "BÖRSE GESCHLOSSEN", tone: "muted", detail: "asOfDateTime" },
+    /* Ausserhalb jedes Handels und mit einem Tagesschluss in der Hand.
+       Der Unterschied zu MARKET_CLOSED ist die Auskunft, die der Nutzer
+       braucht: dort steht "gerade laeuft nichts", hier steht, was er
+       stattdessen sieht. */
+    LAST_CLOSE:    { label: "LETZTER SCHLUSSKURS", tone: "muted", detail: "asOfDate" },
     CONNECTING:    { label: "VERBINDUNG WIRD AUFGEBAUT", tone: "muted", detail: "none" },
     RECONNECTING:  { label: "VERBINDUNG WIRD WIEDERHERGESTELLT", tone: "warn", detail: "asOfTime" },
     OFFLINE:       { label: "KEINE VERBINDUNG", tone: "warn", detail: "asOfDateTime" },
@@ -91,14 +97,23 @@
     var selection = input.selection || { selected: DataClass.TERMINAL_CLASS };
     var negotiation = input.negotiation || { classes: {} };
     var staleness = input.staleness || null;
-    var session = (staleness && staleness.session) || input.session || null;
+    var session = input.session || (staleness && staleness.session) || null;
     var tz = input.timezone || (session && session.timezone) || "America/New_York";
     var ts = toMs(input.lastTimestamp);
     var dc = selection.selected;
+    /* Der Sitzungsname in Produktschreibweise. Ein Befund aus
+       market-hours.js traegt `phase`, einer aus session-policy.js
+       traegt `session` - beide sind zulaessig, damit kein Aufrufer eine
+       Uebersetzung von Hand machen muss. */
+    var sessionName = session
+      ? (session.session || SessionPolicy.sessionOf(session.phase))
+      : null;
 
     var code = classify({
       connection: connection, selection: selection, negotiation: negotiation,
-      staleness: staleness, dataClass: dc, hasData: ts !== null
+      staleness: staleness, dataClass: dc, hasData: ts !== null,
+      session: sessionName,
+      sessionAllowsLive: input.sessionAllowsLive !== false
     });
 
     var spec = STATUS[code] || STATUS.UNAVAILABLE;
@@ -110,11 +125,31 @@
       detail = "Stand " + fmtDate(ts, tz) + " " + fmtTime(ts, tz, false);
     }
 
+    /* Die Sitzung gehoert ins Etikett, sobald sie nicht die regulaere
+       ist. "LIVE" allein beantwortet fuer einen deutschen Nutzer um
+       23:00 nicht die Frage, die er hat - naemlich welcher Handel das
+       ueberhaupt ist. Bei geschlossener Boerse entfaellt der Zusatz: der
+       Statustext sagt es dann schon. */
+    var sessionTag = null;
+    if (sessionName && sessionName !== "CLOSED" &&
+        ["LIVE", "DELAYED", "INTRADAY"].indexOf(code) !== -1) {
+      if (sessionName !== "REGULAR" || code === "LIVE") {
+        sessionTag = SessionPolicy.labelOf(sessionName);
+      }
+    }
+
+    var text = spec.label;
+    if (sessionTag) text += " · " + sessionTag;
+    if (detail) text += " · " + detail;
+
     return {
       code: code,
       label: spec.label,
       detail: detail,
-      text: detail ? spec.label + " · " + detail : spec.label,
+      session: sessionName,
+      sessionLabel: sessionTag,
+      sessionIsExtended: sessionName ? SessionPolicy.isExtended(sessionName) : null,
+      text: text,
       tone: spec.tone,
       isLive: code === "LIVE",
       dataClass: dc,
@@ -153,7 +188,12 @@
        Freitagsschluss ist am Sonntag kein Live-Kurs, egal wie gesund die
        Verbindung ist. */
     if (ctx.staleness && ctx.staleness.level === "MARKET_CLOSED") {
-      return ctx.dataClass === "EOD" ? "EOD" : "MARKET_CLOSED";
+      if (ctx.dataClass !== "EOD") return "MARKET_CLOSED";
+      /* Derselbe Tagesschluss, zwei Auskuenfte - und der Unterschied ist
+         der, den ein deutscher Nutzer um 23:00 braucht. Waehrend der
+         Nachboerse ist ein Tagesschluss ein Rueckfall und heisst so.
+         Nach Handelsschluss ist er die richtige Antwort. */
+      return ctx.session === "CLOSED" ? "LAST_CLOSE" : "EOD";
     }
 
     if (DataClass.isRealtimeClass(ctx.dataClass)) {
@@ -161,8 +201,13 @@
       var verified = !!(finding && finding.state === "AVAILABLE");
       var fresh = !!(ctx.staleness && ctx.staleness.level === "FRESH");
       /* Die fuenf Bedingungen aus dem Modulkopf, an einer Stelle. */
+      /* Sechs Bedingungen jetzt, nicht mehr fuenf: die Sitzung muss das
+         Wort hergeben. Waehrend einer erweiterten Sitzung ohne belegte
+         Echtzeit kommen Daten herein und sind trotzdem nicht "live" -
+         sie sind das, was der Zugang in dieser Sitzung eben liefert. */
       if (state === "LIVE" && ctx.connection.allowsLiveLabel &&
-          verified && fresh && !ctx.selection.downgraded) {
+          verified && fresh && !ctx.selection.downgraded &&
+          ctx.sessionAllowsLive !== false) {
         return "LIVE";
       }
       /* Echtzeitpfad, aber nicht frisch: das ist ein verzoegerter Kurs,
@@ -174,7 +219,12 @@
       if (ctx.staleness && ctx.staleness.level === "STALE") return "DELAYED";
       return "INTRADAY";
     }
-    if (ctx.dataClass === "EOD") return "EOD";
+    if (ctx.dataClass === "EOD") {
+      /* Derselbe Datenstand, zwei Auskuenfte: waehrend des Handels ist
+         ein Tagesschluss ein Rueckfall, ausserhalb ist er die richtige
+         Antwort. */
+      return ctx.session === "CLOSED" ? "LAST_CLOSE" : "EOD";
+    }
     return "UNAVAILABLE";
   }
 

@@ -62,13 +62,38 @@
     }, [
       el("span", { class: "vu-datastatus__dot", "aria-hidden": "true" }),
       el("span", { class: "vu-datastatus__label", text: status.label }),
+      /* Die Sitzung steht zwischen Etikett und Zeitstempel, weil sie in
+         dieser Reihenfolge gelesen wird: was sehe ich, aus welchem
+         Handel, von wann. Ohne sie beantwortet "LIVE" um 23:00 deutscher
+         Zeit die Frage nicht, die der Nutzer hat. */
+      status.sessionLabel
+        ? el("span", { class: "vu-datastatus__session", text: status.sessionLabel })
+        : null,
       status.detail ? el("span", { class: "vu-datastatus__detail", text: status.detail }) : null
     ]);
     if (opts.className) node.className += " " + opts.className;
     return node;
   }
 
+  /* Setzt, aendert oder entfernt einen Teil der Anzeige, ohne sie neu
+     aufzubauen. `vor` haelt die Reihenfolge: die Sitzung gehoert vor den
+     Zeitstempel, auch wenn sie erst spaeter dazukommt. */
+  function setzeTeil(node, klasse, text, vor) {
+    var vorhanden = node.querySelector("." + klasse);
+    if (!text) {
+      if (vorhanden) vorhanden.parentNode.removeChild(vorhanden);
+      return;
+    }
+    if (vorhanden) { vorhanden.textContent = text; return; }
+    var neu = el("span", { class: klasse, text: text });
+    if (vor) node.insertBefore(neu, vor); else node.appendChild(neu);
+  }
+
   function hint(status) {
+    if (status.code === "LIVE" && status.sessionIsExtended) {
+      return "Echtzeitkurse aus dem erweiterten Handel (" + status.sessionLabel + "). " +
+             "Ausserhalb der regulaeren Boersenzeit ist der Handel duenner.";
+    }
     if (status.code === "LIVE") return "Echtzeitkurse. Der Zeitpunkt ist der letzte Datenstand.";
     if (status.downgraded && status.downgradedFrom) {
       return "Diese Ansicht zeigt " + status.dataClass + " statt " +
@@ -86,6 +111,8 @@
     node.setAttribute("title", hint(status));
     var label = node.querySelector(".vu-datastatus__label");
     if (label) label.textContent = status.label;
+    setzeTeil(node, "vu-datastatus__session", status.sessionLabel,
+              node.querySelector(".vu-datastatus__detail"));
     var detail = node.querySelector(".vu-datastatus__detail");
     if (status.detail) {
       if (detail) detail.textContent = status.detail;

@@ -68,7 +68,12 @@ test("A · Realtime verfuegbar → LIVE", async () => {
   await clock.advance(1);
   assert.equal(feed.status().code, "LIVE");
   assert.equal(feed.status().isLive, true);
-  assert.match(feed.status().text, /^LIVE · \d{2}:\d{2}:\d{2}$/);
+  /* Das Etikett traegt seit der Extended-Hours-Erweiterung die Sitzung
+     mit: "LIVE" allein beantwortet fuer einen deutschen Nutzer nicht,
+     welcher Handel gemeint ist. Die Zusicherung ist dieselbe geblieben -
+     sie ist nur genauer geworden. */
+  assert.match(feed.status().text, /^LIVE · REGULAR · \d{2}:\d{2}:\d{2}$/);
+  assert.equal(feed.status().session, "REGULAR");
   assert.equal(feed.activeDataClass(), "REALTIME_QUOTE");
   assert.equal(feed.connection().state, "LIVE");
 });
@@ -199,12 +204,20 @@ test("H · Geschlossene Boerse ist kein Fehler", async () => {
   await clock.advance(60000);
   const s = feed.status();
   assert.equal(s.isLive, false);
-  assert.equal(s.code, "MARKET_CLOSED");
-  assert.equal(feed.staleness().level, "MARKET_CLOSED");
+  /* Seit der Extended-Hours-Erweiterung faellt der Feed bei
+     geschlossener Boerse ausdruecklich auf den Tagesschluss zurueck,
+     statt eine Echtzeitklasse zu halten, die nichts liefern kann. Die
+     Anzeige sagt dann, WAS zu sehen ist, statt nur, dass gerade nichts
+     laeuft - das ist die Auskunft, die ein Nutzer am Sonntag braucht. */
+  assert.equal(s.code, "LAST_CLOSE");
+  assert.equal(feed.activeDataClass(), "EOD");
+  assert.equal(feed.session().session, "CLOSED");
   assert.equal(feed.staleness().session.closedReason, "weekend");
-  /* Kein Rueckfall, kein Wiederaufbau, kein Fehlerzustand. */
+  /* Unveraendert der Kern dieses Szenarios: kein Rueckfall aus einem
+     Fehler, kein Wiederaufbau, kein Fehlerzustand. */
   assert.equal(feed.connection().state === "RECONNECTING", false);
   assert.equal(feed.diagnostics().retryCount, 0);
+  assert.ok(feed.bars().length >= 1, "Der Chart bleibt gefuellt.");
 });
 
 /* ============================================================== I === */
