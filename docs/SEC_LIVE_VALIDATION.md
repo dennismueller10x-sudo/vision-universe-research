@@ -3,6 +3,25 @@
 **Stand: 2026-09-08. Normalisierungslogik 1.3.0. GitHub-Actions-Lauf #12 auf
 `claude/sec-financial-data-core-qiizhj`.**
 
+> **Nachtrag, Release-Audit (Lauf #15, Logik 1.5.0).** Das anschließende
+> Release-Audit hat vier weitere Fehler gefunden und behoben; die Zahlen unten
+> galten für Lauf #12 und haben sich dadurch verändert:
+>
+> | | Lauf #12 | Lauf #15 |
+> | --- | --- | --- |
+> | kanonische Fakten | 4 216 | **4 271** |
+> | PIT-Beobachtungen | 27 231 | **27 385** |
+> | Restatements | 602 | **604** |
+> | unterdrückte Zellen | 30 | **5** |
+> | Tests | 492 | **512** |
+>
+> Am wichtigsten: NVDAs Geschäftsjahre 2011–2014 waren um ein Jahr zu niedrig
+> beschriftet, weil das `fy`-Feld des Jahresabschlusses ungeprüft als Label
+> übernommen wurde. Das war die Ursache der meisten NVDA-Unterdrückungen, die
+> dieser Bericht noch als „dünne frühe XBRL-Jahre" einordnet. Gate-Ergebnisse und
+> Coverage-Startjahre sind unverändert. Vollständig in
+> **`docs/SEC_RELEASE_AUDIT.md`**.
+
 Zwölf Läufe gegen `data.sec.gov`, in denen elf Fehler gefunden wurden; Lauf #12
 ist der Bestätigungslauf, dessen Artefakte hier zitiert werden. Jede Zahl in
 diesem Dokument stammt aus committeten Artefakten unter `quant/data/sec/` und ist

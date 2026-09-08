@@ -1,7 +1,7 @@
 # SEC Coverage Report
 
-**Status: measured against live SEC data on 2026-09-08** (GitHub Actions run #12
-on `claude/sec-financial-data-core-qiizhj`, normalization logic 1.3.0).
+**Status: measured against live SEC data on 2026-09-08** (GitHub Actions run #15
+on `claude/sec-financial-data-core-qiizhj`, normalization logic 1.5.0).
 
 Every number below comes from `quant/data/sec/coverage_matrix.json`, which
 `scripts/quant/sec/coverage.py` computes from ingested facts. Nothing here is
@@ -51,17 +51,17 @@ four of the five.
 
 ## 2. Canonical output per company
 
-From `quant/data/sec/canonical_index.json` (run #12):
+From `quant/data/sec/canonical_index.json` (run #15):
 
 | Company | Canonical facts | Metrics | Suppressed cells | Quarterly years |
 | --- | --- | --- | --- | --- |
-| AAPL | 962 | 13 | 0 | 2007–2026 |
 | MSFT | 998 | 13 | 0 | 2008–2026 |
-| NVDA | 791 | 13 | 29 | 2008–2027 (fiscal) |
+| AAPL | 962 | 13 | 0 | 2007–2026 |
+| NVDA | 846 | 13 | 4 | 2008–2026 (fiscal) |
 | XOM  | 846 | 11 | 1 | 2007–2026 |
 | JPM  | 619 | 7  | 0 | 2007–2026 |
 
-Total: 4216 canonical `FundamentalFact` records.
+Total: 4271 canonical `FundamentalFact` records.
 
 **JPM has 7 metrics, not 13, and that is correct** — and the two reasons for the
 gap are kept apart, which is the point:
@@ -83,10 +83,14 @@ and that is `MISSING_XBRL_CONCEPT`, not a sector rule.
 **Suppressed cells** are cells where the same (metric, fiscal year, quarter)
 resolved to more than one period end. A fiscal quarter has exactly one end date,
 so rather than publish an ambiguous number the cell is withheld and reported
-under `periodEndConflicts` with reason `AMBIGUOUS_PERIOD_END`. All 30 remaining
-are in the thin early XBRL years — 29 for NVDA (2010–2013), 1 for XOM — where the
-learned fiscal calendar cannot place the periods unambiguously. An honest gap
-with a stated reason, not a guess.
+under `periodEndConflicts` with reason `AMBIGUOUS_PERIOD_END`. Five remain — four for NVDA, one for XOM — in the
+earliest XBRL years, where the learned fiscal calendar cannot place the periods
+unambiguously. An honest gap with a stated reason, not a guess.
+
+It was 30 before the release audit. Most of NVDA's were not calendar ambiguity at
+all but a consequence of its fiscal years 2011–2014 being labelled one year too
+low, because the annual filing's own `fy` field was taken at face value. Fixing
+the label recovered 25 cells; see `docs/SEC_RELEASE_AUDIT.md` §3.4.
 
 ## 3. What the states mean
 
