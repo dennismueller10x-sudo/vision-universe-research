@@ -1,0 +1,480 @@
+{
+  "generatedAtUtc": "2026-09-08T17:48:50.458Z",
+  "note": "Kapazitaetsmessung fuer die Golden-Five-Titel gegen den bestehenden Tiingo-Zugang. Enthaelt ausschliesslich Abstaende in Sekunden, Anzahlen und Aussagen - keine Kurse, kein Schluessel (uebernommen von verify-tiingo-realtime.mjs). WebSocket-Verbindungsaufbau wurde nur fuer den ersten Titel geprueft (Konto-, nicht Symbolfaehigkeit).",
+  "source": "scripts/market/verify-tiingo-realtime.mjs, einmal je Titel",
+  "tickers": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "JPM",
+    "XOM"
+  ],
+  "perTicker": {
+    "AAPL": {
+      "symbol": "AAPL",
+      "generatedAt": "2026-09-08T17:48:50.211Z",
+      "webSocketTested": true,
+      "confirmedCapabilities": [],
+      "refutedCapabilities": [
+        "realtimeStream"
+      ],
+      "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
+        "extendedHoursRealtime"
+      ],
+      "findings": [
+        {
+          "capability": "marketSession",
+          "result": "INFO",
+          "evidence": {
+            "phase": "REGULAR",
+            "closedReason": null,
+            "localDate": "2026-09-08",
+            "localTime": "13:48:49",
+            "calendarCoverage": true,
+            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:49.787Z"
+        },
+        {
+          "capability": "latestQuote",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:49.787Z"
+        },
+        {
+          "capability": "realtimeQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:49.787Z"
+        },
+        {
+          "capability": "delayedQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:49.787Z"
+        },
+        {
+          "capability": "historicalIntraday",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:49.788Z"
+        },
+        {
+          "capability": "extendedHoursBars",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:49.788Z"
+        },
+        {
+          "capability": "extendedHoursRealtime",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Abruf nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:49.788Z"
+        },
+        {
+          "capability": "realtimeStream",
+          "result": "FAILED",
+          "evidence": {
+            "opened": true,
+            "messages": 1,
+            "parsedTicks": 0,
+            "closeCode": 1005,
+            "error": null,
+            "interpretation": "Die Verbindung wurde vom Anbieter geschlossen, bevor ein Kurs kam. Ueblich, wenn der Tarif den Strom nicht enthaelt."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.211Z"
+        }
+      ]
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "generatedAt": "2026-09-08T17:48:50.272Z",
+      "webSocketTested": false,
+      "confirmedCapabilities": [],
+      "refutedCapabilities": [],
+      "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
+        "extendedHoursRealtime",
+        "realtimeStream"
+      ],
+      "findings": [
+        {
+          "capability": "marketSession",
+          "result": "INFO",
+          "evidence": {
+            "phase": "REGULAR",
+            "closedReason": null,
+            "localDate": "2026-09-08",
+            "localTime": "13:48:50",
+            "calendarCoverage": true,
+            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.271Z"
+        },
+        {
+          "capability": "latestQuote",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        },
+        {
+          "capability": "realtimeQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        },
+        {
+          "capability": "delayedQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        },
+        {
+          "capability": "historicalIntraday",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        },
+        {
+          "capability": "extendedHoursBars",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        },
+        {
+          "capability": "extendedHoursRealtime",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Abruf nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        },
+        {
+          "capability": "realtimeStream",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.272Z"
+        }
+      ]
+    },
+    "NVDA": {
+      "symbol": "NVDA",
+      "generatedAt": "2026-09-08T17:48:50.330Z",
+      "webSocketTested": false,
+      "confirmedCapabilities": [],
+      "refutedCapabilities": [],
+      "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
+        "extendedHoursRealtime",
+        "realtimeStream"
+      ],
+      "findings": [
+        {
+          "capability": "marketSession",
+          "result": "INFO",
+          "evidence": {
+            "phase": "REGULAR",
+            "closedReason": null,
+            "localDate": "2026-09-08",
+            "localTime": "13:48:50",
+            "calendarCoverage": true,
+            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.329Z"
+        },
+        {
+          "capability": "latestQuote",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        },
+        {
+          "capability": "realtimeQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        },
+        {
+          "capability": "delayedQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        },
+        {
+          "capability": "historicalIntraday",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        },
+        {
+          "capability": "extendedHoursBars",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        },
+        {
+          "capability": "extendedHoursRealtime",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Abruf nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        },
+        {
+          "capability": "realtimeStream",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.330Z"
+        }
+      ]
+    },
+    "JPM": {
+      "symbol": "JPM",
+      "generatedAt": "2026-09-08T17:48:50.390Z",
+      "webSocketTested": false,
+      "confirmedCapabilities": [],
+      "refutedCapabilities": [],
+      "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
+        "extendedHoursRealtime",
+        "realtimeStream"
+      ],
+      "findings": [
+        {
+          "capability": "marketSession",
+          "result": "INFO",
+          "evidence": {
+            "phase": "REGULAR",
+            "closedReason": null,
+            "localDate": "2026-09-08",
+            "localTime": "13:48:50",
+            "calendarCoverage": true,
+            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "latestQuote",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "realtimeQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "delayedQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "historicalIntraday",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "extendedHoursBars",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "extendedHoursRealtime",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Abruf nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        },
+        {
+          "capability": "realtimeStream",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.390Z"
+        }
+      ]
+    },
+    "XOM": {
+      "symbol": "XOM",
+      "generatedAt": "2026-09-08T17:48:50.450Z",
+      "webSocketTested": false,
+      "confirmedCapabilities": [],
+      "refutedCapabilities": [],
+      "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
+        "extendedHoursRealtime",
+        "realtimeStream"
+      ],
+      "findings": [
+        {
+          "capability": "marketSession",
+          "result": "INFO",
+          "evidence": {
+            "phase": "REGULAR",
+            "closedReason": null,
+            "localDate": "2026-09-08",
+            "localTime": "13:48:50",
+            "calendarCoverage": true,
+            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.449Z"
+        },
+        {
+          "capability": "latestQuote",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.449Z"
+        },
+        {
+          "capability": "realtimeQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.449Z"
+        },
+        {
+          "capability": "delayedQuote",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Kursabfrage nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.449Z"
+        },
+        {
+          "capability": "historicalIntraday",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.450Z"
+        },
+        {
+          "capability": "extendedHoursBars",
+          "result": "ERROR",
+          "evidence": {
+            "reason": "notConfigured"
+          },
+          "requests": 1,
+          "checkedAt": "2026-09-08T17:48:50.450Z"
+        },
+        {
+          "capability": "extendedHoursRealtime",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Abruf nicht verfuegbar."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.450Z"
+        },
+        {
+          "capability": "realtimeStream",
+          "result": "UNKNOWN",
+          "evidence": {
+            "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
+          },
+          "requests": 0,
+          "checkedAt": "2026-09-08T17:48:50.450Z"
+        }
+      ]
+    }
+  }
+}
