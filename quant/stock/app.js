@@ -5,7 +5,8 @@
      1 Rating-Band   2 Scores   3 Factor DNA   4 Rohkennzahlen   5 Methodik + Provenance */
 (function () {
   "use strict";
-  var S = window.QuantShell, C = window.QuantComponents, Charts = window.QuantCharts, el = S.el;
+  var S = window.QuantShell, C = window.QuantComponents, Charts = window.QuantCharts,
+      Ranges = window.VUChartRanges, el = S.el;
 
   /* Golden Universe (Phase 5): fuenf reale Titel mit echten SEC-Fundamentaldaten
      ausserhalb des synthetischen Modelluniversums. Sie tragen deshalb NIE das
@@ -13,6 +14,14 @@
      der aus demselben Grund S.page() gar nicht benutzt. Diese Seite behaelt
      S.page() (banner:false, siehe unten) und entscheidet selbst pro Zweig. */
   var GOLDEN_FIVE_PANEL = S.BASE + "data/sec/quant-factor-inputs.json";
+  /* Eigentuemerentscheidung Phase 5, siehe quant/config/development-preview.json:
+     echte Tiingo-EOD-Kurse fuer genau diese fuenf Titel, geschrieben von
+     scripts/market/ingest-tiingo.mjs --publish-preview. Die Freigabe wurde
+     bereits BEIM Schreiben dieser Datei geprueft (DisplayPolicy.check
+     audience:"development_preview") — die Seite liest hier nur, was legitim
+     bereits veroeffentlicht wurde, wie jede andere praekomputierte Datei. */
+  function goldenMarketPath(ticker) { return S.BASE + "data/market/golden-preview/daily/ref_" + ticker + ".json"; }
+  var TECHNICAL_INDEX = S.BASE + "data/technical/index.json";
 
   S.page({
     nav: S.BASE,
@@ -70,11 +79,18 @@
 
   var FACTOR_LABEL = { quality: "Quality", growth: "Growth", value: "Value",
     momentum: "Momentum", risk: "Risk", revisions: "Revisions" };
+  /* Quality/Growth kommen ausschliesslich aus SEC-Fundamentaldaten; Value
+     mischt SEC (Ertrag/FCF) mit dem Tiingo-Schlusskurs (Marktkapitalisierung);
+     Momentum/Risk kommen ausschliesslich aus der Tiingo-Kursreihe. Ein
+     pauschales "· SEC" fuer alle Faktoren waere seit der Preis-Panel-
+     Erweiterung falsch. */
+  var FACTOR_SOURCE = { quality: "SEC EDGAR", growth: "SEC EDGAR", value: "SEC + TIINGO",
+    momentum: "TIINGO", risk: "TIINGO", revisions: "—" };
   /* q-chip kennt nur drei Toene (tone-strong/tone-neutral/tone-poor,
      quant.css:225-227) — dieselben, die die Ranking-Tabelle fuer
      Faktor-Chips benutzt. Keine neue CSS-Klasse fuer diese Seite. */
   var COVERAGE_TONE = { REAL: "strong", PARTIAL: "neutral", UNAVAILABLE: "poor" };
-  var COVERAGE_TEXT = { REAL: "REAL · SEC", PARTIAL: "TEILWEISE REAL · SEC", UNAVAILABLE: "UNAVAILABLE" };
+  var COVERAGE_TEXT = { REAL: "REAL", PARTIAL: "TEILWEISE REAL", UNAVAILABLE: "UNAVAILABLE" };
   var STATUS_TONE = { good: "strong", warn: "neutral", poor: "poor" };
 
   /* Golden Universe (Phase 5) — ein realer Titel mit echten SEC-Fundamental-
@@ -96,19 +112,11 @@
         " Filings). Es gibt fuer diesen Titel keinen VU Quant Score — dazu unten mehr." })
     ]));
 
+    var statusHost = el("div", {});
     root.appendChild(C.section("Datenstatus",
-      "Jede Datenklasse einzeln, nicht pauschal fuers ganze Produkt (DO-NOT-BREAK-Regel #4).",
-      el("div", { class: "q-metrics" }, [
-        statusTile("Fundamentaldaten", "REAL · SEC EDGAR", "good",
-          "Periode bis " + S.formatDate(sec.asOfPeriodEnd) + (sec.restatementStatus === "restated" ? " · restated" : "")),
-        statusTile("Marktdaten / Chart", "UNAVAILABLE", "poor",
-          "Lizenzpruefung fuer Twelve-Data-/Tiingo-Kurse steht aus — keine echten Kurse auf dieser " +
-          "oeffentlichen Development Preview (siehe Data-Provenance unten)."),
-        statusTile("Technical Intelligence", "UNAVAILABLE", "poor",
-          "Braucht dieselbe Kursreihe wie Marktdaten oben — aus demselben Grund noch nicht real fuer " + ticker + "."),
-        statusTile("Elliott Wave (Beta)", "UNAVAILABLE", "poor",
-          "Baut auf Technical Intelligence auf und teilt dieselbe Voraussetzung.")
-      ])));
+      "Jede Datenklasse einzeln, nicht pauschal fuers ganze Produkt (DO-NOT-BREAK-Regel #4).", statusHost));
+    var chartHost = el("div", {});
+    root.appendChild(chartHost);
 
     root.appendChild(C.section("Factor DNA — reale SEC-Komponenten, kein Score",
       "Jede Komponente einzeln REAL oder UNAVAILABLE mit Begruendung. Kein Perzentilrang: fuenf Titel " +
@@ -120,19 +128,96 @@
     root.appendChild(el("div", { style: "margin-top:32px" }, [
       C.disclosure("Datenherkunft (Provenance)", [
         el("div", { class: "q-metrics" }, [
-          S.provenanceTag("Provider", sec.provenance.provider),
-          S.provenanceTag("Quelle", sec.provenance.source),
+          S.provenanceTag("Fundamentaldaten-Provider", sec.provenance.provider),
+          S.provenanceTag("Fundamentaldaten-Quelle", sec.provenance.source),
           S.provenanceTag("Snapshot", sec.provenance.dataSnapshotId),
           S.provenanceTag("Verfuegbar ab", S.formatDate(sec.provenance.availableAt)),
           S.provenanceTag("Mock", sec.provenance.isMock ? "ja" : "nein", sec.provenance.isMock ? "warn" : "good")
         ]),
         el("p", { class: "q-note", style: "margin-top:10px", text:
           "SEC/EDGAR ist eine oeffentliche Behoerdenquelle ohne Lizenzblock (kein LEGAL_REVIEW_REQUIRED). " +
-          "Marktdaten (Twelve Data/Tiingo) sind technisch vollstaendig implementiert und laufzeitgeprueft, " +
-          "aber ihre oeffentliche Anzeige ist ungeklaert und deshalb auf dieser oeffentlichen Preview " +
-          "abgeschaltet — nicht dieselbe Quelle, nicht derselbe Rechtsstatus." })
+          "Marktdaten (Tiingo) sind technisch vollstaendig implementiert und laufzeitgeprueft; ihre " +
+          "oeffentliche Anzeige fuer diese fuenf Titel beruht auf einer expliziten Eigentuemerentscheidung " +
+          "(quant/config/development-preview.json), NICHT auf einer geklaerten Redistributionslizenz — " +
+          "research.visionuniverse.de hat keinen Zugriffsschutz, siehe " +
+          "docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md." })
       ])
     ]));
+
+    /* Marktdaten, Technical und Elliott haengen alle an derselben Frage: ist
+       die Golden-Five-Kursreihe fuer diesen Titel tatsaechlich veroeffentlicht?
+       Ein Ladefehler ist hier kein Fehlerzustand, sondern die ehrliche
+       Antwort UNAVAILABLE - genau das faengt der .catch(null) ab. */
+    return Promise.all([
+      S.loadJSON(goldenMarketPath(ticker), { attempts: 1 }).catch(function () { return null; }),
+      S.loadJSON(TECHNICAL_INDEX, { attempts: 1 }).catch(function () { return null; })
+    ]).then(function (res) {
+      var market = res[0];
+      var techEntry = res[1] && res[1].instruments
+        ? res[1].instruments.filter(function (r) { return r.instrumentId === ticker && !r.isMock; })[0] : null;
+
+      S.mount(statusHost, el("div", { class: "q-metrics" }, [
+        statusTile("Fundamentaldaten", "REAL · SEC EDGAR", "good",
+          "Periode bis " + S.formatDate(sec.asOfPeriodEnd) + (sec.restatementStatus === "restated" ? " · restated" : "")),
+        market
+          ? statusTile("Marktdaten / Chart", "REAL · TIINGO · EOD", "good",
+              market.first + " bis " + market.last + " · Development Preview (Eigentuemerentscheidung)")
+          : statusTile("Marktdaten / Chart", "UNAVAILABLE", "poor",
+              "Fuer " + ticker + " liegt keine veroeffentlichte Golden-Five-Kursreihe vor."),
+        techEntry
+          ? statusTile("Technical Intelligence", "REAL · PRECOMPUTED", "good",
+              "Opportunity Score " + S.num(techEntry.opportunityScore, 0) + " · Trend " + (techEntry.trend || "–"))
+          : statusTile("Technical Intelligence", "UNAVAILABLE", "poor",
+              "Braucht dieselbe Kursreihe wie Marktdaten oben."),
+        techEntry
+          ? statusTile("Elliott Wave (Beta)", "BETA · REAL MARKET INPUT", "good",
+              "Status " + (techEntry.elliottStatus || "n/a") + " — kein erfundener Count bei Ambiguitaet")
+          : statusTile("Elliott Wave (Beta)", "UNAVAILABLE", "poor",
+              "Baut auf Technical Intelligence auf und teilt dieselbe Voraussetzung.")
+      ]));
+
+      if (market) S.mount(chartHost, chartSection(ticker, market));
+      if (techEntry) {
+        chartHost.appendChild(el("p", { class: "q-note", style: "margin-top:10px" }, [
+          el("a", { href: S.BASE + "technical/?symbol=" + ticker, text: "Vollstaendige Technical-Intelligence- und Elliott-Wave-Analyse fuer " + ticker + " ansehen →" })
+        ]));
+      }
+    });
+  }
+
+  var CHART_RANGES = (Ranges ? Ranges.RANGES : []).filter(function (r) { return r.source === "eod"; });
+  var chartState = {};
+
+  function chartSection(ticker, market) {
+    chartState[ticker] = chartState[ticker] || Ranges.DEFAULT_RANGE;
+    var wrap = el("div", { style: "margin-top:8px" });
+    drawChart(ticker, market, wrap);
+    return C.section("Kursverlauf (Tagesschluss)",
+      "Echte Tiingo-EOD-Kurse, Development Preview. Timeframe-Umschaltung wie auf /quant/markt/.", wrap);
+  }
+
+  function drawChart(ticker, market, wrap) {
+    var daten = { eod: market.bars || [], intraday: [], adjustmentStatus: market.adjustmentStatus || "RAW" };
+    var res = Ranges.selectRange(chartState[ticker], daten, { gates: {} });
+    var chartHost = el("div", { class: "q-chart-wrap" });
+    if (res.ok) {
+      chartHost.appendChild(Charts.candlestickChart({
+        bars: res.bars,
+        title: ticker + " — " + res.rangeId,
+        description: "Tagesschluss, " + res.bars.length + " Kurspunkte, " + res.from + " bis " + res.to + ".",
+        yFormat: function (v) { return v.toFixed(2); }
+      }));
+    } else {
+      chartHost.appendChild(S.stateBox("Zeitraum nicht verfuegbar", res.message, "empty"));
+    }
+    S.mount(wrap, [
+      el("div", { class: "q-pillbar", "aria-label": "Zeitraum" }, CHART_RANGES.map(function (r) {
+        return el("button", { class: "q-pill q-pill--sm" + (chartState[ticker] === r.id ? " on" : ""),
+          type: "button", text: r.label,
+          onclick: function () { chartState[ticker] = r.id; drawChart(ticker, market, wrap); } });
+      })),
+      chartHost
+    ]);
   }
 
   function statusTile(label, value, tone, hint) {
@@ -149,7 +234,9 @@
       el("div", { style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px" }, [
         el("b", { text: FACTOR_LABEL[factorId] }),
         el("span", { class: "q-chip tone-" + (COVERAGE_TONE[coverage.status] || "neutral"),
-          text: COVERAGE_TEXT[coverage.status] + " · " + coverage.realCount + "/" + coverage.totalCount })
+          text: COVERAGE_TEXT[coverage.status] +
+                (coverage.status === "UNAVAILABLE" ? "" : " · " + FACTOR_SOURCE[factorId]) +
+                " · " + coverage.realCount + "/" + coverage.totalCount })
       ]),
       coverage.components.length
         ? el("div", { class: "q-metrics" }, coverage.components.map(function (c) {

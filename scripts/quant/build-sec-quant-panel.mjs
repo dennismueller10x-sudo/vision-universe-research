@@ -24,19 +24,25 @@
    Kennzahl, keine echte. Was hier entsteht, sind Faktor-KOMPONENTEN als
    Rohwerte mit Provenance — kein Score.
 
-   price = null bei jedem Aufruf von fundamentalMetrics(): Value, Momentum
-   und Risk sind zu 100% marktdatenbasiert, und fuer diese fuenf Titel liegen
-   auf research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor
-   (siehe docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md,
-   docs/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md). Ein
-   Kurs hier zu erfinden waere exakt der stille Mock-Fallback, den dieses
-   Projekt an anderer Stelle verbietet — deshalb bleibt price bewusst null,
-   und jede preisabhaengige Kennzahl wird dadurch automatisch UNAVAILABLE,
-   ohne Sonderfallcode.
+   PREISDATEN (seit der Golden-Five-Development-Preview-Freigabe, Phase 5):
+   quant/data/market/golden-preview/daily/ enthaelt jetzt echte Tiingo-EOD-
+   Kurse fuer genau diese fuenf Titel (Eigentuemerentscheidung, siehe
+   quant/config/development-preview.json). Dieses Skript baut daraus ueber
+   quant/engines/panel-builder.js — dieselbe Bruecke, die Phase 4A fuer genau
+   diesen Zweck gebaut hat — ein Preis-Panel und ruft
+   factors.js#priceMetrics() fuer Momentum/Risk sowie factors.js#fundamentalMetrics(periods, price)
+   mit echtem Schlusskurs fuer Value auf. Zwei Kennzahlen bleiben trotzdem
+   bewusst UNAVAILABLE, nicht weil der Code sie nicht koennte, sondern weil
+   sie mit nur fuenf selbstgewaehlten Titeln als Vergleichsbasis scheinpraezise
+   waeren: `beta` (braucht einen echten Marktindex, nicht den gleichgewichteten
+   Durchschnitt dieser fuenf Titel) und `relativeStrength` (braucht denselben
+   Index; wird deshalb hier gar nicht erst berechnet). Fehlt das Preis-Panel
+   (Datei nicht vorhanden/leer), bleiben alle preisabhaengigen Kennzahlen wie
+   zuvor automatisch null — kein Kurs wird erfunden.
 
    Ausfuehren:  node scripts/quant/build-sec-quant-panel.mjs
    ========================================================================= */
-import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -49,10 +55,12 @@ const engines = join(root, "quant", "engines");
 const Schema = require(join(engines, "schema.js"));
 const Factors = require(join(engines, "factors.js"));
 const SecFactPanel = require(join(engines, "sec-fact-panel.js"));
+const PanelBuilder = require(join(engines, "panel-builder.js"));
 const SecAdapterModule = require(join(root, "providers", "sec", "adapter.js"));
 const SecAdapter = SecAdapterModule.createSecProvider();
 
 const OUT_PATH = join(root, "quant", "data", "sec", "quant-factor-inputs.json");
+const GOLDEN_PREVIEW_DIR = join(root, "quant", "data", "market", "golden-preview", "daily");
 
 /* Golden Universe (Phase 5). Die securityId-Konvention (sec_<TICKER>) ist
    die des SEC-Adapters selbst (providers/sec/adapter.js), nicht neu erfunden. */
@@ -73,17 +81,49 @@ const FACTOR_FIELDS = {
   revisions: []
 };
 
+const NO_PRICE_PANEL_REASON =
+  "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe " +
+  "gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von " +
+  "scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler.";
 const UNAVAILABLE_REASON = {
-  value: "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Fuer diese fuenf Titel liegen auf " +
-         "research.visionuniverse.de aus Lizenzgruenden keine echten Kurse vor (Twelve-Data-/Tiingo-" +
-         "Rohkursreihen sind Stand der Data-Hygiene-Phase nicht oeffentlich ausgeliefert).",
-  momentum: "Momentum braucht eine Kursreihe. Aus demselben Lizenzgrund wie Value derzeit nicht verfuegbar.",
-  risk: "Risk (Volatilitaet, Drawdown, Beta) braucht eine Kursreihe. Aus demselben Lizenzgrund derzeit nicht verfuegbar.",
+  value: NO_PRICE_PANEL_REASON,
+  momentum: NO_PRICE_PANEL_REASON.replace("Value braucht", "Momentum braucht"),
+  risk: NO_PRICE_PANEL_REASON.replace("Value braucht Marktdaten (Kurs/Marktkapitalisierung)", "Risk (Volatilitaet, Drawdown) braucht eine Kursreihe"),
   revisions: "Analyst Revisions: kein Schema mit lizenzierten PIT-Konsensdaten vorhanden (available: false in " +
              "quant-v1.json, unveraendert seit Phase 1)."
 };
+const NO_BENCHMARK_REASON = "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete " +
+  "Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine " +
+  "scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert.";
 
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
+
+/**
+ * Baut das Preis-Panel aus quant/data/market/golden-preview/daily/, ueber
+ * dieselbe Bruecke (panel-builder.js), die Phase 4A fuer genau diesen Zweck
+ * gebaut hat. Gibt null zurueck, wenn (noch) keine Golden-Five-Kursreihen
+ * veroeffentlicht sind - dann bleibt jede preisabhaengige Kennzahl wie vor
+ * dieser Erweiterung automatisch null.
+ */
+function buildPricePanel() {
+  if (!existsSync(GOLDEN_PREVIEW_DIR)) return null;
+  const serieses = [];
+  for (const entry of GOLDEN_FIVE) {
+    /* Die Golden-Preview-Dateien tragen Tiingos securityId-Konvention
+       (ref_<TICKER>, aus quant/config/tiingo-universe.json) - eine andere
+       als der SEC-Adapter (sec_<TICKER>). Das Panel selbst wird unter
+       entry.securityId (sec_<TICKER>) gefuehrt, damit buildSecurity() beide
+       Quellen unter demselben Schluessel nachschlagen kann. */
+    const file = join(GOLDEN_PREVIEW_DIR, "ref_" + entry.ticker + ".json");
+    if (!existsSync(file)) continue;
+    const payload = JSON.parse(readFileSync(file, "utf8"));
+    if (!Array.isArray(payload.bars) || !payload.bars.length) continue;
+    serieses.push({ securityId: entry.securityId, bars: payload.bars, adjustmentStatus: payload.adjustmentStatus });
+  }
+  if (!serieses.length) return null;
+  const result = PanelBuilder.buildPanel(serieses, { metric: "momentum" });
+  return result.ok ? result.panel : null;
+}
 
 function readReferenceMetadata(entry) {
   /* Reine Anzeige-Metadaten (Firmenname, Sektor) aus derselben, bereits
@@ -106,7 +146,7 @@ function readReferenceMetadata(entry) {
   }
 }
 
-function buildSecurity(entry) {
+function buildSecurity(entry, pricePanel) {
   const reference = readReferenceMetadata(entry);
   const factPanel = SecAdapter.getFactPanel([entry.securityId]);
   if (!factPanel.available) {
@@ -124,19 +164,37 @@ function buildSecurity(entry) {
     };
   }
 
+  /* pm bleibt null, wenn kein Preis-Panel vorliegt oder dieser Titel darin
+     fehlt (z. B. noch nicht veroeffentlicht) - price bleibt dann null wie
+     vor dieser Erweiterung, keine Sonderbehandlung noetig. */
+  const series = pricePanel && pricePanel.series[entry.securityId];
+  const pm = series
+    ? Factors.priceMetrics(pricePanel.series[entry.securityId],
+        pricePanel.dayIndex[pricePanel.tradingDays[pricePanel.tradingDays.length - 1]],
+        pricePanel.benchmark.level, pricePanel.volumeAt, entry.securityId)
+    : null;
+  /* beta braucht einen echten Marktindex; der gleichgewichtete Durchschnitt
+     der fuenf Titel selbst (panel-builder.js's synthetischer Fallback ohne
+     benchmarkId) ist keiner - deshalb wird beta hier nicht uebernommen, und
+     relativeStrength (dasselbe Problem) gar nicht erst berechnet: das ist
+     Teil von computeMetricPanel(), das absichtlich nicht aufgerufen wird. */
+  if (pm) delete pm.beta;
+
   const periods = SecFactPanel.factsToPeriods(facts);
-  const fundamentals = Factors.fundamentalMetrics(periods, null); // price=null: siehe Kopf-Kommentar
+  const fundamentals = Factors.fundamentalMetrics(periods, pm ? pm.price : null);
+  if (pm) Object.assign(fundamentals, pm);
 
   const coverage = {};
   Object.keys(FACTOR_FIELDS).forEach((factorId) => {
     const fields = FACTOR_FIELDS[factorId];
     const components = fields.map((fieldId) => {
       const value = fundamentals[fieldId];
+      const noBenchmarkField = (fieldId === "beta" || fieldId === "relativeStrength") && pm;
       return {
         fieldId,
         real: isNum(value),
         value: isNum(value) ? value : null,
-        reason: isNum(value) ? null : (UNAVAILABLE_REASON[factorId] ||
+        reason: isNum(value) ? null : noBenchmarkField ? NO_BENCHMARK_REASON : (UNAVAILABLE_REASON[factorId] ||
           "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im " +
           "kanonischen Bestand dieses Unternehmens).")
       };
@@ -172,6 +230,12 @@ function buildSecurity(entry) {
     reason: null,
     asOfPeriodEnd: fundamentals._asOfPeriodEnd,
     restatementStatus: fundamentals._restatementStatus,
+    marketData: pm ? {
+      provider: "tiingo", scope: "development_preview", asOf: pricePanel.tradingDays[pricePanel.tradingDays.length - 1],
+      note: "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe " +
+            "quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt " +
+            "denselben Schlusskurs fuer die Marktkapitalisierung."
+    } : null,
     fundamentals,
     coverage,
     provenance
@@ -179,20 +243,31 @@ function buildSecurity(entry) {
 }
 
 function main() {
+  const pricePanel = buildPricePanel();
   const securities = {};
-  GOLDEN_FIVE.forEach((entry) => { securities[entry.ticker] = buildSecurity(entry); });
+  GOLDEN_FIVE.forEach((entry) => { securities[entry.ticker] = buildSecurity(entry, pricePanel); });
 
   const out = {
     schemaVersion: "1.0",
     generatedAtUtc: new Date().toISOString(),
-    note: "Praekomputierte SEC-basierte Faktor-Rohwerte fuer das Golden Universe (Phase 5). Kein VU Quant " +
-          "Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier Sektoren waere scheinpraezise, keine " +
-          "echte Kennzahl (normalization.js verlangt eine Mindest-Peergroesse von 12). Value/Momentum/Risk " +
-          "sind ausschliesslich marktdatenbasiert und bleiben UNAVAILABLE, solange auf research.visionuniverse.de " +
-          "keine lizenzierten Kurse ausgeliefert werden.",
+    note: "Praekomputierte SEC- und (wenn veroeffentlicht) Tiingo-basierte Faktor-Rohwerte fuer das Golden " +
+          "Universe (Phase 5). Kein VU Quant Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier " +
+          "Sektoren waere scheinpraezise, keine echte Kennzahl (normalization.js verlangt eine Mindest-" +
+          "Peergroesse von 12). Value/Momentum/Risk nutzen echte Tiingo-EOD-Kurse, wenn " +
+          "quant/data/market/golden-preview/daily/ eine Reihe fuer den Titel enthaelt, sonst bleiben sie " +
+          "UNAVAILABLE statt einen Kurs zu erfinden. beta/relativeStrength bleiben immer UNAVAILABLE: der " +
+          "gleichgewichtete Durchschnitt dieser fuenf Titel ist kein echter Marktindex.",
     methodologyReference: "quant/methodology/quant-v1.json",
-    source: "providers/sec/adapter.js -> quant/engines/sec-fact-panel.js -> quant/engines/factors.js",
-    versions: { buildScript: "sec-quant-panel-1.0.0", factPanelBridge: "sec-fact-panel-1.0.0" },
+    source: "providers/sec/adapter.js + quant/data/market/golden-preview/ -> quant/engines/{sec-fact-panel," +
+            "panel-builder}.js -> quant/engines/factors.js",
+    pricePanel: pricePanel ? {
+      tradingDays: pricePanel.tradingDays.length,
+      from: pricePanel.tradingDays[0], to: pricePanel.tradingDays[pricePanel.tradingDays.length - 1],
+      adjustmentStatus: pricePanel.adjustmentStatus,
+      benchmark: pricePanel.benchmark.synthetic
+        ? "synthetic equal-weighted (Golden Five only, kein echter Marktindex)" : pricePanel.benchmark.benchmarkId
+    } : null,
+    versions: { buildScript: "sec-quant-panel-1.1.0", factPanelBridge: "sec-fact-panel-1.0.0" },
     securities
   };
 

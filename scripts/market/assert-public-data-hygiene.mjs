@@ -92,12 +92,20 @@ for (const relativePath of [
   }
 }
 
+/* Phase 5, Golden Five: the same narrow, explicit exception as the raw-bar
+   check above. A real (isMock:false) technical instrument bundle may only
+   exist for a ticker in development-preview.json's declared scope - any
+   other real bundle here is a leak, not a feature. */
 const instruments = join(root, "quant", "data", "technical", "instruments");
 if (existsSync(instruments)) {
   for (const name of readdirSync(instruments).filter((name) => name.endsWith(".json"))) {
     const payload = json(join("quant", "data", "technical", "instruments", name));
     if (payload && payload.isMock === false && hasBars(payload)) {
-      findings.push(`quant/data/technical/instruments/${name}: provider-derived raw bars in public bundle`);
+      const instrumentId = payload.instrumentId || name.replace(/\.json$/, "");
+      if (!previewScope.has(instrumentId)) {
+        findings.push(`quant/data/technical/instruments/${name}: real bars for '${instrumentId}' ` +
+                      `outside the declared Golden Five scope (${[...previewScope].join(", ")})`);
+      }
     }
   }
 }

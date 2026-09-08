@@ -104,15 +104,25 @@
     drawChart(file, b, chartHost, prec);
   }
 
+  /* file.source/file.note kommen, wenn gesetzt, direkt aus dem jeweiligen
+     Erzeugungspfad in build-technical-data.mjs - praeziser als die globale
+     meta.realData-Zusammenfassung, die nur den Dashboard-Pfad beschreibt
+     und fuer die Golden-Five-Titel (Quelle: Tiingo, Phase 5) falsch waere. */
+  function provenanceSourceLabel(file, meta) {
+    if (file.isMock) return "MOCK";
+    if (file.source === "tiingo") return "TIINGO";
+    return String((meta.realData && meta.realData.provider) || "UNKNOWN").toUpperCase();
+  }
+
   function originNote(file, meta) {
     var lines = file.isMock
       ? ["Demo-Daten: synthetisches Universum (Seed „" + (meta.mockData ? meta.mockData.seed : "") + "“). Keine realen Unternehmen, keine realen Marktdaten."]
-      : ["Reale Tageskurse (" + (file.priceSeriesType === "SPLIT_ADJUSTED" ? "splitbereinigt" : file.priceSeriesType) + ") aus dem Marktdatenbestand des Dashboards, Stand " + S.formatDateTime(file.sourceRevision) + ". Tagesschluss, keine Realtime-Daten."];
+      : [file.note || ("Reale Tageskurse (" + (file.priceSeriesType === "SPLIT_ADJUSTED" ? "splitbereinigt" : file.priceSeriesType) + ") aus dem Marktdatenbestand des Dashboards, Stand " + S.formatDateTime(file.sourceRevision) + ". Tagesschluss, keine Realtime-Daten.")];
     return el("section", { class: "q-origin-bar", role: "note" }, [
       el("div", { class: "q-provenance-tags" }, [
         S.provenanceTag("MODE", file.isMock ? "MOCK" : "REAL", file.isMock ? "neutral" : "strong"),
         S.provenanceTag("FORM", "PRECOMPUTED", "neutral"),
-        S.provenanceTag("SOURCE", file.isMock ? "MOCK" : String((meta.realData && meta.realData.provider) || "UNKNOWN").toUpperCase(), "neutral"),
+        S.provenanceTag("SOURCE", provenanceSourceLabel(file, meta), "neutral"),
         S.provenanceTag("ELLIOTT", "BETA", "neutral")
       ]),
       el("div", { class: "q-origin-row" }, [S.originBadge("marketData", file.isMock ? "mock" : "endOfDay"), el("span", { class: "q-chip", text: "Analyse-Lookback " + file.bundle.analysisLookback.bars + " Bars ab " + S.formatDate(file.bundle.analysisLookback.from) }), el("span", { class: "q-chip", text: "Anzeige ab " + S.formatDate(file.bars.from) })]),

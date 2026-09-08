@@ -46,14 +46,48 @@ test("UI5 · Navigation fuehrt einen Technical-Tab; oeffentliche Technical-Daten
   const meta = JSON.parse(read("data/technical/meta.json")), index = JSON.parse(read("data/technical/index.json"));
   assert.equal(meta.methodologyVersions.technical, JSON.parse(read("methodology/technical-v1.json")).methodologyVersion);
   assert.ok(index.instruments.every((r) => typeof r.isMock === "boolean" && r.snapshotId && r.asOf));
-  assert.ok(index.instruments.length > 0 && index.instruments.every((r) => r.isMock),
-    "ohne freigegebene Providerdaten duerfen nur Mock-Bundles ausgeliefert werden");
+  /* Phase 5: development-preview.json erlaubt genau fuenf reale Titel
+     (Golden Five, Eigentuemerentscheidung). Jeder andere reale Titel waere
+     ein Leck ausserhalb der deklarierten Scope-Liste - genau das prueft
+     dieser Test jetzt, statt "kein einziger realer Titel" zu verlangen. */
+  const previewScope = new Set(
+    JSON.parse(read("config/development-preview.json")).scope || []);
+  const realInstruments = index.instruments.filter((r) => !r.isMock);
+  assert.ok(index.instruments.length > previewScope.size, "es muessen auch Mock-Bundles vorliegen");
+  assert.ok(realInstruments.every((r) => previewScope.has(r.instrumentId)),
+    "ein realer Titel ausserhalb der Golden-Five-Scope-Liste waere ein Leck: " +
+    realInstruments.filter((r) => !previewScope.has(r.instrumentId)).map((r) => r.instrumentId).join(", "));
   const fixture = JSON.parse(read("data/technical/instruments/VUF011.json"));
   assert.equal(fixture.isMock, true);
   assert.equal(fixture.bundle.priceSeriesType, "SPLIT_ADJUSTED");
   assert.ok(fixture.bundle.analysisLookback.bars >= fixture.bars.timestamps.length, "Analyse-Lookback ≥ Anzeigefenster");
   assert.ok(fixture.bundle.annotations.annotations.some((a) => a.type === "NOW_DIVIDER"));
   assert.ok(fixture.bundle.elliott, "Elliott-Beta-Ergebnis fuer synthetische Fixture");
+
+  /* Jedes Golden-Five-Bundle traegt source:"tiingo" und eine eigene,
+     zutreffende Provenienznotiz - nicht die Dashboard-Formulierung, die
+     fuer diese Quelle falsch waere (Fund: SOURCE zeigte "UNKNOWN" und die
+     Notiz nannte den Dashboard-Bestand, obwohl die Quelle Tiingo ist). */
+  for (const ticker of previewScope) {
+    const bundle = JSON.parse(read(`data/technical/instruments/${ticker}.json`));
+    assert.equal(bundle.isMock, false, ticker);
+    assert.equal(bundle.source, "tiingo", ticker + ": source muss tiingo sein, nicht die Dashboard-Quelle");
+    assert.match(bundle.note || "", /Golden Five/, ticker + ": Provenienznotiz muss die Golden-Five-Herkunft nennen");
+  }
+});
+
+test("UI7 · Die SOURCE-Provenienzfunktion kollidiert nicht mit der einparametrigen Zonen-Quellen-Funktion " +
+     "(Fund: eine spaeter im selben Modul deklarierte function sourceLabel(x) ueberschrieb durch Hoisting " +
+     "die frueher deklarierte zweiparametrige Provenienzfunktion gleichen Namens - SOURCE zeigte dadurch " +
+     "'undefined' statt 'TIINGO'/'MOCK', da x.type auf einem {file, meta}-Argumentpaar nie passt)", () => {
+  const app = read("technical/app.js");
+  const call = app.match(/S\.provenanceTag\("SOURCE",\s*(\w+)\(file,\s*meta\)/);
+  assert.ok(call, "SOURCE-Tag muss eine (file, meta)-Funktion aufrufen");
+  const fnName = call[1];
+  assert.notEqual(fnName, "sourceLabel",
+    "darf nicht denselben Namen wie die vorhandene einparametrige Zonen-Quellen-Funktion tragen");
+  const declarations = app.match(new RegExp("function\\s+" + fnName + "\\s*\\(", "g")) || [];
+  assert.equal(declarations.length, 1, fnName + " darf im Modul nur einmal deklariert sein");
 });
 
 test("UI6 · Provenienz nennt Modus, Form, Quelle und Beta ohne globalen Synthetik-Widerspruch", () => {

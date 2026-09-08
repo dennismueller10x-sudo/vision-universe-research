@@ -6,13 +6,18 @@
    sec-fact-panel.js in factors.js#fundamentalMetrics — dieselbe Funktion,
    die auch das synthetische Modelluniversum bedient, kein Duplikat.
 
-   T1-T4  factsToPeriods(): reine Umformung, verlustfrei, PIT-Reihenfolge.
-   T5-T9  build-sec-quant-panel.mjs-Ausgabe (quant/data/sec/quant-factor-inputs.json):
-          alle fuenf Golden-Universe-Titel vorhanden, isMock:false, und —
-          das ist der eigentliche Wachposten dieser Datei — Value/Momentum/
-          Risk/Revisions sind fuer JEDEN Titel UNAVAILABLE, weil price=null
-          in den Build erhoben wird. Ein zukuenftiger Build, der versehentlich
-          echte Kurse einspeist, wuerde genau hier auffliegen.
+   T1-T4   factsToPeriods(): reine Umformung, verlustfrei, PIT-Reihenfolge.
+   T5-T6   build-sec-quant-panel.mjs-Ausgabe (quant/data/sec/quant-factor-inputs.json):
+           alle fuenf Golden-Universe-Titel vorhanden, isMock:false.
+   T7      Wachposten (Phase 5, seitdem quant/data/market/golden-preview/
+           echte Tiingo-EOD-Kurse liefert): beta/relativeStrength bleiben
+           IMMER UNAVAILABLE — der gleichgewichtete Durchschnitt der fuenf
+           Titel selbst ist kein echter Marktindex, und das darf sich auch
+           mit echten Kursen nicht aendern. Value/Momentum/Risk selbst
+           duerfen jetzt real sein (das ist der Fortschritt gegenueber der
+           urspruenglichen Fassung dieser Datei), aber revisions bleibt
+           immer UNAVAILABLE (keine lizenzierten Analystendaten).
+   T8-T9   Missing != Zero, jede fehlende Komponente traegt eine Begruendung.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -93,19 +98,32 @@ test("T6 · alle fuenf Golden-Universe-Titel sind enthalten und real (isMock:fal
   });
 });
 
-test("T7 · Wachposten: Value/Momentum/Risk/Revisions sind fuer jeden Titel UNAVAILABLE " +
-     "(kein Kurs eingespeist, keine erfundenen Analystendaten)", () => {
+test("T7 · Wachposten: revisions bleibt fuer jeden Titel UNAVAILABLE (keine erfundenen Analystendaten); " +
+     "beta/relativeStrength bleiben UNAVAILABLE auch wenn ein Preis-Panel vorliegt " +
+     "(der gleichgewichtete 5-Titel-Durchschnitt ist kein echter Marktindex)", () => {
   const out = JSON.parse(readFileSync(OUT_PATH, "utf8"));
   Object.keys(out.securities).forEach((t) => {
     const sec = out.securities[t];
     if (!sec.available) return;
-    ["value", "momentum", "risk", "revisions"].forEach((factorId) => {
-      assert.equal(sec.coverage[factorId].status, "UNAVAILABLE",
-        t + "." + factorId + " sollte UNAVAILABLE sein, ist " + sec.coverage[factorId].status);
-      assert.equal(sec.coverage[factorId].realCount, 0);
-    });
-    assert.equal(sec.fundamentals.marketCap, null, t + ": marketCap darf ohne Kurs nicht gesetzt sein");
+    assert.equal(sec.coverage.revisions.status, "UNAVAILABLE", t + ".revisions sollte UNAVAILABLE sein");
+    assert.equal(sec.coverage.revisions.realCount, 0);
+    assert.equal(sec.fundamentals.beta, undefined, t + ": beta darf nie uebernommen werden (kein echter Marktindex)");
+    const momentumBeta = sec.coverage.momentum.components.find((c) => c.fieldId === "relativeStrength");
+    if (momentumBeta) assert.equal(momentumBeta.real, false, t + ": relativeStrength darf nie real sein");
+    const riskBeta = sec.coverage.risk.components.find((c) => c.fieldId === "beta");
+    if (riskBeta) assert.equal(riskBeta.real, false, t + ": beta darf nie real sein");
   });
+  if (out.pricePanel) {
+    /* Sobald ein Preis-Panel vorliegt (Golden-Preview-Kurse veroeffentlicht),
+       duerfen Value/Momentum/Risk ECHT werden - das ist Phase 5, nicht ein
+       Leck. marketCap ohne Preis-Panel bliebe weiterhin null (siehe T8-Nachbar-
+       Pruefung unten fuer den Fall, dass keine Kursreihe existiert). */
+    Object.keys(out.securities).forEach((t) => {
+      const sec = out.securities[t];
+      if (!sec.available) return;
+      assert.ok(isFinite(sec.fundamentals.price), t + ": price sollte real sein, wenn ein Preis-Panel vorliegt");
+    });
+  }
 });
 
 test("T8 · fehlende Rohkennzahlen bleiben null, werden nie durch 0 ersetzt (Missing != Zero)", () => {
