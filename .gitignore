@@ -21,3 +21,9 @@ providers/**/credentials.json
 quant/data/sec/raw/
 quant/data/sec/facts/
 scripts/quant/**/__pycache__/
+
+# Phase 4A — Arbeitsablage fuer Kursdaten.
+# Vollstaendige Historien gehoeren nicht in ein oeffentliches Repository:
+# zu gross, und die Lizenzlage der Anbieter ist ungeklaert. Ausgeliefert
+# wird nur der Ausschnitt unter quant/data/market/daily/.
+.market-cache/

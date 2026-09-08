@@ -151,14 +151,29 @@ test("Q9 · Jeder hinterlegte Befund traegt eine Quelle", () => {
   }
 });
 
-test("Q10 · Kein hinterlegter Befund behauptet eine Laufzeitpruefung", () => {
-  // §13: keine erfundenen Anbieterergebnisse. In dieser Phase wurde keine
-  // einzige Anfrage an einen dieser Anbieter gestellt - also darf auch
-  // nirgends RUNTIME_VERIFIED stehen.
+/* Anbieter, zu denen in Phase 3 kein Zugang bestand. Fuer sie gilt
+   unveraendert: keine Anfrage, also kein Laufzeitbefund. Tiingo steht
+   bewusst nicht in dieser Liste - dort gibt es seit Phase 4A einen Zugang. */
+const OHNE_ZUGANG = ["sharadar", "intrinio", "twelve-data", "eodhd", "fmp", "polygon"];
+
+test("Q10 · Ein Laufzeitbefund muss den Lauf nennen, der ihn erzeugt hat", () => {
+  // §13: keine erfundenen Anbieterergebnisse. Der Test hat sich mit der Lage
+  // geaendert - frueher durfte nirgends RUNTIME_VERIFIED stehen, weil keine
+  // einzige Anfrage moeglich war. Jetzt darf es das, aber nicht umsonst: wer
+  // eine Laufzeitpruefung behauptet, muss sagen, welcher Lauf sie erzeugt
+  // hat. Ein Befund, den niemand nachschlagen kann, ist keiner.
   for (const [id, profile] of Object.entries(PROFILES.providers)) {
     for (const [req, f] of Object.entries(profile.findings || {})) {
-      assert.notEqual(f.level, "RUNTIME_VERIFIED",
-        `${id}.${req} behauptet eine Laufzeitpruefung, die nicht stattgefunden hat`);
+      if (OHNE_ZUGANG.includes(id)) {
+        assert.notEqual(f.level, "RUNTIME_VERIFIED",
+          `${id}.${req} behauptet eine Laufzeitpruefung, die nicht stattgefunden hat`);
+        continue;
+      }
+      if (f.level !== "RUNTIME_VERIFIED") continue;
+      assert.ok(f.source, `${id}.${req}: Laufzeitbefund ohne Quelle`);
+      assert.match(f.source, /Lauf \d+|Actions/,
+        `${id}.${req}: die Quelle nennt keinen nachpruefbaren Lauf`);
+      assert.ok(f.checkedAt, `${id}.${req}: Laufzeitbefund ohne Datum`);
     }
   }
   assert.ok(PROFILES.retrievalNote, "die Herkunft der Befunde muss dokumentiert sein");
@@ -170,15 +185,25 @@ test("Q11 · Alle Profile lassen sich auswerten und keines wird geschoent", () =
     .map((p) => Qualification.runProviderQualification(p, { now: PROFILES.researchedAt }));
 
   // Inventar-Guard: waechst nur zusammen mit quant/config/provider-profiles.json.
-  // sharadar, intrinio, twelve-data, eodhd, fmp, polygon, sec-edgar (Phase 4).
-  assert.equal(results.length, 7);
+  // sharadar, intrinio, twelve-data, eodhd, fmp, polygon, tiingo (Phase 4A),
+  // sec-edgar (Phase 4). Eine feste Zahl statt
+  // Object.keys(PROFILES.providers).length: gegen sich selbst gezaehlt kann die
+  // Zusicherung nicht fehlschlagen, und ein still hinzugefuegtes Profil bliebe
+  // ungeprueft.
+  assert.equal(results.length, 8);
 
   for (const r of results) {
     assert.ok(Qualification.STATUS.includes(r.qualificationStatus), r.providerId);
-    // Kein Anbieter darf ohne Laufzeitbefund als vollstaendig qualifiziert gelten.
+    /* Kein Anbieter ist vollstaendig qualifiziert. Bei Tiingo sind die
+       Kursbefunde gemessen, aber Fundamentaldaten, Delistings und
+       Meldezeitpunkte nicht - gemessene Kurse machen aus einem Anbieter
+       keine Evidenzquelle. */
     assert.notEqual(r.qualificationStatus, "QUALIFIED",
-      `${r.providerId} gilt als vollstaendig qualifiziert, obwohl nichts gemessen wurde`);
-    assert.equal(r.evidence.runtimeVerified.length, 0);
+      `${r.providerId} gilt als vollstaendig qualifiziert`);
+    if (OHNE_ZUGANG.includes(r.providerId)) {
+      assert.equal(r.evidence.runtimeVerified.length, 0,
+        `${r.providerId}: ohne Zugang kann nichts gemessen worden sein`);
+    }
     assert.equal(r.licensingStatus.status, "LEGAL_REVIEW_REQUIRED",
       `${r.providerId}: Lizenzlage darf nicht als geklaert gelten`);
   }
@@ -219,13 +244,22 @@ test("Q14 · Die Entscheidungstabelle bildet den Belegstand ab", () => {
     .map((p) => Qualification.runProviderQualification(p));
   const table = Qualification.decisionTable(results);
 
-  assert.equal(table.length, 7);
+  assert.equal(table.length, 8);
   for (const row of table) {
     assert.ok("provider" in row && "qualification" in row);
-    assert.equal(row.runtimeVerifiedCount, 0,
-      "die Tabelle muss zeigen, dass nichts gemessen wurde");
+    if (OHNE_ZUGANG.includes(row.provider)) {
+      assert.equal(row.runtimeVerifiedCount, 0,
+        "die Tabelle muss zeigen, wo nichts gemessen wurde");
+    }
     assert.equal(row.licenseConfidence, "LEGAL_REVIEW_REQUIRED");
   }
+
+  /* Und die Gegenprobe: die Spalte zeigt den Unterschied auch an. Stuende
+     ueberall 0, waere die Tabelle blind fuer genau die Frage, fuer die es
+     sie gibt. */
+  const tiingo = table.find((r) => r.provider === "tiingo");
+  assert.ok(tiingo.runtimeVerifiedCount > 0,
+    "der gemessene Anbieter muss sich in der Tabelle von den ungemessenen unterscheiden");
 });
 
 test("Q15 · SEC ist als Fundamentalquelle eingetragen, aber nicht als belegte Evidenzquelle", () => {

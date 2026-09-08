@@ -282,11 +282,34 @@
    * PIT-Fundamentaldaten, Faktoren, Scores, Strategiefilter, Ranking.
    * Genau diese Funktion liefert auch das heutige Modellportfolio (§47).
    */
+  /**
+   * Lief dieser Test auf einem generierten Universum?
+   *
+   * Frueher stand hier eine feste true. Solange es nur das Modelluniversum
+   * gab, war das richtig; sobald echte Kurse durch dieselbe Engine laufen,
+   * waere es eine Falschangabe — und der Trust Score haengt daran einen
+   * Hinweis auf, der dann nicht mehr stimmt.
+   *
+   * Die Regel faellt bewusst in die sichere Richtung: synthetisch, solange
+   * nicht jeder Titel ausdruecklich als real gekennzeichnet ist. Ein Titel
+   * ohne Angabe gilt als synthetisch, nicht als real — ein Lauf faelschlich
+   * als Modell zu kennzeichnen kostet einen Hinweis, ihn faelschlich als
+   * real zu kennzeichnen kostet die Glaubwuerdigkeit des Ergebnisses.
+   */
+  function universeIsMock(context) {
+    if (!context.sawReal) return true;
+    return context.sawMock;
+  }
+
   function selectCandidates(context, asOf) {
     var provider = context.provider;
     var definition = context.definition;
 
     var securities = provider.getSecurities({ asOf: asOf }).data;
+    for (var si = 0; si < securities.length; si++) {
+      if (securities[si].isMock === false) context.sawReal = true;
+      else context.sawMock = true;
+    }
     var factPanel = provider.getFactPanel({ asOf: asOf, quarters: 9 }).data;
     var metricPanel = Factors.computeMetricPanel({
       securities: securities, pricePanel: context.pricePanel, factPanel: factPanel, asOf: asOf
@@ -385,7 +408,10 @@
     var context = {
       provider: provider, definition: definition, pricePanel: pricePanel,
       dataSnapshotId: options.dataSnapshotId || null,
-      percentileFields: percentileFieldsOf(definition)
+      percentileFields: percentileFieldsOf(definition),
+      /* Herkunft der Titel, gefuellt beim ersten Auswahlschritt. Siehe
+         universeIsMock(). */
+      sawMock: false, sawReal: false
     };
 
     var rebalances = rebalanceIndices(tradingDays, startDate, endDate, definition.rebalance);
@@ -602,7 +628,7 @@
         everInvested: investedDays > 0,
         timeInvestedPct: metrics.timeInvestedPct,
         emptyRebalances: emptyRebalances,
-        isMock: true
+        isMock: universeIsMock(context)
       },
       warnings: warnings,
       equity: { dates: equityDates, values: equity.map(function (v) { return round(v, 2); }) },
@@ -729,7 +755,10 @@
     var context = {
       provider: provider, definition: definition, pricePanel: pricePanel,
       dataSnapshotId: options.dataSnapshotId || null,
-      percentileFields: percentileFieldsOf(definition)
+      percentileFields: percentileFieldsOf(definition),
+      /* Herkunft der Titel, gefuellt beim ersten Auswahlschritt. Siehe
+         universeIsMock(). */
+      sawMock: false, sawReal: false
     };
     var selection = selectCandidates(context, asOf);
     var weights = selection.candidates.length ? targetWeights(selection.candidates, definition.portfolio) : {};

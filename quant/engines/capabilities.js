@@ -71,6 +71,11 @@
       verifiedAt: spec.verifiedAt || null,
       notes: spec.notes || {},
       limits: spec.limits || {},
+      /* Woher eine Faehigkeit ihren Wert hat. Leer, solange niemand
+         nachgesehen hat. Der Eintrag je Faehigkeit ist ein Objekt mit
+         mindestens `verificationLevel` - er beantwortet die Frage, die auf
+         eine Zusage folgt: woher wisst ihr das? */
+      evidence: spec.evidence || {},
       sets: {}
     };
     Object.keys(CAPABILITY_SETS).forEach(function (setName) {

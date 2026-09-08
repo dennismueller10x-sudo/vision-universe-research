@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "universeId": "TIINGO_PHASE4A_TESTSET",
+  "provider": "tiingo",
+  "createdAt": "2026-09-07",
+  "purpose": "Kleines Testuniversum fuer Phase 4A. Ausgewaehlt nach Datenqualitaetsfragen, nicht nach Marktbedeutung: jeder Titel soll etwas Bestimmtes belegen oder widerlegen. Ein grosses Universum wuerde in dieser Phase nur das Stundenkontingent verbrauchen, ohne mehr zu zeigen.",
+
+  "boundary": "Diese Titel erhalten AUSSCHLIESSLICH echte Kursdaten von Tiingo. Sie bekommen keine Fundamentaldaten und damit keinen vollstaendigen VU Quant Score. Reale Unternehmen mit synthetischen Fundamentalzahlen zu verbinden bleibt ausgeschlossen - das ist seit Phase 1 die Grenze und aendert sich hier nicht.",
+
+  "fetch": {
+    "initialFrom": "2015-01-01",
+    "note": "Rund elf Jahre. Genug fuer mehrere Splits, viele Dividendenzyklen und einen vollstaendigen Drawdown 2020 und 2022 - und wenig genug, dass ein Erstimport im Stundenkontingent bleibt. Die volle Historie reicht bei Tiingo weiter zurueck; sie zu holen ist eine Entscheidung fuer spaeter."
+  },
+
+  "securities": [
+    { "securityId": "ref_NVDA", "ticker": "NVDA", "name": "NVIDIA Corporation",
+      "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology",
+      "tests": ["mehrfachSplit", "hoheVolatilitaet"],
+      "expectation": "Zwei Splits im Zeitraum: 4:1 am 2021-07-20 und 10:1 am 2024-06-10. Der beste Einzelnachweis fuer korrekte Split-Behandlung - wenn die Bereinigung hier stimmt, stimmt sie meistens." },
+
+    { "securityId": "ref_AAPL", "ticker": "AAPL", "name": "Apple Inc.",
+      "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology",
+      "tests": ["split", "dividende"],
+      "expectation": "4:1-Split am 2020-08-31 und regelmaessige Quartalsdividende. Der Titel, an dem sich Split- und Dividendenbereinigung zugleich pruefen lassen." },
+
+    { "securityId": "ref_MSFT", "ticker": "MSFT", "name": "Microsoft Corporation",
+      "mic": "XNAS", "exchange": "NASDAQ", "sector": "Technology",
+      "tests": ["dividende", "referenz"],
+      "expectation": "Keine Splits im Zeitraum, aber verlaessliche Quartalsdividenden. Damit laesst sich die Dividendenbereinigung isoliert pruefen, ohne dass ein Split das Bild stoert." },
+
+    { "securityId": "ref_AMZN", "ticker": "AMZN", "name": "Amazon.com Inc.",
+      "mic": "XNAS", "exchange": "NASDAQ", "sector": "Consumer Discretionary",
+      "tests": ["grosserSplit"],
+      "expectation": "20:1-Split am 2022-06-06. Ein ungewoehnlich grosses Verhaeltnis - wo eine Bereinigung bricht, bricht sie hier." },
+
+    { "securityId": "ref_META", "ticker": "META", "name": "Meta Platforms Inc.",
+      "mic": "XNAS", "exchange": "NASDAQ", "sector": "Communication Services",
+      "tests": ["symbolwechsel", "ersteDividende"],
+      "expectation": "Symbolwechsel von FB zu META im Juni 2022 und erste Dividende 2024. Prueft, ob die Historie ueber einen Tickerwechsel hinweg zusammenhaengt." },
+
+    { "securityId": "ref_TSLA", "ticker": "TSLA", "name": "Tesla Inc.",
+      "mic": "XNAS", "exchange": "NASDAQ", "sector": "Consumer Discretionary",
+      "tests": ["mehrfachSplit", "extremeVolatilitaet"],
+      "expectation": "5:1 am 2020-08-31 und 3:1 am 2022-08-25, dazu die hoechste Volatilitaet im Testsatz. Prueft, ob die Qualitaetsschwelle fuer grosse Tagesbewegungen echte Kurssprunge von unbereinigten Splits unterscheidet." },
+
+    { "securityId": "ref_JPM", "ticker": "JPM", "name": "JPMorgan Chase & Co.",
+      "mic": "XNYS", "exchange": "NYSE", "sector": "Financials",
+      "tests": ["financial", "dividende", "andereBoerse"],
+      "expectation": "NYSE statt NASDAQ - prueft, ob die Boersenzuordnung stimmt. Dazu ein Dividendenzahler mit steigender Ausschuettung." },
+
+    { "securityId": "ref_XOM", "ticker": "XOM", "name": "Exxon Mobil Corporation",
+      "mic": "XNYS", "exchange": "NYSE", "sector": "Energy",
+      "tests": ["energy", "hoheDividende", "drawdown2020"],
+      "expectation": "Hohe Dividendenrendite und ein tiefer Einbruch 2020. Der Titel, an dem der Unterschied zwischen Kursrendite und Gesamtrendite am groessten ausfaellt - genau die Luecke, die Phase 3 benannt hat." },
+
+    { "securityId": "ref_KO", "ticker": "KO", "name": "The Coca-Cola Company",
+      "mic": "XNYS", "exchange": "NYSE", "sector": "Consumer Staples",
+      "tests": ["klassischeDividende", "niedrigeVolatilitaet"],
+      "expectation": "Der klassische Dividendenaristokrat. Ueber elf Jahre summiert sich die Ausschuettung so weit auf, dass eine fehlende Dividendenbereinigung nicht mehr zu uebersehen ist." },
+
+    { "securityId": "ref_JNJ", "ticker": "JNJ", "name": "Johnson & Johnson",
+      "mic": "XNYS", "exchange": "NYSE", "sector": "Health Care",
+      "tests": ["spinoff", "dividende"],
+      "expectation": "Abspaltung von Kenvue im August 2023. Eine Kapitalmassnahme, die weder Split noch Dividende ist - prueft, wie der Anbieter damit umgeht und ob wir es merken." },
+
+    { "securityId": "ref_SPY", "ticker": "SPY", "name": "SPDR S&P 500 ETF Trust",
+      "mic": "ARCX", "exchange": "NYSE Arca", "sector": "Index ETF",
+      "tests": ["benchmark", "etf"],
+      "expectation": "Die Vergleichsgroesse fuer jeden Backtest. Zugleich der Test, ob ETFs ueber dieselbe Schnittstelle laufen wie Einzelaktien." },
+
+    { "securityId": "ref_BRKB", "ticker": "BRK-B", "name": "Berkshire Hathaway Inc. Class B",
+      "mic": "XNYS", "exchange": "NYSE", "sector": "Financials",
+      "tests": ["symbolSonderzeichen", "keineDividende"],
+      "expectation": "Der Bindestrich im Ticker. Prueft, ob die Symbolkodierung durch die URL kommt - eine haeufige und unauffaellige Fehlerquelle. Zahlt keine Dividende: Kursrendite und Gesamtrendite muessen hier identisch sein." }
+  ],
+
+  "notVerifiable": [
+    {
+      "test": "delistetesUnternehmen",
+      "reason": "Kein delisteter Titel im Testsatz. Ob Tiingo delistete Unternehmen fuehrt, ist ungeprueft, und ein Titel, den man nicht abrufen kann, laesst sich schlecht in ein Testuniversum aufnehmen. Nach der Gate-B-Definition aus Phase 3 ist das die Voraussetzung fuer bias-freie Backtests - hier bleibt sie offen.",
+      "status": "UNKNOWN"
+    }
+  ]
+}
