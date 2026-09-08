@@ -99,6 +99,35 @@ eine Einstufung steht.
 Naechster Schritt kostet nichts: Intrinios Developer Sandbox (Dow 30) schliesst
 Gate A und C. Gate B nicht - die Dow 30 sind per Definition Ueberlebende.
 
+## Phase 4B — Realtime Market Data und Extended Hours
+
+Gemerged als PR #51, finaler main-Commit **`39bfaea`**.
+
+Provider-neutrale Live-Chart-Architektur: Datenklassen-Leiter
+(`REALTIME_STREAM → REALTIME_QUOTE → INTRADAY → EOD → UNAVAILABLE`),
+Capability Negotiation mit sechs Zustaenden, Best-Available-Fallback,
+deterministische Merge-Regeln gegen Repainting, Verbindungsautomat,
+Verfallserkennung und ein Datenstatus, der „LIVE" nur unter sechs
+gleichzeitig erfuellten Bedingungen vergibt.
+
+Dazu vier Handelssitzungen (`PRE_MARKET`, `REGULAR`, `AFTER_HOURS`,
+`CLOSED`) als zweite Achse - nicht als zweite Leiter.
+
+**817 Pruefungen gruen** (568 JS + 249 Python). Vier Auditbefunde gefunden
+und behoben, darunter zwei HIGH.
+
+Der Merge aendert nichts am Verhalten der ausgelieferten Seiten: beide
+Feature-Gates bleiben aus, der Lizenzstatus bleibt
+`LEGAL_REVIEW_REQUIRED`, `REALTIME_READY` ist nicht gesetzt, und der
+Live-Chart ist an keine Seite angebunden.
+
+Echtzeit und erweiterte Handelszeiten stehen auf **UNKNOWN**, bis ein
+Laufzeitnachweis mit dem tatsaechlichen Zugang vorliegt.
+
+Berichte: `docs/VU_REALTIME_MARKET_DATA_ARCHITECTURE.md`,
+`docs/VU_REALTIME_MARKET_DATA_VALIDATION.md`.
+Integrationsstand fuers Preview: `docs/VU_REALTIME_PREVIEW_INTEGRATION.md`.
+
 ## In Progress
 
 Nichts. Alle drei Phasen sind abgeschlossen.
