@@ -10,3 +10,20 @@ scripts/dashboard/__pycache__/
 *.key
 secrets.json
 providers/**/credentials.json
+
+# Phase 4 — SEC Financial Data Core.
+# SEC-Rohdaten und der Abruf-Cache sind gross und jederzeit reproduzierbar; sie
+# duerfen das oeffentliche Repository nie erreichen. Die normalisierten
+# Factbooks sind ebenfalls reproduzierbar und bleiben lokal. Committet werden
+# nur die kompakten, pruefbaren Artefakte unter quant/data/sec/.
+.sec-cache/
+.quant-state/
+quant/data/sec/raw/
+quant/data/sec/facts/
+scripts/quant/**/__pycache__/
+
+# Phase 4A — Arbeitsablage fuer Kursdaten.
+# Vollstaendige Historien gehoeren nicht in ein oeffentliches Repository:
+# zu gross, und die Lizenzlage der Anbieter ist ungeklaert. Ausgeliefert
+# wird nur der Ausschnitt unter quant/data/market/daily/.
+.market-cache/

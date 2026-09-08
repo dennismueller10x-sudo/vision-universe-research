@@ -265,9 +265,17 @@
          reales Unternehmen mit erfundenen Bilanzzahlen zu zeigen waere die
          eine Sorte Fehler, die sich nicht durch einen Hinweis heilen laesst. */
       classes.push(["fundamentals", "mock"]);
-      if (status.capabilities && status.capabilities.market &&
-          status.capabilities.market.splits === false) {
+      /* Kapitalmassnahmen bekommen ein eigenes Abzeichen, sobald ueber sie
+         etwas bekannt ist - in beide Richtungen. Frueher stand hier nur der
+         Fall "liefert der Zugang nicht"; seit Splits und Dividenden bei
+         Tiingo zur Laufzeit belegt sind, waere das Schweigen im
+         Erfolgsfall die unehrlichere Haelfte: der Leser saehe nicht, dass
+         die Kursreihe um echte Ereignisse bereinigt ist. */
+      var market = (status.capabilities && status.capabilities.market) || {};
+      if (market.splits === false || market.dividends === false) {
         classes.push(["corporateActions", "capabilityMissing"]);
+      } else if (market.splits === true && market.dividends === true) {
+        classes.push(["corporateActions", anyOk ? "endOfDay" : "unavailable"]);
       }
     }
 

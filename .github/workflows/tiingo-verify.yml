@@ -1,0 +1,217 @@
+name: Tiingo — Laufzeitnachweis
+
+# Phase 4A §33. Der einzige Ort, an dem der Tiingo-Schluessel existiert.
+#
+# Was dieser Workflow leistet: er misst, was der Adapter bisher nur
+# behauptet. Die Faehigkeitsmatrix steht auf null (ungeprueft) - hier wird
+# entschieden, was davon auf true darf.
+#
+# Der Lauf kostet hoechstens acht Anfragen von 50 pro Stunde. Er laeuft
+# deshalb NICHT nach Zeitplan, sondern nur auf Anforderung: eine
+# Faehigkeit, die einmal gemessen ist, aendert sich nicht stuendlich.
+#
+# Der Schluessel wird ausschliesslich als Umgebungsvariable an ein
+# Node-Skript gereicht. Er erscheint nicht im Log, nicht im Bericht und
+# nicht im Repository - der Adapter setzt ihn in den Authorization-Header,
+# nicht in die URL, und ein Test haelt das fest.
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_report:
+        description: 'Bericht als Artefakt hochladen'
+        type: boolean
+        default: true
+      run_ingest:
+        description: 'Zusaetzlich den Importweg gegen die echte API pruefen (kostet ~12 Anfragen)'
+        type: boolean
+        default: false
+
+  # Nach dem Merge ist workflow_dispatch der vorgesehene Weg: der Workflow
+  # liegt dann auf dem Default-Branch und laesst sich dort mit den beiden
+  # Schaltern oben von Hand ausloesen.
+  #
+  # Der Push-Ausloeser bleibt daneben bestehen, aber eng gefasst: nur auf
+  # Entwicklungsbranches unter claude/, nur wenn Nachweis, Import oder
+  # Adapter sich aendern, und nur mit einer Marke in der Commit-Nachricht
+  # ([verify] bzw. [ingest], siehe die Job-Bedingungen). Ohne Marke laeuft
+  # nichts.
+  #
+  # Auf main ist er ausdruecklich NICHT eingetragen. Ein Merge soll keine
+  # Anfragen ausloesen - weder Kontingent verbrauchen noch, mit einer
+  # kuenftigen Freigabe, ungewollt Daten bewegen.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/verify-tiingo-runtime.mjs'
+      - 'scripts/market/ingest-tiingo.mjs'
+      - 'providers/tiingo/adapter.js'
+      - '.github/workflows/tiingo-verify.yml' 
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tiingo-runtime
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    # Auch der Nachweis laeuft nur auf Anforderung. Er kostet sechs von 50
+    # Anfragen pro Stunde, und bei jedem Commit an Adapter oder Skript
+    # summiert sich das: fuenf Laeufe in einer Stunde haben genau das
+    # Stundenkontingent aufgebraucht, und der sechste konnte nichts mehr
+    # messen. Eine Faehigkeit, die einmal gemessen ist, aendert sich nicht
+    # bei jedem Commit.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[verify]') ||
+      contains(github.event.head_commit.message, '[ingest]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo 'Secret vorhanden.'
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY hinterlegt. Der Nachweis wird uebersprungen;'
+            echo 'alle Faehigkeiten bleiben ungeprueft. Das ist kein Fehler.'
+          fi
+
+      - name: Laufzeitnachweis
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-tiingo-runtime.mjs
+
+      - name: Der Bericht enthaelt keinen Schluessel
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        # Zweite Verteidigungslinie. Der Adapter reicht den Schluessel nicht
+        # durch, und ein Test prueft das - aber ein Bericht, der ihn doch
+        # enthielte, waere als Artefakt herunterladbar.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/tiingo-runtime-verification.json";
+            if (!fs.existsSync(file)) { console.log("Kein Bericht erzeugt."); process.exit(0); }
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) {
+              console.error("ABBRUCH: der Bericht enthaelt den Zugangsschluessel.");
+              process.exit(1);
+            }
+            if (/[?&]token=/i.test(raw)) {
+              console.error("ABBRUCH: der Bericht enthaelt eine Anfrage-URL mit Token.");
+              process.exit(1);
+            }
+            console.log("Bericht ist frei von Zugangsdaten (" + Math.round(raw.length/1024) + " KB).");
+          '
+
+      - name: Bericht ins Protokoll
+        if: steps.secret.outputs.available == 'true'
+        # Nach der Schluesselpruefung, nie davor. Das Artefakt ist an eine
+        # Ablage gebunden, die nicht aus jeder Umgebung erreichbar ist; im
+        # Protokoll ist der Befund fuer jeden lesbar, der den Lauf sehen darf.
+        run: cat quant/data/market/tiingo-runtime-verification.json
+
+      - name: Bericht als Artefakt
+        # Bei einem push-Ausloeser gibt es keine inputs; ein blosser
+        # Vergleich gegen false wuerde den Schritt dann ueberspringen -
+        # genau das ist beim ersten Lauf passiert, und der Nachweis lag
+        # nur im Protokoll statt als Datei vor.
+        if: steps.secret.outputs.available == 'true' && (github.event_name != 'workflow_dispatch' || inputs.publish_report)
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-runtime-verification
+          path: quant/data/market/tiingo-runtime-verification.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo — Laufzeitnachweis'
+            echo ''
+            if [ "${{ steps.secret.outputs.available }}" != "true" ]; then
+              echo 'Kein `TIINGO_API_KEY` hinterlegt. Alle Faehigkeiten bleiben ungeprueft.'
+              exit 0
+            fi
+            if [ -f quant/data/market/tiingo-runtime-verification.json ]; then
+              echo '| Faehigkeit | Ergebnis |'
+              echo '|---|---|'
+              node -e '
+                const r = require("./quant/data/market/tiingo-runtime-verification.json");
+                for (const f of r.findings) console.log("| " + f.capability + " | " + f.result + " |");
+                console.log("");
+                console.log("Verbrauch: " + r.quotaUsed.requests + " Anfragen (" + r.quotaUsed.hour + " Stunde).");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------
+  # Der Importweg selbst (§9, §25, §26).
+  #
+  # Der Laufzeitnachweis oben prueft, was Tiingo liefert. Dieser Job
+  # prueft, ob der Weg vom Anbieter in den Bestand funktioniert:
+  # Kontingentzaehlung, Wiederaufnahme nach Abbruch, Qualitaetspruefung,
+  # Gegenprobe der Bereinigung, Zusammenfuehren mit dem Vorstand.
+  #
+  # Er veroeffentlicht nichts. Der Arbeitsstand liegt in .market-cache und
+  # verschwindet mit dem Runner - solange die Lizenzfrage offen ist,
+  # gehoeren echte Kursreihen nicht in ein oeffentliches Repository.
+  # Geprueft wird der Weg, nicht der Bestand.
+  # ---------------------------------------------------------------------
+  ingest:
+    runs-on: ubuntu-latest
+    # Nur auf Anforderung: ein Import kostet zwoelf der 50 Anfragen pro
+    # Stunde und soll nicht bei jedem Commit anfallen. Solange
+    # workflow_dispatch nicht zur Verfuegung steht - es verlangt den
+    # Workflow auf dem Default-Branch - dient dafuer eine Marke in der
+    # Commit-Nachricht.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.run_ingest) ||
+      contains(github.event.head_commit.message, '[ingest]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Importweg gegen die echte API
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/ingest-tiingo.mjs
+
+      - name: Nichts Vertrauliches im Statusbericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Der Bestand bleibt im Arbeitsverzeichnis
+        # Die Gegenprobe zur Absicht: waere unter quant/data/market eine
+        # Kursreihe gelandet, wuerde sie im naechsten Commit
+        # veroeffentlicht. Genau das soll dieser Job nicht tun.
+        run: |
+          if git status --porcelain quant/data/market | grep -q 'daily\|intraday'; then
+            echo 'ABBRUCH: der Import hat Kursreihen in den veroeffentlichten Pfad geschrieben.'
+            git status --porcelain quant/data/market
+            exit 1
+          fi
+          echo 'Keine Kursreihe im veroeffentlichten Pfad.'
+          ls -la .market-cache 2>/dev/null | head -20 || echo 'Kein Arbeitsverzeichnis angelegt.'
+
+      - name: Statusbericht ins Protokoll
+        run: cat quant/data/market/tiingo-status.json

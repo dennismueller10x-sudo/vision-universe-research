@@ -1,0 +1,241 @@
+name: Update SEC fundamentals
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Re-normalize even when no new filing was found"
+        type: boolean
+        default: false
+      as_of:
+        description: "as-of date for the gate report (YYYY-MM-DD, default: today)"
+        type: string
+        required: false
+  schedule:
+    # Weekly. US issuers file 10-Qs and 10-Ks in waves around earnings season;
+    # a weekly incremental pass picks them up without re-reading history, and
+    # the pipeline skips the large companyfacts fetch for anyone who has not
+    # filed since the last run.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-sec-fundamentals
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure the SEC pipeline exists on this ref
+        shell: bash
+        run: |
+          # Der Workflow ist auf main registriert, damit workflow_dispatch ihn
+          # ueberhaupt anbietet. Wird er auf einem Ref gestartet, der die
+          # Pipeline nicht enthaelt, soll er das sagen statt undurchsichtig
+          # mitten im Lauf zu scheitern.
+          missing=0
+          for required in scripts/quant/cli.py providers/sec/adapter.js \
+                          quant/config/sec-universe.json scripts/quant/run-sec-gates.mjs; do
+            if [ ! -e "$required" ]; then echo "fehlt: $required"; missing=1; fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Die SEC-Pipeline liegt auf diesem Ref (${{ github.ref_name }}) nicht vor."
+            exit 1
+          fi
+          echo "SEC-Pipeline auf ${{ github.ref_name }} vorhanden."
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Cache SEC responses between runs
+        uses: actions/cache@v4
+        with:
+          path: .sec-cache
+          key: sec-cache-${{ github.run_id }}
+          restore-keys: sec-cache-
+
+      - name: Restore ingestion state
+        uses: actions/cache@v4
+        with:
+          path: |
+            .quant-state
+            quant/data/sec/facts
+            quant/data/sec/raw
+          key: sec-state-${{ github.run_id }}
+          restore-keys: sec-state-
+
+      - name: Run both offline test suites first
+        run: |
+          python3 scripts/quant/cli.py test
+          node --test "quant/tests/*.test.mjs"
+
+      - name: Resolve the universe against the SEC ticker map
+        # Diagnostic, runs before the expensive ingest: it records which CIK each
+        # configured ticker actually resolves to, and what each candidate CIK
+        # contains. A mismatch here is what stopped the first live run — the
+        # config CIK is only a hint, the SEC is the authority.
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/cli.py resolve --universe quant/config/sec-universe.json
+
+      - name: Ingest the SEC universe
+        id: ingest
+        # A single company failing must not lose the whole run; that is what the
+        # retry queue is for. The completeness check two steps down decides.
+        continue-on-error: true
+        env:
+          # The SEC requires a declaring User-Agent with a contact address.
+          # This is a public contact address, not a credential.
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: |
+          python3 scripts/quant/cli.py ingest \
+            --universe quant/config/sec-universe.json \
+            ${{ inputs.force && '--force' || '' }}
+
+      - name: Retry anything that failed
+        if: steps.ingest.outcome == 'failure'
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/cli.py retry
+
+      - name: Verify every configured company was ingested
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.provider import normalize_cik
+          from quant.sec.store import JsonFactStore
+
+          universe = json.load(open("quant/config/sec-universe.json"))["companies"]
+          stored = set(JsonFactStore(compress=True).list_companies())
+          missing = [c for c in universe if normalize_cik(c["cik"]) not in stored]
+          for c in universe:
+              mark = "ok " if normalize_cik(c["cik"]) in stored else "MISSING"
+              print(f"  {mark} {c['ticker']:6} CIK {normalize_cik(c['cik'])}")
+          if missing:
+              print(f"::error::{len(missing)} of {len(universe)} companies were not "
+                    f"ingested: {[c['ticker'] for c in missing]}")
+              sys.exit(1)
+          print(f"all {len(universe)} companies ingested")
+          PY
+
+      - name: Build the coverage matrix
+        run: python3 scripts/quant/cli.py coverage
+
+      - name: Write the canonical FundamentalFact/Filing layer
+        # This is what providers/sec/adapter.js serves to the quant engines.
+        run: python3 scripts/quant/cli.py canonical
+
+      - name: Run the ingestion integrity checks
+        run: python3 scripts/quant/cli.py gates ${{ inputs.as_of && format('--as-of {0}', inputs.as_of) || '' }}
+
+      - name: Run the existing qualification gates against the SEC adapter
+        # Gate A/B/C come from quant/engines/gate-tests.js - the same stand every
+        # other provider is judged by. A gate that cannot be run is reported
+        # SKIPPED, never PASSED.
+        run: node scripts/quant/run-sec-gates.mjs
+
+      - name: Re-check the adapter against real ingested data
+        run: node --test "quant/tests/sec-adapter.test.mjs"
+
+      - name: Cross-check canonical values against SEC primary data
+        id: primary_source
+        # The only check that leaves the pipeline: it re-fetches companyfacts and
+        # compares raw SEC entries against the normalized and canonical values,
+        # recording concept, accession, filing date and period end for each one.
+        # continue-on-error so the evidence file still gets committed; the run is
+        # failed at the end if anything mismatched.
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/audit_primary_source.py --per-company 8
+
+      - name: Export the data inspector views
+        run: python3 scripts/quant/cli.py export
+
+      - name: Report what was measured
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          cov = json.loads(pathlib.Path("quant/data/sec/coverage_matrix.json").read_text())
+          print("Coverage (probe years):")
+          for year in sorted(cov.get("grid", {}), reverse=True):
+              print(f"  {year}: {cov['grid'][year]}")
+          for company in cov.get("companies", []):
+              print(f"  {company['name']}: first usable fiscal year "
+                    f"{company['first_usable_year']}, first structured "
+                    f"{company['first_structured_year']}")
+          idx = json.loads(pathlib.Path("quant/data/sec/canonical_index.json").read_text())
+          print("\nCanonical bundles:")
+          for c in idx.get("companies", []):
+              print(f"  {c['ticker']:6} {c['factCount']:6} facts, "
+                    f"{len(c['metricIds'])} metrics: {','.join(c['metricIds'])}")
+          PY
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^quant/data/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "::error::this workflow may only change quant/data/:"
+            echo "$unexpected"
+            exit 1
+          fi
+          for forbidden in quant/data/sec/raw quant/data/sec/facts; do
+            if git status --porcelain | grep -q "$forbidden"; then
+              echo "::error::$forbidden must stay untracked"
+              exit 1
+            fi
+          done
+          oversized="$(find quant/data -type f -size +2M -not -path 'quant/data/sec/raw/*' -not -path 'quant/data/sec/facts/*' || true)"
+          if [ -n "$oversized" ]; then
+            echo "::error::generated artifact over 2MB:"; echo "$oversized"; exit 1
+          fi
+
+      - name: Fail the run if any value disagrees with SEC primary data
+        shell: bash
+        run: |
+          report=quant/data/sec/primary_source_audit.json
+          if [ ! -f "$report" ]; then
+            echo "::error::the primary-source cross-check produced no report"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json, pathlib, sys
+          payload = json.loads(pathlib.Path("quant/data/sec/primary_source_audit.json").read_text())
+          print(json.dumps(payload["summary"], indent=2))
+          if payload["mismatchCount"]:
+              print(f"::error::{payload['mismatchCount']} canonical values disagree "
+                    f"with SEC primary data")
+              for check in payload["checks"]:
+                  if check["verdict"].startswith("MISMATCH"):
+                      print(f"  {check['ticker']} {check['metric']} "
+                            f"{check['fiscalYear']} {check['fiscalPeriod']}: "
+                            f"{check['verdict']}")
+              sys.exit(1)
+          PY
+
+      - name: Commit generated data
+        shell: bash
+        run: |
+          git add quant/data
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen an den SEC-Daten – nichts zu committen."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update SEC fundamental data"
+          git push

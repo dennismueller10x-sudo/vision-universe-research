@@ -23,6 +23,35 @@ Begruendung der Technologieentscheidungen in
    gepflegt.**
 6. **Seiten** (`<name>/index.html` + `app.js`) — Glue-Code: laden, rendern, verlinken.
 
+## SEC Financial Data Core (Phase 4)
+
+Der SEC-Workstream ist **keine zweite Architektur**, sondern eine Ingestion-Quelle
+unterhalb der bestehenden Provider-Abstraction:
+
+```
+data.sec.gov -> scripts/quant/sec/**  ->  quant/data/sec/*.json
+   (Actions)     Python-Ingestion         kanonische FundamentalFact/Filing-Records
+                                                    |
+                                          providers/sec/adapter.js
+                                          FundamentalDataProvider (provider.js)
+                                                    |
+                                          engines/  Quant · Strategy · Backtest
+```
+
+- Die Python-Pipeline unter `scripts/quant/sec/` ist der **Adapter-Unterbau**: sie ist
+  der einzige Ort, an dem SEC-/XBRL-spezifische Nutzlasten vorkommen. Sie schreibt
+  ausschliesslich kanonische Records nach `quant/data/sec/`.
+- `providers/sec/adapter.js` implementiert `FundamentalDataProvider` aus
+  `engines/provider.js` und liefert `ok()`/`unavailable()`-Umschlaege. Oberhalb dieser
+  Grenze existiert kein SEC-Feld.
+- Die Point-in-Time-Regel bleibt `availableAt <= decisionTime` aus `engines/schema.js`
+  (`latestKnownFact`). Der SEC-Adapter bringt keine eigene PIT-Semantik mit.
+- Details: `docs/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
+  `docs/SEC_PIT_METHODOLOGY.md`, `docs/SEC_COVERAGE_REPORT.md`.
+
+`quant/data/sec/raw/` und `quant/data/sec/facts/` sind gitignored (SEC-Rohdaten,
+reproduzierbar). Committet werden nur die kompakten Artefakte daneben.
+
 ## Lokale Entwicklung
 
 Voraussetzung: Node.js 22 (nur fuer Tests und Praekomputation; die Website selbst braucht

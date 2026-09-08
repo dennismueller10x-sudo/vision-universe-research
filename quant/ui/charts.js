@@ -207,6 +207,134 @@
     return svg;
   }
 
+  /* =====================================================================
+     KERZENCHART MIT VOLUMEN (Phase 4A, §17)
+
+     Eine Linie aus Schlusskursen verschweigt, was innerhalb eines Tages
+     passiert ist. Bei Tagesdaten ist das verschmerzbar; sobald echte Bars
+     mit Hoch, Tief und Volumen vorliegen, waere es eine Auslassung.
+
+     Zwei Felder in einem Koordinatensystem: oben der Kurs, unten das
+     Volumen, gemeinsame x-Achse. Getrennte Charts wuerden bei
+     unterschiedlichen Breiten auseinanderlaufen, und der Zusammenhang
+     zwischen Umsatz und Bewegung ist genau der Punkt.
+
+     Kein Fremdcode. Die Seite laedt keine Chartbibliothek - ein
+     Kerzenchart sind Rechtecke und Linien, und der Rest der Anwendung
+     kommt auch ohne aus.
+     ===================================================================== */
+
+  /**
+   * @param {object} opts
+   *   bars      [{date, open, high, low, close, volume}] aufsteigend
+   *   height    Gesamthoehe, Standard 320
+   *   volumeShare Anteil der Hoehe fuer das Volumenfeld, Standard 0.22
+   *   yFormat   Formatierung der Kursachse
+   *   title, description
+   */
+  function candlestickChart(opts) {
+    opts = opts || {};
+    var bars = (opts.bars || []).filter(function (b) {
+      return b && isNum(b.close) && b.close > 0;
+    });
+    var w = opts.width || 720;
+    var h = opts.height || 320;
+    var volH = Math.round(h * (opts.volumeShare || 0.22));
+    var priceBottom = h - PAD.bottom - volH - 10;
+
+    var svg = base(w, h, opts.title || "Kursverlauf", opts.description);
+    if (bars.length < 2) {
+      svg.appendChild(svgEl("text", {
+        class: "axis", x: w / 2, y: h / 2, "text-anchor": "middle",
+        text: "Zu wenige Daten fuer eine Darstellung"
+      }));
+      return svg;
+    }
+
+    var dates = bars.map(function (b) { return b.date; });
+    var hochs = bars.map(function (b) { return isNum(b.high) ? b.high : b.close; });
+    var tiefs = bars.map(function (b) { return isNum(b.low) ? b.low : b.close; });
+    var ext = extent(hochs.concat(tiefs));
+    var ticks = niceTicks(ext[0], ext[1], 4);
+
+    var xs = scale([0, bars.length - 1], [PAD.left + 4, w - PAD.right - 4]);
+    var ys = scale([Math.min(ext[0], ticks[0]), Math.max(ext[1], ticks[ticks.length - 1])],
+                   [priceBottom, PAD.top]);
+    var yFormat = opts.yFormat || function (v) { return v.toFixed(2); };
+
+    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }),
+         yFormat, xLabelsFor(dates, xs, 5));
+
+    /* Kerzenbreite aus dem Abstand, nicht aus einer festen Zahl: bei 2000
+       Bars werden daraus Striche, und das ist richtig so - eine Kerze, die
+       schmaler als ein Pixel waere, waere ohnehin keine. */
+    var abstand = (xs(1) - xs(0));
+    var koerper = Math.max(1, Math.min(9, abstand * 0.7));
+    var duenn = koerper < 2.5;
+
+    bars.forEach(function (b, i) {
+      var x = xs(i);
+      var o = isNum(b.open) ? b.open : b.close;
+      var c = b.close;
+      var richtung = c >= o ? "up" : "down";
+      var yHoch = ys(isNum(b.high) ? b.high : Math.max(o, c));
+      var yTief = ys(isNum(b.low) ? b.low : Math.min(o, c));
+
+      svg.appendChild(svgEl("line", {
+        class: "wick " + richtung, x1: x.toFixed(2), x2: x.toFixed(2),
+        y1: yHoch.toFixed(2), y2: yTief.toFixed(2)
+      }));
+
+      if (duenn) return;   // bei sehr dichten Reihen bleibt nur der Docht
+      var y0 = ys(Math.max(o, c)), y1 = ys(Math.min(o, c));
+      svg.appendChild(svgEl("rect", {
+        class: "candle " + richtung,
+        x: (x - koerper / 2).toFixed(2), y: y0.toFixed(2),
+        width: koerper.toFixed(2),
+        /* Ein Tag ohne Bewegung ist ein Strich, keine Leerstelle. */
+        height: Math.max(1, y1 - y0).toFixed(2)
+      }));
+    });
+
+    /* ------------------------------------------------------ Volumenfeld */
+    var volumina = bars.map(function (b) { return isNum(b.volume) ? b.volume : 0; });
+    var maxVol = Math.max.apply(null, volumina);
+    if (maxVol > 0) {
+      var volTop = h - PAD.bottom - volH;
+      var vys = scale([0, maxVol], [h - PAD.bottom, volTop]);
+      svg.appendChild(svgEl("line", {
+        class: "grid", x1: PAD.left, x2: w - PAD.right,
+        y1: h - PAD.bottom, y2: h - PAD.bottom
+      }));
+      bars.forEach(function (b, i) {
+        var v = volumina[i];
+        if (!v) return;
+        var x = xs(i);
+        var o = isNum(b.open) ? b.open : b.close;
+        svg.appendChild(svgEl("rect", {
+          class: "vol " + (b.close >= o ? "up" : "down"),
+          x: (x - koerper / 2).toFixed(2), y: vys(v).toFixed(2),
+          width: koerper.toFixed(2),
+          height: Math.max(1, (h - PAD.bottom) - vys(v)).toFixed(2)
+        }));
+      });
+      svg.appendChild(svgEl("text", {
+        class: "axis", x: PAD.left - 8, y: volTop + 9, "text-anchor": "end",
+        text: compactNumber(maxVol)
+      }));
+    }
+    return svg;
+  }
+
+  /** 1.234.567 -> "1,2 Mio". Fuer Achsen, an denen die Stelle nicht zaehlt. */
+  function compactNumber(v) {
+    if (!isNum(v)) return "";
+    if (v >= 1e9) return (v / 1e9).toFixed(1).replace(".", ",") + " Mrd";
+    if (v >= 1e6) return (v / 1e6).toFixed(1).replace(".", ",") + " Mio";
+    if (v >= 1e3) return Math.round(v / 1e3) + " Tsd";
+    return String(Math.round(v));
+  }
+
   /** Kompakte Sparkline fuer Listen und Karten. */
   function sparkline(values, opts) {
     opts = opts || {};
@@ -227,6 +355,8 @@
 
   var api = {
     lineChart: lineChart,
+    candlestickChart: candlestickChart,
+    compactNumber: compactNumber,
     drawdownChart: drawdownChart,
     barChart: barChart,
     sparkline: sparkline,
