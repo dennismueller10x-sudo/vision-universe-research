@@ -1,0 +1,220 @@
+name: SEC Fundamentals CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "quant/**"
+      - "scripts/quant/**"
+      - "docs/SEC_*.md"
+      - ".github/workflows/sec-fundamentals-ci.yml"
+  pull_request:
+    paths:
+      - "quant/**"
+      - "scripts/quant/**"
+      - "docs/SEC_*.md"
+      - ".github/workflows/sec-fundamentals-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Compile every pipeline module
+        run: python3 -m compileall -q scripts/quant
+
+      - name: Run the SEC ingestion test suite (Python, no network)
+        run: python3 scripts/quant/cli.py test
+
+      - name: Run the whole quant test suite (JS, no network)
+        # The SEC adapter is part of the existing quant system, so it is not
+        # enough to run its own tests: the Phase 1-3 suite has to stay green too.
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Verify the SEC adapter satisfies the existing provider interface
+        run: |
+          node -e '
+            const path = require("path");
+            const Provider = require("./quant/engines/provider.js");
+            const Adapter = require("./providers/sec/adapter.js");
+            const provider = Adapter.createSecProvider();
+            const missing = Provider.missingMethods("FundamentalDataProvider", provider);
+            if (missing.length) {
+              console.error("SEC adapter does not implement FundamentalDataProvider:", missing);
+              process.exit(1);
+            }
+            // It must NOT claim interfaces it cannot serve.
+            for (const iface of ["MarketDataProvider", "EstimateDataProvider", "CorporateActionsProvider"]) {
+              if (Provider.implementsInterface(iface, provider)) {
+                console.error("SEC adapter must not claim " + iface);
+                process.exit(1);
+              }
+            }
+            console.log("SEC adapter interface contract OK");
+          '
+
+      - name: Reject a second architecture
+        shell: bash
+        run: |
+          # The SEC workstream must not grow its own provider abstraction,
+          # capability matrix, PIT rule, factor engine or backtester alongside
+          # the existing ones. These are the names that would signal it.
+          if grep -rniE "class .*Provider(Registry|Abstraction)|CAPABILITY_SETS|def (run_backtest|backtest_symbol)|def score_universe" scripts/quant/sec/; then
+            echo "::error::scripts/quant/sec/ appears to duplicate an existing quant layer"
+            exit 1
+          fi
+          for gone in scripts/quant/sec/factors.py scripts/quant/sec/backtest_bridge.py; do
+            if [ -f "$gone" ]; then
+              echo "::error::$gone duplicates an existing engine and must stay removed"
+              exit 1
+            fi
+          done
+          # Capabilities are declared once, in the shared profile file.
+          if grep -rn "CAPABILITIES = {" scripts/quant/sec/; then
+            echo "::error::capabilities must be declared in quant/config/provider-profiles.json"
+            exit 1
+          fi
+          echo "no parallel architecture detected"
+
+      - name: Validate configuration files
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.registry import MetricRegistry
+
+          registry = MetricRegistry.load()
+          print("metric registry:", registry.version, len(registry.names()), "metrics")
+
+          profiles = json.load(open("quant/config/provider-profiles.json"))
+          assert "sec-edgar" in profiles["providers"], "SEC provider profile missing"
+          print("provider profile: sec-edgar present")
+
+          universe = json.load(open("quant/config/sec-universe.json"))
+          assert universe["companies"], "universe must not be empty"
+          for entry in universe["companies"]:
+              assert entry["ticker"] and entry["cik"], entry
+          print("universe:", [c["ticker"] for c in universe["companies"]])
+          PY
+
+      - name: Validate the generated SEC data JSON
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          # Only what THIS pipeline generates. quant/data/*.json belongs to the
+          # earlier phases and follows their own convention (asOf,
+          # methodologyVersion, dataSnapshotId); asserting the SEC convention
+          # over the whole directory failed on eight files this branch never
+          # wrote. The check had never run before the first pull request, which
+          # is exactly how it survived that long.
+          root = pathlib.Path("quant/data/sec")
+          paths = sorted(root.glob("*.json")) + sorted(root.glob("*/*.json"))
+          assert paths, "no generated SEC artifacts found"
+          # Two naming conventions, on purpose. Below the canonical boundary the
+          # SEC layer uses snake_case; at and above it the payload follows
+          # quant/engines/schema.js, which is camelCase. An artifact must carry
+          # its provenance in one of the two, never in neither.
+          SNAKE = ("schema_version", "generated_at_utc")
+          CAMEL = ("schema", "generatedAtUtc")
+          for path in paths:
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              assert isinstance(payload, dict), path
+              stamped = any(key in payload for key in SNAKE + CAMEL)
+              assert stamped, f"{path} carries neither {SNAKE} nor {CAMEL}"
+              assert "versions" in payload, f"{path} has no version stamp"
+              print(f"{path}: OK ({path.stat().st_size} bytes)")
+          PY
+
+      - name: Validate the data inspector page
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          path = "quant/data-inspector/index.html"
+          html = open(path, encoding="utf-8").read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          assert "<vu-navigation></vu-navigation>" in html, "shared navigation missing"
+          # The inspector is a quant page and must use the quant shell, not a
+          # second UI stack of its own.
+          assert "/quant/ui/shell.js" in html, "shared quant shell missing"
+          assert "/quant/ui/quant.css" in html, "shared quant design system missing"
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Reject company-specific logic in the pipeline
+        # The rule lives in a script, not in this file, so it can be run before
+        # pushing and is covered by the test suite. The previous grep matched
+        # comments and __pycache__ alongside code: naming the company whose real
+        # data exposed a defect is how findings are documented here, and a
+        # binary .pyc is not source at all.
+        run: python3 scripts/quant/check_company_agnostic.py
+
+      - name: Enforce data hygiene
+        shell: bash
+        run: |
+          # Raw SEC payloads and normalized factbooks must never be committed.
+          # raw/ and facts/ are large and regenerable and stay local. canonical/
+          # is the opposite: it IS the data layer the adapter serves, so it is
+          # committed like quant/data/securities.json.
+          for forbidden in quant/data/sec/raw quant/data/sec/facts .sec-cache .quant-state; do
+            if git ls-files --error-unmatch "$forbidden" >/dev/null 2>&1; then
+              echo "::error::$forbidden is tracked but must stay local"
+              exit 1
+            fi
+          done
+          # Committed artifacts stay small enough to review in a diff.
+          oversized="$(find quant/data/sec -type f -size +2M 2>/dev/null || true)"
+          if [ -n "$oversized" ]; then
+            echo "::error::files over 2MB under quant/data/sec:"; echo "$oversized"; exit 1
+          fi
+          # This budget covers what THIS pipeline writes. It used to measure all
+          # of quant/data, where more than half belongs to earlier phases and to
+          # Phase 4A market data -- so it failed on growth this workflow neither
+          # caused nor controls, and would equally have failed their next commit.
+          # A repository-wide budget is a repository-wide job.
+          # 8MB against a measured 5.9MB: enough headroom for the five
+          # validation companies to keep growing a little, tight enough that a
+          # committed raw payload or factbook trips it immediately.
+          total="$(du -sk quant/data/sec | cut -f1)"
+          if [ "$total" -gt 8192 ]; then
+            echo "::error::quant/data/sec is ${total}KB, over the 8MB budget"
+            du -sk quant/data/sec/* | sort -rn
+            exit 1
+          fi
+          echo "data hygiene OK (quant/data/sec: ${total}KB of 8192KB)"
+
+      - name: Reject secrets in the SEC pipeline
+        shell: bash
+        run: |
+          # The SEC APIs need no key. Anything that looks like one is a mistake.
+          if grep -rniE '(api[_-]?key|secret|token|password)[[:space:]]*=[[:space:]]*["'"'"'][A-Za-z0-9_\-]{16,}' scripts/quant/ quant/; then
+            echo "::error::possible credential committed"
+            exit 1
+          fi
+          echo "no credentials found"
+
+      - name: Confirm the existing backtest engine is untouched by the bridge
+        shell: bash
+        run: |
+          # The bridge imports scripts/dashboard/backtest_technicals.py; a change
+          # to that file is a change to the production technical pipeline and
+          # must not arrive through a SEC-pipeline pull request.
+          if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^scripts/dashboard/'; then
+            echo "::error::this pipeline must not modify scripts/dashboard/"
+            exit 1
+          fi
+          echo "scripts/dashboard/ untouched"

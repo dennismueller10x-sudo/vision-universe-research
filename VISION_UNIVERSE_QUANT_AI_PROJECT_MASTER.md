@@ -1099,42 +1099,87 @@ Tiingo-Anbindung existieren nicht als Code — siehe die beiden folgenden Abschn
 
 ## 21. SEC-Workstream
 
-**Realitätsabgleich (Repository-Stand 7. September 2026, per Wortgrenzen-Suche über
-`quant/` und `docs/` verifiziert): Es existiert kein dediziertes „SEC Financial Data
-Core"-Modul im Quant-Bereich.**
+**Stand nach Phase 4 (Branch `claude/sec-financial-data-core-qiizhj`, noch nicht
+gemergt).** Der frühere Stand dieses Abschnitts — „es existiert kein dediziertes
+SEC Financial Data Core-Modul" — galt für `main` zum Zeitpunkt von PR #43 und ist
+durch Phase 4 überholt.
 
-Was tatsächlich existiert:
+### Was gebaut wurde
 
-- `scripts/hedgefonds/fetch_edgar_data.py` — bestätigt ein **13F-HR-Holdings-Scraper für
-  den eigenständigen `hedgefonds/`-Produktbereich**: holt serverseitig (GitHub Actions)
-  13F-Filings einer kuratierten Fondsliste (nach CIK) von SEC EDGAR, bildet
-  Quartals-über-Quartal-AUM-/Positions-Deltas und schreibt
-  `hedgefonds/data/hedgefonds.json`. **Ein eigenständiges Content-Feature, kein Teil der
-  Quant-Provider-Architektur.**
-- Alle SEC/EDGAR/XBRL-Erwähnungen innerhalb von `quant/`/`docs/` stehen in
-  Anbieter-Bewertungsdokumenten (`VU_PROVIDER_DECISION_MATRIX.md`,
-  `provider-profiles.json`, `qualification.json`) und beschreiben die **Nähe
-  Dritter zu SEC-Daten** (Sharadars `datekey` aus SEC-Filings, FMPs SEC-EDGAR-Nähe) —
-  nicht ein eigenes SEC-Ingestion-System.
-- Sharadar und Intrinio sind als **Kandidaten für PIT-Fundamentaldaten** evaluiert
-  (Dokumentations-Recherche, siehe [§7](#7-phase-3--data-qualification)) — aber ohne
-  jede Zeile Adapter-Code.
-- PR #43 nennt ausdrücklich: **„Phase 4 / SEC Financial Data Core ist ausdrücklich NICHT
-  enthalten"** — nicht SEC-EDGAR-Anbindung, nicht XBRL-Verarbeitung, nicht echte PIT-
-  Fundamentaldaten, nicht delistete Unternehmen im historischen Universum, nicht
-  Restatement-Historie aus Primärquellen für den Quant-Bereich.
+Eine generische SEC/XBRL-Ingestion **unterhalb** der bestehenden
+Provider-Abstraction, keine zweite Architektur daneben:
 
-**Ziel laut Planung** (noch nicht begonnen): SEC Financial Data Core V1, generische
-skalierbare SEC/XBRL-Pipeline (nicht fünf Aktien hart codiert), Themen: CIK, Company
-Facts, Submissions, XBRL, PIT, Restatements, FY/Q, TTM, Fiscal Calendars, Provenance,
-Normalization, Incremental Updates. Testuniversum laut Planung: NVDA, AAPL, MSFT, JPM,
-XOM.
+```
+data.sec.gov → scripts/quant/sec/**  →  quant/data/sec/canonical/*.json
+                (Python, Stdlib)         FundamentalFact · Filing · Security
+                                                  ↓
+                                    providers/sec/adapter.js
+                                    FundamentalDataProvider (engines/provider.js)
+                                                  ↓
+                                    engines/schema.js · factors.js · backtest.js
+```
 
-**Empfohlener erster Schritt, kostenlos:** Intrinio Developer Sandbox anfragen, Gate A +
-C gegen echte Dow-30-Daten laufen lassen ([§7](#7-phase-3--data-qualification),
-[§28](#28-cost-philosophy)).
+- **`providers/sec/adapter.js`** implementiert `FundamentalDataProvider`
+  (`getFacts`, `getFilings`, `getFactPanel`, `healthCheck`) plus
+  `getFactsAsOf`/`getUniverseAsOf` für `gate-tests.js`. Serverseitig wie der
+  Twelve-Data-Adapter; die SEC verlangt einen sich ausweisenden User-Agent, den ein
+  Browser nicht setzen darf.
+- **Die PIT-Regel bleibt `availableAt <= decisionTime` aus `engines/schema.js`.**
+  Der Adapter bringt keine eigene mit; ein Test vergleicht seine Auswahl direkt
+  gegen `Schema.latestKnownFact`.
+- **Kein Duplikat entstanden.** Ein SEC-eigenes Faktor-Scoring, eine SEC-eigene
+  Backtest-Bridge, SEC-eigene MOCK-Gates und eine SEC-eigene Capability-Konstante
+  wurden im Zuge der Integration wieder **entfernt**; `factors.js`,
+  `quant-score.js`, `backtest.js`, `gate-tests.js` und
+  `quant/config/provider-profiles.json` sind und bleiben die jeweils einzige
+  Instanz.
+- **Was die Ingestion leistet:** Ticker→CIK, Submissions inkl. älterer
+  Filing-Seiten, Company Facts, Fiskalkalender je Unternehmen (nicht-kalendarisch,
+  52/53 Wochen, gelernter Label-Offset — die Felder `fy`/`fp` werden bewusst nie
+  als Faktenperiode gelesen), Rekonstruktion von Standalone-Quartalen aus
+  kumulierten Year-to-date-Werten innerhalb des PIT-Fensters, Revisionsreihen mit
+  `revisionId`/`restatementStatus`, Provenance bis zur Accession Number,
+  Data-Quality-Engine, Coverage-Matrix, Checkpointing und inkrementelle Updates.
 
----
+### Was ausdrücklich NICHT belegt ist
+
+**Es wurde keine einzige Anfrage an data.sec.gov gestellt.** Die Egress-Policy der
+Entwicklungsumgebung blockiert die SEC-Domains (403 auf CONNECT); GitHub-Actions-
+Runner sind nicht betroffen. Folglich:
+
+- Gate A und Gate C bestehen **gegen eine synthetische Fixture**, nicht gegen echte
+  Daten. Gate B fällt durch — richtigerweise, siehe unten.
+- Coverage-Matrix, historische Reichweite und gemessene Gate-Ergebnisse je
+  Unternehmen tragen `status: "not_generated"`.
+- Das Provider-Profil `sec-edgar` steht durchgängig auf
+  `RUNTIME_VERIFICATION_REQUIRED` oder `UNKNOWN`, nie auf `DOCUMENTATION_VERIFIED`
+  oder `RUNTIME_VERIFIED`. Test Q15 stellt sicher, dass SEC dadurch **nicht** als
+  qualifizierte Evidenzquelle gilt.
+
+### Der ehrliche Negativbefund
+
+SEC/EDGAR führt **keinen Security Master und keinen Delisting-Ereignisstrom**.
+`company_tickers.json` listet nur Registranten mit aktuell zugeteiltem Ticker; ein
+historischer Ticker lässt sich nicht auflösen. Der Adapter liefert für
+`getUniverseAsOf` deshalb `unavailable`, und **Gate B fällt durch** statt das
+heutige Universum als historisches auszugeben. Fundamentaldaten sind
+PIT-korrekt — die Universumszugehörigkeit ist es nicht. Für ein
+survivorship-freies Universum bleibt eine Indexhistorie (Sharadar, CRSP oder
+gleichwertig) erforderlich.
+
+### Nächster Schritt
+
+Workflow **„Update SEC fundamentals"** per `workflow_dispatch` starten: Ingest →
+`canonical` → `coverage` → Ingest-Prüfungen → `run-sec-gates.mjs` → `export`. Erst
+danach lässt sich das Startjahr des Backtesters aus gemessenen Daten festlegen.
+
+Details: `docs/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
+`docs/SEC_PIT_METHODOLOGY.md`, `docs/SEC_COVERAGE_REPORT.md`,
+`docs/SEC_PHASE4_REPORT.md`.
+
+Unberührt bleibt `scripts/hedgefonds/fetch_edgar_data.py`: ein 13F-Scraper für den
+eigenständigen `hedgefonds/`-Produktbereich, kein Teil der Quant-Provider-
+Architektur.
 
 ## 22. Tiingo-Workstream
 

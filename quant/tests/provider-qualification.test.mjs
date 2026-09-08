@@ -184,7 +184,13 @@ test("Q11 · Alle Profile lassen sich auswerten und keines wird geschoent", () =
   const results = Object.values(PROFILES.providers)
     .map((p) => Qualification.runProviderQualification(p, { now: PROFILES.researchedAt }));
 
-  assert.equal(results.length, Object.keys(PROFILES.providers).length);
+  // Inventar-Guard: waechst nur zusammen mit quant/config/provider-profiles.json.
+  // sharadar, intrinio, twelve-data, eodhd, fmp, polygon, tiingo (Phase 4A),
+  // sec-edgar (Phase 4). Eine feste Zahl statt
+  // Object.keys(PROFILES.providers).length: gegen sich selbst gezaehlt kann die
+  // Zusicherung nicht fehlschlagen, und ein still hinzugefuegtes Profil bliebe
+  // ungeprueft.
+  assert.equal(results.length, 8);
 
   for (const r of results) {
     assert.ok(Qualification.STATUS.includes(r.qualificationStatus), r.providerId);
@@ -238,7 +244,7 @@ test("Q14 · Die Entscheidungstabelle bildet den Belegstand ab", () => {
     .map((p) => Qualification.runProviderQualification(p));
   const table = Qualification.decisionTable(results);
 
-  assert.equal(table.length, Object.keys(PROFILES.providers).length);
+  assert.equal(table.length, 8);
   for (const row of table) {
     assert.ok("provider" in row && "qualification" in row);
     if (OHNE_ZUGANG.includes(row.provider)) {
@@ -254,4 +260,33 @@ test("Q14 · Die Entscheidungstabelle bildet den Belegstand ab", () => {
   const tiingo = table.find((r) => r.provider === "tiingo");
   assert.ok(tiingo.runtimeVerifiedCount > 0,
     "der gemessene Anbieter muss sich in der Tabelle von den ungemessenen unterscheiden");
+});
+
+test("Q15 · SEC ist als Fundamentalquelle eingetragen, aber nicht als belegte Evidenzquelle", () => {
+  // Phase 4: der SEC-Adapter existiert und besteht Gate A und C gegen eine
+  // synthetische Fixture. Genau deshalb ist hier zu pruefen, dass ihn das NICHT
+  // zur Evidenzquelle macht - gegen data.sec.gov wurde bis heute keine einzige
+  // Anfrage gestellt, und ein Profil darf das nicht anders aussehen lassen.
+  const profile = PROFILES.providers["sec-edgar"];
+  assert.ok(profile, "sec-edgar fehlt in den Profilen");
+
+  const res = Qualification.runProviderQualification(profile);
+  assert.notEqual(res.qualificationStatus, "QUALIFIED");
+  assert.equal(res.evidence.runtimeVerified.length, 0);
+
+  // Die beiden ehrlichen Negativbefunde muessen als Ausschluss stehen,
+  // nicht als "ungeprueft".
+  assert.equal(profile.findings.survivorshipBiasControls.value, false);
+  assert.equal(profile.findings.marketDataOhlcv.value, false);
+
+  // Und das, was schlicht nicht gemessen wurde, muss null bleiben.
+  assert.equal(profile.findings.delistedSecurities.value, null);
+  assert.equal(profile.findings.historicalCoverage.value, null);
+
+  // Kein Befund darf eine Laufzeitpruefung behaupten.
+  for (const [req, f] of Object.entries(profile.findings)) {
+    assert.notEqual(f.level, "RUNTIME_VERIFIED", `sec-edgar.${req}`);
+    assert.notEqual(f.level, "DOCUMENTATION_VERIFIED",
+      `sec-edgar.${req}: die SEC-Dokumentation wurde in dieser Umgebung nicht abgerufen`);
+  }
 });

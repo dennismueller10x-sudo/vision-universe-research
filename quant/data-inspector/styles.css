@@ -1,0 +1,41 @@
+/* SEC Data Inspector — nur die Ergaenzungen zum gemeinsamen Designsystem
+   (/quant/ui/quant.css). Kein zweites Designsystem: Farben, Typografie,
+   Abstaende und Zustandsboxen kommen unveraendert von dort. */
+.vu-controls {
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
+  margin: 20px 0 14px;
+}
+.vu-controls label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.vu-controls select { min-width: 220px; padding: 6px 8px; font-size: 14px; }
+.vu-controls .vu-check { flex-direction: row; align-items: center; gap: 6px; }
+
+.vu-scroll { overflow-x: auto; }
+table.vu-facts { border-collapse: collapse; width: 100%; font-size: 13px; }
+table.vu-facts th, table.vu-facts td {
+  padding: 6px 10px; text-align: left; border-bottom: 1px solid currentColor;
+  border-bottom-color: rgba(128, 128, 128, .25); white-space: nowrap;
+}
+table.vu-facts th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+table.vu-facts td.num, table.vu-facts th.num {
+  text-align: right; font-variant-numeric: tabular-nums;
+}
+table.vu-facts tr.is-missing td { opacity: .65; font-style: italic; }
+
+.tag { font-size: 11px; padding: 1px 6px; border-radius: 999px; border: 1px solid; }
+.tag--derived { color: #4b3ea8; border-color: #4b3ea8; }
+.tag--sec, .tag--HIGH { color: #1a7f4b; border-color: #1a7f4b; }
+.tag--MEDIUM { color: #9a6400; border-color: #9a6400; }
+.tag--LOW, .tag--UNKNOWN { color: #a32222; border-color: #a32222; }
+
+.gate { display: flex; gap: 10px; padding: 6px 0; align-items: flex-start; }
+.gate__status { flex: 0 0 130px; font-weight: 600; font-size: 12px; }
+.gate__status--PASS, .gate__status--PASSED { color: #1a7f4b; }
+.gate__status--FAIL, .gate__status--FAILED { color: #a32222; }
+.gate__status--UNKNOWN, .gate__status--SKIPPED { color: #9a6400; }
+.gate__status--NOT_APPLICABLE { opacity: .7; }
+.gate__reason { opacity: .8; }
+
+.cov--STRUCTURED { background: rgba(26, 127, 75, .16); }
+.cov--DERIVABLE { background: rgba(154, 100, 0, .16); }
+.cov--FILING_ONLY { background: rgba(163, 34, 34, .14); }
+.cov--MISSING { opacity: .55; }

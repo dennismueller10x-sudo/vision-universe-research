@@ -1,0 +1,603 @@
+{
+  "schema_version": 1,
+  "mapping_version": "1.0.0",
+  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist.",
+  "sector_rules": [
+    {
+      "id": "FINANCIALS",
+      "sic_min": 6000,
+      "sic_max": 6499,
+      "not_applicable": [
+        "cost_of_revenue",
+        "gross_profit",
+        "gross_margin",
+        "ebitda",
+        "total_debt",
+        "net_debt",
+        "debt_to_equity",
+        "roic"
+      ],
+      "reason": "UNSUPPORTED_ACCOUNTING_STRUCTURE",
+      "note": "Depository, credit, security and insurance institutions (SIC 6000-6499) have no cost of revenue, so gross-profit style metrics are undefined rather than missing. Debt is an operating input for a bank, not leverage, so total debt, net debt, debt/equity and ROIC do not carry their usual meaning. Metrics that remain computable but are not comparable to industrials (capex, free cash flow, operating margin) stay available and are flagged in docs/SEC_NORMALIZATION.md rather than suppressed."
+    }
+  ],
+  "metrics": {
+    "revenue": {
+      "label": "Revenue",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RevenueFromContractWithCustomerIncludingAssessedTax",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Revenues",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "SalesRevenueNet",
+          "priority": 40
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "SalesRevenueGoodsNet",
+          "priority": 50
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "SalesRevenueServicesNet",
+          "priority": 60
+        }
+      ]
+    },
+    "cost_of_revenue": {
+      "label": "Cost of Revenue",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CostOfGoodsAndServicesSold",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CostOfRevenue",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CostOfGoodsSold",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CostOfServices",
+          "priority": 40
+        }
+      ]
+    },
+    "gross_profit": {
+      "label": "Gross Profit",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "GrossProfit",
+          "priority": 10
+        }
+      ]
+    },
+    "operating_income": {
+      "label": "Operating Income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "OperatingIncomeLoss",
+          "priority": 10
+        }
+      ]
+    },
+    "pretax_income": {
+      "label": "Pretax Income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+          "priority": 20
+        }
+      ]
+    },
+    "income_tax_expense": {
+      "label": "Income Tax Expense",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IncomeTaxExpenseBenefit",
+          "priority": 10
+        }
+      ]
+    },
+    "net_income": {
+      "label": "Net Income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetIncomeLoss",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProfitLoss",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetIncomeLossAvailableToCommonStockholdersBasic",
+          "priority": 30
+        }
+      ]
+    },
+    "eps_basic": {
+      "label": "EPS Basic",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD/shares"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "EarningsPerShareBasic",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IncomeLossFromContinuingOperationsPerBasicShare",
+          "priority": 20
+        }
+      ]
+    },
+    "eps_diluted": {
+      "label": "EPS Diluted",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD/shares"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "EarningsPerShareDiluted",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IncomeLossFromContinuingOperationsPerDilutedShare",
+          "priority": 20
+        }
+      ]
+    },
+    "operating_cash_flow": {
+      "label": "Operating Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInOperatingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations",
+          "priority": 20
+        }
+      ]
+    },
+    "capital_expenditures": {
+      "label": "Capital Expenditures",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsToAcquirePropertyPlantAndEquipment",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsToAcquireProductiveAssets",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForCapitalImprovements",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsToAcquireOtherPropertyPlantAndEquipment",
+          "priority": 40
+        }
+      ]
+    },
+    "cash_and_equivalents": {
+      "label": "Cash & Cash Equivalents",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CashAndCashEquivalentsAtCarryingValue",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+          "priority": 20
+        }
+      ]
+    },
+    "short_term_investments": {
+      "label": "Short-Term Investments",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ShortTermInvestments",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "MarketableSecuritiesCurrent",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+          "priority": 30
+        }
+      ]
+    },
+    "total_assets": {
+      "label": "Total Assets",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Assets",
+          "priority": 10
+        }
+      ]
+    },
+    "total_liabilities": {
+      "label": "Total Liabilities",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Liabilities",
+          "priority": 10
+        }
+      ]
+    },
+    "stockholders_equity": {
+      "label": "Stockholders Equity",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "StockholdersEquity",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+          "priority": 20
+        }
+      ]
+    },
+    "long_term_debt": {
+      "label": "Long-Term Debt",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LongTermDebtNoncurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LongTermDebt",
+          "priority": 20
+        }
+      ]
+    },
+    "short_term_debt": {
+      "label": "Short-Term Debt",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LongTermDebtCurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ShortTermBorrowings",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DebtCurrent",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "OtherShortTermBorrowings",
+          "priority": 40
+        }
+      ]
+    },
+    "total_debt": {
+      "label": "Total Debt",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DebtLongtermAndShorttermCombinedAmount",
+          "priority": 10
+        }
+      ]
+    },
+    "shares_outstanding": {
+      "label": "Shares Outstanding",
+      "kind": "instant",
+      "statement": "cover",
+      "units": [
+        "shares"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "dei",
+          "concept": "EntityCommonStockSharesOutstanding",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CommonStockSharesOutstanding",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CommonStockSharesIssued",
+          "priority": 30
+        }
+      ]
+    },
+    "diluted_weighted_average_shares": {
+      "label": "Diluted Weighted Average Shares",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "shares"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "priority": 10
+        }
+      ]
+    },
+    "basic_weighted_average_shares": {
+      "label": "Basic Weighted Average Shares",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "shares"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "WeightedAverageNumberOfSharesOutstandingBasic",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "WeightedAverageNumberOfShareOutstandingBasicAndDiluted",
+          "priority": 20
+        }
+      ]
+    },
+    "research_and_development": {
+      "label": "R&D Expense",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ResearchAndDevelopmentExpense",
+          "priority": 10
+        }
+      ]
+    },
+    "sga_expense": {
+      "label": "SG&A Expense",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "SellingGeneralAndAdministrativeExpense",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "GeneralAndAdministrativeExpense",
+          "priority": 20
+        }
+      ]
+    },
+    "interest_expense": {
+      "label": "Interest Expense",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestExpense",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestExpenseDebt",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestExpenseNonoperating",
+          "priority": 30
+        }
+      ]
+    },
+    "dividends_paid": {
+      "label": "Dividends Paid",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsOfDividendsCommonStock",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsOfDividends",
+          "priority": 20
+        }
+      ]
+    },
+    "stock_based_compensation": {
+      "label": "Stock-Based Compensation",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ShareBasedCompensation",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AllocatedShareBasedCompensationExpense",
+          "priority": 20
+        }
+      ]
+    }
+  }
+}

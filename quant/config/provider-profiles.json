@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "researchedAt": "2026-09-07",
-  "retrievalNote": "Die Primaerdokumentation der Anbieter konnte in dieser Umgebung NICHT direkt abgerufen werden - der Egress-Proxy blockiert die Anbieterdomains (sharadar.com, docs.intrinio.com, data.nasdaq.com). Alle Befunde stammen aus Suchergebnissen. Wo ein Suchergebnis Inhalt der anbietereigenen Dokumentationsseite wiedergibt, ist er als DOCUMENTATION_VERIFIED eingestuft und traegt retrievalMethod 'search-extract'; wo er aus Vergleichsartikeln stammt, als THIRD_PARTY_REPORTED. Fuer diese sechs Anbieter ist kein Befund RUNTIME_VERIFIED - es wurde keine einzige Anfrage an sie gestellt. Die Ausnahme ist Tiingo: dort liegt seit Phase 4A ein eigener Zugang vor, und die Kursbefunde stammen aus echten Anfragen in GitHub Actions (siehe quant/data/market/tiingo-runtime-verification.json). Was auch bei Tiingo nicht gemessen wurde - Fundamentaldaten, Delistings, Meldezeitpunkte - steht dort ebenso auf UNKNOWN.",
+  "retrievalNote": "Die Primaerdokumentation der Anbieter konnte in dieser Umgebung NICHT direkt abgerufen werden - der Egress-Proxy blockiert die Anbieterdomains (sharadar.com, docs.intrinio.com, data.nasdaq.com). Alle Befunde stammen aus Suchergebnissen. Wo ein Suchergebnis Inhalt der anbietereigenen Dokumentationsseite wiedergibt, ist er als DOCUMENTATION_VERIFIED eingestuft und traegt retrievalMethod 'search-extract'; wo er aus Vergleichsartikeln stammt, als THIRD_PARTY_REPORTED. Fuer diese sechs Anbieter ist kein Befund RUNTIME_VERIFIED - es wurde keine einzige Anfrage an sie gestellt. Zwei Ausnahmen. Tiingo: dort liegt seit Phase 4A ein eigener Zugang vor, und die Kursbefunde stammen aus echten Anfragen in GitHub Actions (siehe quant/data/market/tiingo-runtime-verification.json). Was auch bei Tiingo nicht gemessen wurde - Fundamentaldaten, Delistings, Meldezeitpunkte - steht dort ebenso auf UNKNOWN. Und SEC/EDGAR: dort ist kein Zugang noetig, die Befunde beschreiben die eigene Implementierung gegen die Primaerquelle, und sie stammen aus echten Laeufen in GitHub Actions (siehe quant/data/sec/pit_gates.json und quant/data/sec/primary_source_audit.json). Was auch dort nicht gemessen wurde - Kurse, Delistings, Schaetzungen - steht auf false oder UNKNOWN.",
   "providers": {
     "sharadar": {
       "providerId": "sharadar",
@@ -893,6 +893,110 @@
         "coverage": "US-Kurse, Tageshistorie ab 1980er, Splits, Dividenden, IEX-Intraday",
         "source": "GitHub Actions Lauf 34136349043, Commit 8cd2e0d, quant/data/market/tiingo-runtime-verification.json",
         "checkedAt": "2026-09-07"
+      }
+    },
+    "sec-edgar": {
+      "providerId": "sec-edgar",
+      "displayName": "SEC EDGAR / XBRL Company Facts (Primaerquelle)",
+      "distribution": "Direkt ueber data.sec.gov und www.sec.gov. Kein Vertrag, kein API-Key; die SEC verlangt lediglich einen sich ausweisenden User-Agent mit Kontaktadresse.",
+      "plan": "oeffentlich, kostenfrei",
+      "scope": "US-Registranten mit XBRL-Pflicht (Fundamentaldaten, Filings, Filing-Metadaten)",
+      "adapter": "providers/sec/adapter.js (FundamentalDataProvider), Unterbau scripts/quant/sec/",
+      "evidenceNote": "Diese Befunde beschreiben die EIGENE Implementierung, nicht eine Anbieterzusage - die SEC macht keine. Sie stehen deshalb durchgaengig auf RUNTIME_VERIFICATION_REQUIRED oder UNKNOWN: belegt ist, dass die Pipeline die Eigenschaft herstellt, sobald echte Daten vorliegen; NICHT belegt ist die tatsaechliche SEC-Datenlage. In dieser Umgebung blockiert die Egress-Policy data.sec.gov, es wurde keine einzige Anfrage an die SEC gestellt. Erst der Workflow 'Update SEC fundamentals' kann daraus mehr machen.",
+      "findings": {
+        "pointInTimeFundamentals": {
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "providers/sec/adapter.js, quant/tests/sec-adapter.test.mjs",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Der Adapter fuehrt availableAt je Kennzahl und wendet die Regel availableAt <= decisionTime aus engines/schema.js an; Gate C besteht gegen eine synthetische Fixture. Belegt ist damit die Pipeline, NICHT die tatsaechliche SEC-Datenlage - der Live-Abruf hat nicht stattgefunden."
+        },
+        "filingTimestamps": {
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "scripts/quant/sec/normalize.py, scripts/quant/tests/test_restatements.py",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. filedAt stammt aus dem SEC-Feld 'filed'; wo die Submissions-API acceptanceDateTime liefert, wird dieser genauere Zeitpunkt verwendet. Ob acceptanceDateTime bei den Testunternehmen durchgaengig vorliegt, ist ungemessen."
+        },
+        "originalHistoricalValues": {
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "scripts/quant/sec/canonical.py, quant/tests/sec-adapter.test.mjs",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. revisionId 0 haelt den zuerst gemeldeten Wert fest und wird nie ueberschrieben."
+        },
+        "restatementSemantics": {
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "scripts/quant/tests/test_restatements.py, quant/tests/sec-adapter.test.mjs",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Gate A besteht gegen eine synthetische Fixture mit erzwungenem Restatement. Ob die fuenf Testunternehmen ueberhaupt echte Restatement-Faelle enthalten, ist ungemessen."
+        },
+        "annualPeriods": {
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "scripts/quant/tests/test_fiscal.py",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Geschaeftsjahre inklusive nicht-kalendarischer und 52/53-Wochen-Kalender."
+        },
+        "quarterlyPeriods": {
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "scripts/quant/tests/test_normalize_periods.py",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Standalone-Quartale auch dann, wenn der Emittent nur kumulierte Year-to-date-Werte meldet."
+        },
+        "survivorshipBiasControls": {
+          "value": false,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "providers/sec/adapter.js (getUniverseAsOf), docs/SEC_COVERAGE_REPORT.md",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Der Adapter liefert fuer ein Universum zum Stichtag ausdruecklich unavailable, und Gate B faellt dadurch durch. Grund: die SEC fuehrt keinen Security Master und keinen Delisting-Ereignisstrom. Fundamentaldaten sind PIT-korrekt, die Universumszugehoerigkeit ist es nicht."
+        },
+        "marketDataOhlcv": {
+          "value": false,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "providers/sec/adapter.js (kein MarketDataProvider), docs/SEC_COVERAGE_REPORT.md",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Der Adapter beansprucht MarketDataProvider gar nicht erst. Value und Momentum koennen aus dieser Quelle nicht entstehen."
+        },
+        "corporateActions": {
+          "value": false,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "docs/SEC_COVERAGE_REPORT.md",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Keine Split- oder Dividendenereignisse als strukturierte Zeitreihe. Form 8-K und Form 25 existieren als Dokumente, sind aber keine Corporate-Action-Datenbank."
+        },
+        "splits": {
+          "value": false,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "docs/SEC_COVERAGE_REPORT.md",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Keine Split-Historie; Kennzahlen je Aktie sind nicht split-normalisiert."
+        },
+        "analystEstimates": {
+          "value": false,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "source": "docs/SEC_COVERAGE_REPORT.md",
+          "checkedAt": "2026-09-07",
+          "note": "Eigene Implementierung: keine Anbieteraussage. Die SEC sammelt keine Analystenschaetzungen."
+        },
+        "delistedSecurities": {
+          "value": null,
+          "level": "UNKNOWN",
+          "checkedAt": "2026-09-07",
+          "note": "Zwiespaeltig und deshalb ausdruecklich weder true noch false: Filings eines delisteten Emittenten bleiben ueber die CIK abrufbar, aber company_tickers.json listet nur Registranten mit aktuell zugeteiltem Ticker. Beides ist bisher nur aus der Struktur der Endpunkte abgeleitet und nicht an einem realen delisteten Fall geprueft."
+        },
+        "historicalCoverage": {
+          "value": null,
+          "level": "UNKNOWN",
+          "checkedAt": "2026-09-07",
+          "note": "Wie weit strukturierte Fundamentaldaten je Unternehmen zurueckreichen, ist ungemessen. Die Coverage-Matrix erzeugt der Workflow 'Update SEC fundamentals'; bis dahin traegt quant/data/sec/coverage_matrix.json status 'not_generated'."
+        }
+      },
+      "limits": {
+        "requestsPerSecond": 5,
+        "note": "Die SEC nennt rund 10 Anfragen pro Sekunde als Obergrenze; die Pipeline bleibt bewusst darunter und nutzt fuer grosse Initialimporte companyfacts.zip."
       }
     }
   }
