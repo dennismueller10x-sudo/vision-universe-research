@@ -34,6 +34,7 @@ on:
     paths:
       - 'scripts/market/ingest-tiingo.mjs'
       - 'scripts/market/assert-public-data-hygiene.mjs'
+      - 'scripts/market/verify-golden-five-capabilities.mjs'
       - 'quant/config/development-preview.json'
       - 'quant/config/feature-gates.json'
       - 'quant/engines/display-policy.js'
@@ -124,6 +125,79 @@ jobs:
                   const id = "ref_" + t;
                   const r = s.securities && s.securities[id];
                   console.log("| " + t + " | " + (r ? (r.ok ? "ok, " + (r.total||r.added||0) + " Bars" : r.reason) : "kein Eintrag") + " |");
+                }
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  capabilities:
+    needs: publish
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[golden-five-publish]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Der publish-Job hat ggf. bereits committet und gepusht - diesen
+      # Stand holen, bevor hier erneut committet wird.
+      - name: Neuesten Stand holen
+        run: git pull --ff-only
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Alle Faehigkeiten bleiben ungeprueft (UNKNOWN)."
+            exit 1
+          fi
+
+      - name: Kapazitaetsmessung je Golden-Five-Titel (Intraday/Quote/Realtime/Extended-Hours/WebSocket)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-golden-five-capabilities.mjs
+
+      - name: Kein Schluessel im Bericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Regressionssuite
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/golden-preview/capabilities quant/data/market/tiingo-realtime-verification.json
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung an den Kapazitaetsberichten."
+          else
+            git commit -m "Golden Five: Kapazitaetsmessung Intraday/Quote/Realtime/Extended-Hours je Titel"
+            git push
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Golden Five — Kapazitaetsmessung'
+            echo ''
+            if [ -f quant/data/market/golden-preview/capabilities/summary.json ]; then
+              node -e '
+                const s = require("./quant/data/market/golden-preview/capabilities/summary.json");
+                console.log("| Titel | Belegt | Widerlegt | Ungeprueft |");
+                console.log("|---|---|---|---|");
+                for (const t of s.tickers) {
+                  const r = s.perTicker[t];
+                  if (!r || !r.findings) { console.log("| " + t + " | - | - | kein Bericht |"); continue; }
+                  console.log("| " + t + " | " + (r.confirmedCapabilities.join(", ") || "-") + " | " +
+                              (r.refutedCapabilities.join(", ") || "-") + " | " +
+                              (r.unknownCapabilities.join(", ") || "-") + " |");
                 }
               '
             fi
