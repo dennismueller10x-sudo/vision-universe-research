@@ -43,6 +43,10 @@ W3-Volumen. Alle Bänder in `elliott-v1.json → guidelines`.
 noch nicht entscheidbar (`passed: null`); „nicht-über“-Regeln sind sofort prüfbar (einmal
 verletzt, immer verletzt) — Audit-Fix AU9.
 
+„Überschreitet“-Regeln (`W3_BEYOND_W1_END`, `C_BEYOND_B_END`) sind für ein **laufendes** Leg
+noch nicht entscheidbar (`passed: null`); „nicht-über“-Regeln sind sofort prüfbar (einmal
+verletzt, immer verletzt) — Audit-Fix AU9.
+
 **Invalidation** aus Hard Rules je laufender Welle: W2 → unter W1-Ursprung; W3 → unter W2-Ende;
 W4 → Eintritt ins W1-Gebiet; W5 → unter W4-Ende; B → über A-Ursprung; C → Bruch des B-Endes
 gegen die C-Richtung. Die Regel „W3 nie die kürzeste“ liefert bewusst keinen Stop-Level.

@@ -7,10 +7,10 @@
 
 | # | Punkt | Befund |
 |---|---|---|
-| 1 | origin/main | `9576ddb` (vorher `da69113`; 4 neue Commits: SEC-Fundamentals-Workflow-Datei, Dashboard-News, Referenz-Tageskurse `quant/data/market/daily/ref_*.json` + `status.json`) |
+| 1 | origin/main | zu Audit-Beginn `9576ddb` (4 Commits seit Branch-Abzweig: SEC-Fundamentals-Workflow-Datei, Dashboard-News, Referenz-Tageskurse `quant/data/market/daily/ref_*.json`); **während des Audits auf `1a6e49e` weitergelaufen: PR #46 „Phase 4A Tiingo Market Data PoC“ gemerged** (neue Engines `market-store.js`, `chart-ranges.js`, `display-policy.js`, `panel-builder.js`, Tiingo-Adapter, Display-Gate, 100 neue Tests) |
 | 2 | Technical Branch | `claude/technical-intelligence-v1-mfjkd3` |
 | 3 | Merge Base | `da69113` |
-| 4 | Branch synchron? | 8 (+1 Audit-Commit) voraus, 4 hinter main; Dry-Merge (`git merge-tree`) **0 Konflikte**; die Branch-Quelldatei `dashboard/data/market_data.json` ist auf main unverändert (0 revidierte historische Closes) → `verify-technical-data.mjs` bleibt nach Merge gültig |
+| 4 | Branch synchron? | 10 voraus, 28 hinter `origin/main @ 1a6e49e`. **Probe-Merge in separatem Worktree:** 0 Konflikte (`quant/ui/shell.js` und `quant.css` auto-gemerged: Tab „Technical“ und Chart-Styles bleiben erhalten, Tiingo berührt keine Technical-Datei); auf dem gemergten Baum **409/409 Tests grün** (232 + 77 Technical + 100 Tiingo), `verify-technical-data.mjs` und `verify-quant-data.mjs` OK. `dashboard/data/market_data.json` auf main unverändert (0 revidierte Closes). Nicht gemerged (Auftrag). |
 | 5 | Geänderte Dateien | vs. origin/main: **4 bestehende** (`.github/workflows/quant-ci.yml`, `quant/ui/quant.css`, `quant/ui/shell.js`, `quant/ARCHITECTURE.md`), 121 neue (quant/data 66, quant/engines 27, tests 10, docs 13, scripts 2, technical 2, methodology 2, ui 1) |
 | 6 | Unbeabsichtigte Änderungen | keine: Quant-Engines Phase 1–3, Dashboard, SEC, Tiingo, Produktionsdaten unberührt |
 | 7 | Secrets | keine (Pattern-Scan über alle neuen Dateien, `secrets.test.mjs` S1–S5 grün, `assert-no-secrets.mjs` OK, keine lokalen Pfade) |
@@ -103,7 +103,9 @@ Hochrechnung: 5.000 Titel × ~0,1 s ≈ 8 min Core-Precompute single-threaded �
 **Tests vorher:** 297 (232 + 65). **Tests nachher:** **309** (232 bestehende unverändert + 77 technical). PASS 309 / FAIL 0. Bestehende Tests weder entfernt noch abgeschwächt.
 **Datenprüfung:** `verify-technical-data.mjs` OK (26 Instrumente); `verify-quant-data.mjs`, `assert-no-secrets.mjs`, `verify-semantics-parity.mjs` OK; JSON-Validität und Seiten-Checks OK.
 
-**PR-Empfehlung:** kein PR erstellt (Auftrag). Der Branch ist konfliktfrei gegen `origin/main @ 9576ddb` mergebar; nach Merge muss `build-technical-data.mjs` nur laufen, wenn sich `dashboard/data/market_data.json` ändert (Verify schlägt dann bewusst fehl).
+**Hinweis Tiingo-Integration (V1.5-Pfad):** `market-store.js` liefert je Bar `splitFactor` und einen `adjustmentStatus`; daraus kann `canonical-bars.fromRows` mit deklarierter Stufe bzw. `fromPriceBars` mit Split-Actions gespeist werden — Technical selbst bleibt unverändert.
+
+**PR-Empfehlung:** kein PR erstellt (Auftrag). Der Branch ist konfliktfrei gegen `origin/main @ 1a6e49e` mergebar (Probe-Merge grün); nach Merge muss `build-technical-data.mjs` nur laufen, wenn sich `dashboard/data/market_data.json` ändert (Verify schlägt dann bewusst fehl).
 
 ### Release-Entscheidung
 

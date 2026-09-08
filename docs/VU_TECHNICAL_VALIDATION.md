@@ -1,6 +1,6 @@
 # VU Technical Validation
 
-Testdateien: `quant/tests/technical-*.test.mjs` (7 Dateien, 60 Tests) + Fixtures
+Testdateien: `quant/tests/technical-*.test.mjs` (9 Dateien, 77 Tests) + Fixtures
 `technical-fixtures.mjs`. Aufruf: `node --test "quant/tests/*.test.mjs"`. Datenprüfung:
 `node scripts/technical/verify-technical-data.mjs`.
 
@@ -26,4 +26,6 @@ Testdateien: `quant/tests/technical-*.test.mjs` (7 Dateien, 60 Tests) + Fixtures
 Audit), Multiple-Testing-Kontrolle (keine Parameteroptimierung in V1 erfolgt), Out-of-Sample-
 Evidenz (Stichprobe zu klein — bewusst nicht angezeigt).
 
-**Bestehende Tests:** 232/232 weiterhin grün; Gesamt 292/292.
+| Release-Audit | AU1–AU11, E6 | Polarität von Structure Failure, Elliott-Entscheidbarkeit (kein Repainting), Fib-Pocket-Richtung, bearische T2, Pivot-Extrem zwischen Pivot und Bestätigung, Same-Bar-Entry, UNDETERMINED ohne Vote, Entry-Nähe, laufende Hard Rules, zweiseitige Range, Renderer-Clipping |
+
+**Bestehende Tests:** 232/232 weiterhin grün; Gesamt 309/309 (Release-Audit).

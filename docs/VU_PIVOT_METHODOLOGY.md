@@ -12,7 +12,9 @@ D_t = max( P_t × minPct , kAtr × ATR_t )
 
 * Im Zustand UP wird das höchste High als **DEVELOPING** Swing High mitgeführt. Erst wenn
   `extremeHigh − low_t ≥ D_t`, wird es **CONFIRMED**: `pivotTime` = Zeitstempel des Extrems,
-  `confirmedAt` = die Reversal-Bar. Danach Zustand DOWN, spiegelbildlich.
+  `confirmedAt` = die Reversal-Bar. Danach Zustand DOWN, spiegelbildlich. Das neue Developing-
+  Extrem ist das tiefste Low zwischen Pivot und Bestätigungsbar (alle Bars ≤ t; Audit-Fix AU5 —
+  zuvor nur `low_t`, wodurch ein tieferes Low bei variierender Schwelle verloren gehen konnte).
 * Vor Verfügbarkeit des ATR (Warmup) gilt nur die Prozentschwelle — ebenfalls kausal.
 * Der erste Pivot einer Serie ist das Extrem, von dem aus die Gegenbewegung die Schwelle zuerst
   überschreitet.
