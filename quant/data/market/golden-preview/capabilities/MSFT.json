@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-08T17:48:50.272Z",
+  "generatedAt": "2026-09-08T18:22:31.759Z",
   "provider": "tiingo",
   "plan": "unknown",
   "scope": "realtime",
@@ -8,16 +8,16 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "34259229765",
+    "runId": "34262475702",
     "runAttempt": "1",
-    "commit": "4499e1abff487858f94304d44e0b33834e2fa0c0",
+    "commit": "84f534c7e4c35644f014193b021d78ef607c3ae0",
     "ref": "claude/golden-five-real-preview-data",
     "streamTested": false
   },
   "symbol": "MSFT",
   "sessionAtRun": {
     "session": "REGULAR",
-    "localTime": "13:48:50",
+    "localTime": "14:22:31",
     "note": "Welche Befunde ueberhaupt moeglich waren, haengt an dieser Zeile."
   },
   "thresholds": {
@@ -32,66 +32,95 @@
         "phase": "REGULAR",
         "closedReason": null,
         "localDate": "2026-09-08",
-        "localTime": "13:48:50",
+        "localTime": "14:22:31",
         "calendarCoverage": true,
         "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
       },
       "requests": 0,
-      "checkedAt": "2026-09-08T17:48:50.271Z"
+      "checkedAt": "2026-09-08T18:22:31.295Z"
     },
     {
       "capability": "latestQuote",
-      "result": "ERROR",
+      "result": "FAILED",
       "evidence": {
-        "reason": "notConfigured"
+        "hasPrice": false,
+        "hasTimestamp": true,
+        "responseMs": 204,
+        "interpretation": "Antwort ohne verwertbaren Kurs."
       },
       "requests": 1,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.499Z"
     },
     {
       "capability": "realtimeQuote",
-      "result": "UNKNOWN",
+      "result": "PASSED",
       "evidence": {
-        "reason": "Kursabfrage nicht verfuegbar."
+        "lagSeconds": 2,
+        "thresholdSeconds": 90,
+        "sessionPhase": "REGULAR",
+        "interpretation": "Bei offenem regulaerem Handel lag der Zeitstempel innerhalb der Echtzeitschwelle. Echtzeit-Kursabfrage belegt."
       },
       "requests": 0,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.499Z"
     },
     {
       "capability": "delayedQuote",
-      "result": "UNKNOWN",
+      "result": "FAILED",
       "evidence": {
-        "reason": "Kursabfrage nicht verfuegbar."
+        "lagSeconds": 2,
+        "interpretation": "Der Kurs ist nicht verzoegert - er ist aktuell."
       },
       "requests": 0,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.499Z"
     },
     {
       "capability": "historicalIntraday",
-      "result": "ERROR",
+      "result": "PASSED",
       "evidence": {
-        "reason": "notConfigured"
+        "requestedFrom": "2026-09-03",
+        "bars": 293,
+        "barsWithTimestamp": 293,
+        "ascending": true,
+        "interpretation": "Intraday-Historie ueber mehrere Tage abrufbar."
       },
       "requests": 1,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.657Z"
+    },
+    {
+      "capability": "intradayFreshness",
+      "result": "INFO",
+      "evidence": {
+        "lastBarLagSeconds": 152,
+        "sessionPhase": "REGULAR",
+        "interpretation": "Abstand der juengsten Intraday-Bar zur Laufzeit. Bei geschlossener Boerse erwartungsgemaess gross."
+      },
+      "requests": 0,
+      "checkedAt": "2026-09-08T18:22:31.657Z"
     },
     {
       "capability": "extendedHoursBars",
-      "result": "ERROR",
+      "result": "PASSED",
       "evidence": {
-        "reason": "notConfigured"
+        "requested": true,
+        "bars": 422,
+        "preMarketBars": 54,
+        "afterHoursBars": 38,
+        "regularBars": 215,
+        "interpretation": "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
       },
       "requests": 1,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.759Z"
     },
     {
       "capability": "extendedHoursRealtime",
       "result": "UNKNOWN",
       "evidence": {
-        "reason": "Abruf nicht verfuegbar."
+        "sessionAtRun": "REGULAR",
+        "localTime": "14:22:31",
+        "reason": "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
       },
       "requests": 0,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.759Z"
     },
     {
       "capability": "realtimeStream",
@@ -100,14 +129,19 @@
         "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
       },
       "requests": 0,
-      "checkedAt": "2026-09-08T17:48:50.272Z"
+      "checkedAt": "2026-09-08T18:22:31.759Z"
     }
   ],
-  "confirmedCapabilities": [],
-  "refutedCapabilities": [],
-  "unknownCapabilities": [
+  "confirmedCapabilities": [
     "realtimeQuote",
-    "delayedQuote",
+    "historicalIntraday",
+    "extendedHoursBars"
+  ],
+  "refutedCapabilities": [
+    "latestQuote",
+    "delayedQuote"
+  ],
+  "unknownCapabilities": [
     "extendedHoursRealtime",
     "realtimeStream"
   ]
