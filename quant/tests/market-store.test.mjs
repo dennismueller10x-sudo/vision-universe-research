@@ -260,7 +260,8 @@ test("P5 · Live-Daten bleiben auch intern aus, solange das Gate aus ist", () =>
 
 test("P6 · Die Gates kommen aus der Umgebung und sind standardmaessig aus", () => {
   assert.deepEqual(DisplayPolicy.gatesFromEnv({}),
-    { ENABLE_LIVE_MARKET_DATA: false, ENABLE_PUBLIC_LIVE_MARKET_DATA: false });
+    { ENABLE_LIVE_MARKET_DATA: false, ENABLE_PUBLIC_LIVE_MARKET_DATA: false,
+      ENABLE_DEVELOPMENT_PREVIEW_MARKET_DATA: false });
   assert.equal(DisplayPolicy.gatesFromEnv({ ENABLE_LIVE_MARKET_DATA: "true" })
     .ENABLE_LIVE_MARKET_DATA, true);
   // Alles andere ist aus - auch "1", "yes", "on".

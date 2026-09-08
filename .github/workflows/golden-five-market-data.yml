@@ -1,0 +1,130 @@
+name: Golden Five — Development Preview Marktdaten
+
+# Phase 5, Eigentuemerentscheidung — siehe quant/config/development-preview.json
+# fuer die vollstaendige Begruendung. Holt und veroeffentlicht echte
+# Tiingo-EOD-Kurse ausschliesslich fuer AAPL/MSFT/NVDA/JPM/XOM in einen
+# eigenen, eng begrenzten Pfad (quant/data/market/golden-preview/daily/).
+# Der Schluessel bleibt ausschliesslich serverseitig (scripts/market/
+# ingest-tiingo.mjs), erscheint nicht im Log, nicht im Bericht und nicht
+# im Repository.
+#
+# Das ist NICHT der bestehende tiingo-verify.yml-ingest-Job: jener ist
+# bewusst so gebaut, dass er NIE etwas veroeffentlicht - seine eigene
+# Gegenprobe wuerde genau das verhindern, was hier beabsichtigt ist. Dieser
+# Workflow hier ist die explizite Gegenstelle: er veroeffentlicht
+# absichtlich, aber nur die fuenf namentlich genannten Titel, nur in ihr
+# eigenes Verzeichnis, mit der Begruendung im Commit und im Statusbericht.
+#
+# workflow_dispatch verlangt bei GitHub, dass die Workflow-Datei bereits
+# auf dem Default-Branch liegt - waere hier also erst nach einem Merge
+# nutzbar. Wie bei tiingo-verify.yml dient bis dahin ein Push-Ausloeser mit
+# Marke in der Commit-Nachricht (`[golden-five-publish]`) auf
+# Entwicklungsbranches. Ohne Marke laeuft nichts.
+
+on:
+  workflow_dispatch:
+    inputs:
+      initial:
+        description: 'Erstimport (volle Historie ab initialFrom statt inkrementell)'
+        type: boolean
+        default: false
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/ingest-tiingo.mjs'
+      - 'scripts/market/assert-public-data-hygiene.mjs'
+      - 'quant/config/development-preview.json'
+      - 'quant/config/feature-gates.json'
+      - 'quant/engines/display-policy.js'
+      - '.github/workflows/golden-five-market-data.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: golden-five-market-data
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[golden-five-publish]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ohne Zugang wird nichts abgerufen oder veroeffentlicht."
+            exit 1
+          fi
+          echo "Zugang vorhanden."
+
+      - name: Ingest + Development-Preview-Veroeffentlichung (nur Golden Five)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} --publish-preview
+
+      - name: Kein Schluessel im Statusbericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene — die Golden-Five-Ausnahme bleibt eng
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Nur die erwarteten Pfade duerfen sich aendern
+        run: |
+          changed="$(git status --porcelain quant/data/market)"
+          echo "$changed"
+          unerwartet="$(echo "$changed" | grep -v 'golden-preview' | grep -v 'tiingo-status.json' || true)"
+          if [ -n "$unerwartet" ]; then
+            echo "ABBRUCH: unerwartete Aenderung ausserhalb von golden-preview/ bzw. tiingo-status.json:"
+            echo "$unerwartet"
+            exit 1
+          fi
+
+      - name: Regressionssuite
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/golden-preview quant/data/market/tiingo-status.json
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung an veroeffentlichten Golden-Five-Daten."
+          else
+            git commit -m "Golden Five: Development-Preview-Marktdaten aktualisiert (Tiingo EOD, AAPL/MSFT/NVDA/JPM/XOM)"
+            git push
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Golden Five — Development Preview Marktdaten'
+            echo ''
+            if [ -f quant/data/market/tiingo-status.json ]; then
+              node -e '
+                const s = require("./quant/data/market/tiingo-status.json");
+                console.log("| Titel | Ergebnis |");
+                console.log("|---|---|");
+                for (const t of ["AAPL","MSFT","NVDA","JPM","XOM"]) {
+                  const id = "ref_" + t;
+                  const r = s.securities && s.securities[id];
+                  console.log("| " + t + " | " + (r ? (r.ok ? "ok, " + (r.total||r.added||0) + " Bars" : r.reason) : "kein Eintrag") + " |");
+                }
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

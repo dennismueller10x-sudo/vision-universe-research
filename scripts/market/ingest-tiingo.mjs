@@ -50,6 +50,13 @@ const args = new Set(process.argv.slice(2));
 const DRY_RUN = args.has("--dry-run");
 const INITIAL = args.has("--initial");
 const PUBLISH = args.has("--publish");
+/* Phase 5, Golden Five: eine eigene, eng begrenzte Auslieferung neben
+   --publish (das oeffentliche, weiterhin gesperrte Gate). Siehe
+   quant/config/development-preview.json fuer die Titel-Allowlist und die
+   Begruendung - dieser Pfad ist keine zweite, lockerere Kopie von
+   --publish, sondern verlangt seine eigene, eng begrenzte Erlaubnis. */
+const PUBLISH_PREVIEW = args.has("--publish-preview");
+const PREVIEW_CONFIG_PATH = join(root, "quant", "config", "development-preview.json");
 const apiKey = process.env.TIINGO_API_KEY || null;
 /* Die Gates kommen aus derselben Datei, die auch der Browser liest.
    Zwei Quellen fuer dieselbe Frage waeren zwei Antworten: der Import
@@ -374,6 +381,43 @@ if (PUBLISH) {
       console.log(`    ${security.ticker.padEnd(6)} ${p.bars} von ${p.of} Bars (${Math.round(p.bytes / 1024)} KB)`);
     } else if (p.reason !== "noWorkingData") {
       console.error(`    ${security.ticker.padEnd(6)} NICHT ausgeliefert: ${p.message || p.reason}`);
+    }
+  }
+}
+
+if (PUBLISH_PREVIEW) {
+  /* Development Preview (Phase 5, Golden Five). Eigene Richtlinienabfrage
+     pro Titel - developmentPreviewScope entscheidet einzeln, nicht "alles
+     im Universum". Landet in einem eigenen Verzeichnis
+     (quant/data/market/golden-preview/daily/), nie im allgemeinen
+     quant/data/market/daily/, das fuer die uebrigen zehn Referenztitel
+     weiterhin gesperrt bleibt. */
+  const previewConfig = JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"));
+  DisplayPolicy.declareFromConfig(previewConfig);
+
+  const previewStore = MarketStore.createMarketStore({
+    root, providerId: Tiingo.PROVIDER_ID, workingDir: store.workingDir,
+    publishedDir: join(root, "quant", "data", "market", "golden-preview")
+  });
+
+  console.log("\n  Development-Preview-Veroeffentlichung (Golden Five):");
+  const scope = new Set(previewConfig.scope || []);
+  for (const security of CONFIG.securities) {
+    if (!scope.has(security.ticker)) continue;
+    const anzeige = DisplayPolicy.check({
+      providerId: "tiingo", dataClass: "marketData", audience: "development_preview",
+      form: "raw", ticker: security.ticker, gates
+    });
+    if (!anzeige.allowed) {
+      console.error(`    ${security.ticker.padEnd(6)} NICHT veroeffentlicht: ${anzeige.message}`);
+      continue;
+    }
+    const p = previewStore.publish(security.securityId, { permission: anzeige });
+    if (p.published) {
+      console.log(`    ${security.ticker.padEnd(6)} ${p.bars} von ${p.of} Bars (${Math.round(p.bytes / 1024)} KB) ` +
+                  `- ${anzeige.basis}`);
+    } else if (p.reason !== "noWorkingData") {
+      console.error(`    ${security.ticker.padEnd(6)} NICHT veroeffentlicht: ${p.message || p.reason}`);
     }
   }
 }
