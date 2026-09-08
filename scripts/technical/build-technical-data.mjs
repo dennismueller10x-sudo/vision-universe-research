@@ -18,10 +18,11 @@
 
    Ausfuehren: node scripts/technical/build-technical-data.mjs
    ========================================================================= */
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadGoldenFiveSeries } from "./golden-five-series.mjs";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -121,51 +122,30 @@ for (const sym of Object.keys(realSeries)) {
 // adjClose-Spalte uebernommen. Kein zweiter Netzwerkaufruf: die
 // Kapitalmassnahmen stehen bereits in den gespeicherten Bars.
 console.log("1b/4 Golden Five (Tiingo EOD, Development Preview) → CanonicalBars …");
-const previewDir = join(root, "quant", "data", "market", "golden-preview", "daily");
+const goldenSeries = loadGoldenFiveSeries(root, Canonical);
 let goldenCount = 0;
-if (existsSync(previewDir)) {
-  for (const file of readdirSync(previewDir).filter((n) => n.endsWith(".json"))) {
-    const payload = JSON.parse(readFileSync(join(previewDir, file), "utf8"));
-    const ticker = payload.ticker;
-    const bars = payload.bars || [];
-    if (!ticker || bars.length < 300) { console.log(`     ${file}: zu wenige Bars oder kein Ticker — uebersprungen`); continue; }
-    if (realSeries[ticker]) { console.log(`     ${ticker}: bereits aus dashboard/data/market_data.json geladen — golden-preview uebersprungen`); continue; }
+for (const ticker of Object.keys(goldenSeries)) {
+  if (realSeries[ticker]) { console.log(`     ${ticker}: bereits aus dashboard/data/market_data.json geladen — golden-preview uebersprungen`); continue; }
+  const series = goldenSeries[ticker];
 
-    const corporateActions = [];
-    for (const bar of bars) {
-      if (bar.splitFactor !== null && bar.splitFactor !== undefined && bar.splitFactor !== 1) {
-        corporateActions.push({ type: "split", exDate: bar.date, ratio: bar.splitFactor });
-      }
-      if (bar.dividend !== null && bar.dividend !== undefined && bar.dividend > 0) {
-        corporateActions.push({ type: "dividend", exDate: bar.date, amount: bar.dividend });
-      }
-    }
-    const worlds = Canonical.fromPriceBars(bars, corporateActions, {
-      instrumentId: ticker, source: "tiingo", sourceRevision: payload.updatedAt,
-      currency: "USD", exchange: payload.exchange || "US"
-    });
-    const series = worlds.SPLIT_ADJUSTED;
-    if (!series || series.length < 300) { console.log(`     ${ticker}: zu wenige Bars nach Aufbereitung — uebersprungen`); continue; }
-
-    const b = Analysis.analyze({ series, benchmarkSeries: null, methodology: METH,
-      options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "5Y" } });
-    const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString() });
-    store.put(snap);
-    const from = Math.max(0, series.length - DISPLAY_BARS);
-    write(`instruments/${ticker}.json`, {
-      instrumentId: ticker, dataMode: "real", isMock: false, source: "tiingo", sourceRevision: payload.updatedAt,
-      priceSeriesType: series.priceSeriesType, benchmarkId: null,
-      note: "Development Preview (Phase 5, Golden Five) — Eigentuemerentscheidung, siehe " +
-            "quant/config/development-preview.json. Kein Benchmark: relative Staerke bleibt UNAVAILABLE.",
-      bars: compactBars(series, from), bundle: compactBundle(b, from, series.timestamps[from]), snapshotId: snap.snapshotId
-    });
-    index.push({ instrumentId: ticker, name: ticker, dataMode: "real", isMock: false, asOf: b.analysisTime,
-      bars: series.length, from: series.timestamps[0], opportunityScore: b.opportunityScore.score,
-      trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null,
-      elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
-    goldenCount++;
-    console.log(`     ${ticker}: ${series.length} Bars, Elliott ${b.elliott ? b.elliott.status : "n/a"}`);
-  }
+  const b = Analysis.analyze({ series, benchmarkSeries: null, methodology: METH,
+    options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "5Y" } });
+  const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString() });
+  store.put(snap);
+  const from = Math.max(0, series.length - DISPLAY_BARS);
+  write(`instruments/${ticker}.json`, {
+    instrumentId: ticker, dataMode: "real", isMock: false, source: "tiingo", sourceRevision: series.sourceRevision,
+    priceSeriesType: series.priceSeriesType, benchmarkId: null,
+    note: "Development Preview (Phase 5, Golden Five) — Eigentuemerentscheidung, siehe " +
+          "quant/config/development-preview.json. Kein Benchmark: relative Staerke bleibt UNAVAILABLE.",
+    bars: compactBars(series, from), bundle: compactBundle(b, from, series.timestamps[from]), snapshotId: snap.snapshotId
+  });
+  index.push({ instrumentId: ticker, name: ticker, dataMode: "real", isMock: false, asOf: b.analysisTime,
+    bars: series.length, from: series.timestamps[0], opportunityScore: b.opportunityScore.score,
+    trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null,
+    elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
+  goldenCount++;
+  console.log(`     ${ticker}: ${series.length} Bars, Elliott ${b.elliott ? b.elliott.status : "n/a"}`);
 }
 console.log(`     ${goldenCount} Golden-Five-Titel verarbeitet`);
 
