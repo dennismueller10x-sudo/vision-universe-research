@@ -185,5 +185,74 @@ class GeneratedArtifactTests(unittest.TestCase):
             self.assertIn("data/sec/", path.as_posix())
 
 
+class CompanyAgnosticTests(unittest.TestCase):
+    """The pipeline may not branch on a specific company — checked on CODE.
+
+    The CI guard for this used to be a `grep -rn` over scripts/quant/sec/. It
+    matched comments and __pycache__ binaries alongside code, and the first
+    pull request turned it red on lines like "NVDA's 10-Ks for the years ending
+    January 2011 to January 2014 tag `fy` one year low" — which is the evidence
+    for a fix, not a hack.
+
+    The rule now lives in scripts/quant/check_company_agnostic.py, so CI and
+    this test run the same implementation and it can be run before pushing.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        from quant import check_company_agnostic
+        cls.checker = check_company_agnostic
+
+    def test_the_shipped_pipeline_is_company_agnostic(self):
+        findings = self.checker.scan()
+        self.assertEqual(findings, [], f"company-specific code: {findings}")
+
+    HACKS = (
+        'def f(ticker):\n    if ticker == "NVDA":\n        return 1\n',
+        'CIK = "0001045810"\n',
+        'apple_hack = {"Apple": 1}\n',
+        'CIKS = {"0000034088": 2}\n',
+        # An underscore is a word character, so `\bNVDA\b` does NOT match this
+        # — and a company-specific constant is exactly this shape. The first
+        # version of the guard let it through.
+        'NVDA_FUDGE = 1.0\n',
+        'x = XOM_SCALE\n',
+    )
+
+    def test_every_shape_of_company_specific_code_is_caught(self):
+        for source in self.HACKS:
+            with self.subTest(source=source.strip()):
+                path = self._tmp(source)
+                code = self.checker.executable_source(path)
+                hit = any(pattern.search(code)
+                          for pattern, _ in self.checker.PATTERNS)
+                self.assertTrue(hit, f"not caught: {source.strip()}")
+
+    def test_a_company_named_in_a_comment_is_not_code(self):
+        source = '# NVDA and Apple and Exxon, CIK 0001045810, measured 2026-09-08\nx = 1\n'
+        code = self.checker.executable_source(self._tmp(source))
+        for token in ("NVDA", "Apple", "Exxon", "0001045810"):
+            self.assertNotIn(token, code)
+
+    def test_a_company_named_in_a_docstring_is_not_code(self):
+        source = '"""NVDA tags fy one year low for 2011-2014."""\nx = 1\n'
+        self.assertNotIn("NVDA", self.checker.executable_source(self._tmp(source)))
+
+    def test_pycache_is_not_scanned(self):
+        import pathlib
+        base = pathlib.Path(self.checker.ROOT) / "scripts/quant/sec"
+        scanned = [p for p in base.rglob("*.py") if "__pycache__" not in p.parts]
+        self.assertTrue(scanned)
+        self.assertFalse(any("__pycache__" in p.parts for p in scanned))
+
+    def _tmp(self, source):
+        import tempfile, pathlib
+        directory = tempfile.mkdtemp()
+        self.addCleanup(__import__("shutil").rmtree, directory)
+        path = pathlib.Path(directory) / "probe.py"
+        path.write_text(source, encoding="utf-8")
+        return path
+
+
 if __name__ == "__main__":
     unittest.main()

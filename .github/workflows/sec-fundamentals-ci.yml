@@ -156,19 +156,12 @@ jobs:
           PY
 
       - name: Reject company-specific logic in the pipeline
-        shell: bash
-        run: |
-          # The pipeline must stay generic: the five validation companies live in
-          # quant/config/sec-universe.json, never in the code that processes them.
-          if grep -rnE '\b(NVDA|AAPL|MSFT|JPM|XOM|NVIDIA|Apple|Microsoft|JPMorgan|Exxon)\b' scripts/quant/sec/; then
-            echo "::error::company-specific identifiers found in scripts/quant/sec/"
-            exit 1
-          fi
-          if grep -rnE '\b(0001045810|0000320193|0000789019|0000019617|0000034088)\b' scripts/quant/sec/; then
-            echo "::error::hard-coded validation-company CIKs found in scripts/quant/sec/"
-            exit 1
-          fi
-          echo "pipeline is company-agnostic"
+        # The rule lives in a script, not in this file, so it can be run before
+        # pushing and is covered by the test suite. The previous grep matched
+        # comments and __pycache__ alongside code: naming the company whose real
+        # data exposed a defect is how findings are documented here, and a
+        # binary .pyc is not source at all.
+        run: python3 scripts/quant/check_company_agnostic.py
 
       - name: Enforce data hygiene
         shell: bash
