@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-07T23:53:37+00:00",
+  "generated_at_utc": "2026-09-08T00:01:01+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.1.0",
+    "normalization_logic": "1.2.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -27,7 +27,7 @@
       "cik": "0000019617",
       "name": "JPMORGAN CHASE & CO",
       "file": "canonical/JPM.json",
-      "factCount": 496,
+      "factCount": 619,
       "metricIds": [
         "accruals",
         "interestExpense",
@@ -37,7 +37,7 @@
         "totalAssets",
         "totalEquity"
       ],
-      "suppressedCells": 40,
+      "suppressedCells": 0,
       "annualYearsExamined": [
         2015,
         2016,
@@ -81,7 +81,7 @@
       "cik": "0000034088",
       "name": "EXXON MOBIL CORP",
       "file": "canonical/XOM.json",
-      "factCount": 714,
+      "factCount": 846,
       "metricIds": [
         "accruals",
         "capex",
@@ -95,7 +95,7 @@
         "totalAssets",
         "totalEquity"
       ],
-      "suppressedCells": 47,
+      "suppressedCells": 1,
       "annualYearsExamined": [
         2015,
         2016,
@@ -139,7 +139,7 @@
       "cik": "0000320193",
       "name": "Apple Inc.",
       "file": "canonical/AAPL.json",
-      "factCount": 924,
+      "factCount": 962,
       "metricIds": [
         "accruals",
         "capex",
@@ -155,7 +155,7 @@
         "totalAssets",
         "totalEquity"
       ],
-      "suppressedCells": 17,
+      "suppressedCells": 0,
       "annualYearsExamined": [
         2015,
         2016,
@@ -199,7 +199,7 @@
       "cik": "0000789019",
       "name": "MICROSOFT CORP",
       "file": "canonical/MSFT.json",
-      "factCount": 966,
+      "factCount": 998,
       "metricIds": [
         "accruals",
         "capex",
@@ -215,7 +215,7 @@
         "totalAssets",
         "totalEquity"
       ],
-      "suppressedCells": 16,
+      "suppressedCells": 0,
       "annualYearsExamined": [
         2015,
         2016,
@@ -258,7 +258,7 @@
       "cik": "0001045810",
       "name": "NVIDIA CORP",
       "file": "canonical/NVDA.json",
-      "factCount": 765,
+      "factCount": 798,
       "metricIds": [
         "accruals",
         "capex",
@@ -274,7 +274,7 @@
         "totalAssets",
         "totalEquity"
       ],
-      "suppressedCells": 43,
+      "suppressedCells": 26,
       "annualYearsExamined": [
         2016,
         2017,

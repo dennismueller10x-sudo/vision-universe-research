@@ -1,8 +1,8 @@
 {
-  "generated_at_utc": "2026-09-07T23:53:39.087Z",
+  "generated_at_utc": "2026-09-08T00:01:02.210Z",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.1.0",
+    "normalization_logic": "1.2.0",
     "formula": "1.0.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -400,10 +400,44 @@
         },
         {
           "gate": "PIT_NO_FUTURE_DATA_LEAK",
-          "status": "PASS",
-          "reason": "all 5822 observations become available on or after their period end",
+          "status": "FAIL",
+          "reason": "4 observation(s) are available before their period ended",
           "evidence": {
-            "observations_checked": 5822
+            "observations_checked": 5822,
+            "offenders": [
+              {
+                "metric": "shares_outstanding",
+                "fiscal_year": 2010,
+                "fiscal_period": "Q2",
+                "period_end": "2010-08-01",
+                "available_from": "2009-08-20T20:59:23.000Z",
+                "accession": "0001045810-09-000024"
+              },
+              {
+                "metric": "shares_outstanding",
+                "fiscal_year": 2010,
+                "fiscal_period": "Q3",
+                "period_end": "2010-10-31",
+                "available_from": "2009-11-19T14:03:13.000Z",
+                "accession": "0001045810-09-000036"
+              },
+              {
+                "metric": "shares_outstanding",
+                "fiscal_year": 2010,
+                "fiscal_period": "FY",
+                "period_end": "2011-01-30",
+                "available_from": "2010-03-17T23:16:55.000Z",
+                "accession": "0001045810-10-000006"
+              },
+              {
+                "metric": "shares_outstanding",
+                "fiscal_year": 2010,
+                "fiscal_period": "Q4",
+                "period_end": "2011-01-30",
+                "available_from": "2010-03-17T23:16:55.000Z",
+                "accession": "0001045810-10-000006"
+              }
+            ]
           }
         },
         {
@@ -442,13 +476,14 @@
       "summary": {
         "total": 8,
         "by_status": {
-          "PASS": 6,
-          "FAIL": 1,
+          "PASS": 5,
+          "FAIL": 2,
           "UNKNOWN": 0,
           "NOT_APPLICABLE": 1
         },
         "blocking_failures": [
-          "SURVIVORSHIP_FREE_UNIVERSE"
+          "SURVIVORSHIP_FREE_UNIVERSE",
+          "PIT_NO_FUTURE_DATA_LEAK"
         ]
       }
     }
@@ -481,7 +516,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 836,
+            "fundamentalRecords": 853,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -489,9 +524,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "836 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "853 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 836,
+            "total": 853,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -512,14 +547,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (2031989), der spaete die Korrektur (2119673). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (3973.010673), der spaete die Korrektur (4104.933895). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 2031989,
-            "afterValue": 2119673,
+            "beforeValue": 3973.010673,
+            "afterValue": 4104.933895,
             "beforeStatus": "original",
             "afterStatus": "restated",
             "beforeAvailableAt": "2010-02-24",
-            "afterAvailableAt": "2010-08-06"
+            "afterAvailableAt": "2010-05-10"
           }
         },
         "GATE_B_DELISTING": {
@@ -529,7 +564,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 409,
+            "fundamentalRecords": 449,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -537,9 +572,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "409 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "449 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 409,
+            "total": 449,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -560,14 +595,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (13415), der spaete die Korrektur (13384). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (8653.567331), der spaete die Korrektur (8668). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 13415,
-            "afterValue": 13384,
+            "beforeValue": 8653.567331,
+            "afterValue": 8668,
             "beforeStatus": "original",
             "afterStatus": "restated",
-            "beforeAvailableAt": "2013-10-24",
-            "afterAvailableAt": "2014-10-23"
+            "beforeAvailableAt": "2010-07-30",
+            "afterAvailableAt": "2010-10-28"
           }
         },
         "GATE_B_DELISTING": {
@@ -577,7 +612,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 909,
+            "fundamentalRecords": 925,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -585,9 +620,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "909 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "925 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 909,
+            "total": 925,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -608,14 +643,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (1102.787), der spaete die Korrektur (1103). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (547.8), der spaete die Korrektur (574.028479). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 1102.787,
-            "afterValue": 1103,
+            "beforeValue": 547.8,
+            "afterValue": 574.028479,
             "beforeStatus": "original",
             "afterStatus": "restated",
-            "beforeAvailableAt": "2014-05-21",
-            "afterAvailableAt": "2015-05-20"
+            "beforeAvailableAt": "2009-08-20",
+            "afterAvailableAt": "2010-08-30"
           }
         },
         "GATE_B_DELISTING": {
@@ -625,7 +660,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 700,
+            "fundamentalRecords": 717,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -633,9 +668,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "700 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "717 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 700,
+            "total": 717,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
@@ -656,14 +691,14 @@
         "GATE_A_RESTATEMENT": {
           "gate": "GATE_A_RESTATEMENT",
           "result": "PASSED",
-          "message": "Der fruehe Stichtag liefert die Erstmeldung (112965), der spaete die Korrektur (117523). Die Korrektur wirkt nicht rueckwaerts.",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (8019), der spaete die Korrektur (4747.283776). Die Korrektur wirkt nicht rueckwaerts.",
           "evidence": {
-            "beforeValue": 112965,
-            "afterValue": 117523,
+            "beforeValue": 8019,
+            "afterValue": 4747.283776,
             "beforeStatus": "original",
             "afterStatus": "restated",
             "beforeAvailableAt": "2009-08-05",
-            "afterAvailableAt": "2010-08-04"
+            "afterAvailableAt": "2009-11-05"
           }
         },
         "GATE_B_DELISTING": {
@@ -673,7 +708,7 @@
           "evidence": {
             "inHistoricalUniverse": false,
             "inCurrentUniverse": false,
-            "fundamentalRecords": 596,
+            "fundamentalRecords": 642,
             "universeSizeDuring": 0,
             "universeSizeAfter": 0
           }
@@ -681,9 +716,9 @@
         "GATE_C_AVAILABILITY": {
           "gate": "GATE_C_AVAILABILITY",
           "result": "PASSED",
-          "message": "596 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "message": "642 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
           "evidence": {
-            "total": 596,
+            "total": 642,
             "withoutTimestamp": 0,
             "availableAfterAsOf": 0,
             "timestampNotAfterPeriodEnd": 0,
