@@ -128,6 +128,37 @@ function measureStream(opts) {
        "Q" Quote (Top of Book), "B"/"A" einseitige Aktualisierungen. */
     const messageTypes = Object.create(null);
     let rejectedSubscription = null;
+
+    /* Die FORM der Nachrichten, ohne ihren Inhalt.
+
+       Der Lauf davor zeigte: dieser Zugang liefert am laufenden Band -
+       138 Nachrichten in 90 Sekunden auf NVDA - und der Parser wirft
+       jede einzelne weg, weil er an Position 0 einen Typbuchstaben
+       erwartet und dort ein Zeitstempel steht. Tiingo hat die
+       IEX-Regeln geaendert; die Ablehnung von Stufe 5 und 0 sagt es
+       ausdruecklich.
+
+       Um den Parser richtig zu erweitern, braucht es die Feldfolge - und
+       ausdruecklich NICHT die Werte: Kurse gehoeren nicht in einen
+       Bericht (§34). Aufgenommen wird deshalb je Position nur, WAS dort
+       steht: Typ, und bei Zeichenketten, ob sie wie ein Zeitstempel oder
+       wie das angefragte Symbol aussehen. Zahlen werden gezaehlt, nie
+       notiert. */
+    const shapeSamples = [];
+    function describeShape(data) {
+      return data.map(function (v) {
+        if (v === null) return "null";
+        if (typeof v === "number") return "number";
+        if (typeof v === "string") {
+          if (/^\d{4}-\d{2}-\d{2}T/.test(v)) return "isoTimestamp";
+          if (symbols.some(function (t) { return t.toUpperCase() === v.toUpperCase(); })) return "requestedTicker";
+          if (/^[A-Z]$/.test(v)) return "letter:" + v;
+          if (v.length <= 8) return "shortString(" + v.length + ")";
+          return "string(" + v.length + ")";
+        }
+        return typeof v;
+      });
+    }
     let openedAt = null, firstEventAt = null, lastEventAt = null;
     let socketError = null, closeCode = null, closeReason = null;
     let candleTicks = 0, candleBucket = null, maxTicksInAnyBucket = 0;
@@ -173,8 +204,17 @@ function measureStream(opts) {
               };
             }
           } else if (msg && msg.messageType === "A" && Array.isArray(msg.data)) {
-            const kind = String(msg.data[0] || "?");
+            /* Der Typbuchstabe steht dort, wo einer steht - und nur
+               dann. Ein Zeitstempel an Position 0 ist kein Typ, und ihn
+               als einen zu zaehlen erzeugte im Lauf davor 138
+               "Nachrichtenarten" statt zweier. */
+            const first = msg.data[0];
+            const kind = typeof first === "string" && /^[A-Z]$/.test(first) ? first : "noTypeField";
             messageTypes[kind] = (messageTypes[kind] || 0) + 1;
+            if (shapeSamples.length < 3) {
+              shapeSamples.push({ service: msg.service || null, length: msg.data.length,
+                                  fields: describeShape(msg.data) });
+            }
           }
         } catch (err) { /* eine unlesbare Nachricht ist keine Kursnachricht */ }
         return TiingoRealtime.parseIexMessage(ev);
@@ -211,6 +251,10 @@ function measureStream(opts) {
           /* Die Auszaehlung nach Art. "T" sind Trades und damit das,
              woraus eine Kerze entsteht; "Q" sind Geld- und Briefkurse. */
           messageTypes: Object.assign({}, messageTypes),
+          /* Die Feldfolge, ohne Werte. Sie sagt, wie der Parser zu
+             erweitern ist - und verraet keinen Kurs. */
+          messageShape: shapeSamples,
+          unparsedPriceMessages: messageTypes.noTypeField || 0,
           tradeMessages: messageTypes.T || 0,
           quoteMessages: (messageTypes.Q || 0) + (messageTypes.B || 0) + (messageTypes.A || 0),
           rejectedSubscription,
@@ -434,6 +478,17 @@ async function main() {
   } else if (!anyOpened) {
     liveChartReady = "FALSE";
     liveChartReason = "Die Verbindung kam bei offener Boerse nicht zustande.";
+  } else if (!withEvents.length && measured.some((r) => r.connection &&
+                                                  r.connection.unparsedPriceMessages > 0)) {
+    const u = measured.find((r) => r.connection && r.connection.unparsedPriceMessages > 0);
+    liveChartReady = "FALSE";
+    liveChartReason =
+      "Der Strom liefert - und der Parser kann die Nachrichten nicht lesen. Auf Stufe " +
+      u.thresholdLevel + " kamen " + u.connection.unparsedPriceMessages + " Kursnachrichten in " +
+      u.durationSeconds + " Sekunden an, ohne das erwartete Typfeld an erster Stelle. " +
+      "Das ist kein fehlender Zugang, sondern eine geaenderte Nachrichtenform: die " +
+      "abgelehnten Stufen 5 und 0 nennen ausdruecklich neue IEX-Regeln. Die beobachtete " +
+      "Feldfolge steht unter measurements[].connection.messageShape.";
   } else if (!withEvents.length && withQuotes.length) {
     liveChartReady = "FALSE";
     liveChartReason =
@@ -513,6 +568,14 @@ async function main() {
       tradeStreamAvailable: withTrades.length > 0,
       quoteMessagesObserved: withQuotes.length ? withQuotes[0].connection.quoteMessages : 0,
       tradeMessagesObserved: withTrades.length ? withTrades[0].connection.tradeMessages : 0,
+      /* Nachrichten, die ankamen und die der Parser nicht zuordnen
+         konnte. Der wichtigste Zaehler dieses Berichts, solange er nicht
+         null ist: er trennt "kein Zugang" von "andere Nachrichtenform". */
+      unparsedPriceMessages: measured.reduce(
+        (max, r) => Math.max(max, (r.connection && r.connection.unparsedPriceMessages) || 0), 0),
+      observedMessageShape: (measured.find(
+        (r) => r.connection && (r.connection.messageShape || []).length) || { connection: {} })
+        .connection.messageShape || [],
       note: "Eine Kerze entsteht aus ausgefuehrten Trades. Quotes bewegen einen Chart " +
             "ebenfalls sichtbar, sind aber eine andere Groesse - Geld und Brief statt " +
             "Abschluss. Beides zu vermischen waere der Fehler, den die Trennung hier " +
