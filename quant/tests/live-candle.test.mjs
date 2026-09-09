@@ -176,11 +176,31 @@ function collect(port, opts = {}) {
       }
     });
 
+    /* Fertig, sobald das Erwartete da ist - nicht nach einer festen Zeit.
+
+       Eine feste Wartezeit misst auf einem ausgelasteten Runner die
+       Auslastung und nicht die Sache: der Handschlag allein kostet dort
+       ein paar hundert Millisekunden. Genau daran ist die Suite in CI
+       einmal gescheitert, waehrend sie lokal gruen war.
+
+       Die Zeit bleibt als Obergrenze - grosszuegig, damit sie nur greift,
+       wenn wirklich nichts kommt. */
+    let done = false;
     const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(cap);
+      clearInterval(poll);
       try { transport.stop(); } catch (err) { /* zu */ }
       resolve({ events, ack, opened, messages, series });
     };
-    setTimeout(finish, opts.durationMs || 700);
+    const expectEvents = opts.expectEvents === undefined ? null : opts.expectEvents;
+    const expectMessages = opts.expectMessages === undefined ? null : opts.expectMessages;
+    const cap = setTimeout(finish, opts.durationMs || 4000);
+    const poll = setInterval(() => {
+      if (expectEvents !== null && events.length >= expectEvents) finish();
+      else if (expectMessages !== null && messages >= expectMessages) finish();
+    }, 10);
 
     transport.start({
       onOpen: () => { opened = true; },
@@ -206,7 +226,7 @@ test("LC1 — Anmeldung, Bestaetigung und mehrere aufeinanderfolgende Kursereign
   }
   const srv = await startWsServer({ ticks, intervalMs: 15 });
   try {
-    const r = await collect(srv.port, { durationMs: 900 });
+    const r = await collect(srv.port, { expectEvents: 6, durationMs: 8000 });
 
     assert.ok(r.opened, "die Verbindung muss zustande kommen");
     /* §5: Anmeldung und Bestaetigung, nicht nur ein offener Socket. */
@@ -239,7 +259,8 @@ test("LC2 — aus mehreren Ereignissen derselben Minute entsteht eine laufende K
   const ticks = prices.map((p, i) => ({ symbol: "NVDA", price: p, size: 10, atMs: base + i * 30 }));
   const srv = await startWsServer({ ticks, intervalMs: 20 });
   try {
-    const r = await collect(srv.port, { durationMs: 900, now: () => base + 3000 });
+    const r = await collect(srv.port, { expectEvents: prices.length, durationMs: 8000,
+                                        now: () => base + 3000 });
     assert.equal(r.events.length, prices.length);
 
     const candle = r.series.last();
@@ -369,7 +390,9 @@ test("LC6 — ein Quote-Strom ist etwas anderes als kein Strom", async () => {
   }
   const srv = await startWsServer({ ticks, intervalMs: 15 });
   try {
-    const r = await collect(srv.port, { durationMs: 900 });
+    /* Hier kann nicht auf Ereignisse gewartet werden - es soll ja keine
+       geben. Gewartet wird auf die Nachrichten selbst. */
+    const r = await collect(srv.port, { expectMessages: 5, durationMs: 8000 });
     /* Quotes duerfen keinen Tick erzeugen - das ist die bestehende,
        richtige Regel aus parseIexMessage. */
     assert.equal(r.events.length, 0, "aus Quotes entsteht kein Tick");
@@ -470,7 +493,8 @@ test("LC10 — zwei Titel ergeben zwei Kerzen, nicht eine gemeinsame", async () 
   }
   const srv = await startWsServer({ ticks, intervalMs: 15 });
   try {
-    const r = await collect(srv.port, { durationMs: 1100, now: () => base + 3000,
+    const r = await collect(srv.port, { expectEvents: ticks.length, durationMs: 8000,
+                                        now: () => base + 3000,
                                         symbols: ["aapl", "msft"] });
     assert.equal(r.events.length, ticks.length);
 
