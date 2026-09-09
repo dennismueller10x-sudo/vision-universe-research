@@ -411,10 +411,19 @@ jobs:
           #
           # Ein echter Backfill verlangt deshalb eine zweite, ausdrueckliche
           # Marke. Ohne sie bewertet der Lauf.
+          # Zwei Schalter, nicht einer - und das war der Fehler im Lauf
+          # 34369902099: die Marke leerte hier zwar MODE, aber das Skript
+          # traegt seit dem teuren Vorfall eine EIGENE Sicherung
+          # (--allow-full-backfill), und die hat der Workflow nie gesetzt.
+          # Ergebnis: ein Lauf, der laden sollte, hat bewertet - still und
+          # gruen. Die Sicherung im Skript war richtig; die Marke war
+          # Dekoration. Ab hier setzt sie beide Schalter.
           MODE=""
+          ALLOW=""
           if [ "$GATE" = "FULL_UNIVERSE" ]; then
             if printf '%s' "$(git log -1 --pretty=%B)" | grep -q '\[tiingo-full-backfill\]'; then
-              echo "FULL_UNIVERSE mit ausdruecklicher Backfill-Marke."
+              ALLOW="--allow-full-backfill"
+              echo "FULL_UNIVERSE mit ausdruecklicher Backfill-Marke: es wird geladen."
             else
               MODE="--assess-only"
               echo "FULL_UNIVERSE ohne Backfill-Marke: es wird bewertet, nicht geladen."
@@ -439,7 +448,8 @@ jobs:
             BUDGET="--request-budget 12000 --max-wait-ms 900000"
             echo "Eigenes Stundenbudget fuer diesen Lauf: 12000 (SAFETY_CEILING, kein Anbieterlimit)."
           fi
-          node scripts/market/run-scale-gate.mjs --gate "$GATE" $MODE $BUDGET || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
+          echo "Aufruf: run-scale-gate.mjs --gate $GATE $MODE $ALLOW $BUDGET"
+          node scripts/market/run-scale-gate.mjs --gate "$GATE" $MODE $ALLOW $BUDGET || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
 
       # Ohne geladene Kurse gibt es nichts zu rechnen. Ein Lauf mit
       # lauter SOURCE_MISSING waere kein Ergebnis, sondern Rauschen.
@@ -474,6 +484,17 @@ jobs:
           fi
           node scripts/market/select-gate-universe.mjs --gate FULL_UNIVERSE
           node scripts/market/run-scale-gate.mjs --gate FULL_UNIVERSE --assess-only
+
+      # Die Pruefungen, die erst ueber viele Titel sichtbar werden:
+      # doppelte securityIds, Tickerkollisionen, ein Feld das bei der
+      # Mehrheit leer ist, Titel die zeitlich zurueckfallen, fehlende
+      # Analysebuendel. Jeder dieser Fehler laesst jeden EINZELNEN Titel
+      # sauber aussehen - deshalb braucht es diese Ebene (§13).
+      - name: Universumsweite Qualitaetspruefung
+        if: always() && steps.gate.outputs.mode != '--assess-only'
+        run: |
+          GATE='${{ steps.gate.outputs.gate }}'
+          node scripts/market/assert-universe-quality.mjs --gate "$GATE"
 
       - name: Gesundheitsbericht
         if: always()

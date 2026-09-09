@@ -1193,3 +1193,246 @@ test("SG20 — der Grenzennachweis erfindet ohne Zugang kein Anbieterlimit", asy
   assert.equal(bericht.configuredLimits.provenance.requestsPerHour, "SAFETY_CEILING");
   assert.match(bericht.configuredLimits.note, /unser Budget/i);
 });
+
+/* ==========================================================================
+   UNIVERSUMSWEITE PRUEFUNGEN (§13 der Nacharbeit)
+
+   Fehler, die jeden einzelnen Titel sauber aussehen lassen und erst im
+   Vergleich vieler sichtbar werden. Die Tests bauen sie absichtlich ein
+   und pruefen, dass die Pruefung sie findet - eine Pruefung, die man nie
+   hat anschlagen sehen, ist keine.
+   ========================================================================== */
+
+function baueArtefakte(dir, opts = {}) {
+  const scale = join(dir, "scale");
+  const factors = join(dir, "factors");
+  const tech = join(dir, "tech");
+  for (const d of [scale, factors, tech]) mkdirSync(d, { recursive: true });
+
+  const tickers = opts.tickers || ["AAA", "BBB", "CCC", "DDD"];
+  const securities = tickers.map((t, i) => ({
+    securityId: (opts.securityIds && opts.securityIds[i]) || "ref_" + t,
+    ticker: t, exchange: "NASDAQ", currency: "USD", instrumentType: "COMMON_STOCK",
+    provider: "tiingo", providerSymbol: t
+  }));
+  writeFileSync(join(scale, "universe-TEST.json"), JSON.stringify({
+    gate: "TEST", targetSize: tickers.length, actualSize: tickers.length,
+    method: "TEST", bySector: {}, byExchange: {}, securities
+  }));
+
+  const perSymbol = {};
+  tickers.forEach((t, i) => {
+    perSymbol[t] = { status: "PASS", reason: "clean", bars: 900, usable: 900,
+                     staleTradingDays: (opts.stale && opts.stale[i]) || 1, factorReady: true };
+  });
+  writeFileSync(join(scale, "gate-TEST.json"), JSON.stringify(Object.assign({
+    gate: "TEST", verdict: "PASS",
+    accounting: { requested: tickers.length, resolved: tickers.length, success: tickers.length,
+                  warning: 0, fail: 0, unavailable: 0 },
+    historyCoverage: { covered: tickers.length },
+    perSymbol
+  }, opts.gateOverrides || {})));
+
+  writeFileSync(join(factors, "factors-TEST-summary.json"), JSON.stringify({
+    gate: "TEST",
+    benchmark: opts.benchmark || { id: "SPY", bars: 8000, last: "2026-09-08" },
+    coverage: { computed: tickers.length, skipped: 0,
+      fieldCoverage: opts.fieldCoverage || {
+        sma20: { CALCULATED: tickers.length, INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 0, NOT_APPLICABLE: 0 }
+      } }
+  }));
+
+  writeFileSync(join(tech, "technical-coverage-TEST.json"), JSON.stringify(Object.assign({
+    gate: "TEST", requested: tickers.length, evaluated: tickers.length,
+    coverage: { TECHNICAL_READY: tickers.length, TECHNICAL_PARTIAL: 0, TECHNICAL_FAILED: 0,
+                INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 0 }
+  }, opts.technicalOverrides || {})));
+
+  return { scale, factors, tech };
+}
+
+async function pruefeUniversum(dir, p) {
+  const args = ["--gate", "TEST", "--scale-dir", p.scale, "--factor-dir", p.factors,
+                "--tech-dir", p.tech, "--out", join(dir, "health")];
+  try {
+    const out = await run("scripts/market/assert-universe-quality.mjs", args, {});
+    return { ok: true, ausgabe: out,
+             bericht: JSON.parse(readFileSync(join(dir, "health", "universe-quality-TEST.json"), "utf8")) };
+  } catch (err) {
+    return { ok: false, ausgabe: String(err.stdout || "") + String(err.stderr || ""),
+             bericht: JSON.parse(readFileSync(join(dir, "health", "universe-quality-TEST.json"), "utf8")) };
+  }
+}
+
+test("SG21 — saubere Artefakte kommen durch die Universumspruefung", async () => {
+  const dir = sandbox();
+  const p = baueArtefakte(dir);
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, true, "der saubere Fall muss durchgehen: " + r.ausgabe);
+  assert.equal(r.bericht.status, "PASSED");
+  assert.equal(r.bericht.errors, 0);
+  /* Und die Pruefungen muessen tatsaechlich gelaufen sein - ein
+     Durchgehen, weil nichts geprueft wurde, ist kein Bestehen. */
+  for (const pruefung of ["duplicateSecurities", "tickerCollisions", "nonFiniteNumbers",
+                          "dateAlignment", "technicalBundles", "accountingConsistency"]) {
+    assert.ok(r.bericht.checksRun.includes(pruefung), `${pruefung} lief nicht`);
+  }
+});
+
+test("SG22 — zwei Titel mit derselben securityId halten an", async () => {
+  const dir = sandbox();
+  /* Der Bestand wird unter der securityId abgelegt. Zwei Zeilen mit
+     derselben Id heisst: die zweite ueberschreibt die erste, und der
+     Screener zeigt fuer den einen Titel die Reihe des anderen. */
+  const p = baueArtefakte(dir, { securityIds: ["ref_X", "ref_X", "ref_C", "ref_D"] });
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, false, "doppelte securityIds muessen anhalten");
+  assert.equal(r.bericht.status, "FAILED");
+  const b = r.bericht.findings.find((f) => f.check === "duplicateSecurities");
+  assert.ok(b, "kein Befund zu doppelten securityIds");
+  assert.equal(b.severity, "ERROR");
+});
+
+test("SG23 — eine Tickerkollision ist eine Warnung, kein Abbruch", async () => {
+  const dir = sandbox();
+  /* Derselbe Ticker an zwei Boersen ist nicht falsch - aber es ist immer
+     eine Frage, welche Reihe der Screener nimmt. */
+  const p = baueArtefakte(dir, { tickers: ["AAA", "AAA", "CCC", "DDD"],
+                                 securityIds: ["ref_A1", "ref_A2", "ref_C", "ref_D"] });
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, true, "eine Kollision darf nicht anhalten");
+  assert.equal(r.bericht.status, "PASSED_WITH_WARNINGS");
+  const b = r.bericht.findings.find((f) => f.check === "tickerCollisions");
+  assert.ok(b && b.severity === "WARNING");
+});
+
+test("SG24 — ein Titel ohne Technical-Zustand ist eine stille Luecke und haelt an", async () => {
+  const dir = sandbox();
+  /* Vier angefordert, drei in den Faechern: einer hat gar keinen
+     Zustand. Er sieht im Bericht aus, als haette es ihn nie gegeben. */
+  const p = baueArtefakte(dir, {
+    technicalOverrides: { requested: 4, evaluated: 3,
+      coverage: { TECHNICAL_READY: 3, TECHNICAL_PARTIAL: 0, TECHNICAL_FAILED: 0,
+                  INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 0 } }
+  });
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, false);
+  const b = r.bericht.findings.find((f) => f.check === "technicalBundles");
+  assert.ok(b, "kein Befund zum fehlenden Buendel");
+  assert.match(b.message, /ohne jeden Zustand/);
+
+  /* Gegenprobe: analysiert werden WENIGER als eingeordnet - das ist
+     richtig so (zu kurze Historie geht nicht durch die Engine) und darf
+     nicht anschlagen. */
+  const dir2 = sandbox();
+  const p2 = baueArtefakte(dir2, {
+    technicalOverrides: { requested: 4, evaluated: 3,
+      coverage: { TECHNICAL_READY: 3, TECHNICAL_PARTIAL: 0, TECHNICAL_FAILED: 0,
+                  INSUFFICIENT_HISTORY: 1, SOURCE_MISSING: 0 } }
+  });
+  const r2 = await pruefeUniversum(dir2, p2);
+  assert.equal(r2.ok, true,
+    "weniger analysierte als eingeordnete Titel ist kein Fehler, sondern die Definition");
+});
+
+test("SG25 — ein Feld, das bei der Mehrheit fehlt, wird als Explosion gemeldet", async () => {
+  const dir = sandbox();
+  const p = baueArtefakte(dir, {
+    fieldCoverage: {
+      sma20: { CALCULATED: 4, INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 0, NOT_APPLICABLE: 0 },
+      /* Alle vier leer: das ist kein Einzelfall, das ist die Rechnung. */
+      relativeStrength12M: { CALCULATED: 0, INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 4, NOT_APPLICABLE: 0 }
+    }
+  });
+  const r = await pruefeUniversum(dir, p);
+  const b = r.bericht.findings.find((f) => f.check === "nullExplosion");
+  assert.ok(b, "eine leere Spalte ueber alle Titel muss auffallen");
+  assert.ok(b.fields.some((f) => f.feld === "relativeStrength12M"));
+  assert.ok(!b.fields.some((f) => f.feld === "sma20"), "das volle Feld darf nicht dabei sein");
+});
+
+test("SG26 — ein Massstab ohne Bars macht jede relative Staerke leer und haelt an", async () => {
+  const dir = sandbox();
+  /* Genau der Fall des alten GATE_100: die Benchmark fehlte, und alle
+     100 Titel trugen SOURCE_MISSING. Im Einzelbericht sah jeder Titel
+     in Ordnung aus. */
+  const p = baueArtefakte(dir, { benchmark: { id: "SPY", status: "SOURCE_MISSING" } });
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, false);
+  const b = r.bericht.findings.find((f) => f.check === "relativeStrengthAlignment");
+  assert.ok(b && b.severity === "ERROR");
+  assert.match(b.message, /sieht aus wie ein schwacher Titel/);
+});
+
+test("SG27 — eine Bilanz, die nicht mit sich selbst stimmt, haelt an", async () => {
+  const dir = sandbox();
+  const p = baueArtefakte(dir, {
+    gateOverrides: { accounting: { requested: 4, resolved: 4, success: 2, warning: 0,
+                                   fail: 0, unavailable: 0 } }
+  });
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, false);
+  const b = r.bericht.findings.find((f) => f.check === "accountingConsistency");
+  assert.ok(b, "eine Bilanz mit fehlenden Titeln muss auffallen");
+  assert.match(b.message, /in keinem Fach oder in zweien/);
+});
+
+test("SG28 — fallen viele Titel zeitlich zurueck, ist das ein Fehler und keine Marktlage", async () => {
+  const dir = sandbox();
+  /* Ein einzelner zurueckliegender Titel ist normal (ausgesetzt,
+     delistet). Die Haelfte ist ein Abrufproblem. */
+  const p = baueArtefakte(dir, { stale: [1, 40, 40, 1] });
+  const r = await pruefeUniversum(dir, p);
+  assert.equal(r.ok, false, "50 % zurueckliegende Titel muessen anhalten");
+  const b = r.bericht.findings.find((f) => f.check === "dateAlignment");
+  assert.ok(b && b.severity === "ERROR");
+
+  /* Gegenprobe: einer von vier bleibt eine Warnung. */
+  const dir2 = sandbox();
+  const p2 = baueArtefakte(dir2, { stale: [1, 1, 1, 40], tickers: ["A1", "A2", "A3", "A4"] });
+  const r2 = await pruefeUniversum(dir2, p2);
+  const b2 = r2.bericht.findings.find((f) => f.check === "dateAlignment");
+  assert.ok(b2, "ein zurueckliegender Titel gehoert trotzdem in den Bericht");
+});
+
+test("SG29 — die Backfill-Marke im Workflow erreicht die Sicherung im Skript", async () => {
+  /* Ein Lauf, der laden sollte, hat bewertet - still und gruen.
+     (Actions-Lauf 34369902099.)
+
+     Ursache: es gibt ZWEI Schalter. Der Workflow leerte seinen eigenen
+     (--assess-only), aber das Skript traegt seit dem teuren Vorfall eine
+     eigene Sicherung (--allow-full-backfill), und die hat der Workflow
+     nie gesetzt. Beide Seiten waren fuer sich richtig; zusammen waren
+     sie eine Marke ohne Wirkung.
+
+     Der Test haelt die Verbindung fest - nicht die Formulierung. */
+  const workflow = readFileSync(join(root, ".github/workflows/tiingo-scale.yml"), "utf8");
+
+  assert.match(workflow, /--allow-full-backfill/,
+    "der Workflow muss die Sicherung des Skripts ueberhaupt kennen");
+
+  /* Die Marke und die Sicherung muessen im selben Zweig stehen: wer die
+     Marke setzt, muss auch die Sicherung loesen. */
+  const zweig = workflow.slice(workflow.indexOf("tiingo-full-backfill"));
+  const bisElse = zweig.slice(0, zweig.indexOf("else"));
+  assert.match(bisElse, /--allow-full-backfill|ALLOW=/,
+    "die Backfill-Marke muss im selben Zweig die Sicherung des Skripts loesen");
+
+  /* Und der Aufruf muss sie weiterreichen - eine gesetzte Variable, die
+     nie in der Kommandozeile landet, ist derselbe Fehler noch einmal. */
+  const aufruf = workflow.split("\n").find((z) => z.includes("run-scale-gate.mjs --gate"));
+  assert.ok(aufruf, "der Aufruf des Gate-Laufs ist nicht zu finden");
+  assert.match(aufruf, /\$ALLOW/,
+    "der Aufruf muss die Backfill-Erlaubnis weiterreichen");
+  assert.match(aufruf, /\$MODE/);
+  assert.match(aufruf, /\$BUDGET/,
+    "das ausdrueckliche Stundenbudget muss ebenfalls ankommen");
+
+  /* Gegenprobe auf der Skriptseite: ohne die Erlaubnis bewertet es. Das
+     ist SG11 - hier wird nur festgehalten, dass die Sicherung noch da
+     ist und nicht bei dieser Gelegenheit entfernt wurde. */
+  const skript = readFileSync(join(root, "scripts/market/run-scale-gate.mjs"), "utf8");
+  assert.match(skript, /ALLOW_FULL_BACKFILL\s*=\s*argv\.includes\("--allow-full-backfill"\)/);
+  assert.match(skript, /GATE === "FULL_UNIVERSE" && !ALLOW_FULL_BACKFILL/,
+    "die Sicherung im Skript darf nicht entfernt werden");
+});

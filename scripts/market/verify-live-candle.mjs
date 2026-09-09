@@ -431,15 +431,21 @@ function measureStream(opts) {
           const treffer = Object.create(null);
           const vorhanden = Object.create(null);
           let imSpread = 0, mitSpread = 0;
+          /* Die Schluessel tragen eine Endung, und das ist keine Kosmetik:
+             "open" mit einer Zahl daneben liest sich wie ein Eroeffnungskurs,
+             und die Hygienepruefung liest es genau so - zu Recht. Hier
+             steht eine ANZAHL Proben, kein Kurs. Der Name muss das sagen,
+             sonst muesste die Pruefung nachgeben, und das waere der
+             falsche Weg herum. */
           for (const v of preisVergleiche) {
-            for (const f of v.fieldsPresent) vorhanden[f] = (vorhanden[f] || 0) + 1;
-            for (const f of v.matchedFields) treffer[f] = (treffer[f] || 0) + 1;
+            for (const f of v.fieldsPresent) vorhanden[f + "Probes"] = (vorhanden[f + "Probes"] || 0) + 1;
+            for (const f of v.matchedFields) treffer[f + "Matches"] = (treffer[f + "Matches"] || 0) + 1;
             if (v.withinBidAsk !== null) { mitSpread++; if (v.withinBidAsk) imSpread++; }
           }
           return {
             probes: preisVergleiche.length,
-            fieldsPresent: vorhanden,
-            matchesByField: treffer,
+            fieldProbeCounts: vorhanden,
+            matchCountsByField: treffer,
             withinBidAskOf: mitSpread,
             withinBidAsk: imSpread,
             medianStreamPriceAgeMs: preisVergleiche.length
@@ -740,10 +746,14 @@ async function main() {
     probenAnzahl += p.probes || 0;
     imSpread += p.withinBidAsk || 0;
     mitSpread += p.withinBidAskOf || 0;
-    for (const [f, n] of Object.entries(p.matchesByField || {})) trefferGesamt[f] = (trefferGesamt[f] || 0) + n;
-    for (const [f, n] of Object.entries(p.fieldsPresent || {})) vorhandenGesamt[f] = (vorhandenGesamt[f] || 0) + n;
+    for (const [f, n] of Object.entries(p.matchCountsByField || {})) trefferGesamt[f] = (trefferGesamt[f] || 0) + n;
+    for (const [f, n] of Object.entries(p.fieldProbeCounts || {})) vorhandenGesamt[f] = (vorhandenGesamt[f] || 0) + n;
   }
-  const rangliste = Object.entries(trefferGesamt).sort((a, b) => b[1] - a[1]);
+  /* Beim Auswerten die Endung wieder abziehen - sie ist fuer den Leser
+     des Berichts da, nicht fuer die Rechnung. */
+  const ohneEndung = (k) => k.replace(/(Matches|Probes)$/, "");
+  const rangliste = Object.entries(trefferGesamt)
+    .map(([k, v]) => [ohneEndung(k), v]).sort((a, b) => b[1] - a[1]);
   const bester = rangliste[0] || null;
   const zweiter = rangliste[1] || null;
   /* Eindeutig heisst: ein Feld trifft die klare Mehrheit der Proben, und
@@ -782,7 +792,7 @@ async function main() {
       tracksFieldType: bedeutung.type,
       matchRate: Math.round(bester[1] / probenAnzahl * 100) / 100,
       probes: probenAnzahl,
-      matchesByField: trefferGesamt,
+      matchCountsByField: trefferGesamt,
       evidence: `Der Stromkurs war in ${bester[1]} von ${probenAnzahl} Proben exakt gleich dem ` +
                 `REST-Feld ${bester[0]} (${bedeutung.meaning}); kein anderes Feld kam nahe.`,
       known: `Der Strom folgt demselben Wert wie ${bester[0]}.`,
@@ -797,11 +807,32 @@ async function main() {
       priceType: "UNSPECIFIED",
       classification: "PROVIDER_CONFIRMATION_REQUIRED",
       probes: probenAnzahl,
-      matchesByField: trefferGesamt,
-      fieldsPresent: vorhandenGesamt,
+      matchCountsByField: trefferGesamt,
+      fieldProbeCounts: vorhandenGesamt,
       withinBidAsk: mitSpread ? { of: mitSpread, inside: imSpread } : null,
+      /* Kein Feld ist eindeutig - aber "nichts gefunden" waere die
+         falsche Zusammenfassung. Zwei Beobachtungen sind es wert,
+         benannt zu werden, und beide sprechen GEGEN einen Abschluss:
+         welches Feld am haeufigsten getroffen hat, und welche Felder in
+         der Antwort ueberhaupt nicht vorkommen. Ein `last`, das gar
+         nicht geliefert wird, kann der Strom auch nicht tragen. */
+      leadingCandidate: bester ? {
+        field: bester[0],
+        type: (FELDBEDEUTUNG[bester[0]] || { type: "UNKNOWN" }).type,
+        matches: bester[1], of: probenAnzahl,
+        note: "Haeufigster Treffer, aber nicht eindeutig genug fuer einen Befund. " +
+              "Ein Indiz, keine Zuordnung."
+      } : null,
+      absentFields: ["last", "bidPrice", "askPrice"].filter((f) => !vorhandenGesamt[f + "Probes"]),
       evidence: probenAnzahl
-        ? "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen."
+        ? "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen." +
+          (bester ? ` Am haeufigsten traf ${bester[0]} (${bester[1]}/${probenAnzahl}).` : "") +
+          (["last", "bidPrice", "askPrice"].some((f) => !vorhandenGesamt[f + "Probes"])
+            ? " Bemerkenswert: " +
+              ["last", "bidPrice", "askPrice"].filter((f) => !vorhandenGesamt[f + "Probes"]).join(", ") +
+              " kommen in der Kursabfrage dieses Kontos gar nicht vor - ein Abschlusskurs " +
+              "steht also nicht einmal zum Vergleich zur Verfuegung."
+            : "")
         : "Kein Vergleich moeglich (keine Proben).",
       /* Nur behaupten, was dieser Lauf gesehen hat. Ohne Zugang hat er
          nichts gesehen, und "es kommen fortlaufend Kurse" waere dann
