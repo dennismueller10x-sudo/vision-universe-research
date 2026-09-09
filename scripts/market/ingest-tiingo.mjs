@@ -391,7 +391,19 @@ if (PUBLISH_PREVIEW) {
      im Universum". Landet in einem eigenen Verzeichnis
      (quant/data/market/golden-preview/daily/), nie im allgemeinen
      quant/data/market/daily/, das fuer die uebrigen zehn Referenztitel
-     weiterhin gesperrt bleibt. */
+     weiterhin gesperrt bleibt.
+
+     Bug (Phase 6, Live-Feedback): MarketStore.publish() ohne eigenes
+     `limit` faellt auf PUBLISHED_BAR_LIMIT=400 zurueck. Die Arbeitsablage
+     haelt aber laengst die volle Historie ab initialFrom (quant/config/
+     tiingo-universe.json, "2015-01-01") - jeder Lauf auf einem frischen
+     Runner erfragt sie ohnehin neu (MarketStore.nextFetchFrom faellt ohne
+     lokalen Stand immer auf initialFrom zurueck, unabhaengig von --initial).
+     Mit 400 Bars zeigte "5J" im Chart nur ~1,6 Jahre. GOLDEN_PREVIEW_BAR_LIMIT
+     veroeffentlicht stattdessen die komplette Arbeitsablage (kein neuer
+     Tiingo-Request, keine neue Pipeline - nur ein anderer Grenzwert beim
+     Schreiben des bereits geholten Bestands). */
+  const GOLDEN_PREVIEW_BAR_LIMIT = 5000;
   const previewConfig = JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"));
   DisplayPolicy.declareFromConfig(previewConfig);
 
@@ -412,7 +424,7 @@ if (PUBLISH_PREVIEW) {
       console.error(`    ${security.ticker.padEnd(6)} NICHT veroeffentlicht: ${anzeige.message}`);
       continue;
     }
-    const p = previewStore.publish(security.securityId, { permission: anzeige });
+    const p = previewStore.publish(security.securityId, { permission: anzeige, limit: GOLDEN_PREVIEW_BAR_LIMIT });
     if (p.published) {
       console.log(`    ${security.ticker.padEnd(6)} ${p.bars} von ${p.of} Bars (${Math.round(p.bytes / 1024)} KB) ` +
                   `- ${anzeige.basis}`);
