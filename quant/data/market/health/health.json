@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-09-09T10:55:40.347Z",
+  "generatedAt": "2026-09-09T11:55:58.001Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null,
+    "source": "github-actions",
+    "runId": "34342865307",
+    "commit": "f07f43fc5d863c399373d7854a439e43c3695387",
     "staleAfterHours": 72
   },
   "overall": "READY_FOR_NEXT_SCALE_GATE",
   "overallReason": "GATE_2000 bestanden. Freigegeben ist FULL_UNIVERSE - und nur das.",
-  "lastSuccessfulUpdate": "2026-09-09T10:44:06.302Z",
+  "lastSuccessfulUpdate": "2026-09-09T11:46:29.381Z",
   "latestPassedGate": "GATE_2000",
   "universe": {
     "status": "OK",
-    "generatedAt": "2026-09-09T10:23:36.356Z",
-    "ageHours": 0.5,
-    "rows": 108573,
-    "screenerEligible": 31320,
+    "generatedAt": "2026-09-09T10:56:42.544Z",
+    "ageHours": 1,
+    "rows": 108572,
+    "screenerEligible": 31319,
     "byInstrumentType": {
-      "COMMON_STOCK": 47888,
+      "COMMON_STOCK": 47887,
       "ADR": 0,
       "PREFERRED": 29,
       "ETF": 9587,
@@ -75,11 +75,224 @@
     "LIVE_CHART_READY": "UNKNOWN"
   },
   "gates": {
+    "FULL_UNIVERSE": {
+      "gate": {
+        "status": "OK",
+        "generatedAt": "2026-09-09T11:46:29.381Z",
+        "ageHours": 0.2,
+        "verdict": "FAIL",
+        "verdictReason": "resolvedRate,successRate,historyCoverageRate",
+        "note": null
+      },
+      "marketData": {
+        "requested": 5684,
+        "resolved": 4998,
+        "PASS": 1966,
+        "WARNING": 2991,
+        "FAIL": 41,
+        "UNAVAILABLE": 686,
+        "historyCoverageRate": 0.8768,
+        "factorReadyRate": 0.8705,
+        "averageBars": 4511,
+        "storageMB": 7356.4,
+        "runtimeMs": 2947894
+      },
+      "backtestReadiness": {
+        "symbols": 5684,
+        "byInferredAdjustment": {
+          "TOTAL_RETURN": 2829,
+          "SPLIT_ADJUSTED": 789,
+          "UNKNOWN": 2066
+        },
+        "adjustmentContradicted": 0,
+        "withCorporateActions": 3777,
+        "rejectedForFutureBars": 0,
+        "notFactorReady": 736,
+        "rawAndAdjustedStoredSeparately": true,
+        "note": "Roh- und bereinigte Spalte liegen in der Arbeitsablage nebeneinander; die Bereinigungsstufe wird gemessen und nicht uebernommen. Zukunftsbars werden verworfen, bevor sie den Bestand erreichen. Ein Leistungsversprechen ist damit nicht verbunden.",
+        "readiness": "DATA_SUPPORTS_BACKTEST",
+        "readinessReason": "Keine widersprochene Bereinigungsstufe und keine Zukunftsbars im Bestand."
+      },
+      "canary": {
+        "passed": 5,
+        "of": 5,
+        "regression": false,
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "NVDA",
+          "JPM",
+          "XOM"
+        ]
+      },
+      "factors": {
+        "status": "OK",
+        "computed": 4957,
+        "skipped": 727,
+        "skippedByReason": {
+          "FAIL": 41,
+          "SOURCE_MISSING": 686
+        },
+        "smaCoverage": {
+          "sma20Calculated": 4957,
+          "sma50Calculated": 4956,
+          "sma100Calculated": 4954,
+          "sma200Calculated": 4951
+        },
+        "momentumCoverage": {
+          "1M": 4957,
+          "3M": 4956,
+          "6M": 4954,
+          "12M": 4948
+        },
+        "relativeStrengthCoverage": {
+          "calculated": 4948,
+          "sourceMissing": 0,
+          "insufficientHistory": 9
+        },
+        "riskCoverage": {
+          "volatility60d": 4956,
+          "maxDrawdown252d": 4948
+        }
+      },
+      "screener": {
+        "status": "OK",
+        "evaluable": 4957,
+        "notEvaluable": 727,
+        "questions": [
+          {
+            "id": "aboveSMA20",
+            "kind": "boolean",
+            "matched": 1788,
+            "notEvaluable": 0
+          },
+          {
+            "id": "aboveSMA50",
+            "kind": "boolean",
+            "matched": 2242,
+            "notEvaluable": 1
+          },
+          {
+            "id": "aboveSMA100",
+            "kind": "boolean",
+            "matched": 2472,
+            "notEvaluable": 3
+          },
+          {
+            "id": "aboveSMA200",
+            "kind": "boolean",
+            "matched": 2650,
+            "notEvaluable": 6
+          },
+          {
+            "id": "aboveSMA20And50And200",
+            "kind": "boolean",
+            "matched": 1071,
+            "notEvaluable": 6
+          },
+          {
+            "id": "aboveAllSMA",
+            "kind": "boolean",
+            "matched": 1006,
+            "notEvaluable": 6
+          },
+          {
+            "id": "newHigh52w",
+            "kind": "boolean",
+            "matched": 177,
+            "notEvaluable": 9
+          },
+          {
+            "id": "within5PctOf52wHigh",
+            "kind": "boolean",
+            "matched": 773,
+            "notEvaluable": 9
+          },
+          {
+            "id": "volumeBreakout",
+            "kind": "boolean",
+            "matched": 289,
+            "notEvaluable": 257
+          },
+          {
+            "id": "strongestMomentum12M",
+            "kind": "ranked",
+            "matched": 4948,
+            "notEvaluable": 9
+          },
+          {
+            "id": "strongestMomentum6M",
+            "kind": "ranked",
+            "matched": 4954,
+            "notEvaluable": 3
+          },
+          {
+            "id": "strongestMomentum12M1M",
+            "kind": "ranked",
+            "matched": 4948,
+            "notEvaluable": 9
+          },
+          {
+            "id": "strongestRelativeStrength12M",
+            "kind": "ranked",
+            "matched": 4948,
+            "notEvaluable": 9
+          },
+          {
+            "id": "trendAcceleration",
+            "kind": "ranked",
+            "matched": 4956,
+            "notEvaluable": 1
+          },
+          {
+            "id": "highVolatility",
+            "kind": "ranked",
+            "matched": 4956,
+            "notEvaluable": 1
+          },
+          {
+            "id": "lowVolatility",
+            "kind": "ranked",
+            "matched": 4956,
+            "notEvaluable": 1
+          },
+          {
+            "id": "nearest52wHigh",
+            "kind": "ranked",
+            "matched": 4948,
+            "notEvaluable": 9
+          },
+          {
+            "id": "deepestDrawdown",
+            "kind": "ranked",
+            "matched": 4948,
+            "notEvaluable": 9
+          }
+        ]
+      },
+      "technical": {
+        "status": "OK",
+        "READY": 4982,
+        "PARTIAL": 0,
+        "FAILED": 0,
+        "INSUFFICIENT_HISTORY": 16,
+        "SOURCE_MISSING": 686,
+        "msPerSymbol": 74,
+        "elliott": {
+          "HIGH_CONFIDENCE": 1293,
+          "MEDIUM_CONFIDENCE": 322,
+          "LOW_CONFIDENCE": 309,
+          "AMBIGUOUS": 3028,
+          "UNAVAILABLE": 30,
+          "NOT_RUN": 702
+        }
+      }
+    },
     "GATE_100": {
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 1,
+        "ageHours": 2,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -288,7 +501,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 0.2,
+        "ageHours": 1.2,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -500,7 +713,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 0.6,
+        "ageHours": 1.6,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
