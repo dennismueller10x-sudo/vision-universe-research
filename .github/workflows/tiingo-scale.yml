@@ -33,6 +33,12 @@ name: Tiingo Commercial — Scale Gates
 #   [tiingo-capability] Faehigkeitsnachweis des Commercial-Zugangs
 #   [tiingo-realtime]   Strom- und Live-Kerzen-Nachweis
 #
+# ACHTUNG bei allen drei Marken: der Push muss eine Datei aus der
+# paths-Liste unten AENDERN. Ein leerer Commit traegt die Marke zwar in
+# der Nachricht, aendert aber keinen Pfad - GitHub legt dann gar keinen
+# Lauf an, und es sieht aus, als sei die Marke falsch geschrieben. Genau
+# das ist beim Ausloesen des Stromnachweises passiert.
+#
 # Der Realtime-Nachweis ist ausdruecklich getrennt: er ist nur waehrend
 # der regulaeren US-Handelszeit aussagekraeftig (13:30-20:00 UTC). Ein
 # Lauf davor oder danach kann nur UNKNOWN ergeben, und das steht dann
