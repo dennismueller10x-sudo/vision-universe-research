@@ -1,23 +1,23 @@
 {
-  "generatedAt": "2026-09-09T15:33:46.068Z",
+  "generatedAt": "2026-09-09T17:14:14.448Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null,
+    "source": "github-actions",
+    "runId": "34374652149",
+    "commit": "49fc460e745f1a902463c489da2df6048d45be2e",
     "staleAfterHours": 72
   },
-  "overall": "READY_FOR_NEXT_SCALE_GATE",
-  "overallReason": "GATE_2000 bestanden. Freigegeben ist FULL_UNIVERSE - und nur das.",
-  "lastSuccessfulUpdate": "2026-09-09T15:23:59.160Z",
-  "latestPassedGate": "GATE_2000",
+  "overall": "READY_FOR_FULL_MARKET_DATA_INGEST",
+  "overallReason": "FULL_UNIVERSE bestanden.",
+  "lastSuccessfulUpdate": "2026-09-09T17:04:45.556Z",
+  "latestPassedGate": "FULL_UNIVERSE",
   "universe": {
     "status": "OK",
-    "generatedAt": "2026-09-09T15:23:57.602Z",
-    "ageHours": 0.2,
+    "generatedAt": "2026-09-09T16:07:59.333Z",
+    "ageHours": 1.1,
     "rows": 108573,
     "screenerEligible": 31320,
     "byInstrumentType": {
@@ -71,7 +71,7 @@
   },
   "realtime": {
     "status": "OK",
-    "generatedAt": "2026-09-09T15:26:35.735Z",
+    "generatedAt": "2026-09-09T15:36:08.426Z",
     "LIVE_CHART_READY": "TRUE",
     "reason": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
     "priceSemantics": {
@@ -84,7 +84,7 @@
     "sessionAtRun": {
       "phase": "REGULAR",
       "localDate": "2026-09-09",
-      "localTime": "11:23:26",
+      "localTime": "11:32:58",
       "closedReason": null,
       "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
     }
@@ -93,206 +93,239 @@
     "FULL_UNIVERSE": {
       "gate": {
         "status": "OK",
-        "generatedAt": "2026-09-09T15:23:59.160Z",
+        "generatedAt": "2026-09-09T17:04:45.556Z",
         "ageHours": 0.2,
-        "verdict": "ASSESSED",
-        "verdictReason": "assessOnly",
+        "verdict": "PASS",
+        "verdictReason": "allChecksPassed",
         "note": null
       },
-      "resumable": null,
+      "resumable": {
+        "status": "COMPLETE",
+        "pending": 0,
+        "completed": 5684
+      },
       "universeQuality": {
-        "status": "NOT_RUN",
-        "note": "Keine universumsweite Pruefung fuer dieses Gate. Das ist kein Bestehen."
+        "status": "PASSED_WITH_WARNINGS",
+        "errors": 0,
+        "warnings": 1,
+        "checksRun": [
+          "duplicateSecurities",
+          "tickerCollisions",
+          "nonFiniteNumbers",
+          "nullExplosion",
+          "dateAlignment",
+          "technicalBundles",
+          "relativeStrengthAlignment",
+          "accountingConsistency"
+        ],
+        "findings": [
+          {
+            "severity": "WARNING",
+            "check": "dateAlignment",
+            "message": "34 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.6 % der aufgeloesten)."
+          }
+        ]
       },
       "marketData": {
-        "status": "ASSESSED_ONLY",
-        "reason": "assessOnly",
-        "projection": {
-          "basis": "Gemessen an GATE_2000 (2000 Titel).",
-          "symbols": 5684,
-          "storageGB": 14.1,
-          "downloadGB": 6.9,
-          "requests": 5684,
-          "gateMinutes": 57,
-          "note": "Linear hochgerechnet. Die gemessenen Raten waren zwischen 100 und 500 Titeln stabil (0,60 s je Titel), deshalb ist die Annahme belegt und nicht geraten. Sie deckt NICHT ab, was passiert, wenn der Platz ausgeht."
-        },
-        "feasibility": {
-          "storageGB": 14.1,
-          "typicalRunnerFreeGB": 14,
-          "fitsOnStandardRunner": false,
-          "verdict": "STORAGE_MIGRATION_REQUIRED",
-          "recommendation": "Ein vollstaendiger Backfill in einem Lauf passt nicht auf einen Standard-Runner. Zwei Wege, beide ohne Datenverlust: den Backfill in Abschnitten fahren (der Checkpoint traegt das schon) oder die Ablage von JSON je Titel auf ein kompakteres Format umstellen. Was NICHT empfohlen wird: die Historie zu kuerzen - sie ist der Grund, warum dieser Zugang bezahlt wird."
-        },
-        "note": "Bewertung ohne Abruf. Es wurde nichts geladen; die Zahlen unter projection sind Hochrechnungen aus gemessenen Raten und ausdruecklich als solche gekennzeichnet."
+        "requested": 5684,
+        "resolved": 5684,
+        "PASS": 2238,
+        "WARNING": 3401,
+        "FAIL": 45,
+        "UNAVAILABLE": 0,
+        "historyCoverageRate": 0.9963,
+        "factorReadyRate": 0.9893,
+        "averageBars": 4085,
+        "storageMB": 7566.4,
+        "runtimeMs": 3367169
       },
       "backtestReadiness": {
-        "status": "MISSING",
-        "note": "Ohne Gate-Bilanz laesst sich die Backtest-Tauglichkeit nicht beurteilen."
+        "symbols": 3446,
+        "byInferredAdjustment": {
+          "TOTAL_RETURN": 1286,
+          "SPLIT_ADJUSTED": 826,
+          "UNKNOWN": 1334
+        },
+        "adjustmentContradicted": 0,
+        "withCorporateActions": 2292,
+        "rejectedForFutureBars": 0,
+        "notFactorReady": 61,
+        "rawAndAdjustedStoredSeparately": true,
+        "note": "Roh- und bereinigte Spalte liegen in der Arbeitsablage nebeneinander; die Bereinigungsstufe wird gemessen und nicht uebernommen. Zukunftsbars werden verworfen, bevor sie den Bestand erreichen. Ein Leistungsversprechen ist damit nicht verbunden.",
+        "readiness": "DATA_SUPPORTS_BACKTEST",
+        "readinessReason": "Keine widersprochene Bereinigungsstufe und keine Zukunftsbars im Bestand."
       },
       "canary": {
-        "status": "MISSING",
-        "note": "Ohne Canary-Ergebnis ist die Gate-Bilanz nicht einzuordnen (§12)."
+        "passed": 5,
+        "of": 5,
+        "regression": false,
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "NVDA",
+          "JPM",
+          "XOM"
+        ]
       },
       "factors": {
         "status": "OK",
-        "computed": 498,
-        "skipped": 5186,
+        "computed": 5639,
+        "skipped": 45,
         "skippedByReason": {
-          "FAIL": 2,
-          "SOURCE_MISSING": 5184
+          "FAIL": 45
         },
         "smaCoverage": {
-          "sma20Calculated": 498,
-          "sma50Calculated": 498,
-          "sma100Calculated": 498,
-          "sma200Calculated": 498
+          "sma20Calculated": 5639,
+          "sma50Calculated": 5638,
+          "sma100Calculated": 5634,
+          "sma200Calculated": 5626
         },
         "momentumCoverage": {
-          "1M": 498,
-          "3M": 498,
-          "6M": 498,
-          "12M": 498
+          "1M": 5639,
+          "3M": 5638,
+          "6M": 5632,
+          "12M": 5623
         },
         "relativeStrengthCoverage": {
-          "calculated": 498,
+          "calculated": 5623,
           "sourceMissing": 0,
-          "insufficientHistory": 0
+          "insufficientHistory": 16
         },
         "riskCoverage": {
-          "volatility60d": 498,
-          "maxDrawdown252d": 498
+          "volatility60d": 5638,
+          "maxDrawdown252d": 5623
         }
       },
       "screener": {
         "status": "OK",
-        "evaluable": 498,
-        "notEvaluable": 5186,
+        "evaluable": 5639,
+        "notEvaluable": 45,
         "questions": [
           {
             "id": "aboveSMA20",
             "kind": "boolean",
-            "matched": 155,
+            "matched": 2096,
             "notEvaluable": 0
           },
           {
             "id": "aboveSMA50",
             "kind": "boolean",
-            "matched": 194,
-            "notEvaluable": 0
+            "matched": 2540,
+            "notEvaluable": 1
           },
           {
             "id": "aboveSMA100",
             "kind": "boolean",
-            "matched": 260,
-            "notEvaluable": 0
+            "matched": 2748,
+            "notEvaluable": 5
           },
           {
             "id": "aboveSMA200",
             "kind": "boolean",
-            "matched": 317,
-            "notEvaluable": 0
+            "matched": 2926,
+            "notEvaluable": 13
           },
           {
             "id": "aboveSMA20And50And200",
             "kind": "boolean",
-            "matched": 100,
-            "notEvaluable": 0
+            "matched": 1216,
+            "notEvaluable": 13
           },
           {
             "id": "aboveAllSMA",
             "kind": "boolean",
-            "matched": 97,
-            "notEvaluable": 0
+            "matched": 1130,
+            "notEvaluable": 13
           },
           {
             "id": "newHigh52w",
             "kind": "boolean",
-            "matched": 10,
-            "notEvaluable": 0
+            "matched": 224,
+            "notEvaluable": 16
           },
           {
             "id": "within5PctOf52wHigh",
             "kind": "boolean",
-            "matched": 54,
-            "notEvaluable": 0
+            "matched": 912,
+            "notEvaluable": 16
           },
           {
             "id": "volumeBreakout",
             "kind": "boolean",
-            "matched": 17,
-            "notEvaluable": 3
+            "matched": 349,
+            "notEvaluable": 431
           },
           {
             "id": "strongestMomentum12M",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5623,
+            "notEvaluable": 16
           },
           {
             "id": "strongestMomentum6M",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5632,
+            "notEvaluable": 7
           },
           {
             "id": "strongestMomentum12M1M",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5623,
+            "notEvaluable": 16
           },
           {
             "id": "strongestRelativeStrength12M",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5623,
+            "notEvaluable": 16
           },
           {
             "id": "trendAcceleration",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5638,
+            "notEvaluable": 1
           },
           {
             "id": "highVolatility",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5638,
+            "notEvaluable": 1
           },
           {
             "id": "lowVolatility",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5638,
+            "notEvaluable": 1
           },
           {
             "id": "nearest52wHigh",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5623,
+            "notEvaluable": 16
           },
           {
             "id": "deepestDrawdown",
             "kind": "ranked",
-            "matched": 498,
-            "notEvaluable": 0
+            "matched": 5623,
+            "notEvaluable": 16
           }
         ]
       },
       "technical": {
         "status": "OK",
-        "READY": 500,
+        "READY": 5661,
         "PARTIAL": 0,
         "FAILED": 0,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 5184,
-        "msPerSymbol": 148,
+        "INSUFFICIENT_HISTORY": 23,
+        "SOURCE_MISSING": 0,
+        "msPerSymbol": 65,
         "elliott": {
-          "HIGH_CONFIDENCE": 130,
-          "MEDIUM_CONFIDENCE": 49,
-          "LOW_CONFIDENCE": 30,
-          "AMBIGUOUS": 291,
-          "UNAVAILABLE": 0,
-          "NOT_RUN": 5184
+          "HIGH_CONFIDENCE": 1430,
+          "MEDIUM_CONFIDENCE": 355,
+          "LOW_CONFIDENCE": 383,
+          "AMBIGUOUS": 3453,
+          "UNAVAILABLE": 40,
+          "NOT_RUN": 23
         }
       }
     },
@@ -300,7 +333,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 5.6,
+        "ageHours": 7.3,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -537,7 +570,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 4.8,
+        "ageHours": 6.5,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -772,7 +805,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 5.3,
+        "ageHours": 6.9,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
