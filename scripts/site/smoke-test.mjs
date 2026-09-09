@@ -218,16 +218,23 @@ async function main() {
             charts: document.querySelectorAll("canvas, svg").length,
             /* Die Seiten weisen ihren Datenzustand selbst aus. Das ist die
                ehrlichste Quelle - ehrlicher als jede Heuristik von aussen. */
-            /* Genau formulieren, nicht ungefaehr. Der Stamm
-               "SYNTHETISCHE" hat auf "Kein synthetischer Titel des
-               Modelluniversums" angeschlagen - eine VERNEINUNG - und die
-               Einzeltitelseite dadurch als MOCK gemeldet, obwohl sie
-               echte Golden-Five-Daten zeigt. Ein Muster, das eine
-               Verneinung als Bestaetigung liest, ist schlimmer als
-               keines: es erzeugt einen Befund, den es nicht gibt. */
-            mockBanner: /DEMO-DATEN|Demo-Daten|SYNTHETISCHES UNIVERSUM|Synthetische Fixtures|MODE\s*·?\s*MOCK/i.test(t),
-            unavailableBanner: /MARKET DATA UNAVAILABLE|Daten nicht verf/i.test(t),
-            realDataBanner: /REAL DATA/i.test(t),
+            /* NUR im Kopfbereich suchen, nicht im ganzen Text.
+
+               Zwei Fehlalarme hintereinander haben das gelehrt. Erst
+               schlug der Stamm "SYNTHETISCHE" auf "Kein synthetischer
+               Titel des Modelluniversums" an, dann "Demo-Daten" auf
+               "fehlende Daten werden nicht stillschweigend durch
+               Demo-Daten ersetzt". Beide Male stand das Wort in einer
+               VERNEINUNG - die Seite erklaerte, dass sie es gerade nicht
+               tut, und wurde dafuer als Demo gemeldet.
+
+               Die Kennzeichnung steht bei diesen Seiten im Kopf, der
+               Erklaertext weiter unten. Die ersten 400 Zeichen trennen
+               beides zuverlaessiger als jede Wortliste. */
+            mockBanner: /DEMO-DATEN|SYNTHETISCHES UNIVERSUM|Synthetische Fixtures|MODE\s*·?\s*MOCK/i
+              .test(t.slice(0, 400)),
+            unavailableBanner: /MARKET DATA UNAVAILABLE|Daten nicht verf/i.test(t.slice(0, 400)),
+            realDataBanner: /REAL DATA|GOLDEN UNIVERSE/i.test(t.slice(0, 400)),
             excerpt: t.slice(0, 200)
           };
         });
