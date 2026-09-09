@@ -40,6 +40,17 @@
           "Ausgefuehrt wird nur, was die Validierung besteht." })
       ]));
 
+      /* Phase 6, Live-Feedback: der Screener liest ausschliesslich das
+         synthetische Modelluniversum (data.securities.rows); die Golden
+         Five tauchten hier nie auf. Eigener, klar getrennter Baustein statt
+         Vermischung mit dem Regelbauer unten (der auf 12+ Peers fuer
+         Perzentil-Filter angewiesen ist). */
+      root.appendChild(C.goldenFiveTeaser("Golden Universe — reale Unternehmen (ausserhalb dieses Screeners)",
+        "Fuenf reale Titel mit echten SEC-Fundamentaldaten und (Development Preview) echten Tiingo-Kursen. " +
+        "Der Regelbauer unten arbeitet ausschliesslich auf dem synthetischen Modelluniversum " +
+        "(Demo-Daten) - Perzentil-Filter brauchen eine Vergleichsgruppe von brauchbarer Groesse, die fuenf " +
+        "Titel aus vier Sektoren nicht bilden. Golden-Five-Details direkt anklicken:"));
+
       var builderMount = el("div", { class: "q-card", style: "margin-top:24px" });
       var vuqlMount = el("div", { style: "margin-top:14px" });
       var errorMount = el("div", { style: "margin-top:14px" });

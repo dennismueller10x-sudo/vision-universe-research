@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtUtc": "2026-09-08T18:21:43.946Z",
+  "generatedAtUtc": "2026-09-09T03:52:20.854Z",
   "note": "Praekomputierte SEC- und (wenn veroeffentlicht) Tiingo-basierte Faktor-Rohwerte fuer das Golden Universe (Phase 5). Kein VU Quant Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier Sektoren waere scheinpraezise, keine echte Kennzahl (normalization.js verlangt eine Mindest-Peergroesse von 12). Value/Momentum/Risk nutzen echte Tiingo-EOD-Kurse, wenn quant/data/market/golden-preview/daily/ eine Reihe fuer den Titel enthaelt, sonst bleiben sie UNAVAILABLE statt einen Kurs zu erfinden. beta/relativeStrength bleiben immer UNAVAILABLE: der gleichgewichtete Durchschnitt dieser fuenf Titel ist kein echter Marktindex.",
   "methodologyReference": "quant/methodology/quant-v1.json",
   "source": "providers/sec/adapter.js + quant/data/market/golden-preview/ -> quant/engines/{sec-fact-panel,panel-builder}.js -> quant/engines/factors.js",
   "pricePanel": {
-    "tradingDays": 400,
-    "from": "2025-02-03",
-    "to": "2026-09-04",
+    "tradingDays": 2937,
+    "from": "2015-01-02",
+    "to": "2026-09-08",
     "benchmark": "synthetic equal-weighted (Golden Five only, kein echter Marktindex)"
   },
   "versions": {
@@ -36,25 +36,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-09-04",
+        "asOf": "2026-09-08",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 466823,
         "freeCashFlow": 136683,
         "netIncome": 128930,
-        "marketCap": 4669699.77,
+        "marketCap": 4614971.6,
         "roic": 81.384,
         "grossProfitability": 0.5926,
         "fcfMargin": 29.279,
         "operatingMargin": 33.173,
         "balanceSheetQuality": 70.65,
         "leverage": null,
-        "earningsYield": 2.761,
-        "fcfYield": 2.927,
+        "earningsYield": 2.794,
+        "fcfYield": 2.962,
         "evToEbitda": null,
-        "evToSales": 10.095,
-        "priceToFcf": 34.164,
+        "evToSales": 9.978,
+        "priceToFcf": 33.764,
         "revenueGrowth": 14.242,
         "epsGrowth": 32.056,
         "fcfGrowth": 42.106,
@@ -65,18 +65,18 @@
         "_asOfAvailableAt": "2026-07-31",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 319.97,
-        "momentum3m": 4.201,
-        "momentum6m": 24.503,
-        "momentum12m": 33.939,
-        "momentum12m1m": 30.66,
-        "distanceTo52wHigh": 5.913,
-        "priceTo50dma": 1.529,
-        "priceTo200dma": 12.717,
-        "volatility": 25.038,
-        "downsideVolatility": 25.119,
+        "price": 316.22,
+        "momentum3m": 4.96,
+        "momentum6m": 21.898,
+        "momentum12m": 32.419,
+        "momentum12m1m": 31.094,
+        "distanceTo52wHigh": 7.016,
+        "priceTo50dma": 0.133,
+        "priceTo200dma": 11.3,
+        "volatility": 25.071,
+        "downsideVolatility": 25.178,
         "maxDrawdown": 13.799,
-        "avgDollarVolume": 16533.974
+        "avgDollarVolume": 16511.188
       },
       "coverage": {
         "quality": {
@@ -85,36 +85,42 @@
               "fieldId": "roic",
               "real": true,
               "value": 81.384,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "grossProfitability",
               "real": true,
               "value": 0.5926,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfMargin",
               "real": true,
               "value": 29.279,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "operatingMargin",
               "real": true,
               "value": 33.173,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "balanceSheetQuality",
               "real": true,
               "value": 70.65,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "leverage",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             }
           ],
@@ -128,24 +134,28 @@
               "fieldId": "revenueGrowth",
               "real": true,
               "value": 14.242,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "epsGrowth",
               "real": true,
               "value": 32.056,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfGrowth",
               "real": true,
               "value": 42.106,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "marginExpansion",
               "real": true,
               "value": 1.307,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -158,37 +168,43 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 2.761,
+              "value": 2.794,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 2.927,
+              "value": 2.962,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "evToSales",
               "real": true,
-              "value": 10.095,
+              "value": 9.978,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 34.164,
+              "value": 33.764,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "dividendYield",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             }
           ],
@@ -201,43 +217,50 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 30.66,
+              "value": 31.094,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 24.503,
+              "value": 21.898,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 4.201,
+              "value": 4.96,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "relativeStrength",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             },
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 5.913,
+              "value": 7.016,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 1.529,
+              "value": 0.133,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 12.717,
+              "value": 11.3,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -250,25 +273,29 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 25.038,
+              "value": 25.071,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 25.119,
+              "value": 25.178,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "maxDrawdown",
               "real": true,
               "value": 13.799,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "beta",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             }
           ],
@@ -315,25 +342,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-09-04",
+        "asOf": "2026-09-08",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 331839,
         "freeCashFlow": 66987,
         "netIncome": 133749,
-        "marketCap": 3710545.08,
+        "marketCap": 3667848.2,
         "roic": 26.559,
         "grossProfitability": 0.2973,
         "fcfMargin": 20.187,
         "operatingMargin": 46.781,
         "balanceSheetQuality": 75.31,
         "leverage": null,
-        "earningsYield": 3.605,
-        "fcfYield": 1.805,
+        "earningsYield": 3.647,
+        "fcfYield": 1.826,
         "evToEbitda": null,
-        "evToSales": 11.24,
-        "priceToFcf": 55.392,
+        "evToSales": 11.111,
+        "priceToFcf": 54.755,
         "revenueGrowth": 17.789,
         "epsGrowth": 31.492,
         "fcfGrowth": -6.457,
@@ -344,18 +371,18 @@
         "_asOfAvailableAt": "2026-07-29",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 499.7,
-        "momentum3m": 20.154,
-        "momentum6m": 22.685,
-        "momentum12m": -0.814,
-        "momentum12m1m": -0.97,
-        "distanceTo52wHigh": 7.816,
-        "priceTo50dma": 12.501,
-        "priceTo200dma": 15.927,
-        "volatility": 32.497,
-        "downsideVolatility": 30.146,
+        "price": 493.95,
+        "momentum3m": 20.193,
+        "momentum6m": 21.14,
+        "momentum12m": 0.614,
+        "momentum12m1m": 1.652,
+        "distanceTo52wHigh": 8.877,
+        "priceTo50dma": 10.604,
+        "priceTo200dma": 14.593,
+        "volatility": 32.416,
+        "downsideVolatility": 29.971,
         "maxDrawdown": 34.496,
-        "avgDollarVolume": 15604.47
+        "avgDollarVolume": 15452.695
       },
       "coverage": {
         "quality": {
@@ -364,36 +391,42 @@
               "fieldId": "roic",
               "real": true,
               "value": 26.559,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "grossProfitability",
               "real": true,
               "value": 0.2973,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfMargin",
               "real": true,
               "value": 20.187,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "operatingMargin",
               "real": true,
               "value": 46.781,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "balanceSheetQuality",
               "real": true,
               "value": 75.31,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "leverage",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             }
           ],
@@ -407,24 +440,28 @@
               "fieldId": "revenueGrowth",
               "real": true,
               "value": 17.789,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "epsGrowth",
               "real": true,
               "value": 31.492,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfGrowth",
               "real": true,
               "value": -6.457,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "marginExpansion",
               "real": true,
               "value": 1.159,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -437,37 +474,43 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 3.605,
+              "value": 3.647,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 1.805,
+              "value": 1.826,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "evToSales",
               "real": true,
-              "value": 11.24,
+              "value": 11.111,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 55.392,
+              "value": 54.755,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "dividendYield",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             }
           ],
@@ -480,43 +523,50 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": -0.97,
+              "value": 1.652,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 22.685,
+              "value": 21.14,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 20.154,
+              "value": 20.193,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "relativeStrength",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             },
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 7.816,
+              "value": 8.877,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 12.501,
+              "value": 10.604,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 15.927,
+              "value": 14.593,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -529,25 +579,29 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 32.497,
+              "value": 32.416,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 30.146,
+              "value": 29.971,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "maxDrawdown",
               "real": true,
               "value": 34.496,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "beta",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             }
           ],
@@ -594,25 +648,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-09-04",
+        "asOf": "2026-09-08",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 302969,
         "freeCashFlow": 127006,
         "netIncome": 192879,
-        "marketCap": 5551676,
+        "marketCap": 5440093,
         "roic": 65.062,
         "grossProfitability": 0.7064,
         "fcfMargin": 41.92,
         "operatingMargin": 65.214,
         "balanceSheetQuality": 29.6,
         "leverage": null,
-        "earningsYield": 3.474,
-        "fcfYield": 2.288,
+        "earningsYield": 3.546,
+        "fcfYield": 2.335,
         "evToEbitda": null,
-        "evToSales": 18.36,
-        "priceToFcf": 43.712,
+        "evToSales": 17.992,
+        "priceToFcf": 42.833,
         "revenueGrowth": 83.375,
         "epsGrowth": 124.58,
         "fcfGrowth": 76.341,
@@ -623,18 +677,18 @@
         "_asOfAvailableAt": "2026-08-26",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 230.36,
-        "momentum3m": 12.316,
-        "momentum6m": 29.702,
-        "momentum12m": 34.371,
-        "momentum12m1m": 27.739,
-        "distanceTo52wHigh": 2.282,
-        "priceTo50dma": 9.4,
-        "priceTo200dma": 17.125,
-        "volatility": 38.118,
-        "downsideVolatility": 36.269,
+        "price": 225.73,
+        "momentum3m": 8.191,
+        "momentum6m": 23.734,
+        "momentum12m": 35.328,
+        "momentum12m1m": 34.267,
+        "distanceTo52wHigh": 4.246,
+        "priceTo50dma": 6.864,
+        "priceTo200dma": 14.641,
+        "volatility": 38.072,
+        "downsideVolatility": 36.176,
         "maxDrawdown": 20.215,
-        "avgDollarVolume": 28122.266
+        "avgDollarVolume": 28043.196
       },
       "coverage": {
         "quality": {
@@ -643,36 +697,42 @@
               "fieldId": "roic",
               "real": true,
               "value": 65.062,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "grossProfitability",
               "real": true,
               "value": 0.7064,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfMargin",
               "real": true,
               "value": 41.92,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "operatingMargin",
               "real": true,
               "value": 65.214,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "balanceSheetQuality",
               "real": true,
               "value": 29.6,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "leverage",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             }
           ],
@@ -686,24 +746,28 @@
               "fieldId": "revenueGrowth",
               "real": true,
               "value": 83.375,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "epsGrowth",
               "real": true,
               "value": 124.58,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfGrowth",
               "real": true,
               "value": 76.341,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "marginExpansion",
               "real": true,
               "value": 7.121,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -716,37 +780,43 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 3.474,
+              "value": 3.546,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 2.288,
+              "value": 2.335,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "evToSales",
               "real": true,
-              "value": 18.36,
+              "value": 17.992,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 43.712,
+              "value": 42.833,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "dividendYield",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             }
           ],
@@ -759,43 +829,50 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 27.739,
+              "value": 34.267,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 29.702,
+              "value": 23.734,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 12.316,
+              "value": 8.191,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "relativeStrength",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             },
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 2.282,
+              "value": 4.246,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 9.4,
+              "value": 6.864,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 17.125,
+              "value": 14.641,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -808,25 +885,29 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 38.118,
+              "value": 38.072,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 36.269,
+              "value": 36.176,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "maxDrawdown",
               "real": true,
               "value": 20.215,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "beta",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             }
           ],
@@ -873,21 +954,21 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-09-04",
+        "asOf": "2026-09-08",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": null,
         "freeCashFlow": null,
         "netIncome": 65067,
-        "marketCap": 1472193.49,
+        "marketCap": 1451135.18,
         "roic": null,
         "grossProfitability": null,
         "fcfMargin": null,
         "operatingMargin": null,
         "balanceSheetQuality": 63.58,
         "leverage": null,
-        "earningsYield": 4.42,
+        "earningsYield": 4.484,
         "fcfYield": null,
         "evToEbitda": null,
         "evToSales": null,
@@ -902,18 +983,18 @@
         "_asOfAvailableAt": "2026-08-06",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 358.64,
-        "momentum3m": 15.323,
-        "momentum6m": 25.073,
-        "momentum12m": 20.285,
-        "momentum12m1m": 19.5,
-        "distanceTo52wHigh": 1.791,
-        "priceTo50dma": 2.534,
-        "priceTo200dma": 12.659,
-        "volatility": 22.319,
-        "downsideVolatility": 23.813,
+        "price": 353.51,
+        "momentum3m": 14.133,
+        "momentum6m": 23.097,
+        "momentum12m": 22.366,
+        "momentum12m1m": 23.754,
+        "distanceTo52wHigh": 3.196,
+        "priceTo50dma": 0.927,
+        "priceTo200dma": 10.953,
+        "volatility": 22.14,
+        "downsideVolatility": 23.451,
         "maxDrawdown": 15.472,
-        "avgDollarVolume": 2787.191
+        "avgDollarVolume": 2772.748
       },
       "coverage": {
         "quality": {
@@ -922,37 +1003,43 @@
               "fieldId": "roic",
               "real": false,
               "value": null,
-              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+              "notApplicable": true,
+              "reason": "Fuer ein Kreditinstitut nicht anwendbar: \"investiertes Kapital\" setzt eine Industrieunternehmens-Bilanzstruktur voraus (Sachanlagen plus Working Capital), die eine Bank nicht hat."
             },
             {
               "fieldId": "grossProfitability",
               "real": false,
               "value": null,
-              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+              "notApplicable": true,
+              "reason": "Kreditinstitute weisen keine Umsatzkosten (cost of revenue) aus - ohne sie ist kein Rohertrag definierbar, nicht nur nicht gemeldet."
             },
             {
               "fieldId": "fcfMargin",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "operatingMargin",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "balanceSheetQuality",
               "real": true,
               "value": 63.58,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "leverage",
               "real": false,
               "value": null,
-              "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
+              "notApplicable": true,
+              "reason": "Verschuldungsgrad ueber Netto-Schulden ist fuer eine Bank nicht aussagekraeftig; einschlaegig waeren aufsichtsrechtliche Kapitalquoten (z. B. Tier 1), die dieses Modell nicht erhebt."
             }
           ],
           "realCount": 1,
@@ -965,24 +1052,28 @@
               "fieldId": "revenueGrowth",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "epsGrowth",
               "real": true,
               "value": -23.672,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfGrowth",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "marginExpansion",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             }
           ],
@@ -995,37 +1086,43 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 4.42,
+              "value": 4.484,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "evToEbitda",
               "real": false,
               "value": null,
-              "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
+              "notApplicable": true,
+              "reason": "EBITDA blendet Zinsaufwand aus - fuer ein Institut, dessen Kerngeschaeft Zinsertrag und -aufwand sind, ist diese Kennzahl nicht sinnvoll."
             },
             {
               "fieldId": "evToSales",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "priceToFcf",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "dividendYield",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             }
           ],
@@ -1038,43 +1135,50 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 19.5,
+              "value": 23.754,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 25.073,
+              "value": 23.097,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 15.323,
+              "value": 14.133,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "relativeStrength",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             },
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 1.791,
+              "value": 3.196,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 2.534,
+              "value": 0.927,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 12.659,
+              "value": 10.953,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -1087,25 +1191,29 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 22.319,
+              "value": 22.14,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 23.813,
+              "value": 23.451,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "maxDrawdown",
               "real": true,
               "value": 15.472,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "beta",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             }
           ],
@@ -1152,25 +1260,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-09-04",
+        "asOf": "2026-09-08",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 334246,
         "freeCashFlow": 18792,
         "netIncome": 25314,
-        "marketCap": 661003.15,
+        "marketCap": 665935.7,
         "roic": null,
         "grossProfitability": null,
         "fcfMargin": 5.622,
         "operatingMargin": null,
         "balanceSheetQuality": 69.91,
         "leverage": null,
-        "earningsYield": 3.83,
-        "fcfYield": 2.843,
+        "earningsYield": 3.801,
+        "fcfYield": 2.822,
         "evToEbitda": null,
         "evToSales": null,
-        "priceToFcf": 35.175,
+        "priceToFcf": 35.437,
         "revenueGrowth": -4.401,
         "epsGrowth": -20.653,
         "fcfGrowth": -33.317,
@@ -1181,18 +1289,18 @@
         "_asOfAvailableAt": "2026-05-04",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 159.47,
-        "momentum3m": 7.049,
-        "momentum6m": 6.828,
-        "momentum12m": 45.95,
-        "momentum12m1m": 40.814,
-        "distanceTo52wHigh": 6.998,
-        "priceTo50dma": 4.256,
-        "priceTo200dma": 10.176,
-        "volatility": 25.759,
-        "downsideVolatility": 25.538,
+        "price": 160.66,
+        "momentum3m": 6.547,
+        "momentum6m": 8.176,
+        "momentum12m": 51.307,
+        "momentum12m1m": 43.217,
+        "distanceTo52wHigh": 6.304,
+        "priceTo50dma": 4.704,
+        "priceTo200dma": 10.839,
+        "volatility": 25.591,
+        "downsideVolatility": 25.301,
         "maxDrawdown": 20.133,
-        "avgDollarVolume": 2335.334
+        "avgDollarVolume": 2326.882
       },
       "coverage": {
         "quality": {
@@ -1201,36 +1309,42 @@
               "fieldId": "roic",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "grossProfitability",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "fcfMargin",
               "real": true,
               "value": 5.622,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "operatingMargin",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             },
             {
               "fieldId": "balanceSheetQuality",
               "real": true,
               "value": 69.91,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "leverage",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             }
           ],
@@ -1244,24 +1358,28 @@
               "fieldId": "revenueGrowth",
               "real": true,
               "value": -4.401,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "epsGrowth",
               "real": true,
               "value": -20.653,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfGrowth",
               "real": true,
               "value": -33.317,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "marginExpansion",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im kanonischen Bestand dieses Unternehmens)."
             }
           ],
@@ -1274,37 +1392,43 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 3.83,
+              "value": 3.801,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 2.843,
+              "value": 2.822,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "evToSales",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 35.175,
+              "value": 35.437,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "dividendYield",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Value braucht Marktdaten (Kurs/Marktkapitalisierung). Keine veroeffentlichte Golden-Five-Kursreihe gefunden (quant/data/market/golden-preview/daily/) — vor der ersten Ausfuehrung von scripts/market/ingest-tiingo.mjs --publish-preview ist das der Normalzustand, kein Fehler."
             }
           ],
@@ -1317,43 +1441,50 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 40.814,
+              "value": 43.217,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 6.828,
+              "value": 8.176,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 7.049,
+              "value": 6.547,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "relativeStrength",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             },
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 6.998,
+              "value": 6.304,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 4.256,
+              "value": 4.704,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 10.176,
+              "value": 10.839,
+              "notApplicable": false,
               "reason": null
             }
           ],
@@ -1366,25 +1497,29 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 25.759,
+              "value": 25.591,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 25.538,
+              "value": 25.301,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "maxDrawdown",
               "real": true,
               "value": 20.133,
+              "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "beta",
               "real": false,
               "value": null,
+              "notApplicable": false,
               "reason": "Braucht einen echten Marktindex als Vergleichsgroesse. Der gleichgewichtete Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert."
             }
           ],

@@ -33,6 +33,17 @@
           "Modelluniversums zum Modellstand " + S.formatDate(data.meta.asOf) + "." })
       ]));
 
+      /* Phase 6, Live-Feedback: "Ranking zeigt weiterhin Mock-Titel" - die
+         Golden Five sind hier nie erschienen, weil diese Seite ausschliesslich
+         data.securities.rows (das synthetische Modelluniversum) laedt.
+         Eigener Abschnitt, NICHT ins Perzentil-Ranking unten gemischt: eine
+         Vergleichsgruppe von fuenf Titeln aus vier Sektoren erfuellt
+         normalization.js' Mindestgroesse (12 Peers) nicht. */
+      root.appendChild(C.goldenFiveTeaser("Golden Universe — reale Unternehmen (ausserhalb dieses Rankings)",
+        "Fuenf reale Titel mit echten SEC-Fundamentaldaten und (Development Preview) echten Tiingo-Kursen. " +
+        "Das Perzentil-Ranking unten arbeitet ausschliesslich auf dem synthetischen Modelluniversum " +
+        "(Demo-Daten) - fuer diese fuenf Titel gibt es bewusst keinen VU Quant Score. Details direkt anklicken:"));
+
       var pills = el("div", { class: "q-pillbar", style: "margin:22px 0 14px", role: "tablist" });
       VIEWS.forEach(function (v) {
         pills.appendChild(el("button", {

@@ -1,0 +1,62 @@
+{
+  "generatedAtUtc": "2026-09-09T04:14:21.058Z",
+  "decisionTime": "2026-09-09T04:14:21.058Z",
+  "tickers": [
+    {
+      "ticker": "AAPL",
+      "available": true,
+      "factCount": 853,
+      "distinctPeriods": 74,
+      "earliestPeriodEnd": "2007-09-29",
+      "latestPeriodEnd": "2026-06-27",
+      "metricsPresentCount": 13,
+      "restatedFactCount": 95,
+      "pitOk": true
+    },
+    {
+      "ticker": "MSFT",
+      "available": true,
+      "factCount": 925,
+      "distinctPeriods": 76,
+      "earliestPeriodEnd": "2007-09-30",
+      "latestPeriodEnd": "2026-06-30",
+      "metricsPresentCount": 13,
+      "restatedFactCount": 67,
+      "pitOk": true
+    },
+    {
+      "ticker": "NVDA",
+      "available": true,
+      "factCount": 767,
+      "distinctPeriods": 74,
+      "earliestPeriodEnd": "2008-01-27",
+      "latestPeriodEnd": "2026-07-26",
+      "metricsPresentCount": 13,
+      "restatedFactCount": 62,
+      "pitOk": true
+    },
+    {
+      "ticker": "JPM",
+      "available": true,
+      "factCount": 449,
+      "distinctPeriods": 74,
+      "earliestPeriodEnd": "2007-12-31",
+      "latestPeriodEnd": "2026-06-30",
+      "metricsPresentCount": 7,
+      "restatedFactCount": 108,
+      "pitOk": true
+    },
+    {
+      "ticker": "XOM",
+      "available": true,
+      "factCount": 642,
+      "distinctPeriods": 73,
+      "earliestPeriodEnd": "2007-12-31",
+      "latestPeriodEnd": "2026-03-31",
+      "metricsPresentCount": 11,
+      "restatedFactCount": 126,
+      "pitOk": true
+    }
+  ],
+  "note": "Point-in-Time-Coverage je Golden-Five-Titel, gelesen ueber providers/sec/adapter.js#getFacts (keine neue SEC-Pipeline, keine neue PIT-Regel - dieselbe wie quant/engines/schema.js). availableAt <= decisionTime wurde fuer jeden einzelnen Fakt unten aktiv geprueft, nicht nur behauptet."
+}

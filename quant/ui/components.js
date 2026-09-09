@@ -299,6 +299,53 @@
     ]);
   }
 
+  /* ------------------------------------ Golden Five (echte Titel) Teaser */
+  /**
+   * Phase 6, Live-Feedback: "Ranking und Strategy zeigen weiterhin Mock-
+   * Titel" - die Golden Five (AAPL/MSFT/NVDA/JPM/XOM) tauchten dort gar
+   * nicht auf, weil beide Seiten ausschliesslich quant/data/securities.json
+   * (das synthetische Universum) laden. Kein Vermischen mit dem Perzentil-
+   * Ranking (fuenf Titel aus vier Sektoren sind keine brauchbare
+   * Vergleichsgruppe, normalization.js verlangt mindestens 12 Peers) -
+   * stattdessen ein eigener, klar getrennter Abschnitt, identisch auf
+   * Quant Home, Ranking und Screener, damit dieselbe Antwort ueberall
+   * gilt statt drei leicht unterschiedlicher Kopien.
+   */
+  function goldenFiveTeaser(title, description) {
+    var host = el("div", { class: "q-grid q-grid--3" }, [S.loading("Lade Golden-Universe-Titel …")]);
+    S.loadJSON(S.BASE + "data/sec/quant-factor-inputs.json", { attempts: 1 })
+      .then(function (panel) {
+        var cards = Object.keys(panel.securities || {}).map(function (ticker) {
+          var sec = panel.securities[ticker];
+          if (!sec.available) return null;
+          var ref = sec.reference || {};
+          return el("a", { class: "q-strategy", href: S.BASE + "stock/?ticker=" + ticker }, [
+            el("h3", { text: ticker + (ref.name ? " · " + ref.name : "") }),
+            el("p", { text: (ref.sector || "SEC EDGAR") + " · echte SEC-Fundamentaldaten" +
+              (sec.marketData ? " + echte Tiingo-Kurse" : "") + ", kein synthetischer Modelltitel." }),
+            el("div", { class: "q-strategy-meta" }, [
+              S.provenanceTag("REAL", "SEC", "strong"),
+              sec.marketData ? S.provenanceTag("REAL", "TIINGO", "strong") : null
+            ])
+          ]);
+        }).filter(Boolean);
+        S.mount(host, cards.length
+          ? cards
+          : [S.stateBox("Golden Universe nicht verfuegbar", "Der Datensatz konnte nicht geladen werden.", "empty")]);
+      })
+      .catch(function () {
+        S.mount(host, [S.stateBox("Golden Universe nicht verfuegbar",
+          "quant/data/sec/quant-factor-inputs.json konnte nicht geladen werden.", "empty")]);
+      });
+    return section(title || "Golden Universe — reale Unternehmen",
+      description || ("Fuenf reale Titel mit echten SEC-Fundamentaldaten und (Development Preview) echten " +
+        "Tiingo-Kursen — kein synthetisches Modelluniversum. Bewusst kein VU Quant Score und keine " +
+        "Einsortierung ins Perzentil-Ranking unten: eine Vergleichsgruppe von fuenf Titeln aus vier " +
+        "Sektoren waere keine brauchbare Peer-Group. Anklicken fuer SEC-Daten, Marktdaten, Chart, " +
+        "Quant-Faktoren, Technical Intelligence und Elliott Wave auf einer Seite."),
+      host);
+  }
+
   /* ------------------------------------------------------------- Abschnitt */
   function section(title, description, content, link) {
     return el("section", { class: "q-section" }, [
@@ -349,7 +396,7 @@
     metricTile: metricTile, metricGrid: metricGrid,
     disclosure: disclosure, definitionList: definitionList,
     methodologyPanel: methodologyPanel, provenancePanel: provenancePanel,
-    peerGroupLabel: peerGroupLabel, section: section, askBar: askBar,
+    peerGroupLabel: peerGroupLabel, section: section, askBar: askBar, goldenFiveTeaser: goldenFiveTeaser,
     EVENT_LABELS: EVENT_LABELS, eventLabel: eventLabel, severityTone: severityTone
   };
 

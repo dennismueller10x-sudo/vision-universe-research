@@ -96,6 +96,34 @@ const NO_BENCHMARK_REASON = "Braucht einen echten Marktindex als Vergleichsgroes
   "Durchschnitt der fuenf Golden-Five-Titel selbst waere keine echte Benchmark, sondern eine " +
   "scheinpraezise Ersatzgroesse - deshalb bleibt diese Kennzahl UNAVAILABLE, nicht angenaehert.";
 
+/* Live-Feedback (Phase 6): JPM zeigte "viele keine Daten" und sah dadurch
+   wie eine kaputte Aktie aus, obwohl ein Teil davon fachlich gar keine
+   Luecke ist. Vier Kennzahlen sind fuer ein Kreditinstitut STRUKTURELL
+   nicht definiert, nicht bloss zufaellig unbelegt - das ist Lehrbuchwissen
+   ueber Bankbilanzen, keine neue Bank-Methodik und keine Aenderung an der
+   SEC-Ingestion/-Registry (die getrennt und parallel skaliert wird). Bei
+   den uebrigen JPM-Luecken (fcfMargin, operatingMargin, balanceSheetQuality)
+   gibt es keinen belastbaren Beleg, dass sie strukturell unanwendbar waeren
+   - sie bleiben bewusst UNAVAILABLE statt NOT_APPLICABLE, um nicht mehr zu
+   behaupten als bekannt ist. Ticker-scoped statt eine allgemeine
+   Sektor-Erkennung, damit dies nicht mit der parallelen SEC-Scaling-
+   Architektur kollidiert (siehe quant/config/sec-metric-registry.json dort
+   fuer die vollstaendige, GAAP-native Regel — dieselbe Unterscheidung,
+   andere Ebene). */
+const SECTOR_NOT_APPLICABLE = {
+  JPM: {
+    roic: "Fuer ein Kreditinstitut nicht anwendbar: \"investiertes Kapital\" setzt eine " +
+          "Industrieunternehmens-Bilanzstruktur voraus (Sachanlagen plus Working Capital), die eine Bank " +
+          "nicht hat.",
+    grossProfitability: "Kreditinstitute weisen keine Umsatzkosten (cost of revenue) aus - ohne sie ist kein " +
+          "Rohertrag definierbar, nicht nur nicht gemeldet.",
+    leverage: "Verschuldungsgrad ueber Netto-Schulden ist fuer eine Bank nicht aussagekraeftig; einschlaegig " +
+          "waeren aufsichtsrechtliche Kapitalquoten (z. B. Tier 1), die dieses Modell nicht erhebt.",
+    evToEbitda: "EBITDA blendet Zinsaufwand aus - fuer ein Institut, dessen Kerngeschaeft Zinsertrag und " +
+          "-aufwand sind, ist diese Kennzahl nicht sinnvoll."
+  }
+};
+
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
 /**
@@ -190,11 +218,19 @@ function buildSecurity(entry, pricePanel) {
     const components = fields.map((fieldId) => {
       const value = fundamentals[fieldId];
       const noBenchmarkField = (fieldId === "beta" || fieldId === "relativeStrength") && pm;
+      const notApplicableReason = SECTOR_NOT_APPLICABLE[entry.ticker] && SECTOR_NOT_APPLICABLE[entry.ticker][fieldId];
       return {
         fieldId,
         real: isNum(value),
         value: isNum(value) ? value : null,
-        reason: isNum(value) ? null : noBenchmarkField ? NO_BENCHMARK_REASON : (UNAVAILABLE_REASON[factorId] ||
+        /* notApplicable unterscheidet "fachlich nicht definiert" (Sektor-
+           Eigenschaft, real:false ist hier kein Datenmangel) von einer
+           echten Luecke (UNAVAILABLE) - UI-seitig gerendert von
+           quant/stock/app.js#factorBlock. Aendert absichtlich NICHT den
+           bestehenden REAL/PARTIAL/UNAVAILABLE-Status der Faktorgruppe. */
+        notApplicable: !isNum(value) && !!notApplicableReason,
+        reason: isNum(value) ? null : notApplicableReason ? notApplicableReason :
+          noBenchmarkField ? NO_BENCHMARK_REASON : (UNAVAILABLE_REASON[factorId] ||
           "Kennzahl aus SEC-Fundamentaldaten nicht ableitbar (siehe unsupportedMetrics/coverage im " +
           "kanonischen Bestand dieses Unternehmens).")
       };

@@ -248,11 +248,23 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
 
 /* ------------------------------------------------------------- Metric tiles */
 .q-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.q-metric{background:var(--surface);border-radius:var(--radius);padding:14px}
+/* min-width:0 overrides the grid-item default (min-width:auto), which sizes
+   a cell to its content's min-content width - a long, mostly-unbroken hint
+   (a date range, a long provenance value) could otherwise push the cell
+   wider than its track and cause horizontal page overflow on narrow
+   viewports (Live-Feedback: 390px). overflow-wrap lets genuinely long
+   tokens still wrap rather than overflow. */
+.q-metric{background:var(--surface);border-radius:var(--radius);padding:14px;min-width:0}
 .q-metric span{display:block;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.02em}
-.q-metric b{display:block;font-size:21px;margin-top:4px;letter-spacing:-.03em;font-weight:800}
+.q-metric b{display:block;font-size:21px;margin-top:4px;letter-spacing:-.03em;font-weight:800;overflow-wrap:break-word}
 .q-metric b.na{color:var(--muted-2);font-size:15px;font-weight:600}
-.q-metric em{display:block;font-style:normal;font-size:11px;color:var(--muted-2);margin-top:3px}
+.q-metric em{display:block;font-style:normal;font-size:11px;color:var(--muted-2);margin-top:3px;overflow-wrap:break-word}
+/* .q-chip defaults to white-space:nowrap for short badges (REAL, PASSED,
+   score pills) - correct there, but a provenance chip's VALUE can be a
+   long, space-free identifier (e.g. "sec_edgar_companyfacts_xbrl"), which
+   nowrap would rather overflow than wrap. Scoped to chips inside a metrics
+   grid only, so pillbars/score badges elsewhere keep their nowrap look. */
+.q-metrics .q-chip{white-space:normal;overflow-wrap:break-word;min-width:0}
 
 /* ------------------------------------------------------------------- Forms */
 .q-field{display:flex;flex-direction:column;gap:5px}

@@ -265,7 +265,6 @@
     ]);
   }
 
-  var CHART_RANGES = (Ranges ? Ranges.RANGES : []).filter(function (r) { return r.source === "eod"; });
   var chartState = {};
 
   function chartSection(ticker, market) {
@@ -274,6 +273,29 @@
     drawChart(ticker, market, wrap);
     return C.section("Kursverlauf (Tagesschluss)",
       "Echte Tiingo-EOD-Kurse, Development Preview. Timeframe-Umschaltung wie auf /quant/markt/.", wrap);
+  }
+
+  /* Zeitraumleiste: dieselbe Leiste wie /quant/markt/ (Ranges.rangeBar +
+     q-rangebar/q-range/is-off), nicht die eigene q-pillbar von vorher. Ein
+     Zeitraum ohne ausreichende Datenbasis wird abgeblendet statt entfernt
+     oder - schlimmer - stillschweigend auf die vorhandenen Bars gekuerzt
+     ("5J" aktiv anzeigen und nur 400 Handelstage rendern war genau der
+     gemeldete Fehler). Die Bar bleibt vollstaendig sichtbar; der Grund
+     steht im title-Attribut. */
+  function rangeBar(daten, aktiv, onSelect) {
+    var zustand = Ranges.rangeBar(daten, { gates: {} });
+    return el("div", { class: "q-rangebar", role: "group", "aria-label": "Zeitraum" },
+      zustand.map(function (r) {
+        return el("button", {
+          type: "button",
+          class: "q-range" + (r.id === aktiv ? " is-active" : "") +
+                 (r.available ? "" : " is-off"),
+          "aria-pressed": r.id === aktiv ? "true" : "false",
+          title: r.available ? "Tagesschluss" : r.message,
+          text: r.label,
+          onclick: function () { onSelect(r.id); }
+        });
+      }));
   }
 
   function drawChart(ticker, market, wrap) {
@@ -288,14 +310,14 @@
         yFormat: function (v) { return v.toFixed(2); }
       }));
     } else {
-      chartHost.appendChild(S.stateBox("Zeitraum nicht verfuegbar", res.message, "empty"));
+      var box = S.stateBox("Zeitraum nicht verfuegbar", res.message, "empty");
+      if (res.suggestion) {
+        box.appendChild(el("p", { class: "q-note", text: "Verfuegbar ist zum Beispiel " + res.suggestion + "." }));
+      }
+      chartHost.appendChild(box);
     }
     S.mount(wrap, [
-      el("div", { class: "q-pillbar", "aria-label": "Zeitraum" }, CHART_RANGES.map(function (r) {
-        return el("button", { class: "q-pill q-pill--sm" + (chartState[ticker] === r.id ? " on" : ""),
-          type: "button", text: r.label,
-          onclick: function () { chartState[ticker] = r.id; drawChart(ticker, market, wrap); } });
-      })),
+      rangeBar(daten, chartState[ticker], function (id) { chartState[ticker] = id; drawChart(ticker, market, wrap); }),
       chartHost
     ]);
   }
@@ -322,6 +344,18 @@
         ? el("div", { class: "q-metrics" }, coverage.components.map(function (c) {
             var field = window.VUCatalog.field(c.fieldId);
             var label = field ? field.label : c.fieldId;
+            /* notApplicable ist fachlich keine Luecke (siehe build-sec-
+               quant-panel.mjs#SECTOR_NOT_APPLICABLE) - "keine Daten" waere
+               hier irrefuehrend, deshalb ein eigenes Metric-Tile statt
+               C.metricTile()'s hartkodiertem "keine Daten" fuer jeden
+               null-Wert. */
+            if (c.notApplicable) {
+              return el("div", { class: "q-metric" }, [
+                el("span", { text: label }),
+                el("b", { class: "na", text: "n/a" }),
+                el("em", { text: c.reason })
+              ]);
+            }
             return C.metricTile(label,
               c.real ? S.fmt(c.fieldId, c.value) : null,
               c.real ? null : c.reason);

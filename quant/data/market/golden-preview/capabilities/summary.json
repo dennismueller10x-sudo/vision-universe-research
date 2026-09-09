@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-09-08T18:22:33.114Z",
+  "generatedAtUtc": "2026-09-09T03:49:02.605Z",
   "note": "Kapazitaetsmessung fuer die Golden-Five-Titel gegen den bestehenden Tiingo-Zugang. Enthaelt ausschliesslich Abstaende in Sekunden, Anzahlen und Aussagen - keine Kurse, kein Schluessel (uebernommen von verify-tiingo-realtime.mjs). WebSocket-Verbindungsaufbau wurde nur fuer den ersten Titel geprueft (Konto-, nicht Symbolfaehigkeit).",
   "source": "scripts/market/verify-tiingo-realtime.mjs, einmal je Titel",
   "tickers": [
@@ -12,19 +12,19 @@
   "perTicker": {
     "AAPL": {
       "symbol": "AAPL",
-      "generatedAt": "2026-09-08T18:22:31.230Z",
+      "generatedAt": "2026-09-09T03:49:00.351Z",
       "webSocketTested": true,
       "confirmedCapabilities": [
-        "realtimeQuote",
         "historicalIntraday",
         "extendedHoursBars"
       ],
       "refutedCapabilities": [
         "latestQuote",
-        "delayedQuote",
         "realtimeStream"
       ],
       "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
         "extendedHoursRealtime"
       ],
       "findings": [
@@ -32,15 +32,15 @@
           "capability": "marketSession",
           "result": "INFO",
           "evidence": {
-            "phase": "REGULAR",
-            "closedReason": null,
+            "phase": "CLOSED",
+            "closedReason": "outsideSession",
             "localDate": "2026-09-08",
-            "localTime": "14:22:30",
+            "localTime": "23:48:59",
             "calendarCoverage": true,
-            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+            "interpretation": "Kein regulaerer Handel. Jeder Abstand misst die Boersenpause, nicht den Tarif."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:30.684Z"
+          "checkedAt": "2026-09-09T03:48:59.706Z"
         },
         {
           "capability": "latestQuote",
@@ -48,82 +48,80 @@
           "evidence": {
             "hasPrice": false,
             "hasTimestamp": true,
-            "responseMs": 138,
+            "responseMs": 261,
             "interpretation": "Antwort ohne verwertbaren Kurs."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:30.822Z"
+          "checkedAt": "2026-09-09T03:48:59.967Z"
         },
         {
           "capability": "realtimeQuote",
-          "result": "PASSED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 0,
-            "thresholdSeconds": 90,
-            "sessionPhase": "REGULAR",
-            "interpretation": "Bei offenem regulaerem Handel lag der Zeitstempel innerhalb der Echtzeitschwelle. Echtzeit-Kursabfrage belegt."
+            "lagSeconds": 28140,
+            "sessionPhase": "CLOSED",
+            "reason": "Ausserhalb des regulaeren Handels. Der Abstand misst die Boersenpause. Der Lauf muss bei offener Boerse wiederholt werden."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:30.822Z"
+          "checkedAt": "2026-09-09T03:48:59.967Z"
         },
         {
           "capability": "delayedQuote",
-          "result": "FAILED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 0,
-            "interpretation": "Der Kurs ist nicht verzoegert - er ist aktuell."
+            "sessionPhase": "CLOSED"
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:30.822Z"
+          "checkedAt": "2026-09-09T03:48:59.967Z"
         },
         {
           "capability": "historicalIntraday",
           "result": "PASSED",
           "evidence": {
-            "requestedFrom": "2026-09-03",
-            "bars": 293,
-            "barsWithTimestamp": 293,
+            "requestedFrom": "2026-09-04",
+            "bars": 234,
+            "barsWithTimestamp": 234,
             "ascending": true,
             "interpretation": "Intraday-Historie ueber mehrere Tage abrufbar."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:31.032Z"
+          "checkedAt": "2026-09-09T03:49:00.126Z"
         },
         {
           "capability": "intradayFreshness",
           "result": "INFO",
           "evidence": {
-            "lastBarLagSeconds": 151,
-            "sessionPhase": "REGULAR",
+            "lastBarLagSeconds": 28440,
+            "sessionPhase": "CLOSED",
             "interpretation": "Abstand der juengsten Intraday-Bar zur Laufzeit. Bei geschlossener Boerse erwartungsgemaess gross."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.032Z"
+          "checkedAt": "2026-09-09T03:49:00.126Z"
         },
         {
           "capability": "extendedHoursBars",
           "result": "PASSED",
           "evidence": {
             "requested": true,
-            "bars": 422,
-            "preMarketBars": 54,
-            "afterHoursBars": 38,
-            "regularBars": 215,
+            "bars": 333,
+            "preMarketBars": 31,
+            "afterHoursBars": 31,
+            "regularBars": 156,
             "interpretation": "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:31.137Z"
+          "checkedAt": "2026-09-09T03:49:00.233Z"
         },
         {
           "capability": "extendedHoursRealtime",
           "result": "UNKNOWN",
           "evidence": {
-            "sessionAtRun": "REGULAR",
-            "localTime": "14:22:31",
+            "sessionAtRun": "CLOSED",
+            "localTime": "23:49:00",
             "reason": "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.137Z"
+          "checkedAt": "2026-09-09T03:49:00.233Z"
         },
         {
           "capability": "realtimeStream",
@@ -137,24 +135,24 @@
             "interpretation": "Die Verbindung wurde vom Anbieter geschlossen, bevor ein Kurs kam. Ueblich, wenn der Tarif den Strom nicht enthaelt."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.229Z"
+          "checkedAt": "2026-09-09T03:49:00.351Z"
         }
       ]
     },
     "MSFT": {
       "symbol": "MSFT",
-      "generatedAt": "2026-09-08T18:22:31.759Z",
+      "generatedAt": "2026-09-09T03:49:00.882Z",
       "webSocketTested": false,
       "confirmedCapabilities": [
-        "realtimeQuote",
         "historicalIntraday",
         "extendedHoursBars"
       ],
       "refutedCapabilities": [
-        "latestQuote",
-        "delayedQuote"
+        "latestQuote"
       ],
       "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
         "extendedHoursRealtime",
         "realtimeStream"
       ],
@@ -163,15 +161,15 @@
           "capability": "marketSession",
           "result": "INFO",
           "evidence": {
-            "phase": "REGULAR",
-            "closedReason": null,
+            "phase": "CLOSED",
+            "closedReason": "outsideSession",
             "localDate": "2026-09-08",
-            "localTime": "14:22:31",
+            "localTime": "23:49:00",
             "calendarCoverage": true,
-            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+            "interpretation": "Kein regulaerer Handel. Jeder Abstand misst die Boersenpause, nicht den Tarif."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.295Z"
+          "checkedAt": "2026-09-09T03:49:00.411Z"
         },
         {
           "capability": "latestQuote",
@@ -179,82 +177,80 @@
           "evidence": {
             "hasPrice": false,
             "hasTimestamp": true,
-            "responseMs": 204,
+            "responseMs": 180,
             "interpretation": "Antwort ohne verwertbaren Kurs."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:31.499Z"
+          "checkedAt": "2026-09-09T03:49:00.591Z"
         },
         {
           "capability": "realtimeQuote",
-          "result": "PASSED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 2,
-            "thresholdSeconds": 90,
-            "sessionPhase": "REGULAR",
-            "interpretation": "Bei offenem regulaerem Handel lag der Zeitstempel innerhalb der Echtzeitschwelle. Echtzeit-Kursabfrage belegt."
+            "lagSeconds": 28141,
+            "sessionPhase": "CLOSED",
+            "reason": "Ausserhalb des regulaeren Handels. Der Abstand misst die Boersenpause. Der Lauf muss bei offener Boerse wiederholt werden."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.499Z"
+          "checkedAt": "2026-09-09T03:49:00.591Z"
         },
         {
           "capability": "delayedQuote",
-          "result": "FAILED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 2,
-            "interpretation": "Der Kurs ist nicht verzoegert - er ist aktuell."
+            "sessionPhase": "CLOSED"
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.499Z"
+          "checkedAt": "2026-09-09T03:49:00.591Z"
         },
         {
           "capability": "historicalIntraday",
           "result": "PASSED",
           "evidence": {
-            "requestedFrom": "2026-09-03",
-            "bars": 293,
-            "barsWithTimestamp": 293,
+            "requestedFrom": "2026-09-04",
+            "bars": 234,
+            "barsWithTimestamp": 234,
             "ascending": true,
             "interpretation": "Intraday-Historie ueber mehrere Tage abrufbar."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:31.657Z"
+          "checkedAt": "2026-09-09T03:49:00.768Z"
         },
         {
           "capability": "intradayFreshness",
           "result": "INFO",
           "evidence": {
-            "lastBarLagSeconds": 152,
-            "sessionPhase": "REGULAR",
+            "lastBarLagSeconds": 28441,
+            "sessionPhase": "CLOSED",
             "interpretation": "Abstand der juengsten Intraday-Bar zur Laufzeit. Bei geschlossener Boerse erwartungsgemaess gross."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.657Z"
+          "checkedAt": "2026-09-09T03:49:00.768Z"
         },
         {
           "capability": "extendedHoursBars",
           "result": "PASSED",
           "evidence": {
             "requested": true,
-            "bars": 422,
-            "preMarketBars": 54,
-            "afterHoursBars": 38,
-            "regularBars": 215,
+            "bars": 336,
+            "preMarketBars": 35,
+            "afterHoursBars": 30,
+            "regularBars": 156,
             "interpretation": "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:31.759Z"
+          "checkedAt": "2026-09-09T03:49:00.882Z"
         },
         {
           "capability": "extendedHoursRealtime",
           "result": "UNKNOWN",
           "evidence": {
-            "sessionAtRun": "REGULAR",
-            "localTime": "14:22:31",
+            "sessionAtRun": "CLOSED",
+            "localTime": "23:49:00",
             "reason": "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.759Z"
+          "checkedAt": "2026-09-09T03:49:00.882Z"
         },
         {
           "capability": "realtimeStream",
@@ -263,24 +259,24 @@
             "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.759Z"
+          "checkedAt": "2026-09-09T03:49:00.882Z"
         }
       ]
     },
     "NVDA": {
       "symbol": "NVDA",
-      "generatedAt": "2026-09-08T18:22:32.195Z",
+      "generatedAt": "2026-09-09T03:49:01.435Z",
       "webSocketTested": false,
       "confirmedCapabilities": [
-        "realtimeQuote",
         "historicalIntraday",
         "extendedHoursBars"
       ],
       "refutedCapabilities": [
-        "latestQuote",
-        "delayedQuote"
+        "latestQuote"
       ],
       "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
         "extendedHoursRealtime",
         "realtimeStream"
       ],
@@ -289,15 +285,15 @@
           "capability": "marketSession",
           "result": "INFO",
           "evidence": {
-            "phase": "REGULAR",
-            "closedReason": null,
+            "phase": "CLOSED",
+            "closedReason": "outsideSession",
             "localDate": "2026-09-08",
-            "localTime": "14:22:31",
+            "localTime": "23:49:00",
             "calendarCoverage": true,
-            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+            "interpretation": "Kein regulaerer Handel. Jeder Abstand misst die Boersenpause, nicht den Tarif."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.850Z"
+          "checkedAt": "2026-09-09T03:49:00.968Z"
         },
         {
           "capability": "latestQuote",
@@ -305,82 +301,80 @@
           "evidence": {
             "hasPrice": false,
             "hasTimestamp": true,
-            "responseMs": 113,
+            "responseMs": 185,
             "interpretation": "Antwort ohne verwertbaren Kurs."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:31.963Z"
+          "checkedAt": "2026-09-09T03:49:01.153Z"
         },
         {
           "capability": "realtimeQuote",
-          "result": "PASSED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 0,
-            "thresholdSeconds": 90,
-            "sessionPhase": "REGULAR",
-            "interpretation": "Bei offenem regulaerem Handel lag der Zeitstempel innerhalb der Echtzeitschwelle. Echtzeit-Kursabfrage belegt."
+            "lagSeconds": 28141,
+            "sessionPhase": "CLOSED",
+            "reason": "Ausserhalb des regulaeren Handels. Der Abstand misst die Boersenpause. Der Lauf muss bei offener Boerse wiederholt werden."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.963Z"
+          "checkedAt": "2026-09-09T03:49:01.153Z"
         },
         {
           "capability": "delayedQuote",
-          "result": "FAILED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 0,
-            "interpretation": "Der Kurs ist nicht verzoegert - er ist aktuell."
+            "sessionPhase": "CLOSED"
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:31.963Z"
+          "checkedAt": "2026-09-09T03:49:01.153Z"
         },
         {
           "capability": "historicalIntraday",
           "result": "PASSED",
           "evidence": {
-            "requestedFrom": "2026-09-03",
-            "bars": 293,
-            "barsWithTimestamp": 293,
+            "requestedFrom": "2026-09-04",
+            "bars": 234,
+            "barsWithTimestamp": 234,
             "ascending": true,
             "interpretation": "Intraday-Historie ueber mehrere Tage abrufbar."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.092Z"
+          "checkedAt": "2026-09-09T03:49:01.312Z"
         },
         {
           "capability": "intradayFreshness",
           "result": "INFO",
           "evidence": {
-            "lastBarLagSeconds": 152,
-            "sessionPhase": "REGULAR",
+            "lastBarLagSeconds": 28441,
+            "sessionPhase": "CLOSED",
             "interpretation": "Abstand der juengsten Intraday-Bar zur Laufzeit. Bei geschlossener Boerse erwartungsgemaess gross."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.092Z"
+          "checkedAt": "2026-09-09T03:49:01.312Z"
         },
         {
           "capability": "extendedHoursBars",
           "result": "PASSED",
           "evidence": {
             "requested": true,
-            "bars": 422,
-            "preMarketBars": 54,
-            "afterHoursBars": 38,
-            "regularBars": 215,
+            "bars": 330,
+            "preMarketBars": 36,
+            "afterHoursBars": 23,
+            "regularBars": 156,
             "interpretation": "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.195Z"
+          "checkedAt": "2026-09-09T03:49:01.435Z"
         },
         {
           "capability": "extendedHoursRealtime",
           "result": "UNKNOWN",
           "evidence": {
-            "sessionAtRun": "REGULAR",
-            "localTime": "14:22:32",
+            "sessionAtRun": "CLOSED",
+            "localTime": "23:49:01",
             "reason": "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.195Z"
+          "checkedAt": "2026-09-09T03:49:01.435Z"
         },
         {
           "capability": "realtimeStream",
@@ -389,24 +383,24 @@
             "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.195Z"
+          "checkedAt": "2026-09-09T03:49:01.435Z"
         }
       ]
     },
     "JPM": {
       "symbol": "JPM",
-      "generatedAt": "2026-09-08T18:22:32.651Z",
+      "generatedAt": "2026-09-09T03:49:02.099Z",
       "webSocketTested": false,
       "confirmedCapabilities": [
-        "realtimeQuote",
         "historicalIntraday",
         "extendedHoursBars"
       ],
       "refutedCapabilities": [
-        "latestQuote",
-        "delayedQuote"
+        "latestQuote"
       ],
       "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
         "extendedHoursRealtime",
         "realtimeStream"
       ],
@@ -415,15 +409,15 @@
           "capability": "marketSession",
           "result": "INFO",
           "evidence": {
-            "phase": "REGULAR",
-            "closedReason": null,
+            "phase": "CLOSED",
+            "closedReason": "outsideSession",
             "localDate": "2026-09-08",
-            "localTime": "14:22:32",
+            "localTime": "23:49:01",
             "calendarCoverage": true,
-            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+            "interpretation": "Kein regulaerer Handel. Jeder Abstand misst die Boersenpause, nicht den Tarif."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.292Z"
+          "checkedAt": "2026-09-09T03:49:01.517Z"
         },
         {
           "capability": "latestQuote",
@@ -431,82 +425,80 @@
           "evidence": {
             "hasPrice": false,
             "hasTimestamp": true,
-            "responseMs": 135,
+            "responseMs": 239,
             "interpretation": "Antwort ohne verwertbaren Kurs."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.427Z"
+          "checkedAt": "2026-09-09T03:49:01.756Z"
         },
         {
           "capability": "realtimeQuote",
-          "result": "PASSED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 4,
-            "thresholdSeconds": 90,
-            "sessionPhase": "REGULAR",
-            "interpretation": "Bei offenem regulaerem Handel lag der Zeitstempel innerhalb der Echtzeitschwelle. Echtzeit-Kursabfrage belegt."
+            "lagSeconds": 28142,
+            "sessionPhase": "CLOSED",
+            "reason": "Ausserhalb des regulaeren Handels. Der Abstand misst die Boersenpause. Der Lauf muss bei offener Boerse wiederholt werden."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.427Z"
+          "checkedAt": "2026-09-09T03:49:01.756Z"
         },
         {
           "capability": "delayedQuote",
-          "result": "FAILED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 4,
-            "interpretation": "Der Kurs ist nicht verzoegert - er ist aktuell."
+            "sessionPhase": "CLOSED"
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.427Z"
+          "checkedAt": "2026-09-09T03:49:01.756Z"
         },
         {
           "capability": "historicalIntraday",
           "result": "PASSED",
           "evidence": {
-            "requestedFrom": "2026-09-03",
-            "bars": 293,
-            "barsWithTimestamp": 293,
+            "requestedFrom": "2026-09-04",
+            "bars": 234,
+            "barsWithTimestamp": 234,
             "ascending": true,
             "interpretation": "Intraday-Historie ueber mehrere Tage abrufbar."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.557Z"
+          "checkedAt": "2026-09-09T03:49:02.012Z"
         },
         {
           "capability": "intradayFreshness",
           "result": "INFO",
           "evidence": {
-            "lastBarLagSeconds": 153,
-            "sessionPhase": "REGULAR",
+            "lastBarLagSeconds": 28442,
+            "sessionPhase": "CLOSED",
             "interpretation": "Abstand der juengsten Intraday-Bar zur Laufzeit. Bei geschlossener Boerse erwartungsgemaess gross."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.557Z"
+          "checkedAt": "2026-09-09T03:49:02.012Z"
         },
         {
           "capability": "extendedHoursBars",
           "result": "PASSED",
           "evidence": {
             "requested": true,
-            "bars": 404,
-            "preMarketBars": 36,
-            "afterHoursBars": 38,
-            "regularBars": 215,
+            "bars": 318,
+            "preMarketBars": 18,
+            "afterHoursBars": 29,
+            "regularBars": 156,
             "interpretation": "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.651Z"
+          "checkedAt": "2026-09-09T03:49:02.099Z"
         },
         {
           "capability": "extendedHoursRealtime",
           "result": "UNKNOWN",
           "evidence": {
-            "sessionAtRun": "REGULAR",
-            "localTime": "14:22:32",
+            "sessionAtRun": "CLOSED",
+            "localTime": "23:49:02",
             "reason": "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.651Z"
+          "checkedAt": "2026-09-09T03:49:02.099Z"
         },
         {
           "capability": "realtimeStream",
@@ -515,24 +507,24 @@
             "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.651Z"
+          "checkedAt": "2026-09-09T03:49:02.099Z"
         }
       ]
     },
     "XOM": {
       "symbol": "XOM",
-      "generatedAt": "2026-09-08T18:22:33.074Z",
+      "generatedAt": "2026-09-09T03:49:02.571Z",
       "webSocketTested": false,
       "confirmedCapabilities": [
-        "realtimeQuote",
         "historicalIntraday",
         "extendedHoursBars"
       ],
       "refutedCapabilities": [
-        "latestQuote",
-        "delayedQuote"
+        "latestQuote"
       ],
       "unknownCapabilities": [
+        "realtimeQuote",
+        "delayedQuote",
         "extendedHoursRealtime",
         "realtimeStream"
       ],
@@ -541,15 +533,15 @@
           "capability": "marketSession",
           "result": "INFO",
           "evidence": {
-            "phase": "REGULAR",
-            "closedReason": null,
+            "phase": "CLOSED",
+            "closedReason": "outsideSession",
             "localDate": "2026-09-08",
-            "localTime": "14:22:32",
+            "localTime": "23:49:02",
             "calendarCoverage": true,
-            "interpretation": "Regulaerer Handel. Ein Zeitstempelabstand ist aussagekraeftig."
+            "interpretation": "Kein regulaerer Handel. Jeder Abstand misst die Boersenpause, nicht den Tarif."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.741Z"
+          "checkedAt": "2026-09-09T03:49:02.185Z"
         },
         {
           "capability": "latestQuote",
@@ -557,82 +549,80 @@
           "evidence": {
             "hasPrice": false,
             "hasTimestamp": true,
-            "responseMs": 118,
+            "responseMs": 144,
             "interpretation": "Antwort ohne verwertbaren Kurs."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.859Z"
+          "checkedAt": "2026-09-09T03:49:02.329Z"
         },
         {
           "capability": "realtimeQuote",
-          "result": "PASSED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 1,
-            "thresholdSeconds": 90,
-            "sessionPhase": "REGULAR",
-            "interpretation": "Bei offenem regulaerem Handel lag der Zeitstempel innerhalb der Echtzeitschwelle. Echtzeit-Kursabfrage belegt."
+            "lagSeconds": 28142,
+            "sessionPhase": "CLOSED",
+            "reason": "Ausserhalb des regulaeren Handels. Der Abstand misst die Boersenpause. Der Lauf muss bei offener Boerse wiederholt werden."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.860Z"
+          "checkedAt": "2026-09-09T03:49:02.329Z"
         },
         {
           "capability": "delayedQuote",
-          "result": "FAILED",
+          "result": "UNKNOWN",
           "evidence": {
-            "lagSeconds": 1,
-            "interpretation": "Der Kurs ist nicht verzoegert - er ist aktuell."
+            "sessionPhase": "CLOSED"
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.860Z"
+          "checkedAt": "2026-09-09T03:49:02.329Z"
         },
         {
           "capability": "historicalIntraday",
           "result": "PASSED",
           "evidence": {
-            "requestedFrom": "2026-09-03",
-            "bars": 293,
-            "barsWithTimestamp": 293,
+            "requestedFrom": "2026-09-04",
+            "bars": 234,
+            "barsWithTimestamp": 234,
             "ascending": true,
             "interpretation": "Intraday-Historie ueber mehrere Tage abrufbar."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:32.984Z"
+          "checkedAt": "2026-09-09T03:49:02.449Z"
         },
         {
           "capability": "intradayFreshness",
           "result": "INFO",
           "evidence": {
-            "lastBarLagSeconds": 153,
-            "sessionPhase": "REGULAR",
+            "lastBarLagSeconds": 28442,
+            "sessionPhase": "CLOSED",
             "interpretation": "Abstand der juengsten Intraday-Bar zur Laufzeit. Bei geschlossener Boerse erwartungsgemaess gross."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:32.985Z"
+          "checkedAt": "2026-09-09T03:49:02.449Z"
         },
         {
           "capability": "extendedHoursBars",
           "result": "PASSED",
           "evidence": {
             "requested": true,
-            "bars": 404,
-            "preMarketBars": 36,
-            "afterHoursBars": 38,
-            "regularBars": 215,
+            "bars": 316,
+            "preMarketBars": 18,
+            "afterHoursBars": 27,
+            "regularBars": 156,
             "interpretation": "Mit afterHours=true kommen Bars ausserhalb der regulaeren Sitzung zurueck."
           },
           "requests": 1,
-          "checkedAt": "2026-09-08T18:22:33.074Z"
+          "checkedAt": "2026-09-09T03:49:02.571Z"
         },
         {
           "capability": "extendedHoursRealtime",
           "result": "UNKNOWN",
           "evidence": {
-            "sessionAtRun": "REGULAR",
-            "localTime": "14:22:32",
+            "sessionAtRun": "CLOSED",
+            "localTime": "23:49:02",
             "reason": "Der Lauf faellt nicht in eine erweiterte Sitzung. Ob die Bars dort aktuell waeren, laesst sich jetzt nicht messen - nur zwischen 04:00 und 09:30 oder zwischen 16:00 und 20:00 New Yorker Zeit."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:33.074Z"
+          "checkedAt": "2026-09-09T03:49:02.571Z"
         },
         {
           "capability": "realtimeStream",
@@ -641,7 +631,7 @@
             "reason": "Nicht geprueft. Der Stromtest wird nur mit --with-stream ausgefuehrt: er oeffnet eine Verbindung und wartet, und beides soll eine Entscheidung sein und kein Nebeneffekt."
           },
           "requests": 0,
-          "checkedAt": "2026-09-08T18:22:33.074Z"
+          "checkedAt": "2026-09-09T03:49:02.571Z"
         }
       ]
     }

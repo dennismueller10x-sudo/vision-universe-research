@@ -148,3 +148,33 @@ test("T9 · jede Faktor-Komponente ohne Realwert traegt eine Begruendung, nie ei
     });
   });
 });
+
+test("T10 · JPM: strukturell nicht anwendbare Kennzahlen tragen notApplicable, keine generische Luecke " +
+     "(Live-Feedback: 'JPM sieht aus wie eine kaputte Aktie')", () => {
+  const out = JSON.parse(readFileSync(OUT_PATH, "utf8"));
+  const jpm = out.securities.JPM;
+  assert.ok(jpm && jpm.available, "JPM sollte verfuegbar sein");
+  const expectNotApplicable = { quality: ["roic", "grossProfitability", "leverage"], value: ["evToEbitda"] };
+  Object.keys(expectNotApplicable).forEach((factorId) => {
+    const byField = Object.fromEntries(jpm.coverage[factorId].components.map((c) => [c.fieldId, c]));
+    expectNotApplicable[factorId].forEach((fieldId) => {
+      const c = byField[fieldId];
+      assert.ok(c, "JPM." + factorId + "." + fieldId + " nicht gefunden");
+      assert.equal(c.real, false, "JPM." + factorId + "." + fieldId + " sollte keinen Wert haben");
+      assert.equal(c.notApplicable, true, "JPM." + factorId + "." + fieldId + " sollte notApplicable sein");
+      assert.ok(c.reason && c.reason.length > 20, "JPM." + factorId + "." + fieldId + " ohne erklaerende Begruendung");
+    });
+  });
+  /* Die Gegenprobe: kein anderer Golden-Five-Titel bekommt diese
+     Sonderbehandlung - sie ist ticker-scoped fuer JPM, keine allgemeine
+     Sektor-Erkennung. */
+  ["AAPL", "MSFT", "NVDA", "XOM"].forEach((t) => {
+    const sec = out.securities[t];
+    if (!sec || !sec.available) return;
+    Object.keys(sec.coverage).forEach((factorId) => {
+      sec.coverage[factorId].components.forEach((c) => {
+        assert.equal(c.notApplicable, false, t + "." + factorId + "." + c.fieldId + " sollte nicht notApplicable sein");
+      });
+    });
+  });
+});
