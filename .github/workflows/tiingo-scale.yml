@@ -355,6 +355,24 @@ jobs:
           GATE='${{ steps.gate.outputs.gate }}'
           node scripts/technical/run-technical-scale.mjs --gate "$GATE"
 
+      # §25: das Vollausbaustadium wird BEWERTET, bevor es gestartet wird.
+      # Ein Backfill, der auf halbem Weg an der Platte scheitert, hat
+      # Kontingent verbrannt und nichts belegt. Die Bewertung holt keinen
+      # Kurs - sie rechnet mit den Raten, die die kleineren Gates gemessen
+      # haben. Sie laeuft nur, wenn GATE_2000 bestanden hat: vorher waere
+      # sie eine Hochrechnung auf eine Stufe, die noch nicht freigegeben
+      # ist (§37).
+      - name: Vollausbaustadium bewerten (ohne Abruf)
+        if: always() && steps.gate.outputs.gate == 'GATE_2000'
+        run: |
+          VERDICT=$(node -e 'try{console.log(require("./quant/data/market/scale/gate-GATE_2000.json").verdict)}catch(e){console.log("MISSING")}')
+          if [ "$VERDICT" != "PASS" ]; then
+            echo "GATE_2000 ist nicht bestanden ($VERDICT). Das Vollausbaustadium wird nicht bewertet."
+            exit 0
+          fi
+          node scripts/market/select-gate-universe.mjs --gate FULL_UNIVERSE
+          node scripts/market/run-scale-gate.mjs --gate FULL_UNIVERSE --assess-only
+
       - name: Gesundheitsbericht
         if: always()
         run: node scripts/market/build-health-report.mjs

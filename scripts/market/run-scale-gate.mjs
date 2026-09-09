@@ -54,6 +54,18 @@ function arg(name, fallback) {
 const GATE = arg("--gate", "GATE_100");
 const DRY_RUN = argv.includes("--dry-run");
 const SKIP_CANARY = argv.includes("--skip-canary");
+/* --assess-only: Universum bewerten, ohne Kurse zu holen.
+
+   Fuer FULL_UNIVERSE ist das der einzige verantwortbare erste Schritt.
+   Die Ablage waechst gemessen mit rund 3 GB je 1.000 Titel; bei den
+   ueber 8.000 Aktien der Primaerboersen waeren das mehr als 24 GB - mehr
+   freier Platz, als ein Standard-Runner hat. Ein Lauf, der das
+   herausfindet, indem er auf halbem Weg an der Platte scheitert, hat
+   Kontingent verbrannt und nichts belegt.
+
+   Die Bewertung rechnet statt zu laden: Groesse, Zusammensetzung und die
+   Hochrechnung aus den gemessenen Raten der kleineren Gates (§25, §26). */
+const ASSESS_ONLY = argv.includes("--assess-only");
 const LIMIT = parseInt(arg("--limit", "0"), 10) || 0;
 /* --scale-dir und --work-dir sind Testschalter derselben Art wie
    TIINGO_BASE_URL: sie lenken Eingabe, Bericht und Arbeitsablage auf
@@ -88,7 +100,10 @@ function writeReport(report) {
   return file;
 }
 
-if (!apiKey && !DRY_RUN) {
+/* --assess-only und --dry-run brauchen keinen Zugang: sie rechnen und
+   holen nichts. Ein Abbruch wegen fehlendem Schluessel waere hier eine
+   Huerde ohne Zweck - und genau die stand beim ersten Versuch im Weg. */
+if (!apiKey && !DRY_RUN && !ASSESS_ONLY) {
   console.log("\n  Kein TIINGO_API_KEY gesetzt. Es wird nichts abgerufen.");
   writeReport({
     generatedAt: new Date().toISOString(), gate: GATE, provider: "tiingo",
@@ -98,6 +113,13 @@ if (!apiKey && !DRY_RUN) {
     requested: securities.length
   });
   process.exit(0);
+}
+
+/* Die Bewertung braucht weder Adapter noch Registry noch Speicher - sie
+   liest den bereits geschriebenen Universumsbericht und die Bilanzen der
+   gelaufenen Gates. Sie steht deshalb vor dem Aufbau und nicht darin. */
+if (ASSESS_ONLY) {
+  assessOnly();
 }
 
 const allSymbols = securities.map((s) => ({ securityId: s.securityId, ticker: s.ticker,
@@ -151,6 +173,96 @@ const permitted = DisplayPolicy.check({
 if (!permitted.allowed && !DRY_RUN) {
   console.error(`\n  ABBRUCH: ${permitted.message}`);
   process.exit(1);
+}
+
+function assessOnly() {
+  /* Die Hochrechnung stuetzt sich auf die Bilanzen der bereits
+     gelaufenen Gates und nicht auf eine Annahme. Fehlen sie, sagt der
+     Bericht das - eine Hochrechnung ohne Messgrundlage waere eine
+     Zahl ohne Deckung. */
+  const measured = [];
+  for (const g of SCALE.gates) {
+    const file = join(SCALE_DIR, `gate-${g.id}.json`);
+    if (!existsSync(file)) continue;
+    try {
+      const r = JSON.parse(readFileSync(file, "utf8"));
+      if (r.verdict === "PASS" && r.accounting && r.accounting.storageBytes) {
+        measured.push({
+          gate: g.id, symbols: r.accounting.requested,
+          storageMB: r.accounting.storageMB,
+          storageMBPer1000: r.accounting.storageMBPer1000Symbols,
+          secondsPerSymbol: r.run.runtimeSecondsPerSymbol,
+          requests: r.accounting.requests,
+          bytesReceivedMB: r.accounting.bytesReceivedMB
+        });
+      }
+    } catch (err) { /* ein unlesbarer Bericht ist keine Messgrundlage */ }
+  }
+
+  const basis = measured.length ? measured[measured.length - 1] : null;
+  const n = securities.length;
+  const report = {
+    generatedAt: new Date().toISOString(),
+    gate: GATE, provider: "tiingo", plan: "commercial",
+    verdict: "ASSESSED",
+    verdictReason: "assessOnly",
+    message: "Bewertung ohne Abruf. Es wurde kein Kurs geladen und kein Kontingent " +
+             "verbraucht - die Zahlen unten sind Hochrechnungen aus gemessenen Raten, " +
+             "ausdruecklich gekennzeichnet als solche.",
+    universe: {
+      file: `quant/data/market/scale/universe-${GATE}.json`,
+      method: universe.method, targetSize: universe.targetSize, actualSize: n,
+      bySector: universe.bySector, byExchange: universe.byExchange,
+      notes: universe.notes || []
+    },
+    measurementBasis: measured,
+    projection: basis ? {
+      basis: `Gemessen an ${basis.gate} (${basis.symbols} Titel).`,
+      symbols: n,
+      storageGB: Math.round(basis.storageMBPer1000 * n / 1000 / 1024 * 10) / 10,
+      downloadGB: Math.round(basis.bytesReceivedMB / basis.symbols * n / 1024 * 10) / 10,
+      requests: n,
+      gateMinutes: Math.round(basis.secondsPerSymbol * n / 60),
+      note: "Linear hochgerechnet. Die gemessenen Raten waren zwischen 100 und 500 " +
+            "Titeln stabil (0,60 s je Titel), deshalb ist die Annahme belegt und nicht " +
+            "geraten. Sie deckt NICHT ab, was passiert, wenn der Platz ausgeht."
+    } : {
+      status: "NO_MEASUREMENT_BASIS",
+      note: "Kein bestandenes Gate mit Bilanz vorhanden. Ohne Messgrundlage wird hier " +
+            "nicht hochgerechnet."
+    },
+    feasibility: basis ? (() => {
+      const storageGB = basis.storageMBPer1000 * n / 1000 / 1024;
+      /* Ein GitHub-Standard-Runner hat rund 14 GB frei. Die Zahl steht
+         hier als Vergleichsgroesse und wird im Lauf selbst gemessen
+         (Schritt "Platz auf dem Laufwerk"). */
+      const runnerGB = 14;
+      return {
+        storageGB: Math.round(storageGB * 10) / 10,
+        typicalRunnerFreeGB: runnerGB,
+        fitsOnStandardRunner: storageGB < runnerGB * 0.8,
+        verdict: storageGB < runnerGB * 0.8 ? "FEASIBLE_AS_IS" : "STORAGE_MIGRATION_REQUIRED",
+        recommendation: storageGB < runnerGB * 0.8
+          ? "Der Backfill passt auf einen Standard-Runner."
+          : "Ein vollstaendiger Backfill in einem Lauf passt nicht auf einen " +
+            "Standard-Runner. Zwei Wege, beide ohne Datenverlust: den Backfill in " +
+            "Abschnitten fahren (der Checkpoint traegt das schon) oder die Ablage " +
+            "von JSON je Titel auf ein kompakteres Format umstellen. Was NICHT " +
+            "empfohlen wird: die Historie zu kuerzen - sie ist der Grund, warum " +
+            "dieser Zugang bezahlt wird."
+      };
+    })() : { verdict: "UNKNOWN", recommendation: "Ohne Messgrundlage keine Aussage." }
+  };
+  writeReport(report);
+  console.log(`\n  Bewertung ohne Abruf: ${n} Titel`);
+  if (report.projection.storageGB !== undefined) {
+    console.log(`  Hochrechnung: ${report.projection.storageGB} GB Ablage, ` +
+                `${report.projection.downloadGB} GB Download, ${report.projection.requests} Anfragen, ` +
+                `${report.projection.gateMinutes} min Gate-Laufzeit`);
+    console.log(`  ${report.feasibility.verdict}`);
+    console.log(`  ${report.feasibility.recommendation}`);
+  }
+  process.exit(0);
 }
 
 /* --------------------------------------------------------- Abrufkern */

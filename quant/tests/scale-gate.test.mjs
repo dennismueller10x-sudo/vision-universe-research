@@ -557,3 +557,82 @@ test("SG8 — die erzeugten Artefakte kommen durch die Hygienepruefung", async (
     provider.server.close();
   }
 });
+
+test("SG9 — das Vollausbaustadium wird bewertet, ohne einen Kurs zu holen", async () => {
+  /* §25: erst bewerten, dann starten. Ein Backfill, der auf halbem Weg an
+     der Platte scheitert, hat Kontingent verbrannt und nichts belegt.
+
+     Der Test stellt einen Anbieter bereit und weist nach, dass er NICHT
+     angefragt wird - das ist der Punkt der Betriebsart. */
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+
+    /* Eine Bilanz aus einem bestandenen Gate als Messgrundlage. */
+    writeFileSync(join(scaleDir, "gate-GATE_500.json"), JSON.stringify({
+      gate: "GATE_500", verdict: "PASS",
+      accounting: { requested: 500, storageBytes: 1594884000, storageMB: 1520.6,
+                    storageMBPer1000Symbols: 3041.2, requests: 502, bytesReceivedMB: 866.7 },
+      run: { runtimeSecondsPerSymbol: 0.602 }
+    }));
+
+    const securities = [];
+    for (let i = 0; i < 8158; i++) {
+      securities.push({ securityId: "ref_S" + i, ticker: "S" + i,
+                        provider: "tiingo", providerSymbol: "S" + i });
+    }
+    writeFileSync(join(scaleDir, "universe-FULL_UNIVERSE.json"), JSON.stringify({
+      gate: "FULL_UNIVERSE", targetSize: null, actualSize: securities.length,
+      method: "RULE_BASED_FROM_PROVIDER_UNIVERSE",
+      bySector: { UNKNOWN: securities.length }, byExchange: { NASDAQ: 4908, NYSE: 2718 },
+      notes: [], securities
+    }));
+
+    const out = await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "FULL_UNIVERSE", "--assess-only", "--scale-dir", scaleDir,
+       "--work-dir", join(dir, "cache")],
+      { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+    assert.match(out, /Bewertung ohne Abruf/);
+
+    /* Der eigentliche Nachweis: keine einzige Anfrage. */
+    assert.equal(provider.requests(), 0, "die Bewertung darf nichts abrufen");
+
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-FULL_UNIVERSE.json"), "utf8"));
+    assert.equal(report.verdict, "ASSESSED");
+    assert.equal(report.universe.actualSize, securities.length);
+    /* Die Hochrechnung muss auf einer MESSUNG stehen, nicht auf einer Annahme. */
+    assert.equal(report.measurementBasis.length, 1);
+    assert.equal(report.measurementBasis[0].gate, "GATE_500");
+    assert.ok(report.projection.storageGB > 20, "8.158 Titel bei 3 GB je 1.000 sind ueber 20 GB");
+    assert.equal(report.feasibility.verdict, "STORAGE_MIGRATION_REQUIRED");
+    /* Und die Empfehlung darf nicht sein, die Historie zu kuerzen. */
+    assert.match(report.feasibility.recommendation, /NICHT empfohlen wird: die Historie zu kuerzen/);
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG10 — ohne Messgrundlage wird nicht hochgerechnet", async () => {
+  /* Eine Hochrechnung ohne gemessene Rate waere eine Zahl ohne Deckung -
+     und sie saehe genauso aus wie eine belegte. */
+  const dir = sandbox();
+  const scaleDir = join(dir, "scale");
+  writeFileSync(join(scaleDir, "universe-FULL_UNIVERSE.json"), JSON.stringify({
+    gate: "FULL_UNIVERSE", targetSize: null, actualSize: 2, method: "TEST",
+    bySector: {}, byExchange: {},
+    securities: [{ securityId: "ref_A", ticker: "A", provider: "tiingo", providerSymbol: "A" },
+                 { securityId: "ref_B", ticker: "B", provider: "tiingo", providerSymbol: "B" }]
+  }));
+
+  await run("scripts/market/run-scale-gate.mjs",
+    ["--gate", "FULL_UNIVERSE", "--assess-only", "--scale-dir", scaleDir,
+     "--work-dir", join(dir, "cache")]);
+
+  const report = JSON.parse(readFileSync(join(scaleDir, "gate-FULL_UNIVERSE.json"), "utf8"));
+  assert.equal(report.verdict, "ASSESSED");
+  assert.equal(report.projection.status, "NO_MEASUREMENT_BASIS");
+  assert.equal(report.feasibility.verdict, "UNKNOWN");
+  assert.ok(report.projection.storageGB === undefined,
+            "ohne Messgrundlage darf keine Zahl erscheinen");
+});
