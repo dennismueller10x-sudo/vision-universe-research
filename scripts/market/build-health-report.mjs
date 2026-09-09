@@ -115,10 +115,27 @@ for (const id of gateIds()) {
      Zustand, ueber den er berichten soll. */
   const hasAccounting = !!(d && d.accounting && d.dataQuality && d.historyCoverage);
 
+  /* Die universumsweite Pruefung, wenn es sie fuer dieses Gate gibt.
+     Sie beantwortet eine andere Frage als die Bilanz: nicht "wie viele
+     Titel sind gut", sondern "passt der Bestand als Ganzes zusammen"
+     (§13). Fehlt sie, steht das da - eine fehlende Pruefung ist kein
+     Bestehen. */
+  const uq = load(join("market", "health", `universe-quality-${id}.json`)).data;
+
   gates[id] = {
     gate: { status: g.status, generatedAt: g.generatedAt, ageHours: g.ageHours,
             verdict: d ? d.verdict : null, verdictReason: d ? d.verdictReason : null,
             note: g.note },
+    /* Fortsetzbarkeit steht neben dem Urteil, weil sie darueber
+       entscheidet, was als Naechstes zu tun ist. */
+    resumable: d && d.resumable ? d.resumable : null,
+    universeQuality: uq ? {
+      status: uq.status, errors: uq.errors, warnings: uq.warnings,
+      checksRun: uq.checksRun,
+      findings: (uq.findings || []).map((f) => ({ severity: f.severity, check: f.check,
+                                                  message: f.message }))
+    } : { status: "NOT_RUN",
+          note: "Keine universumsweite Pruefung fuer dieses Gate. Das ist kein Bestehen." },
     marketData: hasAccounting ? {
       requested: d.accounting.requested, resolved: d.accounting.resolved,
       PASS: d.dataQuality.PASS, WARNING: d.dataQuality.WARNING,
