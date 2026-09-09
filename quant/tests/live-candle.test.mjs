@@ -120,8 +120,9 @@ function startWsServer(opts = {}) {
       socket.write(encodeTextFrame(JSON.stringify({
         messageType: "A",
         service: "iex",
-        /* Tiingos Form: [typ, zeitstempel, ticker, ...zahlen] */
-        data: ["T", new Date(t.atMs).toISOString(), t.symbol, t.price, t.size]
+        /* Tiingos Form: [typ, zeitstempel, ticker, ...zahlen].
+           "T" ist ein ausgefuehrter Trade, "Q" ein Geld-/Briefkurs. */
+        data: [t.kind || "T", new Date(t.atMs).toISOString(), t.symbol, t.price, t.size]
       })));
       setTimeout(send, opts.intervalMs === undefined ? 15 : opts.intervalMs);
     };
@@ -349,4 +350,56 @@ test("LC5 — der geschriebene Nachweis nennt weder Kurse noch den Zugangsschlue
     assert.ok(!text.includes(forbidden),
               `der Bericht darf kein Kursfeld ${forbidden} tragen`);
   }
+});
+
+test("LC6 — ein Quote-Strom ist etwas anderes als kein Strom", async () => {
+  /* Der Befund, den die erste Messung bei offener Boerse ergab: die
+     Verbindung stand ueber die volle Dauer und trug 132 Nachrichten -
+     alle Quotes, kein einziger Trade. Als blosses "0 Ereignisse" gemeldet
+     sah das aus wie ein toter Strom.
+
+     Die Unterscheidung entscheidet, was als naechstes zu tun ist: bei
+     einem toten Strom hilft nur ein Tarifwechsel, bei einem Quote-Strom
+     steht der technische Weg und es fehlt die Datenart. */
+  const now = Date.now();
+  const ticks = [];
+  for (let i = 0; i < 5; i++) {
+    ticks.push({ symbol: "NVDA", price: 184.2 + i * 0.02, size: 100, atMs: now + i * 20,
+                 kind: "Q" });
+  }
+  const srv = await startWsServer({ ticks, intervalMs: 15 });
+  try {
+    const r = await collect(srv.port, { durationMs: 900 });
+    /* Quotes duerfen keinen Tick erzeugen - das ist die bestehende,
+       richtige Regel aus parseIexMessage. */
+    assert.equal(r.events.length, 0, "aus Quotes entsteht kein Tick");
+    assert.equal(r.series.length(), 0, "und keine Kerze");
+    /* Aber die Nachrichten sind angekommen. Genau das muss unterscheidbar
+       bleiben. */
+    assert.ok(r.messages >= 5, `es kamen ${r.messages} Nachrichten an`);
+  } finally { srv.close(); }
+});
+
+test("LC7 — die Auswertung trennt 'kein Strom' von 'Strom ohne Trades'", () => {
+  /* Geprueft wird die Entscheidungslogik selbst, an der Quelle: die drei
+     Faelle muessen im Bericht unterschiedliche Woerter erzeugen. Ohne das
+     verschwindet der teuerste Befund in einem FALSE. */
+  const src = readFileSync(join(root, "scripts", "market", "verify-live-candle.mjs"), "utf8");
+
+  assert.match(src, /quoteStreamAvailable/);
+  assert.match(src, /tradeStreamAvailable/);
+  assert.match(src, /rejectedThresholdLevels/);
+  /* Der Quote-Fall braucht seinen eigenen Zweig - nicht denselben Text
+     wie "kein Strom". */
+  assert.match(src, /withQuotes\.length\) \{[\s\S]{0,400}?Quotes\)/);
+  /* Und er darf nicht als TRUE durchgehen: eine Kerze aus Geld- und
+     Briefkursen ist eine andere Zahl. */
+  const quoteBranch = src.slice(src.indexOf("} else if (!withEvents.length && withQuotes.length) {"),
+                                src.indexOf("} else if (!withEvents.length) {"));
+  assert.match(quoteBranch, /liveChartReady = "FALSE"/);
+  assert.ok(!quoteBranch.includes('liveChartReady = "TRUE"'));
+  /* §21 wird getrennt beantwortet: sichtbare Bewegung ja, aus Trades nein. */
+  assert.match(src, /fromExecutedTrades/);
+  assert.match(src, /fromQuotesOnly/);
+  assert.match(src, /decisionRequired/);
 });

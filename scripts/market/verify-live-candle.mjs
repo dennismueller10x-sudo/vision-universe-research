@@ -117,6 +117,17 @@ function measureStream(opts) {
     const events = [];          /* {atMs, symbol, hasTimestamp, lagS} */
     const perSymbol = {};
     let messages = 0, adminMessages = 0, subscriptionAck = null, opened = false;
+    /* Wie viele Kursnachrichten welcher Art kamen.
+
+       Der erste Lauf meldete "134 Nachrichten, 0 Ereignisse" - und liess
+       damit offen, was die 134 waren. Sie waren Quotes: Geld und Brief,
+       keine ausgefuehrten Trades. Der Unterschied ist der ganze Befund,
+       und er darf nicht aus zwei Zahlen erschlossen werden muessen.
+
+       Tiingos IEX-Strom kennzeichnet die Art im ersten Feld: "T" Trade,
+       "Q" Quote (Top of Book), "B"/"A" einseitige Aktualisierungen. */
+    const messageTypes = Object.create(null);
+    let rejectedSubscription = null;
     let openedAt = null, firstEventAt = null, lastEventAt = null;
     let socketError = null, closeCode = null, closeReason = null;
     let candleTicks = 0, candleBucket = null, maxTicksInAnyBucket = 0;
@@ -149,10 +160,21 @@ function measureStream(opts) {
               subscriptionAck = {
                 messageType: msg.messageType,
                 code: msg.response ? msg.response.code : null,
-                message: msg.response ? String(msg.response.message || "").slice(0, 120) : null,
+                message: msg.response ? String(msg.response.message || "").slice(0, 200) : null,
                 hasSubscriptionId: !!(msg.data && msg.data.subscriptionId)
               };
             }
+            /* Eine ausdrueckliche Ablehnung ist ein eigener Befund und
+               nicht dasselbe wie Stille. */
+            if (msg.messageType === "E" && msg.response && msg.response.code >= 400) {
+              rejectedSubscription = {
+                code: msg.response.code,
+                message: String(msg.response.message || "").slice(0, 200)
+              };
+            }
+          } else if (msg && msg.messageType === "A" && Array.isArray(msg.data)) {
+            const kind = String(msg.data[0] || "?");
+            messageTypes[kind] = (messageTypes[kind] || 0) + 1;
           }
         } catch (err) { /* eine unlesbare Nachricht ist keine Kursnachricht */ }
         return TiingoRealtime.parseIexMessage(ev);
@@ -186,6 +208,12 @@ function measureStream(opts) {
           subscriptionAck,
           messages,
           adminMessages,
+          /* Die Auszaehlung nach Art. "T" sind Trades und damit das,
+             woraus eine Kerze entsteht; "Q" sind Geld- und Briefkurse. */
+          messageTypes: Object.assign({}, messageTypes),
+          tradeMessages: messageTypes.T || 0,
+          quoteMessages: (messageTypes.Q || 0) + (messageTypes.B || 0) + (messageTypes.A || 0),
+          rejectedSubscription,
           socketError,
           closeCode, closeReason,
           /* Stabilitaet ist nicht "keine Fehlermeldung", sondern: die
@@ -363,6 +391,27 @@ async function main() {
   const withCandle = measured.filter((r) => r.candle && r.candle.multipleUpdatesInSameCandle);
   const anyOpened = measured.some((r) => r.connection && r.connection.opened);
 
+  /* Drei Faelle, die sich sehr aehnlich sehen und ganz verschiedene
+     Folgen haben:
+
+       kein Strom          die Verbindung kommt nicht zustande oder wird
+                           abgelehnt. Nichts zu machen ohne Tarifwechsel.
+       Strom ohne Trades   die Verbindung steht und liefert - aber Geld-
+                           und Briefkurse statt ausgefuehrter Trades.
+                           Technisch ist der Weg da; was fehlt, ist die
+                           Datenart, aus der eine Kerze entsteht.
+       Strom mit Trades    der Fall, fuer den alles gebaut ist.
+
+     Der mittlere Fall war das Ergebnis der ersten Messung, und er ging in
+     einem blossen FALSE unter. */
+  const withQuotes = measured.filter((r) => r.connection && r.connection.quoteMessages > 0);
+  const withTrades = measured.filter((r) => r.connection && r.connection.tradeMessages > 0);
+  const rejected = measured.filter((r) => r.connection && r.connection.rejectedSubscription);
+  const acceptedLevels = measured
+    .filter((r) => r.connection && r.connection.opened && !r.connection.rejectedSubscription)
+    .map((r) => r.thresholdLevel);
+  const rejectedLevels = rejected.map((r) => r.thresholdLevel);
+
   /* LIVE_CHART_READY ist kein Optimismus. TRUE verlangt: Verbindung
      stand, mehrere aufeinanderfolgende Ereignisse, und daraus ist eine
      Minutenkerze mit mehr als einem Update entstanden. Fehlt eines
@@ -385,6 +434,16 @@ async function main() {
   } else if (!anyOpened) {
     liveChartReady = "FALSE";
     liveChartReason = "Die Verbindung kam bei offener Boerse nicht zustande.";
+  } else if (!withEvents.length && withQuotes.length) {
+    liveChartReady = "FALSE";
+    liveChartReason =
+      "Der Strom laeuft - er liefert aber Geld- und Briefkurse (Quotes) und keine " +
+      "ausgefuehrten Trades. Die Verbindung stand ueber die volle Messdauer und trug " +
+      withQuotes[0].connection.quoteMessages + " Quote-Nachrichten in " +
+      withQuotes[0].durationSeconds + " Sekunden; Trades kamen null. Eine Kerze aus " +
+      "Geld- und Briefkursen ist eine ANDERE Zahl als die, die der Chart heute zeigt - " +
+      "sie zu bauen waere eine Produktentscheidung und keine Messung. Der technische " +
+      "Weg steht; was fehlt, ist die Datenart.";
   } else if (!withEvents.length) {
     liveChartReady = "FALSE";
     liveChartReason = "Die Verbindung stand bei offener Boerse, lieferte aber keine " +
@@ -442,6 +501,23 @@ async function main() {
     },
     LIVE_CHART_READY: liveChartReady,
     liveChartReason,
+    /* Die Teilbefunde einzeln. Sie sagen zusammen, was LIVE_CHART_READY
+       sagt - aber sie sagen auch, WAS genau fehlt, und das entscheidet
+       ueber den naechsten Schritt. */
+    streamFindings: {
+      connectionAccepted: anyOpened,
+      acceptedThresholdLevels: acceptedLevels,
+      rejectedThresholdLevels: rejectedLevels,
+      rejectionMessage: rejected.length ? rejected[0].connection.rejectedSubscription.message : null,
+      quoteStreamAvailable: withQuotes.length > 0,
+      tradeStreamAvailable: withTrades.length > 0,
+      quoteMessagesObserved: withQuotes.length ? withQuotes[0].connection.quoteMessages : 0,
+      tradeMessagesObserved: withTrades.length ? withTrades[0].connection.tradeMessages : 0,
+      note: "Eine Kerze entsteht aus ausgefuehrten Trades. Quotes bewegen einen Chart " +
+            "ebenfalls sichtbar, sind aber eine andere Groesse - Geld und Brief statt " +
+            "Abschluss. Beides zu vermischen waere der Fehler, den die Trennung hier " +
+            "verhindert."
+    },
     /* Leer, wenn der Strom geliefert hat. Gefuellt sagt er, was der
        Anbieter STATTDESSEN geschickt hat - eine Bestaetigung ohne Daten
        sieht anders aus als eine abgelehnte Anmeldung. */
@@ -450,8 +526,19 @@ async function main() {
        ist genau die obere, in anderen Worten. Sie steht trotzdem
        getrennt, weil sie getrennt gestellt wurde. */
     marketOpenExperience: {
-      visibleMovementPossible: liveChartReady === "TRUE",
-      basis: liveChartReason
+      /* §21 fragt nach sichtbarer Bewegung, nicht nach Trades. Ein
+         Quote-Strom bewegt einen Chart - er bewegt ihn nur mit einer
+         anderen Zahl. Die Antwort trennt das. */
+      visibleMovementPossible: liveChartReady === "TRUE" || withQuotes.length > 0,
+      fromExecutedTrades: withTrades.length > 0,
+      fromQuotesOnly: withQuotes.length > 0 && withTrades.length === 0,
+      basis: liveChartReason,
+      decisionRequired: withQuotes.length > 0 && withTrades.length === 0
+        ? "Zwei Wege: den Tarif um die Last-Sale-Daten erweitern, oder die laufende Kerze " +
+          "ausdruecklich aus Quote-Mittelkursen bauen. Das zweite ist eine " +
+          "Produktentscheidung mit Folgen fuer jede Kennzahl, die auf der Kerze rechnet - " +
+          "sie gehoert nicht in ein Skript, sondern in eine Freigabe."
+        : null
     },
     measurements: runs
   };
