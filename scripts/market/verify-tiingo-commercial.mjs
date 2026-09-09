@@ -228,8 +228,22 @@ async function main() {
         hasTimestamp: !!(q && q.timestamp),
         lagSeconds: lagS,
         sessionPhase: session.phase,
-        /* Kein Kurs im Beleg (§34) - nur ob einer da war und wie alt. */
-        interpretation: "Der Betrag selbst steht bewusst nicht im Bericht."
+        /* Kein Kurs im Beleg (§34) - nur ob einer da war und wie alt.
+
+           Und die Einordnung, ohne die ein ABSENT hier falsch gelesen
+           wird: `last` ist der letzte an IEX AUSGEFUEHRTE Trade. Vor
+           Boersenoeffnung gibt es keinen, also ist das Feld leer - das
+           sagt nichts ueber den Zugang und alles ueber die Uhrzeit. Ein
+           belastbares Urteil ueber diese Faehigkeit verlangt einen Lauf
+           waehrend der regulaeren Sitzung. */
+        sessionDependent: session.phase !== "REGULAR",
+        interpretation: q && q.last !== null
+          ? "Ein ausgefuehrter Kurs liegt vor. Der Betrag selbst steht bewusst nicht im Bericht."
+          : session.phase === "REGULAR"
+            ? "Kein ausgefuehrter Kurs bei offener Boerse. Das ist ein Befund ueber den Zugang."
+            : `Kein ausgefuehrter Kurs in der Phase ${session.phase}. Erwartbar: vor der ` +
+              "Eroeffnung gibt es keinen letzten Trade. Der Befund sagt hier nichts ueber " +
+              "den Zugang - der Referenzkurs (tngoLast) daneben schon."
       });
 
       /* Der Referenzkurs. Genau die Frage aus §4. */

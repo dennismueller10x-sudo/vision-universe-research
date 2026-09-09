@@ -487,3 +487,38 @@ test("MS22 — ein echter Kurssturz auf der bereinigten Spalte ist kein Bereinig
   assert.ok(echterSplit.findings.some((f) => f.code === "announced_split"));
   assert.equal(echterSplit.ok, true);
 });
+
+test("MS23 — MAX zeigt die tatsaechlich vorhandene Historie, auch ueber 36 Jahre", () => {
+  /* §19: MAX ist die gesamte vorhandene Historie und keine Hochrechnung.
+     Der Commercial-Zugang liefert fuer die Canary-Titel Kurse ab
+     1990-01-02 - vorher endete die Arbeitsablage bei 2015. Der Test haelt
+     fest, dass die Bereichsleiste damit umgeht, statt bei einem der
+     laengeren Fenster abzuschneiden. */
+  const Ranges = require(join(engines, "chart-ranges.js"));
+  const bars = [];
+  const cursor = new Date(Date.UTC(1990, 0, 2));
+  const end = Date.UTC(2026, 8, 9);
+  while (cursor.getTime() < end) {
+    const day = cursor.getUTCDay();
+    if (day !== 0 && day !== 6) bars.push({ date: cursor.toISOString().slice(0, 10), close: 100 });
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  assert.ok(bars.length > 9000, "die Testreihe soll die echte Tiefe abbilden");
+
+  const max = Ranges.selectRange("MAX", { eod: bars }, { today: "2026-09-09", gates: {} });
+  assert.equal(max.ok, true);
+  assert.equal(max.bars.length, bars.length, "MAX darf nichts abschneiden");
+  assert.equal(max.from, bars[0].date);
+
+  /* Die kuerzeren Fenster bleiben Fenster - MAX ist nicht ihr Ersatz. */
+  const tenY = Ranges.selectRange("10Y", { eod: bars }, { today: "2026-09-09", gates: {} });
+  assert.equal(tenY.ok, true);
+  assert.ok(tenY.bars.length < max.bars.length);
+  assert.ok(tenY.from > bars[0].date);
+
+  /* Die Intraday-Fenster haengen an einer Freigabe und nicht an den
+     Daten: aus Tagesschlusskursen laesst sich kein Tagesverlauf bauen. */
+  const oneDay = Ranges.selectRange("1D", { eod: bars }, { today: "2026-09-09", gates: {} });
+  assert.equal(oneDay.ok, false);
+  assert.equal(oneDay.reason, "gateDisabled");
+});
