@@ -218,7 +218,14 @@ async function main() {
             charts: document.querySelectorAll("canvas, svg").length,
             /* Die Seiten weisen ihren Datenzustand selbst aus. Das ist die
                ehrlichste Quelle - ehrlicher als jede Heuristik von aussen. */
-            mockBanner: /DEMO-DATEN|SYNTHETISCHE|MODE\s*·?\s*MOCK/i.test(t),
+            /* Genau formulieren, nicht ungefaehr. Der Stamm
+               "SYNTHETISCHE" hat auf "Kein synthetischer Titel des
+               Modelluniversums" angeschlagen - eine VERNEINUNG - und die
+               Einzeltitelseite dadurch als MOCK gemeldet, obwohl sie
+               echte Golden-Five-Daten zeigt. Ein Muster, das eine
+               Verneinung als Bestaetigung liest, ist schlimmer als
+               keines: es erzeugt einen Befund, den es nicht gibt. */
+            mockBanner: /DEMO-DATEN|Demo-Daten|SYNTHETISCHES UNIVERSUM|Synthetische Fixtures|MODE\s*·?\s*MOCK/i.test(t),
             unavailableBanner: /MARKET DATA UNAVAILABLE|Daten nicht verf/i.test(t),
             realDataBanner: /REAL DATA/i.test(t),
             excerpt: t.slice(0, 200)
