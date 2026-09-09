@@ -68,6 +68,30 @@ class ReconstructionTests(unittest.TestCase):
         self.assertAlmostEqual(fcf.value, ocf.value - capex.value, places=6)
         self.assertEqual(fcf.provenance.source, SOURCE_DERIVED)
 
+    def test_ebit_is_derived_from_pretax_income_and_interest_expense(self):
+        ebit = self.derived["ebit"]
+        pretax = self.resolver.annual("pretax_income", 2025, self.as_of)
+        interest = self.resolver.annual("interest_expense", 2025, self.as_of)
+        # The standard fixture intentionally has no interest expense, proving
+        # that EBIT is unavailable rather than silently relabelled operating income.
+        self.assertFalse(ebit.available)
+        self.assertIsNone(ebit.value)
+        self.assertTrue(pretax.available)
+        self.assertFalse(interest.available)
+
+    def test_ebit_is_marked_derived_when_both_inputs_exist(self):
+        from quant.tests.fixtures import FLOW_CONCEPTS
+        resolver, _, _ = resolver_for(
+            3000000099, lambda year: 1000.0 * (year - 2017),
+            flow_concepts=FLOW_CONCEPTS + (("InterestExpense", "USD", 0.02),))
+        as_of = date(2026, 3, 1)
+        ebit = reconstruct(resolver, 2025, "FY", as_of)["ebit"]
+        pretax = resolver.annual("pretax_income", 2025, as_of)
+        interest = resolver.annual("interest_expense", 2025, as_of)
+        self.assertTrue(ebit.available)
+        self.assertAlmostEqual(pretax.value + interest.value, ebit.value)
+        self.assertEqual(SOURCE_DERIVED, ebit.provenance.source)
+
     def test_gross_profit_is_reconstructed_when_not_reported(self):
         self.assertIsNone(self.resolver.factbook.get("gross_profit", 2025, "FY"))
         gross = self.derived["gross_profit"]

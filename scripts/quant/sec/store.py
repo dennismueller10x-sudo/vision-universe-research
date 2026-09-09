@@ -385,8 +385,12 @@ class CheckpointStore:
     def load(self):
         if not self.path.exists():
             return {"run_id": self.run_id, "started_at": _utcnow(), "completed": {},
-                    "failed": {}, "retry_queue": [], "last_cik": None}
-        return json.loads(self.path.read_text(encoding="utf-8"))
+                    "excluded": {}, "failed": {}, "retry_queue": [], "last_cik": None}
+        state = json.loads(self.path.read_text(encoding="utf-8"))
+        # Backward-compatible with checkpoints written before exclusions became
+        # a first-class terminal state.
+        state.setdefault("excluded", {})
+        return state
 
     def save(self, state):
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -398,17 +402,29 @@ class CheckpointStore:
 
     def mark_completed(self, state, cik, detail):
         state["completed"][str(cik)] = {"at": _utcnow(), **detail}
+        state.setdefault("excluded", {}).pop(str(cik), None)
         state["failed"].pop(str(cik), None)
         state["retry_queue"] = [item for item in state["retry_queue"] if item != str(cik)]
         state["last_cik"] = str(cik)
         return state
 
-    def mark_failed(self, state, cik, error, code="UNKNOWN"):
+    def mark_excluded(self, state, cik, detail):
+        """Record a reproducible eligibility exclusion without retrying it."""
+        state.setdefault("excluded", {})[str(cik)] = {"at": _utcnow(), **detail}
+        state["completed"].pop(str(cik), None)
+        state["failed"].pop(str(cik), None)
+        state["retry_queue"] = [item for item in state["retry_queue"] if item != str(cik)]
+        state["last_cik"] = str(cik)
+        return state
+
+    def mark_failed(self, state, cik, error, code="UNKNOWN", detail=None):
         record = state["failed"].get(str(cik), {"attempts": 0})
         record["attempts"] += 1
         record["at"] = _utcnow()
         record["error"] = str(error)
         record["code"] = code
+        if detail:
+            record.update(detail)
         state["failed"][str(cik)] = record
         if str(cik) not in state["retry_queue"]:
             state["retry_queue"].append(str(cik))
@@ -416,7 +432,8 @@ class CheckpointStore:
         return state
 
     def is_completed(self, state, cik):
-        return str(cik) in state["completed"]
+        return (str(cik) in state["completed"]
+                or str(cik) in state.get("excluded", {}))
 
     def reset(self):
         if self.path.exists():

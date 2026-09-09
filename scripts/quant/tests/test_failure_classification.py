@@ -4,7 +4,7 @@ import unittest
 import urllib.error
 
 from quant.sec.failures import (
-    IngestionFailure, NO_COMPANY_FACTS, NO_FILINGS, QUALITY_FAILURE, SEC_RATE_LIMIT,
+    IngestionFailure, NO_COMPANY_FACTS, NO_FILINGS, QUALITY_FAILURE, RATE_LIMITED,
     UNKNOWN, UNSUPPORTED_ENTITY, classify_failure,
 )
 from quant.sec.http_client import DiskCache, RateLimiter, SECHttpClient
@@ -74,7 +74,7 @@ class RateLimitStopTests(unittest.TestCase):
             result = pipeline.ingest_universe([{"cik": 1}, {"cik": 2}])
             self.assertTrue(result["manifest"]["run"]["halted"])
             self.assertEqual(1, result["manifest"]["run"]["processed"])
-            self.assertEqual(SEC_RATE_LIMIT,
+            self.assertEqual(RATE_LIMITED,
                              result["state"]["failed"]["0000000001"]["code"])
             self.assertEqual(2, result["manifest"]["run"]["http"]["status_counts"]["429"])
 

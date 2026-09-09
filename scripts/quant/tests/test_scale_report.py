@@ -67,6 +67,20 @@ class ScaleReportTests(unittest.TestCase):
         self.assertEqual("FAIL", report["survivorshipBiasStatus"])
         self.assertEqual("EXTERNAL_SECURITY_MASTER_REQUIRED", report["securityMasterStatus"])
 
+    def test_expected_exclusions_do_not_inflate_technical_failure_rate(self):
+        self.store.write_company("0000000001", document())
+        report = build_scale_report(
+            self.store, [{"cik": "1"}], "test", {"run": {
+                "total_sample": 2, "eligible": 1, "expected_exclusions": 1,
+                "real_failures": 0, "unprocessed": 0,
+                "technical_failure_rate": 0.0, "halted": False,
+            }})
+        self.assertEqual(2, report["totalSample"])
+        self.assertEqual(1, report["expectedExclusions"])
+        self.assertEqual(0, report["realFailures"])
+        self.assertEqual(0.0, report["technicalFailureRate"])
+        self.assertEqual("PASS", report["status"])
+
 
 if __name__ == "__main__":
     unittest.main()

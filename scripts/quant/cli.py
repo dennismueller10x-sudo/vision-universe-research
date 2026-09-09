@@ -9,17 +9,22 @@
     python3 scripts/quant/cli.py gates
     python3 scripts/quant/cli.py resolve
     python3 scripts/quant/cli.py universe
+    python3 scripts/quant/cli.py eligibility
+    python3 scripts/quant/cli.py alias-discovery
+    python3 scripts/quant/cli.py bulk-download
     python3 scripts/quant/cli.py canonical
     python3 scripts/quant/cli.py inspect   --ticker NVDA --metric revenue
     python3 scripts/quant/cli.py test
 
-Commands that reach sec.gov: ingest, update, retry, resolve, universe. Everything else works
-offline against what has already been ingested.
+Commands that may reach sec.gov: ingest, update, retry, resolve, universe,
+eligibility and bulk-download. Everything else works offline against what has
+already been ingested.
 """
 import argparse
 import json
 import logging
 import sys
+import zipfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -27,16 +32,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from quant.sec import coverage as coverage_module
 from quant.sec import gates as gates_module
+from quant.sec.alias_discovery import build_alias_discovery
 from quant.sec.canonical import DATA_SOURCE, build_company_bundle
+from quant.sec.eligibility import (
+    build_classification_report, classify_entity, fundamentals_gate_sample,
+)
 from quant.sec.periods import PeriodResolver
 from quant.sec.pipeline import IngestionPipeline, export_inspector_view, _rehydrate
-from quant.sec.provider import SECProvider, normalize_cik
+from quant.sec.provider import (
+    BULK_COMPANY_FACTS_URL, BULK_SUBMISSIONS_URL, SECProvider, normalize_cik,
+)
 from quant.sec.registry import MetricRegistry
 from quant.sec.regression import compare_golden
 from quant.sec.restatements import POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN, POLICIES
 from quant.sec.scale_report import build_scale_report
 from quant.sec.store import (
-    DEFAULT_FACT_DIR, DEFAULT_SQLITE_FACT_PATH, JsonFactStore, SqliteFactStore,
+    DEFAULT_FACT_DIR, DEFAULT_SQLITE_FACT_PATH, JsonFactStore, JsonRawStore,
+    SqliteFactStore,
 )
 from quant.sec.universe import build_current_universe, gate_sample
 from quant.sec.version import version_stamp
@@ -219,6 +231,133 @@ def cmd_universe(args):
     return 0
 
 
+def _provider(args):
+    return SECProvider(
+        bulk_submissions_path=getattr(args, "bulk_submissions_zip", None),
+        bulk_company_facts_path=getattr(args, "bulk_company_facts_zip", None),
+    )
+
+
+def _add_bulk_args(parser):
+    parser.add_argument("--bulk-submissions-zip",
+                        help="local official SEC submissions.zip (off-Git)")
+    parser.add_argument("--bulk-company-facts-zip",
+                        help="local official SEC companyfacts.zip (off-Git)")
+
+
+def cmd_eligibility(args):
+    """Classify deterministic candidates using cached/fetched submissions only."""
+    provider = _provider(args)
+    raw_store = JsonRawStore(args.raw_store)
+    rows = []
+    eligible = 0
+    for entry in _load_universe(args.universe)[:args.max_candidates]:
+        cik = normalize_cik(entry["cik"])
+        submissions = raw_store.get_latest(cik, "submissions")
+        if submissions is None:
+            # Current submissions metadata is sufficient for eligibility and
+            # avoids downloading decades of filing-index pages merely to decide
+            # whether an entity belongs in the fundamentals universe.
+            if args.offline and not args.bulk_submissions_zip:
+                rows.append({**entry, "cik": cik,
+                             "classificationError": "NO_CACHED_SUBMISSIONS"})
+                print(f"[{len(rows)}/{args.max_candidates}] cik={cik} "
+                      "classification=UNAVAILABLE error=NO_CACHED_SUBMISSIONS")
+                continue
+            try:
+                submissions = provider.get_submissions(cik, include_history=False)
+            except Exception as exc:  # failure remains explicit in the report
+                rows.append({**entry, "cik": cik,
+                             "classificationError": type(exc).__name__,
+                             "classificationErrorDetail": str(exc)})
+                print(f"[{len(rows)}/{args.max_candidates}] cik={cik} "
+                      f"classification=UNAVAILABLE error={type(exc).__name__}")
+                continue
+        digest = raw_store.put(cik, "submissions", submissions)
+        snapshot = raw_store.snapshot_record(cik, "submissions", digest)
+        if snapshot:
+            submissions["_retrieved_at"] = snapshot["first_seen"]
+        profile = provider.get_company_profile(cik, submissions)
+        filings = provider.get_filing_metadata(cik, submissions)
+        cached_facts = raw_store.get_latest(cik, "companyfacts") or {}
+        classification = classify_entity(
+            profile, filings, taxonomies=(cached_facts.get("facts") or {}).keys())
+        rows.append({**entry, "cik": cik, "classification": classification.to_dict()})
+        eligible += classification.fundamentals_eligible is True
+        print(f"[{len(rows)}/{args.max_candidates}] cik={cik} "
+              f"classification={classification.entity_classification} "
+              f"eligible={classification.fundamentals_eligible}")
+        if args.target_eligible and eligible >= args.target_eligible:
+            break
+
+    report = build_classification_report(rows)
+    report["generatedAtUtc"] = _utcnow()
+    report["sourceUniverse"] = str(args.universe)
+    report["targetEligible"] = args.target_eligible
+    _write(Path(args.output), report)
+    if args.eligible_output:
+        sample = fundamentals_gate_sample(rows, args.target_eligible)
+        sample["classificationReport"] = str(args.output)
+        _write(Path(args.eligible_output), sample)
+        if sample["actualSize"] != args.target_eligible:
+            return 1
+    return 0
+
+
+def cmd_alias_discovery(args):
+    """Build an offline concept-coverage report from archived raw payloads."""
+    store = JsonRawStore(args.raw_store)
+    if args.universe:
+        ciks = [normalize_cik(row["cik"]) for row in _load_universe(args.universe)]
+    else:
+        ciks = [path.name for path in Path(args.raw_store).iterdir()
+                if path.is_dir() and path.name.isdigit()]
+    payloads = []
+    for cik in ciks:
+        payload = store.get_latest(cik, "companyfacts")
+        if payload:
+            payloads.append((cik, payload))
+    report = build_alias_discovery(payloads, MetricRegistry.load())
+    _write(Path(args.output), report)
+    return 0
+
+
+def cmd_bulk_download(args):
+    """Cache the two official nightly SEC bulk archives outside Git."""
+    provider = SECProvider()
+    directory = Path(args.directory)
+    requested = {
+        "submissions": (BULK_SUBMISSIONS_URL, directory / "submissions.zip"),
+        "companyfacts": (BULK_COMPANY_FACTS_URL, directory / "companyfacts.zip"),
+    }
+    kinds = requested if args.only == "both" else {args.only: requested[args.only]}
+    archives = []
+    for kind, (url, path) in kinds.items():
+        provider.client.download_file(url, path, force=args.force)
+        with zipfile.ZipFile(path) as archive:
+            entries = len(archive.infolist())
+            if not entries:
+                raise SystemExit(f"downloaded SEC archive is empty: {path}")
+        archives.append({
+            "kind": kind,
+            "officialSource": url,
+            "file": path.name,
+            "bytes": path.stat().st_size,
+            "entries": entries,
+            "modifiedAt": datetime.fromtimestamp(
+                path.stat().st_mtime, tz=timezone.utc).isoformat(timespec="seconds"),
+        })
+    report = {
+        "schemaVersion": 1,
+        "generatedAtUtc": _utcnow(),
+        "storageClass": "PRODUCTION_CACHE_OFF_GIT",
+        "archives": archives,
+        "http": provider.client.stats,
+    }
+    _write(Path(args.output), report)
+    return 0
+
+
 def cmd_golden_regression(args):
     report = compare_golden(
         _fact_store(args), MetricRegistry.load(), _load_universe(args.universe),
@@ -233,7 +372,8 @@ def cmd_golden_regression(args):
 def cmd_scale_report(args):
     store = _fact_store(args)
     entries = _load_universe(args.universe)
-    report = build_scale_report(store, entries, args.gate)
+    report = build_scale_report(store, entries, args.gate,
+                                raw_store_path=args.raw_store)
     _write(Path(args.output), report)
     print(json.dumps({
         "gate": report["gate"],
@@ -247,7 +387,7 @@ def cmd_scale_report(args):
 
 
 def cmd_ingest(args):
-    provider = SECProvider()
+    provider = _provider(args)
     registry = MetricRegistry.load()
     pipeline = IngestionPipeline(provider=provider, registry=registry,
                                  fact_store=_fact_store(args), run_id=args.run_id)
@@ -576,6 +716,7 @@ def build_parser():
     ingest.add_argument("--limit", type=int)
     ingest.add_argument("--no-resume", action="store_true")
     _add_store_args(ingest)
+    _add_bulk_args(ingest)
     ingest.set_defaults(func=cmd_ingest)
 
     update = subparsers.add_parser("update", help="re-ingest companies with new filings")
@@ -620,6 +761,37 @@ def build_parser():
     universe.add_argument("--sample-sizes", type=int, nargs="+", default=[100, 500, 2000])
     universe.set_defaults(func=cmd_universe)
 
+    eligibility = subparsers.add_parser(
+        "eligibility", help="classify SEC candidates and build an eligible gate sample")
+    eligibility.add_argument("--universe", required=True)
+    eligibility.add_argument("--output", required=True)
+    eligibility.add_argument("--eligible-output")
+    eligibility.add_argument("--target-eligible", type=int, default=100)
+    eligibility.add_argument("--max-candidates", type=int, default=500)
+    eligibility.add_argument("--raw-store", default=str(ROOT / ".sec-data" / "raw"))
+    eligibility.add_argument("--offline", action="store_true",
+                             help="classify only archived submissions; never call SEC")
+    _add_bulk_args(eligibility)
+    eligibility.set_defaults(func=cmd_eligibility)
+
+    aliases = subparsers.add_parser(
+        "alias-discovery", help="report mapped and candidate XBRL concepts offline")
+    aliases.add_argument("--universe")
+    aliases.add_argument("--output", required=True)
+    aliases.add_argument("--raw-store", default=str(ROOT / ".sec-data" / "raw"))
+    aliases.set_defaults(func=cmd_alias_discovery)
+
+    bulk_download = subparsers.add_parser(
+        "bulk-download", help="stream official SEC bulk archives into off-Git cache")
+    bulk_download.add_argument(
+        "--directory", default=str(ROOT / ".sec-data" / "bulk"))
+    bulk_download.add_argument(
+        "--output", default=str(ROOT / ".sec-data" / "reports" / "bulk-download.json"))
+    bulk_download.add_argument(
+        "--only", choices=("both", "submissions", "companyfacts"), default="both")
+    bulk_download.add_argument("--force", action="store_true")
+    bulk_download.set_defaults(func=cmd_bulk_download)
+
     regression = subparsers.add_parser(
         "golden-regression", help="compare a live fact store with committed Golden bundles")
     regression.add_argument("--universe", default=str(DEFAULT_UNIVERSE))
@@ -633,6 +805,7 @@ def build_parser():
     scale_report.add_argument("--gate", required=True)
     scale_report.add_argument("--universe", required=True)
     scale_report.add_argument("--output", required=True)
+    scale_report.add_argument("--raw-store", default=str(ROOT / ".sec-data" / "raw"))
     _add_store_args(scale_report)
     scale_report.set_defaults(func=cmd_scale_report)
 

@@ -151,7 +151,7 @@ class SECHttpClient:
 
     def __init__(self, user_agent=DEFAULT_USER_AGENT, cache=None, rate_limiter=None,
                  opener=None, timeout=DEFAULT_TIMEOUT, max_retries=DEFAULT_MAX_RETRIES,
-                 sleep=time.sleep, jitter=random.random):
+                 sleep=time.sleep, jitter=random.random, stream_opener=None):
         if not user_agent or "@" not in user_agent:
             raise ValueError(
                 "SEC requires a declaring User-Agent containing a contact address"
@@ -165,6 +165,7 @@ class SECHttpClient:
         self._jitter = jitter
         # opener(url, headers, timeout) -> bytes. Injected in tests; no network there.
         self._opener = opener or self._urlopen
+        self._stream_opener = stream_opener or self._urlopen_stream
         self._inflight = {}
         self._inflight_lock = threading.Lock()
         self.stats = {
@@ -184,6 +185,10 @@ class SECHttpClient:
             if response.headers.get("Content-Encoding") == "gzip":
                 payload = gzip.decompress(payload)
             return payload
+
+    def _urlopen_stream(self, url, headers, timeout):
+        request = urllib.request.Request(url, headers=headers)
+        return urllib.request.urlopen(request, timeout=timeout)
 
     def _headers(self):
         return {
@@ -285,3 +290,68 @@ class SECHttpClient:
     def get_zip(self, url, use_cache=True):
         """Return a BytesIO of a bulk ZIP payload (companyfacts.zip et al.)."""
         return io.BytesIO(self.get_bytes(url, use_cache=use_cache))
+
+    def download_file(self, url, target, force=False, chunk_bytes=1024 * 1024):
+        """Stream one large official archive to disk with the normal retry policy.
+
+        Bulk SEC archives can be multiple gigabytes, so routing them through
+        ``get_bytes`` would duplicate the whole payload in memory. The sibling
+        ``.part`` file makes interruption recoverable and is atomically replaced
+        only after a complete response.
+        """
+        target = Path(target)
+        if target.is_file() and not force:
+            self.stats["cache_hits"] += 1
+            return target
+        target.parent.mkdir(parents=True, exist_ok=True)
+        temporary = target.with_name(target.name + ".part")
+        last_status = None
+        last_message = ""
+        for attempt in range(self.max_retries + 1):
+            waited = self.rate_limiter.acquire()
+            self.stats["requests"] += 1
+            started = time.monotonic()
+            try:
+                headers = self._headers()
+                headers["Accept-Encoding"] = "identity"
+                received = 0
+                with self._stream_opener(url, headers, self.timeout) as response:
+                    with temporary.open("wb") as handle:
+                        while True:
+                            chunk = response.read(chunk_bytes)
+                            if not chunk:
+                                break
+                            handle.write(chunk)
+                            received += len(chunk)
+                temporary.replace(target)
+                self.stats["bytes_received"] += received
+                self.stats["status_counts"]["200"] = (
+                    self.stats["status_counts"].get("200", 0) + 1)
+                LOGGER.info(
+                    "sec_download url=%s status=200 bytes=%d attempt=%d "
+                    "wait=%.2fs elapsed=%.2fs",
+                    url, received, attempt + 1, waited, time.monotonic() - started,
+                )
+                return target
+            except urllib.error.HTTPError as exc:
+                last_status, last_message = exc.code, str(exc.reason)
+                key = str(exc.code)
+                self.stats["status_counts"][key] = (
+                    self.stats["status_counts"].get(key, 0) + 1)
+                retryable = exc.code in RETRYABLE_STATUS
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                last_status, last_message = None, str(exc)
+                if isinstance(exc, TimeoutError) or "timed out" in str(exc).lower():
+                    self.stats["timeouts"] += 1
+                retryable = True
+            if temporary.exists():
+                temporary.unlink()
+            LOGGER.warning(
+                "sec_download url=%s status=%s attempt=%d retryable=%s error=%s",
+                url, last_status, attempt + 1, retryable, last_message,
+            )
+            if not retryable or attempt == self.max_retries:
+                break
+            self.stats["retries"] += 1
+            self._sleep(self._backoff_seconds(attempt))
+        raise SECHTTPError(url, last_status, last_message, self.max_retries + 1)

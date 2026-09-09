@@ -40,20 +40,24 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         retained in RawStore and quality evidence but quarantined from fiscal
 #         calendar inference and canonical output; dates and values are never
 #         repaired by guessing.
-NORMALIZATION_LOGIC_VERSION = "1.6.0"
+#
+# 1.7.0 — adds PIT-safe, explicitly derived EBIT. The value becomes available
+#         only when both pretax income and interest expense are available.
+NORMALIZATION_LOGIC_VERSION = "1.7.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
 METRIC_REGISTRY_MIN_VERSION = 1
 
 # Derived-metric formulas. Bump on any change to derived.py's arithmetic.
-FORMULA_VERSION = "1.0.0"
+# 1.1.0 adds explicitly DERIVED EBIT = pretax income + interest expense.
+FORMULA_VERSION = "1.1.0"
 
 # The SEC access adapter (endpoints, fair-access behaviour).
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
 
 # Data quality rule set.
-QUALITY_RULES_VERSION = "1.0.0"
+QUALITY_RULES_VERSION = "2.0.0"
 
 
 # Files whose content defines NORMALIZATION_LOGIC_VERSION. Changing any of them
@@ -69,7 +73,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "e91ce3c4926157afcf0076dafbbecff3e987768457db57f1cfc32558762f5453"
+    "aec5a76c97203b294b4887727224891ce89f7d503bf0903180412ebf10fca9fa"
 )
 
 

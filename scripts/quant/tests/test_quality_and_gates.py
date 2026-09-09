@@ -152,6 +152,37 @@ class NormalizedQualityTests(unittest.TestCase):
         self.assertIn("FUTURE_DATA_LEAK", summary["by_code"])
         self.assertEqual(summary["rules_version"], quality_module.QUALITY_RULES_VERSION)
 
+    def test_quality_scorecard_is_machine_readable_and_separates_source_anomalies(self):
+        document = {
+            "cik": "0000000001",
+            "profile": {"cik": "0000000001"},
+            "classification": {
+                "entityClassification": "OPERATING_COMPANY",
+                "fundamentalsEligible": True,
+                "accountingStandard": "US_GAAP",
+                "accountingCapability": "SUPPORTED",
+                "metricProfile": "GENERAL",
+            },
+            "filing_index": [{"form": "10-K"}],
+            "filing_years": {"2024": {}},
+            "quality": {"findings": [{
+                "code": "FUTURE_DATA_LEAK", "severity": "ERROR",
+            }]},
+            "factbook": {"timelines": [{
+                "metric": "revenue", "fiscal_year": 2024,
+                "fiscal_period": "FY", "observations": [{
+                    "period_end": "2024-12-31", "available_from": "2025-02-01",
+                    "filed": "2025-02-01",
+                }],
+            }]},
+        }
+        scorecard = quality_module.build_quality_scorecard(document)
+        self.assertEqual("OPERATING_COMPANY", scorecard["entityClassification"])
+        self.assertEqual(1, scorecard["sourceAnomalies"])
+        self.assertEqual(0, scorecard["canonicalViolations"])
+        self.assertEqual(1.0, scorecard["pitCoverage"])
+        self.assertEqual("PARTIAL", scorecard["qualityStatus"])
+
 
 class GateTests(unittest.TestCase):
     @classmethod

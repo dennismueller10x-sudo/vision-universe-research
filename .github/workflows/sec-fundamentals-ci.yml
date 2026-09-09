@@ -15,6 +15,12 @@ on:
       - "docs/SEC_*.md"
       - ".github/workflows/sec-fundamentals-ci.yml"
   workflow_dispatch:
+    inputs:
+      run_gate_100:
+        description: "Run the live Phase-2 eligible-company Gate 100 and upload reports"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   validate:
@@ -218,3 +224,261 @@ jobs:
             exit 1
           fi
           echo "scripts/dashboard/ untouched"
+
+  gate-100:
+    name: Phase 2 live Gate 100 (manual only)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_gate_100
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+      GATE_STORE: .sec-data/gates/gate-100-phase2.sqlite
+      GATE_RUN_ID: gate-100-phase2-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Start measured run
+        run: |
+          mkdir -p .sec-data/gates .sec-data/reports .sec-data/universe/samples
+          date +%s > .sec-data/gates/start-epoch.txt
+
+      - name: Build current SEC universe and deterministic candidate sample
+        run: |
+          python3 scripts/quant/cli.py universe \
+            --output .sec-data/universe/current.json \
+            --sample-sizes 500
+
+      - name: Classify candidates and select exactly 100 eligible companies
+        run: |
+          python3 scripts/quant/cli.py eligibility \
+            --universe .sec-data/universe/samples/gate-500.json \
+            --output .sec-data/reports/gate-100-eligibility.json \
+            --eligible-output .sec-data/universe/samples/gate-100-eligible.json \
+            --target-eligible 100 \
+            --max-candidates 500
+
+      - name: Simulate interruption after ten eligible companies
+        id: partial
+        continue-on-error: true
+        run: |
+          set +e
+          python3 scripts/quant/cli.py ingest \
+            --universe .sec-data/universe/samples/gate-100-eligible.json \
+            --run-id "$GATE_RUN_ID" \
+            --store sqlite --store-path "$GATE_STORE" \
+            --limit 10
+          status=$?
+          cp ".quant-state/checkpoint-${GATE_RUN_ID}.json" \
+             .sec-data/reports/gate-100-resume-partial.json
+          python3 - <<'PY'
+          import hashlib, json, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from quant.sec.store import SqliteFactStore
+          store = SqliteFactStore(Path(".sec-data/gates/gate-100-phase2.sqlite"))
+          hashes = {}
+          for cik in store.list_companies():
+              body = json.dumps(store.read_company(cik), sort_keys=True,
+                                separators=(",", ":")).encode()
+              hashes[cik] = hashlib.sha256(body).hexdigest()
+          Path(".sec-data/reports/gate-100-resume-partial-hashes.json").write_text(
+              json.dumps(hashes, indent=2) + "\n")
+          PY
+          exit $status
+
+      - name: Resume the same Gate 100 run
+        id: resume
+        continue-on-error: true
+        run: |
+          set +e
+          python3 scripts/quant/cli.py ingest \
+            --universe .sec-data/universe/samples/gate-100-eligible.json \
+            --run-id "$GATE_RUN_ID" \
+            --store sqlite --store-path "$GATE_STORE"
+          status=$?
+          cp ".quant-state/checkpoint-${GATE_RUN_ID}.json" \
+             .sec-data/reports/gate-100-resume-complete.json
+          python3 - <<'PY'
+          import hashlib, json, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from quant.sec.store import SqliteFactStore
+          before_path = Path(".sec-data/reports/gate-100-resume-partial-hashes.json")
+          before = json.loads(before_path.read_text()) if before_path.exists() else {}
+          store = SqliteFactStore(Path(".sec-data/gates/gate-100-phase2.sqlite"))
+          after = {}
+          for cik in store.list_companies():
+              body = json.dumps(store.read_company(cik), sort_keys=True,
+                                separators=(",", ":")).encode()
+              after[cik] = hashlib.sha256(body).hexdigest()
+          changed = sorted(cik for cik, digest in before.items()
+                           if after.get(cik) != digest)
+          result = {"schemaVersion": 1,
+                    "status": "PASS" if before and not changed else "FAIL",
+                    "successfulBeforeInterruption": len(before),
+                    "successfulAfterResume": len(after),
+                    "previouslySuccessfulChangedCiks": changed}
+          Path(".sec-data/reports/gate-100-resume-validation.json").write_text(
+              json.dumps(result, indent=2) + "\n")
+          PY
+          exit $status
+
+      - name: Build measured Gate 100 and alias-coverage reports
+        id: report
+        continue-on-error: true
+        run: |
+          set +e
+          python3 scripts/quant/cli.py scale-report \
+            --gate 100 \
+            --universe .sec-data/universe/samples/gate-100-eligible.json \
+            --output .sec-data/reports/gate-100-phase2.json \
+            --store sqlite --store-path "$GATE_STORE"
+          scale_status=$?
+          python3 scripts/quant/cli.py alias-discovery \
+            --universe .sec-data/universe/samples/gate-100-eligible.json \
+            --output .sec-data/reports/gate-100-alias-discovery.json
+          alias_status=$?
+          test $scale_status -eq 0 -a $alias_status -eq 0
+
+      - name: Prove canonical idempotency on an identical third invocation
+        id: idempotency
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.store import SqliteFactStore
+          store = SqliteFactStore(Path(".sec-data/gates/gate-100-phase2.sqlite"))
+          hashes = {}
+          for cik in store.list_companies():
+              body = json.dumps(store.read_company(cik), sort_keys=True,
+                                separators=(",", ":")).encode()
+              hashes[cik] = hashlib.sha256(body).hexdigest()
+          Path(".sec-data/reports/gate-100-idempotency-before.json").write_text(
+              json.dumps(hashes, indent=2) + "\n")
+          PY
+          set +e
+          python3 scripts/quant/cli.py ingest \
+            --universe .sec-data/universe/samples/gate-100-eligible.json \
+            --run-id "$GATE_RUN_ID" \
+            --store sqlite --store-path "$GATE_STORE"
+          ingest_status=$?
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.store import SqliteFactStore
+          store = SqliteFactStore(Path(".sec-data/gates/gate-100-phase2.sqlite"))
+          before = json.loads(Path(
+              ".sec-data/reports/gate-100-idempotency-before.json").read_text())
+          after = {}
+          for cik in store.list_companies():
+              body = json.dumps(store.read_company(cik), sort_keys=True,
+                                separators=(",", ":")).encode()
+              after[cik] = hashlib.sha256(body).hexdigest()
+          changed = sorted(cik for cik in set(before) | set(after)
+                           if before.get(cik) != after.get(cik))
+          result = {"schemaVersion": 1, "status": "PASS" if not changed else "FAIL",
+                    "companiesBefore": len(before), "companiesAfter": len(after),
+                    "changedCiks": changed}
+          Path(".sec-data/reports/gate-100-idempotency.json").write_text(
+              json.dumps(result, indent=2) + "\n")
+          raise SystemExit(0 if result["status"] == "PASS" else 1)
+          PY
+          compare_status=$?
+          test $ingest_status -eq 0 -a $compare_status -eq 0
+
+      - name: Re-ingest and compare the Golden Five
+        id: golden
+        continue-on-error: true
+        run: |
+          set +e
+          python3 scripts/quant/cli.py ingest \
+            --universe quant/config/sec-universe.json \
+            --run-id "golden-phase2-${{ github.run_id }}" \
+            --store sqlite --store-path .sec-data/gates/golden-phase2.sqlite
+          ingest_status=$?
+          python3 scripts/quant/cli.py golden-regression \
+            --universe quant/config/sec-universe.json \
+            --output .sec-data/reports/golden-five-phase2.json \
+            --store sqlite --store-path .sec-data/gates/golden-phase2.sqlite
+          regression_status=$?
+          test $ingest_status -eq 0 -a $regression_status -eq 0
+
+      - name: Assemble the hard Gate 100 verdict
+        id: verdict
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import json, time
+          from pathlib import Path
+          def read(name):
+              path = Path(".sec-data/reports") / name
+              return json.loads(path.read_text()) if path.exists() else {}
+          eligibility = read("gate-100-eligibility.json")
+          gate = read("gate-100-phase2.json")
+          partial = read("gate-100-resume-partial.json")
+          complete = read("gate-100-resume-complete.json")
+          idem = read("gate-100-idempotency.json")
+          resume = read("gate-100-resume-validation.json")
+          golden = read("golden-five-phase2.json")
+          partial_done = len(partial.get("completed", {}))
+          complete_done = len(complete.get("completed", {}))
+          categories = eligibility.get("byEntityClassification", {})
+          checks = {
+              "exactly100Eligible": eligibility.get("eligible") == 100,
+              "classificationFailuresZero": eligibility.get("classificationFailures") == 0,
+              "expectedExclusionsReported": eligibility.get("expectedExclusions", 0) > 0,
+              "sectorProfilesPresent": all(categories.get(name, 0) > 0 for name in (
+                  "OPERATING_COMPANY", "BANK", "INSURANCE", "REIT")),
+              "gateReportPass": gate.get("status") == "PASS",
+              "all100Stored": complete_done == 100,
+              "noRealFailures": not complete.get("failed"),
+              "resumeSkippedPriorSuccesses": (resume.get("status") == "PASS"
+                                                and 0 < partial_done <= 10
+                                                and complete_done == 100),
+              "idempotency": idem.get("status") == "PASS",
+              "pitCoverage100Percent": gate.get("pitCoverage") == 1.0,
+              "pitViolationsZero": gate.get("pitViolations") == 0,
+              "canonicalViolationsZero": gate.get("canonicalViolations") == 0,
+              "goldenFiveRegression": golden.get("status") == "PASS",
+          }
+          status = "PASS" if all(checks.values()) else "FAIL"
+          start = int(Path(".sec-data/gates/start-epoch.txt").read_text())
+          result = {"schemaVersion": 1, "status": status, "checks": checks,
+                    "runtimeSecondsEndToEnd": int(time.time()) - start,
+                    "recommendation": ("READY FOR GATE 500" if status == "PASS"
+                                       else "NOT READY")}
+          Path(".sec-data/reports/gate-100-validation.json").write_text(
+              json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, indent=2))
+          raise SystemExit(0 if status == "PASS" else 1)
+          PY
+
+      - name: Upload compact Gate 100 evidence (never raw SEC data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-gate-100-phase2-${{ github.run_id }}
+          path: |
+            .sec-data/reports/*.json
+            .sec-data/universe/samples/gate-100-eligible.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Fail the job unless every hard Gate 100 check passed
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          report = json.load(open(".sec-data/reports/gate-100-validation.json"))
+          assert report["status"] == "PASS", report
+          PY

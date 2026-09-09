@@ -26,11 +26,12 @@ from .version import FORMULA_VERSION
 LOGGER = logging.getLogger("vu.sec.derived")
 
 # Canonical metrics this module reconstructs, in dependency order.
-RECONSTRUCTED = ("gross_profit", "free_cash_flow", "total_debt", "net_debt",
+RECONSTRUCTED = ("gross_profit", "ebit", "free_cash_flow", "total_debt", "net_debt",
                  "invested_capital", "accruals")
 
 FORMULAS = {
     "gross_profit": "revenue - cost_of_revenue",
+    "ebit": "pretax_income + interest_expense",
     "free_cash_flow": "operating_cash_flow - capital_expenditures",
     "total_debt": "long_term_debt + short_term_debt",
     "net_debt": "total_debt - cash_and_equivalents",
@@ -183,6 +184,11 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
         out["gross_profit"] = reported_gross
     else:
         emit("gross_profit", ("revenue", "cost_of_revenue"), lambda r, c: r - c)
+
+    # EBIT is not relabelled operating income.  Where SEC reports no explicit
+    # canonical EBIT line, reconstruct the accounting identity and retain the
+    # formula/provenance distinction.
+    emit("ebit", ("pretax_income", "interest_expense"), lambda pretax, interest: pretax + interest)
 
     emit("free_cash_flow", ("operating_cash_flow", "capital_expenditures"),
          lambda ocf, capex: ocf - capex)

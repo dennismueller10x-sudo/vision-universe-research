@@ -16,8 +16,15 @@ from datetime import datetime, timezone
 from . import quality as quality_module
 from .fiscal import FiscalCalendar
 from .failures import (
-    IngestionFailure, NO_COMPANY_FACTS, NO_FILINGS, QUALITY_FAILURE,
-    SEC_RATE_LIMIT, UNSUPPORTED_ENTITY, classify_failure,
+    EXPECTED_EXCLUSION_CODES, EXCLUDED_ADR, EXCLUDED_FUND,
+    EXCLUDED_NON_OPERATING_ENTITY, EXCLUDED_SPV, EXCLUDED_TRUST,
+    IngestionFailure, NO_COMPANY_FACTS, NO_PERIODIC_FILINGS, PIT_VIOLATION,
+    QUALITY_FAILURE, RATE_LIMITED, SEC_RATE_LIMIT, UNSUPPORTED_ENTITY,
+    UNSUPPORTED_FOREIGN_ISSUER, classify_failure,
+)
+from .eligibility import (
+    ADR, CLOSED_END_FUND, ELIGIBILITY_RULES_VERSION, ETF, FOREIGN_ISSUER,
+    MUTUAL_FUND, SPV, TRUST, classify_entity,
 )
 from .gates import FAIL, gate_no_future_data_leak
 from .normalize import build_availability_map, normalize_company
@@ -32,10 +39,25 @@ LOGGER = logging.getLogger("vu.sec.pipeline")
 STATUS_INGESTED = "INGESTED"
 STATUS_UNCHANGED = "UNCHANGED"
 STATUS_FAILED = "FAILED"
+STATUS_EXCLUDED = "EXCLUDED"
 
 
 def _utcnow():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _exclusion_code(entity_classification):
+    if entity_classification in (ETF, MUTUAL_FUND, CLOSED_END_FUND):
+        return EXCLUDED_FUND
+    if entity_classification == TRUST:
+        return EXCLUDED_TRUST
+    if entity_classification == SPV:
+        return EXCLUDED_SPV
+    if entity_classification == ADR:
+        return EXCLUDED_ADR
+    if entity_classification == FOREIGN_ISSUER:
+        return UNSUPPORTED_FOREIGN_ISSUER
+    return EXCLUDED_NON_OPERATING_ENTITY
 
 
 class IngestionPipeline:
@@ -74,19 +96,37 @@ class IngestionPipeline:
         profile = self.provider.get_company_profile(cik, submissions)
         filing_metadata = self.provider.get_filing_metadata(cik, submissions)
 
+        classification = classify_entity(profile, filing_metadata)
+        if classification.fundamentals_eligible is not True:
+            code = _exclusion_code(classification.entity_classification)
+            raise IngestionFailure(
+                code,
+                f"CIK {cik} excluded before fundamentals ingestion: "
+                f"{classification.entity_classification} "
+                f"({', '.join(classification.reason_codes)})",
+                {"classification": classification.to_dict()},
+            )
+
         signature = self.latest_filing_signature(filing_metadata)
         if signature is None:
-            raise IngestionFailure(NO_FILINGS, f"CIK {cik} has no supported periodic filings")
+            raise IngestionFailure(
+                NO_PERIODIC_FILINGS, f"CIK {cik} has no supported periodic filings",
+                {"classification": classification.to_dict()},
+            )
         stored = self.fact_store.read_company(cik)
         if stored and not force and self._is_current(stored, signature):
             LOGGER.info("cik=%s unchanged since %s; skipping companyfacts fetch",
                         cik, signature and signature["filing_date"])
             return {"cik": cik, "status": STATUS_UNCHANGED, "signature": signature,
+                    "classification": classification.to_dict(),
                     "seconds": round(time.monotonic() - started, 2)}
 
         company_facts = self.provider.get_company_facts(cik)
         if not (company_facts.get("facts") or {}):
-            raise IngestionFailure(NO_COMPANY_FACTS, f"CIK {cik} has no companyfacts payload")
+            raise IngestionFailure(
+                NO_COMPANY_FACTS, f"CIK {cik} has no companyfacts payload",
+                {"classification": classification.to_dict()},
+            )
         facts_hash = self.raw_store.put(cik, "companyfacts", company_facts)
 
         # Provenance records when this payload was FIRST retrieved, not when
@@ -108,7 +148,7 @@ class IngestionPipeline:
         pit_gate = gate_no_future_data_leak(result.factbook)
         if pit_gate["status"] == FAIL:
             raise IngestionFailure(
-                QUALITY_FAILURE,
+                PIT_VIOLATION,
                 f"CIK {cik} failed PIT_NO_FUTURE_DATA_LEAK: {pit_gate['reason']}",
                 pit_gate.get("evidence"),
             )
@@ -124,15 +164,18 @@ class IngestionPipeline:
             "filing_years": _filing_years(filing_metadata),
             "filing_index": _filing_index(filing_metadata),
             "profile": profile.to_dict(),
+            "classification": classification.to_dict(),
             "calendar": calendar.to_dict(),
             "stats": result.stats,
             "quality": {"summary": summary, "findings": findings},
             "factbook": result.factbook.to_dict(),
         }
+        document["qualityScorecard"] = quality_module.build_quality_scorecard(document)
         self.fact_store.write_company(cik, document)
         return {
             "cik": cik, "status": STATUS_INGESTED, "signature": signature,
             "stats": result.stats, "quality": summary,
+            "classification": classification.to_dict(),
             "seconds": round(time.monotonic() - started, 2),
         }
 
@@ -163,8 +206,10 @@ class IngestionPipeline:
         entries = list(entries)
         state = self.checkpoint.load() if resume else {
             "run_id": self.checkpoint.run_id, "started_at": _utcnow(),
-            "completed": {}, "failed": {}, "retry_queue": [], "last_cik": None,
+            "completed": {}, "excluded": {}, "failed": {}, "retry_queue": [],
+            "last_cik": None,
         }
+        state.setdefault("excluded", {})
         results = []
         processed = 0
         halted = False
@@ -175,6 +220,13 @@ class IngestionPipeline:
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
             if limit is not None and processed >= limit:
                 break
+            excluded = state.get("excluded", {}).get(cik)
+            if (resume and excluded
+                    and excluded.get("rules_version") == ELIGIBILITY_RULES_VERSION
+                    and not force):
+                continue
+            if excluded:
+                state["excluded"].pop(cik, None)
             if resume and self.checkpoint.is_completed(state, cik):
                 stored = self.fact_store.read_company(cik)
                 if stored is None:
@@ -209,6 +261,7 @@ class IngestionPipeline:
                 state = self.checkpoint.mark_completed(state, cik, {
                     "status": outcome["status"],
                     "latest_filing": (outcome.get("signature") or {}).get("accession"),
+                    "classification": outcome.get("classification"),
                 })
                 results.append(outcome)
                 LOGGER.info(
@@ -219,26 +272,49 @@ class IngestionPipeline:
                     getattr(getattr(self.provider, "client", None), "stats", {}).get("retries", 0),
                 )
             except Exception as exc:  # noqa: BLE001 - the failure log is the point
-                LOGGER.exception("ingest failed cik=%s", cik)
                 code = classify_failure(exc)
-                state = self.checkpoint.mark_failed(state, cik, exc, code=code)
+                context = getattr(exc, "context", {}) or {}
+                classification = context.get("classification")
+                if code in EXPECTED_EXCLUSION_CODES:
+                    state = self.checkpoint.mark_excluded(state, cik, {
+                        "status": STATUS_EXCLUDED,
+                        "code": code,
+                        "reason": str(exc),
+                        "rules_version": ELIGIBILITY_RULES_VERSION,
+                        "classification": classification,
+                    })
+                    results.append({
+                        "cik": cik, "status": STATUS_EXCLUDED,
+                        "exclusion_code": code, "reason": str(exc),
+                        "classification": classification,
+                    })
+                    LOGGER.info("[%d/%d] cik=%s status=EXCLUDED code=%s",
+                                position, total_requested, cik, code)
+                    continue
+
+                LOGGER.exception("ingest failed cik=%s", cik)
+                failure_detail = {"classification": classification} if classification else None
+                state = self.checkpoint.mark_failed(
+                    state, cik, exc, code=code, detail=failure_detail)
                 results.append({"cik": cik, "status": STATUS_FAILED,
-                                "failure_code": code, "error": str(exc)})
+                                "failure_code": code, "error": str(exc),
+                                "classification": classification})
                 LOGGER.error("[%d/%d] cik=%s status=FAILED code=%s",
                              position, total_requested, cik, code)
-                if code == SEC_RATE_LIMIT:
+                if code in (SEC_RATE_LIMIT, RATE_LIMITED):
                     halted = True
                     stop_reason = "repeated SEC 403/429 exhausted request retries"
-                elif code == QUALITY_FAILURE:
+                elif code in (QUALITY_FAILURE, PIT_VIOLATION):
                     halted = True
                     stop_reason = f"canonical data quality failure at CIK {cik}: {exc}"
                 else:
                     attempted = len(set(state["completed"]) | set(state["failed"]))
+                    real_failures = len(state["failed"])
                     if (attempted >= min_failure_sample
-                            and len(state["failed"]) / attempted > max_failure_rate):
+                            and real_failures / attempted > max_failure_rate):
                         halted = True
                         stop_reason = (
-                            f"failure rate {len(state['failed'])}/{attempted} exceeded "
+                            f"real failure rate {real_failures}/{attempted} exceeded "
                             f"{max_failure_rate:.0%}"
                         )
             finally:
@@ -250,11 +326,32 @@ class IngestionPipeline:
 
         http = dict(getattr(getattr(self.provider, "client", None), "stats", {}))
         logical_requests = http.get("requests", 0) + http.get("cache_hits", 0)
-        current_successes = [row for row in results if row["status"] != STATUS_FAILED]
+        current_successes = [row for row in results
+                             if row["status"] in (STATUS_INGESTED, STATUS_UNCHANGED)]
         failure_codes = {}
         for row in state["failed"].values():
             code = row.get("code", "UNKNOWN")
             failure_codes[code] = failure_codes.get(code, 0) + 1
+        exclusion_codes = {}
+        classification_counts = {}
+        for row in state.get("excluded", {}).values():
+            code = row.get("code", EXCLUDED_NON_OPERATING_ENTITY)
+            exclusion_codes[code] = exclusion_codes.get(code, 0) + 1
+        for bucket in (state.get("completed", {}), state.get("excluded", {}),
+                       state.get("failed", {})):
+            for row in bucket.values():
+                classification = row.get("classification") or {}
+                category = classification.get("entityClassification")
+                if category:
+                    classification_counts[category] = classification_counts.get(category, 0) + 1
+
+        terminal_ciks = set(state["completed"]) | set(state["failed"]) | set(state["excluded"])
+        unprocessed = max(0, total_requested - len(terminal_ciks))
+        eligible_attempted = len(state["completed"]) + len(state["failed"])
+        technical_failure_rate = (
+            round(len(state["failed"]) / eligible_attempted, 6)
+            if eligible_attempted else 0.0
+        )
         storage = self.fact_store.stats() if hasattr(self.fact_store, "stats") else {}
         raw_facts = sum((row.get("stats") or {}).get("raw_facts", 0) for row in results)
         mapped_facts = sum((row.get("stats") or {}).get("mapped", 0) for row in results)
@@ -273,10 +370,20 @@ class IngestionPipeline:
                 "processed": processed,
                 "completed": len(state["completed"]),
                 "failed": len(state["failed"]),
+                "total_sample": total_requested,
+                "eligible": eligible_attempted,
+                "expected_exclusions": len(state["excluded"]),
+                "real_failures": len(state["failed"]),
+                "unprocessed": unprocessed,
+                "technical_failure_rate": technical_failure_rate,
                 "retry_queue": list(state["retry_queue"]),
                 "halted": halted,
                 "stop_reason": stop_reason,
                 "failure_codes": failure_codes,
+                "exclusion_codes": exclusion_codes,
+                "entity_classifications": dict(sorted(classification_counts.items())),
+                "input_sources": (self.provider.input_evidence()
+                                  if hasattr(self.provider, "input_evidence") else []),
                 "facts_raw": raw_facts,
                 "facts_mapped": mapped_facts,
                 "duplicates_removed": duplicates,
