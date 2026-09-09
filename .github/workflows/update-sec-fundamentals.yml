@@ -100,13 +100,14 @@ jobs:
         run: |
           python3 scripts/quant/cli.py ingest \
             --universe quant/config/sec-universe.json \
+            --run-id "${{ github.run_id }}" \
             ${{ inputs.force && '--force' || '' }}
 
       - name: Retry anything that failed
         if: steps.ingest.outcome == 'failure'
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
-        run: python3 scripts/quant/cli.py retry
+        run: python3 scripts/quant/cli.py retry --run-id "${{ github.run_id }}"
 
       - name: Verify every configured company was ingested
         shell: bash

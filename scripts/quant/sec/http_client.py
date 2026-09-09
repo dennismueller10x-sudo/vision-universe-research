@@ -167,7 +167,15 @@ class SECHttpClient:
         self._opener = opener or self._urlopen
         self._inflight = {}
         self._inflight_lock = threading.Lock()
-        self.stats = {"requests": 0, "cache_hits": 0, "retries": 0, "deduplicated": 0}
+        self.stats = {
+            "requests": 0,
+            "cache_hits": 0,
+            "retries": 0,
+            "deduplicated": 0,
+            "bytes_received": 0,
+            "timeouts": 0,
+            "status_counts": {},
+        }
 
     def _urlopen(self, url, headers, timeout):
         request = urllib.request.Request(url, headers=headers)
@@ -236,6 +244,10 @@ class SECHttpClient:
             started = time.monotonic()
             try:
                 payload = self._opener(url, self._headers(), self.timeout)
+                self.stats["bytes_received"] += len(payload)
+                self.stats["status_counts"]["200"] = (
+                    self.stats["status_counts"].get("200", 0) + 1
+                )
                 LOGGER.info(
                     "sec_get url=%s status=200 bytes=%d attempt=%d wait=%.2fs elapsed=%.2fs",
                     url, len(payload), attempt + 1, waited, time.monotonic() - started,
@@ -243,9 +255,13 @@ class SECHttpClient:
                 return payload
             except urllib.error.HTTPError as exc:
                 last_status, last_message = exc.code, str(exc.reason)
+                key = str(exc.code)
+                self.stats["status_counts"][key] = self.stats["status_counts"].get(key, 0) + 1
                 retryable = exc.code in RETRYABLE_STATUS
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 last_status, last_message = None, str(exc)
+                if isinstance(exc, TimeoutError) or "timed out" in str(exc).lower():
+                    self.stats["timeouts"] += 1
                 retryable = True
 
             LOGGER.warning(

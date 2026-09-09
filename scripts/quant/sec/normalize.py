@@ -38,6 +38,7 @@ ISSUE_UNKNOWN_CONCEPT = "UNKNOWN_CONCEPT"
 ISSUE_DUPLICATE_FACT = "DUPLICATE_FACT"
 ISSUE_CONCEPT_DISAGREEMENT = "CONCEPT_DISAGREEMENT"
 ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
+ISSUE_FUTURE_PERIOD = "FUTURE_PERIOD"
 
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
@@ -102,9 +103,27 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     issues = []
     availability = build_availability_map(filing_metadata)
 
+    # Companyfacts occasionally contains a source observation whose period ends
+    # after the filing that supposedly reported it. Keep that observation in the
+    # immutable raw archive, but never admit it to the canonical layer or allow
+    # it to influence fiscal-calendar inference. This is quarantine, not repair:
+    # no date or value is changed and the anomaly remains explicit in quality
+    # output.
+    reportable_facts = []
+    for fact in raw_facts:
+        available = fact.available_from or availability.get(fact.accession) or fact.filed
+        if fact.end and available and fact.end > available[:10]:
+            issues.append(_issue(
+                ISSUE_FUTURE_PERIOD, fact,
+                f"period end {fact.end} is after availability {available}; "
+                "raw fact quarantined from canonical output",
+            ))
+            continue
+        reportable_facts.append(fact)
+
     if calendar is None:
         calendar = FiscalCalendar.from_raw_facts(
-            cik, raw_facts,
+            cik, reportable_facts,
             fiscal_year_end_hint=getattr(profile, "fiscal_year_end", None),
         )
 
@@ -116,9 +135,10 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     # the company's other facts for the same period were measured on.
     observed_period_ends = defaultdict(Counter)
     seen_fact_ids = set()
-    stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
+    stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0,
+             "quarantined_future_periods": len(raw_facts) - len(reportable_facts)}
 
-    for fact in raw_facts:
+    for fact in reportable_facts:
         matches = registry.metrics_for_concept(fact.taxonomy, fact.concept)
         if not matches:
             stats["unmapped"] += 1

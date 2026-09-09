@@ -142,6 +142,15 @@ class SECProvider:
             LOGGER.info("loaded SEC ticker map: %d tickers", len(mapping))
         return self._ticker_map
 
+    def get_current_ticker_exchange_universe(self):
+        """Current SEC company/ticker/exchange mappings with retrieval metadata.
+
+        The caller must not interpret this file as a historical security master.
+        """
+        payload = self.client.get_json(TICKER_EXCHANGE_URL)
+        payload["_retrieved_at"] = _utcnow_iso()
+        return payload
+
     def resolve_ticker(self, ticker):
         """Ticker -> 10-digit CIK. Raises TickerNotFound if the SEC has no mapping."""
         key = str(ticker).strip().upper()

@@ -8,11 +8,12 @@
     python3 scripts/quant/cli.py coverage
     python3 scripts/quant/cli.py gates
     python3 scripts/quant/cli.py resolve
+    python3 scripts/quant/cli.py universe
     python3 scripts/quant/cli.py canonical
     python3 scripts/quant/cli.py inspect   --ticker NVDA --metric revenue
     python3 scripts/quant/cli.py test
 
-Commands that reach data.sec.gov: ingest, update, retry. Everything else works
+Commands that reach sec.gov: ingest, update, retry, resolve, universe. Everything else works
 offline against what has already been ingested.
 """
 import argparse
@@ -31,8 +32,13 @@ from quant.sec.periods import PeriodResolver
 from quant.sec.pipeline import IngestionPipeline, export_inspector_view, _rehydrate
 from quant.sec.provider import SECProvider, normalize_cik
 from quant.sec.registry import MetricRegistry
+from quant.sec.regression import compare_golden
 from quant.sec.restatements import POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN, POLICIES
-from quant.sec.store import JsonFactStore
+from quant.sec.scale_report import build_scale_report
+from quant.sec.store import (
+    DEFAULT_FACT_DIR, DEFAULT_SQLITE_FACT_PATH, JsonFactStore, SqliteFactStore,
+)
+from quant.sec.universe import build_current_universe, gate_sample
 from quant.sec.version import version_stamp
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -40,6 +46,7 @@ DATA_DIR = ROOT / "quant" / "data" / "sec"
 INSPECTOR_DIR = DATA_DIR / "inspector"
 CANONICAL_DIR = DATA_DIR / "canonical"
 DEFAULT_UNIVERSE = ROOT / "quant" / "config" / "sec-universe.json"
+DEFAULT_MASTER_UNIVERSE = ROOT / ".sec-data" / "universe" / "current.json"
 
 
 def _utcnow():
@@ -92,7 +99,8 @@ def _resolve_universe(provider, companies, verify=True):
             cik = provider.try_resolve_ticker(ticker)
         if cik is None and hint:
             cik = normalize_cik(hint)
-            print(f"  {ticker}: not in the SEC ticker map, using configured CIK {cik}")
+            if ticker:
+                print(f"  {ticker}: not in the SEC ticker map, using configured CIK {cik}")
         if cik is None:
             raise SystemExit(f"cannot resolve a CIK for {entry!r}")
         if verify and hint and normalize_cik(hint) != cik:
@@ -133,6 +141,21 @@ def _documents(store, ciks=None):
         if document is not None:
             documents.append(document)
     return documents
+
+
+def _fact_store(args):
+    kind = getattr(args, "store", "json")
+    path = getattr(args, "store_path", None)
+    if kind == "sqlite":
+        return SqliteFactStore(path or DEFAULT_SQLITE_FACT_PATH)
+    return JsonFactStore(path or DEFAULT_FACT_DIR, compress=True)
+
+
+def _add_store_args(parser):
+    parser.add_argument("--store", choices=("json", "sqlite"), default="json",
+                        help="normalized fact store; use sqlite for scale gates")
+    parser.add_argument("--store-path",
+                        help="override fact directory (json) or database path (sqlite)")
 
 
 def _declared_tickers(path=DEFAULT_UNIVERSE):
@@ -179,11 +202,55 @@ def _canonical_ticker(document, declared):
 
 # ---------------------------------------------------------------- commands
 
+def cmd_universe(args):
+    """Fetch the current SEC mapping once and derive deterministic scale samples."""
+    provider = SECProvider()
+    payload = provider.get_current_ticker_exchange_universe()
+    universe = build_current_universe(payload)
+    output = Path(args.output)
+    _write(output, universe)
+
+    golden = [entry for entry in _load_universe(args.golden_universe) if entry.get("cik")]
+    sample_dir = output.parent / "samples"
+    for size in args.sample_sizes:
+        _write(sample_dir / f"gate-{size}.json", gate_sample(universe, size, golden))
+    print(json.dumps(universe["counts"], indent=2))
+    print("securityMasterStatus: EXTERNAL_SECURITY_MASTER_REQUIRED")
+    return 0
+
+
+def cmd_golden_regression(args):
+    report = compare_golden(
+        _fact_store(args), MetricRegistry.load(), _load_universe(args.universe),
+        args.canonical_directory,
+    )
+    _write(Path(args.output), report)
+    for row in report["companies"]:
+        print(f"  {row['ticker']}: {row['status']}")
+    return 0 if report["status"] == "PASS" else 1
+
+
+def cmd_scale_report(args):
+    store = _fact_store(args)
+    entries = _load_universe(args.universe)
+    report = build_scale_report(store, entries, args.gate)
+    _write(Path(args.output), report)
+    print(json.dumps({
+        "gate": report["gate"],
+        "companiesRequested": report["companiesRequested"],
+        "companiesSuccessful": report["companiesSuccessful"],
+        "pitCoverage": report["pitCoverage"],
+        "pitViolations": report["pitViolations"],
+        "storage": report["storage"],
+    }, indent=2))
+    return 0 if report["status"] == "PASS" else 1
+
+
 def cmd_ingest(args):
     provider = SECProvider()
     registry = MetricRegistry.load()
     pipeline = IngestionPipeline(provider=provider, registry=registry,
-                                 run_id=args.run_id)
+                                 fact_store=_fact_store(args), run_id=args.run_id)
     companies = _resolve_universe(provider, _load_universe(args.universe))
     outcome = pipeline.ingest_universe(companies, resume=not args.no_resume,
                                        force=args.force, limit=args.limit)
@@ -195,7 +262,7 @@ def cmd_ingest(args):
 
 
 def cmd_update(args):
-    pipeline = IngestionPipeline(run_id=args.run_id)
+    pipeline = IngestionPipeline(fact_store=_fact_store(args), run_id=args.run_id)
     outcome = pipeline.refresh_since(args.since)
     for result in outcome["results"]:
         print(f"  {result['cik']}: {result['status']}")
@@ -203,7 +270,7 @@ def cmd_update(args):
 
 
 def cmd_retry(args):
-    pipeline = IngestionPipeline(run_id=args.run_id)
+    pipeline = IngestionPipeline(fact_store=_fact_store(args), run_id=args.run_id)
     outcome = pipeline.retry_failed()
     for result in outcome["results"]:
         print(f"  {result['cik']}: {result['status']}")
@@ -212,7 +279,7 @@ def cmd_retry(args):
 
 def cmd_export(args):
     registry = MetricRegistry.load()
-    store = JsonFactStore(compress=True)
+    store = _fact_store(args)
     documents = _documents(store)
     if not documents:
         print("no ingested companies found; run `ingest` first")
@@ -248,7 +315,7 @@ def cmd_export(args):
 
 def cmd_coverage(args):
     registry = MetricRegistry.load()
-    store = JsonFactStore(compress=True)
+    store = _fact_store(args)
     documents = _documents(store)
     if not documents:
         print("no ingested companies found; run `ingest` first")
@@ -264,7 +331,7 @@ def cmd_coverage(args):
 
 def cmd_gates(args):
     registry = MetricRegistry.load()
-    store = JsonFactStore(compress=True)
+    store = _fact_store(args)
     provider = SECProvider()
     documents = _documents(store)
     declared = _declared_tickers()
@@ -402,7 +469,7 @@ def cmd_canonical(args):
     validates against quant/engines/schema.js.
     """
     registry = MetricRegistry.load()
-    store = JsonFactStore(compress=True)
+    store = _fact_store(args)
     documents = _documents(store)
     if not documents:
         print("no ingested companies found; run `ingest` first")
@@ -441,7 +508,7 @@ def cmd_canonical(args):
 
 def cmd_inspect(args):
     registry = MetricRegistry.load()
-    store = JsonFactStore(compress=True)
+    store = _fact_store(args)
     provider_cik = args.cik
     if provider_cik is None and args.ticker:
         for document in _documents(store):
@@ -508,15 +575,18 @@ def build_parser():
     ingest.add_argument("--force", action="store_true")
     ingest.add_argument("--limit", type=int)
     ingest.add_argument("--no-resume", action="store_true")
+    _add_store_args(ingest)
     ingest.set_defaults(func=cmd_ingest)
 
     update = subparsers.add_parser("update", help="re-ingest companies with new filings")
     update.add_argument("--since", required=True)
     update.add_argument("--run-id", default="default")
+    _add_store_args(update)
     update.set_defaults(func=cmd_update)
 
     retry = subparsers.add_parser("retry", help="retry the failure queue")
     retry.add_argument("--run-id", default="default")
+    _add_store_args(retry)
     retry.set_defaults(func=cmd_retry)
 
     export = subparsers.add_parser("export", help="write the data inspector views")
@@ -524,13 +594,16 @@ def build_parser():
     export.add_argument("--annual-years", type=int, default=12)
     export.add_argument("--quarterly-years", type=int, default=5)
     export.add_argument("--policy", choices=POLICIES, default=POLICY_LATEST_KNOWN)
+    _add_store_args(export)
     export.set_defaults(func=cmd_export)
 
     cov = subparsers.add_parser("coverage", help="build the coverage matrix")
+    _add_store_args(cov)
     cov.set_defaults(func=cmd_coverage)
 
     gate = subparsers.add_parser("gates", help="run the qualification gates")
     gate.add_argument("--as-of")
+    _add_store_args(gate)
     gate.set_defaults(func=cmd_gates)
 
     resolve = subparsers.add_parser(
@@ -540,11 +613,35 @@ def build_parser():
                          help="exit non-zero when a configured CIK disagrees with the SEC")
     resolve.set_defaults(func=cmd_resolve)
 
+    universe = subparsers.add_parser(
+        "universe", help="build the current SEC company/security mapping off-Git")
+    universe.add_argument("--output", default=str(DEFAULT_MASTER_UNIVERSE))
+    universe.add_argument("--golden-universe", default=str(DEFAULT_UNIVERSE))
+    universe.add_argument("--sample-sizes", type=int, nargs="+", default=[100, 500, 2000])
+    universe.set_defaults(func=cmd_universe)
+
+    regression = subparsers.add_parser(
+        "golden-regression", help="compare a live fact store with committed Golden bundles")
+    regression.add_argument("--universe", default=str(DEFAULT_UNIVERSE))
+    regression.add_argument("--canonical-directory", default=str(CANONICAL_DIR))
+    regression.add_argument("--output", required=True)
+    _add_store_args(regression)
+    regression.set_defaults(func=cmd_golden_regression)
+
+    scale_report = subparsers.add_parser(
+        "scale-report", help="measure a scale gate from an off-Git fact store")
+    scale_report.add_argument("--gate", required=True)
+    scale_report.add_argument("--universe", required=True)
+    scale_report.add_argument("--output", required=True)
+    _add_store_args(scale_report)
+    scale_report.set_defaults(func=cmd_scale_report)
+
     canonical = subparsers.add_parser(
         "canonical", help="write the canonical FundamentalFact/Filing payload")
     canonical.add_argument("--annual-years", type=int, default=12)
     canonical.add_argument("--quarterly-years", type=int, default=None,
                            help="limit the quarterly window; default is the full history")
+    _add_store_args(canonical)
     canonical.set_defaults(func=cmd_canonical)
 
     inspect = subparsers.add_parser("inspect", help="print one metric's series")
@@ -554,6 +651,7 @@ def build_parser():
     inspect.add_argument("--as-of")
     inspect.add_argument("--policy", choices=POLICIES, default=POLICY_LATEST_KNOWN)
     inspect.add_argument("--hide-missing", action="store_true")
+    _add_store_args(inspect)
     inspect.set_defaults(func=cmd_inspect)
 
     test = subparsers.add_parser("test", help="run the offline test suite")

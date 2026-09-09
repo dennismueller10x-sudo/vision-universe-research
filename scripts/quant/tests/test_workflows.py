@@ -112,6 +112,12 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Verify every configured company was ingested", text)
         self.assertIn("::error::", text)
 
+    def test_each_scheduled_ingest_has_a_fresh_checkpoint_namespace(self):
+        """A permanent `default` checkpoint would skip new filings next week."""
+        text = workflow_text("update-sec-fundamentals.yml")
+        self.assertRegex(text, r"cli\.py ingest[\s\S]*?--run-id \"\$\{\{ github\.run_id \}\}\"")
+        self.assertRegex(text, r"cli\.py retry --run-id \"\$\{\{ github\.run_id \}\}\"")
+
     def test_no_workflow_commits_the_regenerable_layers(self):
         text = workflow_text("update-sec-fundamentals.yml")
         for forbidden in ("quant/data/sec/raw", "quant/data/sec/facts"):

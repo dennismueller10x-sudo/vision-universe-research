@@ -15,6 +15,11 @@ from datetime import datetime, timezone
 
 from . import quality as quality_module
 from .fiscal import FiscalCalendar
+from .failures import (
+    IngestionFailure, NO_COMPANY_FACTS, NO_FILINGS, QUALITY_FAILURE,
+    SEC_RATE_LIMIT, UNSUPPORTED_ENTITY, classify_failure,
+)
+from .gates import FAIL, gate_no_future_data_leak
 from .normalize import build_availability_map, normalize_company
 from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from .registry import MetricRegistry
@@ -70,6 +75,8 @@ class IngestionPipeline:
         filing_metadata = self.provider.get_filing_metadata(cik, submissions)
 
         signature = self.latest_filing_signature(filing_metadata)
+        if signature is None:
+            raise IngestionFailure(NO_FILINGS, f"CIK {cik} has no supported periodic filings")
         stored = self.fact_store.read_company(cik)
         if stored and not force and self._is_current(stored, signature):
             LOGGER.info("cik=%s unchanged since %s; skipping companyfacts fetch",
@@ -78,6 +85,8 @@ class IngestionPipeline:
                     "seconds": round(time.monotonic() - started, 2)}
 
         company_facts = self.provider.get_company_facts(cik)
+        if not (company_facts.get("facts") or {}):
+            raise IngestionFailure(NO_COMPANY_FACTS, f"CIK {cik} has no companyfacts payload")
         facts_hash = self.raw_store.put(cik, "companyfacts", company_facts)
 
         # Provenance records when this payload was FIRST retrieved, not when
@@ -92,10 +101,17 @@ class IngestionPipeline:
         raw_facts = list(self.provider.iter_raw_facts(
             company_facts, availability=availability, forms=PERIODIC_FORMS))
 
-        calendar = FiscalCalendar.from_raw_facts(
-            cik, raw_facts, fiscal_year_end_hint=profile.fiscal_year_end)
         result = normalize_company(cik, raw_facts, self.registry, profile=profile,
-                                   filing_metadata=filing_metadata, calendar=calendar)
+                                   filing_metadata=filing_metadata)
+        calendar = result.factbook.calendar
+        _ensure_supported_facts(cik, raw_facts, result.stats)
+        pit_gate = gate_no_future_data_leak(result.factbook)
+        if pit_gate["status"] == FAIL:
+            raise IngestionFailure(
+                QUALITY_FAILURE,
+                f"CIK {cik} failed PIT_NO_FUTURE_DATA_LEAK: {pit_gate['reason']}",
+                pit_gate.get("evidence"),
+            )
         findings, summary = quality_module.run_all(
             raw_facts, result.factbook, self.registry, result.issues)
 
@@ -140,16 +156,22 @@ class IngestionPipeline:
     # ----------------------------------------------------------------- universe
 
     def ingest_universe(self, entries, resume=True, force=False, limit=None,
-                        max_attempts=3):
+                        max_attempts=3, max_failure_rate=0.25,
+                        min_failure_sample=10):
         """Ingest many companies with checkpointing, a failure log and a retry queue."""
+        run_started = time.monotonic()
+        entries = list(entries)
         state = self.checkpoint.load() if resume else {
             "run_id": self.checkpoint.run_id, "started_at": _utcnow(),
             "completed": {}, "failed": {}, "retry_queue": [], "last_cik": None,
         }
         results = []
         processed = 0
+        halted = False
+        stop_reason = None
+        total_requested = len(entries)
 
-        for entry in entries:
+        for position, entry in enumerate(entries, start=1):
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
             if limit is not None and processed >= limit:
                 break
@@ -181,6 +203,7 @@ class IngestionPipeline:
                 LOGGER.warning("cik=%s skipped: %d failed attempts", cik, attempts)
                 continue
             processed += 1
+            LOGGER.info("[%d/%d] cik=%s status=START", position, total_requested, cik)
             try:
                 outcome = self.ingest_company(cik, force=force)
                 state = self.checkpoint.mark_completed(state, cik, {
@@ -188,14 +211,54 @@ class IngestionPipeline:
                     "latest_filing": (outcome.get("signature") or {}).get("accession"),
                 })
                 results.append(outcome)
+                LOGGER.info(
+                    "[%d/%d] cik=%s status=%s raw_facts=%s mapped=%s retries=%d",
+                    position, total_requested, cik, outcome["status"],
+                    (outcome.get("stats") or {}).get("raw_facts"),
+                    (outcome.get("stats") or {}).get("mapped"),
+                    getattr(getattr(self.provider, "client", None), "stats", {}).get("retries", 0),
+                )
             except Exception as exc:  # noqa: BLE001 - the failure log is the point
                 LOGGER.exception("ingest failed cik=%s", cik)
-                state = self.checkpoint.mark_failed(state, cik, exc)
-                results.append({"cik": cik, "status": STATUS_FAILED, "error": str(exc)})
+                code = classify_failure(exc)
+                state = self.checkpoint.mark_failed(state, cik, exc, code=code)
+                results.append({"cik": cik, "status": STATUS_FAILED,
+                                "failure_code": code, "error": str(exc)})
+                LOGGER.error("[%d/%d] cik=%s status=FAILED code=%s",
+                             position, total_requested, cik, code)
+                if code == SEC_RATE_LIMIT:
+                    halted = True
+                    stop_reason = "repeated SEC 403/429 exhausted request retries"
+                elif code == QUALITY_FAILURE:
+                    halted = True
+                    stop_reason = f"canonical data quality failure at CIK {cik}: {exc}"
+                else:
+                    attempted = len(set(state["completed"]) | set(state["failed"]))
+                    if (attempted >= min_failure_sample
+                            and len(state["failed"]) / attempted > max_failure_rate):
+                        halted = True
+                        stop_reason = (
+                            f"failure rate {len(state['failed'])}/{attempted} exceeded "
+                            f"{max_failure_rate:.0%}"
+                        )
             finally:
                 # Written after every company so a crash resumes at the next one.
                 self.checkpoint.save(state)
+            if halted:
+                LOGGER.error("bulk ingest halted: %s", stop_reason)
+                break
 
+        http = dict(getattr(getattr(self.provider, "client", None), "stats", {}))
+        logical_requests = http.get("requests", 0) + http.get("cache_hits", 0)
+        current_successes = [row for row in results if row["status"] != STATUS_FAILED]
+        failure_codes = {}
+        for row in state["failed"].values():
+            code = row.get("code", "UNKNOWN")
+            failure_codes[code] = failure_codes.get(code, 0) + 1
+        storage = self.fact_store.stats() if hasattr(self.fact_store, "stats") else {}
+        raw_facts = sum((row.get("stats") or {}).get("raw_facts", 0) for row in results)
+        mapped_facts = sum((row.get("stats") or {}).get("mapped", 0) for row in results)
+        duplicates = sum((row.get("stats") or {}).get("duplicates", 0) for row in results)
         manifest = {
             "generated_at_utc": _utcnow(),
             "versions": version_stamp(self.registry.version),
@@ -203,10 +266,35 @@ class IngestionPipeline:
             "companies": self.fact_store.list_companies(),
             "run": {
                 "run_id": state["run_id"],
+                "companies_requested": total_requested,
+                "companies_resolved": total_requested,
+                "companies_successful": len(state["completed"]),
+                "companies_successful_this_invocation": len(current_successes),
                 "processed": processed,
                 "completed": len(state["completed"]),
                 "failed": len(state["failed"]),
                 "retry_queue": list(state["retry_queue"]),
+                "halted": halted,
+                "stop_reason": stop_reason,
+                "failure_codes": failure_codes,
+                "facts_raw": raw_facts,
+                "facts_mapped": mapped_facts,
+                "duplicates_removed": duplicates,
+                "http": http,
+                "request_count": http.get("requests", 0),
+                "cache_hit_rate": (
+                    round(http.get("cache_hits", 0) / logical_requests, 6)
+                    if logical_requests else None
+                ),
+                "retry_count": http.get("retries", 0),
+                "http_403_count": (http.get("status_counts") or {}).get("403", 0),
+                "http_429_count": (http.get("status_counts") or {}).get("429", 0),
+                "http_5xx_count": sum(
+                    count for status, count in (http.get("status_counts") or {}).items()
+                    if str(status).startswith("5")
+                ),
+                "run_time_seconds": round(time.monotonic() - run_started, 3),
+                "storage": storage,
             },
         }
         self.fact_store.write_manifest(manifest)
@@ -262,6 +350,26 @@ def _filing_years(filing_metadata):
         if row.get("is_xbrl"):
             bucket["xbrl"] += 1
     return dict(sorted(years.items()))
+
+
+def _ensure_supported_facts(cik, raw_facts, stats):
+    """Refuse an empty normalized entity with a stable, actionable reason."""
+    if stats.get("mapped", 0):
+        return
+    forms = {fact.form for fact in raw_facts}
+    taxonomies = {fact.taxonomy for fact in raw_facts}
+    if any(form.startswith(("20-F", "40-F")) for form in forms) or "ifrs-full" in taxonomies:
+        raise IngestionFailure(
+            UNSUPPORTED_ENTITY,
+            f"CIK {cik} is a foreign/private issuer whose structured taxonomy "
+            "has no reliable mapped facts; entity retained as UNSUPPORTED_ENTITY",
+            {"forms": sorted(forms), "taxonomies": sorted(taxonomies)},
+        )
+    raise IngestionFailure(
+        NO_COMPANY_FACTS,
+        f"CIK {cik} produced raw companyfacts but no mapped canonical facts",
+        {"forms": sorted(forms), "taxonomies": sorted(taxonomies)},
+    )
 
 
 def _filing_index(filing_metadata):
