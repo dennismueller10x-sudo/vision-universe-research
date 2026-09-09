@@ -227,6 +227,23 @@ jobs:
           path: quant/data/market/commercial/live-candle-verification.json
           if-no-files-found: warn
 
+      # Der Bericht wird committet, wie der Faehigkeitsnachweis auch: der
+      # Gesundheitsbericht liest ihn, und ein Befund, der nur als Artefakt
+      # existiert, ist nach 90 Tagen weg. Er enthaelt keine Kurse und
+      # keinen Schluessel - der Schritt darueber prueft das.
+      - name: Bericht committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung am Stromnachweis."
+          else
+            git commit -m "Tiingo Commercial: Stromnachweis aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
       - name: Zusammenfassung
         if: always()
         run: |
@@ -240,6 +257,20 @@ jobs:
                 console.log("");
                 console.log(r.liveChartReason);
                 console.log("");
+                if ((r.silenceEvidence || []).length) {
+                  console.log("Was stattdessen kam:");
+                  console.log("");
+                  console.log("| Stufe | Nachrichten | davon Verwaltung | Bestaetigung | Schliesscode |");
+                  console.log("|---|---|---|---|---|");
+                  for (const e of r.silenceEvidence) {
+                    const ack = e.subscriptionAck
+                      ? (e.subscriptionAck.code + " " + (e.subscriptionAck.message || "")) : "keine";
+                    console.log("| " + e.thresholdLevel + " | " + e.messages + " | " +
+                                e.adminMessages + " | " + ack + " | " +
+                                (e.closeCode === null ? "-" : e.closeCode) + " |");
+                  }
+                  console.log("");
+                }
                 console.log("| Messung | Stufe | Verbindung | Ereignisse | Ereignisse/s | Abstand median (ms) | Updates in einer Kerze |");
                 console.log("|---|---|---|---|---|---|---|");
                 for (const m of r.measurements) {

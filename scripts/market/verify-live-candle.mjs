@@ -312,13 +312,25 @@ async function main() {
   if (!apiKey) {
     console.log("  Kein TIINGO_API_KEY gesetzt. Es wird keine Verbindung aufgebaut.");
   } else {
-    /* §4 nennt Stufe 6 ausdruecklich; Stufe 5 laeuft als Vergleich. Beide
-       am selben Titel, sonst vergleicht die Messung zwei Dinge. */
-    for (const level of [6, 5]) {
+    /* §4 nennt Stufe 6 ausdruecklich. Stufe 5 und Stufe 0 laufen als
+       Vergleich - alle am selben Titel, sonst vergleicht die Messung zwei
+       Dinge.
+
+       Stufe 0 ist der entscheidende dritte Fall: sie ist Tiingos
+       dokumentierte Grundeinstellung fuer den IEX-Strom und liefert
+       alles, was es gibt. Bleibt auch sie stumm, liegt es nicht an der
+       Stufe, sondern am Zugang - und genau diese beiden Ursachen wollte
+       der erste Lauf unterscheiden koennen und konnte es nicht. */
+    for (const level of [6, 5, 0]) {
       console.log(`  Messung: ${PRIMARY}, thresholdLevel ${level}, ${SECONDS} s ...`);
       const r = await measureStream({ symbols: [PRIMARY], thresholdLevel: level,
                                       durationMs: SECONDS * 1000 });
       runs.push(Object.assign({ scope: "primary" }, r));
+      /* Kurz durchatmen, bevor die naechste Verbindung aufgeht. Die
+         zweite Messung des ersten Laufs endete nach 0,4 Sekunden - wenn
+         der Anbieter je Konto nur eine Verbindung zulaesst, misst ein
+         sofortiger Neuaufbau die eigene, noch offene Verbindung. */
+      await new Promise((r2) => setTimeout(r2, 3000));
       console.log(`    ${r.result}  Verbindung ${r.connection && r.connection.opened ? "offen" : "nicht zustande"}` +
                   `, ${r.events ? r.events.count : 0} Kursereignisse` +
                   (r.events && r.events.perSecond !== null ? `, ${r.events.perSecond}/s` : "") +
@@ -384,6 +396,23 @@ async function main() {
                       MIN_TICKS_IN_CANDLE + " Updates in derselben Minute).";
   }
 
+  /* Warum blieb der Strom stumm? Die Antwort steht in den
+     Verwaltungsnachrichten und im Schliessgrund, nicht im Ergebniswort.
+     Sie hier zusammenzuziehen erspart es, den ganzen Bericht zu lesen,
+     um die eine Zeile zu finden, auf die es ankommt. */
+  const silenceEvidence = measured
+    .filter((r) => r.connection && r.connection.opened && r.events && r.events.count === 0)
+    .map((r) => ({
+      thresholdLevel: r.thresholdLevel,
+      messages: r.connection.messages,
+      adminMessages: r.connection.adminMessages,
+      subscriptionAck: r.connection.subscriptionAck,
+      closeCode: r.connection.closeCode,
+      closeReason: r.connection.closeReason,
+      stableForFullDuration: r.connection.stableForFullDuration,
+      durationSeconds: r.durationSeconds
+    }));
+
   const report = {
     generatedAt: new Date().toISOString(),
     provider: "tiingo",
@@ -413,6 +442,10 @@ async function main() {
     },
     LIVE_CHART_READY: liveChartReady,
     liveChartReason,
+    /* Leer, wenn der Strom geliefert hat. Gefuellt sagt er, was der
+       Anbieter STATTDESSEN geschickt hat - eine Bestaetigung ohne Daten
+       sieht anders aus als eine abgelehnte Anmeldung. */
+    silenceEvidence,
     /* Die Frage aus §21 - bewegt sich ein geoeffnetes Chart sichtbar? -
        ist genau die obere, in anderen Worten. Sie steht trotzdem
        getrennt, weil sie getrennt gestellt wurde. */
