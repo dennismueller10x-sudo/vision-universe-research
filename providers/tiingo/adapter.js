@@ -63,18 +63,35 @@ const FREE_LIMITS = {
 
 /* Der kostenpflichtige Zugang aendert ausschliesslich diese Zahlen, nicht
    den Adapter. Genau das ist der Sinn der Trennung (§28).
-   
-   ACHTUNG: Diese Zahlen sind PLATZHALTER. Es besteht kein
-   kostenpflichtiger Zugang, und die Konditionen wurden nicht geprueft -
-   weder in der Anbieterdokumentation noch vertraglich. Sie stehen hier,
-   damit der Umschaltweg gebaut und getestet werden kann, nicht weil
-   jemand sie nachgesehen haette.
-   
-   Wer diesen Tarif in Betrieb nimmt, ersetzt sie durch die zugesagten
-   Werte. Bis dahin gilt: die Zahlen unten sind eine Annahme, und eine
-   Annahme, auf die man ein Kontingent stuetzt, ist ein Ausfall mit
-   Ansage. FREE_LIMITS dagegen sind gemessen - der Import laeuft gegen
-   sie. */
+
+   STAND 2026-09: Ein Commercial-Zugang BESTEHT (Tiingo Commercial
+   Internal Use). Was sich damit NICHT geaendert hat: die Zahlen unten
+   sind weiterhin ungeprueft. Ein bestehender Vertrag ist keine Messung -
+   er sagt, dass mehr erlaubt ist, nicht wie viel mehr.
+
+   Die Zahlen bleiben deshalb konservativ und tragen verified:false. Sie
+   werden angehoben, wenn ein Lauf sie misst (scripts/market/
+   run-scale-gate.mjs meldet Anfragen, Bytes und Kontingentstaende je
+   Gate), nicht wenn jemand eine Tarifseite liest. Eine Annahme, auf die
+   man ein Kontingent stuetzt, ist ein Ausfall mit Ansage. */
+/* HERKUNFT DER ZAHLEN (§2 der Nacharbeit)
+
+   Jede Zahl traegt ihre Herkunft als Feld, nicht als Kommentar. Der
+   Grund ist ein konkreter Vorfall: der FULL_UNIVERSE-Lauf vom
+   2026-09-09 endete nach exakt 5.000 Anfragen, 686 Titel blieben
+   ungefragt, und der Bericht las sich wie ein Anbieterlimit. Er war
+   keines. Die 5.000 stammen aus diesem Objekt - sie wurden in Phase 4A
+   als bewusst konservative Annahme gesetzt und nie gemessen.
+
+   Die Klassifikation unten macht das unuebersehbar. Eine Annahme darf
+   nie zu einem Anbieterlimit werden, indem sie lange genug unwidersprochen
+   im Code steht. */
+const LIMIT_PROVENANCE = {
+  /* Die sieben zulaessigen Stufen, absteigend nach Beweiskraft. */
+  LEVELS: ["PROVIDER_VERIFIED", "ACCOUNT_VERIFIED", "RUNTIME_MEASURED",
+           "DOCUMENTED", "CONFIG_ASSUMPTION", "SAFETY_CEILING", "UNKNOWN"]
+};
+
 const COMMERCIAL_LIMITS = {
   requestsPerMinute: 100,
   requestsPerHour: 5000,
@@ -86,7 +103,35 @@ const COMMERCIAL_LIMITS = {
   /* Die Kennzeichnung ist Teil der Daten, nicht nur des Kommentars: ein
      Kommentar wird nicht mitgeliefert, wenn jemand das Objekt ausgibt. */
   verified: false,
-  note: "Platzhalter. Kein kostenpflichtiger Zugang vorhanden, Konditionen ungeprueft."
+
+  /* Je Zahl: woher sie kommt. Nicht "ist sie geprueft" (ein Ja/Nein
+     verschweigt, WAS geprueft waere), sondern welche Art Beleg dahinter
+     steht. */
+  provenance: {
+    requestsPerMinute: "SAFETY_CEILING",
+    requestsPerHour: "SAFETY_CEILING",
+    requestsPerDay: "SAFETY_CEILING",
+    bytesPerMonth: "UNKNOWN",
+    concurrency: "CONFIG_ASSUMPTION"
+  },
+
+  /* Was der Anbieter selbst gesagt hat - bis jetzt: nichts. Kein einziger
+     Lauf dieser Phase hat einen HTTP 429 oder einen Kontingentheader von
+     Tiingo gesehen. scripts/market/verify-request-limits.mjs fuellt dieses
+     Feld aus echten Antwortkoepfen; solange es UNKNOWN traegt, ist ueber
+     die tatsaechliche Grenze des Kontos nichts belegt. */
+  providerObserved: {
+    status: "UNKNOWN",
+    rateLimitHeaders: null,
+    http429Seen: false,
+    highestObservedHourlyRequests: null,
+    note: "Noch keine Anbieteraussage gemessen. PROVIDER_CONFIRMATION_REQUIRED."
+  },
+
+  note: "Diese Zahlen sind UNSER Budget, nicht Tiingos Limit. Der Commercial-Zugang " +
+        "besteht (Stand 2026-09); was er tatsaechlich erlaubt, ist ungeprueft. Ein Vertrag " +
+        "ist keine Messung, und eine Sekundaerquelle im Netz auch nicht. Wird eine dieser " +
+        "Zahlen erreicht, ist das eine Aussage ueber uns - der Anbieter hat dann nichts gesagt."
 };
 
 /* ==========================================================================
@@ -516,7 +561,14 @@ function createTiingoProvider(options) {
         available: false, data: null,
         reason: (res && res.reason) || "requestFailed",
         message: (res && res.message) || "Abruf fehlgeschlagen.",
-        status: (res && res.status) || null
+        status: (res && res.status) || null,
+        /* WER hat abgelehnt: "clientBudget" heisst, wir haben nicht
+           gefragt; "provider" heisst, Tiingo hat nein gesagt. Ohne diese
+           Angabe sehen beide Faelle im Bericht gleich aus - und genau so
+           ist der FULL_UNIVERSE-Lauf als Anbieterlimit missverstanden
+           worden. */
+        source: (res && res.source) || null,
+        retryAfterSeconds: (res && res.retryAfterSeconds) || null
       };
     }
     return {
@@ -710,6 +762,20 @@ function createTiingoProvider(options) {
             open: num(row.open), high: num(row.high), low: num(row.low),
             volume: num(row.volume) === null ? 0 : num(row.volume),
             timestamp: row.timestamp || null,
+
+            /* Tiingos eigener Referenzkurs (tngoLast) neben dem letzten
+               Boersenkurs (last). Die beiden sind nicht dasselbe: `last`
+               ist der letzte an IEX ausgefuehrte Trade, `tngoLast` Tiingos
+               konsolidierter Referenzwert. Ausserhalb der regulaeren
+               Sitzung und bei duenn gehandelten Titeln unterscheiden sie
+               sich - und dann ist es wichtig zu wissen, welchen man
+               ansieht. Beide bleiben getrennt; keiner ersetzt den anderen.
+               null heisst: das Feld kam nicht mit, nicht "kein Kurs". */
+            referencePrice: num(row.tngoLast),
+            bid: num(row.bidPrice), ask: num(row.askPrice), mid: num(row.mid),
+            quoteTimestamp: row.quoteTimestamp || null,
+            lastSaleTimestamp: row.lastSaleTimeStamp || null,
+
             currency: "USD",
             dataSourceId: DATA_SOURCE_ID
           };

@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-09-09T15:33:45.869Z",
+  "note": "Pruefungen, die erst ueber viele Titel sichtbar werden. Je Titel prueft market-quality.js; beide zusammen ergeben das Urteil.",
+  "run": {
+    "source": "local",
+    "runId": null,
+    "commit": null
+  },
+  "thresholds": {
+    "maxDateSpreadTradingDays": 5,
+    "nullExplosionRate": 0.5
+  },
+  "status": "FAILED",
+  "gate": "GATE_100",
+  "checksRun": [
+    "duplicateSecurities",
+    "tickerCollisions",
+    "nonFiniteNumbers",
+    "nullExplosion",
+    "dateAlignment",
+    "technicalBundles",
+    "relativeStrengthAlignment",
+    "accountingConsistency"
+  ],
+  "errors": 1,
+  "warnings": 1,
+  "findings": [
+    {
+      "severity": "WARNING",
+      "check": "nullExplosion",
+      "message": "4 Faktorfeld(er) fehlen bei mehr als 50 % der 100 gerechneten Titel.",
+      "fields": [
+        {
+          "feld": "relativeStrength.1M",
+          "calculated": 0,
+          "of": 100,
+          "missingRate": 1,
+          "breakdown": {
+            "CALCULATED": 0,
+            "INSUFFICIENT_HISTORY": 0,
+            "SOURCE_MISSING": 100,
+            "NOT_APPLICABLE": 0
+          }
+        },
+        {
+          "feld": "relativeStrength.3M",
+          "calculated": 0,
+          "of": 100,
+          "missingRate": 1,
+          "breakdown": {
+            "CALCULATED": 0,
+            "INSUFFICIENT_HISTORY": 0,
+            "SOURCE_MISSING": 100,
+            "NOT_APPLICABLE": 0
+          }
+        },
+        {
+          "feld": "relativeStrength.6M",
+          "calculated": 0,
+          "of": 100,
+          "missingRate": 1,
+          "breakdown": {
+            "CALCULATED": 0,
+            "INSUFFICIENT_HISTORY": 0,
+            "SOURCE_MISSING": 100,
+            "NOT_APPLICABLE": 0
+          }
+        },
+        {
+          "feld": "relativeStrength.12M",
+          "calculated": 0,
+          "of": 100,
+          "missingRate": 1,
+          "breakdown": {
+            "CALCULATED": 0,
+            "INSUFFICIENT_HISTORY": 0,
+            "SOURCE_MISSING": 100,
+            "NOT_APPLICABLE": 0
+          }
+        }
+      ]
+    },
+    {
+      "severity": "ERROR",
+      "check": "relativeStrengthAlignment",
+      "message": "Der Vergleichsmassstab traegt keine Bars. Jede relative Staerke waere dann leer - und ein leeres Feld sieht aus wie ein schwacher Titel."
+    }
+  ]
+}

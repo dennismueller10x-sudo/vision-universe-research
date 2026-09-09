@@ -103,6 +103,11 @@
     var stats = {
       providerId: providerId, requests: 0, cacheHits: 0, deduplicated: 0,
       errors: 0, retries: 0, quotaBlocks: 0, bytes: 0,
+      /* Was der ANBIETER zum Kontingent gesagt hat - getrennt von dem,
+         was wir uns selbst auferlegen. Bleibt provider429 auf 0 und
+         rateLimitHeaders leer, dann hat er nie widersprochen, und jede
+         Aussage ueber sein Limit waere unbelegt. */
+      provider429: 0, rateLimitHeaders: null, retryAfterSeconds: null,
       latencyTotalMs: 0, latencySamples: 0, bytesReceived: 0,
       lastSuccessAt: null, lastErrorAt: null, lastError: null
     };
@@ -282,6 +287,51 @@
       });
     }
 
+    /* Kontingentkoepfe des Anbieters mitschreiben.
+
+       Sie sind der einzige Weg, an dem der Anbieter von sich aus sagt,
+       wie viel noch geht - ohne dass man gegen die Wand laufen muss, um
+       es herauszufinden. Fehlen sie, bleibt das Feld null: "nicht
+       gesendet" ist eine Auskunft, "0 verbleibend" waere eine erfundene. */
+    var RATE_LIMIT_HEADERS = [
+      "x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset",
+      "ratelimit-limit", "ratelimit-remaining", "ratelimit-reset",
+      "x-rate-limit-limit", "x-rate-limit-remaining", "retry-after"
+    ];
+
+    function readHeader(res, name) {
+      if (!res || !res.headers) return null;
+      try {
+        if (typeof res.headers.get === "function") return res.headers.get(name);
+        var direct = res.headers[name];
+        if (direct !== undefined) return direct;
+        var lower = res.headers[String(name).toLowerCase()];
+        return lower === undefined ? null : lower;
+      } catch (err) { return null; }
+    }
+
+    function noteRateLimitHeaders(res) {
+      var found = null;
+      for (var i = 0; i < RATE_LIMIT_HEADERS.length; i++) {
+        var v = readHeader(res, RATE_LIMIT_HEADERS[i]);
+        if (v === null || v === undefined || v === "") continue;
+        if (!found) found = {};
+        found[RATE_LIMIT_HEADERS[i]] = String(v).slice(0, 100);
+      }
+      if (found) {
+        stats.rateLimitHeaders = found;
+        var ra = found["retry-after"];
+        if (ra !== undefined) {
+          var sec = parseInt(ra, 10);
+          /* Retry-After darf auch ein Datum sein. Ist es keine Zahl,
+             bleibt das Feld null statt auf 0 zu fallen - 0 hiesse
+             "sofort wieder", und das waere das Gegenteil der Auskunft. */
+          stats.retryAfterSeconds = isNaN(sec) ? null : sec;
+        }
+      }
+      return found;
+    }
+
     function attempt(spec, key, retryCount) {
       var quota = quotaState();
       if (quota.dayRemaining <= 0) {
@@ -299,15 +349,27 @@
            beides "Minutenkontingent" nennt, nimmt sie ihm ab. */
         var binding = (isFinite(limits.requestsPerHour) &&
                        hourWindow.length >= limits.requestsPerHour) ? "Stunden" : "Minuten";
-        var message = binding + "kontingent erschoepft (" +
+        /* Wessen Grenze ist das? Die Frage ist nicht rhetorisch. Diese
+           Schranke ist UNSER Budget - der Anbieter hat nichts gesagt, er
+           wurde nicht einmal gefragt. Eine Meldung, die "Kontingent
+           erschoepft" sagt, laesst sich spaeter als Anbieterlimit lesen,
+           und genau so ist der FULL_UNIVERSE-Lauf falsch berichtet worden.
+           Der Text nennt deshalb den Urheber, und das Ergebnis traegt
+           source:"clientBudget". Ein echtes 429 des Anbieters kommt
+           weiter unten an und traegt source:"provider". */
+        var message = "Eigenes " + binding + "budget ausgeschoepft (" +
                       (binding === "Stunden" ? hourWindow.length + "/" + limits.requestsPerHour
                                              : minuteWindow.length + "/" + limits.requestsPerMinute) +
-                      "). Naechster freier Platz in " + Math.round(wait / 1000) + " s.";
+                      "). Der Anbieter hat nichts abgelehnt. Naechster freier Platz in " +
+                      Math.round(wait / 1000) + " s.";
         if (wait > (spec.maxWaitMs || 65000)) {
           stats.quotaBlocks++;
           setHealth("rateLimited", message);
           return Promise.resolve(staleFallback(key, "rateLimited", message) ||
-            { ok: false, reason: "rateLimited", message: message, waitMs: wait });
+            { ok: false, reason: "rateLimited", source: "clientBudget",
+              binding: binding === "Stunden" ? "hour" : "minute",
+              limit: binding === "Stunden" ? limits.requestsPerHour : limits.requestsPerMinute,
+              message: message, waitMs: wait });
         }
         return sleep(wait).then(function () { return attempt(spec, key, retryCount); });
       }
@@ -325,6 +387,7 @@
           stats.latencyTotalMs += latency; stats.latencySamples++;
 
           if (!res || typeof res.status !== "number") throw new Error("Ungueltige Antwort vom HTTP-Client");
+          noteRateLimitHeaders(res);
           if (res.status >= 200 && res.status < 300) {
             return readBody(res).then(function (body) {
               if (body && body.__parseError) {
@@ -372,6 +435,10 @@
         return Promise.resolve({ ok: false, reason: "authError", status: status, message: message });
       }
       if (cls === "quota") {
+        /* HIER hat der Anbieter tatsaechlich widersprochen - im Gegensatz
+           zum eigenen Budget weiter oben. Der Unterschied wird gezaehlt,
+           weil er der einzige Beleg fuer ein echtes Anbieterlimit ist. */
+        stats.provider429++;
         setHealth("quotaExceeded", "Der Anbieter meldet ein erschoepftes Kontingent (HTTP 429).");
         /* 429 zaehlt gegen das Minutenfenster, damit der Client von selbst
            langsamer wird statt weiter dagegenzulaufen. */
@@ -380,7 +447,8 @@
           for (var h = 0; h < Math.max(1, limits.requestsPerHour - hourWindow.length); h++) hourWindow.push(now());
         }
         return Promise.resolve(staleFallback(key, "quotaExceeded", message) ||
-          { ok: false, reason: "quotaExceeded", status: status, message: message });
+          { ok: false, reason: "quotaExceeded", source: "provider", status: status,
+            retryAfterSeconds: stats.retryAfterSeconds, message: message });
       }
       if (cls === "transient" && retryCount < limits.maxRetries) {
         stats.retries++;

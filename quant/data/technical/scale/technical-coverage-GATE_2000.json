@@ -1,0 +1,130 @@
+{
+  "generatedAt": "2026-09-09T10:50:45.815Z",
+  "gate": "GATE_2000",
+  "provider": "tiingo",
+  "methodologyVersions": {
+    "technical": "technical-v1.0.0",
+    "elliott": "elliott-v1.0.0-beta"
+  },
+  "note": "Deckungsbericht, kein Datensatz. Die Analysebundles bleiben in der Arbeitsablage - rund ein halbes Megabyte je Titel waere weder speicherbar noch weitergabefaehig. Ausgewiesen sind Zustaende und Laufzeiten, keine Kurse.",
+  "run": {
+    "source": "github-actions",
+    "runId": "34339904683",
+    "commit": "41a195635392c0e5973b32fa37f8d83acfaeaca5",
+    "elliottEnabled": true,
+    "minBars": 300,
+    "benchmark": "SPY",
+    "benchmarkStatus": "OK"
+  },
+  "requested": 2000,
+  "evaluated": 1999,
+  "coverage": {
+    "TECHNICAL_READY": 1999,
+    "TECHNICAL_PARTIAL": 0,
+    "TECHNICAL_FAILED": 0,
+    "INSUFFICIENT_HISTORY": 1,
+    "SOURCE_MISSING": 0
+  },
+  "coverageRate": 0.9995,
+  "elliott": {
+    "enabled": true,
+    "symbolsRun": 1999,
+    "coverage": {
+      "HIGH_CONFIDENCE": 559,
+      "MEDIUM_CONFIDENCE": 132,
+      "LOW_CONFIDENCE": 117,
+      "AMBIGUOUS": 1191,
+      "UNAVAILABLE": 0,
+      "NOT_RUN": 1
+    },
+    "reasons": {
+      "ambiguousCount": 1191,
+      "FIRST_LEG_ONLY": 115,
+      "lowConfidence": 2
+    },
+    "confidenceThresholds": {
+      "highConfidenceFrom": 70,
+      "mediumConfidenceFrom": 50
+    },
+    "thresholdNote": "Die Schwellen ordnen den vorhandenen confidence-Wert der Engine in die Faecher aus §18 ein. Sie veraendern die Engine nicht und rechnen nichts nach."
+  },
+  "performance": {
+    "totalRuntimeMs": 357567,
+    "analysisRuntimeMs": 257627,
+    "msPerSymbol": 129,
+    "processed": 1999,
+    "slowest": [
+      {
+        "ticker": "AAPL",
+        "ms": 307,
+        "bars": 9238
+      },
+      {
+        "ticker": "MSFT",
+        "ms": 211,
+        "bars": 9238
+      },
+      {
+        "ticker": "MRK",
+        "ms": 203,
+        "bars": 9238
+      },
+      {
+        "ticker": "AMD",
+        "ms": 196,
+        "bars": 9238
+      },
+      {
+        "ticker": "IBM",
+        "ms": 196,
+        "bars": 9238
+      },
+      {
+        "ticker": "NWLI",
+        "ms": 196,
+        "bars": 8781
+      },
+      {
+        "ticker": "ITIC",
+        "ms": 196,
+        "bars": 9179
+      },
+      {
+        "ticker": "WLY",
+        "ms": 195,
+        "bars": 9180
+      },
+      {
+        "ticker": "HUM",
+        "ms": 194,
+        "bars": 9238
+      },
+      {
+        "ticker": "USB",
+        "ms": 192,
+        "bars": 9238
+      }
+    ],
+    "projected": {
+      "basis": "Linear aus 1999 gemessenen Titeln. Die Analyse je Titel ist unabhaengig von den anderen; es gibt keinen Schritt ueber Titelpaare.",
+      "minutesFor500": 1.1,
+      "minutesFor2000": 4.3,
+      "minutesFor10000": 21.5
+    }
+  },
+  "perSymbol": {
+    "NXH": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 17,
+      "minBars": 300,
+      "reason": "Reihe hat 17 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    }
+  },
+  "perSymbolDetail": {
+    "location": "workingStore",
+    "symbolsTotal": 2000,
+    "symbolsInReport": 1,
+    "reason": "Mehr als 500 Titel. Ausgeliefert werden die Befunde und die Bilanz (§26)."
+  }
+}

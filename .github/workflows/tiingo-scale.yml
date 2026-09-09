@@ -1,0 +1,675 @@
+name: Tiingo Commercial — Scale Gates
+
+# Phase "Tiingo Commercial": vom Canary zum Universum.
+#
+# Dieser Workflow ist der einzige Ort, an dem die Scale-Kette gegen den
+# echten Anbieter laeuft. Der Schluessel liegt hier und nirgends sonst:
+# lokal ist api.tiingo.com nicht erreichbar, und ein Nachweis ohne echte
+# Antwort waere keiner.
+#
+# WARUM EIN PUSH-AUSLOESER MIT MARKE
+#
+# workflow_dispatch verlangt bei GitHub, dass die Workflow-Datei auf dem
+# Default-Branch liegt - hier also erst nach einem Merge nutzbar. Bis
+# dahin gilt dieselbe Loesung wie in tiingo-verify.yml und
+# golden-five-market-data.yml: ein Push-Ausloeser auf Entwicklungsbranches
+# mit einer Marke in der Commit-Nachricht. OHNE MARKE LAEUFT NICHTS - ein
+# Workflow, der bei jedem Push das Kontingent eines kostenpflichtigen
+# Zugangs anfasst, waere ein Fehler mit Rechnung.
+#
+#   [tiingo-scale]      Universum, Gate-Lauf, Faktoren, Technical, Bericht
+#                       Die Bedingungen pruefen auf das PRAEFIX
+#                       "[tiingo-scale" ohne schliessende Klammer - sonst
+#                       traefe "[tiingo-scale:GATE_500]" nicht zu, und der
+#                       Job wuerde stillschweigend uebersprungen. Genau das
+#                       ist beim dritten Lauf passiert.
+#                       Welche Stufe, sagt die Marke selbst:
+#                       [tiingo-scale] allein laeuft GATE_100,
+#                       [tiingo-scale:GATE_500] laeuft GATE_500.
+#                       Ohne diese Schreibweise gaebe es auf einem
+#                       Entwicklungsbranch nur GATE_100 - workflow_dispatch
+#                       mit Eingabefeldern steht erst nach einem Merge zur
+#                       Verfuegung.
+#   [tiingo-capability] Faehigkeitsnachweis des Commercial-Zugangs
+#   [tiingo-realtime]   Strom- und Live-Kerzen-Nachweis
+#
+# ACHTUNG bei allen drei Marken: der Push muss eine Datei aus der
+# paths-Liste unten AENDERN. Ein leerer Commit traegt die Marke zwar in
+# der Nachricht, aendert aber keinen Pfad - GitHub legt dann gar keinen
+# Lauf an, und es sieht aus, als sei die Marke falsch geschrieben. Genau
+# das ist beim Ausloesen des Stromnachweises passiert.
+#
+# Der Realtime-Nachweis ist ausdruecklich getrennt: er ist nur waehrend
+# der regulaeren US-Handelszeit aussagekraeftig (13:30-20:00 UTC). Ein
+# Lauf davor oder danach kann nur UNKNOWN ergeben, und das steht dann
+# auch so im Bericht.
+
+on:
+  workflow_dispatch:
+    inputs:
+      gate:
+        description: 'Welches Gate (CANARY, GATE_100, GATE_500, GATE_2000, FULL_UNIVERSE)'
+        type: string
+        default: 'GATE_100'
+      realtime:
+        description: 'Strom- und Live-Kerzen-Nachweis mitlaufen lassen'
+        type: boolean
+        default: false
+      realtimeSeconds:
+        description: 'Messdauer je Stromlauf in Sekunden'
+        type: string
+        default: '90'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/build-market-universe.mjs'
+      - 'scripts/market/select-gate-universe.mjs'
+      - 'scripts/market/run-scale-gate.mjs'
+      - 'scripts/market/build-market-factors.mjs'
+      - 'scripts/market/build-health-report.mjs'
+      - 'scripts/market/verify-tiingo-commercial.mjs'
+      - 'scripts/market/verify-live-candle.mjs'
+      - 'scripts/technical/run-technical-scale.mjs'
+      - 'quant/config/tiingo-scale.json'
+      - 'quant/config/gate-100-seed.json'
+      - 'quant/engines/instrument-classification.js'
+      - 'quant/engines/market-factors.js'
+      - '.github/workflows/tiingo-scale.yml'
+
+permissions:
+  contents: write
+
+# Die Nebenlaeufigkeit steht je Job und nicht fuer den ganzen Workflow.
+#
+# Der Grund ist eine Erfahrung: ein Gate-Lauf ueber tausende Titel dauert
+# Stunden, und mit einer Gruppe fuer alles wartet der Echtzeitnachweis
+# dahinter - ein Nachweis, der nur waehrend der Handelszeit ueberhaupt
+# etwas messen kann. Eine Warteschlange, die genau das Zeitfenster
+# verpasst, um das es geht, ist keine Vorsicht, sondern ein Fehler.
+
+jobs:
+  capability:
+    name: Commercial-Faehigkeitsnachweis
+    runs-on: ubuntu-latest
+    concurrency:
+      group: tiingo-capability
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[tiingo-capability]') ||
+      contains(github.event.head_commit.message, '[tiingo-scale')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ohne Zugang bleibt jede Faehigkeit ungeprueft."
+            exit 1
+          fi
+          echo "Zugang vorhanden."
+
+      # Der Nachweis laeuft ueber die Golden Five - hier ausschliesslich in
+      # ihrer Rolle als Canary (§0), nicht als Zieluniversum.
+      - name: Faehigkeiten am Canary-Satz messen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-tiingo-commercial.mjs
+
+      # Was erlaubt der Zugang wirklich? Der teuerste offene Punkt der
+      # Vorphase. Der Nachweis sucht Anbieteraussagen - Kontoendpunkt,
+      # Dokumentation, Antwortkoepfe - und stellt dafuer eine
+      # zweistellige Zahl von Anfragen. Er laeuft ausdruecklich NICHT
+      # gegen die Wand, um eine Decke zu finden.
+      - name: Was erlaubt der Zugang wirklich?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-request-limits.mjs
+
+      - name: Kein Schluessel im Bericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Bericht sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-capability-retest
+          path: |
+            quant/data/market/commercial/capability-retest.json
+            quant/data/market/commercial/request-limits.json
+          if-no-files-found: warn
+
+      # Der Bericht wird committet, damit der Gesundheitsbericht ihn sieht.
+      # Ohne das steht dort "commercial: MISSING", obwohl der Nachweis im
+      # selben Lauf gelaufen ist - eine Luecke, die es nicht gibt.
+      - name: Bericht committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung am Faehigkeitsbericht."
+          else
+            git commit -m "Tiingo Commercial: Faehigkeitsnachweis aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo Commercial — Faehigkeitsnachweis'
+            echo ''
+            if [ -f quant/data/market/commercial/capability-retest.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/capability-retest.json");
+                console.log("Sitzung zur Messung: **" + (r.sessionAtRun ? r.sessionAtRun.phase : "?") + "**");
+                console.log("");
+                console.log("| Faehigkeit | Kontostand |");
+                console.log("|---|---|");
+                for (const k of Object.keys(r.accountCapabilities).sort()) {
+                  console.log("| " + k + " | " + r.accountCapabilities[k] + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  realtime:
+    name: Strom- und Live-Kerzen-Nachweis
+    runs-on: ubuntu-latest
+    concurrency:
+      group: tiingo-realtime
+      cancel-in-progress: false
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.realtime) ||
+      contains(github.event.head_commit.message, '[tiingo-realtime]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Der Strom bleibt ungeprueft."
+            exit 1
+          fi
+
+      # Der Hinweis steht bewusst im Log und nicht nur in der Dokumentation:
+      # wer diesen Job um 03:00 UTC startet, soll wissen, warum das Ergebnis
+      # UNKNOWN lautet, bevor er es fuer ein Nein haelt.
+      - name: Handelszeit einordnen
+        run: |
+          echo "Jetzt (UTC): $(date -u '+%H:%M')"
+          echo "Regulaerer US-Handel: 13:30-20:00 UTC (Sommerzeit), 14:30-21:00 UTC (Winterzeit)."
+          echo "Ausserhalb dieser Zeit kann der Nachweis nur UNKNOWN ergeben."
+
+      - name: Strom messen (NVDA zuerst, thresholdLevel 6 und 5)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/verify-live-candle.mjs \
+            --seconds "${{ github.event_name == 'workflow_dispatch' && inputs.realtimeSeconds || '90' }}"
+
+      - name: Kein Schluessel im Bericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Bericht sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-live-candle
+          path: quant/data/market/commercial/live-candle-verification.json
+          if-no-files-found: warn
+
+      # Der Bericht wird committet, wie der Faehigkeitsnachweis auch: der
+      # Gesundheitsbericht liest ihn, und ein Befund, der nur als Artefakt
+      # existiert, ist nach 90 Tagen weg. Er enthaelt keine Kurse und
+      # keinen Schluessel - der Schritt darueber prueft das.
+      - name: Bericht committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung am Stromnachweis."
+          else
+            git commit -m "Tiingo Commercial: Stromnachweis aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo Commercial — Strom und Live-Kerze'
+            echo ''
+            if [ -f quant/data/market/commercial/live-candle-verification.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/live-candle-verification.json");
+                console.log("**LIVE_CHART_READY = " + r.LIVE_CHART_READY + "**");
+                console.log("");
+                console.log(r.liveChartReason);
+                console.log("");
+                if ((r.silenceEvidence || []).length) {
+                  console.log("Was stattdessen kam:");
+                  console.log("");
+                  console.log("| Stufe | Nachrichten | davon Verwaltung | Bestaetigung | Schliesscode |");
+                  console.log("|---|---|---|---|---|");
+                  for (const e of r.silenceEvidence) {
+                    const ack = e.subscriptionAck
+                      ? (e.subscriptionAck.code + " " + (e.subscriptionAck.message || "")) : "keine";
+                    console.log("| " + e.thresholdLevel + " | " + e.messages + " | " +
+                                e.adminMessages + " | " + ack + " | " +
+                                (e.closeCode === null ? "-" : e.closeCode) + " |");
+                  }
+                  console.log("");
+                }
+                console.log("| Messung | Stufe | Verbindung | Ereignisse | Ereignisse/s | Abstand median (ms) | Updates in einer Kerze |");
+                console.log("|---|---|---|---|---|---|---|");
+                for (const m of r.measurements) {
+                  if (!m.connection) { console.log("| " + m.scope + " | - | - | - | - | - | - |"); continue; }
+                  console.log("| " + m.scope + " | " + m.thresholdLevel + " | " +
+                    (m.connection.opened ? "offen" : "nein") + " | " + m.events.count + " | " +
+                    (m.events.perSecond === null ? "-" : m.events.perSecond) + " | " +
+                    (m.events.gapMs.median === null ? "-" : m.events.gapMs.median) + " | " +
+                    m.candle.maxTicksInAnyBucket + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  gate:
+    name: Scale Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    concurrency:
+      group: tiingo-scale-gate
+      cancel-in-progress: false
+    # Beide Jobs committen auf denselben Branch. Nacheinander statt
+    # nebeneinander: ein Wettlauf um denselben Ref kostet mehr, als die
+    # zwanzig Sekunden Wartezeit wert sind. `always()` haelt das Gate am
+    # Laufen, wenn der Faehigkeitsnachweis uebersprungen wurde oder
+    # fehlschlaegt - er ist eine Auskunft, keine Voraussetzung.
+    needs: capability
+    if: >-
+      always() && (
+        github.event_name == 'workflow_dispatch' ||
+        contains(github.event.head_commit.message, '[tiingo-scale')
+      )
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ein Gate laesst sich ohne Zugang weder"
+            echo "bestehen noch nicht bestehen."
+            exit 1
+          fi
+
+      # Die Arbeitsablage zwischen Laeufen erhalten. Ohne sie waere jeder
+      # Lauf ein Erstimport ueber die volle Historie - genau das, was §27
+      # ausschliesst. Mit ihr laedt der zweite Lauf nur die Tage seit dem
+      # ersten nach.
+      # Wiederherstellen und Sichern sind getrennt, und das ist keine
+      # Formsache: die Arbeitsablage waechst mit der Stufe. Gemessen sind
+      # rund 3 GB je 1.000 Titel; bei 2.000 waeren das 6 GB, die nach
+      # jedem Lauf hochgeladen wuerden - langsamer als ein Neuabruf und
+      # nahe an der Ablagegrenze eines Repositories. Gesichert wird
+      # deshalb nur, was sich zu sichern lohnt (§26).
+      - name: Arbeitsablage aus dem letzten Lauf holen
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: market-cache-${{ github.run_id }}
+          restore-keys: |
+            market-cache-
+
+      - name: Platz auf dem Laufwerk vor dem Lauf
+        run: df -h / | tail -1
+
+      - name: Marktuniversum aus den Anbieterstammdaten bauen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/build-market-universe.mjs
+
+      # Die Stufe kommt entweder aus der Eingabe (nach einem Merge) oder aus
+      # der Marke in der Commit-Nachricht. Ein unbekannter Wert faellt hier
+      # auf und nicht erst, wenn ein Universum fehlt.
+      - name: Stufe bestimmen
+        id: pick
+        run: |
+          GATE='${{ github.event_name == 'workflow_dispatch' && inputs.gate || '' }}'
+          if [ -z "$GATE" ]; then
+            MSG=$(git log -1 --pretty=%B)
+            GATE=$(printf '%s' "$MSG" | grep -oE '\[tiingo-scale:[A-Z_0-9]+\]' | head -1 | sed -E 's/.*:([A-Z_0-9]+)\]/\1/')
+          fi
+          [ -z "$GATE" ] && GATE='GATE_100'
+          case "$GATE" in
+            CANARY|GATE_100|GATE_500|GATE_2000|FULL_UNIVERSE) ;;
+            *) echo "Unbekannte Stufe '$GATE'."; exit 1 ;;
+          esac
+          echo "Stufe: $GATE"
+          echo "gate=$GATE" >> "$GITHUB_OUTPUT"
+
+      - name: Gate-Universum waehlen
+        run: |
+          GATE='${{ steps.pick.outputs.gate }}'
+          # Gates sind geschachtelt: das kleinere muss vorliegen, damit das
+          # groessere es vollstaendig enthaelt.
+          case "$GATE" in
+            GATE_500)  node scripts/market/select-gate-universe.mjs --gate GATE_100 ;;
+            GATE_2000) node scripts/market/select-gate-universe.mjs --gate GATE_100
+                       node scripts/market/select-gate-universe.mjs --gate GATE_500 ;;
+            FULL_UNIVERSE) node scripts/market/select-gate-universe.mjs --gate GATE_100
+                           node scripts/market/select-gate-universe.mjs --gate GATE_500
+                           node scripts/market/select-gate-universe.mjs --gate GATE_2000 ;;
+          esac
+          node scripts/market/select-gate-universe.mjs --gate "$GATE"
+
+      - name: Gate laufen lassen
+        id: gate
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          GATE='${{ steps.pick.outputs.gate }}'
+          echo "gate=$GATE" >> "$GITHUB_OUTPUT"
+          # Ein FAIL-Urteil ist ein Ergebnis und kein Werkzeugfehler: der
+          # Lauf soll den Bericht schreiben und die Auswertung erreichen.
+          # Der Schritt am Ende dieses Jobs setzt den Job dann rot.
+          # §25: FULL_UNIVERSE wird BEWERTET, nicht blind gestartet. Die
+          # gemessenen Raten sagen 24 GB Ablage fuer die ueber 8.000
+          # Aktien der Primaerboersen - mehr, als ein Standard-Runner frei
+          # hat. Ein Lauf, der das auf halbem Weg herausfindet, hat
+          # Kontingent verbrannt und nichts belegt.
+          #
+          # Ein echter Backfill verlangt deshalb eine zweite, ausdrueckliche
+          # Marke. Ohne sie bewertet der Lauf.
+          # Zwei Schalter, nicht einer - und das war der Fehler im Lauf
+          # 34369902099: die Marke leerte hier zwar MODE, aber das Skript
+          # traegt seit dem teuren Vorfall eine EIGENE Sicherung
+          # (--allow-full-backfill), und die hat der Workflow nie gesetzt.
+          # Ergebnis: ein Lauf, der laden sollte, hat bewertet - still und
+          # gruen. Die Sicherung im Skript war richtig; die Marke war
+          # Dekoration. Ab hier setzt sie beide Schalter.
+          MODE=""
+          ALLOW=""
+          if [ "$GATE" = "FULL_UNIVERSE" ]; then
+            if printf '%s' "$(git log -1 --pretty=%B)" | grep -q '\[tiingo-full-backfill\]'; then
+              ALLOW="--allow-full-backfill"
+              echo "FULL_UNIVERSE mit ausdruecklicher Backfill-Marke: es wird geladen."
+            else
+              MODE="--assess-only"
+              echo "FULL_UNIVERSE ohne Backfill-Marke: es wird bewertet, nicht geladen."
+            fi
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          # Das Stundenbudget ist UNSER Wert, nicht Tiingos.
+          #
+          # Der erste FULL_UNIVERSE-Lauf endete nach exakt 5.000 Anfragen
+          # - der Zahl aus COMMERCIAL_LIMITS, die verified:false traegt
+          # und nie gemessen wurde. 686 Titel blieben ungefragt, und der
+          # Bericht las sich wie ein Anbieterlimit.
+          #
+          # Fuer einen Lauf ueber 5.684 Titel wird das Budget deshalb
+          # ausdruecklich ueber die Arbeitsmenge gesetzt. Das ist kein
+          # Lasttest: es ist genau eine Anfrage je Titel, im selben Takt
+          # wie bisher (100/min, gemessene 0,6 s je Titel). Lehnt Tiingo
+          # dabei ab, ist DAS die Messung, die uns fehlt - der Client
+          # bremst dann von selbst und der Checkpoint haelt den Stand.
+          BUDGET=""
+          if [ "$GATE" = "FULL_UNIVERSE" ] && [ -z "$MODE" ]; then
+            BUDGET="--request-budget 12000 --max-wait-ms 900000"
+            echo "Eigenes Stundenbudget fuer diesen Lauf: 12000 (SAFETY_CEILING, kein Anbieterlimit)."
+          fi
+          echo "Aufruf: run-scale-gate.mjs --gate $GATE $MODE $ALLOW $BUDGET"
+          node scripts/market/run-scale-gate.mjs --gate "$GATE" $MODE $ALLOW $BUDGET || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
+
+      # Ohne geladene Kurse gibt es nichts zu rechnen. Ein Lauf mit
+      # lauter SOURCE_MISSING waere kein Ergebnis, sondern Rauschen.
+      - name: Marktfaktoren und Screener-Datenmodell
+        if: always() && steps.gate.outputs.mode != '--assess-only'
+        run: |
+          GATE='${{ steps.gate.outputs.gate }}'
+          node scripts/market/build-market-factors.mjs --gate "$GATE"
+
+      - name: Technical Intelligence und Elliott im Massstab
+        if: always() && steps.gate.outputs.mode != '--assess-only'
+        run: |
+          GATE='${{ steps.gate.outputs.gate }}'
+          node scripts/technical/run-technical-scale.mjs --gate "$GATE"
+
+      # §25: das Vollausbaustadium wird BEWERTET, bevor es gestartet wird.
+      # Ein Backfill, der auf halbem Weg an der Platte scheitert, hat
+      # Kontingent verbrannt und nichts belegt. Die Bewertung holt keinen
+      # Kurs - sie rechnet mit den Raten, die die kleineren Gates gemessen
+      # haben. Sie laeuft nur, wenn GATE_2000 bestanden hat: vorher waere
+      # sie eine Hochrechnung auf eine Stufe, die noch nicht freigegeben
+      # ist (§37).
+      - name: Vollausbaustadium bewerten (ohne Abruf)
+        if: always() && steps.gate.outputs.gate == 'GATE_2000'
+        # Nur nach GATE_2000. Laeuft der Lauf selbst schon auf
+        # FULL_UNIVERSE, hat er die Bewertung bereits erledigt.
+        run: |
+          VERDICT=$(node -e 'try{console.log(require("./quant/data/market/scale/gate-GATE_2000.json").verdict)}catch(e){console.log("MISSING")}')
+          if [ "$VERDICT" != "PASS" ]; then
+            echo "GATE_2000 ist nicht bestanden ($VERDICT). Das Vollausbaustadium wird nicht bewertet."
+            exit 0
+          fi
+          node scripts/market/select-gate-universe.mjs --gate FULL_UNIVERSE
+          node scripts/market/run-scale-gate.mjs --gate FULL_UNIVERSE --assess-only
+
+      # Die Pruefungen, die erst ueber viele Titel sichtbar werden:
+      # doppelte securityIds, Tickerkollisionen, ein Feld das bei der
+      # Mehrheit leer ist, Titel die zeitlich zurueckfallen, fehlende
+      # Analysebuendel. Jeder dieser Fehler laesst jeden EINZELNEN Titel
+      # sauber aussehen - deshalb braucht es diese Ebene (§13).
+      - name: Universumsweite Qualitaetspruefung
+        if: always() && steps.gate.outputs.mode != '--assess-only'
+        run: |
+          GATE='${{ steps.gate.outputs.gate }}'
+          node scripts/market/assert-universe-quality.mjs --gate "$GATE"
+
+      - name: Gesundheitsbericht
+        if: always()
+        run: node scripts/market/build-health-report.mjs
+
+      - name: Kein Schluessel in den Berichten
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene — keine Rohkurse in ausgelieferten Pfaden
+        if: always()
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      # --test-reporter=dot: die vollstaendige TAP-Ausgabe von ueber 600
+      # Tests macht das Joblog so gross, dass die eigentlichen Befunde
+      # dieses Laufs darin untergehen. Punkte genuegen; ein Fehlschlag
+      # wird weiterhin vollstaendig ausgegeben.
+      - name: Regressionssuite
+        if: always()
+        run: node --test --test-reporter=dot "quant/tests/*.test.mjs"
+
+      - name: Platz und Ablagegroesse nach dem Lauf
+        if: always()
+        id: disk
+        run: |
+          df -h / | tail -1
+          if [ -d .market-cache ]; then
+            SIZE_MB=$(du -sm .market-cache | cut -f1)
+            echo "Arbeitsablage: ${SIZE_MB} MB"
+            echo "cache_mb=$SIZE_MB" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache_mb=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Die Grenze ist eine Abwaegung und keine Naturkonstante: bis 2,5 GB
+      # ist ein Upload schneller als ein Neuabruf, darueber nicht mehr.
+      - name: Arbeitsablage sichern, solange sie handlich ist
+        if: always() && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
+        uses: actions/cache/save@v4
+        with:
+          path: .market-cache
+          key: market-cache-${{ github.run_id }}
+
+      - name: Berichte sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-scale-reports
+          path: |
+            quant/data/market/universe/
+            quant/data/market/scale/
+            quant/data/market/factors/
+            quant/data/market/health/
+            quant/data/technical/scale/
+          if-no-files-found: warn
+
+      - name: Berichte committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          # Nur vorhandene Pfade anfassen. `git add` bricht bei einem
+          # einzigen unbekannten Pfad ab und legt dann GAR NICHTS an -
+          # ein fehlgeschlagener Zwischenschritt haette sonst zur Folge,
+          # dass auch die geglueckten Berichte nicht committet werden.
+          for p in quant/data/market/universe quant/data/market/scale \
+                   quant/data/market/factors quant/data/market/health \
+                   quant/data/market/commercial quant/data/technical/scale; do
+            [ -e "$p" ] && git add "$p"
+          done
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung an den Berichten."
+          else
+            git commit -m "Tiingo Scale: Berichte aus Lauf ${{ github.run_id }} (${{ steps.gate.outputs.gate }})"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo Commercial — Scale Gate'
+            echo ''
+            GATE='${{ steps.gate.outputs.gate }}'
+            if [ -f "quant/data/market/scale/gate-$GATE.json" ]; then
+              node -e '
+                const g = require("./quant/data/market/scale/gate-" + process.env.GATE + ".json");
+                console.log("**Urteil: " + g.verdict + "** (" + g.verdictReason + ")");
+                console.log("");
+                if (g.canary) {
+                  console.log("Canary: " + g.canary.passed + "/" + g.canary.of +
+                              (g.canary.regression ? " — REGRESSION" : " — sauber"));
+                  console.log("");
+                  if (g.canary.regression) {
+                    console.log("| Titel | Bars | Zeitraum | Befunde |");
+                    console.log("|---|---|---|---|");
+                    for (const d of g.canary.details) {
+                      console.log("| " + d.ticker + " | " + d.bars + " | " +
+                                  (d.first || "-") + " → " + (d.last || "-") + " | " +
+                                  (d.failures.length ? d.failures.join(", ") : "ok") + " |");
+                    }
+                    console.log("");
+                  }
+                }
+                if (g.accounting) {
+                  console.log("| Posten | Wert |");
+                  console.log("|---|---|");
+                  const a = g.accounting;
+                  for (const [k, v] of [["angefragt", a.requested], ["aufgeloest", a.resolved],
+                                        ["PASS", g.dataQuality.PASS], ["WARNING", g.dataQuality.WARNING],
+                                        ["FAIL", g.dataQuality.FAIL], ["UNAVAILABLE", g.dataQuality.UNAVAILABLE],
+                                        ["Anfragen", a.requests], ["empfangen (MB)", a.bytesReceivedMB],
+                                        ["Ablage (MB)", a.storageMB],
+                                        ["Laufzeit (s)", Math.round(g.run.runtimeMs / 1000)],
+                                        ["Historie >= Schwelle", g.historyCoverage.covered],
+                                        ["Bars im Schnitt", g.historyCoverage.averageBars]]) {
+                    console.log("| " + k + " | " + v + " |");
+                  }
+                  console.log("");
+                }
+                // Ein an der Canary-Regression abgebrochener Lauf hat keine
+                // Pruefliste - er ist vor ihr stehengeblieben.
+                if (!Array.isArray(g.checks)) {
+                  console.log("Keine Pruefliste: der Lauf ist vor dem Gate-Universum abgebrochen.");
+                  process.exit(0);
+                }
+                console.log("| Pruefung | Wert | Ergebnis |");
+                console.log("|---|---|---|");
+                for (const c of g.checks) {
+                  console.log("| " + c.id + " | " + (c.value === null ? "-" : (c.value * 100).toFixed(1) + " %") +
+                              " | " + (c.ok === true ? "OK" : c.ok === false ? "FAIL" : "n/a") + " |");
+                }
+              '
+            else
+              echo 'Kein Gate-Bericht entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          GATE: ${{ steps.gate.outputs.gate }}
+
+      # §37: ein FAIL darf nicht als gruener Lauf enden. Die Skalierung
+      # haelt hier an, und der Job zeigt das an.
+      - name: Urteil durchsetzen
+        if: always()
+        run: |
+          GATE='${{ steps.gate.outputs.gate }}'
+          VERDICT=$(node -e 'try{console.log(require("./quant/data/market/scale/gate-"+process.env.GATE+".json").verdict)}catch(e){console.log("MISSING")}')
+          echo "Urteil: $VERDICT"
+          # ASSESSED ist kein Bestehen und kein Scheitern: es wurde nichts
+          # geladen, also gibt es nichts zu bestehen. Der Lauf bleibt gruen,
+          # und die Bewertung sagt, was ein echter Lauf kosten wuerde.
+          if [ "$VERDICT" = "ASSESSED" ]; then
+            echo "Bewertung ohne Abruf. Es wurde nichts geladen und nichts freigegeben."
+            exit 0
+          fi
+          # INCOMPLETE_RESUMABLE ist kein Datenfehler: Titel sind offen,
+          # der Checkpoint haelt den Stand, ein erneuter Lauf schliesst
+          # die Luecke. Freigegeben wird trotzdem nichts - unvollstaendig
+          # ist nicht bestanden (§37). Der Job wird rot, damit der Zustand
+          # sichtbar bleibt und niemand ihn fuer ein PASS haelt.
+          if [ "$VERDICT" = "INCOMPLETE_RESUMABLE" ]; then
+            echo "Der Lauf ist unvollstaendig und fortsetzbar - kein Datenfehler."
+            node -e 'const r=require("./quant/data/market/scale/gate-"+process.env.GATE+".json");
+                     console.log("  offen:", r.resumable.pending, "| erledigt:", r.resumable.completed,
+                                 "| Ursache:", r.resumable.cause);
+                     console.log(" ", r.resumable.causeNote);'
+            echo "Nicht freigegeben. Ein erneuter Lauf setzt am Checkpoint fort."
+            exit 1
+          fi
+          if [ "$VERDICT" != "PASS" ]; then
+            echo "Das Gate ist nicht bestanden. Es wird nicht weiter skaliert (§37)."
+            exit 1
+          fi
+        env:
+          GATE: ${{ steps.gate.outputs.gate }}

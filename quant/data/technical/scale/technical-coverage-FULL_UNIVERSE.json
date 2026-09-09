@@ -1,0 +1,363 @@
+{
+  "generatedAt": "2026-09-09T17:14:14.229Z",
+  "gate": "FULL_UNIVERSE",
+  "provider": "tiingo",
+  "methodologyVersions": {
+    "technical": "technical-v1.0.0",
+    "elliott": "elliott-v1.0.0-beta"
+  },
+  "note": "Deckungsbericht, kein Datensatz. Die Analysebundles bleiben in der Arbeitsablage - rund ein halbes Megabyte je Titel waere weder speicherbar noch weitergabefaehig. Ausgewiesen sind Zustaende und Laufzeiten, keine Kurse.",
+  "run": {
+    "source": "github-actions",
+    "runId": "34374652149",
+    "commit": "49fc460e745f1a902463c489da2df6048d45be2e",
+    "elliottEnabled": true,
+    "minBars": 300,
+    "benchmark": "SPY",
+    "benchmarkStatus": "OK"
+  },
+  "requested": 5684,
+  "evaluated": 5661,
+  "coverage": {
+    "TECHNICAL_READY": 5661,
+    "TECHNICAL_PARTIAL": 0,
+    "TECHNICAL_FAILED": 0,
+    "INSUFFICIENT_HISTORY": 23,
+    "SOURCE_MISSING": 0
+  },
+  "coverageRate": 0.996,
+  "elliott": {
+    "enabled": true,
+    "symbolsRun": 5661,
+    "coverage": {
+      "HIGH_CONFIDENCE": 1430,
+      "MEDIUM_CONFIDENCE": 355,
+      "LOW_CONFIDENCE": 383,
+      "AMBIGUOUS": 3453,
+      "UNAVAILABLE": 40,
+      "NOT_RUN": 23
+    },
+    "reasons": {
+      "ambiguousCount": 3453,
+      "FIRST_LEG_ONLY": 376,
+      "lowConfidence": 7,
+      "TOO_FEW_PIVOTS": 40
+    },
+    "confidenceThresholds": {
+      "highConfidenceFrom": 70,
+      "mediumConfidenceFrom": 50
+    },
+    "thresholdNote": "Die Schwellen ordnen den vorhandenen confidence-Wert der Engine in die Faecher aus §18 ein. Sie veraendern die Engine nicht und rechnen nichts nach."
+  },
+  "performance": {
+    "totalRuntimeMs": 510248,
+    "analysisRuntimeMs": 368037,
+    "msPerSymbol": 65,
+    "processed": 5661,
+    "slowest": [
+      {
+        "ticker": "AAPL",
+        "ms": 314,
+        "bars": 9238
+      },
+      {
+        "ticker": "WGO",
+        "ms": 207,
+        "bars": 9238
+      },
+      {
+        "ticker": "MSFT",
+        "ms": 200,
+        "bars": 9238
+      },
+      {
+        "ticker": "WHR",
+        "ms": 196,
+        "bars": 9238
+      },
+      {
+        "ticker": "INTC",
+        "ms": 195,
+        "bars": 9238
+      },
+      {
+        "ticker": "CSCO",
+        "ms": 194,
+        "bars": 9180
+      },
+      {
+        "ticker": "PEG",
+        "ms": 188,
+        "bars": 9238
+      },
+      {
+        "ticker": "BAC",
+        "ms": 187,
+        "bars": 9238
+      },
+      {
+        "ticker": "PEP",
+        "ms": 187,
+        "bars": 9238
+      },
+      {
+        "ticker": "PH",
+        "ms": 187,
+        "bars": 9238
+      }
+    ],
+    "projected": {
+      "basis": "Linear aus 5661 gemessenen Titeln. Die Analyse je Titel ist unabhaengig von den anderen; es gibt keinen Schritt ueber Titelpaare.",
+      "minutesFor500": 0.5,
+      "minutesFor2000": 2.2,
+      "minutesFor10000": 10.8
+    }
+  },
+  "perSymbol": {
+    "NXH": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 17,
+      "minBars": 300,
+      "reason": "Reihe hat 17 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "LILAV": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 77,
+      "minBars": 300,
+      "reason": "Reihe hat 77 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "LILKV": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 76,
+      "minBars": 300,
+      "reason": "Reihe hat 76 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "RIVR": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 47,
+      "minBars": 300,
+      "reason": "Reihe hat 47 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "NGHT": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 177,
+      "minBars": 300,
+      "reason": "Reihe hat 177 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "MYHA": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 234,
+      "minBars": 300,
+      "reason": "Reihe hat 234 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "CRCO": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 247,
+      "minBars": 300,
+      "reason": "Reihe hat 247 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "MDA": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 127,
+      "minBars": 300,
+      "reason": "Reihe hat 127 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "EDVA": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 12,
+      "minBars": 300,
+      "reason": "Reihe hat 12 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "CTEST-A": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 152,
+      "minBars": 300,
+      "reason": "Reihe hat 152 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "CELGR": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 208,
+      "minBars": 300,
+      "reason": "Reihe hat 208 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "VLNWF": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 287,
+      "minBars": 300,
+      "reason": "Reihe hat 287 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "COOL": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 18,
+      "minBars": 300,
+      "reason": "Reihe hat 18 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "CMIIU": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 135,
+      "minBars": 300,
+      "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "LEGO": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 282,
+      "minBars": 300,
+      "reason": "Reihe hat 282 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "CNL": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 20,
+      "minBars": 300,
+      "reason": "Reihe hat 20 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "MCVT": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 116,
+      "minBars": 300,
+      "reason": "Reihe hat 116 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "LNC-P-D": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 148,
+      "minBars": 300,
+      "reason": "Reihe hat 148 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "BNH": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 75,
+      "minBars": 300,
+      "reason": "Reihe hat 75 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "TOROV": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 147,
+      "minBars": 300,
+      "reason": "Reihe hat 147 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "PHXM": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 75,
+      "minBars": 300,
+      "reason": "Reihe hat 75 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "ABLLW": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 163,
+      "minBars": 300,
+      "reason": "Reihe hat 163 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "TLSIW": {
+      "technical": "INSUFFICIENT_HISTORY",
+      "elliott": "NOT_RUN",
+      "bars": 110,
+      "minBars": 300,
+      "reason": "Reihe hat 110 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
+    },
+    "AAPL": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "AMBIGUOUS",
+      "elliottConfidence": 79,
+      "bars": 9238,
+      "runtimeMs": 314,
+      "trend": "BULLISH",
+      "momentumState": "POSITIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 63.9,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    },
+    "MSFT": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "LOW_CONFIDENCE",
+      "elliottConfidence": 68,
+      "bars": 9238,
+      "runtimeMs": 200,
+      "trend": "BULLISH",
+      "momentumState": "POSITIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 58.3,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    },
+    "NVDA": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "AMBIGUOUS",
+      "elliottConfidence": 76,
+      "bars": 6949,
+      "runtimeMs": 133,
+      "trend": "BULLISH",
+      "momentumState": "POSITIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 57.4,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    },
+    "JPM": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "AMBIGUOUS",
+      "elliottConfidence": 83,
+      "bars": 9238,
+      "runtimeMs": 147,
+      "trend": "BULLISH",
+      "momentumState": "STRONG_POSITIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 64.5,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    },
+    "XOM": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "AMBIGUOUS",
+      "elliottConfidence": 70,
+      "bars": 9238,
+      "runtimeMs": 172,
+      "trend": "BULLISH",
+      "momentumState": "POSITIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 67,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    }
+  },
+  "perSymbolDetail": {
+    "location": "workingStore",
+    "file": ".market-cache/tiingo/technical/technical-coverage-FULL_UNIVERSE-perSymbol.json",
+    "symbolsTotal": 5684,
+    "symbolsInReport": 28,
+    "canaryAlwaysIncluded": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "JPM",
+      "XOM"
+    ],
+    "reason": "Mehr als 500 Titel. Ausgeliefert werden die Befunde - alles ausser TECHNICAL_READY - der Canary-Satz und die Deckungsbilanz (§26)."
+  }
+}

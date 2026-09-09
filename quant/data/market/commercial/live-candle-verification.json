@@ -1,0 +1,657 @@
+{
+  "generatedAt": "2026-09-09T15:36:08.426Z",
+  "provider": "tiingo",
+  "plan": "commercial",
+  "scope": "realtimeStreamAndLiveCandle",
+  "verificationLevel": "RUNTIME_VERIFIED",
+  "note": "Der Bericht enthaelt keine Kurse. Die Minutenkerze wurde echt gebaut (quant/engines/realtime/bar-merge.js, derselbe applyTick wie im Chart); ausgewiesen sind ihre Form und ihre Bewegung in relativen Groessen, nicht ihre Werte.",
+  "run": {
+    "source": "github-actions",
+    "repository": "dennismueller10x-sudo/vision-universe-research",
+    "runId": "34370938243",
+    "commit": "ad103f3b1169f739249c279299ea5f5061be92d6",
+    "ref": "claude/tiingo-commercial-phase-1-4j0581",
+    "wsUrl": "wss://api.tiingo.com/iex",
+    "secondsPerMeasurement": 90
+  },
+  "sessionAtRun": {
+    "phase": "REGULAR",
+    "localDate": "2026-09-09",
+    "localTime": "11:32:58",
+    "closedReason": null,
+    "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
+  },
+  "thresholds": {
+    "minEventsForStream": 3,
+    "minTicksInCandle": 2
+  },
+  "LIVE_CHART_READY": "TRUE",
+  "liveChartReason": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
+  "priceSemantics": {
+    "outcome": "UNSPECIFIED",
+    "priceType": "UNSPECIFIED",
+    "classification": "PROVIDER_CONFIRMATION_REQUIRED",
+    "probes": 24,
+    "matchCountsByField": {
+      "tngoLastMatches": 8,
+      "midMatches": 4
+    },
+    "fieldProbeCounts": {
+      "tngoLastProbes": 24,
+      "midProbes": 24,
+      "prevCloseProbes": 24,
+      "openProbes": 24,
+      "highProbes": 24,
+      "lowProbes": 24
+    },
+    "withinBidAsk": null,
+    "leadingCandidate": {
+      "field": "tngoLast",
+      "type": "REFERENCE",
+      "matches": 8,
+      "of": 24,
+      "note": "Haeufigster Treffer, aber nicht eindeutig genug fuer einen Befund. Ein Indiz, keine Zuordnung."
+    },
+    "absentFields": [
+      "last",
+      "bidPrice",
+      "askPrice"
+    ],
+    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen. Am haeufigsten traf tngoLast (8/24). Bemerkenswert: last, bidPrice, askPrice kommen in der Kursabfrage dieses Kontos gar nicht vor - ein Abschlusskurs steht also nicht einmal zum Vergleich zur Verfuegung.",
+    "known": "Es kommen fortlaufend Kurse, und sie bauen eine bewegte Minutenkerze.",
+    "unknown": "Was die Zahl bedeutet - Abschluss, Referenz, Mitte oder Quote - ist offen.",
+    "safeForIntradayIntelligence": false,
+    "providerConfirmationRequired": true,
+    "intradayIntelligence": {
+      "status": "BLOCKED",
+      "blockedUses": [
+        "intradaySignals",
+        "technicalSignalGeneration",
+        "backtesting",
+        "executionSimulation",
+        "tradeBasedVolumeAnalysis",
+        "tradeBasedOHLC"
+      ],
+      "permittedUses": [
+        "liveMovingChart"
+      ],
+      "labelling": {
+        "forbidden": [
+          "Last Trade",
+          "Official Trade Price",
+          "Realtime Trade"
+        ],
+        "required": "Die Unsicherheit muss am Kurs sichtbar bleiben.",
+        "machineReadableField": "priceSemantics.outcome"
+      },
+      "sourceOfTruth": "Die geprueften historischen und Intraday-Datensaetze bleiben die Rechengrundlage, bis die Kursart belegt ist.",
+      "note": "Kein Verbot des Charts - ein Verbot, auf dieser Kerze zu rechnen und sie zu beschriften, als waere sie etwas Belegtes."
+    }
+  },
+  "streamFindings": {
+    "connectionAccepted": true,
+    "acceptedThresholdLevels": [
+      6,
+      6
+    ],
+    "rejectedThresholdLevels": [
+      5,
+      0
+    ],
+    "rejectionMessage": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex",
+    "quoteStreamAvailable": false,
+    "tradeStreamAvailable": false,
+    "quoteMessagesObserved": 0,
+    "tradeMessagesObserved": 0,
+    "unparsedPriceMessages": 110,
+    "observedMessageShape": [
+      {
+        "service": "iex",
+        "length": 3,
+        "fields": [
+          "isoTimestamp",
+          "requestedTicker",
+          "number"
+        ]
+      },
+      {
+        "service": "iex",
+        "length": 3,
+        "fields": [
+          "isoTimestamp",
+          "requestedTicker",
+          "number"
+        ]
+      },
+      {
+        "service": "iex",
+        "length": 3,
+        "fields": [
+          "isoTimestamp",
+          "requestedTicker",
+          "number"
+        ]
+      }
+    ],
+    "priceTypeVerified": false,
+    "priceTypeNote": "Die Kursart ist nicht belegt. Sie zu klaeren ist der naechste Schritt - beim Anbieter, nicht im Code: die Nachrichtenform der neuen IEX-Stufe traegt keinen Typ. Bis dahin darf keine Kennzahl auf dieser Kerze als 'auf Abschluessen gerechnet' ausgewiesen werden.",
+    "note": "Eine Kerze entsteht aus ausgefuehrten Trades. Quotes bewegen einen Chart ebenfalls sichtbar, sind aber eine andere Groesse - Geld und Brief statt Abschluss. Beides zu vermischen waere der Fehler, den die Trennung hier verhindert."
+  },
+  "silenceEvidence": [
+    {
+      "thresholdLevel": 5,
+      "messages": 1,
+      "adminMessages": 1,
+      "subscriptionAck": {
+        "messageType": "E",
+        "code": 400,
+        "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex",
+        "hasSubscriptionId": false
+      },
+      "closeCode": 1005,
+      "closeReason": "",
+      "stableForFullDuration": false,
+      "durationSeconds": 90
+    },
+    {
+      "thresholdLevel": 0,
+      "messages": 1,
+      "adminMessages": 1,
+      "subscriptionAck": {
+        "messageType": "E",
+        "code": 400,
+        "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex",
+        "hasSubscriptionId": false
+      },
+      "closeCode": 1005,
+      "closeReason": "",
+      "stableForFullDuration": false,
+      "durationSeconds": 90
+    }
+  ],
+  "marketOpenExperience": {
+    "visibleMovementPossible": true,
+    "fromExecutedTrades": false,
+    "fromQuotesOnly": false,
+    "basis": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
+    "decisionRequired": null
+  },
+  "measurements": [
+    {
+      "scope": "primary",
+      "result": "PASSED",
+      "thresholdLevel": 6,
+      "symbols": [
+        "NVDA"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 221,
+        "subscriptionAck": {
+          "messageType": "H",
+          "code": 200,
+          "message": "HeartBeat",
+          "hasSubscriptionId": false
+        },
+        "messages": 112,
+        "adminMessages": 2,
+        "messageTypes": {
+          "noTypeField": 110
+        },
+        "messageShape": [
+          {
+            "service": "iex",
+            "length": 3,
+            "fields": [
+              "isoTimestamp",
+              "requestedTicker",
+              "number"
+            ]
+          },
+          {
+            "service": "iex",
+            "length": 3,
+            "fields": [
+              "isoTimestamp",
+              "requestedTicker",
+              "number"
+            ]
+          },
+          {
+            "service": "iex",
+            "length": 3,
+            "fields": [
+              "isoTimestamp",
+              "requestedTicker",
+              "number"
+            ]
+          }
+        ],
+        "unparsedPriceMessages": 110,
+        "tradeMessages": 0,
+        "quoteMessages": 0,
+        "rejectedSubscription": null,
+        "socketError": null,
+        "closeCode": null,
+        "closeReason": null,
+        "stableForFullDuration": true
+      },
+      "events": {
+        "count": 110,
+        "firstAfterMs": 1413,
+        "lastAfterMs": 89347,
+        "perSecond": 1.25,
+        "gapMs": {
+          "min": 434,
+          "median": 585,
+          "p90": 1310,
+          "max": 4786
+        },
+        "providerLagSeconds": {
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "withTimestamp": 110,
+        "withSymbol": 110,
+        "bySymbol": {
+          "NVDA": 110
+        },
+        "consecutive": true
+      },
+      "candle": {
+        "symbol": "NVDA",
+        "bucket": "2026-09-09T11:34",
+        "ticksInBucket": 35,
+        "perSymbol": {
+          "NVDA": {
+            "bars": 2,
+            "ticksInLastBar": 35,
+            "maxTicksInAnyBar": 75,
+            "rangeRelative": 0.00098
+          }
+        },
+        "maxTicksInAnyBucket": 75,
+        "barsFormed": 2,
+        "hasOpen": true,
+        "hasHigh": true,
+        "hasLow": true,
+        "hasClose": true,
+        "hasTimestamp": true,
+        "rangeRelative": 0.00098,
+        "closeMovedFromOpen": -0.000958,
+        "origin": "REALTIME_DEVELOPING",
+        "confirmed": false,
+        "priceTypes": {
+          "UNSPECIFIED": 110
+        },
+        "messageForms": {
+          "iexNoTypeField": 110
+        },
+        "priceTypeVerified": false,
+        "mergeStats": {
+          "ticks": 110,
+          "accepted": 2,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": true
+      },
+      "priceFieldProbe": {
+        "probes": 8,
+        "fieldProbeCounts": {
+          "tngoLastProbes": 8,
+          "midProbes": 8,
+          "prevCloseProbes": 8,
+          "openProbes": 8,
+          "highProbes": 8,
+          "lowProbes": 8
+        },
+        "matchCountsByField": {
+          "tngoLastMatches": 3,
+          "midMatches": 3
+        },
+        "withinBidAskOf": 0,
+        "withinBidAsk": 0,
+        "medianStreamPriceAgeMs": 768,
+        "error": null,
+        "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
+      }
+    },
+    {
+      "scope": "primary",
+      "result": "FAILED",
+      "thresholdLevel": 5,
+      "symbols": [
+        "NVDA"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 47,
+        "subscriptionAck": {
+          "messageType": "E",
+          "code": 400,
+          "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex",
+          "hasSubscriptionId": false
+        },
+        "messages": 1,
+        "adminMessages": 1,
+        "messageTypes": {},
+        "messageShape": [],
+        "unparsedPriceMessages": 0,
+        "tradeMessages": 0,
+        "quoteMessages": 0,
+        "rejectedSubscription": {
+          "code": 400,
+          "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex"
+        },
+        "socketError": null,
+        "closeCode": 1005,
+        "closeReason": "",
+        "stableForFullDuration": false
+      },
+      "events": {
+        "count": 0,
+        "firstAfterMs": null,
+        "lastAfterMs": null,
+        "perSecond": null,
+        "gapMs": {
+          "min": null,
+          "median": null,
+          "p90": null,
+          "max": null
+        },
+        "providerLagSeconds": {
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "withTimestamp": 0,
+        "withSymbol": 0,
+        "bySymbol": {},
+        "consecutive": false
+      },
+      "candle": {
+        "symbol": null,
+        "bucket": null,
+        "ticksInBucket": 0,
+        "perSymbol": {},
+        "maxTicksInAnyBucket": 0,
+        "barsFormed": 0,
+        "hasOpen": false,
+        "hasHigh": false,
+        "hasLow": false,
+        "hasClose": false,
+        "hasTimestamp": false,
+        "rangeRelative": null,
+        "closeMovedFromOpen": null,
+        "origin": null,
+        "confirmed": null,
+        "priceTypes": {},
+        "messageForms": {},
+        "priceTypeVerified": false,
+        "mergeStats": {
+          "ticks": 0,
+          "accepted": 0,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": false
+      },
+      "priceFieldProbe": null,
+      "closedEarly": true
+    },
+    {
+      "scope": "primary",
+      "result": "FAILED",
+      "thresholdLevel": 0,
+      "symbols": [
+        "NVDA"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 58,
+        "subscriptionAck": {
+          "messageType": "E",
+          "code": 400,
+          "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex",
+          "hasSubscriptionId": false
+        },
+        "messages": 1,
+        "adminMessages": 1,
+        "messageTypes": {},
+        "messageShape": [],
+        "unparsedPriceMessages": 0,
+        "tradeMessages": 0,
+        "quoteMessages": 0,
+        "rejectedSubscription": {
+          "code": 400,
+          "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.com/documentation/iex"
+        },
+        "socketError": null,
+        "closeCode": 1005,
+        "closeReason": "",
+        "stableForFullDuration": false
+      },
+      "events": {
+        "count": 0,
+        "firstAfterMs": null,
+        "lastAfterMs": null,
+        "perSecond": null,
+        "gapMs": {
+          "min": null,
+          "median": null,
+          "p90": null,
+          "max": null
+        },
+        "providerLagSeconds": {
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "withTimestamp": 0,
+        "withSymbol": 0,
+        "bySymbol": {},
+        "consecutive": false
+      },
+      "candle": {
+        "symbol": null,
+        "bucket": null,
+        "ticksInBucket": 0,
+        "perSymbol": {},
+        "maxTicksInAnyBucket": 0,
+        "barsFormed": 0,
+        "hasOpen": false,
+        "hasHigh": false,
+        "hasLow": false,
+        "hasClose": false,
+        "hasTimestamp": false,
+        "rangeRelative": null,
+        "closeMovedFromOpen": null,
+        "origin": null,
+        "confirmed": null,
+        "priceTypes": {},
+        "messageForms": {},
+        "priceTypeVerified": false,
+        "mergeStats": {
+          "ticks": 0,
+          "accepted": 0,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": false
+      },
+      "priceFieldProbe": null,
+      "closedEarly": true
+    },
+    {
+      "scope": "secondary",
+      "result": "PASSED",
+      "thresholdLevel": 6,
+      "symbols": [
+        "AAPL",
+        "MSFT"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 47,
+        "subscriptionAck": {
+          "messageType": "H",
+          "code": 200,
+          "message": "HeartBeat",
+          "hasSubscriptionId": false
+        },
+        "messages": 102,
+        "adminMessages": 2,
+        "messageTypes": {
+          "noTypeField": 100
+        },
+        "messageShape": [
+          {
+            "service": "iex",
+            "length": 3,
+            "fields": [
+              "isoTimestamp",
+              "requestedTicker",
+              "number"
+            ]
+          },
+          {
+            "service": "iex",
+            "length": 3,
+            "fields": [
+              "isoTimestamp",
+              "requestedTicker",
+              "number"
+            ]
+          },
+          {
+            "service": "iex",
+            "length": 3,
+            "fields": [
+              "isoTimestamp",
+              "requestedTicker",
+              "number"
+            ]
+          }
+        ],
+        "unparsedPriceMessages": 100,
+        "tradeMessages": 0,
+        "quoteMessages": 0,
+        "rejectedSubscription": null,
+        "socketError": null,
+        "closeCode": null,
+        "closeReason": null,
+        "stableForFullDuration": true
+      },
+      "events": {
+        "count": 100,
+        "firstAfterMs": 385,
+        "lastAfterMs": 89471,
+        "perSecond": 1.12,
+        "gapMs": {
+          "min": 23,
+          "median": 683,
+          "p90": 1904,
+          "max": 4376
+        },
+        "providerLagSeconds": {
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "withTimestamp": 100,
+        "withSymbol": 100,
+        "bySymbol": {
+          "AAPL": 79,
+          "MSFT": 21
+        },
+        "consecutive": true
+      },
+      "candle": {
+        "symbol": "AAPL",
+        "bucket": "2026-09-09T11:36",
+        "ticksInBucket": 5,
+        "perSymbol": {
+          "AAPL": {
+            "bars": 3,
+            "ticksInLastBar": 5,
+            "maxTicksInAnyBar": 54,
+            "rangeRelative": 0.000303
+          },
+          "MSFT": {
+            "bars": 3,
+            "ticksInLastBar": 1,
+            "maxTicksInAnyBar": 11,
+            "rangeRelative": 0
+          }
+        },
+        "maxTicksInAnyBucket": 54,
+        "barsFormed": 3,
+        "hasOpen": true,
+        "hasHigh": true,
+        "hasLow": true,
+        "hasClose": true,
+        "hasTimestamp": true,
+        "rangeRelative": 0.000303,
+        "closeMovedFromOpen": 0.000207,
+        "origin": "REALTIME_DEVELOPING",
+        "confirmed": false,
+        "priceTypes": {
+          "UNSPECIFIED": 100
+        },
+        "messageForms": {
+          "iexNoTypeField": 100
+        },
+        "priceTypeVerified": false,
+        "mergeStats": {
+          "ticks": 79,
+          "accepted": 3,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": true
+      },
+      "priceFieldProbe": {
+        "probes": 16,
+        "fieldProbeCounts": {
+          "tngoLastProbes": 16,
+          "midProbes": 16,
+          "prevCloseProbes": 16,
+          "openProbes": 16,
+          "highProbes": 16,
+          "lowProbes": 16
+        },
+        "matchCountsByField": {
+          "tngoLastMatches": 5,
+          "midMatches": 1
+        },
+        "withinBidAskOf": 0,
+        "withinBidAsk": 0,
+        "medianStreamPriceAgeMs": 1053,
+        "error": null,
+        "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
+      }
+    }
+  ]
+}

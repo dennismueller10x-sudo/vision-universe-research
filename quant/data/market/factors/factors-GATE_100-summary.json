@@ -1,0 +1,276 @@
+{
+  "generatedAt": "2026-09-09T09:58:04.910Z",
+  "gate": "GATE_100",
+  "provider": "tiingo",
+  "engine": "market-factors-1.0.0",
+  "benchmark": {
+    "id": "SPY",
+    "status": "SOURCE_MISSING",
+    "note": "Keine Benchmarkreihe in der Arbeitsablage. Relative Staerke bleibt fuer alle Titel leer."
+  },
+  "run": {
+    "source": "github-actions",
+    "runId": "34337535547",
+    "commit": "6619a7634c43440d5ce85caea105ab21d3800dfd",
+    "runtimeMs": 2205,
+    "msPerSymbol": 22
+  },
+  "redistribution": {
+    "priceLevels": "WITHHELD",
+    "note": "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, Abstaende und Renditen."
+  },
+  "coverage": {
+    "requested": 100,
+    "computed": 100,
+    "skipped": 0,
+    "skippedByReason": {},
+    "fieldCoverage": {
+      "sma20": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA20": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA20": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "sma50": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA50": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA50": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "sma100": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA100": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA100": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "sma200": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA200": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA200": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "aboveAllSMA": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "aboveSMA20And50And200": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "high52w": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "low52w": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceTo52wHigh": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceTo52wLow": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "newHigh52w": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "closeAtHigh52w": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "within5PctOf52wHigh": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.1M": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.3M": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.6M": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.12M": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "return12M1M": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "momentumAcceleration": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volatility20d": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volatility60d": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volatility252d": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "maxDrawdown252d": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "avgVolume20d": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "avgVolume60d": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volumeRatio20over60": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volumeSpikeRatio": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volumeBreakout": {
+        "CALCULATED": 100,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.1M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 100,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.3M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 100,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.6M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 100,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.12M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 100,
+        "NOT_APPLICABLE": 0
+      }
+    }
+  },
+  "skipped": [],
+  "detail": {
+    "location": "repository",
+    "file": "quant/data/market/factors/factors-GATE_100.json",
+    "symbols": 100
+  }
+}
