@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T14:04:59.811Z",
+  "generatedAt": "2026-09-09T14:13:22.436Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "realtimeStreamAndLiveCandle",
@@ -8,8 +8,8 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "34360893405",
-    "commit": "1888d887ba2cd596580725cde4e9ad08c8591548",
+    "runId": "34361816697",
+    "commit": "db5a8d67e5d9d55ce3a0b536c1027b61922878c0",
     "ref": "claude/tiingo-commercial-phase-1-4j0581",
     "wsUrl": "wss://api.tiingo.com/iex",
     "secondsPerMeasurement": 90
@@ -17,7 +17,7 @@
   "sessionAtRun": {
     "phase": "REGULAR",
     "localDate": "2026-09-09",
-    "localTime": "10:01:50",
+    "localTime": "10:10:12",
     "closedReason": null,
     "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
   },
@@ -42,7 +42,7 @@
     "tradeStreamAvailable": false,
     "quoteMessagesObserved": 0,
     "tradeMessagesObserved": 0,
-    "unparsedPriceMessages": 141,
+    "unparsedPriceMessages": 116,
     "observedMessageShape": [
       {
         "service": "iex",
@@ -129,17 +129,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 202,
+        "openedAfterMs": 440,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 143,
+        "messages": 118,
         "adminMessages": 2,
         "messageTypes": {
-          "noTypeField": 141
+          "noTypeField": 116
         },
         "messageShape": [
           {
@@ -170,7 +170,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 141,
+        "unparsedPriceMessages": 116,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -180,54 +180,63 @@
         "stableForFullDuration": true
       },
       "events": {
-        "count": 141,
-        "firstAfterMs": 291,
-        "lastAfterMs": 89750,
-        "perSecond": 1.58,
+        "count": 116,
+        "firstAfterMs": 671,
+        "lastAfterMs": 89498,
+        "perSecond": 1.31,
         "gapMs": {
-          "min": 417,
-          "median": 559,
-          "p90": 976,
-          "max": 1720
+          "min": 435,
+          "median": 591,
+          "p90": 1185,
+          "max": 3117
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
           "max": 0
         },
-        "withTimestamp": 141,
-        "withSymbol": 141,
+        "withTimestamp": 116,
+        "withSymbol": 116,
         "bySymbol": {
-          "NVDA": 141
+          "NVDA": 116
         },
         "consecutive": true
       },
       "candle": {
-        "bucket": "2026-09-09T10:03",
-        "ticksInBucket": 30,
-        "maxTicksInAnyBucket": 97,
-        "barsFormed": 3,
+        "symbol": "NVDA",
+        "bucket": "2026-09-09T10:11",
+        "ticksInBucket": 57,
+        "perSymbol": {
+          "NVDA": {
+            "bars": 2,
+            "ticksInLastBar": 57,
+            "maxTicksInAnyBar": 58,
+            "rangeRelative": 0.00127
+          }
+        },
+        "maxTicksInAnyBucket": 58,
+        "barsFormed": 2,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.000714,
-        "closeMovedFromOpen": -0.000067,
+        "rangeRelative": 0.00127,
+        "closeMovedFromOpen": -0.001226,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 141
+          "UNSPECIFIED": 116
         },
         "messageForms": {
-          "iexNoTypeField": 141
+          "iexNoTypeField": 116
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 141,
-          "accepted": 3,
+          "ticks": 115,
+          "accepted": 2,
           "rejectedFuture": 0,
-          "rejectedConfirmed": 0,
+          "rejectedConfirmed": 1,
           "rejectedMalformed": 0
         },
         "multipleUpdatesInSameCandle": true
@@ -246,7 +255,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 100,
+        "openedAfterMs": 31,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -291,8 +300,10 @@
         "consecutive": false
       },
       "candle": {
+        "symbol": null,
         "bucket": null,
         "ticksInBucket": 0,
+        "perSymbol": {},
         "maxTicksInAnyBucket": 0,
         "barsFormed": 0,
         "hasOpen": false,
@@ -331,7 +342,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 106,
+        "openedAfterMs": 35,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -376,8 +387,10 @@
         "consecutive": false
       },
       "candle": {
+        "symbol": null,
         "bucket": null,
         "ticksInBucket": 0,
+        "perSymbol": {},
         "maxTicksInAnyBucket": 0,
         "barsFormed": 0,
         "hasOpen": false,
@@ -417,17 +430,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 172,
+        "openedAfterMs": 111,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 121,
+        "messages": 113,
         "adminMessages": 2,
         "messageTypes": {
-          "noTypeField": 119
+          "noTypeField": 111
         },
         "messageShape": [
           {
@@ -458,7 +471,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 119,
+        "unparsedPriceMessages": 111,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -468,53 +481,68 @@
         "stableForFullDuration": true
       },
       "events": {
-        "count": 119,
-        "firstAfterMs": 602,
-        "lastAfterMs": 88966,
-        "perSecond": 1.35,
+        "count": 111,
+        "firstAfterMs": 168,
+        "lastAfterMs": 89699,
+        "perSecond": 1.24,
         "gapMs": {
-          "min": 4,
-          "median": 642,
-          "p90": 1268,
-          "max": 2138
+          "min": 11,
+          "median": 627,
+          "p90": 1462,
+          "max": 4042
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
           "max": 0
         },
-        "withTimestamp": 119,
-        "withSymbol": 119,
+        "withTimestamp": 111,
+        "withSymbol": 111,
         "bySymbol": {
-          "AAPL": 97,
-          "MSFT": 22
+          "AAPL": 85,
+          "MSFT": 26
         },
         "consecutive": true
       },
       "candle": {
-        "bucket": "2026-09-09T10:04",
-        "ticksInBucket": 77,
-        "maxTicksInAnyBucket": 77,
-        "barsFormed": 2,
+        "symbol": "AAPL",
+        "bucket": "2026-09-09T10:13",
+        "ticksInBucket": 21,
+        "perSymbol": {
+          "AAPL": {
+            "bars": 3,
+            "ticksInLastBar": 21,
+            "maxTicksInAnyBar": 56,
+            "rangeRelative": 0.000933
+          },
+          "MSFT": {
+            "bars": 3,
+            "ticksInLastBar": 5,
+            "maxTicksInAnyBar": 18,
+            "rangeRelative": 0.000773
+          }
+        },
+        "maxTicksInAnyBucket": 56,
+        "barsFormed": 3,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.551685,
-        "closeMovedFromOpen": -0.000646,
+        "rangeRelative": 0.000933,
+        "closeMovedFromOpen": 0.000332,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 119
+          "UNSPECIFIED": 111
         },
         "messageForms": {
-          "iexNoTypeField": 119
+          "iexNoTypeField": 111
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 119,
-          "accepted": 2,
+          "ticks": 85,
+          "accepted": 3,
           "rejectedFuture": 0,
           "rejectedConfirmed": 0,
           "rejectedMalformed": 0
