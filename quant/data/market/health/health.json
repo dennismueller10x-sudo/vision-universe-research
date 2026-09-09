@@ -1,0 +1,254 @@
+{
+  "generatedAt": "2026-09-09T09:58:25.243Z",
+  "provider": "tiingo",
+  "plan": "commercial",
+  "schemaVersion": 1,
+  "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
+  "run": {
+    "source": "github-actions",
+    "runId": "34337535547",
+    "commit": "6619a7634c43440d5ce85caea105ab21d3800dfd",
+    "staleAfterHours": 72
+  },
+  "overall": "READY_FOR_NEXT_SCALE_GATE",
+  "overallReason": "GATE_100 bestanden. Freigegeben ist GATE_500 - und nur das.",
+  "lastSuccessfulUpdate": "2026-09-09T09:58:02.632Z",
+  "latestPassedGate": "GATE_100",
+  "universe": {
+    "status": "OK",
+    "generatedAt": "2026-09-09T09:56:59.607Z",
+    "ageHours": 0,
+    "rows": 108572,
+    "screenerEligible": 31319,
+    "byInstrumentType": {
+      "COMMON_STOCK": 47887,
+      "ADR": 0,
+      "PREFERRED": 29,
+      "ETF": 9587,
+      "ETN": 0,
+      "FUND": 49878,
+      "WARRANT": 697,
+      "OTHER": 494,
+      "UNKNOWN": 0
+    },
+    "coverageGaps": {
+      "company": {
+        "status": "SOURCE_MISSING",
+        "note": "Die Tickerliste des Anbieters traegt keinen Firmennamen. Namen kaemen aus dem Stammdatenendpunkt - eine Anfrage je Titel."
+      },
+      "sector": {
+        "status": "SOURCE_MISSING",
+        "note": "Sektor und Branche liegen bei Tiingo im Fundamentalzusatz, der in diesem Zugang nicht enthalten ist. Sie bleiben leer und werden nicht geschaetzt."
+      },
+      "adr": {
+        "status": "UNVERIFIED",
+        "note": "Ohne Firmennamen ist eine ADR nicht von einer Stammaktie zu unterscheiden. Die ADR-Zahl unten ist deshalb eine Untergrenze, keine Zaehlung."
+      }
+    }
+  },
+  "commercialCapabilities": {
+    "status": "MISSING",
+    "note": "Dieser Lauf hat nicht stattgefunden. Der Bericht traegt hier keine Zahl - eine Null waere eine Aussage ueber Daten, die es nicht gibt."
+  },
+  "realtime": {
+    "status": "MISSING",
+    "note": "Dieser Lauf hat nicht stattgefunden. Der Bericht traegt hier keine Zahl - eine Null waere eine Aussage ueber Daten, die es nicht gibt.",
+    "LIVE_CHART_READY": "UNKNOWN"
+  },
+  "gates": {
+    "GATE_100": {
+      "gate": {
+        "status": "OK",
+        "generatedAt": "2026-09-09T09:58:02.632Z",
+        "ageHours": 0,
+        "verdict": "PASS",
+        "verdictReason": "allChecksPassed",
+        "note": null
+      },
+      "marketData": {
+        "requested": 100,
+        "resolved": 100,
+        "PASS": 76,
+        "WARNING": 24,
+        "FAIL": 0,
+        "UNAVAILABLE": 0,
+        "historyCoverageRate": 1,
+        "factorReadyRate": 1,
+        "averageBars": 8490,
+        "storageMB": 288.3,
+        "runtimeMs": 61441
+      },
+      "canary": {
+        "passed": 5,
+        "of": 5,
+        "regression": false,
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "NVDA",
+          "JPM",
+          "XOM"
+        ]
+      },
+      "factors": {
+        "status": "OK",
+        "computed": 100,
+        "skipped": 0,
+        "skippedByReason": {},
+        "smaCoverage": {
+          "sma20Calculated": 100,
+          "sma50Calculated": 100,
+          "sma100Calculated": 100,
+          "sma200Calculated": 100
+        },
+        "momentumCoverage": {
+          "1M": 100,
+          "3M": 100,
+          "6M": 100,
+          "12M": 100
+        },
+        "relativeStrengthCoverage": {
+          "calculated": 0,
+          "sourceMissing": 100,
+          "insufficientHistory": 0
+        },
+        "riskCoverage": {
+          "volatility60d": 100,
+          "maxDrawdown252d": 100
+        }
+      },
+      "screener": {
+        "status": "OK",
+        "evaluable": 100,
+        "notEvaluable": 0,
+        "questions": [
+          {
+            "id": "aboveSMA20",
+            "kind": "boolean",
+            "matched": 33,
+            "notEvaluable": 0
+          },
+          {
+            "id": "aboveSMA50",
+            "kind": "boolean",
+            "matched": 47,
+            "notEvaluable": 0
+          },
+          {
+            "id": "aboveSMA100",
+            "kind": "boolean",
+            "matched": 59,
+            "notEvaluable": 0
+          },
+          {
+            "id": "aboveSMA200",
+            "kind": "boolean",
+            "matched": 70,
+            "notEvaluable": 0
+          },
+          {
+            "id": "aboveSMA20And50And200",
+            "kind": "boolean",
+            "matched": 24,
+            "notEvaluable": 0
+          },
+          {
+            "id": "aboveAllSMA",
+            "kind": "boolean",
+            "matched": 23,
+            "notEvaluable": 0
+          },
+          {
+            "id": "newHigh52w",
+            "kind": "boolean",
+            "matched": 4,
+            "notEvaluable": 0
+          },
+          {
+            "id": "within5PctOf52wHigh",
+            "kind": "boolean",
+            "matched": 11,
+            "notEvaluable": 0
+          },
+          {
+            "id": "volumeBreakout",
+            "kind": "boolean",
+            "matched": 3,
+            "notEvaluable": 0
+          },
+          {
+            "id": "strongestMomentum12M",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "strongestMomentum6M",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "strongestMomentum12M1M",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "strongestRelativeStrength12M",
+            "kind": "ranked",
+            "matched": 0,
+            "notEvaluable": 100
+          },
+          {
+            "id": "trendAcceleration",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "highVolatility",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "lowVolatility",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "nearest52wHigh",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          },
+          {
+            "id": "deepestDrawdown",
+            "kind": "ranked",
+            "matched": 100,
+            "notEvaluable": 0
+          }
+        ]
+      },
+      "technical": {
+        "status": "OK",
+        "READY": 100,
+        "PARTIAL": 0,
+        "FAILED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "msPerSymbol": 148,
+        "elliott": {
+          "HIGH_CONFIDENCE": 22,
+          "MEDIUM_CONFIDENCE": 8,
+          "LOW_CONFIDENCE": 8,
+          "AMBIGUOUS": 62,
+          "UNAVAILABLE": 0,
+          "NOT_RUN": 0
+        }
+      }
+    }
+  }
+}
