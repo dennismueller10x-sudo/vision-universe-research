@@ -145,6 +145,8 @@ function measureStream(opts) {
        wie das angefragte Symbol aussehen. Zahlen werden gezaehlt, nie
        notiert. */
     const shapeSamples = [];
+    const priceTypes = Object.create(null);
+    const messageForms = Object.create(null);
     function describeShape(data) {
       return data.map(function (v) {
         if (v === null) return "null";
@@ -304,6 +306,13 @@ function measureStream(opts) {
             ? Math.round((running.close / running.open - 1) * 1e6) / 1e6 : null,
           origin: running ? running.origin : null,
           confirmed: running ? running.confirmed : null,
+          /* Woraus die Kerze besteht. TRADE heisst Abschluesse;
+             UNSPECIFIED heisst, der Anbieter nennt die Kursart nicht -
+             die Kerze bewegt sich dann sichtbar, aber worauf sie sich
+             bezieht, ist ungeklaert. */
+          priceTypes: Object.assign({}, priceTypes),
+          messageForms: Object.assign({}, messageForms),
+          priceTypeVerified: !!priceTypes.TRADE && !priceTypes.UNSPECIFIED,
           mergeStats: { ticks: stats.ticks, accepted: stats.accepted,
                         rejectedFuture: stats.rejectedFuture,
                         rejectedConfirmed: stats.rejectedConfirmed,
@@ -330,6 +339,12 @@ function measureStream(opts) {
       onOpen: function () { opened = true; openedAt = Date.now(); },
       onTick: function (tick) {
         const at = Date.now();
+        /* Welche Art Kurs der Tick traegt. Bei der typisierten Form ein
+           Abschluss, bei der neuen Form unbestimmt - und das muss bis in
+           den Bericht durchschlagen, sonst liest sich eine Kerze aus
+           unbestimmten Kursen wie eine aus Abschluessen. */
+        if (tick.priceType) priceTypes[tick.priceType] = (priceTypes[tick.priceType] || 0) + 1;
+        if (tick.messageForm) messageForms[tick.messageForm] = (messageForms[tick.messageForm] || 0) + 1;
         if (!firstEventAt) firstEventAt = at;
         lastEventAt = at;
         const lagS = tick.timestamp
@@ -463,13 +478,27 @@ async function main() {
      dann hat die Messung die Handelspause gemessen und nicht den Tarif. */
   let liveChartReady;
   let liveChartReason;
+  const unspecifiedOnly = measured.some((r) => r.candle && r.candle.priceTypes &&
+    r.candle.priceTypes.UNSPECIFIED > 0 && !r.candle.priceTypes.TRADE);
+
   if (!apiKey) {
     liveChartReady = "UNKNOWN";
     liveChartReason = "Kein Zugang konfiguriert. Es wurde nichts gemessen.";
   } else if (streaming.length && withCandle.length) {
+    /* Die Kerze entsteht - das ist gemessen. Woraus sie entsteht, ist bei
+       der neuen Nachrichtenform NICHT gemessen, und diese Einschraenkung
+       gehoert in dieselbe Zeile wie das TRUE. Ein TRUE ohne sie waere die
+       Zusage, der Chart zeige Abschluesse. */
     liveChartReady = "TRUE";
-    liveChartReason = "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende " +
-                      "Minutenkerze mit mehr als einem Update entstanden.";
+    liveChartReason = unspecifiedOnly
+      ? "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende " +
+        "Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter " +
+        "nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die " +
+        "Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, " +
+        "was auf der Kerze rechnet, braucht diese Auskunft."
+      : "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende " +
+        "Minutenkerze mit mehr als einem Update entstanden. Die Kurse sind ausgefuehrte " +
+        "Abschluesse (priceType TRADE).";
   } else if (session.phase !== "REGULAR") {
     liveChartReady = "UNKNOWN";
     liveChartReason = `Gemessen wurde in der Phase ${session.phase}. Ein ausbleibender Kurs ` +
@@ -576,6 +605,13 @@ async function main() {
       observedMessageShape: (measured.find(
         (r) => r.connection && (r.connection.messageShape || []).length) || { connection: {} })
         .connection.messageShape || [],
+      priceTypeVerified: !unspecifiedOnly,
+      priceTypeNote: unspecifiedOnly
+        ? "Die Kursart ist nicht belegt. Sie zu klaeren ist der naechste Schritt - beim " +
+          "Anbieter, nicht im Code: die Nachrichtenform der neuen IEX-Stufe traegt keinen " +
+          "Typ. Bis dahin darf keine Kennzahl auf dieser Kerze als 'auf Abschluessen " +
+          "gerechnet' ausgewiesen werden."
+        : null,
       note: "Eine Kerze entsteht aus ausgefuehrten Trades. Quotes bewegen einen Chart " +
             "ebenfalls sichtbar, sind aber eine andere Groesse - Geld und Brief statt " +
             "Abschluss. Beides zu vermischen waere der Fehler, den die Trennung hier " +

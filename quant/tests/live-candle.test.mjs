@@ -403,3 +403,57 @@ test("LC7 — die Auswertung trennt 'kein Strom' von 'Strom ohne Trades'", () =>
   assert.match(src, /fromQuotesOnly/);
   assert.match(src, /decisionRequired/);
 });
+
+test("LC8 — die neue Nachrichtenform ergibt einen Tick, der seine Unbestimmtheit mitfuehrt", () => {
+  /* Gemessen am 2026-09-09 gegen den Commercial-Zugang: die IEX-Stufe 6
+     liefert [Zeitstempel, Ticker, Kurs] - drei Felder, kein Typfeld.
+     Der Parser hat diese Nachrichten zuvor alle verworfen.
+
+     Er liest sie jetzt - und schreibt an den Tick, dass die Kursart NICHT
+     bekannt ist. Ohne diese Kennzeichnung saehe eine Kerze aus
+     unbestimmten Kursen genauso aus wie eine aus Abschluessen. */
+  const neu = TiingoRealtime.parseIexMessage(JSON.stringify({
+    messageType: "A", service: "iex",
+    data: ["2026-09-09T09:47:40.460465838-04:00", "NVDA", 184.24]
+  }));
+  assert.ok(neu && neu.tick, "die neue Form muss einen Tick ergeben");
+  assert.equal(neu.tick.price, 184.24);
+  assert.equal(neu.tick.symbol, "NVDA");
+  assert.equal(neu.tick.priceType, "UNSPECIFIED");
+  assert.equal(neu.tick.messageForm, "iexNoTypeField");
+  assert.equal(neu.tick.size, null, "die Form traegt keine Stueckzahl");
+
+  /* Die typisierte Form bleibt, was sie war - und sagt es jetzt auch. */
+  const trade = TiingoRealtime.parseIexMessage(JSON.stringify({
+    messageType: "A", data: ["T", "2026-09-09T13:47:40Z", "NVDA", 184.2, 55]
+  }));
+  assert.equal(trade.tick.priceType, "TRADE");
+  assert.equal(trade.tick.messageForm, "iexTyped");
+  assert.equal(trade.tick.size, 55);
+
+  /* Und ein Quote bleibt verworfen: Geld und Brief sind keine Kerze. */
+  const quote = TiingoRealtime.parseIexMessage(JSON.stringify({
+    messageType: "A", data: ["Q", "2026-09-09T13:47:40Z", "NVDA", 184.1, 100, 184.3, 100]
+  }));
+  assert.equal(quote, null);
+
+  /* Zu kurze oder unbrauchbare Nachrichten bleiben verworfen. */
+  assert.equal(TiingoRealtime.parseIexMessage(JSON.stringify({
+    messageType: "A", data: ["2026-09-09T09:47:40Z", "NVDA"] })), null);
+  assert.equal(TiingoRealtime.parseIexMessage(JSON.stringify({
+    messageType: "A", data: ["2026-09-09T09:47:40Z", "NVDA", 0] })), null);
+});
+
+test("LC9 — ein TRUE aus unbestimmten Kursen sagt seine Einschraenkung mit", () => {
+  /* Die Kerze entsteht - das ist messbar. Woraus sie entsteht, ist bei der
+     neuen Nachrichtenform nicht messbar. Ein TRUE ohne diese Zeile waere
+     die Zusage, der Chart zeige Abschluesse. */
+  const src = readFileSync(join(root, "scripts", "market", "verify-live-candle.mjs"), "utf8");
+  const branch = src.slice(src.indexOf("} else if (streaming.length && withCandle.length) {"),
+                           src.indexOf('} else if (session.phase !== "REGULAR") {'));
+  assert.match(branch, /liveChartReady = "TRUE"/);
+  assert.match(branch, /EINSCHRAENKUNG/);
+  assert.match(branch, /UNSPECIFIED/);
+  assert.match(src, /priceTypeVerified/);
+  assert.match(src, /priceTypeNote/);
+});

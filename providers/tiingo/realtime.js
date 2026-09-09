@@ -116,10 +116,53 @@ function parseIexMessage(event) {
   var d = msg.data;
   if (!Array.isArray(d) || d.length < 3) return null;
 
-  /* d[0] Typ, d[1] Zeitstempel, d[2] Ticker. Nur Trades ("T") tragen
+  /* ZWEI NACHRICHTENFORMEN, und der Unterschied ist nicht kosmetisch.
+
+     Die klassische Form traegt an erster Stelle einen Typbuchstaben:
+     d[0] Typ, d[1] Zeitstempel, d[2] Ticker. Nur Trades ("T") tragen
      einen ausgefuehrten Kurs; Quotes ("Q") tragen Geld und Brief, und
      aus einem Briefkurs eine Kerze zu bauen waere eine andere Zahl als
-     die, die der Chart zeigt. */
+     die, die der Chart zeigt.
+
+     Die zweite Form hat gar kein Typfeld: [Zeitstempel, Ticker, Kurs] -
+     drei Felder, ein Kurs. Sie ist gemessen worden, nicht angenommen
+     (quant/data/market/commercial/live-candle-verification.json, Stufe 6,
+     124 Nachrichten in 90 Sekunden auf NVDA). Tiingo hat die IEX-Regeln
+     geaendert; Stufe 5 und 0 werden diesem Konto mit "thresholdLevel not
+     valid for your subscription tier" verweigert.
+
+     WAS DIESE ZAHL BEDEUTET, IST NICHT GEMESSEN. Sie kann der letzte
+     Abschluss sein oder ein Referenzkurs. Der Tick traegt deshalb
+     priceType "UNSPECIFIED" - und wer darauf eine Kerze baut, muss diese
+     Angabe sehen und entscheiden. Sie stillschweigend als Trade zu
+     fuehren waere genau die Behauptung, die dieses Repository sonst
+     ueberall vermeidet. */
+  var hatTypfeld = typeof d[0] === "string" && /^[A-Z]$/.test(d[0]);
+
+  if (!hatTypfeld) {
+    if (d.length < 3) return null;
+    var ts = typeof d[0] === "string" ? d[0] : null;
+    var sym = typeof d[1] === "string" ? d[1] : null;
+    var p = null;
+    for (var k = 2; k < d.length; k++) {
+      if (typeof d[k] === "number" && isFinite(d[k]) && d[k] > 0) { p = d[k]; break; }
+    }
+    if (p === null || ts === null) return null;
+    return {
+      tick: {
+        price: p,
+        size: null,
+        timestamp: ts,
+        symbol: sym,
+        /* Die Kennzeichnung faehrt mit dem Tick, nicht nur im Bericht. */
+        priceType: "UNSPECIFIED",
+        messageForm: "iexNoTypeField",
+        source: PROVIDER_ID
+      },
+      raw: null
+    };
+  }
+
   if (d[0] !== "T") return null;
   var price = null, size = null;
   for (var i = 3; i < d.length; i++) {
@@ -133,6 +176,8 @@ function parseIexMessage(event) {
       size: size,
       timestamp: d[1] || null,
       symbol: d[2] || null,
+      priceType: "TRADE",
+      messageForm: "iexTyped",
       source: PROVIDER_ID
     },
     raw: null                 /* Die Rohnachricht wird nicht weitergereicht. */
