@@ -434,6 +434,17 @@ test("SG6 — Faktoren, Screener, Technical und Gesundheitsbericht laufen auf de
     assert.ok(health.gates.GATE_100.factors.smaCoverage);
     assert.ok(health.gates.GATE_100.technical.READY >= 0);
     assert.ok(health.gates.GATE_100.canary);
+    /* §31: die Backtest-Tauglichkeit wird aus dem Gate-Bericht abgeleitet
+       und nicht neu gemessen. Sie muss die Bereinigungsstufen auszaehlen
+       und einen Widerspruch benennen koennen. */
+    const bt = health.gates.GATE_100.backtestReadiness;
+    assert.equal(bt.symbols, tickers.length);
+    assert.equal(bt.rejectedForFutureBars, 0);
+    assert.equal(bt.rawAndAdjustedStoredSeparately, true);
+    assert.ok(["DATA_SUPPORTS_BACKTEST", "REVIEW_REQUIRED"].includes(bt.readiness));
+    assert.equal(Object.values(bt.byInferredAdjustment).reduce((a, b) => a + b, 0),
+                 tickers.length, "jede Reihe braucht genau eine gemessene Bereinigungsstufe");
+
     /* Ohne Universum ist die Kette nicht betriebsbereit, egal wie gut das
        Gate lief. Genau das muss der Gesamtbefund sagen. */
     assert.equal(health.overall, "NOT_READY");

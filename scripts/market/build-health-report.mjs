@@ -126,6 +126,63 @@ for (const id of gateIds()) {
               "Es gibt keine Bilanz, weil nichts geladen wurde - und keine Null, die so " +
               "aussaehe, als waere geladen worden."
             : g.note },
+    /* Backtest-Tauglichkeit (§31). Bewusst abgeleitet und nicht neu
+       gemessen: alles, was die Frage beantwortet, steht bereits im
+       Gate-Bericht.
+
+       Die drei Punkte, an denen ein Backtest falsch wird:
+
+         - Bereinigungsstufe unklar. Eine Reihe, die als TOTAL_RETURN
+           deklariert ist und sich nicht so verhaelt, erzeugt eine
+           Rendite, die es nie gab. Deshalb stehen deklarierte und
+           gemessene Stufe getrennt und werden hier gegeneinander
+           gezaehlt.
+         - Zukunftsdaten. validateBars() verwirft Bars mit einem Datum
+           nach heute - sie entstehen durch Zeitzonenfehler und wirken im
+           Backtest als Look-Ahead.
+         - Zu kurze Historie. Sie macht einen Backtest nicht falsch,
+           aber bedeutungslos.
+
+       Was hier NICHT steht, ist ein Leistungsversprechen. Der Block
+       sagt, ob die Daten die Frage tragen - nicht, was aus ihnen folgt. */
+    backtestReadiness: hasAccounting ? (() => {
+      const rows = Object.values(d.perSymbol || {});
+      const byInferred = {};
+      let contradicted = 0, withEvents = 0, futureBars = 0, tooShort = 0;
+      for (const r of rows) {
+        const inferred = r.adjustmentInferred || "UNKNOWN";
+        byInferred[inferred] = (byInferred[inferred] || 0) + 1;
+        const rank = { UNADJUSTED: 0, SPLIT_ADJUSTED: 1, TOTAL_RETURN: 2 };
+        const c = rank[String(r.adjustmentClaimed || "").toUpperCase()];
+        const i = rank[inferred];
+        if (c !== undefined && i !== undefined && c > i) contradicted++;
+        if ((r.splits || 0) + (r.dividends || 0) > 0) withEvents++;
+        if (r.reason === "future_bar") futureBars++;
+        if (!r.factorReady) tooShort++;
+      }
+      return {
+        symbols: rows.length,
+        byInferredAdjustment: byInferred,
+        adjustmentContradicted: contradicted,
+        withCorporateActions: withEvents,
+        rejectedForFutureBars: futureBars,
+        notFactorReady: tooShort,
+        rawAndAdjustedStoredSeparately: true,
+        note: "Roh- und bereinigte Spalte liegen in der Arbeitsablage nebeneinander; die " +
+              "Bereinigungsstufe wird gemessen und nicht uebernommen. Zukunftsbars werden " +
+              "verworfen, bevor sie den Bestand erreichen. Ein Leistungsversprechen ist " +
+              "damit nicht verbunden.",
+        readiness: contradicted === 0 && futureBars === 0
+          ? "DATA_SUPPORTS_BACKTEST"
+          : "REVIEW_REQUIRED",
+        readinessReason: contradicted === 0 && futureBars === 0
+          ? "Keine widersprochene Bereinigungsstufe und keine Zukunftsbars im Bestand."
+          : `${contradicted} Reihe(n) mit widersprochener Bereinigungsstufe, ` +
+            `${futureBars} mit Zukunftsbars. Beides muss vor einem Backtest geklaert sein.`
+      };
+    })() : { status: "MISSING",
+             note: "Ohne Gate-Bilanz laesst sich die Backtest-Tauglichkeit nicht beurteilen." },
+
     canary: d && d.canary ? {
       passed: d.canary.passed, of: d.canary.of, regression: d.canary.regression,
       symbols: d.canary.symbols

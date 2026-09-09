@@ -18,6 +18,11 @@ name: Tiingo Commercial — Scale Gates
 # Zugangs anfasst, waere ein Fehler mit Rechnung.
 #
 #   [tiingo-scale]      Universum, Gate-Lauf, Faktoren, Technical, Bericht
+#                       Die Bedingungen pruefen auf das PRAEFIX
+#                       "[tiingo-scale" ohne schliessende Klammer - sonst
+#                       traefe "[tiingo-scale:GATE_500]" nicht zu, und der
+#                       Job wuerde stillschweigend uebersprungen. Genau das
+#                       ist beim dritten Lauf passiert.
 #                       Welche Stufe, sagt die Marke selbst:
 #                       [tiingo-scale] allein laeuft GATE_100,
 #                       [tiingo-scale:GATE_500] laeuft GATE_500.
@@ -80,7 +85,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, '[tiingo-capability]') ||
-      contains(github.event.head_commit.message, '[tiingo-scale]')
+      contains(github.event.head_commit.message, '[tiingo-scale')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -247,7 +252,7 @@ jobs:
     if: >-
       always() && (
         github.event_name == 'workflow_dispatch' ||
-        contains(github.event.head_commit.message, '[tiingo-scale]')
+        contains(github.event.head_commit.message, '[tiingo-scale')
       )
     steps:
       - uses: actions/checkout@v4
