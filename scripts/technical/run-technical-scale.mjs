@@ -54,6 +54,10 @@ function arg(name, fallback) {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 }
 const GATE = arg("--gate", "GATE_100");
+/* Der Canary-Satz kommt aus derselben Konfiguration wie ueberall sonst -
+   eine zweite Liste waere eine, die auseinanderlaufen kann. */
+const SCALE = JSON.parse(
+  readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 const SCALE_DIR = arg("--scale-dir", join(root, "quant", "data", "market", "scale"));
 const OUT_DIR = arg("--out", join(root, "quant", "data", "technical", "scale"));
 const WORK_DIR = arg("--work-dir", null);
@@ -330,14 +334,28 @@ if (!detailInRepo) {
   Object.keys(perSymbol).forEach((t) => {
     if (perSymbol[t].technical !== "TECHNICAL_READY") auffaellig[t] = perSymbol[t];
   });
+  /* Der Canary bleibt IMMER im ausgelieferten Bericht - auch wenn er
+     sauber durchgelaufen ist.
+
+     Er ist der Regressionssatz (§12): seine Zeilen sind genau die, an
+     denen sich ein Rueckschritt zeigen wuerde. Sie in die Arbeitsablage
+     zu schieben, weil sie unauffaellig sind, nimmt dem naechsten Lauf
+     den Vergleich - und "5/5 bestanden" ohne die Zeilen dahinter ist
+     eine Behauptung statt eines Belegs. Fuenf Zeilen kosten nichts. */
+  const canary = (SCALE.canary && SCALE.canary.symbols) || [];
+  const canaryImBericht = [];
+  canary.forEach((t) => {
+    if (perSymbol[t] && !auffaellig[t]) { auffaellig[t] = perSymbol[t]; canaryImBericht.push(t); }
+  });
   report.perSymbol = auffaellig;
   report.perSymbolDetail = {
     location: "workingStore",
     file: workFile.replace(root + "/", ""),
     symbolsTotal: Object.keys(perSymbol).length,
     symbolsInReport: Object.keys(auffaellig).length,
+    canaryAlwaysIncluded: canaryImBericht,
     reason: `Mehr als ${DETAIL_LIMIT} Titel. Ausgeliefert werden die Befunde - alles ausser ` +
-            `TECHNICAL_READY - und die Deckungsbilanz (§26).`
+            `TECHNICAL_READY - der Canary-Satz und die Deckungsbilanz (§26).`
   };
 } else {
   report.perSymbolDetail = { location: "report", symbolsTotal: Object.keys(perSymbol).length };

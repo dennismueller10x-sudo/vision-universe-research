@@ -1436,3 +1436,54 @@ test("SG29 — die Backfill-Marke im Workflow erreicht die Sicherung im Skript",
   assert.match(skript, /GATE === "FULL_UNIVERSE" && !ALLOW_FULL_BACKFILL/,
     "die Sicherung im Skript darf nicht entfernt werden");
 });
+
+test("SG30 — ein Checkpoint ohne seinen Bestand meldet keine Titel als geprueft", async () => {
+  /* Actions-Lauf 34370938243: der Runner bekam nach 2.998 Titeln ein
+     Abschaltsignal. Der Haken sicherte den Checkpoint - und mit dem
+     Runner ging die Platte, auf der die Kursreihen lagen.
+
+     Ein Checkpoint, der Titel als erledigt fuehrt, deren Reihen es nicht
+     mehr gibt, wuerde sie beim Fortsetzen aus dem Bestand bewerten - und
+     der ist leer. Ergebnis waere ein Bericht, der Titel als geprueft und
+     UNAVAILABLE ausweist, die in Wahrheit nie geholt wurden. Das ist
+     schlimmer als ein fehlender Titel: es ist ein erfundener Befund. */
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const work = join(dir, "cache");
+    const gateTickers = ["AAA", "BBB", "CCC", "DDD"];
+    const alle = ["AAPL", "MSFT", "NVDA", "JPM", "XOM", ...gateTickers];
+    writeGateUniverse(scaleDir, "GATE_100", alle);
+    const env = { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` };
+
+    /* Einen Checkpoint hinlegen, der mehr behauptet, als der Bestand
+       hergibt - genau die Lage nach einem verlorenen Runner. */
+    const ckptVerzeichnis = join(work, "tiingo", "checkpoints");
+    mkdirSync(ckptVerzeichnis, { recursive: true });
+    writeFileSync(join(ckptVerzeichnis, "gate-GATE_100.json"), JSON.stringify({
+      runId: "gate-GATE_100", startedAt: new Date().toISOString(), updatedAt: null,
+      done: alle.map((t) => "ref_" + t), failed: [], requests: 0
+    }));
+
+    const out = await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", work,
+       "--max-wait-ms", "1", "--minute-budget", "100000"], env);
+
+    assert.match(out, /Checkpoint-Eintraege ohne Bestand/,
+      "der Lauf muss die verwaisten Eintraege benennen");
+
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+    /* Der Kern: kein Titel wird als geprueft-und-leer gemeldet. Alle
+       wurden tatsaechlich geholt. */
+    assert.equal(report.accounting.resolved, alle.length,
+      "alle Titel muessen erneut geholt worden sein");
+    assert.equal(report.accounting.unavailable, 0,
+      "ein Titel ohne Reihe darf nicht als UNAVAILABLE erfunden werden");
+    for (const t of gateTickers) {
+      assert.equal(provider.perSymbol().get(t), 1, `${t} wurde nicht erneut geholt`);
+    }
+  } finally {
+    provider.server.close();
+  }
+});

@@ -538,6 +538,33 @@ async function main() {
      nicht mehr aus ihrer Laenge zu lesen. Die Menge macht das
      Fortsetzen idempotent: zweimal fortsetzen ist dasselbe wie einmal. */
   const done = new Set(checkpoint.done || []);
+
+  /* Ein Checkpoint ohne seinen Bestand ist kein Fortschritt.
+
+     Gelernt an Actions-Lauf 34370938243: der Runner bekam nach 2.998
+     Titeln ein Abschaltsignal. Der Haken hat den Checkpoint gesichert -
+     und mit dem Runner ging die Platte, auf der die Kursreihen lagen.
+     Der Checkpoint haette beim naechsten Lauf 2.998 Titel als erledigt
+     gemeldet, deren Reihen es nicht mehr gibt; die Bewertung aus dem
+     Bestand haette sie als UNAVAILABLE gezaehlt.
+
+     Das waere die schlimmste Sorte Fehler: ein Bericht, der Titel als
+     geprueft und schlecht ausweist, die in Wahrheit nie geholt wurden.
+     Ein Eintrag ohne Reihe gilt deshalb als NICHT erledigt und wird
+     erneut geholt. Lieber eine Anfrage zu viel als eine Zahl zu
+     wenig. */
+  let verwaisteEintraege = 0;
+  for (const sec of securities) {
+    if (!done.has(sec.securityId)) continue;
+    if (store.readBars(sec.securityId, "working")) continue;
+    done.delete(sec.securityId);
+    verwaisteEintraege++;
+  }
+  if (verwaisteEintraege) {
+    console.log(`\n  ${verwaisteEintraege} Checkpoint-Eintraege ohne Bestand: ` +
+                "die Reihen fehlen, die Titel werden erneut geholt.");
+  }
+
   checkpoint.done = Array.from(done);
   const pending = securities.filter((s) => !done.has(s.securityId));
   const resumed = done.size > 0;

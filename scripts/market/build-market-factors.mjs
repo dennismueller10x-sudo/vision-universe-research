@@ -293,6 +293,14 @@ const coverage = {
 
 /* Die Deckungsbilanz wird IMMER ausgeliefert. Sie ist klein, sie beantwortet
    "wie viele Titel tragen SMA200", und der Gesundheitsbericht liest sie. */
+/* Der Canary bleibt IMMER im ausgelieferten Bericht (§12).
+
+   Fuenf Zeilen kosten nichts, und ohne sie ist "der Canary ist sauber"
+   eine Behauptung: die Faktorzeilen sind genau das, woran sich ein
+   Rueckschritt bei SMA, Momentum oder relativer Staerke zeigen wuerde. */
+const canarySymbols = (SCALE.canary && SCALE.canary.symbols) || [];
+const canaryRows = rows.filter((r) => canarySymbols.includes(r.ticker));
+
 const summaryFile = join(OUT_DIR, `factors-${GATE}-summary.json`);
 const detailInRepo = rows.length <= DETAIL_LIMIT;
 writeFileSync(summaryFile, JSON.stringify(Object.assign({}, provenance, {
@@ -305,8 +313,12 @@ writeFileSync(summaryFile, JSON.stringify(Object.assign({}, provenance, {
         file: join(WORK_DIR || join(root, SCALE.storage.workingDir),
                    "tiingo", "factors", `factors-${GATE}.json`).replace(root + "/", ""),
         symbols: rows.length,
+        canaryAlwaysIncluded: canaryRows.map((r) => r.ticker),
         reason: `Mehr als ${DETAIL_LIMIT} Titel. Die Einzelzeilen bleiben in der ` +
-                `Arbeitsablage; ausgeliefert werden Deckungsbilanz und Screener (§26).` }
+                `Arbeitsablage; ausgeliefert werden Deckungsbilanz, Screener und der ` +
+                `Canary-Satz (§12, §26).` },
+  /* Der Regressionssatz, immer mitgeliefert. */
+  canary: canaryRows
 }), null, 2) + "\n");
 
 const detailPayload = JSON.stringify(Object.assign({}, provenance, {
