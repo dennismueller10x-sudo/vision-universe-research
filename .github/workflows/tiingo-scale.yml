@@ -274,18 +274,22 @@ jobs:
       # Lauf ein Erstimport ueber die volle Historie - genau das, was §27
       # ausschliesst. Mit ihr laedt der zweite Lauf nur die Tage seit dem
       # ersten nach.
-      - name: Arbeitsablage aus dem letzten Lauf
-        uses: actions/cache@v4
+      # Wiederherstellen und Sichern sind getrennt, und das ist keine
+      # Formsache: die Arbeitsablage waechst mit der Stufe. Gemessen sind
+      # rund 3 GB je 1.000 Titel; bei 2.000 waeren das 6 GB, die nach
+      # jedem Lauf hochgeladen wuerden - langsamer als ein Neuabruf und
+      # nahe an der Ablagegrenze eines Repositories. Gesichert wird
+      # deshalb nur, was sich zu sichern lohnt (§26).
+      - name: Arbeitsablage aus dem letzten Lauf holen
+        uses: actions/cache/restore@v4
         with:
           path: .market-cache
-          # Ein Schluessel je Lauf, damit jeder Lauf seinen Stand ablegt;
-          # restore-keys holt den letzten passenden. Gates sind
-          # geschachtelt, also ist der Bestand eines kleineren Gates fuer
-          # ein groesseres brauchbar - deshalb der allgemeine Praefix am
-          # Ende.
           key: market-cache-${{ github.run_id }}
           restore-keys: |
             market-cache-
+
+      - name: Platz auf dem Laufwerk vor dem Lauf
+        run: df -h / | tail -1
 
       - name: Marktuniversum aus den Anbieterstammdaten bauen
         env:
@@ -371,6 +375,28 @@ jobs:
       - name: Regressionssuite
         if: always()
         run: node --test --test-reporter=dot "quant/tests/*.test.mjs"
+
+      - name: Platz und Ablagegroesse nach dem Lauf
+        if: always()
+        id: disk
+        run: |
+          df -h / | tail -1
+          if [ -d .market-cache ]; then
+            SIZE_MB=$(du -sm .market-cache | cut -f1)
+            echo "Arbeitsablage: ${SIZE_MB} MB"
+            echo "cache_mb=$SIZE_MB" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache_mb=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Die Grenze ist eine Abwaegung und keine Naturkonstante: bis 2,5 GB
+      # ist ein Upload schneller als ein Neuabruf, darueber nicht mehr.
+      - name: Arbeitsablage sichern, solange sie handlich ist
+        if: always() && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
+        uses: actions/cache/save@v4
+        with:
+          path: .market-cache
+          key: market-cache-${{ github.run_id }}
 
       - name: Berichte sichern
         if: always()
