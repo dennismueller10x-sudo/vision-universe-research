@@ -42,7 +42,10 @@ const GOLDEN_FIVE = [
 ];
 
 const MARKET_DIR = join(root, "quant", "data", "market", "golden-preview", "daily");
-const OUT_DIR = join(root, "quant", "data", "sec", "golden-five-pit-coverage");
+/* Dasselbe Geschwisterverzeichnis wie build-golden-five-pit-coverage.mjs -
+   bewusst NICHT unter quant/data/sec/, das die parallele SEC-Scaling-
+   Pipeline wortwoertlich scannt (siehe deren Kommentar dort). */
+const OUT_DIR = join(root, "quant", "data", "golden-five-pit-coverage");
 mkdirSync(OUT_DIR, { recursive: true });
 
 const results = [];

@@ -13,8 +13,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const DIR = join(root, "quant", "data", "sec", "golden-five-pit-coverage");
+const DIR = join(root, "quant", "data", "golden-five-pit-coverage");
 const TICKERS = ["AAPL", "MSFT", "NVDA", "JPM", "XOM"];
+
+test("PIT0 · der Bericht liegt NICHT unter quant/data/sec/ (das scannt die parallele " +
+     "SEC-Scaling-Pipeline woertlich und policet dort jede *.json - siehe scripts/quant/tests/" +
+     "test_workflows.py#GeneratedArtifactTests/DataBudgetTests)", () => {
+  assert.ok(!existsSync(join(root, "quant", "data", "sec", "golden-five-pit-coverage")),
+    "quant/data/sec/golden-five-pit-coverage darf nicht (wieder) existieren - eigenes " +
+    "Geschwisterverzeichnis quant/data/golden-five-pit-coverage verwenden.");
+});
 
 test("PIT1 · Coverage-Report existiert fuer alle fuenf Golden-Five-Titel", () => {
   assert.ok(existsSync(join(DIR, "summary.json")), "summary.json fehlt - build-golden-five-pit-coverage.mjs gelaufen?");

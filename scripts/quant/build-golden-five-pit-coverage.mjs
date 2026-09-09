@@ -46,7 +46,15 @@ const GOLDEN_FIVE = [
   { ticker: "XOM", securityId: "sec_XOM" }
 ];
 
-const OUT_DIR = join(root, "quant", "data", "sec", "golden-five-pit-coverage");
+/* Bewusst NICHT unter quant/data/sec/ - die parallele SEC-Scaling-Pipeline
+   (scripts/quant/sec/, Python) scannt genau diesen Baum wortwoertlich
+   (scripts/quant/tests/test_workflows.py#GeneratedArtifactTests/
+   DataBudgetTests: jede *.json dort muss ihr eigenes versions-Schema
+   tragen und zaehlt gegen deren Speicherbudget) - ausdruecklich NICHT,
+   um "aus fremden Phasen hereinzuwirken" (siehe Kommentar dort). Ein
+   eigenes Geschwisterverzeichnis vermeidet die Kollision vollstaendig,
+   ohne deren Pipeline/Tests anzufassen. */
+const OUT_DIR = join(root, "quant", "data", "golden-five-pit-coverage");
 mkdirSync(OUT_DIR, { recursive: true });
 
 /* Die Gegenprobe zur PIT-Regel. Keine neue Regel - dieselbe wie

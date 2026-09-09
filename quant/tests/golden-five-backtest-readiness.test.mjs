@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const FILE = join(root, "quant", "data", "sec", "golden-five-pit-coverage", "backtest-readiness.json");
+const FILE = join(root, "quant", "data", "golden-five-pit-coverage", "backtest-readiness.json");
 const TICKERS = ["AAPL", "MSFT", "NVDA", "JPM", "XOM"];
 
 test("BT1 · Golden-Case-Bericht existiert und deckt alle fuenf Titel ab", () => {
