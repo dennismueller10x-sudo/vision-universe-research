@@ -522,3 +522,63 @@ test("MS23 — MAX zeigt die tatsaechlich vorhandene Historie, auch ueber 36 Jah
   assert.equal(oneDay.ok, false);
   assert.equal(oneDay.reason, "gateDisabled");
 });
+
+test("MS24 — die relative Staerke vergleicht auf den Stichtag des Titels, nicht auf heute", () => {
+  /* Ein Titel, dessen Reihe frueher endet, wurde gegen den heutigen
+     Indexstand verglichen. Das zeigte eine Schwaeche, die es nicht gab -
+     der Titel war nicht schwaecher, er war aelter.
+
+     Dieselbe Regel wie in relative-strength-engine.js: der letzte
+     bekannte Benchmark-Wert am Stichtag, nie ein spaeterer. */
+  function withDates(count, endDate, drift) {
+    const dates = tradingDates(count, endDate);
+    let p = 100;
+    return dates.map((date) => { p *= drift; return { date, close: p }; });
+  }
+
+  /* Der Titel endet drei Monate frueher als die Benchmark, und die
+     Benchmark steigt in diesen drei Monaten kraeftig. */
+  const symbolBars = withDates(400, "2026-06-01", 1.0005);
+  const payload = {
+    ticker: "ALT", provider: "tiingo", adjustmentStatus: "splitAdjusted",
+    bars: symbolBars.map((b) => ({
+      date: b.date, open: b.close, high: b.close * 1.002, low: b.close * 0.998,
+      close: b.close, volume: 1e6, adjustedClose: b.close,
+      adjustedHigh: b.close * 1.002, adjustedLow: b.close * 0.998,
+      splitFactor: 1, dividend: 0, dataSourceId: "ds_tiingo"
+    }))
+  };
+  /* Die Benchmark steigt gleichmaessig - und legt NACH dem Stichtag des
+     Titels einen Sprung hin. Ohne Ausrichtung liefe dieser Sprung in die
+     relative Staerke eines Titels, der ihn nie erlebt hat. Eine Benchmark
+     mit konstanter Rate wuerde den Fehler verstecken: dort ist die
+     Rendite ueber 252 Bars unabhaengig vom Endpunkt. */
+  const benchDates = tradingDates(600, TODAY);
+  let bp = 100;
+  const benchBars = benchDates.map((date) => {
+    bp *= date > "2026-06-01" ? 1.004 : 1.0005;
+    return { date, close: bp };
+  });
+  const benchmark = { dates: benchBars.map((b) => b.date), closes: benchBars.map((b) => b.close) };
+
+  const aligned = MarketFactors.computeFactors(payload, { benchmark });
+  assert.equal(aligned.asOf, "2026-06-01");
+  assert.equal(aligned.benchmarkAsOf, "2026-06-01",
+               "verglichen wird auf den Stichtag des Titels");
+  assert.equal(aligned.fieldStatus.relativeStrength["12M"], "CALCULATED");
+
+  /* Zum Vergleich: ohne Datumsspalte faellt die Rechnung auf den letzten
+     Benchmark-Tag zurueck - und genau dann weicht das Ergebnis ab. */
+  const unaligned = MarketFactors.computeFactors(payload, { benchmark: { closes: benchmark.closes } });
+  assert.equal(unaligned.benchmarkAsOf, null);
+  assert.notEqual(unaligned.values.relativeStrength["12M"],
+                  aligned.values.relativeStrength["12M"],
+                  "die Ausrichtung muss einen messbaren Unterschied machen");
+
+  /* Und wenn die Benchmark erst nach dem Stichtag des Titels beginnt, ist
+     das keine zu kurze Historie, sondern eine fehlende Ueberschneidung. */
+  const spaeter = { dates: tradingDates(50, TODAY), closes: new Array(50).fill(100) };
+  const keine = MarketFactors.computeFactors(payload, { benchmark: spaeter });
+  assert.equal(keine.fieldStatus.relativeStrength["12M"], "NOT_APPLICABLE");
+  assert.equal(keine.values.relativeStrength["12M"], null);
+});

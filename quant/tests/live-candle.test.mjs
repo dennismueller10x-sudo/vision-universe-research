@@ -143,8 +143,15 @@ function startWsServer(opts = {}) {
 /** Baut die Messkette genau so auf wie verify-live-candle.mjs. */
 function collect(port, opts = {}) {
   return new Promise((resolve) => {
+    /* Die Uhr der Kerzenreihe kann festgehalten werden.
+
+       Ohne das haengt der Test an der Wanduhr: faellt zwischen dem letzten
+       Tick und der Pruefung ein Minutenwechsel, gilt die Kerze als
+       abgeschlossen, und der Test scheitert an der Uhrzeit statt an der
+       Sache. Genau das ist einmal passiert. */
     const series = BarMerge.createSeries({
-      timeframe: "1m", interval: "1m", calendar, exchange: "XNYS", adjustmentStatus: null
+      timeframe: "1m", interval: "1m", calendar, exchange: "XNYS", adjustmentStatus: null,
+      now: opts.now
     });
     const events = [];
     let ack = null, opened = false, messages = 0;
@@ -221,13 +228,17 @@ test("LC1 — Anmeldung, Bestaetigung und mehrere aufeinanderfolgende Kursereign
 test("LC2 — aus mehreren Ereignissen derselben Minute entsteht eine laufende Kerze", async () => {
   /* Alle Ticks in derselben Minute und mit einem klaren Verlauf:
      hoch, hoeher, tiefer, dazwischen. Open, High, Low und Close muessen
-     danach eindeutig bestimmt sein. */
-  const base = Date.now();
+     danach eindeutig bestimmt sein.
+
+     Die Zeitpunkte liegen am ANFANG einer Minute, und die Uhr der Reihe
+     steht fest: sonst entscheidet der Sekundenzeiger darueber, ob die
+     Kerze noch laeuft. */
+  const base = Math.floor(Date.now() / 60000) * 60000 + 2000;
   const prices = [184.20, 184.31, 184.18, 184.24];
   const ticks = prices.map((p, i) => ({ symbol: "NVDA", price: p, size: 10, atMs: base + i * 30 }));
   const srv = await startWsServer({ ticks, intervalMs: 20 });
   try {
-    const r = await collect(srv.port, { durationMs: 900 });
+    const r = await collect(srv.port, { durationMs: 900, now: () => base + 3000 });
     assert.equal(r.events.length, prices.length);
 
     const candle = r.series.last();

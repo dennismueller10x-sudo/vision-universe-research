@@ -305,6 +305,27 @@
     fieldStatus.relativeStrength = {};
     var bench = opts.benchmark && Array.isArray(opts.benchmark.closes)
       ? opts.benchmark.closes : null;
+    var benchDates = opts.benchmark && Array.isArray(opts.benchmark.dates)
+      ? opts.benchmark.dates : null;
+
+    /* Auf welchen Benchmark-Tag wird verglichen?
+
+       Nicht auf den letzten, den die Benchmark hat, sondern auf den
+       letzten, den sie am Stichtag DIESES Titels hatte. Der Unterschied
+       faellt nur bei Titeln auf, deren Reihe frueher endet - und genau
+       dort waere er ein Fehler: die relative Staerke verglichen dann
+       einen alten Kurs gegen einen frischen Index und zeigte eine
+       Schwaeche, die es nicht gab.
+
+       Dieselbe Regel wie in relative-strength-engine.js: der letzte
+       bekannte Wert, nie ein spaeterer. */
+    var benchIndex = bench ? bench.length - 1 : -1;
+    var asOfDate = bars[i] ? bars[i].date : null;
+    if (bench && benchDates && asOfDate) {
+      benchIndex = -1;
+      for (var bd = 0; bd < benchDates.length && benchDates[bd] <= asOfDate; bd++) benchIndex = bd;
+    }
+
     Object.keys(HORIZONS).forEach(function (h) {
       var w = HORIZONS[h];
       if (!bench) {
@@ -312,7 +333,14 @@
         fieldStatus.relativeStrength[h] = STATUS.SOURCE_MISSING;
         return;
       }
-      var bi = bench.length - 1;
+      if (benchIndex < 0) {
+        /* Die Benchmark beginnt spaeter als dieser Titel endet. Das ist
+           keine zu kurze Historie, sondern eine fehlende Ueberschneidung. */
+        values.relativeStrength[h] = null;
+        fieldStatus.relativeStrength[h] = STATUS.NOT_APPLICABLE;
+        return;
+      }
+      var bi = benchIndex;
       if (bi - w < 0 || i - w < 0 || !isNum(bench[bi]) || !isNum(bench[bi - w]) ||
           !isNum(close[i]) || !isNum(close[i - w]) || bench[bi - w] <= 0 || close[i - w] <= 0) {
         values.relativeStrength[h] = null;
@@ -334,6 +362,9 @@
          ein SMA200 nicht einordnen. */
       basis: basis,
       adjustmentStatus: payload.adjustmentStatus || null,
+      /* Gegen welchen Benchmark-Tag verglichen wurde. Ohne diese Angabe
+         laesst sich eine relative Staerke nicht einordnen. */
+      benchmarkAsOf: bench && benchDates && benchIndex >= 0 ? benchDates[benchIndex] : null,
       /* Der Kurs selbst gehoert NICHT in die ausgelieferte Faktorzeile
          (§34: keine Rohkursweitergabe). Er steht hier, weil derselbe
          Aufruf auch intern benutzt wird; das Schreibskript laesst ihn

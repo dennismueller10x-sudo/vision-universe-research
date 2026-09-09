@@ -93,6 +93,9 @@ if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length
   const basis = MarketFactors.priceBasis(benchPayload.bars, benchPayload.adjustmentStatus);
   benchmark = {
     id: BENCHMARK,
+    /* Die Datumsspalte gehoert dazu: ohne sie vergleicht ein Titel mit
+       aelterem Stichtag gegen den heutigen Indexstand. */
+    dates: benchPayload.bars.map((b) => b.date),
     closes: benchPayload.bars.map((b) => {
       const v = b[basis];
       return typeof v === "number" && isFinite(v) && v > 0 ? v : b.close;
