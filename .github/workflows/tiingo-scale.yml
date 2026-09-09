@@ -341,16 +341,36 @@ jobs:
           # Ein FAIL-Urteil ist ein Ergebnis und kein Werkzeugfehler: der
           # Lauf soll den Bericht schreiben und die Auswertung erreichen.
           # Der Schritt am Ende dieses Jobs setzt den Job dann rot.
-          node scripts/market/run-scale-gate.mjs --gate "$GATE" || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
+          # §25: FULL_UNIVERSE wird BEWERTET, nicht blind gestartet. Die
+          # gemessenen Raten sagen 24 GB Ablage fuer die ueber 8.000
+          # Aktien der Primaerboersen - mehr, als ein Standard-Runner frei
+          # hat. Ein Lauf, der das auf halbem Weg herausfindet, hat
+          # Kontingent verbrannt und nichts belegt.
+          #
+          # Ein echter Backfill verlangt deshalb eine zweite, ausdrueckliche
+          # Marke. Ohne sie bewertet der Lauf.
+          MODE=""
+          if [ "$GATE" = "FULL_UNIVERSE" ]; then
+            if printf '%s' "$(git log -1 --pretty=%B)" | grep -q '\[tiingo-full-backfill\]'; then
+              echo "FULL_UNIVERSE mit ausdruecklicher Backfill-Marke."
+            else
+              MODE="--assess-only"
+              echo "FULL_UNIVERSE ohne Backfill-Marke: es wird bewertet, nicht geladen."
+            fi
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          node scripts/market/run-scale-gate.mjs --gate "$GATE" $MODE || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
 
+      # Ohne geladene Kurse gibt es nichts zu rechnen. Ein Lauf mit
+      # lauter SOURCE_MISSING waere kein Ergebnis, sondern Rauschen.
       - name: Marktfaktoren und Screener-Datenmodell
-        if: always()
+        if: always() && steps.gate.outputs.mode != '--assess-only'
         run: |
           GATE='${{ steps.gate.outputs.gate }}'
           node scripts/market/build-market-factors.mjs --gate "$GATE"
 
       - name: Technical Intelligence und Elliott im Massstab
-        if: always()
+        if: always() && steps.gate.outputs.mode != '--assess-only'
         run: |
           GATE='${{ steps.gate.outputs.gate }}'
           node scripts/technical/run-technical-scale.mjs --gate "$GATE"
@@ -364,6 +384,8 @@ jobs:
       # ist (§37).
       - name: Vollausbaustadium bewerten (ohne Abruf)
         if: always() && steps.gate.outputs.gate == 'GATE_2000'
+        # Nur nach GATE_2000. Laeuft der Lauf selbst schon auf
+        # FULL_UNIVERSE, hat er die Bewertung bereits erledigt.
         run: |
           VERDICT=$(node -e 'try{console.log(require("./quant/data/market/scale/gate-GATE_2000.json").verdict)}catch(e){console.log("MISSING")}')
           if [ "$VERDICT" != "PASS" ]; then
@@ -523,6 +545,13 @@ jobs:
           GATE='${{ steps.gate.outputs.gate }}'
           VERDICT=$(node -e 'try{console.log(require("./quant/data/market/scale/gate-"+process.env.GATE+".json").verdict)}catch(e){console.log("MISSING")}')
           echo "Urteil: $VERDICT"
+          # ASSESSED ist kein Bestehen und kein Scheitern: es wurde nichts
+          # geladen, also gibt es nichts zu bestehen. Der Lauf bleibt gruen,
+          # und die Bewertung sagt, was ein echter Lauf kosten wuerde.
+          if [ "$VERDICT" = "ASSESSED" ]; then
+            echo "Bewertung ohne Abruf. Es wurde nichts geladen und nichts freigegeben."
+            exit 0
+          fi
           if [ "$VERDICT" != "PASS" ]; then
             echo "Das Gate ist nicht bestanden. Es wird nicht weiter skaliert (§37)."
             exit 1

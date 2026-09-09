@@ -90,6 +90,8 @@ for (const id of gateIds()) {
   const technical = load(join("technical", "scale", `technical-coverage-${id}.json`));
 
   const d = g.data;
+  /* ASSESSED zaehlt ausdruecklich nicht als bestanden: es wurde nichts
+     geladen, also ist nichts belegt. */
   if (d && d.verdict === "PASS") {
     const order = SCALE.gates.map((x) => x.id);
     if (!latestPassedGate || order.indexOf(id) > order.indexOf(latestPassedGate)) latestPassedGate = id;
@@ -119,13 +121,18 @@ for (const id of gateIds()) {
       averageBars: d.historyCoverage.averageBars,
       storageMB: d.accounting.storageMB,
       runtimeMs: d.run.runtimeMs
-    } : { status: d ? "ABORTED" : g.status,
+    } : { status: d ? (d.verdict === "ASSESSED" ? "ASSESSED_ONLY" : "ABORTED") : g.status,
           reason: d ? d.verdictReason : null,
-          note: d
-            ? "Der Lauf ist vor dem Gate-Universum abgebrochen (" + d.verdictReason + "). " +
-              "Es gibt keine Bilanz, weil nichts geladen wurde - und keine Null, die so " +
-              "aussaehe, als waere geladen worden."
-            : g.note },
+          projection: d && d.projection ? d.projection : null,
+          feasibility: d && d.feasibility ? d.feasibility : null,
+          note: !d ? g.note
+            : d.verdict === "ASSESSED"
+              ? "Bewertung ohne Abruf. Es wurde nichts geladen; die Zahlen unter projection " +
+                "sind Hochrechnungen aus gemessenen Raten und ausdruecklich als solche " +
+                "gekennzeichnet."
+              : "Der Lauf ist vor dem Gate-Universum abgebrochen (" + d.verdictReason + "). " +
+                "Es gibt keine Bilanz, weil nichts geladen wurde - und keine Null, die so " +
+                "aussaehe, als waere geladen worden." },
     /* Backtest-Tauglichkeit (§31). Bewusst abgeleitet und nicht neu
        gemessen: alles, was die Frage beantwortet, steht bereits im
        Gate-Bericht.

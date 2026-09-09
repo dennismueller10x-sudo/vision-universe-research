@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-09T10:50:45.964Z",
+  "generatedAt": "2026-09-09T10:55:40.347Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
-    "source": "github-actions",
-    "runId": "34339904683",
-    "commit": "41a195635392c0e5973b32fa37f8d83acfaeaca5",
+    "source": "local",
+    "runId": null,
+    "commit": null,
     "staleAfterHours": 72
   },
   "overall": "READY_FOR_NEXT_SCALE_GATE",
@@ -48,7 +48,7 @@
   },
   "commercialCapabilities": {
     "status": "OK",
-    "generatedAt": "2026-09-09T10:13:14.712Z",
+    "generatedAt": "2026-09-09T10:23:12.724Z",
     "verificationLevel": "RUNTIME_VERIFIED",
     "accountCapabilities": {
       "authentication": "VERIFIED",
@@ -64,7 +64,7 @@
     "sessionAtRun": {
       "phase": "PRE",
       "localDate": "2026-09-09",
-      "localTime": "06:13:09",
+      "localTime": "06:23:08",
       "closedReason": null,
       "note": "Welche Befunde ueberhaupt moeglich waren, haengt an dieser Zeile - erweiterte Zeiten und Kursabstaende vor allem."
     }
@@ -79,7 +79,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 0.9,
+        "ageHours": 1,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -288,7 +288,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 0.1,
+        "ageHours": 0.2,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -500,7 +500,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 0.5,
+        "ageHours": 0.6,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
