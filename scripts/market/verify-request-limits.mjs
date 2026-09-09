@@ -35,7 +35,7 @@
    Ausfuehren:
      TIINGO_API_KEY=... node scripts/market/verify-request-limits.mjs
    ========================================================================= */
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -143,13 +143,62 @@ async function main() {
     bericht.evidence.push(Object.assign({ source: quelle, evidenceRank: rang }, ergebnis));
   }
 
+  /* Die Untergrenze wird GELESEN, nicht eingetippt.
+
+     Eine fest eingetragene Zahl war hier schon einmal der Fehler: sie
+     stimmte, als sie geschrieben wurde, und log danach. Der hoechste
+     Anfragestand eines Laufs ohne Ablehnung steht in den Gate-Berichten;
+     von dort kommt er. */
+  const gateDir = join(root, "quant", "data", "market", "scale");
+  let hoechsteOhneAblehnung = null;
+  let ablehnungGesehen = false;
+  const gequellen = [];
+  try {
+    for (const datei of readdirSync(gateDir).filter((f) => /^gate-.*\.json$/.test(f))) {
+      let g;
+      try { g = JSON.parse(readFileSync(join(gateDir, datei), "utf8")); } catch (err) { continue; }
+      const a = g && g.accounting;
+      if (!a || typeof a.requests !== "number") continue;
+      const po = a.providerObserved || {};
+      if (po.http429Seen) ablehnungGesehen = true;
+      /* Nur Laeufe zaehlen, in denen der Anbieter NICHTS abgelehnt hat.
+         Ein Lauf mit 429 sagt etwas anderes - naemlich wo die Grenze
+         liegt, nicht dass sie hoeher liegt. */
+      if (!po.http429Seen && (hoechsteOhneAblehnung === null || a.requests > hoechsteOhneAblehnung)) {
+        hoechsteOhneAblehnung = a.requests;
+      }
+      gequellen.push(`${datei}: ${a.requests} Anfragen, 429 ${po.http429Seen ? "ja" : "nein"}`);
+    }
+  } catch (err) { /* Kein Gate-Verzeichnis: dann eben ohne Beobachtung. */ }
+
+  beleg("observedRuns", 4, {
+    status: hoechsteOhneAblehnung === null ? "NO_RUNS_FOUND" : "LOWER_BOUND_ONLY",
+    highestRequestsInOneHourWithoutRefusal: hoechsteOhneAblehnung,
+    http429EverSeen: ablehnungGesehen,
+    runs: gequellen,
+    interpretation: hoechsteOhneAblehnung === null
+      ? "Keine Gate-Bilanz gefunden. Ohne Lauf keine Beobachtung."
+      : `In den bisherigen Laeufen wurden bis zu ${hoechsteOhneAblehnung} Anfragen in einer ` +
+        "Stunde gestellt, ohne dass Tiingo eine einzige abgelehnt haette. Belegt ist damit " +
+        `eine UNTERGRENZE: die tatsaechliche Grenze liegt bei mindestens ${hoechsteOhneAblehnung}/h. ` +
+        "Wo genau, sagt kein Lauf - dazu muesste einer abgelehnt werden.",
+    /* Nicht "source": das Feld traegt beleg() schon, und ein zweites
+       ueberschriebe die Quellenangabe des Belegs selbst. */
+    sourceFiles: "quant/data/market/scale/gate-*.json, accounting.requests und providerObserved"
+  });
+
+
   if (!apiKey) {
     console.log("  Kein TIINGO_API_KEY gesetzt. Es wird nichts abgerufen und nichts behauptet.");
     bericht.verdict = {
       status: "NOT_RUN",
       requestsPerHour: null,
       classification: "UNKNOWN",
-      note: "Ohne Zugang keine Messung. Der Befund der Vorphase bleibt unveraendert."
+      /* Die Untergrenze aus frueheren Laeufen gilt weiter - sie ist eine
+         Aussage ueber die Vergangenheit und braucht keinen Zugang. */
+      lowerBound: hoechsteOhneAblehnung,
+      note: "Ohne Zugang keine neue Messung. Die Untergrenze aus den vorhandenen " +
+            "Gate-Bilanzen steht in evidence[observedRuns]."
     };
     schreibe(bericht);
     return;
@@ -262,17 +311,6 @@ async function main() {
   /* Was die bisherigen Gate-Laeufe belegen: keine einzige Ablehnung des
      Anbieters. Das ist eine Untergrenze und keine Grenze - "mindestens
      so viel" ist etwas anderes als "genau so viel". */
-  beleg("observedRuns", 4, {
-    status: "LOWER_BOUND_ONLY",
-    highestRequestsInOneHourWithoutRefusal: 5000,
-    http429EverSeen: false,
-    interpretation: "In den Laeufen GATE_100/500/2000 und FULL_UNIVERSE wurden bis zu 5.000 " +
-      "Anfragen in einer Stunde gestellt, ohne dass Tiingo eine einzige abgelehnt haette. " +
-      "Bei 5.000 hat UNSER Budget gestoppt, nicht der Anbieter. Belegt ist damit: die " +
-      "tatsaechliche Grenze liegt bei mindestens 5.000/h. Wo genau, ist offen.",
-    source: "quant/data/market/scale/gate-*.json, accounting.providerObserved"
-  });
-
   /* ------------------------------------------------------------ Urteil */
 
   const kopfBeleg = bericht.evidence.find((e) => e.source === "responseHeaders");
@@ -299,13 +337,15 @@ async function main() {
       status: "UNKNOWN",
       classification: "PROVIDER_CONFIRMATION_REQUIRED",
       requestsPerHour: null,
-      lowerBound: 5000,
-      lowerBoundNote: "Mindestens 5.000/h gingen ohne Ablehnung durch. Das ist eine Untergrenze " +
-                      "aus Beobachtung, keine Zusage.",
+      lowerBound: hoechsteOhneAblehnung,
+      lowerBoundNote: hoechsteOhneAblehnung
+        ? `Mindestens ${hoechsteOhneAblehnung}/h gingen ohne Ablehnung durch. Das ist eine ` +
+          "Untergrenze aus Beobachtung, keine Zusage."
+        : "Keine Beobachtung vorhanden.",
       note: "Tiingo nennt sein Kontingent weder in einem Kontoendpunkt noch in Antwortkoepfen. " +
             "Die tatsaechliche Grenze dieses Kontos ist damit UNBEKANNT und nur beim Anbieter " +
-            "zu erfahren. Die 5.000 im Code bleiben SAFETY_CEILING - unsere Zahl. Sie darf " +
-            "nirgends als Tiingos Limit auftreten.",
+            "zu erfahren. Die Zahlen im Code bleiben SAFETY_CEILING - unsere Zahlen. Sie " +
+            "duerfen nirgends als Tiingos Limit auftreten.",
       nextStep: "Beim Anbieter nachfragen (Vertrag/Support). Bis dahin faehrt der Backfill " +
                 "ueber Checkpoints und ein ausdrueckliches eigenes Budget."
     };

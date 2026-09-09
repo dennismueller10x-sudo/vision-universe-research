@@ -300,7 +300,16 @@ const report = {
     confidenceThresholds: { highConfidenceFrom: ELLIOTT_HIGH,
                             mediumConfidenceFrom: ELLIOTT_MEDIUM },
     thresholdNote: "Die Schwellen ordnen den vorhandenen confidence-Wert der Engine in die " +
-                   "Faecher aus §18 ein. Sie veraendern die Engine nicht und rechnen nichts nach."
+                   "Faecher aus §18 ein. Sie veraendern die Engine nicht und rechnen nichts nach.",
+    /* Warum eine Zeile confidence 79 UND das Fach AMBIGUOUS tragen kann.
+       Ohne diese Erklaerung liest sich das wie ein Fehler, und der
+       naechste Leser "behebt" es in die falsche Richtung. */
+    precedenceNote: "Das eigene Urteil der Engine geht der Zahl vor. Meldet sie AMBIGUOUS " +
+                    "oder LOW_CONFIDENCE, bleibt es dabei - auch bei hoher confidence. Der " +
+                    "Wert bezieht sich dann auf die fuehrende von mehreren konkurrierenden " +
+                    "Zaehlungen, und eine mehrdeutige Zaehlung wird nicht dadurch eindeutig, " +
+                    "dass ein Zweig gut abschneidet. Die Schwellen greifen nur, wenn die " +
+                    "Engine selbst keinen Vorbehalt gemeldet hat."
   },
   performance: {
     totalRuntimeMs: runtimeMs,
