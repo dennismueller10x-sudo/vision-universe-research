@@ -36,10 +36,13 @@
     { id: "1D",  label: "1T",  days: 1,    source: "intraday" },
     { id: "5D",  label: "5T",  days: 5,    source: "intraday" },
     { id: "1M",  label: "1M",  days: 31,   source: "eod" },
+    { id: "3M",  label: "3M",  days: 93,   source: "eod" },
     { id: "6M",  label: "6M",  days: 186,  source: "eod" },
     { id: "YTD", label: "YTD", ytd: true,  source: "eod" },
     { id: "1Y",  label: "1J",  days: 366,  source: "eod" },
+    { id: "3Y",  label: "3J",  days: 1096, source: "eod" },
     { id: "5Y",  label: "5J",  days: 1827, source: "eod" },
+    { id: "10Y", label: "10J", days: 3653, source: "eod" },
     { id: "MAX", label: "Max", all: true,  source: "eod" }
   ];
 

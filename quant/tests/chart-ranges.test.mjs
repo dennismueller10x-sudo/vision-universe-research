@@ -119,7 +119,7 @@ test("R8 · Eine kurze Reihe blendet die grossen Fenster nicht aus", () => {
   // Reihe von 60 Tagen zeigt eben diese 60 Tage - das ist ehrlich, solange
   // die Achse es sagt.
   const bar = Ranges.rangeBar({ eod: tagesreihe(60) }, { gates: AUS, today: HEUTE });
-  assert.equal(bar.length, 8);
+  assert.equal(bar.length, 11);
   const fuenfJahre = bar.find((r) => r.id === "5Y");
   assert.equal(fuenfJahre.available, true);
   const tag = bar.find((r) => r.id === "1D");
@@ -196,6 +196,26 @@ test("R14 · Ein unlesbarer Stichtag entfernt nicht einfach das Fenster", () => 
   assert.equal(res.ok, false);
   assert.equal(res.reason, "invalidDate");
   assert.equal(res.bars.length, 0);
+});
+
+test("R16 · 3M, 3J und 10J sind vorhanden und in die Staffelung eingereiht", () => {
+  const data = { eod: tagesreihe(5000) };
+  const ids = ["1M", "3M", "6M", "1Y", "3Y", "5Y", "10Y", "MAX"];
+  const laengen = ids.map((id) => Ranges.selectRange(id, data, { gates: AUS, today: HEUTE }).bars.length);
+  for (let i = 1; i < laengen.length; i++) {
+    assert.ok(laengen[i] >= laengen[i - 1],
+      `${ids[i]} (${laengen[i]}) ist kleiner als ${ids[i - 1]} (${laengen[i - 1]})`);
+  }
+  assert.equal(laengen[laengen.length - 1], 5000, "MAX muss die gesamte vorhandene Historie zeigen");
+});
+
+test("R17 · 10J zeigt bei kuerzerer Historie die gesamte vorhandene Historie - kein Hochrechnen, kein Clamping", () => {
+  // Nur ~3 Jahre Historie vorhanden: 10J darf weder scheitern noch auf
+  // Phantomdaten zurueckgreifen, sondern muss einfach alles zeigen, was da ist.
+  const data = { eod: tagesreihe(800) };
+  const res = Ranges.selectRange("10Y", data, { gates: AUS, today: HEUTE });
+  assert.equal(res.ok, true);
+  assert.equal(res.bars.length, 800, "10J muss die vollstaendige vorhandene Historie liefern, nicht mehr und nicht weniger");
 });
 
 test("R15 · Das Fenster endet am Stichtag, nicht am letzten Bar", () => {

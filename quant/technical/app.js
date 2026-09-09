@@ -224,7 +224,7 @@
       el("p", { class: "q-kicker", text: s.type === "PRIMARY" ? "Primary Scenario" : s.type === "ALTERNATIVE" ? "Alternative Scenario" : "Bear / Invalidation Scenario" }),
       el("h3", { class: "q-h3", text: scenarioHeadline(s) }),
       el("span", { class: "q-chip", text: label(s.status) }),
-      C.definitionList(rows.map(function (r) { return { term: r[0], value: r[1] }; })),
+      C.definitionList(rows),
       s.supportingEvidence && s.supportingEvidence.length ? el("details", { class: "q-disclosure" }, [el("summary", { text: "Supporting Evidence (" + s.supportingEvidence.length + ") · Conflicting (" + s.conflictingEvidence.length + ")" }), evidenceList(s.supportingEvidence, "good"), evidenceList(s.conflictingEvidence, "poor")]) : null
     ]);
   }
@@ -256,13 +256,13 @@
     var waves = p.waves.map(function (w) { return el("span", { class: "q-chip q-wave q-wave--" + w.status.toLowerCase(), title: (w.toTime || "") + (w.confirmedAt ? " · bestaetigt " + w.confirmedAt : ""), text: w.label + " " + (w.toPrice ? fmtP(w.toPrice, prec) : "") }); });
     var zones = p.projection.zones.map(function (z) { return el("li", { text: "Welle " + z.label + ": " + zoneText(z, prec) + " (" + z.sources.length + " Quellen)" }); });
     var rows = [
-      { term: "Status", value: label(e.status) + (e.reason ? " · " + label(e.reason) : "") },
-      { term: "Degree", value: e.degreeIndex + " (Pivot-Skala " + e.degreeScale + ", strukturell, kein Kalenderzeitraum)" },
-      { term: "Historical Wave Map", value: hist.patterns.length + " abgeschlossene Muster (" + hist.patterns.map(function (x) { return x.type; }).join(", ") + "), Coverage " + S.num(hist.coverage * 100, 0) + " % der signifikanten Pivots" },
-      { term: "Aktuelle Welle", value: p.currentWave ? "Welle " + p.currentWave.label + " (" + p.currentWave.patternType + ") — " + label(p.currentWave.status) + (p.currentWave.note ? " · " + p.currentWave.note : "") : "–" },
-      { term: "Invalidation", value: p.invalidation ? p.invalidation.statement + " (Regel " + p.invalidation.ruleId + ")" : "keine — daher keine Projektion" },
-      { term: "Elliott Confidence", value: e.confidence + "/100 Method Fit (Fit " + S.num(e.fit * 100, 0) + ", Stabilitaet " + S.num(e.stability * 100, 0) + ") — keine Wahrscheinlichkeit" },
-      { term: "Alternative Count", value: e.alternativeCount && e.alternativeCount.currentWave ? "Welle " + e.alternativeCount.currentWave.label + " (" + e.alternativeCount.currentWave.patternType + ") — per Toggle im Chart" : "keine materiell andere valide Alternative" }
+      ["Status", label(e.status) + (e.reason ? " · " + label(e.reason) : "")],
+      ["Degree", e.degreeIndex + " (Pivot-Skala " + e.degreeScale + ", strukturell, kein Kalenderzeitraum)"],
+      ["Historical Wave Map", hist.patterns.length + " abgeschlossene Muster (" + hist.patterns.map(function (x) { return x.type; }).join(", ") + "), Coverage " + S.num(hist.coverage * 100, 0) + " % der signifikanten Pivots"],
+      ["Aktuelle Welle", p.currentWave ? "Welle " + p.currentWave.label + " (" + p.currentWave.patternType + ") — " + label(p.currentWave.status) + (p.currentWave.note ? " · " + p.currentWave.note : "") : "–"],
+      ["Invalidation", p.invalidation ? p.invalidation.statement + " (Regel " + p.invalidation.ruleId + ")" : "keine — daher keine Projektion"],
+      ["Elliott Confidence", e.confidence + "/100 Method Fit (Fit " + S.num(e.fit * 100, 0) + ", Stabilitaet " + S.num(e.stability * 100, 0) + ") — keine Wahrscheinlichkeit"],
+      ["Alternative Count", e.alternativeCount && e.alternativeCount.currentWave ? "Welle " + e.alternativeCount.currentWave.label + " (" + e.alternativeCount.currentWave.patternType + ") — per Toggle im Chart" : "keine materiell andere valide Alternative"]
     ];
     return C.section("Elliott Wave (Beta)", "Regelbasierte strukturale Hypothesenmaschine: erst die Vergangenheit erklaeren (Labels an echten Pivots), dann die laufende Welle, erst danach Projektion. Harte Regeln sind Gates, Guidelines ranken.", el("div", { class: "q-card" }, [
       C.definitionList(rows),
@@ -284,14 +284,14 @@
       ["Support / Resistance", [["Naechste Unterstuetzung", sr.nearestSupport ? zoneText(sr.nearestSupport, prec) + " (Staerke " + S.num(sr.nearestSupport.strength, 0) + ", " + sr.nearestSupport.touchCount + " Touches)" : "–"], ["Naechster Widerstand", sr.nearestResistance ? zoneText(sr.nearestResistance, prec) + " (Staerke " + S.num(sr.nearestResistance.strength, 0) + ", " + sr.nearestResistance.touchCount + " Touches)" : "–"], ["Zonen", sr.zones.length + " aktiv"], ["Fibonacci", b.fibonacci.currentRetracement === null ? "–" : "Retracement " + pct(b.fibonacci.currentRetracement) + (b.fibonacci.inRetracementPocket ? " (38.2–61.8)" : "") + " · " + b.fibonacci.clusters.length + " Cluster (auxiliary)"]]]
     ];
     return C.section("Technische Details", "Layer 3/4: Zustaende der unabhaengigen Engines und Rohmetriken. Fehlende Werte werden als fehlend ausgewiesen.", el("div", { class: "q-grid q-grid--3" }, blocks.map(function (bl) {
-      return el("div", { class: "q-card q-card--flat" }, [el("p", { class: "q-kicker", text: bl[0] }), C.definitionList(bl[1].map(function (r) { return { term: r[0], value: r[1] }; }))]);
+      return el("div", { class: "q-card q-card--flat" }, [el("p", { class: "q-kicker", text: bl[0] }), C.definitionList(bl[1])]);
     })));
   }
 
   function evidenceSection(b) {
     var c = b.confluence;
     var fams = Object.keys(c.families).map(function (k) { var f = c.families[k]; return el("div", { class: "q-tech-family" + (f.value === null ? " is-na" : f.value > 0.2 ? " is-pos" : f.value < -0.2 ? " is-neg" : "") }, [el("b", { text: k.replace(/_/g, " ") }), el("span", { text: f.value === null ? "n/a" : S.signed(f.value, 2) })]); });
-    var contrib = Object.keys(b.opportunityScore.contributions).map(function (k) { return { term: k.replace(/_/g, " "), value: S.num(b.opportunityScore.contributions[k], 1) + " / " + b.opportunityScore.maxContribution[k] }; });
+    var contrib = Object.keys(b.opportunityScore.contributions).map(function (k) { return [k.replace(/_/g, " "), S.num(b.opportunityScore.contributions[k], 1) + " / " + b.opportunityScore.maxContribution[k]]; });
     return C.section("Confluence und Score-Zerlegung", "Familienbasiert: RSI, MACD und Moving Averages erhalten keine Extra-Votes. Fibonacci/Elliott sind gekappt (max. 10 Punkte).", el("div", { class: "q-grid q-grid--2" }, [
       el("div", { class: "q-card q-card--flat" }, [el("p", { class: "q-kicker", text: "Signal-Familien (−1 … +1)" }), el("div", { class: "q-tech-families" }, fams), el("p", { class: "q-note", text: "Confluence " + S.num(c.confluenceScore, 0) + "/100 · Konfliktabschlag " + S.num(c.conflictPenalty * 100, 0) + " % · Coverage " + S.num(c.coverage * 100, 0) + " %" })]),
       el("div", { class: "q-card q-card--flat" }, [el("p", { class: "q-kicker", text: "Technical Opportunity Score " + S.num(b.opportunityScore.score, 0) }), C.definitionList(contrib), el("p", { class: "q-note", text: b.opportunityScore.disclaimer })])
@@ -300,10 +300,10 @@
 
   function methodologySection(file, b, meta) {
     var prov = [
-      { term: "Data Cutoff", value: S.formatDate(b.dataCutoff) }, { term: "Data Version", value: b.dataVersion }, { term: "Data Hash", value: b.dataHash },
-      { term: "Price Series", value: b.priceSeriesType + " (" + b.source + ")" }, { term: "Engine Bundle", value: b.bundleVersion }, { term: "Methodology", value: b.methodologyVersion + " · " + (b.elliottMethodologyVersion || "–") },
-      { term: "Parameters Hash", value: b.parametersHash }, { term: "Snapshot", value: file.snapshotId }, { term: "Engine Versions", value: Object.keys(b.engineVersions).map(function (k) { return k + " " + b.engineVersions[k]; }).join(" · ") },
-      { term: "Repainting Policies", value: Object.keys(b.repaintingPolicies).filter(function (k) { return b.repaintingPolicies[k]; }).map(function (k) { return k + ": " + b.repaintingPolicies[k]; }).join(" · ") }
+      ["Data Cutoff", S.formatDate(b.dataCutoff)], ["Data Version", b.dataVersion], ["Data Hash", b.dataHash],
+      ["Price Series", b.priceSeriesType + " (" + b.source + ")"], ["Engine Bundle", b.bundleVersion], ["Methodology", b.methodologyVersion + " · " + (b.elliottMethodologyVersion || "–")],
+      ["Parameters Hash", b.parametersHash], ["Snapshot", file.snapshotId], ["Engine Versions", Object.keys(b.engineVersions).map(function (k) { return k + " " + b.engineVersions[k]; }).join(" · ")],
+      ["Repainting Policies", Object.keys(b.repaintingPolicies).filter(function (k) { return b.repaintingPolicies[k]; }).map(function (k) { return k + ": " + b.repaintingPolicies[k]; }).join(" · ")]
     ];
     return C.section("Methodik und Provenienz", "Kein Ergebnis ohne Herkunft. Jede Projektion ist auf Daten, Pivots, Struktur, Regeln, Engine- und Methodikversion zurueckfuehrbar.", el("div", {}, [
       C.disclosure("Provenienz dieses Analysestands", [C.definitionList(prov)]),
