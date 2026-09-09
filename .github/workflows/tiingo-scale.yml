@@ -224,14 +224,15 @@ jobs:
                 console.log("");
                 console.log(r.liveChartReason);
                 console.log("");
-                console.log("| Messung | Stufe | Verbindung | Ereignisse | Ereignisse/s | Updates in der Kerze |");
-                console.log("|---|---|---|---|---|---|");
+                console.log("| Messung | Stufe | Verbindung | Ereignisse | Ereignisse/s | Abstand median (ms) | Updates in einer Kerze |");
+                console.log("|---|---|---|---|---|---|---|");
                 for (const m of r.measurements) {
-                  if (!m.connection) { console.log("| " + m.scope + " | - | - | - | - | - |"); continue; }
+                  if (!m.connection) { console.log("| " + m.scope + " | - | - | - | - | - | - |"); continue; }
                   console.log("| " + m.scope + " | " + m.thresholdLevel + " | " +
                     (m.connection.opened ? "offen" : "nein") + " | " + m.events.count + " | " +
                     (m.events.perSecond === null ? "-" : m.events.perSecond) + " | " +
-                    m.candle.ticksInBucket + " |");
+                    (m.events.gapMs.median === null ? "-" : m.events.gapMs.median) + " | " +
+                    m.candle.maxTicksInAnyBucket + " |");
                 }
               '
             else

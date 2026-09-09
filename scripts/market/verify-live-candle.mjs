@@ -119,7 +119,7 @@ function measureStream(opts) {
     let messages = 0, adminMessages = 0, subscriptionAck = null, opened = false;
     let openedAt = null, firstEventAt = null, lastEventAt = null;
     let socketError = null, closeCode = null, closeReason = null;
-    let candleTicks = 0, candleBucket = null;
+    let candleTicks = 0, candleBucket = null, maxTicksInAnyBucket = 0;
     let done = false;
 
     const transport = Transport.createWebSocketTransport({
@@ -213,6 +213,7 @@ function measureStream(opts) {
         candle: {
           bucket: running ? running.bucket : null,
           ticksInBucket: candleTicks,
+          maxTicksInAnyBucket: maxTicksInAnyBucket,
           barsFormed: series.length(),
           /* Die Kerze in relativen Groessen: dass sie sich bewegt hat,
              ohne zu sagen, wo. Genau das ist der Nachweis aus §6. */
@@ -231,7 +232,7 @@ function measureStream(opts) {
                         rejectedFuture: stats.rejectedFuture,
                         rejectedConfirmed: stats.rejectedConfirmed,
                         rejectedMalformed: stats.rejectedMalformed },
-          multipleUpdatesInSameCandle: candleTicks >= MIN_TICKS_IN_CANDLE
+          multipleUpdatesInSameCandle: maxTicksInAnyBucket >= MIN_TICKS_IN_CANDLE
         }
       }, extra || {}));
     };
@@ -265,8 +266,14 @@ function measureStream(opts) {
           currency: "USD", source: "tiingo", dataClass: "REALTIME_STREAM"
         });
         const after = series.last();
+        /* Beim Minutenwechsel faengt die Zaehlung von vorn an. Gemeldet
+           wird deshalb zusaetzlich das Maximum ueber alle Minuten der
+           Messung: eine Messung, die kurz nach einem Minutenwechsel
+           endet, wuerde sonst eine gut gefuellte Kerze als duenn
+           ausweisen - ein Messfehler, kein Befund. */
         if (after && after.bucket !== candleBucket) { candleBucket = after.bucket; candleTicks = 0; }
         if (r.action !== "rejected" && r.action !== "ignored") candleTicks++;
+        if (candleTicks > maxTicksInAnyBucket) maxTicksInAnyBucket = candleTicks;
         void before;
       },
       onError: function (err) {
@@ -306,7 +313,7 @@ async function main() {
       console.log(`    ${r.result}  Verbindung ${r.connection && r.connection.opened ? "offen" : "nicht zustande"}` +
                   `, ${r.events ? r.events.count : 0} Kursereignisse` +
                   (r.events && r.events.perSecond !== null ? `, ${r.events.perSecond}/s` : "") +
-                  (r.candle ? `, Kerze mit ${r.candle.ticksInBucket} Update(s)` : ""));
+                  (r.candle ? `, Kerze mit bis zu ${r.candle.maxTicksInAnyBucket} Update(s)` : ""));
     }
 
     /* Nur wenn die erste Messung ueberhaupt etwas geliefert hat, lohnt
