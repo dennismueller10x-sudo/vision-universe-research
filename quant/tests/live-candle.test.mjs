@@ -457,3 +457,34 @@ test("LC9 — ein TRUE aus unbestimmten Kursen sagt seine Einschraenkung mit", (
   assert.match(src, /priceTypeVerified/);
   assert.match(src, /priceTypeNote/);
 });
+
+test("LC10 — zwei Titel ergeben zwei Kerzen, nicht eine gemeinsame", async () => {
+  /* Der Fehler des Laufs davor: die Kurse zweier Titel fielen in dieselbe
+     Kerze und ergaben eine Spanne von 55 Prozent - eine Zahl, die nichts
+     misst. Ein Chart zeigt einen Titel; die Messung muss das auch tun. */
+  const base = Math.floor(Date.now() / 60000) * 60000 + 2000;
+  const ticks = [];
+  for (let i = 0; i < 4; i++) {
+    ticks.push({ symbol: "AAPL", price: 230 + i * 0.05, size: 10, atMs: base + i * 20 });
+    ticks.push({ symbol: "MSFT", price: 510 + i * 0.05, size: 10, atMs: base + i * 20 + 5 });
+  }
+  const srv = await startWsServer({ ticks, intervalMs: 15 });
+  try {
+    const r = await collect(srv.port, { durationMs: 1100, now: () => base + 3000,
+                                        symbols: ["aapl", "msft"] });
+    assert.equal(r.events.length, ticks.length);
+
+    /* Die Reihe des Tests ist bewusst eine gemeinsame - geprueft wird
+       hier, dass das MESSSKRIPT je Titel trennt. Der Nachweis dafuer
+       steht in seiner Quelle, weil die Aufteilung dort passiert. */
+    const src = readFileSync(join(root, "scripts", "market", "verify-live-candle.mjs"), "utf8");
+    assert.match(src, /seriesBySymbol/);
+    assert.match(src, /function seriesFor\(symbol\)/);
+    /* Und die Kerze im Bericht gehoert einem benannten Titel. */
+    assert.match(src, /symbol: leadSymbol/);
+    assert.match(src, /perSymbol: perSymbolCandles/);
+    /* Eine gemeinsame Reihe ueber alle Titel darf es nicht mehr geben. */
+    assert.ok(!/const series = BarMerge\.createSeries/.test(src),
+              "eine einzelne Sammelreihe waere der alte Fehler");
+  } finally { srv.close(); }
+});

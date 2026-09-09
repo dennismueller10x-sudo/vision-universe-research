@@ -108,11 +108,24 @@ function measureStream(opts) {
       return;
     }
 
-    /* Die Minutenkerze. Dieselbe Engine wie im Chart, Zeitraster 1m. */
-    const series = BarMerge.createSeries({
-      timeframe: "1m", interval: "1m", calendar, exchange: "XNYS",
-      adjustmentStatus: null
-    });
+    /* Eine Minutenkerze JE TITEL. Dieselbe Engine wie im Chart,
+       Zeitraster 1m.
+
+       Eine gemeinsame Reihe fuer mehrere Titel war der Fehler des Laufs
+       davor: die Kurse von AAPL und MSFT fielen in dieselbe Kerze und
+       ergaben eine Spanne von 55 Prozent - eine Zahl, die nichts misst.
+       Ein Chart zeigt einen Titel; die Messung muss das auch tun. */
+    const seriesBySymbol = new Map();
+    function seriesFor(symbol) {
+      const key = String(symbol || symbols[0] || "?").toUpperCase();
+      if (!seriesBySymbol.has(key)) {
+        seriesBySymbol.set(key, BarMerge.createSeries({
+          timeframe: "1m", interval: "1m", calendar, exchange: "XNYS",
+          adjustmentStatus: null
+        }));
+      }
+      return seriesBySymbol.get(key);
+    }
 
     const events = [];          /* {atMs, symbol, hasTimestamp, lagS} */
     const perSymbol = {};
@@ -163,7 +176,11 @@ function measureStream(opts) {
     }
     let openedAt = null, firstEventAt = null, lastEventAt = null;
     let socketError = null, closeCode = null, closeReason = null;
-    let candleTicks = 0, candleBucket = null, maxTicksInAnyBucket = 0;
+    /* Zaehler je Titel, damit ein zweiter Titel den ersten nicht
+       zuruecksetzt. */
+    const candleTicks = new Map();
+    const candleBucket = new Map();
+    const maxTicks = new Map();
     let done = false;
 
     const transport = Transport.createWebSocketTransport({
@@ -232,8 +249,29 @@ function measureStream(opts) {
       const gaps = [];
       for (let i = 1; i < events.length; i++) gaps.push(events[i].atMs - events[i - 1].atMs);
       const lags = events.map((e) => e.lagS).filter((v) => v !== null);
-      const running = series.last();
-      const stats = series.stats();
+      /* Der Titel mit den meisten Ereignissen steht fuer die Kerze; die
+         uebrigen stehen daneben. Eine Sammelkerze ueber mehrere Titel
+         gibt es nicht mehr. */
+      let leadSymbol = null, leadCount = -1;
+      for (const [sym, count] of Object.entries(perSymbol)) {
+        if (count > leadCount) { leadCount = count; leadSymbol = sym; }
+      }
+      const leadSeries = leadSymbol && seriesBySymbol.has(leadSymbol)
+        ? seriesBySymbol.get(leadSymbol) : null;
+      const running = leadSeries ? leadSeries.last() : null;
+      const stats = leadSeries ? leadSeries.stats()
+        : { ticks: 0, accepted: 0, rejectedFuture: 0, rejectedConfirmed: 0, rejectedMalformed: 0 };
+      const maxTicksInAnyBucket = leadSymbol ? (maxTicks.get(leadSymbol) || 0) : 0;
+      const perSymbolCandles = {};
+      for (const [sym, ser] of seriesBySymbol.entries()) {
+        const last = ser.last();
+        perSymbolCandles[sym] = {
+          bars: ser.length(),
+          ticksInLastBar: candleTicks.get(sym) || 0,
+          maxTicksInAnyBar: maxTicks.get(sym) || 0,
+          rangeRelative: last && last.open ? Math.round((last.high - last.low) / last.open * 1e6) / 1e6 : null
+        };
+      }
 
       const phaseAtEnd = MarketHours.sessionAt(Date.now(), { calendar, exchange: "XNYS" }).phase;
       resolve(Object.assign({
@@ -289,10 +327,12 @@ function measureStream(opts) {
           consecutive: events.length >= MIN_EVENTS_FOR_STREAM
         },
         candle: {
+          symbol: leadSymbol,
           bucket: running ? running.bucket : null,
-          ticksInBucket: candleTicks,
+          ticksInBucket: leadSymbol ? (candleTicks.get(leadSymbol) || 0) : 0,
+          perSymbol: perSymbolCandles,
           maxTicksInAnyBucket: maxTicksInAnyBucket,
-          barsFormed: series.length(),
+          barsFormed: leadSeries ? leadSeries.length() : 0,
           /* Die Kerze in relativen Groessen: dass sie sich bewegt hat,
              ohne zu sagen, wo. Genau das ist der Nachweis aus §6. */
           hasOpen: !!(running && running.open !== null),
@@ -351,26 +391,33 @@ function measureStream(opts) {
           ? Math.round((at - new Date(tick.timestamp).getTime()) / 1000) : null;
         events.push({ atMs: at, symbol: tick.symbol || null,
                       hasTimestamp: !!tick.timestamp, lagS });
-        const key = (tick.symbol || "?").toUpperCase();
+        const key = (tick.symbol || symbols[0] || "?").toUpperCase();
         perSymbol[key] = (perSymbol[key] || 0) + 1;
 
-        /* Die Kerze: genau so, wie das Chart sie bauen wuerde. */
-        const before = series.last();
-        const r = series.applyTick({
+        /* Die Kerze: genau so, wie das Chart sie bauen wuerde - und je
+           Titel getrennt. */
+        const s2 = seriesFor(tick.symbol);
+        const r = s2.applyTick({
           price: tick.price, size: tick.size,
           timestamp: tick.timestamp, receivedAt: at,
           currency: "USD", source: "tiingo", dataClass: "REALTIME_STREAM"
         });
-        const after = series.last();
+        const after = s2.last();
         /* Beim Minutenwechsel faengt die Zaehlung von vorn an. Gemeldet
            wird deshalb zusaetzlich das Maximum ueber alle Minuten der
            Messung: eine Messung, die kurz nach einem Minutenwechsel
            endet, wuerde sonst eine gut gefuellte Kerze als duenn
            ausweisen - ein Messfehler, kein Befund. */
-        if (after && after.bucket !== candleBucket) { candleBucket = after.bucket; candleTicks = 0; }
-        if (r.action !== "rejected" && r.action !== "ignored") candleTicks++;
-        if (candleTicks > maxTicksInAnyBucket) maxTicksInAnyBucket = candleTicks;
-        void before;
+        if (after && after.bucket !== candleBucket.get(key)) {
+          candleBucket.set(key, after.bucket);
+          candleTicks.set(key, 0);
+        }
+        if (r.action !== "rejected" && r.action !== "ignored") {
+          candleTicks.set(key, (candleTicks.get(key) || 0) + 1);
+        }
+        if ((candleTicks.get(key) || 0) > (maxTicks.get(key) || 0)) {
+          maxTicks.set(key, candleTicks.get(key) || 0);
+        }
       },
       onError: function (err) {
         socketError = { reason: err.reason, fatal: !!err.fatal };
