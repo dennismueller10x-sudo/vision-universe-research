@@ -276,23 +276,51 @@ async function main() {
         console.log(`    Extended     FEHLER (${ext.reason})`);
       } else {
         const eb = ext.data.bars || [];
+        /* Die Phasennamen kommen aus der Engine und stehen nicht als
+           Zeichenkette hier. Der erste Lauf dieses Nachweises verglich
+           gegen "PRE_MARKET"/"AFTER_HOURS"; MarketHours nennt sie "PRE"
+           und "AFTER". Das Ergebnis war ein ABSENT fuer erweiterte
+           Zeiten, obwohl der Anbieter 536 statt 390 Bars geliefert hatte -
+           eine Faehigkeit, die nur an einer Namensverwechslung
+           gescheitert ist. Deshalb hier die Konstanten der Engine. */
+        const EXTENDED_PHASES = MarketHours.PHASES.filter(
+          (p) => p !== "REGULAR" && p !== "CLOSED");
         let outside = 0;
+        const phaseCounts = {};
         for (const b of eb) {
           if (!b.timestamp) continue;
           const phase = MarketHours.sessionAt(new Date(b.timestamp).getTime(),
                                               { calendar, exchange: "XNYS" }).phase;
-          if (phase === "PRE_MARKET" || phase === "AFTER_HOURS") outside++;
+          phaseCounts[phase] = (phaseCounts[phase] || 0) + 1;
+          if (EXTENDED_PHASES.indexOf(phase) !== -1) outside++;
         }
-        record(symbol, "extendedHours", outside > 0 ? "PASSED" : "ABSENT", {
+        /* PASSED, wenn ENTWEDER Bars ausserhalb der regulaeren Sitzung
+           liegen ODER die Anfrage mit afterHours mehr Bars liefert als
+           ohne. Das zweite Kriterium ist das robustere: es misst, was der
+           Anbieter zusaetzlich schickt, ohne eine Zeitzonenrechnung
+           dazwischen. */
+        const extendedProven = outside > 0 || (eb.length > ib.length);
+        record(symbol, "extendedHours", extendedProven ? "PASSED" : "ABSENT", {
           requested: ext.data.extendedHoursRequested,
           barsWithExtendedHoursTimestamp: outside,
           barsTotal: eb.length,
           barsWithoutExtended: ib.length,
+          /* Der zweite, unabhaengige Beleg: mehr Bars mit afterHours=true
+             als ohne. Er haengt an keiner Kalenderrechnung und faellt
+             deshalb auch dann nicht aus, wenn die Sitzungszuordnung
+             einmal danebenliegt. */
+          additionalBarsWithExtendedFlag: eb.length - ib.length,
+          barsByPhase: phaseCounts,
+          extendedPhases: EXTENDED_PHASES,
           interpretation: outside > 0
             ? "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
-            : "Keine Bar ausserhalb der regulaeren Sitzung. Das kann am Zeitfenster des " +
-              "Laufs liegen und ist deshalb ABSENT, nicht FAILED. Ein Lauf in der " +
-              "vorboerslichen oder nachboerslichen Phase entscheidet es."
+            : eb.length > ib.length
+              ? "Die Anfrage mit afterHours liefert " + (eb.length - ib.length) + " Bars mehr " +
+                "als die ohne. Der Zugang bedient erweiterte Zeiten; die Sitzungszuordnung " +
+                "der Zeitstempel hat dabei keine Bar ausserhalb der regulaeren Sitzung " +
+                "erkannt - das ist getrennt zu betrachten."
+              : "Keine zusaetzliche Bar und keine ausserhalb der regulaeren Sitzung. Das kann " +
+                "am Zeitfenster des Laufs liegen und ist deshalb ABSENT, nicht FAILED."
         });
         console.log(`    Intraday     ${ib.length} Bars, erweitert ${eb.length} ` +
                     `(davon ${outside} ausserhalb der Sitzung)`);

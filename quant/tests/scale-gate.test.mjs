@@ -441,3 +441,108 @@ test("SG6 — Faktoren, Screener, Technical und Gesundheitsbericht laufen auf de
     provider.server.close();
   }
 });
+
+test("SG7 — ein an der Canary-Regression abgebrochener Lauf laesst sich berichten", async () => {
+  /* Der Bericht eines abgebrochenen Laufs traegt keine Bilanz: das
+     Gate-Universum wurde nie angefasst. Der Gesundheitsbericht muss genau
+     das abbilden koennen. Beim ersten echten Lauf ist er daran
+     gescheitert - und hat damit die Auskunft verhindert, fuer die er
+     gebaut ist. */
+  const dir = sandbox();
+  const dataRoot = join(dir, "dataroot");
+  mkdirSync(join(dataRoot, "market", "scale"), { recursive: true });
+  writeFileSync(join(dataRoot, "market", "scale", "gate-GATE_100.json"), JSON.stringify({
+    generatedAt: new Date().toISOString(), gate: "GATE_100", provider: "tiingo",
+    verdict: "FAIL", verdictReason: "canaryRegression",
+    message: "Canary-Regression vor dem Gate.",
+    requested: 100,
+    canary: { symbols: ["AAPL"], passed: 0, of: 1, passRate: 0, regression: true,
+              details: [{ ticker: "AAPL", ok: false, failures: ["qualityFail:stale_last_bar"],
+                          status: "FAIL", bars: 9238, first: "1990-01-02", last: "2026-08-01" }] },
+    runtimeMs: 1234
+  }, null, 2));
+
+  const healthDir = join(dir, "health");
+  await run("scripts/market/build-health-report.mjs", ["--data-root", dataRoot, "--out", healthDir]);
+
+  const health = JSON.parse(readFileSync(join(healthDir, "health.json"), "utf8"));
+  assert.equal(health.gates.GATE_100.gate.verdict, "FAIL");
+  assert.equal(health.gates.GATE_100.marketData.status, "ABORTED");
+  assert.equal(health.gates.GATE_100.marketData.reason, "canaryRegression");
+  assert.equal(health.gates.GATE_100.canary.regression, true);
+  /* Kein bestandenes Gate heisst nicht betriebsbereit - und der Grund
+     muss den Abbruch benennen, nicht das fehlende Universum. */
+  assert.equal(health.overall, "NOT_READY");
+  assert.equal(health.latestPassedGate, null);
+  /* Was nicht gelaufen ist, steht als MISSING da - nicht als 0 (§30). */
+  assert.equal(health.gates.GATE_100.factors.status, "MISSING");
+  assert.equal(health.gates.GATE_100.technical.status, "MISSING");
+});
+
+test("SG8 — die erzeugten Artefakte kommen durch die Hygienepruefung", async () => {
+  /* Die Regression, die den ersten echten Lauf angehalten hat: der
+     Gesundheitsbericht fuehrte eine Anzahl unter dem Feldnamen "sma200",
+     der Technical-Bericht eine Schwelle unter "high". Beide Zahlen sind
+     harmlos und beide sind in einem ausgelieferten Artefakt von einem
+     Kurs nicht zu unterscheiden - die Pruefung hat sie zu Recht
+     angehalten.
+
+     Dieser Test baut die Artefakte und laesst die echte Pruefung darauf
+     los. Er faengt damit nicht nur diesen einen Fall, sondern jeden
+     kuenftigen Feldnamen, der dieselbe Zweideutigkeit hat. */
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const cache = join(dir, "cache");
+    const tickers = ["AAPL", "MSFT", "NVDA", "JPM", "XOM", "SPY"];
+    writeFileSync(join(scaleDir, "universe-GATE_100.json"), JSON.stringify({
+      gate: "GATE_100", targetSize: 100, actualSize: tickers.length, method: "TEST",
+      bySector: {}, byExchange: {},
+      securities: tickers.map((t) => ({
+        securityId: "ref_" + t, ticker: t, exchange: "NASDAQ", currency: "USD",
+        provider: "tiingo", providerSymbol: t, sector: "Technology", sectorStatus: "CURATED"
+      }))
+    }));
+
+    const env = { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` };
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache], env);
+
+    /* Ein Baum in der Form des Repositories - die Pruefung erwartet genau
+       diese Pfade und darf dafuer nicht in quant/data/ schreiben muessen. */
+    const tree = join(dir, "tree");
+    const data = join(tree, "quant", "data");
+    mkdirSync(join(tree, "quant", "config"), { recursive: true });
+    mkdirSync(join(data, "market"), { recursive: true });
+    mkdirSync(join(data, "technical"), { recursive: true });
+    cpSync(join(root, "quant", "config", "development-preview.json"),
+           join(tree, "quant", "config", "development-preview.json"));
+    cpSync(scaleDir, join(data, "market", "scale"), { recursive: true });
+
+    await run("scripts/market/build-market-factors.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+       "--out", join(data, "market", "factors"), "--benchmark", "SPY"]);
+    await run("scripts/technical/run-technical-scale.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+       "--out", join(data, "technical", "scale"), "--benchmark", "SPY"]);
+    await run("scripts/market/build-health-report.mjs",
+      ["--data-root", data, "--out", join(data, "market", "health")]);
+
+    /* Die echte Pruefung, auf dem echten Baum. Kein Nachbau. */
+    const out = await run("scripts/market/assert-public-data-hygiene.mjs", [`--root=${tree}`]);
+    assert.match(out, /no commercial-provider raw bars/);
+
+    /* Gegenprobe: ein echtes Kursniveau muss sie anhalten - sonst
+       prueft der Test oben nur, dass nichts passiert. */
+    const factorsFile = join(data, "market", "factors", "factors-GATE_100.json");
+    const payload = JSON.parse(readFileSync(factorsFile, "utf8"));
+    payload.securities[0].values.sma200 = 184.2;
+    writeFileSync(factorsFile, JSON.stringify(payload));
+    await assert.rejects(
+      () => run("scripts/market/assert-public-data-hygiene.mjs", [`--root=${tree}`]),
+      "ein durchgereichtes Kursniveau muss die Pruefung anhalten");
+  } finally {
+    provider.server.close();
+  }
+});

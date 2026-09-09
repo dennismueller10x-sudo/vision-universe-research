@@ -305,9 +305,13 @@ jobs:
         if: always()
         run: node scripts/market/assert-public-data-hygiene.mjs
 
+      # --test-reporter=dot: die vollstaendige TAP-Ausgabe von ueber 600
+      # Tests macht das Joblog so gross, dass die eigentlichen Befunde
+      # dieses Laufs darin untergehen. Punkte genuegen; ein Fehlschlag
+      # wird weiterhin vollstaendig ausgegeben.
       - name: Regressionssuite
         if: always()
-        run: node --test "quant/tests/*.test.mjs"
+        run: node --test --test-reporter=dot "quant/tests/*.test.mjs"
 
       - name: Berichte sichern
         if: always()
@@ -327,9 +331,15 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/universe quant/data/market/scale \
-                  quant/data/market/factors quant/data/market/health \
-                  quant/data/market/commercial quant/data/technical/scale 2>/dev/null || true
+          # Nur vorhandene Pfade anfassen. `git add` bricht bei einem
+          # einzigen unbekannten Pfad ab und legt dann GAR NICHTS an -
+          # ein fehlgeschlagener Zwischenschritt haette sonst zur Folge,
+          # dass auch die geglueckten Berichte nicht committet werden.
+          for p in quant/data/market/universe quant/data/market/scale \
+                   quant/data/market/factors quant/data/market/health \
+                   quant/data/market/commercial quant/data/technical/scale; do
+            [ -e "$p" ] && git add "$p"
+          done
           if git diff --cached --quiet; then
             echo "Keine Aenderung an den Berichten."
           else
@@ -354,6 +364,16 @@ jobs:
                   console.log("Canary: " + g.canary.passed + "/" + g.canary.of +
                               (g.canary.regression ? " — REGRESSION" : " — sauber"));
                   console.log("");
+                  if (g.canary.regression) {
+                    console.log("| Titel | Bars | Zeitraum | Befunde |");
+                    console.log("|---|---|---|---|");
+                    for (const d of g.canary.details) {
+                      console.log("| " + d.ticker + " | " + d.bars + " | " +
+                                  (d.first || "-") + " → " + (d.last || "-") + " | " +
+                                  (d.failures.length ? d.failures.join(", ") : "ok") + " |");
+                    }
+                    console.log("");
+                  }
                 }
                 if (g.accounting) {
                   console.log("| Posten | Wert |");
@@ -370,6 +390,12 @@ jobs:
                     console.log("| " + k + " | " + v + " |");
                   }
                   console.log("");
+                }
+                // Ein an der Canary-Regression abgebrochener Lauf hat keine
+                // Pruefliste - er ist vor ihr stehengeblieben.
+                if (!Array.isArray(g.checks)) {
+                  console.log("Keine Pruefliste: der Lauf ist vor dem Gate-Universum abgebrochen.");
+                  process.exit(0);
                 }
                 console.log("| Pruefung | Wert | Ergebnis |");
                 console.log("|---|---|---|");

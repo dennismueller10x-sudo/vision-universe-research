@@ -284,7 +284,13 @@ const report = {
     symbolsRun: elliottSymbols,
     coverage: elliottCoverage,
     reasons: elliottReasons,
-    confidenceThresholds: { high: ELLIOTT_HIGH, medium: ELLIOTT_MEDIUM },
+    /* "highConfidenceFrom" statt "high": ein Feld namens "high" mit einer
+       Zahl darin ist in einem ausgelieferten Artefakt nicht von einem
+       Tageshoechstkurs zu unterscheiden. Die Hygienepruefung sucht genau
+       danach und hat diesen Bericht beim ersten Lauf angehalten - zu
+       Recht, denn der Unterschied stand nur im Kontext. */
+    confidenceThresholds: { highConfidenceFrom: ELLIOTT_HIGH,
+                            mediumConfidenceFrom: ELLIOTT_MEDIUM },
     thresholdNote: "Die Schwellen ordnen den vorhandenen confidence-Wert der Engine in die " +
                    "Faecher aus §18 ein. Sie veraendern die Engine nicht und rechnen nichts nach."
   },

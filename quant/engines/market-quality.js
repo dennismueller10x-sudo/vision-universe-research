@@ -175,12 +175,42 @@
              Kapitalmassnahme und kein Verdachtsfall - auch dann nicht, wenn
              nur die rohe Spalte vorliegt. */
           var angekuendigt = isNum(bar.splitFactor) && Math.abs(bar.splitFactor - 1) > 1e-9;
+
+          /* Der umgekehrte Fall, und er kostet sonst genau die Titel, die
+             am laengsten dabei sind.
+
+             Wenn auf der BEREINIGTEN Spalte geprueft wird UND der
+             Anbieter fuer diesen Tag ausdruecklich splitFactor = 1
+             meldet, dann ist ein nicht bereinigter Split keine mogliche
+             Erklaerung mehr: die Reihe ist bereinigt, und der Anbieter
+             sagt, an diesem Tag war nichts. Was bleibt, ist eine echte
+             Tagesbewegung - selten, aber es gibt sie.
+
+             Der Fall ist nicht konstruiert. Mit voller Historie (§10)
+             faellt Apples 29.09.2000 in die Reihe: minus 51,9 Prozent an
+             einem Tag. Das Verhaeltnis 2,08 liegt innerhalb der Toleranz
+             fuer einen 2:1-Split, und der Befund war ein Fehler, der die
+             ganze Reihe verwarf - fuer ein Ereignis, das tatsaechlich
+             stattgefunden hat.
+
+             Wo die Angabe FEHLT (splitFactor null) oder auf der rohen
+             Spalte geprueft wird, bleibt alles wie bisher: dort ist der
+             Verdacht weiterhin die richtige Antwort. */
+          var ausdruecklichKeinSplit = pruefeBereinigt && bar.splitFactor !== null &&
+                                       bar.splitFactor !== undefined && !angekuendigt;
+
           if (angekuendigt) {
             findings.push(finding("info", "announced_split",
               "Kurssprung von " + round(movePct, 1) + " % am " + bar.date + " faellt mit einem " +
               "vom Anbieter gekennzeichneten Split zusammen (Faktor " + bar.splitFactor + ")." +
               (pruefeBereinigt ? "" : " Die Reihe traegt keine belastbare bereinigte Spalte; " +
                "fuer Kennzahlen ist sie damit nur eingeschraenkt brauchbar."), where));
+          } else if (split && ausdruecklichKeinSplit) {
+            findings.push(finding("warning", "large_move_matching_split_ratio",
+              "Kurssprung von " + round(movePct, 1) + " % am " + bar.date + " entspricht zwar einem " +
+              split.ratio + ":1-Verhaeltnis, faellt aber auf die bereinigte Spalte, und der Anbieter " +
+              "meldet fuer diesen Tag ausdruecklich keinen Split (splitFactor 1). Damit bleibt eine " +
+              "echte Tagesbewegung - pruefenswert, aber kein Bereinigungsfehler.", where));
           } else if (split) {
             suspectedSplits.push({ date: bar.date, ratio: split.ratio, direction: split.direction,
                                    from: vorher, to: jetzt });

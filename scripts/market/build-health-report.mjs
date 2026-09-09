@@ -99,11 +99,18 @@ for (const id of gateIds()) {
     lastSuccessfulUpdate = d.generatedAt;
   }
 
+  /* Ein Gate, das an der Canary-Regression abgebrochen ist, schreibt
+     einen kurzen Bericht OHNE Bilanz - das Universum wurde ja nie
+     angefasst (§12). Der Gesundheitsbericht muss genau das abbilden
+     koennen, statt daran zu scheitern: ein abgebrochener Lauf ist der
+     Zustand, ueber den er berichten soll. */
+  const hasAccounting = !!(d && d.accounting && d.dataQuality && d.historyCoverage);
+
   gates[id] = {
     gate: { status: g.status, generatedAt: g.generatedAt, ageHours: g.ageHours,
             verdict: d ? d.verdict : null, verdictReason: d ? d.verdictReason : null,
             note: g.note },
-    marketData: d ? {
+    marketData: hasAccounting ? {
       requested: d.accounting.requested, resolved: d.accounting.resolved,
       PASS: d.dataQuality.PASS, WARNING: d.dataQuality.WARNING,
       FAIL: d.dataQuality.FAIL, UNAVAILABLE: d.dataQuality.UNAVAILABLE,
@@ -112,7 +119,13 @@ for (const id of gateIds()) {
       averageBars: d.historyCoverage.averageBars,
       storageMB: d.accounting.storageMB,
       runtimeMs: d.run.runtimeMs
-    } : { status: g.status, note: g.note },
+    } : { status: d ? "ABORTED" : g.status,
+          reason: d ? d.verdictReason : null,
+          note: d
+            ? "Der Lauf ist vor dem Gate-Universum abgebrochen (" + d.verdictReason + "). " +
+              "Es gibt keine Bilanz, weil nichts geladen wurde - und keine Null, die so " +
+              "aussaehe, als waere geladen worden."
+            : g.note },
     canary: d && d.canary ? {
       passed: d.canary.passed, of: d.canary.of, regression: d.canary.regression,
       symbols: d.canary.symbols
@@ -124,10 +137,18 @@ for (const id of gateIds()) {
       skipped: factors.data.coverage.skipped,
       skippedByReason: factors.data.coverage.skippedByReason,
       /* Die vier Durchschnitte einzeln: §14 fragt nach ihnen, und eine
-         Sammelzahl verdeckt, wenn ausgerechnet SMA200 fehlt. */
-      smaCoverage: ["sma20", "sma50", "sma100", "sma200"].reduce((acc, k) => {
-        const c = factors.data.coverage.fieldCoverage[k];
-        acc[k] = c ? c.CALCULATED : 0;
+         Sammelzahl verdeckt, wenn ausgerechnet SMA200 fehlt.
+
+         Die Feldnamen tragen "Calculated", und das ist kein Schmuck: der
+         Wert ist eine ANZAHL von Titeln, kein Kursniveau. Ein Feld namens
+         "sma200" mit einer Zahl darin ist von einem SMA-Kurs nicht zu
+         unterscheiden - weder fuer einen Leser noch fuer die
+         Hygienepruefung, die genau solche Felder in ausgelieferten
+         Artefakten sucht. Sie hat diesen Bericht beim ersten Lauf zu
+         Recht angehalten. */
+      smaCoverage: [20, 50, 100, 200].reduce((acc, p) => {
+        const c = factors.data.coverage.fieldCoverage["sma" + p];
+        acc["sma" + p + "Calculated"] = c ? c.CALCULATED : 0;
         return acc;
       }, {}),
       momentumCoverage: ["1M", "3M", "6M", "12M"].reduce((acc, h) => {

@@ -440,3 +440,50 @@ test("MS21 — der Skalierungsplan schreibt volle Historie und geordnete Stufen 
   assert.equal(scale.realtime.capacity.maxStreamSubscriptions, null);
   assert.equal(scale.realtime.capacity.source, "UNMEASURED");
 });
+
+test("MS22 — ein echter Kurssturz auf der bereinigten Spalte ist kein Bereinigungsfehler", () => {
+  /* Der Fall aus dem ersten Lauf gegen die volle Historie: Apple faellt am
+     29.09.2000 um 51,9 Prozent an einem Tag. Das Verhaeltnis 2,08 liegt in
+     der Toleranz fuer einen 2:1-Split, und die Reihe wurde deshalb komplett
+     verworfen - fuer ein Ereignis, das tatsaechlich stattgefunden hat.
+
+     Der Anbieter meldet fuer diesen Tag ausdruecklich splitFactor 1, und
+     geprueft wird die bereinigte Spalte. Beides zusammen schliesst einen
+     nicht bereinigten Split aus. */
+  function crash(splitFactor, adjusted) {
+    const dates = tradingDates(300, TODAY);
+    let p = 100;
+    return dates.map((date, i) => {
+      p = i === 150 ? p * 0.481 : p * 1.001;
+      return { date, open: p, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6,
+               adjustedClose: adjusted ? p : null,
+               splitFactor, dividend: 0, dataSourceId: "ds_tiingo" };
+    });
+  }
+
+  const bereinigt = MarketQuality.validateBars(crash(1, true),
+    { today: TODAY, adjustmentStatus: "adjusted" });
+  assert.equal(bereinigt.ok, true, "eine echte Tagesbewegung darf die Reihe nicht verwerfen");
+  assert.ok(bereinigt.findings.some((f) => f.code === "large_move_matching_split_ratio"));
+  assert.ok(bereinigt.findings.some((f) => f.severity === "warning"),
+            "der Sprung bleibt kennzeichnungspflichtig - er verschwindet nicht");
+
+  /* Und die Gegenprobe, zweimal: wo die Angabe FEHLT und wo auf der
+     rohen Spalte geprueft wird, bleibt der Verdacht ein Fehler. Ohne
+     diese beiden Faelle waere die Aenderung oben eine Aufweichung. */
+  const ohneAngabe = MarketQuality.validateBars(crash(null, true),
+    { today: TODAY, adjustmentStatus: "adjusted" });
+  assert.equal(ohneAngabe.ok, false);
+  assert.ok(ohneAngabe.findings.some((f) => f.code === "suspected_unadjusted_split"));
+
+  const roh = MarketQuality.validateBars(crash(1, false),
+    { today: TODAY, adjustmentStatus: "unadjusted" });
+  assert.equal(roh.ok, false);
+  assert.ok(roh.findings.some((f) => f.code === "suspected_unadjusted_split"));
+
+  /* Ein tatsaechlich angekuendigter Split bleibt ein angekuendigter Split. */
+  const echterSplit = MarketQuality.validateBars(crash(2, true),
+    { today: TODAY, adjustmentStatus: "adjusted" });
+  assert.ok(echterSplit.findings.some((f) => f.code === "announced_split"));
+  assert.equal(echterSplit.ok, true);
+});
