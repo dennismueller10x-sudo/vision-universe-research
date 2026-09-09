@@ -1,0 +1,310 @@
+{
+  "generatedAt": "2026-09-09T13:42:48.042Z",
+  "provider": "tiingo",
+  "plan": "commercial",
+  "scope": "realtimeStreamAndLiveCandle",
+  "verificationLevel": "RUNTIME_VERIFIED",
+  "note": "Der Bericht enthaelt keine Kurse. Die Minutenkerze wurde echt gebaut (quant/engines/realtime/bar-merge.js, derselbe applyTick wie im Chart); ausgewiesen sind ihre Form und ihre Bewegung in relativen Groessen, nicht ihre Werte.",
+  "run": {
+    "source": "github-actions",
+    "repository": "dennismueller10x-sudo/vision-universe-research",
+    "runId": "34358636479",
+    "commit": "21385ab5dd1a5fe0b01ca40b7e51cd801aa28ab5",
+    "ref": "claude/tiingo-commercial-phase-1-4j0581",
+    "wsUrl": "wss://api.tiingo.com/iex",
+    "secondsPerMeasurement": 90
+  },
+  "sessionAtRun": {
+    "phase": "REGULAR",
+    "localDate": "2026-09-09",
+    "localTime": "09:41:08",
+    "closedReason": null,
+    "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
+  },
+  "thresholds": {
+    "minEventsForStream": 3,
+    "minTicksInCandle": 2
+  },
+  "LIVE_CHART_READY": "FALSE",
+  "liveChartReason": "Die Verbindung stand bei offener Boerse, lieferte aber keine Kursnachricht. Dieser Zugang bedient den Strom nicht.",
+  "silenceEvidence": [
+    {
+      "thresholdLevel": 6,
+      "messages": 134,
+      "adminMessages": 2,
+      "subscriptionAck": {
+        "messageType": "H",
+        "code": 200,
+        "message": "HeartBeat",
+        "hasSubscriptionId": false
+      },
+      "closeCode": null,
+      "closeReason": null,
+      "stableForFullDuration": true,
+      "durationSeconds": 90
+    },
+    {
+      "thresholdLevel": 5,
+      "messages": 1,
+      "adminMessages": 1,
+      "subscriptionAck": {
+        "messageType": "E",
+        "code": 400,
+        "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.co",
+        "hasSubscriptionId": false
+      },
+      "closeCode": 1005,
+      "closeReason": "",
+      "stableForFullDuration": false,
+      "durationSeconds": 90
+    },
+    {
+      "thresholdLevel": 0,
+      "messages": 1,
+      "adminMessages": 1,
+      "subscriptionAck": {
+        "messageType": "E",
+        "code": 400,
+        "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.co",
+        "hasSubscriptionId": false
+      },
+      "closeCode": 1005,
+      "closeReason": "",
+      "stableForFullDuration": false,
+      "durationSeconds": 90
+    }
+  ],
+  "marketOpenExperience": {
+    "visibleMovementPossible": false,
+    "basis": "Die Verbindung stand bei offener Boerse, lieferte aber keine Kursnachricht. Dieser Zugang bedient den Strom nicht."
+  },
+  "measurements": [
+    {
+      "scope": "primary",
+      "result": "UNKNOWN",
+      "thresholdLevel": 6,
+      "symbols": [
+        "NVDA"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 98,
+        "subscriptionAck": {
+          "messageType": "H",
+          "code": 200,
+          "message": "HeartBeat",
+          "hasSubscriptionId": false
+        },
+        "messages": 134,
+        "adminMessages": 2,
+        "socketError": null,
+        "closeCode": null,
+        "closeReason": null,
+        "stableForFullDuration": true
+      },
+      "events": {
+        "count": 0,
+        "firstAfterMs": null,
+        "lastAfterMs": null,
+        "perSecond": null,
+        "gapMs": {
+          "min": null,
+          "median": null,
+          "p90": null,
+          "max": null
+        },
+        "providerLagSeconds": {
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "withTimestamp": 0,
+        "withSymbol": 0,
+        "bySymbol": {},
+        "consecutive": false
+      },
+      "candle": {
+        "bucket": null,
+        "ticksInBucket": 0,
+        "maxTicksInAnyBucket": 0,
+        "barsFormed": 0,
+        "hasOpen": false,
+        "hasHigh": false,
+        "hasLow": false,
+        "hasClose": false,
+        "hasTimestamp": false,
+        "rangeRelative": null,
+        "closeMovedFromOpen": null,
+        "origin": null,
+        "confirmed": null,
+        "mergeStats": {
+          "ticks": 0,
+          "accepted": 0,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": false
+      }
+    },
+    {
+      "scope": "primary",
+      "result": "FAILED",
+      "thresholdLevel": 5,
+      "symbols": [
+        "NVDA"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 38,
+        "subscriptionAck": {
+          "messageType": "E",
+          "code": 400,
+          "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.co",
+          "hasSubscriptionId": false
+        },
+        "messages": 1,
+        "adminMessages": 1,
+        "socketError": null,
+        "closeCode": 1005,
+        "closeReason": "",
+        "stableForFullDuration": false
+      },
+      "events": {
+        "count": 0,
+        "firstAfterMs": null,
+        "lastAfterMs": null,
+        "perSecond": null,
+        "gapMs": {
+          "min": null,
+          "median": null,
+          "p90": null,
+          "max": null
+        },
+        "providerLagSeconds": {
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "withTimestamp": 0,
+        "withSymbol": 0,
+        "bySymbol": {},
+        "consecutive": false
+      },
+      "candle": {
+        "bucket": null,
+        "ticksInBucket": 0,
+        "maxTicksInAnyBucket": 0,
+        "barsFormed": 0,
+        "hasOpen": false,
+        "hasHigh": false,
+        "hasLow": false,
+        "hasClose": false,
+        "hasTimestamp": false,
+        "rangeRelative": null,
+        "closeMovedFromOpen": null,
+        "origin": null,
+        "confirmed": null,
+        "mergeStats": {
+          "ticks": 0,
+          "accepted": 0,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": false
+      },
+      "closedEarly": true
+    },
+    {
+      "scope": "primary",
+      "result": "FAILED",
+      "thresholdLevel": 0,
+      "symbols": [
+        "NVDA"
+      ],
+      "durationSeconds": 90,
+      "sessionPhaseAtStart": "REGULAR",
+      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseChanged": false,
+      "connection": {
+        "opened": true,
+        "openedAfterMs": 34,
+        "subscriptionAck": {
+          "messageType": "E",
+          "code": 400,
+          "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.co",
+          "hasSubscriptionId": false
+        },
+        "messages": 1,
+        "adminMessages": 1,
+        "socketError": null,
+        "closeCode": 1005,
+        "closeReason": "",
+        "stableForFullDuration": false
+      },
+      "events": {
+        "count": 0,
+        "firstAfterMs": null,
+        "lastAfterMs": null,
+        "perSecond": null,
+        "gapMs": {
+          "min": null,
+          "median": null,
+          "p90": null,
+          "max": null
+        },
+        "providerLagSeconds": {
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "withTimestamp": 0,
+        "withSymbol": 0,
+        "bySymbol": {},
+        "consecutive": false
+      },
+      "candle": {
+        "bucket": null,
+        "ticksInBucket": 0,
+        "maxTicksInAnyBucket": 0,
+        "barsFormed": 0,
+        "hasOpen": false,
+        "hasHigh": false,
+        "hasLow": false,
+        "hasClose": false,
+        "hasTimestamp": false,
+        "rangeRelative": null,
+        "closeMovedFromOpen": null,
+        "origin": null,
+        "confirmed": null,
+        "mergeStats": {
+          "ticks": 0,
+          "accepted": 0,
+          "rejectedFuture": 0,
+          "rejectedConfirmed": 0,
+          "rejectedMalformed": 0
+        },
+        "multipleUpdatesInSameCandle": false
+      },
+      "closedEarly": true
+    },
+    {
+      "scope": "secondary",
+      "result": "SKIPPED",
+      "symbols": [
+        "AAPL",
+        "MSFT"
+      ],
+      "reason": "Die Erstmessung lieferte kein Kursereignis. Weitere Titel zu messen wuerde dasselbe Ergebnis wiederholen, nicht pruefen."
+    }
+  ]
+}
