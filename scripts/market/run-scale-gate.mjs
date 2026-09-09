@@ -66,6 +66,18 @@ const SKIP_CANARY = argv.includes("--skip-canary");
    Die Bewertung rechnet statt zu laden: Groesse, Zusammensetzung und die
    Hochrechnung aus den gemessenen Raten der kleineren Gates (§25, §26). */
 const ASSESS_ONLY = argv.includes("--assess-only");
+/* Der Schutz gehoert in das Skript und nicht in die Workflow-Datei.
+
+   Der Grund ist eine teure Erfahrung: die Entscheidung "bewerten statt
+   laden" stand in einer Shell-Bedingung im Workflow, und der Lauf hat
+   trotzdem einen vollstaendigen Backfill begonnen - stundenlang, mit
+   absehbarem Platzmangel. Eine Sicherung, die man von aussen umgehen
+   oder falsch verdrahten kann, ist keine.
+
+   Ab hier gilt: ein Backfill des Vollausbaustadiums verlangt
+   --allow-full-backfill, unabhaengig davon, wer das Skript aufruft.
+   Ohne die Angabe bewertet es. */
+const ALLOW_FULL_BACKFILL = argv.includes("--allow-full-backfill");
 const LIMIT = parseInt(arg("--limit", "0"), 10) || 0;
 /* --scale-dir und --work-dir sind Testschalter derselben Art wie
    TIINGO_BASE_URL: sie lenken Eingabe, Bericht und Arbeitsablage auf
@@ -118,8 +130,17 @@ if (!apiKey && !DRY_RUN && !ASSESS_ONLY) {
 /* Die Bewertung braucht weder Adapter noch Registry noch Speicher - sie
    liest den bereits geschriebenen Universumsbericht und die Bilanzen der
    gelaufenen Gates. Sie steht deshalb vor dem Aufbau und nicht darin. */
+/* Bewerten statt laden - entweder auf Verlangen oder weil die Groesse
+   es gebietet. */
 if (ASSESS_ONLY) {
-  assessOnly();
+  assessOnly("angefordert (--assess-only)");
+}
+if (GATE === "FULL_UNIVERSE" && !ALLOW_FULL_BACKFILL) {
+  console.log("\n  FULL_UNIVERSE ohne --allow-full-backfill: es wird bewertet, nicht geladen.");
+  console.log("  Gemessen sind rund 3 GB Ablage je 1.000 Titel. Ein vollstaendiger Lauf");
+  console.log("  braucht mehr Platz, als ein Standard-Runner frei hat - und ein Lauf, der");
+  console.log("  das auf halbem Weg herausfindet, hat Kontingent verbrannt und nichts belegt.");
+  assessOnly("Groessenschutz: FULL_UNIVERSE ohne --allow-full-backfill");
 }
 
 const allSymbols = securities.map((s) => ({ securityId: s.securityId, ticker: s.ticker,
@@ -175,7 +196,7 @@ if (!permitted.allowed && !DRY_RUN) {
   process.exit(1);
 }
 
-function assessOnly() {
+function assessOnly(grund) {
   /* Die Hochrechnung stuetzt sich auf die Bilanzen der bereits
      gelaufenen Gates und nicht auf eine Annahme. Fehlen sie, sagt der
      Bericht das - eine Hochrechnung ohne Messgrundlage waere eine
@@ -206,6 +227,10 @@ function assessOnly() {
     gate: GATE, provider: "tiingo", plan: "commercial",
     verdict: "ASSESSED",
     verdictReason: "assessOnly",
+    /* Warum bewertet wurde: auf Verlangen oder weil die Groesse es
+       gebietet. Der Unterschied gehoert in den Bericht - sonst liest sich
+       ein Groessenschutz wie eine Entscheidung des Aufrufers. */
+    assessReason: grund || "angefordert",
     message: "Bewertung ohne Abruf. Es wurde kein Kurs geladen und kein Kontingent " +
              "verbraucht - die Zahlen unten sind Hochrechnungen aus gemessenen Raten, " +
              "ausdruecklich gekennzeichnet als solche.",

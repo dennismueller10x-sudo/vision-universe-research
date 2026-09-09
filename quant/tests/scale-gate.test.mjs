@@ -636,3 +636,42 @@ test("SG10 — ohne Messgrundlage wird nicht hochgerechnet", async () => {
   assert.ok(report.projection.storageGB === undefined,
             "ohne Messgrundlage darf keine Zahl erscheinen");
 });
+
+test("SG11 — FULL_UNIVERSE laedt nichts ohne ausdrueckliche Erlaubnis", async () => {
+  /* Der Schutz gehoert in das Skript und nicht in die Workflow-Datei.
+
+     Er stand zuerst in einer Shell-Bedingung im Workflow, und ein Lauf hat
+     trotzdem einen vollstaendigen Backfill begonnen - stundenlang, mit
+     absehbarem Platzmangel. Eine Sicherung, die von aussen falsch
+     verdrahtet werden kann, ist keine. Dieser Test haelt sie dort fest,
+     wo sie nicht umgangen werden kann. */
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const securities = [];
+    for (let i = 0; i < 300; i++) {
+      securities.push({ securityId: "ref_S" + i, ticker: "S" + i,
+                        provider: "tiingo", providerSymbol: "S" + i });
+    }
+    writeFileSync(join(scaleDir, "universe-FULL_UNIVERSE.json"), JSON.stringify({
+      gate: "FULL_UNIVERSE", targetSize: null, actualSize: securities.length,
+      method: "TEST", bySector: {}, byExchange: {}, notes: [], securities
+    }));
+
+    /* Ohne Flag und ohne --assess-only: der Lauf muss trotzdem bewerten. */
+    const out = await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "FULL_UNIVERSE", "--scale-dir", scaleDir, "--work-dir", join(dir, "cache")],
+      { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+
+    assert.match(out, /es wird bewertet, nicht geladen/);
+    assert.equal(provider.requests(), 0,
+                 "ohne ausdrueckliche Erlaubnis darf FULL_UNIVERSE nichts abrufen");
+
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-FULL_UNIVERSE.json"), "utf8"));
+    assert.equal(report.verdict, "ASSESSED");
+    assert.match(report.assessReason, /Groessenschutz/);
+  } finally {
+    provider.server.close();
+  }
+});

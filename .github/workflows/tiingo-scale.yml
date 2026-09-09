@@ -74,14 +74,21 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: tiingo-scale
-  cancel-in-progress: false
+# Die Nebenlaeufigkeit steht je Job und nicht fuer den ganzen Workflow.
+#
+# Der Grund ist eine Erfahrung: ein Gate-Lauf ueber tausende Titel dauert
+# Stunden, und mit einer Gruppe fuer alles wartet der Echtzeitnachweis
+# dahinter - ein Nachweis, der nur waehrend der Handelszeit ueberhaupt
+# etwas messen kann. Eine Warteschlange, die genau das Zeitfenster
+# verpasst, um das es geht, ist keine Vorsicht, sondern ein Fehler.
 
 jobs:
   capability:
     name: Commercial-Faehigkeitsnachweis
     runs-on: ubuntu-latest
+    concurrency:
+      group: tiingo-capability
+      cancel-in-progress: false
     if: >-
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, '[tiingo-capability]') ||
@@ -165,6 +172,9 @@ jobs:
   realtime:
     name: Strom- und Live-Kerzen-Nachweis
     runs-on: ubuntu-latest
+    concurrency:
+      group: tiingo-realtime
+      cancel-in-progress: false
     if: >-
       (github.event_name == 'workflow_dispatch' && inputs.realtime) ||
       contains(github.event.head_commit.message, '[tiingo-realtime]')
@@ -244,6 +254,9 @@ jobs:
     name: Scale Gate
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    concurrency:
+      group: tiingo-scale-gate
+      cancel-in-progress: false
     # Beide Jobs committen auf denselben Branch. Nacheinander statt
     # nebeneinander: ein Wettlauf um denselben Ref kostet mehr, als die
     # zwanzig Sekunden Wartezeit wert sind. `always()` haelt das Gate am
