@@ -294,7 +294,13 @@ test("T16 · Das Stundenkontingent bindet, nicht das Tageskontingent", async () 
   const blocked = await p.getDailyBars("ref_AAPL", { from: "2020-04-01" });
   assert.equal(blocked.available, false);
   assert.equal(blocked.reason, "rateLimited");
-  assert.match(blocked.message, /Stundenkontingent/);
+  /* Gebunden hat das STUNDEN-Fenster, nicht das Tages-Fenster - das ist
+     der Kern dieses Tests und bleibt es. Die Meldung nennt seit der
+     Nacharbeit zusaetzlich den Urheber: es ist unser eigenes Budget,
+     nicht Tiingos Kontingent. */
+  assert.match(blocked.message, /Stundenbudget/);
+  assert.match(blocked.message, /3\/3/, "das Stundenfenster muss das bindende sein");
+  assert.equal(blocked.source, "clientBudget");
   assert.equal(calls, 3, "das Kontingent wird eingehalten statt ueberschritten");
 });
 
@@ -537,7 +543,11 @@ test("T31 · Anfragegrenze und Kontingent sind zwei verschiedene Zustaende", asy
   assert.equal(dritter.reason, "rateLimited");
   assert.equal(p.rawHealth().status, "rateLimited",
     "der Zustand muss sich vom erschoepften Tageskontingent unterscheiden");
-  assert.match(dritter.message, /Stundenkontingent/);
+  /* Das Stundenfenster bindet - und die Meldung sagt seit der Nacharbeit
+     auch, WESSEN Fenster das ist. Der Anbieter wurde nicht gefragt. */
+  assert.match(dritter.message, /Stundenbudget/);
+  assert.equal(dritter.source, "clientBudget");
+  assert.match(dritter.message, /Anbieter hat nichts abgelehnt/);
   // Nach aussen bleibt es "degraded": der Anbieter antwortet, er drosselt nur.
   assert.equal(p.healthCheck().status, "degraded");
 });

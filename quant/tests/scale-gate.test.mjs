@@ -13,7 +13,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -74,13 +74,28 @@ function startProvider(opts = {}) {
   const failFor = new Set(opts.failFor || []);
   const shortFor = new Set(opts.shortFor || []);
   const endDate = opts.endDate || new Date().toISOString().slice(0, 10);
+  /* Ab der wievielten Anfrage antwortet die Attrappe mit 429? null heisst
+     nie. Damit laesst sich die Ablehnung DES ANBIETERS von unserem
+     eigenen Budget unterscheiden - der Unterschied, um den es in dieser
+     Nacharbeit geht. */
+  const rateLimitAfter = opts.rateLimitAfter === undefined ? null : opts.rateLimitAfter;
   let requests = 0;
+  /* Je Titel mitzaehlen. Ein Fortsetzen, das schon geholte Titel erneut
+     laedt, ist an dieser Zahl zu erkennen und sonst an nichts. */
+  const perSymbol = new Map();
   const server = createServer((req, res) => {
     requests++;
     const url = new URL(req.url, "http://localhost");
     const m = url.pathname.match(/^\/tiingo\/daily\/([^/]+)\/prices$/);
     if (!m) { res.writeHead(404).end(JSON.stringify({ detail: "Not found" })); return; }
     const symbol = decodeURIComponent(m[1]).toUpperCase();
+    perSymbol.set(symbol, (perSymbol.get(symbol) || 0) + 1);
+    if (rateLimitAfter !== null && requests > rateLimitAfter) {
+      res.writeHead(429, { "Content-Type": "application/json", "Retry-After": "3600",
+                           "x-ratelimit-limit": "5000", "x-ratelimit-remaining": "0" });
+      res.end(JSON.stringify({ detail: "Too many requests" }));
+      return;
+    }
     if (failFor.has(symbol)) {
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ detail: "Error: Ticker '" + symbol + "' not found." }));
@@ -96,7 +111,8 @@ function startProvider(opts = {}) {
   });
   return new Promise((resolve) => {
     server.listen(0, "127.0.0.1", () => {
-      resolve({ server, port: server.address().port, requests: () => requests });
+      resolve({ server, port: server.address().port, requests: () => requests,
+                perSymbol: () => new Map(perSymbol) });
     });
   });
 }
@@ -780,4 +796,400 @@ test("SG13 — auch Faktoren und Technical schreiben ihre Einzelzeilen in DIE Ar
   } finally {
     provider.server.close();
   }
+});
+
+/* ==========================================================================
+   CHECKPOINT UND FORTSETZEN (§4, §6 der Nacharbeit)
+
+   Vorgeschichte: der FULL_UNIVERSE-Lauf endete nach exakt 5.000
+   Anfragen. Die Zahl stammte aus COMMERCIAL_LIMITS - unser eigenes
+   Budget, nie gemessen, mit verified:false. Der Bericht meldete
+   trotzdem FAIL und drei gerissene Quoten, als laege es an den Daten.
+   686 Titel waren schlicht nie abgerufen worden.
+
+   Die Tests hier halten beides fest: dass ein Budgetstopp als solcher
+   berichtet wird, und dass ein Fortsetzen keine Arbeit doppelt macht
+   und keinen Titel verliert.
+   ========================================================================== */
+
+function writeGateUniverse(scaleDir, gate, tickers) {
+  writeFileSync(join(scaleDir, `universe-${gate}.json`), JSON.stringify({
+    gate, targetSize: tickers.length, actualSize: tickers.length,
+    method: "TEST", bySector: {}, byExchange: {},
+    securities: tickers.map((t) => ({
+      securityId: "ref_" + t, ticker: t, exchange: "NASDAQ", currency: "USD",
+      instrumentType: "COMMON_STOCK", provider: "tiingo", providerSymbol: t,
+      sector: "Technology", sectorStatus: "CURATED", selection: "rule"
+    }))
+  }));
+}
+
+/* Canary (5) + Benchmark (1) laufen vor dem Gate und verbrauchen Budget.
+   Wer das beim Rechnen vergisst, misst den falschen Stopp-Punkt. */
+const VORLAUF_ANFRAGEN = 6;
+
+test("SG14 — ein Stopp am eigenen Budget ist kein FAIL, sondern fortsetzbar", async () => {
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const gateTickers = ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG", "HHH"];
+    writeGateUniverse(scaleDir, "GATE_100", ["AAPL", "MSFT", "NVDA", "JPM", "XOM", ...gateTickers]);
+
+    /* Budget so knapp, dass der Vorlauf plus drei Gate-Titel hineinpassen. */
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", join(dir, "cache"),
+       "--request-budget", String(VORLAUF_ANFRAGEN + 3), "--max-wait-ms", "1"],
+      { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+
+    /* Der Kern: nicht FAIL. Die Daten sind nicht schlecht - sie sind
+       teilweise nicht abgerufen. */
+    assert.equal(report.verdict, "INCOMPLETE_RESUMABLE",
+      "ein Budgetstopp darf nicht als Datenfehler berichtet werden");
+    assert.match(report.verdictReason, /eigenesBudget/);
+    assert.equal(report.resumable.status, "RESUMABLE");
+    assert.ok(report.resumable.pending > 0, "es muessen Titel offen ausgewiesen sein");
+
+    /* Und die Urheberschaft steht dran: WIR haben aufgehoert zu fragen. */
+    assert.equal(report.resumable.cause, "clientBudget");
+    assert.match(report.resumable.causeNote, /nicht Tiingos/i);
+    assert.equal(report.accounting.providerObserved.http429Seen, false);
+    assert.equal(report.accounting.providerObserved.status, "NO_PROVIDER_STATEMENT");
+    assert.ok(report.accounting.providerObserved.symbolsBlockedByOwnBudget > 0);
+    assert.equal(report.accounting.providerObserved.symbolsRefusedByProvider, 0);
+    assert.equal(report.accounting.requestBudget.provenance, "SAFETY_CEILING");
+
+    /* Die Quote ueber die tatsaechlich geholten Titel bleibt lesbar -
+       sie ist bei einem Teillauf die einzige aussagekraeftige. */
+    assert.ok(report.qualityOfResolved, "qualityOfResolved fehlt");
+    assert.equal(report.qualityOfResolved.of, report.accounting.resolved);
+
+    /* Eine abgewiesene Zeile nennt den Urheber, nicht nur den Grund. */
+    const blockiert = Object.values(report.perSymbol)
+      .filter((r) => r.status === "UNAVAILABLE" && r.source === "clientBudget");
+    assert.ok(blockiert.length > 0, "keine Zeile traegt source clientBudget");
+    assert.match(blockiert[0].message, /Anbieter hat nichts abgelehnt/);
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG15 — Fortsetzen holt keinen Titel doppelt und verliert keinen", async () => {
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const work = join(dir, "cache");
+    const gateTickers = ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG", "HHH"];
+    const alle = ["AAPL", "MSFT", "NVDA", "JPM", "XOM", ...gateTickers];
+    writeGateUniverse(scaleDir, "GATE_100", alle);
+
+    const env = { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` };
+
+    /* START → Teilmenge → Checkpoint */
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", work,
+       "--request-budget", String(VORLAUF_ANFRAGEN + 3), "--max-wait-ms", "1"], env);
+    const ersterLauf = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+    assert.equal(ersterLauf.verdict, "INCOMPLETE_RESUMABLE");
+    const nachErstem = provider.perSymbol();
+
+    /* FORTSETZEN → vollstaendig */
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", work,
+       "--request-budget", "500", "--max-wait-ms", "1"], env);
+    const zweiterLauf = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+
+    /* Kein Titel verloren: am Ende ist jeder aufgeloest. */
+    assert.equal(zweiterLauf.accounting.requested, alle.length);
+    assert.equal(zweiterLauf.accounting.resolved, alle.length,
+      "nach dem Fortsetzen muss jeder Titel aufgeloest sein");
+    assert.equal(zweiterLauf.accounting.unavailable, 0);
+    assert.equal(zweiterLauf.resumable.status, "COMPLETE");
+    assert.notEqual(zweiterLauf.verdict, "INCOMPLETE_RESUMABLE");
+
+    /* Keine Doppelarbeit: kein Gate-Titel wurde zweimal GEHOLT.
+
+       Der Canary laeuft in jedem Lauf erneut - das ist Absicht (§12) und
+       zaehlt nicht als Doppelarbeit. Geprueft werden die Gate-Titel. */
+    const nachZweitem = provider.perSymbol();
+    for (const t of gateTickers) {
+      const gesamt = nachZweitem.get(t) || 0;
+      assert.equal(gesamt, 1,
+        `${t} wurde ${gesamt}-mal geholt statt genau einmal (vor dem Fortsetzen: ${nachErstem.get(t) || 0})`);
+    }
+
+    /* Deterministisch: die zusammengesetzte Reihe ist dieselbe, die ein
+       Lauf in einem Zug erzeugt haette. */
+    const frisch = join(dir, "cache-frisch");
+    const scaleFrisch = join(dir, "scale-frisch");
+    mkdirSync(scaleFrisch, { recursive: true });
+    writeGateUniverse(scaleFrisch, "GATE_100", alle);
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleFrisch, "--work-dir", frisch,
+       "--request-budget", "500", "--max-wait-ms", "1"], env);
+    const inEinemZug = JSON.parse(readFileSync(join(scaleFrisch, "gate-GATE_100.json"), "utf8"));
+
+    for (const t of gateTickers) {
+      assert.deepEqual(
+        { status: zweiterLauf.perSymbol[t].status, bars: zweiterLauf.perSymbol[t].bars },
+        { status: inEinemZug.perSymbol[t].status, bars: inEinemZug.perSymbol[t].bars },
+        `${t} unterscheidet sich zwischen fortgesetztem und durchgehendem Lauf`);
+    }
+    assert.equal(zweiterLauf.historyCoverage.covered, inEinemZug.historyCoverage.covered);
+    assert.equal(zweiterLauf.accounting.success, inEinemZug.accounting.success);
+    assert.equal(zweiterLauf.accounting.warning, inEinemZug.accounting.warning);
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG16 — sagt der Anbieter selbst nein, wird das als seine Aussage berichtet", async () => {
+  const dir = sandbox();
+  /* Diesmal lehnt die Attrappe ab - mit 429 und Kontingentkoepfen, so
+     wie es ein echtes Limit taete. */
+  const provider = await startProvider({ rateLimitAfter: VORLAUF_ANFRAGEN + 2 });
+  try {
+    const scaleDir = join(dir, "scale");
+    const gateTickers = ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"];
+    writeGateUniverse(scaleDir, "GATE_100", ["AAPL", "MSFT", "NVDA", "JPM", "XOM", ...gateTickers]);
+
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", join(dir, "cache"),
+       "--request-budget", "500", "--max-wait-ms", "1"],
+      { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+    const beobachtet = report.accounting.providerObserved;
+
+    /* Das ist der Unterschied zu SG14: hier hat der Anbieter geredet. */
+    assert.equal(beobachtet.http429Seen, true, "ein echtes 429 muss als solches erscheinen");
+    assert.ok(beobachtet.http429Count > 0);
+    assert.equal(beobachtet.status, "PROVIDER_LIMIT_OBSERVED");
+    assert.ok(beobachtet.symbolsRefusedByProvider > 0,
+      "vom Anbieter abgelehnte Titel muessen getrennt gezaehlt werden");
+    assert.equal(beobachtet.symbolsBlockedByOwnBudget, 0,
+      "unser Budget war grosszuegig - die Ablehnung kam von aussen");
+    assert.match(beobachtet.note, /Beleg/);
+
+    /* Die Kontingentkoepfe des Anbieters werden mitgeschrieben - sie sind
+       die einzige Auskunft, die er von sich aus gibt. */
+    assert.ok(beobachtet.rateLimitHeaders, "Kontingentkoepfe wurden nicht mitgeschrieben");
+    assert.equal(beobachtet.rateLimitHeaders["x-ratelimit-limit"], "5000");
+    assert.equal(beobachtet.retryAfterSeconds, 3600);
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG17 — ein Abbruch mitten im Lauf nimmt den Fortschritt nicht mit", async () => {
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const work = join(dir, "cache");
+    /* Genug Titel, dass der Lauf lange genug dauert, um ihn wirklich
+       mitten hinein zu treffen. Mit 30 war er vorbei, bevor das Signal
+       ankam - und ein Test, der einen bereits beendeten Lauf abbricht,
+       prueft nichts. */
+    const gateTickers = Array.from({ length: 400 }, (_, i) => "T" + String(i).padStart(3, "0"));
+    writeGateUniverse(scaleDir, "GATE_100", ["AAPL", "MSFT", "NVDA", "JPM", "XOM", ...gateTickers]);
+    const env = { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` };
+
+    const kind = spawn(process.execPath,
+      [join(root, "scripts/market/run-scale-gate.mjs"), "--gate", "GATE_100",
+       "--scale-dir", scaleDir, "--work-dir", work, "--max-wait-ms", "1",
+       "--minute-budget", "100000", "--request-budget", "100000"],
+      { env: Object.assign({}, process.env, env), stdio: ["ignore", "pipe", "pipe"] });
+
+    let ausgabe = "";
+    kind.stdout.on("data", (d) => { ausgabe += d.toString(); });
+    kind.stderr.on("data", (d) => { ausgabe += d.toString(); });
+
+    /* Auf das Ende horchen, BEVOR das Signal geht.
+
+       Andersherum entsteht ein Wettlauf: ist der Lauf schon fertig, ist
+       das exit-Ereignis vorbei, der spaeter angehaengte Horcher hoert
+       nichts mehr, und der Test haengt bis zum Zeitlimit. */
+    const beendet = new Promise((r) => kind.on("exit", (code, signal) => r({ code, signal })));
+
+    /* Warten, bis der Lauf mitten IM Gate steht - die Fortschrittszeile
+       kommt alle 25 Titel und beweist das, anders als eine feste Pause. */
+    await new Promise((fertig, fehler) => {
+      const frist = setTimeout(() => fehler(new Error("Gate-Lauf kam nicht in Gang: " + ausgabe)), 30000);
+      const takt = setInterval(() => {
+        if (/\d+\/\d+\s+[\d.]+ Titel\/s/.test(ausgabe)) {
+          clearInterval(takt); clearTimeout(frist); fertig();
+        }
+      }, 25);
+    });
+    kind.kill("SIGTERM");
+    const ende = await beendet;
+
+    assert.equal(ende.code, 130, "ein Abbruch muss als Abbruch enden, nicht als Erfolg");
+    assert.match(ausgabe, /Fortschritt gesichert/);
+
+    /* Der Checkpoint traegt, was fertig war - und nichts doppelt. */
+    const ckptDatei = join(work, "tiingo", "checkpoints", "gate-GATE_100.json");
+    assert.ok(existsSync(ckptDatei), "kein Checkpoint geschrieben: " + ckptDatei);
+    const ckpt = JSON.parse(readFileSync(ckptDatei, "utf8"));
+    assert.ok(ckpt.done.length > 0, "der Checkpoint ist leer - der Abbruch hat alles gekostet");
+    assert.ok(ckpt.done.length < gateTickers.length,
+      "der Lauf war schon fertig - der Abbruch hat nichts unterbrochen");
+    assert.equal(new Set(ckpt.done).size, ckpt.done.length, "der Checkpoint enthaelt Doppelte");
+    const nachAbbruch = provider.perSymbol();
+    const fertigVorAbbruch = new Set(ckpt.done.map((id) => id.replace(/^ref_/, "")));
+
+    /* Fortsetzen bis zum Ende. */
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", work, "--max-wait-ms", "1",
+       "--minute-budget", "100000", "--request-budget", "100000"], env);
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+
+    /* Kein Titel verloren - auch die aus dem abgebrochenen Lauf sind in
+       der Bilanz, ohne erneut geholt worden zu sein. */
+    assert.equal(report.accounting.requested, 5 + gateTickers.length);
+    assert.equal(report.accounting.resolved, 5 + gateTickers.length,
+      "nach dem Fortsetzen fehlt ein Titel in der Bilanz");
+    assert.equal(report.accounting.unavailable, 0);
+    assert.equal(report.resumable.status, "COMPLETE");
+
+    /* Keine Doppelarbeit: was vor dem Abbruch fertig war, wurde nicht
+       noch einmal geholt. */
+    const nachEnde = provider.perSymbol();
+    let geprueft = 0;
+    for (const t of gateTickers) {
+      if (!fertigVorAbbruch.has(t)) continue;
+      geprueft++;
+      assert.equal(nachEnde.get(t), nachAbbruch.get(t),
+        `${t} war schon fertig und wurde beim Fortsetzen erneut geholt`);
+    }
+    assert.ok(geprueft > 0, "es gab nichts zu pruefen - der Abbruch kam zu frueh");
+  } finally {
+    provider.server.close();
+  }
+});
+
+/* ==========================================================================
+   KURSART UND IHRE FOLGEN (§7-§11 der Nacharbeit)
+
+   Der Strom liefert Kurse ohne Typfeld. Solange der Anbieter nicht sagt,
+   was sie bedeuten, darf kein Artefakt sie "Last Trade" nennen und keine
+   Kennzahl auf ihnen rechnen. Die Pruefung liest das erzeugte Artefakt,
+   nicht die Absicht des Skripts.
+   ========================================================================== */
+
+test("SG18 — ohne Zugang behauptet der Stromnachweis keine Kursart und sperrt die Nutzung", async () => {
+  const dir = sandbox();
+  const out = join(dir, "commercial");
+  await run("scripts/market/verify-live-candle.mjs", ["--out", out, "--seconds", "15"], {});
+  const bericht = JSON.parse(readFileSync(join(out, "live-candle-verification.json"), "utf8"));
+
+  assert.equal(bericht.LIVE_CHART_READY, "UNKNOWN");
+  assert.ok(bericht.priceSemantics, "der Bericht muss die Kursart ausweisen");
+  assert.equal(bericht.priceSemantics.outcome, "UNSPECIFIED");
+  assert.equal(bericht.priceSemantics.classification, "PROVIDER_CONFIRMATION_REQUIRED");
+  assert.equal(bericht.priceSemantics.safeForIntradayIntelligence, false);
+  assert.equal(bericht.priceSemantics.providerConfirmationRequired, true);
+
+  /* Ohne Lauf darf auch nichts ueber den Lauf behauptet werden. */
+  assert.match(bericht.priceSemantics.known, /Nichts|keine Verbindung/i);
+
+  /* Die Sperre ist maschinenlesbar und benennt, was gesperrt ist. */
+  const sperre = bericht.priceSemantics.intradayIntelligence;
+  assert.equal(sperre.status, "BLOCKED");
+  for (const verboten of ["intradaySignals", "backtesting", "executionSimulation",
+                          "tradeBasedVolumeAnalysis", "tradeBasedOHLC"]) {
+    assert.ok(sperre.blockedUses.includes(verboten), `${verboten} muss gesperrt sein`);
+  }
+  /* Das Chart selbst bleibt erlaubt - gesperrt ist das Rechnen, nicht das Zeigen. */
+  assert.ok(sperre.permittedUses.includes("liveMovingChart"));
+  assert.ok(sperre.labelling.forbidden.includes("Last Trade"));
+});
+
+test("SG19 — ein Artefakt, das eine unbelegte Kursart behauptet, kommt nicht durch die Hygiene", async () => {
+  const dir = sandbox();
+  /* Ein Minimalbaum, der so aussieht wie der echte - nur mit einem
+     Bericht, der mehr behauptet, als gemessen wurde. */
+  const commercial = join(dir, "quant", "data", "market", "commercial");
+  mkdirSync(commercial, { recursive: true });
+
+  function schreibeBefund(inhalt) {
+    writeFileSync(join(commercial, "live-candle-verification.json"), JSON.stringify(inhalt));
+  }
+  async function hygiene() {
+    try {
+      await run("scripts/market/assert-public-data-hygiene.mjs", [`--root=${dir}`], {});
+      return { ok: true, ausgabe: "" };
+    } catch (err) {
+      return { ok: false, ausgabe: String(err.stderr || err.stdout || err.message) };
+    }
+  }
+
+  /* Gegenprobe 1: verbotene Beschriftung bei unbelegter Kursart. */
+  schreibeBefund({
+    LIVE_CHART_READY: "TRUE",
+    liveChartReason: "Der Chart zeigt den Last Trade in Echtzeit.",
+    priceSemantics: { outcome: "UNSPECIFIED", intradayIntelligence: { status: "BLOCKED" } }
+  });
+  const eins = await hygiene();
+  assert.equal(eins.ok, false, "eine unbelegte Kursart als 'Last Trade' muss anhalten");
+  assert.match(eins.ausgabe, /behauptet eine Kursart/);
+
+  /* Gegenprobe 2: unbelegte Kursart ohne Sperre. */
+  schreibeBefund({
+    LIVE_CHART_READY: "TRUE",
+    liveChartReason: "Der Chart bewegt sich.",
+    priceSemantics: { outcome: "UNSPECIFIED" }
+  });
+  const zwei = await hygiene();
+  assert.equal(zwei.ok, false, "ohne Sperre darf der Befund nicht durchgehen");
+  assert.match(zwei.ausgabe, /sperrt die abgeleitete Nutzung nicht/);
+
+  /* Und der ehrliche Fall geht durch - samt der Verbotsliste selbst, die
+     die verbotenen Woerter ja enthaelt und trotzdem kein Verstoss ist. */
+  schreibeBefund({
+    LIVE_CHART_READY: "TRUE",
+    liveChartReason: "Mehrere aufeinanderfolgende Kursereignisse. Die Kursart ist unbelegt.",
+    priceSemantics: {
+      outcome: "UNSPECIFIED",
+      intradayIntelligence: {
+        status: "BLOCKED",
+        blockedUses: ["intradaySignals", "backtesting"],
+        labelling: { forbidden: ["Last Trade", "Official Trade Price", "Realtime Trade"] }
+      }
+    }
+  });
+  const drei = await hygiene();
+  assert.equal(drei.ok, true,
+    "der ehrliche Bericht muss durchgehen - auch wenn er die verbotenen Woerter auflistet");
+
+  /* Ist die Kursart belegt, greift die Sperre nicht mehr. */
+  schreibeBefund({
+    LIVE_CHART_READY: "TRUE",
+    liveChartReason: "Der Chart zeigt den Last Trade.",
+    priceSemantics: { outcome: "VERIFIED_PRICE_TYPE", priceType: "TRADE" }
+  });
+  const vier = await hygiene();
+  assert.equal(vier.ok, true, "eine belegte Kursart darf auch so genannt werden");
+});
+
+test("SG20 — der Grenzennachweis erfindet ohne Zugang kein Anbieterlimit", async () => {
+  const dir = sandbox();
+  const out = join(dir, "commercial");
+  await run("scripts/market/verify-request-limits.mjs", ["--out", out], {});
+  const bericht = JSON.parse(readFileSync(join(out, "request-limits.json"), "utf8"));
+
+  assert.equal(bericht.verificationLevel, "NOT_RUN");
+  assert.equal(bericht.requestsMade, 0, "ohne Zugang darf keine Anfrage gestellt werden");
+  assert.equal(bericht.verdict.classification, "UNKNOWN");
+  assert.equal(bericht.verdict.requestsPerHour, null);
+
+  /* Die Zahl aus dem Code steht drin - mit ihrer Herkunft, nicht als Befund. */
+  assert.equal(bericht.configuredLimits.requestsPerHour, 5000);
+  assert.equal(bericht.configuredLimits.verified, false);
+  assert.equal(bericht.configuredLimits.provenance.requestsPerHour, "SAFETY_CEILING");
+  assert.match(bericht.configuredLimits.note, /unser Budget/i);
 });

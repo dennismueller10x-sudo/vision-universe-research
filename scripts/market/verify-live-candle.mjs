@@ -62,6 +62,7 @@ function arg(name, fallback) {
 }
 const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "commercial"));
 const WS_URL = process.env.TIINGO_WS_URL || TiingoRealtime.DEFAULT_WS_URL;
+const REST_BASE = process.env.TIINGO_BASE_URL || "https://api.tiingo.com";
 const SECONDS = Math.max(15, parseInt(arg("--seconds", "90"), 10) || 90);
 /* Ab wie vielen Ereignissen gilt ein Strom als "liefert laufend"? Drei
    ist die kleinste Zahl, aus der sich ein Abstand und dessen Streuung
@@ -174,6 +175,70 @@ function measureStream(opts) {
         return typeof v;
       });
     }
+    /* WAS IST DIESE ZAHL? (§7/§8 der Nacharbeit)
+
+       Der Strom liefert [Zeitstempel, Ticker, Kurs] - ohne Typfeld. Der
+       Tick traegt deshalb priceType "UNSPECIFIED", und solange das so
+       bleibt, darf keine Kennzahl auf dieser Kerze als "auf
+       Abschluessen gerechnet" gelten.
+
+       Raten ist keine Option. Messen schon: die REST-Kursabfrage
+       desselben Titels liefert nebeneinander `last` (letzter an IEX
+       ausgefuehrter Trade), `tngoLast` (Tiingos Referenzkurs), Geld,
+       Brief und Mitte. Faellt der Stromkurs wiederholt und exakt auf
+       genau eines dieser Felder, ist das ein Beleg - kein Beweis, aber
+       weit mehr als eine Vermutung.
+
+       Verglichen wird auf Gleichheit, nicht mit Toleranz: eine Toleranz
+       wuerde bei eng beieinanderliegenden Feldern jedes Feld "treffen"
+       und damit nichts zeigen. Und in den Bericht geht ausschliesslich,
+       WELCHES Feld getroffen hat - nie eine Zahl (§34). */
+    const preisVergleiche = [];
+    const letzterStromkurs = new Map();
+    let vergleichsFehler = null;
+
+    async function vergleichePreisart() {
+      if (!apiKey || !opts.probeSemantics) return;
+      for (const sym of symbols) {
+        const stromkurs = letzterStromkurs.get(sym.toUpperCase());
+        if (!stromkurs) continue;
+        try {
+          const res = await fetch(`${REST_BASE}/iex/${encodeURIComponent(sym.toLowerCase())}`,
+                                  { headers: { Authorization: "Token " + apiKey } });
+          if (!res.ok) continue;
+          const body = await res.json();
+          const row = Array.isArray(body) ? body[0] : body;
+          if (!row) continue;
+          const kandidaten = {
+            last: row.last, tngoLast: row.tngoLast, mid: row.mid,
+            bidPrice: row.bidPrice, askPrice: row.askPrice,
+            prevClose: row.prevClose, open: row.open, high: row.high, low: row.low
+          };
+          const getroffen = [];
+          const vorhanden = [];
+          for (const [feld, wert] of Object.entries(kandidaten)) {
+            if (typeof wert !== "number") continue;
+            vorhanden.push(feld);
+            if (wert === stromkurs.price) getroffen.push(feld);
+          }
+          const bid = typeof row.bidPrice === "number" ? row.bidPrice : null;
+          const ask = typeof row.askPrice === "number" ? row.askPrice : null;
+          preisVergleiche.push({
+            symbol: sym.toUpperCase(),
+            atMs: Date.now() - (openedAt || Date.now()),
+            streamPriceAgeMs: Date.now() - stromkurs.atMs,
+            fieldsPresent: vorhanden,
+            matchedFields: getroffen,
+            withinBidAsk: (bid !== null && ask !== null)
+              ? (stromkurs.price >= Math.min(bid, ask) && stromkurs.price <= Math.max(bid, ask))
+              : null
+          });
+        } catch (err) {
+          vergleichsFehler = String((err && err.message) || err).slice(0, 120);
+        }
+      }
+    }
+
     let openedAt = null, firstEventAt = null, lastEventAt = null;
     let socketError = null, closeCode = null, closeReason = null;
     /* Zaehler je Titel, damit ein zweiter Titel den ersten nicht
@@ -244,6 +309,7 @@ function measureStream(opts) {
       if (done) return;
       done = true;
       clearTimeout(timer);
+      if (vergleichsTakt) clearInterval(vergleichsTakt);
       try { transport.stop(); } catch (err) { /* geschlossen genug */ }
 
       const gaps = [];
@@ -358,7 +424,32 @@ function measureStream(opts) {
                         rejectedConfirmed: stats.rejectedConfirmed,
                         rejectedMalformed: stats.rejectedMalformed },
           multipleUpdatesInSameCandle: maxTicksInAnyBucket >= MIN_TICKS_IN_CANDLE
-        }
+        },
+        /* Der Feldvergleich: welches REST-Feld der Stromkurs getroffen
+           hat. Zahlen stehen hier keine - nur Feldnamen und Zaehlungen. */
+        priceFieldProbe: opts.probeSemantics ? (() => {
+          const treffer = Object.create(null);
+          const vorhanden = Object.create(null);
+          let imSpread = 0, mitSpread = 0;
+          for (const v of preisVergleiche) {
+            for (const f of v.fieldsPresent) vorhanden[f] = (vorhanden[f] || 0) + 1;
+            for (const f of v.matchedFields) treffer[f] = (treffer[f] || 0) + 1;
+            if (v.withinBidAsk !== null) { mitSpread++; if (v.withinBidAsk) imSpread++; }
+          }
+          return {
+            probes: preisVergleiche.length,
+            fieldsPresent: vorhanden,
+            matchesByField: treffer,
+            withinBidAskOf: mitSpread,
+            withinBidAsk: imSpread,
+            medianStreamPriceAgeMs: preisVergleiche.length
+              ? pct(preisVergleiche.map((v) => v.streamPriceAgeMs).sort((a, b) => a - b), 50)
+              : null,
+            error: vergleichsFehler,
+            note: "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und " +
+                  "den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
+          };
+        })() : null
       }, extra || {}));
     };
 
@@ -375,8 +466,16 @@ function measureStream(opts) {
         : "FAILED");
     }, durationMs);
 
+    /* Der Vergleich laeuft mitlaufend, nicht am Ende: am Ende waere der
+       Stromkurs Sekunden alt und jeder Nichttreffer erklaerbar durch die
+       Zeit statt durch die Bedeutung. */
+    const vergleichsTakt = opts.probeSemantics
+      ? setInterval(() => { vergleichePreisart(); }, Math.max(8000, Math.round(durationMs / 8)))
+      : null;
+
     transport.start({
-      onOpen: function () { opened = true; openedAt = Date.now(); },
+      onOpen: function () { opened = true; openedAt = Date.now();
+                            if (opts.probeSemantics) setTimeout(() => vergleichePreisart(), 4000); },
       onTick: function (tick) {
         const at = Date.now();
         /* Welche Art Kurs der Tick traegt. Bei der typisierten Form ein
@@ -393,6 +492,9 @@ function measureStream(opts) {
                       hasTimestamp: !!tick.timestamp, lagS });
         const key = (tick.symbol || symbols[0] || "?").toUpperCase();
         perSymbol[key] = (perSymbol[key] || 0) + 1;
+        /* Nur im Arbeitsspeicher, ausschliesslich fuer den Feldvergleich.
+           Dieser Wert verlaesst den Prozess nicht. */
+        if (typeof tick.price === "number") letzterStromkurs.set(key, { price: tick.price, atMs: at });
 
         /* Die Kerze: genau so, wie das Chart sie bauen wuerde - und je
            Titel getrennt. */
@@ -457,8 +559,12 @@ async function main() {
        der erste Lauf unterscheiden koennen und konnte es nicht. */
     for (const level of [6, 5, 0]) {
       console.log(`  Messung: ${PRIMARY}, thresholdLevel ${level}, ${SECONDS} s ...`);
+      /* Der Feldvergleich laeuft nur auf der Stufe, die auch Kurse
+         liefert. Auf einer abgelehnten Stufe gibt es keinen Stromkurs
+         zu vergleichen - dort waeren die Anfragen verschwendet. */
       const r = await measureStream({ symbols: [PRIMARY], thresholdLevel: level,
-                                      durationMs: SECONDS * 1000 });
+                                      durationMs: SECONDS * 1000,
+                                      probeSemantics: level === 6 });
       runs.push(Object.assign({ scope: "primary" }, r));
       /* Kurz durchatmen, bevor die naechste Verbindung aufgeht. Die
          zweite Messung des ersten Laufs endete nach 0,4 Sekunden - wenn
@@ -478,6 +584,7 @@ async function main() {
     if (SECONDARY.length && best && best.events && best.events.count > 0) {
       console.log(`  Messung: ${SECONDARY.join(", ")}, thresholdLevel ${best.thresholdLevel}, ${SECONDS} s ...`);
       const r = await measureStream({ symbols: SECONDARY, thresholdLevel: best.thresholdLevel,
+                                      probeSemantics: true,
                                       durationMs: SECONDS * 1000 });
       runs.push(Object.assign({ scope: "secondary" }, r));
       console.log(`    ${r.result}  ${r.events ? r.events.count : 0} Kursereignisse ` +
@@ -527,6 +634,10 @@ async function main() {
   let liveChartReason;
   const unspecifiedOnly = measured.some((r) => r.candle && r.candle.priceTypes &&
     r.candle.priceTypes.UNSPECIFIED > 0 && !r.candle.priceTypes.TRADE);
+  /* Hat der Anbieter irgendwo selbst "T" gesagt? Nur dann ist die
+     Kursart aus seiner Auskunft belegt und nicht aus unserem Vergleich. */
+  const anyTradeTyped = measured.some((r) => r.candle && r.candle.priceTypes &&
+    r.candle.priceTypes.TRADE > 0);
 
   if (!apiKey) {
     liveChartReady = "UNKNOWN";
@@ -603,6 +714,130 @@ async function main() {
       durationSeconds: r.durationSeconds
     }));
 
+  /* ==================================================================
+     WAS IST DIESE ZAHL? (§7/§8 der Nacharbeit)
+
+     Genau drei Ausgaenge sind zulaessig, und geraten wird keiner:
+
+       VERIFIED_PRICE_TYPE   Der Anbieter sagt es, und die Messung
+                             widerspricht nicht.
+       PARTIALLY_VERIFIED    Die Messung zeigt, WELCHEM Feld der
+                             Stromkurs folgt - der Anbieter hat es
+                             aber nicht benannt.
+       UNSPECIFIED /
+       PROVIDER_CONFIRMATION_REQUIRED   Nichts davon.
+
+     Der Feldvergleich ist ein Indiz, keine Zusage. Er kann zeigen, dass
+     der Stromkurs exakt und wiederholt auf `last` faellt - dass Tiingo
+     dieses Feld auch morgen so fuellt, sagt er damit nicht. Deshalb
+     hebt selbst ein eindeutiger Vergleich nur auf PARTIALLY_VERIFIED.
+     ================================================================== */
+  const proben = measured.map((r) => r.priceFieldProbe).filter(Boolean);
+  const trefferGesamt = Object.create(null);
+  const vorhandenGesamt = Object.create(null);
+  let probenAnzahl = 0, imSpread = 0, mitSpread = 0;
+  for (const p of proben) {
+    probenAnzahl += p.probes || 0;
+    imSpread += p.withinBidAsk || 0;
+    mitSpread += p.withinBidAskOf || 0;
+    for (const [f, n] of Object.entries(p.matchesByField || {})) trefferGesamt[f] = (trefferGesamt[f] || 0) + n;
+    for (const [f, n] of Object.entries(p.fieldsPresent || {})) vorhandenGesamt[f] = (vorhandenGesamt[f] || 0) + n;
+  }
+  const rangliste = Object.entries(trefferGesamt).sort((a, b) => b[1] - a[1]);
+  const bester = rangliste[0] || null;
+  const zweiter = rangliste[1] || null;
+  /* Eindeutig heisst: ein Feld trifft die klare Mehrheit der Proben, und
+     kein zweites kommt ihm nahe. Zwei Felder, die gleich oft treffen,
+     sind kein Befund - sie waren in diesen Momenten nur gleich gross. */
+  const eindeutig = !!(bester && probenAnzahl >= 3 &&
+                       bester[1] >= Math.ceil(probenAnzahl * 0.6) &&
+                       (!zweiter || zweiter[1] < bester[1] * 0.5));
+
+  const FELDBEDEUTUNG = {
+    last: { type: "TRADE", meaning: "letzter an IEX ausgefuehrter Abschluss" },
+    tngoLast: { type: "REFERENCE", meaning: "Tiingos konsolidierter Referenzkurs" },
+    mid: { type: "MID", meaning: "Mitte zwischen Geld und Brief" },
+    bidPrice: { type: "QUOTE", meaning: "Geldkurs" },
+    askPrice: { type: "QUOTE", meaning: "Briefkurs" },
+    prevClose: { type: "REFERENCE", meaning: "Vortagesschluss" },
+    open: { type: "REFERENCE", meaning: "Eroeffnungskurs" }
+  };
+
+  let priceSemantics;
+  if (!unspecifiedOnly && anyTradeTyped) {
+    priceSemantics = {
+      outcome: "VERIFIED_PRICE_TYPE",
+      priceType: "TRADE",
+      evidence: "Der Anbieter kennzeichnet die Nachricht selbst mit dem Typbuchstaben T.",
+      known: "Die Kerze besteht aus ausgefuehrten Abschluessen.",
+      unknown: null,
+      safeForIntradayIntelligence: true
+    };
+  } else if (eindeutig) {
+    const bedeutung = FELDBEDEUTUNG[bester[0]] || { type: "UNKNOWN", meaning: bester[0] };
+    priceSemantics = {
+      outcome: "PARTIALLY_VERIFIED",
+      priceType: "UNSPECIFIED",
+      tracksField: bester[0],
+      tracksFieldType: bedeutung.type,
+      matchRate: Math.round(bester[1] / probenAnzahl * 100) / 100,
+      probes: probenAnzahl,
+      matchesByField: trefferGesamt,
+      evidence: `Der Stromkurs war in ${bester[1]} von ${probenAnzahl} Proben exakt gleich dem ` +
+                `REST-Feld ${bester[0]} (${bedeutung.meaning}); kein anderes Feld kam nahe.`,
+      known: `Der Strom folgt demselben Wert wie ${bester[0]}.`,
+      unknown: "Der Anbieter benennt die Kursart in der Nachricht weiterhin nicht. Ein " +
+               "Feldvergleich ist ein Indiz aus einem Zeitraum, keine Zusage fuer den naechsten.",
+      safeForIntradayIntelligence: false,
+      providerConfirmationRequired: true
+    };
+  } else {
+    priceSemantics = {
+      outcome: "UNSPECIFIED",
+      priceType: "UNSPECIFIED",
+      classification: "PROVIDER_CONFIRMATION_REQUIRED",
+      probes: probenAnzahl,
+      matchesByField: trefferGesamt,
+      fieldsPresent: vorhandenGesamt,
+      withinBidAsk: mitSpread ? { of: mitSpread, inside: imSpread } : null,
+      evidence: probenAnzahl
+        ? "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen."
+        : "Kein Vergleich moeglich (keine Proben).",
+      /* Nur behaupten, was dieser Lauf gesehen hat. Ohne Zugang hat er
+         nichts gesehen, und "es kommen fortlaufend Kurse" waere dann
+         eine Aussage ueber einen Lauf, den es nicht gab. */
+      known: !apiKey
+        ? "Nichts. Ohne Zugang wurde keine Verbindung aufgebaut."
+        : withCandle.length
+        ? "Es kommen fortlaufend Kurse, und sie bauen eine bewegte Minutenkerze."
+        : "Der Strom wurde gemessen; eine bewegte Kerze ist dabei nicht entstanden.",
+      unknown: "Was die Zahl bedeutet - Abschluss, Referenz, Mitte oder Quote - ist offen.",
+      safeForIntradayIntelligence: false,
+      providerConfirmationRequired: true
+    };
+  }
+
+  /* Was fuer diese Bedeutung gilt, gilt auch fuer alles, was auf ihr
+     rechnet. Die Sperre steht im Bericht und nicht nur in der
+     Dokumentation, damit ein Programm sie lesen kann (§11). */
+  priceSemantics.intradayIntelligence = priceSemantics.safeForIntradayIntelligence
+    ? { status: "PERMITTED", note: "Die Kursart ist belegt." }
+    : {
+        status: "BLOCKED",
+        blockedUses: ["intradaySignals", "technicalSignalGeneration", "backtesting",
+                      "executionSimulation", "tradeBasedVolumeAnalysis", "tradeBasedOHLC"],
+        permittedUses: ["liveMovingChart"],
+        labelling: {
+          forbidden: ["Last Trade", "Official Trade Price", "Realtime Trade"],
+          required: "Die Unsicherheit muss am Kurs sichtbar bleiben.",
+          machineReadableField: "priceSemantics.outcome"
+        },
+        sourceOfTruth: "Die geprueften historischen und Intraday-Datensaetze bleiben die " +
+                       "Rechengrundlage, bis die Kursart belegt ist.",
+        note: "Kein Verbot des Charts - ein Verbot, auf dieser Kerze zu rechnen und sie zu " +
+              "beschriften, als waere sie etwas Belegtes."
+      };
+
   const report = {
     generatedAt: new Date().toISOString(),
     provider: "tiingo",
@@ -632,6 +867,7 @@ async function main() {
     },
     LIVE_CHART_READY: liveChartReady,
     liveChartReason,
+    priceSemantics,
     /* Die Teilbefunde einzeln. Sie sagen zusammen, was LIVE_CHART_READY
        sagt - aber sie sagen auch, WAS genau fehlt, und das entscheidet
        ueber den naechsten Schritt. */

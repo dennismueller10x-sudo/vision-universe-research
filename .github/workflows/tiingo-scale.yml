@@ -122,6 +122,16 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/verify-tiingo-commercial.mjs
 
+      # Was erlaubt der Zugang wirklich? Der teuerste offene Punkt der
+      # Vorphase. Der Nachweis sucht Anbieteraussagen - Kontoendpunkt,
+      # Dokumentation, Antwortkoepfe - und stellt dafuer eine
+      # zweistellige Zahl von Anfragen. Er laeuft ausdruecklich NICHT
+      # gegen die Wand, um eine Decke zu finden.
+      - name: Was erlaubt der Zugang wirklich?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-request-limits.mjs
+
       - name: Kein Schluessel im Bericht
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -134,7 +144,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tiingo-capability-retest
-          path: quant/data/market/commercial/capability-retest.json
+          path: |
+            quant/data/market/commercial/capability-retest.json
+            quant/data/market/commercial/request-limits.json
           if-no-files-found: warn
 
       # Der Bericht wird committet, damit der Gesundheitsbericht ihn sieht.
@@ -409,7 +421,25 @@ jobs:
             fi
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
-          node scripts/market/run-scale-gate.mjs --gate "$GATE" $MODE || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
+          # Das Stundenbudget ist UNSER Wert, nicht Tiingos.
+          #
+          # Der erste FULL_UNIVERSE-Lauf endete nach exakt 5.000 Anfragen
+          # - der Zahl aus COMMERCIAL_LIMITS, die verified:false traegt
+          # und nie gemessen wurde. 686 Titel blieben ungefragt, und der
+          # Bericht las sich wie ein Anbieterlimit.
+          #
+          # Fuer einen Lauf ueber 5.684 Titel wird das Budget deshalb
+          # ausdruecklich ueber die Arbeitsmenge gesetzt. Das ist kein
+          # Lasttest: es ist genau eine Anfrage je Titel, im selben Takt
+          # wie bisher (100/min, gemessene 0,6 s je Titel). Lehnt Tiingo
+          # dabei ab, ist DAS die Messung, die uns fehlt - der Client
+          # bremst dann von selbst und der Checkpoint haelt den Stand.
+          BUDGET=""
+          if [ "$GATE" = "FULL_UNIVERSE" ] && [ -z "$MODE" ]; then
+            BUDGET="--request-budget 12000 --max-wait-ms 900000"
+            echo "Eigenes Stundenbudget fuer diesen Lauf: 12000 (SAFETY_CEILING, kein Anbieterlimit)."
+          fi
+          node scripts/market/run-scale-gate.mjs --gate "$GATE" $MODE $BUDGET || echo "verdict=FAIL" >> "$GITHUB_OUTPUT"
 
       # Ohne geladene Kurse gibt es nichts zu rechnen. Ein Lauf mit
       # lauter SOURCE_MISSING waere kein Ergebnis, sondern Rauschen.
@@ -601,6 +631,20 @@ jobs:
           if [ "$VERDICT" = "ASSESSED" ]; then
             echo "Bewertung ohne Abruf. Es wurde nichts geladen und nichts freigegeben."
             exit 0
+          fi
+          # INCOMPLETE_RESUMABLE ist kein Datenfehler: Titel sind offen,
+          # der Checkpoint haelt den Stand, ein erneuter Lauf schliesst
+          # die Luecke. Freigegeben wird trotzdem nichts - unvollstaendig
+          # ist nicht bestanden (§37). Der Job wird rot, damit der Zustand
+          # sichtbar bleibt und niemand ihn fuer ein PASS haelt.
+          if [ "$VERDICT" = "INCOMPLETE_RESUMABLE" ]; then
+            echo "Der Lauf ist unvollstaendig und fortsetzbar - kein Datenfehler."
+            node -e 'const r=require("./quant/data/market/scale/gate-"+process.env.GATE+".json");
+                     console.log("  offen:", r.resumable.pending, "| erledigt:", r.resumable.completed,
+                                 "| Ursache:", r.resumable.cause);
+                     console.log(" ", r.resumable.causeNote);'
+            echo "Nicht freigegeben. Ein erneuter Lauf setzt am Checkpoint fort."
+            exit 1
           fi
           if [ "$VERDICT" != "PASS" ]; then
             echo "Das Gate ist nicht bestanden. Es wird nicht weiter skaliert (§37)."

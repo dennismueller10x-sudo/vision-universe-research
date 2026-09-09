@@ -324,9 +324,26 @@ const report = {
     status: liveCandle.status, generatedAt: liveCandle.generatedAt,
     LIVE_CHART_READY: liveCandle.data.LIVE_CHART_READY,
     reason: liveCandle.data.liveChartReason,
+    /* Die Kursart gehoert in den Zustandsbericht, weil sie ueber die
+       Verwendung entscheidet und nicht nur ueber die Anzeige. Ein
+       nachgelagerter Dienst, der hier BLOCKED liest, weiss ohne
+       Nachfrage, dass er auf dieser Kerze nicht rechnen darf (§11). */
+    priceSemantics: liveCandle.data.priceSemantics ? {
+      outcome: liveCandle.data.priceSemantics.outcome,
+      priceType: liveCandle.data.priceSemantics.priceType,
+      tracksField: liveCandle.data.priceSemantics.tracksField || null,
+      providerConfirmationRequired:
+        !!liveCandle.data.priceSemantics.providerConfirmationRequired,
+      intradayIntelligence: liveCandle.data.priceSemantics.intradayIntelligence
+        ? liveCandle.data.priceSemantics.intradayIntelligence.status : null
+    } : { outcome: "UNKNOWN", priceType: null, tracksField: null,
+          providerConfirmationRequired: true, intradayIntelligence: "BLOCKED",
+          note: "Kein Stromnachweis mit Kursartbefund vorhanden. Bis dahin gesperrt." },
     sessionAtRun: liveCandle.data.sessionAtRun
   } : { status: liveCandle.status, note: liveCandle.note,
-        LIVE_CHART_READY: "UNKNOWN" },
+        LIVE_CHART_READY: "UNKNOWN",
+        priceSemantics: { outcome: "UNKNOWN", intradayIntelligence: "BLOCKED",
+                          providerConfirmationRequired: true } },
   gates
 };
 
@@ -339,7 +356,10 @@ console.log(`  Universum:  ${report.universe.status}` +
             (report.universe.screenerEligible !== undefined && report.universe.screenerEligible !== null
               ? ` (${report.universe.screenerEligible} screenerfaehige Aktien)` : ""));
 console.log(`  Commercial: ${report.commercialCapabilities.status}`);
-console.log(`  Realtime:   LIVE_CHART_READY = ${report.realtime.LIVE_CHART_READY}`);
+console.log(`  Realtime:   LIVE_CHART_READY = ${report.realtime.LIVE_CHART_READY}` +
+            (report.realtime.priceSemantics
+              ? `, Kursart ${report.realtime.priceSemantics.outcome}` +
+                ` (Intraday-Nutzung ${report.realtime.priceSemantics.intradayIntelligence})` : ""));
 Object.keys(gates).forEach((id) => {
   const g = gates[id];
   console.log(`  ${id.padEnd(15)} ${String(g.gate.verdict || g.gate.status).padEnd(11)}` +

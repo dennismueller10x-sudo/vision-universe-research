@@ -200,6 +200,58 @@ for (const parts of scaleTrees) {
   }
 }
 
+/* ==========================================================================
+   UNBELEGTE KURSART DARF NICHT BELEGT KLINGEN (§10/§11 der Nacharbeit)
+
+   Der Echtzeitstrom liefert [Zeitstempel, Ticker, Kurs] ohne Typfeld.
+   Solange der Anbieter die Kursart nicht benennt, ist jede Beschriftung
+   wie "Last Trade" eine Behauptung ueber etwas Ungeprueftes - und
+   ausgerechnet die naheliegendste Beschriftung waere die falsche.
+
+   Diese Pruefung liest den gemessenen Befund und haelt an, wenn ein
+   ausgeliefertes Artefakt mehr behauptet, als er hergibt. Sie prueft
+   das ERZEUGTE Artefakt, nicht die Absicht des Skripts - so wie die
+   Kursniveaupruefung darueber. */
+const VERBOTENE_ETIKETTEN = [
+  /\blast\s*trade\b/i,
+  /\bofficial\s+trade\s+price\b/i,
+  /\brealtime\s+trade\b/i,
+  /\bausgefuehrte[rn]?\s+abschluss\b/i
+];
+
+const streamBefund = json("quant/data/market/commercial/live-candle-verification.json");
+if (streamBefund && streamBefund.priceSemantics &&
+    streamBefund.priceSemantics.outcome !== "VERIFIED_PRICE_TYPE") {
+  const zuPruefen = [
+    "quant/data/market/commercial/live-candle-verification.json",
+    "quant/data/market/health/health.json",
+    "dashboard/data/market_data.json"
+  ];
+  for (const rel of zuPruefen) {
+    const payload = json(rel);
+    if (!payload) continue;
+    const text = JSON.stringify(payload);
+    for (const muster of VERBOTENE_ETIKETTEN) {
+      /* Die Verbotsliste im Bericht selbst ist kein Verstoss - sie ist
+         die Stelle, an der das Verbot steht. Erkennbar daran, dass sie
+         unter labelling.forbidden haengt. */
+      const ohneListe = text.split('"forbidden":').join('"__liste__":')
+        .replace(/"__liste__":\[[^\]]*\]/g, '"__liste__":[]');
+      if (muster.test(ohneListe)) {
+        findings.push(`${rel}: behauptet eine Kursart ("${muster.source}"), die der Anbieter ` +
+                      `nicht belegt hat (priceSemantics.outcome = ${streamBefund.priceSemantics.outcome})`);
+      }
+    }
+  }
+  /* Und die Sperre selbst muss dastehen. Fehlt sie, ist der Befund
+     zwar richtig, aber niemand nachgelagert kann ihn lesen. */
+  const sperre = streamBefund.priceSemantics.intradayIntelligence;
+  if (!sperre || sperre.status !== "BLOCKED") {
+    findings.push("live-candle-verification.json: die Kursart ist unbelegt, aber " +
+                  "priceSemantics.intradayIntelligence sperrt die abgeleitete Nutzung nicht");
+  }
+}
+
 if (findings.length) {
   console.error("PUBLIC DATA HYGIENE FAILED");
   findings.forEach((finding) => console.error(`  - ${finding}`));

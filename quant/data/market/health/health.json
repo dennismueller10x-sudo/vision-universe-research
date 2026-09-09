@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T14:14:14.599Z",
+  "generatedAt": "2026-09-09T15:17:09.026Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
@@ -17,7 +17,7 @@
   "universe": {
     "status": "OK",
     "generatedAt": "2026-09-09T10:56:42.544Z",
-    "ageHours": 3.3,
+    "ageHours": 4.3,
     "rows": 108572,
     "screenerEligible": 31319,
     "byInstrumentType": {
@@ -74,6 +74,14 @@
     "generatedAt": "2026-09-09T14:13:22.436Z",
     "LIVE_CHART_READY": "TRUE",
     "reason": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
+    "priceSemantics": {
+      "outcome": "UNKNOWN",
+      "priceType": null,
+      "tracksField": null,
+      "providerConfirmationRequired": true,
+      "intradayIntelligence": "BLOCKED",
+      "note": "Kein Stromnachweis mit Kursartbefund vorhanden. Bis dahin gesperrt."
+    },
     "sessionAtRun": {
       "phase": "REGULAR",
       "localDate": "2026-09-09",
@@ -87,7 +95,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T11:46:29.381Z",
-        "ageHours": 2.5,
+        "ageHours": 3.5,
         "verdict": "FAIL",
         "verdictReason": "resolvedRate,successRate,historyCoverageRate",
         "note": null
@@ -300,7 +308,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 4.3,
+        "ageHours": 5.3,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -509,7 +517,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 3.5,
+        "ageHours": 4.6,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -721,7 +729,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 3.9,
+        "ageHours": 5,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null

@@ -87,6 +87,35 @@ const LIMIT = parseInt(arg("--limit", "0"), 10) || 0;
    ausgelieferten Bericht, der Rest wandert ab dieser Groesse in die
    Arbeitsablage (§26). */
 const DETAIL_LIMIT = parseInt(arg("--detail-limit", "500"), 10) || 500;
+/* --request-budget: unser eigenes Stundenbudget, ausdruecklich als
+   solches.
+
+   Vorgeschichte, weil sie die Bauart erklaert: der FULL_UNIVERSE-Lauf
+   vom 2026-09-09 endete nach exakt 5.000 Anfragen. 686 Titel blieben
+   ungefragt, drei Pruefungen rissen, und der Bericht las sich wie ein
+   Anbieterlimit. Es war unsere eigene Zahl aus COMMERCIAL_LIMITS - der
+   Anbieter wurde fuer diese 686 Titel nie gefragt und hat nie etwas
+   abgelehnt.
+
+   Die Zahl bleibt einstellbar, aber sie heisst jetzt, was sie ist: ein
+   Budget. Wer es erreicht, hat ueber Tiingo nichts gelernt. */
+const REQUEST_BUDGET = parseInt(arg("--request-budget", "0"), 10) || 0;
+/* Das Minutenbudget ist der eigentliche Taktgeber: 100/min ergeben die
+   gemessenen 0,6 s je Titel. Es bleibt getrennt einstellbar, weil es
+   eine andere Frage beantwortet als das Stundenbudget - "wie schnell"
+   statt "wie viel insgesamt". */
+const MINUTE_BUDGET = parseInt(arg("--minute-budget", "0"), 10) || 0;
+/* Wie lange darf ein Abruf auf einen freien Platz warten?
+
+   Der Standardwert 65 s stammt aus dem Oberflaechenbetrieb, wo niemand
+   laenger vor einem Ladebalken sitzen soll. In einem Backfill ist er
+   falsch: er hat 686 Titel verworfen, weil der naechste freie Platz 652
+   Sekunden entfernt war. Warten waere hier billiger gewesen als
+   aufgeben. */
+const MAX_WAIT_MS = parseInt(arg("--max-wait-ms", "0"), 10) || 0;
+/* Fortsetzen statt neu anfangen. Der Checkpoint traegt, was fertig ist;
+   --fresh wirft ihn weg und beginnt von vorn. */
+const FRESH = argv.includes("--fresh");
 /* --scale-dir und --work-dir sind Testschalter derselben Art wie
    TIINGO_BASE_URL: sie lenken Eingabe, Bericht und Arbeitsablage auf
    einen Wegwerfbaum um, damit ein Test den echten Lauf pruefen kann,
@@ -178,6 +207,25 @@ const registry = SymbolMapping.createRegistry(
 );
 
 const capabilities = Tiingo.commercialPlanCapabilities();
+/* Das Budget anheben, wenn der Aufrufer es verlangt - und die Herkunft
+   mitverschieben. Eine angehobene Zahl ohne neue Herkunft waere genau
+   der Fehler, den diese Nacharbeit abstellt: sie saehe hinterher aus wie
+   eine Messung. Sie bleibt SAFETY_CEILING, nur eben eine andere. */
+if (REQUEST_BUDGET > 0 || MINUTE_BUDGET > 0) {
+  capabilities.limits = Object.assign({}, capabilities.limits,
+    REQUEST_BUDGET > 0 ? {
+      requestsPerHour: REQUEST_BUDGET,
+      requestsPerDay: Math.max(capabilities.limits.requestsPerDay, REQUEST_BUDGET)
+    } : {},
+    MINUTE_BUDGET > 0 ? { requestsPerMinute: MINUTE_BUDGET } : {});
+  capabilities.limits.provenance = Object.assign({}, capabilities.limits.provenance, {
+    requestsPerHour: "SAFETY_CEILING",
+    requestsPerMinute: "SAFETY_CEILING",
+    budgetNote: `Vom Aufrufer gesetzt (--request-budget/--minute-budget): ` +
+      `${capabilities.limits.requestsPerHour}/h, ${capabilities.limits.requestsPerMinute}/min. ` +
+      "Weiterhin unsere Zahlen, nicht Tiingos. Was der Anbieter erlaubt, steht in providerObserved."
+  });
+}
 /* TIINGO_BASE_URL ist ausschliesslich fuer Tests da: ein lokaler Server
    an derselben Schnittstelle laesst den ganzen Gate-Lauf pruefen, ohne
    das Kontingent des Anbieters anzufassen. Fehlt die Variable, laeuft
@@ -315,13 +363,19 @@ async function fetchAndAssess(sec, opts) {
   }
 
   const started = Date.now();
-  const res = await provider.getDailyBars(sec.securityId, { from });
+  const res = await provider.getDailyBars(sec.securityId,
+    MAX_WAIT_MS ? { from, maxWaitMs: MAX_WAIT_MS } : { from });
   const latencyMs = Date.now() - started;
 
   if (!res.available) {
     return { ticker: sec.ticker, securityId: sec.securityId, fetched: false,
              providerError: { reason: res.reason, message: String(res.message || "").slice(0, 200),
-                              status: res.status || null },
+                              status: res.status || null,
+                              /* Wer hat abgelehnt? "clientBudget" heisst: wir haben
+                                 nicht gefragt. "provider" heisst: Tiingo hat nein
+                                 gesagt. Nur das zweite ist eine Aussage ueber das
+                                 Konto. */
+                              source: res.source || (res.reason === "rateLimited" ? "clientBudget" : "provider") },
              latencyMs };
   }
 
@@ -473,19 +527,64 @@ async function main() {
   /* -------------------------------------------------- Gate-Universum */
 
   const runId = `gate-${GATE}`;
+  if (FRESH) store.clearCheckpoint(runId);
   const checkpoint = store.loadCheckpoint(runId);
   if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
+
+  /* Der Checkpoint ist eine Menge, keine Liste.
+
+     Als Liste wuchs sie bei jedem Fortsetzen um die schon erledigten
+     Titel weiter - doppelte Eintraege, und "wie viele sind fertig" war
+     nicht mehr aus ihrer Laenge zu lesen. Die Menge macht das
+     Fortsetzen idempotent: zweimal fortsetzen ist dasselbe wie einmal. */
   const done = new Set(checkpoint.done || []);
+  checkpoint.done = Array.from(done);
   const pending = securities.filter((s) => !done.has(s.securityId));
+  const resumed = done.size > 0;
 
   console.log(`\n  Gate-Lauf: ${pending.length} ausstehend` +
-              (done.size ? ` (${done.size} aus einem frueheren Lauf erledigt)` : ""));
+              (done.size ? ` (${done.size} aus einem frueheren Lauf erledigt — Fortsetzung)` : ""));
   console.log(`  Gleichzeitigkeit: ${capabilities.limits.concurrency}, ` +
-              `Kontingent ${capabilities.limits.requestsPerHour}/h (ungeprueft)\n`);
+              `eigenes Budget ${capabilities.limits.requestsPerHour}/h ` +
+              `(SAFETY_CEILING, kein Anbieterlimit)`);
+  if (MAX_WAIT_MS) console.log(`  Wartebereitschaft je Abruf: ${Math.round(MAX_WAIT_MS / 1000)} s`);
+  console.log("");
 
   const perSymbol = {};
   let processed = 0;
   const t1 = Date.now();
+
+  /* Der Checkpoint wird zeitgesteuert gesichert, nicht alle N Titel.
+
+     Die alte Bedingung (done.length % 50 === 0) konnte bei
+     gleichzeitigen Abrufen ueberspringen: zwei Worker schieben kurz
+     hintereinander, die Laenge springt von 49 auf 51, und es wird nie
+     gesichert. Eine Uhr kann nicht uebersprungen werden. */
+  let lastSave = Date.now();
+  const SAVE_EVERY_MS = 10000;
+  function noteDone(securityId) {
+    if (done.has(securityId)) return;
+    done.add(securityId);
+    checkpoint.done.push(securityId);
+    if (Date.now() - lastSave >= SAVE_EVERY_MS) {
+      store.saveCheckpoint(checkpoint);
+      lastSave = Date.now();
+    }
+  }
+
+  /* Ein Abbruch von aussen darf den Fortschritt nicht mitnehmen. Ohne
+     diesen Haken kostet ein abgebrochener Actions-Lauf jede seit der
+     letzten Sicherung geholte Reihe erneut. */
+  let interrupted = null;
+  for (const sig of ["SIGINT", "SIGTERM"]) {
+    process.on(sig, () => {
+      interrupted = sig;
+      try { store.saveCheckpoint(checkpoint); } catch (err) { /* Beim Abbruch nicht noch scheitern. */ }
+      console.error(`\n  ${sig}: Fortschritt gesichert (${checkpoint.done.length} Titel). ` +
+                    "Ein erneuter Aufruf setzt hier fort.");
+      process.exit(130);
+    });
+  }
 
   const results = await pool(pending, async (sec) => {
     const r = await fetchAndAssess(sec, { incremental: true });
@@ -510,14 +609,37 @@ async function main() {
          kann. Die Zaehler (Anfragen, Bytes) bleiben unberuehrt. */
       provider.clearCache();
     }
-    if (!r.providerError) {
-      checkpoint.done.push(sec.securityId);
-      if (checkpoint.done.length % 50 === 0) store.saveCheckpoint(checkpoint);
-    }
+    if (!r.providerError) noteDone(sec.securityId);
     return r;
   }, capabilities.limits.concurrency || 2);
 
   store.saveCheckpoint(checkpoint);
+
+  /* Was ein frueherer Lauf schon geholt hat, gehoert in die Bilanz.
+
+     Ohne diesen Schritt zaehlt ein fortgesetzter Lauf nur, was ER selbst
+     abgerufen hat - die 4.998 Titel aus dem Lauf davor waeren
+     verschwunden, und der Bericht saehe schlechter aus als der Bestand.
+     Das kostet keine einzige Anfrage: die Reihen liegen in der
+     Arbeitsablage, sie werden nur erneut bewertet. */
+  const ausBestand = [];
+  if (resumed) {
+    for (const sec of securities) {
+      if (!done.has(sec.securityId)) continue;
+      if (pending.some((p) => p.securityId === sec.securityId)) continue;
+      const stored = store.readBars(sec.securityId, "working");
+      ausBestand.push({
+        ticker: sec.ticker, securityId: sec.securityId, fetched: false,
+        fromCheckpoint: true,
+        assessment: MarketQuality.assessSeries(stored, { today })
+      });
+    }
+    if (ausBestand.length) {
+      console.log(`  ${ausBestand.length} Titel aus dem Bestand des vorigen Laufs bewertet ` +
+                  "(keine Anfrage).");
+    }
+  }
+  const alleErgebnisse = results.concat(ausBestand);
   const runtimeMs = Date.now() - t0;
 
   /* ------------------------------------------------------- Bilanz */
@@ -525,12 +647,18 @@ async function main() {
   const counts = { requested: securities.length, resolved: 0, success: 0, warning: 0,
                    fail: 0, unavailable: 0 };
   const providerErrors = {};
+  /* Vom eigenen Budget abgewiesen - getrennt gezaehlt. Diese Titel sind
+     nicht schlecht, sie sind ungefragt. Sie mit Datenfehlern in einen
+     Topf zu werfen, war der Berichtsfehler des ersten
+     FULL_UNIVERSE-Laufs. */
+  const budgetBlocked = [];
+  const providerRefused = [];
   const qualityReasons = {};
   let historyCovered = 0, factorReady = 0, totalBars = 0;
   let oldestFirst = null, newestLast = null;
 
   const byTicker = new Map();
-  for (const r of results) {
+  for (const r of alleErgebnisse) {
     if (!r) continue;
     byTicker.set(r.ticker, r);
     const a = r.assessment;
@@ -538,7 +666,10 @@ async function main() {
       counts.unavailable++;
       const key = r.providerError.reason || "unknown";
       providerErrors[key] = (providerErrors[key] || 0) + 1;
+      if (r.providerError.source === "clientBudget") budgetBlocked.push(r.ticker);
+      else if (r.providerError.reason === "quotaExceeded") providerRefused.push(r.ticker);
       perSymbol[r.ticker] = { status: "UNAVAILABLE", reason: key,
+                              source: r.providerError.source || null,
                               message: r.providerError.message };
       continue;
     }
@@ -603,7 +734,35 @@ async function main() {
   ];
   const failed = checks.filter((c) => c.ok === false);
   const skipped = checks.filter((c) => c.ok === null);
-  const verdict = failed.length ? "FAIL" : skipped.length ? "INCOMPLETE" : "PASS";
+
+  /* FAIL heisst: die Daten taugen nicht. Es heisst NICHT: wir haben
+     aufgehoert zu fragen.
+
+     Der erste FULL_UNIVERSE-Lauf hat genau das verwechselt. 686 Titel
+     blieben ungefragt, weil unser eigenes Budget zu Ende war; die drei
+     Quoten wurden trotzdem ueber das volle Universum gerechnet und
+     rissen. Eine Quote ueber einen Nenner, der nie abgerufen wurde,
+     misst nicht die Daten - sie misst den Abbruch.
+
+     Ab hier gilt: sind Titel am eigenen Budget haengengeblieben, lautet
+     das Urteil INCOMPLETE_RESUMABLE. Der Lauf ist nicht gescheitert, er
+     ist nicht fertig, und der Checkpoint sagt, wo er weitergeht. Die
+     Qualitaetsquoten stehen weiter im Bericht - aber ueber dem Nenner,
+     der wirklich abgerufen wurde. */
+  let verdict;
+  if (budgetBlocked.length || providerRefused.length) verdict = "INCOMPLETE_RESUMABLE";
+  else if (failed.length) verdict = "FAIL";
+  else if (skipped.length) verdict = "INCOMPLETE";
+  else verdict = "PASS";
+
+  /* Die Qualitaet der tatsaechlich geholten Titel - unabhaengig davon,
+     wie viele noch ausstehen. Diese Quote ist bei einem abgebrochenen
+     Lauf die einzige, die etwas ueber die Daten aussagt. */
+  const qualityOfResolved = counts.resolved
+    ? { of: counts.resolved,
+        successRate: Math.round((counts.success + counts.warning) / counts.resolved * 10000) / 10000,
+        failRate: Math.round(counts.fail / counts.resolved * 10000) / 10000 }
+    : null;
 
   const gateSpec = SCALE.gates.find((g) => g.id === GATE);
   const report = {
@@ -612,8 +771,31 @@ async function main() {
     provider: "tiingo",
     plan: "commercial",
     verdict,
-    verdictReason: failed.length ? failed.map((c) => c.id).join(",")
-                                 : skipped.length ? "incompleteChecks" : "allChecksPassed",
+    verdictReason: budgetBlocked.length
+      ? `eigenesBudget:${budgetBlocked.length}TitelUngefragt`
+      : providerRefused.length
+      ? `anbieterAblehnung:${providerRefused.length}Titel`
+      : failed.length ? failed.map((c) => c.id).join(",")
+                      : skipped.length ? "incompleteChecks" : "allChecksPassed",
+    /* Fortsetzbarkeit ist Teil des Urteils, nicht eine Fussnote. Wer den
+       Bericht liest, muss ohne Nachfrage wissen, ob ein erneuter Aufruf
+       die Luecke schliesst oder ob erst etwas repariert werden muss. */
+    resumable: (budgetBlocked.length || providerRefused.length) ? {
+      status: "RESUMABLE",
+      pending: budgetBlocked.length + providerRefused.length,
+      completed: checkpoint.done.length,
+      checkpoint: `${runId}`,
+      cause: budgetBlocked.length ? "clientBudget" : "providerLimit",
+      causeNote: budgetBlocked.length
+        ? "Unser eigenes Stundenbudget, nicht Tiingos Limit. Der Anbieter wurde " +
+          "fuer diese Titel nicht gefragt und hat nichts abgelehnt."
+        : "Der Anbieter hat mit HTTP 429 abgelehnt. Das ist eine echte Grenze des Kontos " +
+          "und gehoert in providerObserved - kein Datenfehler.",
+      howTo: `node scripts/market/run-scale-gate.mjs --gate ${GATE}` +
+             (GATE === "FULL_UNIVERSE" ? " --allow-full-backfill" : "") +
+             " (der Checkpoint wird automatisch fortgesetzt)"
+    } : { status: "COMPLETE", pending: 0, completed: checkpoint.done.length },
+    qualityOfResolved,
     nextGate: verdict === "PASS" ? (gateSpec && gateSpec.next) || null : null,
     nextGateNote: verdict === "PASS"
       ? "Freigegeben. Erst jetzt darf die naechste Stufe laufen (§37)."
@@ -651,6 +833,37 @@ async function main() {
       storageMBPer1000Symbols: counts.requested
         ? Math.round(storageBytes / 1048576 / counts.requested * 1000 * 10) / 10 : null,
       quota: quota,
+      /* ANBIETER gegen UNS - die Unterscheidung, die dieser Phase gefehlt hat.
+
+         requestBudget ist unsere Zahl. providerObserved ist, was Tiingo
+         von sich aus gesagt hat. Solange http429Seen false bleibt und
+         keine Kontingentkoepfe ankommen, ist ueber das tatsaechliche
+         Limit des Kontos nichts belegt - und dann darf auch niemand
+         behaupten, es seien 5.000. */
+      requestBudget: {
+        requestsPerHour: capabilities.limits.requestsPerHour,
+        requestsPerMinute: capabilities.limits.requestsPerMinute,
+        provenance: "SAFETY_CEILING",
+        owner: "vision-universe",
+        note: "Unser Budget, nicht Tiingos Limit."
+      },
+      providerObserved: {
+        http429Seen: stats.provider429 > 0,
+        http429Count: stats.provider429 || 0,
+        rateLimitHeaders: stats.rateLimitHeaders || null,
+        retryAfterSeconds: stats.retryAfterSeconds || null,
+        symbolsRefusedByProvider: providerRefused.length,
+        symbolsBlockedByOwnBudget: budgetBlocked.length,
+        highestRequestsInThisRun: stats.requests,
+        status: stats.provider429 > 0 ? "PROVIDER_LIMIT_OBSERVED"
+              : stats.rateLimitHeaders ? "RATE_LIMIT_HEADERS_PRESENT"
+              : "NO_PROVIDER_STATEMENT",
+        note: stats.provider429 > 0
+          ? "Der Anbieter hat abgelehnt. Diese Zahl ist ein Beleg."
+          : "Der Anbieter hat in diesem Lauf nichts abgelehnt und keine Kontingentkoepfe " +
+            "gesendet. Ueber sein tatsaechliches Limit sagt der Lauf damit nichts - ausser, " +
+            "dass es mindestens so hoch ist wie die hier gestellten Anfragen."
+      },
       /* Was der Lauf an Speicher gebraucht hat. Die Zahl entscheidet
          mit, ob die naechste Stufe auf demselben Weg laufen kann (§24,
          §32) - eine Hochrechnung aus der Titelzahl allein wuerde den

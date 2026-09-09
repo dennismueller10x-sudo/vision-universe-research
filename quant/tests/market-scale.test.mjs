@@ -582,3 +582,121 @@ test("MS24 — die relative Staerke vergleicht auf den Stichtag des Titels, nich
   assert.equal(keine.fieldStatus.relativeStrength["12M"], "NOT_APPLICABLE");
   assert.equal(keine.values.relativeStrength["12M"], null);
 });
+
+/* ==========================================================================
+   NACHARBEIT: HERKUNFT DER GRENZEN UND BEDEUTUNG DER KURSE
+
+   Zwei Befunde der Vorphase, die beide dasselbe Muster hatten: eine
+   ungepruefte Groesse las sich wie eine gepruefte. Einmal war es unser
+   eigenes Stundenbudget, das wie Tiingos Limit aussah; einmal eine
+   Kursart, die der Anbieter nie benannt hat.
+
+   Die Tests hier halten fest, dass beides jetzt seine Herkunft traegt.
+   ========================================================================== */
+
+test("MS25 — jede Kontingentzahl traegt ihre Herkunft, und keine gibt sich als Anbieterlimit aus", () => {
+  const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
+  const limits = Tiingo.commercialPlanCapabilities().limits;
+
+  /* Die Zahl, an der FULL_UNIVERSE gescheitert ist. Sie darf bleiben -
+     sie darf nur nicht so tun, als komme sie vom Anbieter. */
+  assert.equal(limits.requestsPerHour, 5000);
+  assert.equal(limits.verified, false);
+  assert.equal(limits.provenance.requestsPerHour, "SAFETY_CEILING",
+    "die 5000 sind unsere Vorsichtsgrenze und muessen als solche gekennzeichnet sein");
+  assert.equal(limits.provenance.requestsPerMinute, "SAFETY_CEILING");
+  assert.equal(limits.provenance.bytesPerMonth, "UNKNOWN");
+
+  /* Was der Anbieter selbst gesagt hat: bis jetzt nichts. */
+  assert.equal(limits.providerObserved.status, "UNKNOWN");
+  assert.equal(limits.providerObserved.http429Seen, false);
+  assert.equal(limits.providerObserved.rateLimitHeaders, null);
+  assert.match(limits.providerObserved.note, /PROVIDER_CONFIRMATION_REQUIRED/);
+
+  /* Und der Begleittext sagt es in Worten, nicht nur in Kennzeichen. */
+  assert.match(limits.note, /UNSER Budget, nicht Tiingos Limit/);
+
+  /* Nur die sieben zugelassenen Stufen kommen vor. */
+  const ERLAUBT = new Set(["PROVIDER_VERIFIED", "ACCOUNT_VERIFIED", "RUNTIME_MEASURED",
+                           "DOCUMENTED", "CONFIG_ASSUMPTION", "SAFETY_CEILING", "UNKNOWN"]);
+  for (const [feld, stufe] of Object.entries(limits.provenance)) {
+    if (feld.endsWith("Note")) continue;
+    assert.ok(ERLAUBT.has(stufe), `${feld} traegt die unbekannte Herkunftsstufe ${stufe}`);
+  }
+});
+
+test("MS26 — das eigene Budget meldet sich als eigenes, nicht als Kontingent des Anbieters", async () => {
+  const MarketClient = require(join(engines, "market-client.js"));
+  /* Ein Client mit einem Budget von einer Anfrage pro Stunde. Die zweite
+     muss abgewiesen werden - und die Meldung muss sagen, von wem. */
+  const client = MarketClient.createMarketClient({
+    providerId: "test",
+    fetchImpl: () => Promise.resolve({
+      status: 200, headers: new Map(),
+      text: () => Promise.resolve("[]")
+    }),
+    limits: { requestsPerMinute: 100, requestsPerHour: 1, requestsPerDay: 1000,
+              bytesPerMonth: Infinity, concurrency: 1, maxRetries: 0, baseBackoffMs: 1 }
+  });
+
+  const ersteAntwort = await client.request({ kind: "t", url: "http://x/1", maxWaitMs: 1 });
+  assert.equal(ersteAntwort.ok, true);
+
+  const zweiteAntwort = await client.request({ kind: "t", url: "http://x/2", maxWaitMs: 1 });
+  assert.equal(zweiteAntwort.ok, false);
+  assert.equal(zweiteAntwort.reason, "rateLimited");
+  assert.equal(zweiteAntwort.source, "clientBudget",
+    "eine selbst auferlegte Grenze muss sich als solche ausweisen");
+  assert.equal(zweiteAntwort.binding, "hour");
+  assert.equal(zweiteAntwort.limit, 1);
+  /* Der Text darf nicht klingen, als haette der Anbieter abgelehnt. */
+  assert.match(zweiteAntwort.message, /Eigenes/);
+  assert.match(zweiteAntwort.message, /Anbieter hat nichts abgelehnt/);
+  assert.ok(!/Kontingent erschoepft/.test(zweiteAntwort.message),
+    "die alte Formulierung las sich wie eine Anbieteraussage");
+});
+
+test("MS27 — ein echtes 429 des Anbieters wird getrennt gezaehlt und mit seinen Koepfen belegt", async () => {
+  const MarketClient = require(join(engines, "market-client.js"));
+  const client = MarketClient.createMarketClient({
+    providerId: "test",
+    fetchImpl: () => Promise.resolve({
+      status: 429,
+      headers: new Map([["x-ratelimit-limit", "5000"], ["x-ratelimit-remaining", "0"],
+                        ["retry-after", "1800"]]),
+      text: () => Promise.resolve("{}")
+    }),
+    limits: { requestsPerMinute: 100, requestsPerHour: 5000, requestsPerDay: 50000,
+              bytesPerMonth: Infinity, concurrency: 1, maxRetries: 0, baseBackoffMs: 1 }
+  });
+
+  const antwort = await client.request({ kind: "t", url: "http://x/1", maxWaitMs: 1 });
+  assert.equal(antwort.ok, false);
+  assert.equal(antwort.reason, "quotaExceeded");
+  assert.equal(antwort.source, "provider", "hier hat der Anbieter tatsaechlich abgelehnt");
+
+  const stats = client.stats();
+  assert.equal(stats.provider429, 1);
+  assert.ok(stats.rateLimitHeaders, "die Kontingentkoepfe muessen mitgeschrieben werden");
+  assert.equal(stats.rateLimitHeaders["x-ratelimit-limit"], "5000");
+  assert.equal(stats.retryAfterSeconds, 1800);
+});
+
+test("MS28 — ein Retry-After als Datum wird nicht zu einer Null gerechnet", async () => {
+  const MarketClient = require(join(engines, "market-client.js"));
+  const client = MarketClient.createMarketClient({
+    providerId: "test",
+    fetchImpl: () => Promise.resolve({
+      status: 429,
+      headers: new Map([["retry-after", "Wed, 09 Sep 2026 18:00:00 GMT"]]),
+      text: () => Promise.resolve("{}")
+    }),
+    limits: { requestsPerMinute: 100, requestsPerHour: 5000, requestsPerDay: 50000,
+              bytesPerMonth: Infinity, concurrency: 1, maxRetries: 0, baseBackoffMs: 1 }
+  });
+  await client.request({ kind: "t", url: "http://x/1", maxWaitMs: 1 });
+  /* null heisst "nicht als Sekunden lesbar". 0 hiesse "sofort wieder" -
+     das Gegenteil dessen, was der Kopf sagt. */
+  assert.equal(client.stats().retryAfterSeconds, null);
+  assert.equal(client.stats().rateLimitHeaders["retry-after"], "Wed, 09 Sep 2026 18:00:00 GMT");
+});
