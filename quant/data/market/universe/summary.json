@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-09T10:13:33.284Z",
+  "generatedAt": "2026-09-09T10:23:36.356Z",
   "provider": "tiingo",
   "status": "OK",
   "classificationVersion": "instrument-classification-1.0.0",
   "source": {
     "kind": "providerDownload",
     "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-    "fetchedAt": "2026-09-09T10:13:32.598Z",
-    "bytes": 801602,
+    "fetchedAt": "2026-09-09T10:23:35.664Z",
+    "bytes": 794106,
     "columns": [
       "ticker",
       "exchange",
@@ -19,14 +19,14 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "34339012486",
-    "commit": "3628ef0a8b92ed3dddcb5d057128b7166092b3dd",
-    "classificationRuntimeMs": 332
+    "runId": "34339904683",
+    "commit": "41a195635392c0e5973b32fa37f8d83acfaeaca5",
+    "classificationRuntimeMs": 387
   },
   "totals": {
-    "rows": 108572,
+    "rows": 108573,
     "byInstrumentType": {
-      "COMMON_STOCK": 47887,
+      "COMMON_STOCK": 47888,
       "ADR": 0,
       "PREFERRED": 29,
       "ETF": 9587,
@@ -36,15 +36,15 @@
       "OTHER": 494,
       "UNKNOWN": 0
     },
-    "screenerEligible": 31319,
+    "screenerEligible": 31320,
     "screenerEligibleByExchange": {
-      "SHE": 3212,
+      "SHE": 3213,
       "SHG": 2837,
       "NYSE": 2718,
       "NYSE ARCA": 23,
-      "PINK": 15805,
+      "PINK": 15801,
       "NASDAQ": 4908,
-      "OTCMKTS": 832,
+      "OTCMKTS": 836,
       "OTCGREY": 176,
       "BATS": 225,
       "OTCQB": 205,
@@ -59,16 +59,16 @@
       "NMFQS": 2
     },
     "byCurrency": {
-      "USD": 101337,
+      "USD": 101338,
       "CNY": 7178,
       "HKD": 52,
       "AUD": 5
     },
-    "activeTrue": 66110,
+    "activeTrue": 66111,
     "activeFalse": 42462,
     "activeUnknown": 0,
     "otc": 17109,
-    "nonOtc": 14210
+    "nonOtc": 14211
   },
   "coverageGaps": {
     "company": {
