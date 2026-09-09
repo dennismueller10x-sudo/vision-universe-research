@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T15:26:35.735Z",
+  "generatedAt": "2026-09-09T15:36:08.426Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "realtimeStreamAndLiveCandle",
@@ -8,8 +8,8 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "34369902099",
-    "commit": "d4ab4e15fa1314e2b0be8ed90621574c4b00ab24",
+    "runId": "34370938243",
+    "commit": "ad103f3b1169f739249c279299ea5f5061be92d6",
     "ref": "claude/tiingo-commercial-phase-1-4j0581",
     "wsUrl": "wss://api.tiingo.com/iex",
     "secondsPerMeasurement": 90
@@ -17,7 +17,7 @@
   "sessionAtRun": {
     "phase": "REGULAR",
     "localDate": "2026-09-09",
-    "localTime": "11:23:26",
+    "localTime": "11:32:58",
     "closedReason": null,
     "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
   },
@@ -32,20 +32,32 @@
     "priceType": "UNSPECIFIED",
     "classification": "PROVIDER_CONFIRMATION_REQUIRED",
     "probes": 24,
-    "matchesByField": {
-      "tngoLast": 13,
-      "mid": 7
+    "matchCountsByField": {
+      "tngoLastMatches": 8,
+      "midMatches": 4
     },
-    "fieldsPresent": {
-      "tngoLast": 24,
-      "mid": 24,
-      "prevClose": 24,
-      "open": 24,
-      "high": 24,
-      "low": 24
+    "fieldProbeCounts": {
+      "tngoLastProbes": 24,
+      "midProbes": 24,
+      "prevCloseProbes": 24,
+      "openProbes": 24,
+      "highProbes": 24,
+      "lowProbes": 24
     },
     "withinBidAsk": null,
-    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen.",
+    "leadingCandidate": {
+      "field": "tngoLast",
+      "type": "REFERENCE",
+      "matches": 8,
+      "of": 24,
+      "note": "Haeufigster Treffer, aber nicht eindeutig genug fuer einen Befund. Ein Indiz, keine Zuordnung."
+    },
+    "absentFields": [
+      "last",
+      "bidPrice",
+      "askPrice"
+    ],
+    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen. Am haeufigsten traf tngoLast (8/24). Bemerkenswert: last, bidPrice, askPrice kommen in der Kursabfrage dieses Kontos gar nicht vor - ein Abschlusskurs steht also nicht einmal zum Vergleich zur Verfuegung.",
     "known": "Es kommen fortlaufend Kurse, und sie bauen eine bewegte Minutenkerze.",
     "unknown": "Was die Zahl bedeutet - Abschluss, Referenz, Mitte oder Quote - ist offen.",
     "safeForIntradayIntelligence": false,
@@ -91,7 +103,7 @@
     "tradeStreamAvailable": false,
     "quoteMessagesObserved": 0,
     "tradeMessagesObserved": 0,
-    "unparsedPriceMessages": 131,
+    "unparsedPriceMessages": 110,
     "observedMessageShape": [
       {
         "service": "iex",
@@ -178,17 +190,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 200,
+        "openedAfterMs": 221,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 133,
+        "messages": 112,
         "adminMessages": 2,
         "messageTypes": {
-          "noTypeField": 131
+          "noTypeField": 110
         },
         "messageShape": [
           {
@@ -219,7 +231,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 131,
+        "unparsedPriceMessages": 110,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -229,60 +241,60 @@
         "stableForFullDuration": true
       },
       "events": {
-        "count": 131,
-        "firstAfterMs": 527,
-        "lastAfterMs": 88188,
-        "perSecond": 1.49,
+        "count": 110,
+        "firstAfterMs": 1413,
+        "lastAfterMs": 89347,
+        "perSecond": 1.25,
         "gapMs": {
-          "min": 471,
-          "median": 561,
-          "p90": 1043,
-          "max": 2125
+          "min": 434,
+          "median": 585,
+          "p90": 1310,
+          "max": 4786
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
           "max": 0
         },
-        "withTimestamp": 131,
-        "withSymbol": 131,
+        "withTimestamp": 110,
+        "withSymbol": 110,
         "bySymbol": {
-          "NVDA": 131
+          "NVDA": 110
         },
         "consecutive": true
       },
       "candle": {
         "symbol": "NVDA",
-        "bucket": "2026-09-09T11:24",
-        "ticksInBucket": 82,
+        "bucket": "2026-09-09T11:34",
+        "ticksInBucket": 35,
         "perSymbol": {
           "NVDA": {
             "bars": 2,
-            "ticksInLastBar": 82,
-            "maxTicksInAnyBar": 82,
-            "rangeRelative": 0.000693
+            "ticksInLastBar": 35,
+            "maxTicksInAnyBar": 75,
+            "rangeRelative": 0.00098
           }
         },
-        "maxTicksInAnyBucket": 82,
+        "maxTicksInAnyBucket": 75,
         "barsFormed": 2,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.000693,
-        "closeMovedFromOpen": -0.000603,
+        "rangeRelative": 0.00098,
+        "closeMovedFromOpen": -0.000958,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 131
+          "UNSPECIFIED": 110
         },
         "messageForms": {
-          "iexNoTypeField": 131
+          "iexNoTypeField": 110
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 131,
+          "ticks": 110,
           "accepted": 2,
           "rejectedFuture": 0,
           "rejectedConfirmed": 0,
@@ -292,21 +304,21 @@
       },
       "priceFieldProbe": {
         "probes": 8,
-        "fieldsPresent": {
-          "tngoLast": 8,
-          "mid": 8,
-          "prevClose": 8,
-          "open": 8,
-          "high": 8,
-          "low": 8
+        "fieldProbeCounts": {
+          "tngoLastProbes": 8,
+          "midProbes": 8,
+          "prevCloseProbes": 8,
+          "openProbes": 8,
+          "highProbes": 8,
+          "lowProbes": 8
         },
-        "matchesByField": {
-          "tngoLast": 3,
-          "mid": 3
+        "matchCountsByField": {
+          "tngoLastMatches": 3,
+          "midMatches": 3
         },
         "withinBidAskOf": 0,
         "withinBidAsk": 0,
-        "medianStreamPriceAgeMs": 632,
+        "medianStreamPriceAgeMs": 768,
         "error": null,
         "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }
@@ -324,7 +336,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 78,
+        "openedAfterMs": 47,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -412,7 +424,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 168,
+        "openedAfterMs": 58,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -501,17 +513,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 72,
+        "openedAfterMs": 47,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 128,
+        "messages": 102,
         "adminMessages": 2,
         "messageTypes": {
-          "noTypeField": 126
+          "noTypeField": 100
         },
         "messageShape": [
           {
@@ -542,7 +554,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 126,
+        "unparsedPriceMessages": 100,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -552,68 +564,68 @@
         "stableForFullDuration": true
       },
       "events": {
-        "count": 126,
-        "firstAfterMs": 217,
-        "lastAfterMs": 88410,
-        "perSecond": 1.43,
+        "count": 100,
+        "firstAfterMs": 385,
+        "lastAfterMs": 89471,
+        "perSecond": 1.12,
         "gapMs": {
-          "min": 3,
-          "median": 604,
-          "p90": 1222,
-          "max": 2860
+          "min": 23,
+          "median": 683,
+          "p90": 1904,
+          "max": 4376
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
           "max": 0
         },
-        "withTimestamp": 126,
-        "withSymbol": 126,
+        "withTimestamp": 100,
+        "withSymbol": 100,
         "bySymbol": {
-          "AAPL": 105,
+          "AAPL": 79,
           "MSFT": 21
         },
         "consecutive": true
       },
       "candle": {
         "symbol": "AAPL",
-        "bucket": "2026-09-09T11:26",
-        "ticksInBucket": 40,
+        "bucket": "2026-09-09T11:36",
+        "ticksInBucket": 5,
         "perSymbol": {
           "AAPL": {
-            "bars": 2,
-            "ticksInLastBar": 40,
-            "maxTicksInAnyBar": 65,
-            "rangeRelative": 0.000352
+            "bars": 3,
+            "ticksInLastBar": 5,
+            "maxTicksInAnyBar": 54,
+            "rangeRelative": 0.000303
           },
           "MSFT": {
-            "bars": 2,
-            "ticksInLastBar": 7,
-            "maxTicksInAnyBar": 14,
-            "rangeRelative": 0.000132
+            "bars": 3,
+            "ticksInLastBar": 1,
+            "maxTicksInAnyBar": 11,
+            "rangeRelative": 0
           }
         },
-        "maxTicksInAnyBucket": 65,
-        "barsFormed": 2,
+        "maxTicksInAnyBucket": 54,
+        "barsFormed": 3,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.000352,
-        "closeMovedFromOpen": 0.00008,
+        "rangeRelative": 0.000303,
+        "closeMovedFromOpen": 0.000207,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 126
+          "UNSPECIFIED": 100
         },
         "messageForms": {
-          "iexNoTypeField": 126
+          "iexNoTypeField": 100
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 105,
-          "accepted": 2,
+          "ticks": 79,
+          "accepted": 3,
           "rejectedFuture": 0,
           "rejectedConfirmed": 0,
           "rejectedMalformed": 0
@@ -622,21 +634,21 @@
       },
       "priceFieldProbe": {
         "probes": 16,
-        "fieldsPresent": {
-          "tngoLast": 16,
-          "mid": 16,
-          "prevClose": 16,
-          "open": 16,
-          "high": 16,
-          "low": 16
+        "fieldProbeCounts": {
+          "tngoLastProbes": 16,
+          "midProbes": 16,
+          "prevCloseProbes": 16,
+          "openProbes": 16,
+          "highProbes": 16,
+          "lowProbes": 16
         },
-        "matchesByField": {
-          "mid": 4,
-          "tngoLast": 10
+        "matchCountsByField": {
+          "tngoLastMatches": 5,
+          "midMatches": 1
         },
         "withinBidAskOf": 0,
         "withinBidAsk": 0,
-        "medianStreamPriceAgeMs": 1159,
+        "medianStreamPriceAgeMs": 1053,
         "error": null,
         "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }
