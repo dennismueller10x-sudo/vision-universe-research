@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.0.0",
+  "mapping_version": "2.0.0",
   "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist.",
   "sector_rules": [
     {
@@ -59,6 +59,11 @@
           "taxonomy": "us-gaap",
           "concept": "SalesRevenueServicesNet",
           "priority": 60
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RevenuesNetOfInterestExpense",
+          "priority": 70
         }
       ]
     },
@@ -242,6 +247,46 @@
         }
       ]
     },
+    "investing_cash_flow": {
+      "label": "Investing Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInInvestingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInInvestingActivitiesContinuingOperations",
+          "priority": 20
+        }
+      ]
+    },
+    "financing_cash_flow": {
+      "label": "Financing Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInFinancingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInFinancingActivitiesContinuingOperations",
+          "priority": 20
+        }
+      ]
+    },
     "capital_expenditures": {
       "label": "Capital Expenditures",
       "kind": "duration",
@@ -333,6 +378,36 @@
         }
       ]
     },
+    "current_assets": {
+      "label": "Current Assets",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AssetsCurrent",
+          "priority": 10
+        }
+      ]
+    },
+    "current_liabilities": {
+      "label": "Current Liabilities",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilitiesCurrent",
+          "priority": 10
+        }
+      ]
+    },
     "total_liabilities": {
       "label": "Total Liabilities",
       "kind": "instant",
@@ -365,6 +440,85 @@
           "taxonomy": "us-gaap",
           "concept": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
           "priority": 20
+        }
+      ]
+    },
+    "goodwill": {
+      "label": "Goodwill",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Goodwill",
+          "priority": 10
+        }
+      ]
+    },
+    "intangible_assets": {
+      "label": "Intangible Assets Excluding Goodwill",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IntangibleAssetsNetExcludingGoodwill",
+          "priority": 10
+        }
+      ]
+    },
+    "inventory": {
+      "label": "Inventory",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InventoryNet",
+          "priority": 10
+        }
+      ]
+    },
+    "accounts_receivable": {
+      "label": "Accounts Receivable",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsReceivableNetCurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ReceivablesNetCurrent",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsNotesAndLoansReceivableNetCurrent",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsReceivableNet",
+          "priority": 40
         }
       ]
     },
@@ -575,6 +729,38 @@
           "taxonomy": "us-gaap",
           "concept": "PaymentsOfDividends",
           "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsOfDividendsCommonAndPreferredStock",
+          "priority": 30
+        }
+      ]
+    },
+    "share_repurchases": {
+      "label": "Share Repurchases",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfCommonStock",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfCommonAndPreferredStock",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfEquity",
+          "priority": 30
         }
       ]
     },

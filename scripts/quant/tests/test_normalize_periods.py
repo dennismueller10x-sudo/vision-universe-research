@@ -10,7 +10,10 @@ from quant.sec.model import (
     TRANSFORM_YTD_DIFF, TRANSFORM_FY_MINUS_YTD, TRANSFORM_NONE, TRANSFORM_SUM,
     SOURCE_SEC, NOT_APPLICABLE_FOR_SECTOR, MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY,
 )
-from quant.sec.normalize import normalize_company, period_end_for_cover_date
+from quant.sec.normalize import (
+    ISSUE_FUTURE_PERIOD, normalize_company, period_end_for_cover_date,
+)
+from quant.sec.gates import PASS, gate_no_future_data_leak
 from quant.sec.periods import PeriodResolver
 from quant.sec.provider import SECProvider
 from quant.sec.registry import MetricRegistry
@@ -290,6 +293,33 @@ class MappingIntegrityTests(unittest.TestCase):
         result, _ = normalize(builder, self.registry, 2000000009)
         self.assertEqual(result.stats["unmapped"], 1)
         self.assertEqual(result.stats["mapped"], 0)
+
+
+class FuturePeriodQuarantineTests(unittest.TestCase):
+    def test_source_fact_for_a_future_period_is_quarantined_not_repaired(self):
+        registry = MetricRegistry.load()
+        builder = FactsBuilder(2000000099)
+        builder.add_filing("acc-q1", "10-Q", "2021-05-17", "2021-03-31",
+                           acceptance="2021-05-17T20:39:45.000Z")
+        builder.add_filing("acc-fy", "10-K", "2022-02-01", "2021-12-31",
+                           acceptance="2022-02-01T20:00:00.000Z")
+        builder.add("us-gaap", "ShareBasedCompensation", "USD", 10,
+                    "2021-03-31", "2021-01-01", "acc-q1", "10-Q",
+                    "2021-05-17", fy=2021, fp="Q1")
+        builder.add("us-gaap", "ShareBasedCompensation", "USD", 10,
+                    "2021-09-30", "2021-07-01", "acc-q1", "10-Q",
+                    "2021-05-17", fy=2021, fp="Q1")
+        builder.add("us-gaap", "ShareBasedCompensation", "USD", 40,
+                    "2021-12-31", "2021-01-01", "acc-fy", "10-K",
+                    "2022-02-01", fy=2021, fp="FY")
+
+        result, raw = normalize(builder, registry, 2000000099)
+
+        self.assertEqual(len(raw), 3, "the immutable raw layer retains every fact")
+        self.assertEqual(result.stats["quarantined_future_periods"], 1)
+        self.assertEqual(sum(issue["code"] == ISSUE_FUTURE_PERIOD
+                             for issue in result.issues), 1)
+        self.assertEqual(gate_no_future_data_leak(result.factbook)["status"], PASS)
 
 
 class CoverDateInstantTests(unittest.TestCase):

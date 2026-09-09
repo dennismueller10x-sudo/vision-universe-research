@@ -15,6 +15,9 @@ import hashlib
 import json
 import logging
 import os
+import sqlite3
+import zlib
+from contextlib import contextmanager
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,9 +25,12 @@ from pathlib import Path
 LOGGER = logging.getLogger("vu.sec.store")
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RAW_DIR = Path(os.environ.get("SEC_RAW_DIR") or (ROOT / "quant" / "data" / "sec" / "raw"))
+DEFAULT_RAW_DIR = Path(os.environ.get("SEC_RAW_DIR") or (ROOT / ".sec-data" / "raw"))
 DEFAULT_FACT_DIR = Path(os.environ.get("SEC_FACT_DIR") or (ROOT / "quant" / "data" / "sec" / "facts"))
 DEFAULT_STATE_DIR = Path(os.environ.get("SEC_STATE_DIR") or (ROOT / ".quant-state"))
+DEFAULT_SQLITE_FACT_PATH = Path(
+    os.environ.get("SEC_SQLITE_FACT_PATH") or (ROOT / ".sec-data" / "sec-facts.sqlite")
+)
 
 
 def _utcnow():
@@ -216,6 +222,154 @@ class JsonFactStore(FactStore):
             return None
         return json.loads(path.read_text(encoding="utf-8"))
 
+    def stats(self):
+        if not self.directory.exists():
+            return {"companies": 0, "files": 0, "storageBytes": 0}
+        suffix = ".json.gz" if self.compress else ".json"
+        paths = [path for path in self.directory.glob(f"*{suffix}")
+                 if path.name != self.MANIFEST_NAME]
+        digest = hashlib.sha256()
+        for path in sorted(paths):
+            digest.update(path.name.encode("utf-8"))
+            digest.update(hashlib.sha256(path.read_bytes()).digest())
+        return {
+            "companies": len(paths),
+            "files": len(paths),
+            "storageBytes": sum(path.stat().st_size for path in paths),
+            "stateDigest": digest.hexdigest(),
+        }
+
+
+class SqliteFactStore(FactStore):
+    """Transactional, indexed local store for large-universe normalized documents.
+
+    The existing pipeline still writes one logical document per CIK, but SQLite
+    removes the 10,000-file factbook layout, provides atomic replacement and an
+    indexed inventory. Payloads are compressed because company factbooks are
+    dominated by repetitive JSON keys. The public canonical adapter remains on
+    the existing small JSON fixtures; production data never enters Git.
+    """
+
+    def __init__(self, path=DEFAULT_SQLITE_FACT_PATH):
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._initialize()
+
+    def _connect(self):
+        connection = sqlite3.connect(str(self.path), timeout=30)
+        connection.execute("PRAGMA journal_mode=WAL")
+        connection.execute("PRAGMA synchronous=FULL")
+        return connection
+
+    @contextmanager
+    def _connection(self):
+        connection = self._connect()
+        try:
+            yield connection
+            connection.commit()
+        finally:
+            connection.close()
+
+    def _initialize(self):
+        with self._connection() as connection:
+            connection.execute("""
+                CREATE TABLE IF NOT EXISTS company_documents (
+                    cik TEXT PRIMARY KEY,
+                    payload BLOB NOT NULL,
+                    sha256 TEXT NOT NULL,
+                    uncompressed_bytes INTEGER NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+            """)
+            connection.execute("""
+                CREATE TABLE IF NOT EXISTS store_manifest (
+                    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                    payload TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+            """)
+
+    @staticmethod
+    def _encode(document):
+        body = json.dumps(document, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return body, hashlib.sha256(body).hexdigest(), zlib.compress(body, level=6)
+
+    def write_company(self, cik, document):
+        cik = str(cik)
+        body, digest, compressed = self._encode(document)
+        with self._connection() as connection:
+            connection.execute(
+                """INSERT INTO company_documents
+                   (cik, payload, sha256, uncompressed_bytes, updated_at)
+                   VALUES (?, ?, ?, ?, ?)
+                   ON CONFLICT(cik) DO UPDATE SET
+                     payload=excluded.payload,
+                     sha256=excluded.sha256,
+                     uncompressed_bytes=excluded.uncompressed_bytes,
+                     updated_at=excluded.updated_at""",
+                (cik, compressed, digest, len(body), _utcnow()),
+            )
+        LOGGER.info("stored sqlite facts cik=%s bytes=%d compressed=%d",
+                    cik, len(body), len(compressed))
+        return self.path
+
+    def read_company(self, cik):
+        with self._connection() as connection:
+            row = connection.execute(
+                "SELECT payload FROM company_documents WHERE cik = ?", (str(cik),)
+            ).fetchone()
+        if row is None:
+            return None
+        return json.loads(zlib.decompress(row[0]))
+
+    def list_companies(self):
+        with self._connection() as connection:
+            rows = connection.execute(
+                "SELECT cik FROM company_documents ORDER BY cik"
+            ).fetchall()
+        return [row[0] for row in rows]
+
+    def write_manifest(self, manifest):
+        payload = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+        with self._connection() as connection:
+            connection.execute(
+                """INSERT INTO store_manifest(singleton, payload, updated_at)
+                   VALUES (1, ?, ?)
+                   ON CONFLICT(singleton) DO UPDATE SET
+                     payload=excluded.payload, updated_at=excluded.updated_at""",
+                (payload, _utcnow()),
+            )
+        return self.path
+
+    def read_manifest(self):
+        with self._connection() as connection:
+            row = connection.execute(
+                "SELECT payload FROM store_manifest WHERE singleton = 1"
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def stats(self):
+        with self._connection() as connection:
+            row = connection.execute(
+                """SELECT COUNT(*), COALESCE(SUM(uncompressed_bytes), 0),
+                          COALESCE(SUM(LENGTH(payload)), 0)
+                   FROM company_documents"""
+            ).fetchone()
+            digests = connection.execute(
+                "SELECT cik, sha256 FROM company_documents ORDER BY cik"
+            ).fetchall()
+        state_digest = hashlib.sha256()
+        for cik, digest in digests:
+            state_digest.update(cik.encode("utf-8"))
+            state_digest.update(digest.encode("ascii"))
+        return {
+            "companies": row[0],
+            "uncompressedBytes": row[1],
+            "compressedPayloadBytes": row[2],
+            "databaseBytes": self.path.stat().st_size if self.path.exists() else 0,
+            "stateDigest": state_digest.hexdigest(),
+        }
+
 
 class CheckpointStore:
     """Resumable import state: progress, failures and a retry queue.
@@ -231,8 +385,12 @@ class CheckpointStore:
     def load(self):
         if not self.path.exists():
             return {"run_id": self.run_id, "started_at": _utcnow(), "completed": {},
-                    "failed": {}, "retry_queue": [], "last_cik": None}
-        return json.loads(self.path.read_text(encoding="utf-8"))
+                    "excluded": {}, "failed": {}, "retry_queue": [], "last_cik": None}
+        state = json.loads(self.path.read_text(encoding="utf-8"))
+        # Backward-compatible with checkpoints written before exclusions became
+        # a first-class terminal state.
+        state.setdefault("excluded", {})
+        return state
 
     def save(self, state):
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -244,16 +402,29 @@ class CheckpointStore:
 
     def mark_completed(self, state, cik, detail):
         state["completed"][str(cik)] = {"at": _utcnow(), **detail}
+        state.setdefault("excluded", {}).pop(str(cik), None)
         state["failed"].pop(str(cik), None)
         state["retry_queue"] = [item for item in state["retry_queue"] if item != str(cik)]
         state["last_cik"] = str(cik)
         return state
 
-    def mark_failed(self, state, cik, error):
+    def mark_excluded(self, state, cik, detail):
+        """Record a reproducible eligibility exclusion without retrying it."""
+        state.setdefault("excluded", {})[str(cik)] = {"at": _utcnow(), **detail}
+        state["completed"].pop(str(cik), None)
+        state["failed"].pop(str(cik), None)
+        state["retry_queue"] = [item for item in state["retry_queue"] if item != str(cik)]
+        state["last_cik"] = str(cik)
+        return state
+
+    def mark_failed(self, state, cik, error, code="UNKNOWN", detail=None):
         record = state["failed"].get(str(cik), {"attempts": 0})
         record["attempts"] += 1
         record["at"] = _utcnow()
         record["error"] = str(error)
+        record["code"] = code
+        if detail:
+            record.update(detail)
         state["failed"][str(cik)] = record
         if str(cik) not in state["retry_queue"]:
             state["retry_queue"].append(str(cik))
@@ -261,7 +432,8 @@ class CheckpointStore:
         return state
 
     def is_completed(self, state, cik):
-        return str(cik) in state["completed"]
+        return (str(cik) in state["completed"]
+                or str(cik) in state.get("excluded", {}))
 
     def reset(self):
         if self.path.exists():

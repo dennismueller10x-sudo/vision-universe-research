@@ -1,9 +1,11 @@
 """SEC fair access and the provider surface. No test here touches the network."""
+import io
 import json
 import sys
 import tempfile
 import unittest
 import urllib.error
+import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -207,6 +209,26 @@ class HttpClientTests(unittest.TestCase):
                 client.get_json("https://data.sec.gov/x.json")
         self.assertEqual(len(attempts), 2)
 
+    def test_large_download_streams_to_an_atomic_local_cache(self):
+        payload = b"PK" + (b"x" * 4096)
+        client = SECHttpClient(
+            user_agent="TestSuite test@example.test",
+            cache=DiskCache(self.tmp.name, ttl_seconds=3600),
+            rate_limiter=RateLimiter(rate_per_second=1000, burst=1000,
+                                     monotonic=self.clock.monotonic,
+                                     sleep=self.clock.sleep),
+            stream_opener=lambda _url, _headers, _timeout: io.BytesIO(payload),
+        )
+        target = Path(self.tmp.name) / "bulk" / "archive.zip"
+        self.assertEqual(client.download_file("https://example.test/archive", target),
+                         target)
+        self.assertEqual(target.read_bytes(), payload)
+        self.assertFalse(target.with_name("archive.zip.part").exists())
+        self.assertEqual(client.stats["requests"], 1)
+        client.download_file("https://example.test/archive", target)
+        self.assertEqual(client.stats["requests"], 1)
+        self.assertEqual(client.stats["cache_hits"], 1)
+
 
 class StubClient:
     def __init__(self, responses):
@@ -221,6 +243,45 @@ class StubClient:
 
 
 class ProviderTests(unittest.TestCase):
+    def test_local_bulk_archives_feed_the_existing_provider_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            submissions_zip = directory / "submissions.zip"
+            facts_zip = directory / "companyfacts.zip"
+            submission = submissions(
+                1045810, "SYNTHETIC ONE", "3674", "1231", ["SYN1"], [])
+            facts = FactsBuilder(1045810).company_facts()
+            with zipfile.ZipFile(submissions_zip, "w") as archive:
+                archive.writestr("CIK0001045810.json", json.dumps(submission))
+            with zipfile.ZipFile(facts_zip, "w") as archive:
+                archive.writestr("CIK0001045810.json", json.dumps(facts))
+
+            provider = SECProvider(
+                bulk_submissions_path=submissions_zip,
+                bulk_company_facts_path=facts_zip,
+            )
+            self.assertEqual(provider.get_submissions("1045810")["name"],
+                             "SYNTHETIC ONE")
+            self.assertEqual(provider.get_company_facts("1045810")["cik"], 1045810)
+            self.assertEqual(provider.client.stats["requests"], 0)
+            evidence = provider.input_evidence()
+            self.assertEqual([row["kind"] for row in evidence],
+                             ["submissions", "companyfacts"])
+            provider.close()
+
+    def test_bulk_submissions_cannot_silently_drop_a_history_page(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "submissions.zip"
+            payload = submissions(
+                1045810, "SYNTHETIC ONE", "3674", "1231", ["SYN1"], [])
+            payload["filings"]["files"] = [{"name": "missing-page.json"}]
+            with zipfile.ZipFile(path, "w") as archive:
+                archive.writestr("CIK0001045810.json", json.dumps(payload))
+            provider = SECProvider(bulk_submissions_path=path)
+            with self.assertRaisesRegex(ValueError, "incomplete"):
+                provider.get_submissions("1045810")
+            provider.close()
+
     TICKER_URL = "https://www.sec.gov/files/company_tickers.json"
 
     def _provider(self, extra=None):

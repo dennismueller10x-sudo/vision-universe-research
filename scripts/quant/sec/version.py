@@ -35,20 +35,29 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         NVDA's 10-Ks for the years ending January 2011 to January 2014 tag it
 #         one year low, which produced two fiscal years labelled 2010, no 2014,
 #         and four years off by one.
-NORMALIZATION_LOGIC_VERSION = "1.5.0"
+#
+# 1.6.0 — a source fact whose period ends after the filing became available is
+#         retained in RawStore and quality evidence but quarantined from fiscal
+#         calendar inference and canonical output; dates and values are never
+#         repaired by guessing.
+#
+# 1.7.0 — adds PIT-safe, explicitly derived EBIT. The value becomes available
+#         only when both pretax income and interest expense are available.
+NORMALIZATION_LOGIC_VERSION = "1.7.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
 METRIC_REGISTRY_MIN_VERSION = 1
 
 # Derived-metric formulas. Bump on any change to derived.py's arithmetic.
-FORMULA_VERSION = "1.0.0"
+# 1.1.0 adds explicitly DERIVED EBIT = pretax income + interest expense.
+FORMULA_VERSION = "1.1.0"
 
 # The SEC access adapter (endpoints, fair-access behaviour).
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
 
 # Data quality rule set.
-QUALITY_RULES_VERSION = "1.0.0"
+QUALITY_RULES_VERSION = "2.0.0"
 
 
 # Files whose content defines NORMALIZATION_LOGIC_VERSION. Changing any of them
@@ -64,7 +73,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "2afb58fcf5a4f9bdf9d463ec3abc58694452b757a47da85d0c700a5637cef3cd"
+    "aec5a76c97203b294b4887727224891ce89f7d503bf0903180412ebf10fca9fa"
 )
 
 

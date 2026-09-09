@@ -18,7 +18,7 @@ from quant.sec.pipeline import (
 from quant.sec.provider import SECProvider, normalize_cik
 from quant.sec.registry import MetricRegistry
 from quant.sec.restatements import POLICY_LATEST_KNOWN
-from quant.sec.store import CheckpointStore, JsonFactStore, JsonRawStore
+from quant.sec.store import CheckpointStore, JsonFactStore, JsonRawStore, SqliteFactStore
 from quant.tests.fixtures import build_year_ends, standard_company, submissions
 
 
@@ -211,9 +211,22 @@ class UniverseTests(PipelineTestCase):
         self.pipe.ingest_universe(self.entries, limit=2)
         state = self.checkpoint.load()
         self.assertEqual(len(state["completed"]), 2)
-        self.pipe.ingest_universe(self.entries)
+        outcome = self.pipe.ingest_universe(self.entries)
         self.assertEqual(len(self.checkpoint.load()["completed"]), 4)
         self.assertEqual(len(self.fact_store.list_companies()), 4)
+        self.assertEqual(outcome["manifest"]["run"]["companies_successful"], 4)
+        self.assertEqual(
+            outcome["manifest"]["run"]["companies_successful_this_invocation"], 2)
+
+    def test_resumed_failure_rate_uses_the_whole_checkpoint_population(self):
+        self.pipe.ingest_universe(self.entries, limit=3)
+        resumed = self.pipe.ingest_universe(
+            self.entries + [{"cik": 4999999}], max_failure_rate=0.5,
+            min_failure_sample=4,
+        )
+        self.assertFalse(resumed["manifest"]["run"]["halted"])
+        self.assertEqual(resumed["manifest"]["run"]["completed"], 4)
+        self.assertEqual(resumed["manifest"]["run"]["failed"], 1)
 
     def test_a_company_is_abandoned_after_repeated_failures(self):
         broken = [{"cik": 4999999}]
@@ -436,6 +449,30 @@ class StoreTests(unittest.TestCase):
     def test_reading_an_unknown_company_returns_none(self):
         store = JsonFactStore(Path(self.tmp.name) / "facts", compress=True)
         self.assertIsNone(store.read_company("0000000099"))
+
+    def test_sqlite_store_round_trips_and_indexes_companies(self):
+        store = SqliteFactStore(Path(self.tmp.name) / "facts.sqlite")
+        store.write_company("0000000002", {"cik": "0000000002", "x": [2]})
+        store.write_company("0000000001", {"cik": "0000000001", "x": [1]})
+        self.assertEqual(["0000000001", "0000000002"], store.list_companies())
+        self.assertEqual([2], store.read_company("0000000002")["x"])
+
+    def test_sqlite_store_is_idempotent_for_the_same_company_document(self):
+        store = SqliteFactStore(Path(self.tmp.name) / "facts.sqlite")
+        document = {"cik": "0000000001", "facts": [{"value": 42}]}
+        store.write_company("0000000001", document)
+        before = store.stats()
+        store.write_company("0000000001", document)
+        after = store.stats()
+        self.assertEqual(1, after["companies"])
+        self.assertEqual(before["uncompressedBytes"], after["uncompressedBytes"])
+        self.assertEqual(document, store.read_company("0000000001"))
+
+    def test_sqlite_manifest_round_trips(self):
+        store = SqliteFactStore(Path(self.tmp.name) / "facts.sqlite")
+        manifest = {"run": {"completed": 2}}
+        store.write_manifest(manifest)
+        self.assertEqual(manifest, store.read_manifest())
 
     def test_a_checkpoint_survives_a_process_restart(self):
         directory = Path(self.tmp.name) / "state"

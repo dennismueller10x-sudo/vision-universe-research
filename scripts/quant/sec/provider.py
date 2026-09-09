@@ -13,6 +13,7 @@ Endpoints used (all official, no scraping, no third parties):
 """
 import json
 import logging
+import zipfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -29,6 +30,7 @@ SUBMISSIONS_PAGE_URL = "https://data.sec.gov/submissions/{name}"
 COMPANY_FACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
 COMPANY_CONCEPT_URL = "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}/{taxonomy}/{concept}.json"
 BULK_COMPANY_FACTS_URL = "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip"
+BULK_SUBMISSIONS_URL = "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip"
 
 # Forms that carry audited/reviewed periodic financial statements. 8-K exhibits
 # and S-1s also contain XBRL, but their period semantics are not comparable, so
@@ -111,10 +113,74 @@ class SECProvider:
     PROVIDER_ID = "sec-edgar"
 
 
-    def __init__(self, client=None):
+    def __init__(self, client=None, bulk_submissions_path=None,
+                 bulk_company_facts_path=None):
         self.client = client or SECHttpClient()
         self._ticker_map = None
         self._capabilities = None
+        self.bulk_submissions_path = (Path(bulk_submissions_path)
+                                      if bulk_submissions_path else None)
+        self.bulk_company_facts_path = (Path(bulk_company_facts_path)
+                                        if bulk_company_facts_path else None)
+        self._bulk_archives = {}
+
+    def _bulk_archive(self, path):
+        path = Path(path)
+        if not path.is_file():
+            raise FileNotFoundError(f"SEC bulk archive does not exist: {path}")
+        key = str(path.resolve())
+        archive = self._bulk_archives.get(key)
+        if archive is None:
+            archive = zipfile.ZipFile(path)
+            self._bulk_archives[key] = archive
+        return archive
+
+    def _bulk_json(self, path, member):
+        archive = self._bulk_archive(path)
+        candidates = (member, f"submissions/{member}", f"companyfacts/{member}")
+        for candidate in candidates:
+            try:
+                with archive.open(candidate) as handle:
+                    return json.loads(handle.read())
+            except KeyError:
+                continue
+        raise KeyError(f"{member} is not present in SEC bulk archive {Path(path).name}")
+
+    @staticmethod
+    def _bulk_retrieved_at(path):
+        return datetime.fromtimestamp(
+            Path(path).stat().st_mtime, tz=timezone.utc).isoformat(timespec="seconds")
+
+    def input_evidence(self):
+        """Describe local bulk inputs without exposing machine-specific paths."""
+        evidence = []
+        for kind, path, source in (
+            ("submissions", self.bulk_submissions_path, BULK_SUBMISSIONS_URL),
+            ("companyfacts", self.bulk_company_facts_path, BULK_COMPANY_FACTS_URL),
+        ):
+            if path:
+                stat = path.stat() if path.is_file() else None
+                evidence.append({
+                    "kind": kind,
+                    "mode": "LOCAL_SEC_BULK_ARCHIVE",
+                    "file": path.name,
+                    "bytes": stat.st_size if stat else None,
+                    "modifiedAt": self._bulk_retrieved_at(path) if stat else None,
+                    "officialSource": source,
+                })
+        return evidence
+
+    def close(self):
+        """Release local bulk archives (important for long-lived Windows jobs)."""
+        for archive in self._bulk_archives.values():
+            archive.close()
+        self._bulk_archives.clear()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _traceback):
+        self.close()
 
     @property
     def DECLARED_CAPABILITIES(self):  # noqa: N802 - mirrors the JS constant name
@@ -141,6 +207,15 @@ class SECProvider:
             self._ticker_map = mapping
             LOGGER.info("loaded SEC ticker map: %d tickers", len(mapping))
         return self._ticker_map
+
+    def get_current_ticker_exchange_universe(self):
+        """Current SEC company/ticker/exchange mappings with retrieval metadata.
+
+        The caller must not interpret this file as a historical security master.
+        """
+        payload = self.client.get_json(TICKER_EXCHANGE_URL)
+        payload["_retrieved_at"] = _utcnow_iso()
+        return payload
 
     def resolve_ticker(self, ticker):
         """Ticker -> 10-digit CIK. Raises TickerNotFound if the SEC has no mapping."""
@@ -169,22 +244,35 @@ class SECProvider:
         a company's pre-2015 filing history is silently invisible.
         """
         cik = normalize_cik(cik)
-        payload = self.client.get_json(SUBMISSIONS_URL.format(cik=cik))
+        if self.bulk_submissions_path:
+            payload = self._bulk_json(self.bulk_submissions_path, f"CIK{cik}.json")
+        else:
+            payload = self.client.get_json(SUBMISSIONS_URL.format(cik=cik))
         if include_history:
             for page in (payload.get("filings", {}) or {}).get("files", []) or []:
                 name = page.get("name")
                 if not name:
                     continue
-                try:
-                    extra = self.client.get_json(SUBMISSIONS_PAGE_URL.format(name=name))
-                except SECHTTPError as exc:
-                    LOGGER.warning("submissions page %s unavailable: %s", name, exc)
-                    continue
+                if self.bulk_submissions_path:
+                    try:
+                        extra = self._bulk_json(self.bulk_submissions_path, name)
+                    except KeyError as exc:
+                        raise ValueError(
+                            f"SEC bulk submissions archive is incomplete: referenced "
+                            f"history page {name} is missing") from exc
+                else:
+                    try:
+                        extra = self.client.get_json(SUBMISSIONS_PAGE_URL.format(name=name))
+                    except SECHTTPError as exc:
+                        LOGGER.warning("submissions page %s unavailable: %s", name, exc)
+                        continue
                 recent = payload["filings"]["recent"]
                 for column, values in extra.items():
                     recent.setdefault(column, [])
                     recent[column].extend(values)
-        payload["_retrieved_at"] = _utcnow_iso()
+        payload["_retrieved_at"] = (
+            self._bulk_retrieved_at(self.bulk_submissions_path)
+            if self.bulk_submissions_path else _utcnow_iso())
         return payload
 
     def get_company_profile(self, cik, submissions=None):
@@ -262,8 +350,15 @@ class SECProvider:
 
     def get_company_facts(self, cik):
         cik = normalize_cik(cik)
-        payload = self.client.get_json(COMPANY_FACTS_URL.format(cik=cik))
-        payload["_retrieved_at"] = _utcnow_iso()
+        if self.bulk_company_facts_path:
+            payload = self._bulk_json(
+                self.bulk_company_facts_path, f"CIK{cik}.json")
+            payload["_retrieved_at"] = self._bulk_retrieved_at(
+                self.bulk_company_facts_path)
+            payload["_source"] = "bulk_companyfacts_zip"
+        else:
+            payload = self.client.get_json(COMPANY_FACTS_URL.format(cik=cik))
+            payload["_retrieved_at"] = _utcnow_iso()
         return payload
 
     def get_company_concept(self, cik, taxonomy, concept):
@@ -327,11 +422,14 @@ class SECProvider:
         instead of one per company, which is what SEC fair access actually asks
         for. The archive is streamed from the cache, never committed.
         """
-        import zipfile
-
         wanted = {normalize_cik(c) for c in ciks} if ciks else None
-        buffer = self.client.get_zip(BULK_COMPANY_FACTS_URL)
-        with zipfile.ZipFile(buffer) as archive:
+        if self.bulk_company_facts_path:
+            archive = self._bulk_archive(self.bulk_company_facts_path)
+            close_after = False
+        else:
+            archive = zipfile.ZipFile(self.client.get_zip(BULK_COMPANY_FACTS_URL))
+            close_after = True
+        try:
             for info in archive.infolist():
                 if not info.filename.startswith("CIK") or not info.filename.endswith(".json"):
                     continue
@@ -340,6 +438,11 @@ class SECProvider:
                     continue
                 with archive.open(info) as handle:
                     payload = json.loads(handle.read())
-                payload["_retrieved_at"] = _utcnow_iso()
+                payload["_retrieved_at"] = (
+                    self._bulk_retrieved_at(self.bulk_company_facts_path)
+                    if self.bulk_company_facts_path else _utcnow_iso())
                 payload["_source"] = "bulk_companyfacts_zip"
                 yield cik, payload
+        finally:
+            if close_after:
+                archive.close()
