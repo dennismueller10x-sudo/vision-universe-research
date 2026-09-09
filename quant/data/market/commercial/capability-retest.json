@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T10:11:26.828Z",
+  "generatedAt": "2026-09-09T10:13:14.712Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "commercialCapabilityRetest",
@@ -8,8 +8,8 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "34338858591",
-    "commit": "203e343f45048971bab039fbff42ccea86f768f3",
+    "runId": "34339012486",
+    "commit": "3628ef0a8b92ed3dddcb5d057128b7166092b3dd",
     "ref": "claude/tiingo-commercial-phase-1-4j0581",
     "requests": 20
   },
@@ -23,7 +23,7 @@
   "sessionAtRun": {
     "phase": "PRE",
     "localDate": "2026-09-09",
-    "localTime": "06:11:24",
+    "localTime": "06:13:09",
     "closedReason": null,
     "note": "Welche Befunde ueberhaupt moeglich waren, haengt an dieser Zeile - erweiterte Zeiten und Kursabstaende vor allem."
   },
@@ -119,9 +119,9 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 365
+        "latencyMs": 1331
       },
-      "checkedAt": "2026-09-09T10:11:25.377Z"
+      "checkedAt": "2026-09-09T10:13:11.640Z"
     },
     {
       "symbol": "AAPL",
@@ -131,9 +131,9 @@
         "bars": 9238,
         "first": "1990-01-02",
         "last": "2026-09-08",
-        "latencyMs": 365
+        "latencyMs": 1331
       },
-      "checkedAt": "2026-09-09T10:11:25.377Z"
+      "checkedAt": "2026-09-09T10:13:11.640Z"
     },
     {
       "symbol": "AAPL",
@@ -145,7 +145,7 @@
         "requestedFrom": "1990-01-01",
         "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T10:11:25.377Z"
+      "checkedAt": "2026-09-09T10:13:11.640Z"
     },
     {
       "symbol": "AAPL",
@@ -161,7 +161,7 @@
         "dividendEvents": 81,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T10:11:25.389Z"
+      "checkedAt": "2026-09-09T10:13:11.649Z"
     },
     {
       "symbol": "AAPL",
@@ -172,7 +172,7 @@
         "dividends": 81,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T10:11:25.391Z"
+      "checkedAt": "2026-09-09T10:13:11.650Z"
     },
     {
       "symbol": "AAPL",
@@ -181,11 +181,11 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 51085,
+        "lagSeconds": 51192,
         "sessionPhase": "PRE",
         "interpretation": "Der Betrag selbst steht bewusst nicht im Bericht."
       },
-      "checkedAt": "2026-09-09T10:11:25.475Z"
+      "checkedAt": "2026-09-09T10:13:11.952Z"
     },
     {
       "symbol": "AAPL",
@@ -198,7 +198,7 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T10:11:25.475Z"
+      "checkedAt": "2026-09-09T10:13:11.952Z"
     },
     {
       "symbol": "AAPL",
@@ -210,7 +210,7 @@
         "first": "2026-09-08T13:30:00.000Z",
         "last": "2026-09-08T19:59:00.000Z"
       },
-      "checkedAt": "2026-09-09T10:11:25.522Z"
+      "checkedAt": "2026-09-09T10:13:12.077Z"
     },
     {
       "symbol": "AAPL",
@@ -233,7 +233,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T10:11:25.621Z"
+      "checkedAt": "2026-09-09T10:13:12.344Z"
     },
     {
       "symbol": "MSFT",
@@ -241,9 +241,9 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 143
+        "latencyMs": 306
       },
-      "checkedAt": "2026-09-09T10:11:25.764Z"
+      "checkedAt": "2026-09-09T10:13:12.650Z"
     },
     {
       "symbol": "MSFT",
@@ -253,9 +253,9 @@
         "bars": 9238,
         "first": "1990-01-02",
         "last": "2026-09-08",
-        "latencyMs": 143
+        "latencyMs": 306
       },
-      "checkedAt": "2026-09-09T10:11:25.764Z"
+      "checkedAt": "2026-09-09T10:13:12.650Z"
     },
     {
       "symbol": "MSFT",
@@ -267,7 +267,7 @@
         "requestedFrom": "1990-01-01",
         "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T10:11:25.764Z"
+      "checkedAt": "2026-09-09T10:13:12.650Z"
     },
     {
       "symbol": "MSFT",
@@ -283,7 +283,7 @@
         "dividendEvents": 91,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T10:11:25.773Z"
+      "checkedAt": "2026-09-09T10:13:12.657Z"
     },
     {
       "symbol": "MSFT",
@@ -294,7 +294,7 @@
         "dividends": 91,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T10:11:25.774Z"
+      "checkedAt": "2026-09-09T10:13:12.658Z"
     },
     {
       "symbol": "MSFT",
@@ -303,11 +303,11 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 51086,
+        "lagSeconds": 51193,
         "sessionPhase": "PRE",
         "interpretation": "Der Betrag selbst steht bewusst nicht im Bericht."
       },
-      "checkedAt": "2026-09-09T10:11:25.804Z"
+      "checkedAt": "2026-09-09T10:13:12.773Z"
     },
     {
       "symbol": "MSFT",
@@ -320,7 +320,7 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T10:11:25.804Z"
+      "checkedAt": "2026-09-09T10:13:12.773Z"
     },
     {
       "symbol": "MSFT",
@@ -332,7 +332,7 @@
         "first": "2026-09-08T13:30:00.000Z",
         "last": "2026-09-08T19:59:00.000Z"
       },
-      "checkedAt": "2026-09-09T10:11:25.879Z"
+      "checkedAt": "2026-09-09T10:13:12.879Z"
     },
     {
       "symbol": "MSFT",
@@ -355,7 +355,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T10:11:25.954Z"
+      "checkedAt": "2026-09-09T10:13:13.006Z"
     },
     {
       "symbol": "NVDA",
@@ -363,9 +363,9 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 74
+        "latencyMs": 234
       },
-      "checkedAt": "2026-09-09T10:11:26.028Z"
+      "checkedAt": "2026-09-09T10:13:13.240Z"
     },
     {
       "symbol": "NVDA",
@@ -375,9 +375,9 @@
         "bars": 6949,
         "first": "1999-01-22",
         "last": "2026-09-08",
-        "latencyMs": 74
+        "latencyMs": 234
       },
-      "checkedAt": "2026-09-09T10:11:26.028Z"
+      "checkedAt": "2026-09-09T10:13:13.240Z"
     },
     {
       "symbol": "NVDA",
@@ -389,7 +389,7 @@
         "requestedFrom": "1990-01-01",
         "interpretation": "Der Anbieter liefert 27.6 Jahre ab 1999-01-22. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T10:11:26.028Z"
+      "checkedAt": "2026-09-09T10:13:13.240Z"
     },
     {
       "symbol": "NVDA",
@@ -405,7 +405,7 @@
         "dividendEvents": 55,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T10:11:26.032Z"
+      "checkedAt": "2026-09-09T10:13:13.244Z"
     },
     {
       "symbol": "NVDA",
@@ -416,7 +416,7 @@
         "dividends": 55,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T10:11:26.032Z"
+      "checkedAt": "2026-09-09T10:13:13.244Z"
     },
     {
       "symbol": "NVDA",
@@ -425,11 +425,11 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 51086,
+        "lagSeconds": 51193,
         "sessionPhase": "PRE",
         "interpretation": "Der Betrag selbst steht bewusst nicht im Bericht."
       },
-      "checkedAt": "2026-09-09T10:11:26.067Z"
+      "checkedAt": "2026-09-09T10:13:13.339Z"
     },
     {
       "symbol": "NVDA",
@@ -442,7 +442,7 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T10:11:26.067Z"
+      "checkedAt": "2026-09-09T10:13:13.339Z"
     },
     {
       "symbol": "NVDA",
@@ -454,7 +454,7 @@
         "first": "2026-09-08T13:30:00.000Z",
         "last": "2026-09-08T19:59:00.000Z"
       },
-      "checkedAt": "2026-09-09T10:11:26.139Z"
+      "checkedAt": "2026-09-09T10:13:13.469Z"
     },
     {
       "symbol": "NVDA",
@@ -477,7 +477,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T10:11:26.222Z"
+      "checkedAt": "2026-09-09T10:13:13.599Z"
     },
     {
       "symbol": "JPM",
@@ -485,9 +485,9 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 115
+        "latencyMs": 243
       },
-      "checkedAt": "2026-09-09T10:11:26.337Z"
+      "checkedAt": "2026-09-09T10:13:13.842Z"
     },
     {
       "symbol": "JPM",
@@ -497,9 +497,9 @@
         "bars": 9238,
         "first": "1990-01-02",
         "last": "2026-09-08",
-        "latencyMs": 115
+        "latencyMs": 243
       },
-      "checkedAt": "2026-09-09T10:11:26.337Z"
+      "checkedAt": "2026-09-09T10:13:13.842Z"
     },
     {
       "symbol": "JPM",
@@ -511,7 +511,7 @@
         "requestedFrom": "1990-01-01",
         "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T10:11:26.337Z"
+      "checkedAt": "2026-09-09T10:13:13.842Z"
     },
     {
       "symbol": "JPM",
@@ -527,7 +527,7 @@
         "dividendEvents": 153,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T10:11:26.338Z"
+      "checkedAt": "2026-09-09T10:13:13.843Z"
     },
     {
       "symbol": "JPM",
@@ -538,7 +538,7 @@
         "dividends": 153,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T10:11:26.338Z"
+      "checkedAt": "2026-09-09T10:13:13.844Z"
     },
     {
       "symbol": "JPM",
@@ -547,11 +547,11 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 51086,
+        "lagSeconds": 51194,
         "sessionPhase": "PRE",
         "interpretation": "Der Betrag selbst steht bewusst nicht im Bericht."
       },
-      "checkedAt": "2026-09-09T10:11:26.378Z"
+      "checkedAt": "2026-09-09T10:13:13.936Z"
     },
     {
       "symbol": "JPM",
@@ -564,7 +564,7 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T10:11:26.378Z"
+      "checkedAt": "2026-09-09T10:13:13.936Z"
     },
     {
       "symbol": "JPM",
@@ -576,7 +576,7 @@
         "first": "2026-09-08T13:30:00.000Z",
         "last": "2026-09-08T19:59:00.000Z"
       },
-      "checkedAt": "2026-09-09T10:11:26.454Z"
+      "checkedAt": "2026-09-09T10:13:14.056Z"
     },
     {
       "symbol": "JPM",
@@ -599,7 +599,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T10:11:26.521Z"
+      "checkedAt": "2026-09-09T10:13:14.190Z"
     },
     {
       "symbol": "XOM",
@@ -607,9 +607,9 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 122
+        "latencyMs": 175
       },
-      "checkedAt": "2026-09-09T10:11:26.643Z"
+      "checkedAt": "2026-09-09T10:13:14.365Z"
     },
     {
       "symbol": "XOM",
@@ -619,9 +619,9 @@
         "bars": 9238,
         "first": "1990-01-02",
         "last": "2026-09-08",
-        "latencyMs": 122
+        "latencyMs": 175
       },
-      "checkedAt": "2026-09-09T10:11:26.643Z"
+      "checkedAt": "2026-09-09T10:13:14.365Z"
     },
     {
       "symbol": "XOM",
@@ -633,7 +633,7 @@
         "requestedFrom": "1990-01-01",
         "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T10:11:26.643Z"
+      "checkedAt": "2026-09-09T10:13:14.365Z"
     },
     {
       "symbol": "XOM",
@@ -649,7 +649,7 @@
         "dividendEvents": 148,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T10:11:26.643Z"
+      "checkedAt": "2026-09-09T10:13:14.365Z"
     },
     {
       "symbol": "XOM",
@@ -660,7 +660,7 @@
         "dividends": 148,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T10:11:26.644Z"
+      "checkedAt": "2026-09-09T10:13:14.365Z"
     },
     {
       "symbol": "XOM",
@@ -669,11 +669,11 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 51087,
+        "lagSeconds": 51194,
         "sessionPhase": "PRE",
         "interpretation": "Der Betrag selbst steht bewusst nicht im Bericht."
       },
-      "checkedAt": "2026-09-09T10:11:26.679Z"
+      "checkedAt": "2026-09-09T10:13:14.447Z"
     },
     {
       "symbol": "XOM",
@@ -686,7 +686,7 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T10:11:26.679Z"
+      "checkedAt": "2026-09-09T10:13:14.447Z"
     },
     {
       "symbol": "XOM",
@@ -698,7 +698,7 @@
         "first": "2026-09-08T13:30:00.000Z",
         "last": "2026-09-08T19:59:00.000Z"
       },
-      "checkedAt": "2026-09-09T10:11:26.747Z"
+      "checkedAt": "2026-09-09T10:13:14.575Z"
     },
     {
       "symbol": "XOM",
@@ -721,7 +721,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T10:11:26.828Z"
+      "checkedAt": "2026-09-09T10:13:14.711Z"
     }
   ]
 }
