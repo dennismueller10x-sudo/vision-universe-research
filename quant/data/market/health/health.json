@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-09T11:55:58.001Z",
+  "generatedAt": "2026-09-09T12:05:06.496Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
-    "source": "github-actions",
-    "runId": "34342865307",
-    "commit": "f07f43fc5d863c399373d7854a439e43c3695387",
+    "source": "local",
+    "runId": null,
+    "commit": null,
     "staleAfterHours": 72
   },
   "overall": "READY_FOR_NEXT_SCALE_GATE",
@@ -17,7 +17,7 @@
   "universe": {
     "status": "OK",
     "generatedAt": "2026-09-09T10:56:42.544Z",
-    "ageHours": 1,
+    "ageHours": 1.1,
     "rows": 108572,
     "screenerEligible": 31319,
     "byInstrumentType": {
@@ -48,7 +48,7 @@
   },
   "commercialCapabilities": {
     "status": "OK",
-    "generatedAt": "2026-09-09T10:23:12.724Z",
+    "generatedAt": "2026-09-09T10:56:23.586Z",
     "verificationLevel": "RUNTIME_VERIFIED",
     "accountCapabilities": {
       "authentication": "VERIFIED",
@@ -64,7 +64,7 @@
     "sessionAtRun": {
       "phase": "PRE",
       "localDate": "2026-09-09",
-      "localTime": "06:23:08",
+      "localTime": "06:56:21",
       "closedReason": null,
       "note": "Welche Befunde ueberhaupt moeglich waren, haengt an dieser Zeile - erweiterte Zeiten und Kursabstaende vor allem."
     }
@@ -79,7 +79,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T11:46:29.381Z",
-        "ageHours": 0.2,
+        "ageHours": 0.3,
         "verdict": "FAIL",
         "verdictReason": "resolvedRate,successRate,historyCoverageRate",
         "note": null
@@ -98,14 +98,14 @@
         "runtimeMs": 2947894
       },
       "backtestReadiness": {
-        "symbols": 5684,
+        "symbols": 3718,
         "byInferredAdjustment": {
-          "TOTAL_RETURN": 2829,
-          "SPLIT_ADJUSTED": 789,
-          "UNKNOWN": 2066
+          "TOTAL_RETURN": 1260,
+          "SPLIT_ADJUSTED": 731,
+          "UNKNOWN": 1727
         },
         "adjustmentContradicted": 0,
-        "withCorporateActions": 3777,
+        "withCorporateActions": 2142,
         "rejectedForFutureBars": 0,
         "notFactorReady": 736,
         "rawAndAdjustedStoredSeparately": true,
@@ -292,7 +292,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 2,
+        "ageHours": 2.1,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -501,7 +501,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 1.2,
+        "ageHours": 1.4,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -520,14 +520,14 @@
         "runtimeMs": 1201764
       },
       "backtestReadiness": {
-        "symbols": 2000,
+        "symbols": 1138,
         "byInferredAdjustment": {
-          "TOTAL_RETURN": 1591,
-          "SPLIT_ADJUSTED": 249,
-          "UNKNOWN": 160
+          "TOTAL_RETURN": 783,
+          "SPLIT_ADJUSTED": 218,
+          "UNKNOWN": 137
         },
         "adjustmentContradicted": 0,
-        "withCorporateActions": 1866,
+        "withCorporateActions": 1025,
         "rejectedForFutureBars": 0,
         "notFactorReady": 5,
         "rawAndAdjustedStoredSeparately": true,
@@ -713,7 +713,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 1.6,
+        "ageHours": 1.8,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null

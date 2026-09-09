@@ -85,7 +85,14 @@ let latestPassedGate = null;
 
 for (const id of gateIds()) {
   const g = load(join("market", "scale", `gate-${id}.json`));
-  const factors = load(join("market", "factors", `factors-${id}.json`));
+  /* Die Deckungsbilanz zuerst: sie wird immer ausgeliefert. Die
+     Einzelzeilen liegen ab einer gewissen Groesse in der Arbeitsablage
+     (§26), und ein Gesundheitsbericht, der auf sie angewiesen waere,
+     meldete dann MISSING fuer einen Lauf, den es gab. */
+  const factorsSummary = load(join("market", "factors", `factors-${id}-summary.json`));
+  const factors = factorsSummary.data
+    ? factorsSummary
+    : load(join("market", "factors", `factors-${id}.json`));
   const screener = load(join("market", "factors", `screener-${id}.json`));
   const technical = load(join("technical", "scale", `technical-coverage-${id}.json`));
 

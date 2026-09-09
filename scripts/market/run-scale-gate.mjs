@@ -79,6 +79,14 @@ const ASSESS_ONLY = argv.includes("--assess-only");
    Ohne die Angabe bewertet es. */
 const ALLOW_FULL_BACKFILL = argv.includes("--allow-full-backfill");
 const LIMIT = parseInt(arg("--limit", "0"), 10) || 0;
+/* Ab wie vielen Titeln wandert die Einzelzeile in die Arbeitsablage?
+
+   Ein Gate ueber 5.684 Titel erzeugt 2,1 MB perSymbol - in jedem Lauf
+   erneut in die Versionierung geschrieben. Die interessanten Zeilen sind
+   ohnehin die anderen: was NICHT sauber durchlief. Die bleiben immer im
+   ausgelieferten Bericht, der Rest wandert ab dieser Groesse in die
+   Arbeitsablage (§26). */
+const DETAIL_LIMIT = parseInt(arg("--detail-limit", "500"), 10) || 500;
 /* --scale-dir und --work-dir sind Testschalter derselben Art wie
    TIINGO_BASE_URL: sie lenken Eingabe, Bericht und Arbeitsablage auf
    einen Wegwerfbaum um, damit ein Test den echten Lauf pruefen kann,
@@ -672,6 +680,35 @@ async function main() {
     note: "Kein Feld dieses Berichts ist geschaetzt. Fehlende Werte stehen als null mit " +
           "Grund; Kurse selbst enthaelt der Bericht nicht (§34)."
   };
+
+  /* Einzelzeilen: immer vollstaendig in die Arbeitsablage, im
+     ausgelieferten Bericht nur bis DETAIL_LIMIT. Was auffiel - alles
+     ausser PASS - bleibt in jedem Fall drin: ein Bericht ohne seine
+     Befunde waere keiner. */
+  const detailInRepo = Object.keys(perSymbol).length <= DETAIL_LIMIT;
+  if (!detailInRepo) {
+    const detailFile = join(root, SCALE.storage.workingDir, "tiingo", "gates",
+                            `gate-${GATE}-perSymbol.json`);
+    mkdirSync(dirname(detailFile), { recursive: true });
+    writeFileSync(detailFile, JSON.stringify(perSymbol));
+
+    const auffaellig = {};
+    Object.keys(perSymbol).forEach((t) => {
+      if (perSymbol[t].status !== "PASS") auffaellig[t] = perSymbol[t];
+    });
+    report.perSymbol = auffaellig;
+    report.perSymbolDetail = {
+      location: "workingStore",
+      file: `${SCALE.storage.workingDir}/tiingo/gates/gate-${GATE}-perSymbol.json`,
+      symbolsTotal: Object.keys(perSymbol).length,
+      symbolsInReport: Object.keys(auffaellig).length,
+      reason: `Mehr als ${DETAIL_LIMIT} Titel. Ausgeliefert werden die Befunde - alles ` +
+              `ausser PASS - und die Bilanz; die vollstaendige Liste liegt in der ` +
+              `Arbeitsablage (§26).`
+    };
+  } else {
+    report.perSymbolDetail = { location: "report", symbolsTotal: Object.keys(perSymbol).length };
+  }
 
   writeReport(report);
 

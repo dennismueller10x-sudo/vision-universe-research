@@ -27,7 +27,7 @@
    Ausfuehren:
      node scripts/market/build-market-factors.mjs --gate GATE_100
    ========================================================================= */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -56,6 +56,19 @@ const BENCHMARK = arg("--benchmark", "SPY");
    Datei gross und die Antwort nicht besser - die Frage lautet "wer ist am
    staerksten", nicht "wie ist die Reihenfolge aller". */
 const RANK_LIMIT = parseInt(arg("--rank-limit", "50"), 10) || 50;
+/* Ab wie vielen Titeln bleibt die Einzelzeile in der Arbeitsablage?
+
+   Gemessen: die Faktorzeilen von 5.684 Titeln sind 15,5 MB. In jedem Lauf
+   erneut in die Versionierung geschrieben ist das kein Datensatz mehr,
+   sondern Ballast - und §26 zieht die Grenze ausdruecklich zwischen
+   ausgeliefertem Ergebnis und Arbeitsmaterial.
+
+   Bis zu dieser Zahl wird die Einzelzeile mit ausgeliefert: sie ist klein
+   genug und beim Arbeiten am Datenmodell das Nuetzlichste, was es gibt.
+   Darueber wandert sie in die Arbeitsablage, und ausgeliefert werden die
+   Deckungsbilanz und der Screener - genau das, was die Fragen aus §15
+   beantwortet. */
+const DETAIL_LIMIT = parseInt(arg("--detail-limit", "500"), 10) || 500;
 
 const universeFile = join(SCALE_DIR, `universe-${GATE}.json`);
 if (!existsSync(universeFile)) {
@@ -265,19 +278,50 @@ const provenance = {
   }
 };
 
-writeFileSync(join(OUT_DIR, `factors-${GATE}.json`), JSON.stringify(Object.assign({}, provenance, {
-  coverage: {
-    requested: universe.securities.length,
-    computed: rows.length,
-    skipped: skipped.length,
-    skippedByReason: skipped.reduce((acc, s) => {
-      acc[s.reason] = (acc[s.reason] || 0) + 1; return acc;
-    }, {}),
-    fieldCoverage
-  },
+const coverage = {
+  requested: universe.securities.length,
+  computed: rows.length,
+  skipped: skipped.length,
+  skippedByReason: skipped.reduce((acc, s) => {
+    acc[s.reason] = (acc[s.reason] || 0) + 1; return acc;
+  }, {}),
+  fieldCoverage
+};
+
+/* Die Deckungsbilanz wird IMMER ausgeliefert. Sie ist klein, sie beantwortet
+   "wie viele Titel tragen SMA200", und der Gesundheitsbericht liest sie. */
+const summaryFile = join(OUT_DIR, `factors-${GATE}-summary.json`);
+const detailInRepo = rows.length <= DETAIL_LIMIT;
+writeFileSync(summaryFile, JSON.stringify(Object.assign({}, provenance, {
+  coverage,
   skipped,
-  securities: rows
+  detail: detailInRepo
+    ? { location: "repository", file: `quant/data/market/factors/factors-${GATE}.json`,
+        symbols: rows.length }
+    : { location: "workingStore",
+        file: `${SCALE.storage.workingDir}/tiingo/factors/factors-${GATE}.json`,
+        symbols: rows.length,
+        reason: `Mehr als ${DETAIL_LIMIT} Titel. Die Einzelzeilen bleiben in der ` +
+                `Arbeitsablage; ausgeliefert werden Deckungsbilanz und Screener (§26).` }
 }), null, 2) + "\n");
+
+const detailPayload = JSON.stringify(Object.assign({}, provenance, {
+  coverage, skipped, securities: rows
+}), null, 2) + "\n";
+
+let detailFile;
+if (detailInRepo) {
+  detailFile = join(OUT_DIR, `factors-${GATE}.json`);
+} else {
+  detailFile = join(root, SCALE.storage.workingDir, "tiingo", "factors", `factors-${GATE}.json`);
+  mkdirSync(dirname(detailFile), { recursive: true });
+  /* Eine frueher ausgelieferte Einzelzeile wieder entfernen: sonst bleibt
+     ein alter, kleinerer Stand im Repository stehen und sieht aus wie der
+     aktuelle. */
+  const stale = join(OUT_DIR, `factors-${GATE}.json`);
+  if (existsSync(stale)) rmSync(stale);
+}
+writeFileSync(detailFile, detailPayload);
 
 writeFileSync(join(OUT_DIR, `screener-${GATE}.json`), JSON.stringify(Object.assign({}, provenance, {
   universeSize: universe.securities.length,
@@ -299,6 +343,8 @@ questions.forEach((q) => {
                 (q.top.length ? `  Spitze: ${q.top[0].ticker}` : ""));
   }
 });
-console.log(`\n  ${join(OUT_DIR, `factors-${GATE}.json`).replace(root + "/", "")}`);
+console.log(`\n  ${summaryFile.replace(root + "/", "")}`);
+console.log(`  ${detailFile.replace(root + "/", "")}` +
+            (detailInRepo ? "" : "   (Arbeitsablage - zu gross fuer die Auslieferung)"));
 console.log(`  ${join(OUT_DIR, `screener-${GATE}.json`).replace(root + "/", "")}`);
 console.log("\nFertig.");

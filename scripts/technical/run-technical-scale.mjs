@@ -65,6 +65,10 @@ const NO_ELLIOTT = argv.includes("--no-elliott");
    und die Pivot-Erkennung braucht Spielraum darueber. Darunter ist das
    Ergebnis nicht schlechter - es ist keines. */
 const MIN_BARS = parseInt(arg("--min-bars", "300"), 10) || 300;
+/* Wie beim Gate-Bericht: ueber dieser Groesse bleiben im ausgelieferten
+   Deckungsbericht nur die Titel, die NICHT sauber durchliefen. Die
+   vollstaendige Liste liegt in der Arbeitsablage (§26). */
+const DETAIL_LIMIT = parseInt(arg("--detail-limit", "500"), 10) || 500;
 
 /* Elliott-Vertrauensschwellen. Sie klassifizieren AUSSCHLIESSLICH den
    vorhandenen confidence-Wert der Engine in die Faecher aus §18; sie
@@ -314,6 +318,30 @@ const report = {
   },
   perSymbol
 };
+
+const detailInRepo = Object.keys(perSymbol).length <= DETAIL_LIMIT;
+if (!detailInRepo) {
+  const workFile = join(root, ".market-cache", "tiingo", "technical",
+                        `technical-coverage-${GATE}-perSymbol.json`);
+  mkdirSync(dirname(workFile), { recursive: true });
+  writeFileSync(workFile, JSON.stringify(perSymbol));
+
+  const auffaellig = {};
+  Object.keys(perSymbol).forEach((t) => {
+    if (perSymbol[t].technical !== "TECHNICAL_READY") auffaellig[t] = perSymbol[t];
+  });
+  report.perSymbol = auffaellig;
+  report.perSymbolDetail = {
+    location: "workingStore",
+    file: `.market-cache/tiingo/technical/technical-coverage-${GATE}-perSymbol.json`,
+    symbolsTotal: Object.keys(perSymbol).length,
+    symbolsInReport: Object.keys(auffaellig).length,
+    reason: `Mehr als ${DETAIL_LIMIT} Titel. Ausgeliefert werden die Befunde - alles ausser ` +
+            `TECHNICAL_READY - und die Deckungsbilanz (§26).`
+  };
+} else {
+  report.perSymbolDetail = { location: "report", symbolsTotal: Object.keys(perSymbol).length };
+}
 
 mkdirSync(OUT_DIR, { recursive: true });
 const file = join(OUT_DIR, `technical-coverage-${GATE}.json`);
