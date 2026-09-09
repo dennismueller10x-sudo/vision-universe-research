@@ -1,0 +1,106 @@
+{
+  "generatedAtUtc": "2026-09-09T03:53:48.904Z",
+  "note": "Golden-Case-Datenvoraussetzungspruefung je Titel: Historical SEC PIT + Historical Market Data + Corporate Actions + decisionTime/executionTime. Ruft quant/engines/backtest.js NICHT auf - kein Backtest-Lauf, keine Kennzahl, kein Performance-Versprechen. Bestaetigt nur, dass die vier Zutaten vorhanden sind und in der richtigen Reihenfolge zueinander stehen.",
+  "tickers": [
+    {
+      "ticker": "AAPL",
+      "ok": true,
+      "decisionDate": "2020-10-30",
+      "executionDate": "2020-11-02",
+      "marketData": {
+        "hasExecutionPrice": true,
+        "orderingOk": true
+      },
+      "secPit": {
+        "available": true,
+        "factsKnownAtDecisionDate": 565,
+        "noFutureLeak": true
+      },
+      "corporateActions": {
+        "schemaPresent": true,
+        "splitEvents": 1,
+        "dividendEvents": 47
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "ok": true,
+      "decisionDate": "2020-10-30",
+      "executionDate": "2020-11-02",
+      "marketData": {
+        "hasExecutionPrice": true,
+        "orderingOk": true
+      },
+      "secPit": {
+        "available": true,
+        "factsKnownAtDecisionDate": 626,
+        "noFutureLeak": true
+      },
+      "corporateActions": {
+        "schemaPresent": true,
+        "splitEvents": 0,
+        "dividendEvents": 47
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "ok": true,
+      "decisionDate": "2020-10-30",
+      "executionDate": "2020-11-02",
+      "marketData": {
+        "hasExecutionPrice": true,
+        "orderingOk": true
+      },
+      "secPit": {
+        "available": true,
+        "factsKnownAtDecisionDate": 467,
+        "noFutureLeak": true
+      },
+      "corporateActions": {
+        "schemaPresent": true,
+        "splitEvents": 2,
+        "dividendEvents": 46
+      }
+    },
+    {
+      "ticker": "JPM",
+      "ok": true,
+      "decisionDate": "2020-10-30",
+      "executionDate": "2020-11-02",
+      "marketData": {
+        "hasExecutionPrice": true,
+        "orderingOk": true
+      },
+      "secPit": {
+        "available": true,
+        "factsKnownAtDecisionDate": 314,
+        "noFutureLeak": true
+      },
+      "corporateActions": {
+        "schemaPresent": true,
+        "splitEvents": 0,
+        "dividendEvents": 47
+      }
+    },
+    {
+      "ticker": "XOM",
+      "ok": true,
+      "decisionDate": "2020-10-30",
+      "executionDate": "2020-11-02",
+      "marketData": {
+        "hasExecutionPrice": true,
+        "orderingOk": true
+      },
+      "secPit": {
+        "available": true,
+        "factsKnownAtDecisionDate": 435,
+        "noFutureLeak": true
+      },
+      "corporateActions": {
+        "schemaPresent": true,
+        "splitEvents": 0,
+        "dividendEvents": 47
+      }
+    }
+  ]
+}
