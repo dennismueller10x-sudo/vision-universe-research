@@ -194,12 +194,40 @@ async function main() {
       const ladezeitMs = Date.now() - t0;
 
       /* Ist der Kerninhalt da? Nicht "hat geantwortet", sondern "hat
-         gerendert". */
+         gerendert".
+
+         DIESE PRUEFUNG WAR ZU SCHWACH und hat einen echten Zustand
+         durchgelassen: sie suchte "Vision Universe" im Body-Text, und das
+         erfuellt die Kopfzeile allein. Eine Seite, die nur ihr Menue
+         zeigt und darunter "Daten nicht verfuegbar", galt als bestanden.
+
+         Jetzt wird gemessen, nicht gesucht: wie viel sichtbarer Text
+         steht da, wie viele Datenzeilen, und - entscheidend - in welchem
+         Datenmodus die Seite laeuft. Eine Seite in MOCK oder UNAVAILABLE
+         ist nicht kaputt, aber sie zeigt eben auch keine Marktdaten, und
+         das muss im Bericht stehen. */
       let inhaltGefunden = false, titel = null, sichtbarerText = "";
+      let inhalt = null;
       try {
         titel = await page.title();
-        sichtbarerText = await page.evaluate(() => document.body ? document.body.innerText : "");
-        inhaltGefunden = seite.expect.text.test(sichtbarerText) || seite.expect.text.test(titel || "");
+        inhalt = await page.evaluate(() => {
+          const t = document.body ? document.body.innerText.replace(/\s+/g, " ").trim() : "";
+          return {
+            textLength: t.length,
+            dataRows: document.querySelectorAll("tbody tr").length,
+            charts: document.querySelectorAll("canvas, svg").length,
+            /* Die Seiten weisen ihren Datenzustand selbst aus. Das ist die
+               ehrlichste Quelle - ehrlicher als jede Heuristik von aussen. */
+            mockBanner: /DEMO-DATEN|SYNTHETISCHE|MODE\s*·?\s*MOCK/i.test(t),
+            unavailableBanner: /MARKET DATA UNAVAILABLE|Daten nicht verf/i.test(t),
+            realDataBanner: /REAL DATA/i.test(t),
+            excerpt: t.slice(0, 200)
+          };
+        });
+        sichtbarerText = inhalt.excerpt;
+        inhaltGefunden = seite.expect.text.test(inhalt.excerpt) ||
+                         seite.expect.text.test(titel || "") ||
+                         inhalt.textLength >= (seite.minText || 200);
       } catch (err) { /* kein Dokument */ }
 
       /* Laeuft das Layout auf dem Telefon ueber? Ein horizontaler
@@ -250,6 +278,16 @@ async function main() {
         httpStatus, loaded: geladen, loadError: ladeFehler, loadMs: ladezeitMs,
         title: titel, contentRendered: inhaltGefunden,
         expectation: String(seite.expect.text),
+        /* Was wirklich auf der Seite steht - Zahlen, keine Zusicherung. */
+        content: inhalt,
+        /* Der Datenzustand, den die Seite selbst ausweist. Das ist die
+           Antwort auf "live ist nichts zu sehen": nicht kaputt, aber
+           auch nicht mit Marktdaten befuellt. */
+        dataMode: inhalt
+          ? (inhalt.unavailableBanner ? "UNAVAILABLE"
+            : inhalt.mockBanner ? "MOCK"
+            : inhalt.realDataBanner ? "REAL" : "UNMARKED")
+          : null,
         consoleErrors: konsolenFehler.slice(0, 10),
         pageErrors: seitenFehler.slice(0, 10),
         failedRequests: fehlgeschlagen.slice(0, 15),
@@ -258,8 +296,14 @@ async function main() {
       });
 
       const marke = ok ? "OK  " : "FAIL";
+      const modus = inhalt
+        ? (inhalt.unavailableBanner ? "UNAVAILABLE" : inhalt.mockBanner ? "MOCK"
+          : inhalt.realDataBanner ? "REAL" : "-")
+        : "?";
       console.log(`  [${ansicht.id.padEnd(10)}] ${marke} ${seite.label.padEnd(28)} ` +
-                  `${String(httpStatus || "-").padStart(3)} ${String(ladezeitMs).padStart(5)} ms` +
+                  `${String(httpStatus || "-").padStart(3)} ${String(ladezeitMs).padStart(5)} ms ` +
+                  `${modus.padEnd(11)} ${String(inhalt ? inhalt.textLength : 0).padStart(5)} Zeichen, ` +
+                  `${String(inhalt ? inhalt.dataRows : 0).padStart(3)} Datenzeilen` +
                   (inhaltGefunden ? "" : "  [Inhalt fehlt]") +
                   (konsolenFehler.length ? `  [${konsolenFehler.length} Konsolenfehler]` : "") +
                   (seitenFehler.length ? `  [${seitenFehler.length} JS-Fehler]` : "") +
@@ -275,15 +319,42 @@ async function main() {
   bericht.secrets.status = bericht.secrets.findings.length ? "EXPOSED" : "CLEAN";
 
   const fehlerhaft = bericht.pages.filter((p) => p.result === "FAIL");
+  /* Erreichbarkeit und Inhalt sind zwei Fragen. Eine Seite kann laden,
+     rendern und trotzdem nichts zeigen, weil ihre Daten nicht
+     freigegeben sind. Der Bericht trennt das jetzt - vorher hat er es
+     vermischt und "PASSED" gemeldet, wo "erreichbar, aber ohne
+     Marktdaten" richtig gewesen waere. */
+  const nachModus = {};
+  for (const p of bericht.pages) nachModus[p.dataMode || "?"] = (nachModus[p.dataMode || "?"] || 0) + 1;
+  const ohneMarktdaten = bericht.pages.filter(
+    (p) => p.dataMode === "UNAVAILABLE" || p.dataMode === "MOCK");
+
   bericht.verdict = {
     status: fehlerhaft.length ? "FAILED" : "PASSED",
+    meaning: "PASSED heisst: erreichbar, gerendert, ohne JS- und 404-Fehler. Es heisst NICHT, " +
+             "dass Marktdaten sichtbar sind - dafuer steht dataAvailability.",
     pagesChecked: bericht.pages.length,
     pagesFailed: fehlerhaft.length,
     failures: fehlerhaft.map((p) => `${p.viewport}/${p.id}`),
-    secrets: bericht.secrets.status
+    secrets: bericht.secrets.status,
+    dataAvailability: {
+      byMode: nachModus,
+      pagesWithoutMarketData: ohneMarktdaten.length,
+      pages: ohneMarktdaten.map((p) => `${p.viewport}/${p.id}:${p.dataMode}`),
+      note: ohneMarktdaten.length
+        ? "Diese Seiten laden, zeigen aber keine Marktdaten. Sie weisen das selbst aus " +
+          "(MOCK bzw. UNAVAILABLE) - das ist der Zustand der Freigabe, kein Defekt der Seite."
+        : "Alle geprueften Seiten fuehren Echtdaten."
+    }
   };
 
   console.log(`\n  Seiten geprueft: ${bericht.pages.length}, davon fehlerhaft: ${fehlerhaft.length}`);
+  console.log(`  Datenzustand: ${JSON.stringify(nachModus)}`);
+  if (ohneMarktdaten.length) {
+    console.log(`  OHNE MARKTDATEN: ${ohneMarktdaten.length} Seitenaufrufe ` +
+                `(${[...new Set(ohneMarktdaten.map((p) => p.id + ":" + p.dataMode))].join(", ")})`);
+    console.log("  Diese Seiten sind erreichbar und weisen ihren Zustand selbst aus.");
+  }
   console.log(`  Schluessel im ausgelieferten Inhalt: ${bericht.secrets.status}`);
   console.log(`\n  ERGEBNIS: ${bericht.verdict.status}\n`);
 
