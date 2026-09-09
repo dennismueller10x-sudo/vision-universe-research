@@ -321,8 +321,8 @@ const report = {
 
 const detailInRepo = Object.keys(perSymbol).length <= DETAIL_LIMIT;
 if (!detailInRepo) {
-  const workFile = join(root, ".market-cache", "tiingo", "technical",
-                        `technical-coverage-${GATE}-perSymbol.json`);
+  const workFile = join(WORK_DIR || join(root, ".market-cache"),
+                        "tiingo", "technical", `technical-coverage-${GATE}-perSymbol.json`);
   mkdirSync(dirname(workFile), { recursive: true });
   writeFileSync(workFile, JSON.stringify(perSymbol));
 
@@ -333,7 +333,7 @@ if (!detailInRepo) {
   report.perSymbol = auffaellig;
   report.perSymbolDetail = {
     location: "workingStore",
-    file: `.market-cache/tiingo/technical/technical-coverage-${GATE}-perSymbol.json`,
+    file: workFile.replace(root + "/", ""),
     symbolsTotal: Object.keys(perSymbol).length,
     symbolsInReport: Object.keys(auffaellig).length,
     reason: `Mehr als ${DETAIL_LIMIT} Titel. Ausgeliefert werden die Befunde - alles ausser ` +

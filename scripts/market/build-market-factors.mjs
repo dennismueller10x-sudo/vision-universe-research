@@ -299,7 +299,8 @@ writeFileSync(summaryFile, JSON.stringify(Object.assign({}, provenance, {
     ? { location: "repository", file: `quant/data/market/factors/factors-${GATE}.json`,
         symbols: rows.length }
     : { location: "workingStore",
-        file: `${SCALE.storage.workingDir}/tiingo/factors/factors-${GATE}.json`,
+        file: join(WORK_DIR || join(root, SCALE.storage.workingDir),
+                   "tiingo", "factors", `factors-${GATE}.json`).replace(root + "/", ""),
         symbols: rows.length,
         reason: `Mehr als ${DETAIL_LIMIT} Titel. Die Einzelzeilen bleiben in der ` +
                 `Arbeitsablage; ausgeliefert werden Deckungsbilanz und Screener (§26).` }
@@ -313,7 +314,8 @@ let detailFile;
 if (detailInRepo) {
   detailFile = join(OUT_DIR, `factors-${GATE}.json`);
 } else {
-  detailFile = join(root, SCALE.storage.workingDir, "tiingo", "factors", `factors-${GATE}.json`);
+  detailFile = join(WORK_DIR || join(root, SCALE.storage.workingDir),
+                    "tiingo", "factors", `factors-${GATE}.json`);
   mkdirSync(dirname(detailFile), { recursive: true });
   /* Eine frueher ausgelieferte Einzelzeile wieder entfernen: sonst bleibt
      ein alter, kleinerer Stand im Repository stehen und sieht aus wie der

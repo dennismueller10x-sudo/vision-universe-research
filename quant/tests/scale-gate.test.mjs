@@ -15,7 +15,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, cpSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -671,6 +671,112 @@ test("SG11 — FULL_UNIVERSE laedt nichts ohne ausdrueckliche Erlaubnis", async 
     const report = JSON.parse(readFileSync(join(scaleDir, "gate-FULL_UNIVERSE.json"), "utf8"));
     assert.equal(report.verdict, "ASSESSED");
     assert.match(report.assessReason, /Groessenschutz/);
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG12 — ueber der Detailgrenze bleiben die Befunde im Bericht, der Rest wandert ab", async () => {
+  /* §26: was ausgeliefert wird, ist das Ergebnis; Arbeitsmaterial bleibt in
+     der Arbeitsablage. Die Grenze ist hier klein gesetzt, damit der Test
+     sie mit wenigen Titeln erreicht - die Regel ist dieselbe.
+
+     Der Punkt, auf den es ankommt: ein Titel, der NICHT sauber durchlief,
+     darf nie aus dem ausgelieferten Bericht verschwinden. Ein Bericht ohne
+     seine Befunde waere keiner. */
+  const dir = sandbox();
+  const provider = await startProvider({ failFor: ["BBB"], shortFor: ["CCC"] });
+  try {
+    const scaleDir = join(dir, "scale");
+    const cache = join(dir, "cache");
+    const tickers = ["AAPL", "MSFT", "NVDA", "JPM", "XOM", "AAA", "BBB", "CCC", "DDD", "EEE"];
+    writeFileSync(join(scaleDir, "universe-GATE_100.json"), JSON.stringify({
+      gate: "GATE_100", targetSize: 100, actualSize: tickers.length, method: "TEST",
+      bySector: {}, byExchange: {},
+      securities: tickers.map((t) => ({
+        securityId: "ref_" + t, ticker: t, exchange: "NASDAQ", currency: "USD",
+        provider: "tiingo", providerSymbol: t
+      }))
+    }));
+
+    try {
+      await run("scripts/market/run-scale-gate.mjs",
+        ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+         "--detail-limit", "3"],
+        { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+    } catch (err) { /* das Urteil kann FAIL sein - der Bericht entsteht trotzdem */ }
+
+    const report = JSON.parse(readFileSync(join(scaleDir, "gate-GATE_100.json"), "utf8"));
+    assert.equal(report.perSymbolDetail.location, "workingStore");
+    assert.equal(report.perSymbolDetail.symbolsTotal, tickers.length);
+
+    /* Die Befunde bleiben. */
+    assert.ok(report.perSymbol.BBB, "ein Anbieterfehler darf nicht aus dem Bericht fallen");
+    assert.equal(report.perSymbol.BBB.status, "UNAVAILABLE");
+    assert.ok(report.perSymbol.CCC, "eine zu kurze Reihe darf nicht aus dem Bericht fallen");
+    for (const t of Object.keys(report.perSymbol)) {
+      assert.notEqual(report.perSymbol[t].status, "PASS",
+                      "saubere Titel gehoeren ueber der Grenze nicht in den Bericht");
+    }
+
+    /* Und die vollstaendige Liste liegt trotzdem vor - nur woanders. */
+    const detail = JSON.parse(readFileSync(
+      join(cache, "tiingo", "gates", "gate-GATE_100-perSymbol.json"), "utf8"));
+    assert.equal(Object.keys(detail).length, tickers.length);
+    for (const t of tickers) assert.ok(detail[t], `${t} fehlt in der Arbeitsablage`);
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG13 — auch Faktoren und Technical schreiben ihre Einzelzeilen in DIE Arbeitsablage des Laufs", async () => {
+  /* Die Ergaenzung zu SG12, und aus demselben Grund: ein Lauf mit
+     --work-dir darf seine Einzelzeilen nicht in die Ablage des
+     Repositories schreiben. Der Fehler faellt sonst niemandem auf - er
+     legt nur Dateien an einer Stelle ab, an der sie niemand sucht. */
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const cache = join(dir, "cache");
+    const tickers = ["AAPL", "MSFT", "NVDA", "JPM", "XOM", "SPY", "AAA", "BBB"];
+    writeFileSync(join(scaleDir, "universe-GATE_100.json"), JSON.stringify({
+      gate: "GATE_100", targetSize: 100, actualSize: tickers.length, method: "TEST",
+      bySector: {}, byExchange: {},
+      securities: tickers.map((t) => ({
+        securityId: "ref_" + t, ticker: t, exchange: "NASDAQ", currency: "USD",
+        provider: "tiingo", providerSymbol: t
+      }))
+    }));
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache],
+      { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+
+    const factorsDir = join(dir, "factors");
+    await run("scripts/market/build-market-factors.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+       "--out", factorsDir, "--benchmark", "SPY", "--detail-limit", "3"]);
+
+    const summary = JSON.parse(readFileSync(
+      join(factorsDir, "factors-GATE_100-summary.json"), "utf8"));
+    assert.equal(summary.detail.location, "workingStore");
+    assert.ok(!existsSync(join(factorsDir, "factors-GATE_100.json")),
+              "ueber der Grenze darf keine Einzelzeilendatei ausgeliefert werden");
+    const detail = JSON.parse(readFileSync(
+      join(cache, "tiingo", "factors", "factors-GATE_100.json"), "utf8"));
+    assert.equal(detail.securities.length, summary.coverage.computed);
+
+    const techDir = join(dir, "technical");
+    await run("scripts/technical/run-technical-scale.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+       "--out", techDir, "--benchmark", "SPY", "--detail-limit", "3"]);
+
+    const tech = JSON.parse(readFileSync(
+      join(techDir, "technical-coverage-GATE_100.json"), "utf8"));
+    assert.equal(tech.perSymbolDetail.location, "workingStore");
+    const techDetail = JSON.parse(readFileSync(
+      join(cache, "tiingo", "technical", "technical-coverage-GATE_100-perSymbol.json"), "utf8"));
+    assert.equal(Object.keys(techDetail).length, tickers.length);
   } finally {
     provider.server.close();
   }

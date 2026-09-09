@@ -687,8 +687,12 @@ async function main() {
      Befunde waere keiner. */
   const detailInRepo = Object.keys(perSymbol).length <= DETAIL_LIMIT;
   if (!detailInRepo) {
-    const detailFile = join(root, SCALE.storage.workingDir, "tiingo", "gates",
-                            `gate-${GATE}-perSymbol.json`);
+    /* In DIE Arbeitsablage, die dieser Lauf benutzt - nicht in die des
+       Repositories. Ohne diese Unterscheidung schreibt ein Lauf mit
+       --work-dir seine Einzelzeilen woanders hin als seine Kursreihen,
+       und ein Test findet sie nicht dort, wo er sie hingelenkt hat. */
+    const detailFile = join(WORK_DIR || join(root, SCALE.storage.workingDir),
+                            "tiingo", "gates", `gate-${GATE}-perSymbol.json`);
     mkdirSync(dirname(detailFile), { recursive: true });
     writeFileSync(detailFile, JSON.stringify(perSymbol));
 
@@ -699,7 +703,7 @@ async function main() {
     report.perSymbol = auffaellig;
     report.perSymbolDetail = {
       location: "workingStore",
-      file: `${SCALE.storage.workingDir}/tiingo/gates/gate-${GATE}-perSymbol.json`,
+      file: detailFile.replace(root + "/", ""),
       symbolsTotal: Object.keys(perSymbol).length,
       symbolsInReport: Object.keys(auffaellig).length,
       reason: `Mehr als ${DETAIL_LIMIT} Titel. Ausgeliefert werden die Befunde - alles ` +
