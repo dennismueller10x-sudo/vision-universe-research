@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-09-09T15:17:09.026Z",
+  "generatedAt": "2026-09-09T15:25:55.444Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null,
+    "source": "github-actions",
+    "runId": "34369902099",
+    "commit": "d4ab4e15fa1314e2b0be8ed90621574c4b00ab24",
     "staleAfterHours": 72
   },
   "overall": "READY_FOR_NEXT_SCALE_GATE",
   "overallReason": "GATE_2000 bestanden. Freigegeben ist FULL_UNIVERSE - und nur das.",
-  "lastSuccessfulUpdate": "2026-09-09T11:46:29.381Z",
+  "lastSuccessfulUpdate": "2026-09-09T15:23:59.160Z",
   "latestPassedGate": "GATE_2000",
   "universe": {
     "status": "OK",
-    "generatedAt": "2026-09-09T10:56:42.544Z",
-    "ageHours": 4.3,
-    "rows": 108572,
-    "screenerEligible": 31319,
+    "generatedAt": "2026-09-09T15:23:57.602Z",
+    "ageHours": 0,
+    "rows": 108573,
+    "screenerEligible": 31320,
     "byInstrumentType": {
-      "COMMON_STOCK": 47887,
+      "COMMON_STOCK": 47888,
       "ADR": 0,
       "PREFERRED": 29,
       "ETF": 9587,
@@ -94,213 +94,201 @@
     "FULL_UNIVERSE": {
       "gate": {
         "status": "OK",
-        "generatedAt": "2026-09-09T11:46:29.381Z",
-        "ageHours": 3.5,
-        "verdict": "FAIL",
-        "verdictReason": "resolvedRate,successRate,historyCoverageRate",
+        "generatedAt": "2026-09-09T15:23:59.160Z",
+        "ageHours": 0,
+        "verdict": "ASSESSED",
+        "verdictReason": "assessOnly",
         "note": null
       },
       "marketData": {
-        "requested": 5684,
-        "resolved": 4998,
-        "PASS": 1966,
-        "WARNING": 2991,
-        "FAIL": 41,
-        "UNAVAILABLE": 686,
-        "historyCoverageRate": 0.8768,
-        "factorReadyRate": 0.8705,
-        "averageBars": 4511,
-        "storageMB": 7356.4,
-        "runtimeMs": 2947894
+        "status": "ASSESSED_ONLY",
+        "reason": "assessOnly",
+        "projection": {
+          "basis": "Gemessen an GATE_2000 (2000 Titel).",
+          "symbols": 5684,
+          "storageGB": 14.1,
+          "downloadGB": 6.9,
+          "requests": 5684,
+          "gateMinutes": 57,
+          "note": "Linear hochgerechnet. Die gemessenen Raten waren zwischen 100 und 500 Titeln stabil (0,60 s je Titel), deshalb ist die Annahme belegt und nicht geraten. Sie deckt NICHT ab, was passiert, wenn der Platz ausgeht."
+        },
+        "feasibility": {
+          "storageGB": 14.1,
+          "typicalRunnerFreeGB": 14,
+          "fitsOnStandardRunner": false,
+          "verdict": "STORAGE_MIGRATION_REQUIRED",
+          "recommendation": "Ein vollstaendiger Backfill in einem Lauf passt nicht auf einen Standard-Runner. Zwei Wege, beide ohne Datenverlust: den Backfill in Abschnitten fahren (der Checkpoint traegt das schon) oder die Ablage von JSON je Titel auf ein kompakteres Format umstellen. Was NICHT empfohlen wird: die Historie zu kuerzen - sie ist der Grund, warum dieser Zugang bezahlt wird."
+        },
+        "note": "Bewertung ohne Abruf. Es wurde nichts geladen; die Zahlen unter projection sind Hochrechnungen aus gemessenen Raten und ausdruecklich als solche gekennzeichnet."
       },
       "backtestReadiness": {
-        "symbols": 3718,
-        "byInferredAdjustment": {
-          "TOTAL_RETURN": 1260,
-          "SPLIT_ADJUSTED": 731,
-          "UNKNOWN": 1727
-        },
-        "adjustmentContradicted": 0,
-        "withCorporateActions": 2142,
-        "rejectedForFutureBars": 0,
-        "notFactorReady": 736,
-        "rawAndAdjustedStoredSeparately": true,
-        "note": "Roh- und bereinigte Spalte liegen in der Arbeitsablage nebeneinander; die Bereinigungsstufe wird gemessen und nicht uebernommen. Zukunftsbars werden verworfen, bevor sie den Bestand erreichen. Ein Leistungsversprechen ist damit nicht verbunden.",
-        "readiness": "DATA_SUPPORTS_BACKTEST",
-        "readinessReason": "Keine widersprochene Bereinigungsstufe und keine Zukunftsbars im Bestand."
+        "status": "MISSING",
+        "note": "Ohne Gate-Bilanz laesst sich die Backtest-Tauglichkeit nicht beurteilen."
       },
       "canary": {
-        "passed": 5,
-        "of": 5,
-        "regression": false,
-        "symbols": [
-          "AAPL",
-          "MSFT",
-          "NVDA",
-          "JPM",
-          "XOM"
-        ]
+        "status": "MISSING",
+        "note": "Ohne Canary-Ergebnis ist die Gate-Bilanz nicht einzuordnen (§12)."
       },
       "factors": {
         "status": "OK",
-        "computed": 4957,
-        "skipped": 727,
+        "computed": 498,
+        "skipped": 5186,
         "skippedByReason": {
-          "FAIL": 41,
-          "SOURCE_MISSING": 686
+          "FAIL": 2,
+          "SOURCE_MISSING": 5184
         },
         "smaCoverage": {
-          "sma20Calculated": 4957,
-          "sma50Calculated": 4956,
-          "sma100Calculated": 4954,
-          "sma200Calculated": 4951
+          "sma20Calculated": 498,
+          "sma50Calculated": 498,
+          "sma100Calculated": 498,
+          "sma200Calculated": 498
         },
         "momentumCoverage": {
-          "1M": 4957,
-          "3M": 4956,
-          "6M": 4954,
-          "12M": 4948
+          "1M": 498,
+          "3M": 498,
+          "6M": 498,
+          "12M": 498
         },
         "relativeStrengthCoverage": {
-          "calculated": 4948,
+          "calculated": 498,
           "sourceMissing": 0,
-          "insufficientHistory": 9
+          "insufficientHistory": 0
         },
         "riskCoverage": {
-          "volatility60d": 4956,
-          "maxDrawdown252d": 4948
+          "volatility60d": 498,
+          "maxDrawdown252d": 498
         }
       },
       "screener": {
         "status": "OK",
-        "evaluable": 4957,
-        "notEvaluable": 727,
+        "evaluable": 498,
+        "notEvaluable": 5186,
         "questions": [
           {
             "id": "aboveSMA20",
             "kind": "boolean",
-            "matched": 1788,
+            "matched": 155,
             "notEvaluable": 0
           },
           {
             "id": "aboveSMA50",
             "kind": "boolean",
-            "matched": 2242,
-            "notEvaluable": 1
+            "matched": 194,
+            "notEvaluable": 0
           },
           {
             "id": "aboveSMA100",
             "kind": "boolean",
-            "matched": 2472,
-            "notEvaluable": 3
+            "matched": 260,
+            "notEvaluable": 0
           },
           {
             "id": "aboveSMA200",
             "kind": "boolean",
-            "matched": 2650,
-            "notEvaluable": 6
+            "matched": 317,
+            "notEvaluable": 0
           },
           {
             "id": "aboveSMA20And50And200",
             "kind": "boolean",
-            "matched": 1071,
-            "notEvaluable": 6
+            "matched": 100,
+            "notEvaluable": 0
           },
           {
             "id": "aboveAllSMA",
             "kind": "boolean",
-            "matched": 1006,
-            "notEvaluable": 6
+            "matched": 97,
+            "notEvaluable": 0
           },
           {
             "id": "newHigh52w",
             "kind": "boolean",
-            "matched": 177,
-            "notEvaluable": 9
+            "matched": 10,
+            "notEvaluable": 0
           },
           {
             "id": "within5PctOf52wHigh",
             "kind": "boolean",
-            "matched": 773,
-            "notEvaluable": 9
+            "matched": 54,
+            "notEvaluable": 0
           },
           {
             "id": "volumeBreakout",
             "kind": "boolean",
-            "matched": 289,
-            "notEvaluable": 257
+            "matched": 17,
+            "notEvaluable": 3
           },
           {
             "id": "strongestMomentum12M",
             "kind": "ranked",
-            "matched": 4948,
-            "notEvaluable": 9
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "strongestMomentum6M",
             "kind": "ranked",
-            "matched": 4954,
-            "notEvaluable": 3
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "strongestMomentum12M1M",
             "kind": "ranked",
-            "matched": 4948,
-            "notEvaluable": 9
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "strongestRelativeStrength12M",
             "kind": "ranked",
-            "matched": 4948,
-            "notEvaluable": 9
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "trendAcceleration",
             "kind": "ranked",
-            "matched": 4956,
-            "notEvaluable": 1
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "highVolatility",
             "kind": "ranked",
-            "matched": 4956,
-            "notEvaluable": 1
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "lowVolatility",
             "kind": "ranked",
-            "matched": 4956,
-            "notEvaluable": 1
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "nearest52wHigh",
             "kind": "ranked",
-            "matched": 4948,
-            "notEvaluable": 9
+            "matched": 498,
+            "notEvaluable": 0
           },
           {
             "id": "deepestDrawdown",
             "kind": "ranked",
-            "matched": 4948,
-            "notEvaluable": 9
+            "matched": 498,
+            "notEvaluable": 0
           }
         ]
       },
       "technical": {
         "status": "OK",
-        "READY": 4982,
+        "READY": 500,
         "PARTIAL": 0,
         "FAILED": 0,
-        "INSUFFICIENT_HISTORY": 16,
-        "SOURCE_MISSING": 686,
-        "msPerSymbol": 74,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 5184,
+        "msPerSymbol": 148,
         "elliott": {
-          "HIGH_CONFIDENCE": 1293,
-          "MEDIUM_CONFIDENCE": 322,
-          "LOW_CONFIDENCE": 309,
-          "AMBIGUOUS": 3028,
-          "UNAVAILABLE": 30,
-          "NOT_RUN": 702
+          "HIGH_CONFIDENCE": 130,
+          "MEDIUM_CONFIDENCE": 49,
+          "LOW_CONFIDENCE": 30,
+          "AMBIGUOUS": 291,
+          "UNAVAILABLE": 0,
+          "NOT_RUN": 5184
         }
       }
     },
@@ -308,7 +296,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 5.3,
+        "ageHours": 5.5,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -517,7 +505,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 4.6,
+        "ageHours": 4.7,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -729,7 +717,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 5,
+        "ageHours": 5.1,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
