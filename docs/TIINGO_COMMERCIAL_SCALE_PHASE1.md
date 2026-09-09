@@ -201,7 +201,61 @@ Kurs des Anbieters. `market-factors.stripPriceLevels()` entfernt das eine und
 behält das andere, und `assert-public-data-hygiene.mjs` prüft das erzeugte
 Artefakt — nicht die Absicht des Skripts.
 
-## Echtzeit (§20, §28)
+## Echtzeit: gemessen bei offener Börse (§5, §6, §21)
+
+**LIVE_CHART_READY = TRUE** — mit einer Einschränkung, die in dieselbe Zeile
+gehört.
+
+Gemessen am 2026-09-09 während der regulären US-Sitzung, je 90 Sekunden:
+
+| | NVDA | AAPL + MSFT |
+|---|---|---|
+| thresholdLevel | 6 | 6 |
+| Verbindung | offen, über die volle Dauer stabil | ebenso |
+| Kursereignisse | **116** (1,31/s) | 111 (1,24/s) |
+| Abstand Median / p90 | 591 ms / 1.185 ms | 627 ms / 1.462 ms |
+| Anbieterverzögerung (Median) | **0 s** | 0 s |
+| Laufende Minutenkerze | bis **58 Updates** in einer Kerze | AAPL 56, MSFT 18 |
+| O/H/L/C | alle vorhanden | alle vorhanden |
+| Kerze bestätigt? | nein — sie läuft | nein |
+
+Die Kerze entsteht mit demselben `applyTick()`, das auch das Chart benutzt
+(`quant/engines/realtime/bar-merge.js`), nicht mit einer zweiten Rechnung.
+
+### Was der Weg dorthin gezeigt hat
+
+Die erste Messung meldete „138 Nachrichten, 0 Ereignisse" und daraus
+LIVE_CHART_READY = FALSE mit der Begründung, der Zugang bediene den Strom
+nicht. **Das war falsch.** Die Nachrichten kamen an; der Parser konnte sie nur
+nicht lesen:
+
+| Stufe | Ergebnis |
+|---|---|
+| 6 | angenommen, liefert |
+| 5 | abgelehnt: `thresholdLevel not valid for your subscription tier` (400) |
+| 0 | dieselbe Ablehnung |
+
+Die Nachrichten der Stufe 6 haben die Form `[Zeitstempel, Ticker, Kurs]` —
+drei Felder, **kein Typfeld**. `parseIexMessage` erwartete an erster Stelle
+`"T"` und verwarf jede einzelne. Tiingo hat die IEX-Regeln geändert; die
+Ablehnungsmeldung sagt es ausdrücklich.
+
+Die Feldfolge wurde **gemessen, nicht geraten** — und ohne einen einzigen Wert
+aufzuzeichnen: der Nachweis notiert je Position nur, *was* dort steht
+(Zeitstempel, angefragtes Symbol, Zahl). Kurse gehören nicht in einen Bericht.
+
+### Die Einschränkung
+
+Der Anbieter nennt in dieser Form **die Kursart nicht**. Der Tick trägt
+deshalb `priceType: "UNSPECIFIED"`, und das schlägt bis in das Urteil durch:
+der Chart bewegt sich sichtbar — ob die Zahl ein Abschluss oder ein
+Referenzkurs ist, ist damit **nicht belegt**.
+
+Das ist keine Kleinigkeit. Alles, was auf der Kerze rechnet, braucht diese
+Auskunft. Zu klären ist sie beim Anbieter, nicht im Code. Bis dahin darf keine
+Kennzahl auf dieser Kerze als „auf Abschlüssen gerechnet" ausgewiesen werden.
+
+## Echtzeit-Verteilung (§20, §28)
 
 Der Browser verbindet sich **nie** mit dem Anbieter. Der Schlüssel liegt
 serverseitig; das Backend hält die Ströme und verteilt sie.
@@ -243,7 +297,8 @@ unter `high` stand. Behoben wurden die Feldnamen, nicht die Prüfung.
 
 | Frage | Status | Warum |
 |---|---|---|
-| Abo-Grenzen des Stroms | `UNMEASURED` | Ein Vertrag ist keine Messung. |
+| Abo-Grenzen des Stroms | `UNMEASURED` | Ein Vertrag ist keine Messung. Gemessen ist nur, dass Stufe 6 trägt und 5/0 abgelehnt werden. |
+| Kursart im Strom | `UNSPECIFIED` | Die Nachrichtenform der neuen IEX-Stufe trägt keinen Typ. |
 | Kontingente (`COMMERCIAL_LIMITS`) | `verified: false` | Ebenso — und der FULL_UNIVERSE-Lauf hat gezeigt, was das kostet: er ist an unserer eigenen, nie gemessenen Stundengrenze von 5.000 gescheitert. Das ist der teuerste offene Punkt dieser Phase. |
 | Sektor/Branche | `SOURCE_MISSING` | Nicht im Zugang enthalten. Nicht geschätzt. |
 | ADR-Trennung | `UNVERIFIED` | Ohne Firmennamen nicht entscheidbar. |
