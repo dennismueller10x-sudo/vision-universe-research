@@ -18,7 +18,11 @@ on:
         required: false
         default: "https://research.visionuniverse.de"
   push:
-    branches: [main]
+    # main, damit der Rauchtest nach einer Auslieferung von selbst laeuft.
+    # Der Arbeitszweig steht daneben, weil workflow_dispatch die Datei auf
+    # dem Standardzweig verlangt - ohne ihn liesse sich der Nachweis erst
+    # nach dem Merge fuehren, und das ist die falsche Reihenfolge.
+    branches: [main, "claude/live-smoke-test-nach-merge"]
     paths:
       - "scripts/site/smoke-test.mjs"
       - ".github/workflows/site-smoke-test.yml"
