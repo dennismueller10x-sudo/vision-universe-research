@@ -66,7 +66,17 @@
   /* Ausserboerslich gehandelte Titel sind Aktien - aber sie sind nicht
      dieselbe Datenlage. Der Screener soll sie nicht stillschweigend
      mitzaehlen; er soll sie sehen koennen und ausschliessen duerfen. */
-  var OTC_EXCHANGES = { "OTC": true, "PINK": true, "OTCMKTS": true, "NMFQS": true };
+  /* Die Liste stammt aus der echten Tickerliste des Anbieters, nicht aus
+     einer Vermutung: der erste Lauf ueber 108.572 Zeilen hat neben PINK
+     und OTCMKTS auch OTCQB, OTCQX, OTCGREY, OTCBB, OTCCE, OTCD und EXPM
+     gezeigt. Ohne sie galten rund 440 ausserboerslich gehandelte Titel
+     als regulaer gelistet - kein Fehler mit lauter Wirkung, aber genau
+     die Art Unschaerfe, die einen Screener unbrauchbar macht. */
+  var OTC_EXCHANGES = {
+    "OTC": true, "PINK": true, "OTCMKTS": true, "NMFQS": true,
+    "OTCQB": true, "OTCQX": true, "OTCBB": true, "OTCGREY": true,
+    "OTCCE": true, "OTCD": true, "EXPM": true
+  };
 
   function norm(v) {
     return v === null || v === undefined ? "" : String(v).trim();

@@ -18,6 +18,13 @@ name: Tiingo Commercial — Scale Gates
 # Zugangs anfasst, waere ein Fehler mit Rechnung.
 #
 #   [tiingo-scale]      Universum, Gate-Lauf, Faktoren, Technical, Bericht
+#                       Welche Stufe, sagt die Marke selbst:
+#                       [tiingo-scale] allein laeuft GATE_100,
+#                       [tiingo-scale:GATE_500] laeuft GATE_500.
+#                       Ohne diese Schreibweise gaebe es auf einem
+#                       Entwicklungsbranch nur GATE_100 - workflow_dispatch
+#                       mit Eingabefeldern steht erst nach einem Merge zur
+#                       Verfuegung.
 #   [tiingo-capability] Faehigkeitsnachweis des Commercial-Zugangs
 #   [tiingo-realtime]   Strom- und Live-Kerzen-Nachweis
 #
@@ -111,6 +118,22 @@ jobs:
           name: tiingo-capability-retest
           path: quant/data/market/commercial/capability-retest.json
           if-no-files-found: warn
+
+      # Der Bericht wird committet, damit der Gesundheitsbericht ihn sieht.
+      # Ohne das steht dort "commercial: MISSING", obwohl der Nachweis im
+      # selben Lauf gelaufen ist - eine Luecke, die es nicht gibt.
+      - name: Bericht committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung am Faehigkeitsbericht."
+          else
+            git commit -m "Tiingo Commercial: Faehigkeitsnachweis aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
 
       - name: Zusammenfassung
         if: always()
@@ -215,9 +238,17 @@ jobs:
     name: Scale Gate
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    # Beide Jobs committen auf denselben Branch. Nacheinander statt
+    # nebeneinander: ein Wettlauf um denselben Ref kostet mehr, als die
+    # zwanzig Sekunden Wartezeit wert sind. `always()` haelt das Gate am
+    # Laufen, wenn der Faehigkeitsnachweis uebersprungen wurde oder
+    # fehlschlaegt - er ist eine Auskunft, keine Voraussetzung.
+    needs: capability
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      contains(github.event.head_commit.message, '[tiingo-scale]')
+      always() && (
+        github.event_name == 'workflow_dispatch' ||
+        contains(github.event.head_commit.message, '[tiingo-scale]')
+      )
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -242,9 +273,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .market-cache
-          key: market-cache-${{ inputs.gate || 'GATE_100' }}-${{ github.run_id }}
+          # Ein Schluessel je Lauf, damit jeder Lauf seinen Stand ablegt;
+          # restore-keys holt den letzten passenden. Gates sind
+          # geschachtelt, also ist der Bestand eines kleineren Gates fuer
+          # ein groesseres brauchbar - deshalb der allgemeine Praefix am
+          # Ende.
+          key: market-cache-${{ github.run_id }}
           restore-keys: |
-            market-cache-${{ inputs.gate || 'GATE_100' }}-
             market-cache-
 
       - name: Marktuniversum aus den Anbieterstammdaten bauen
@@ -252,9 +287,28 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/build-market-universe.mjs
 
+      # Die Stufe kommt entweder aus der Eingabe (nach einem Merge) oder aus
+      # der Marke in der Commit-Nachricht. Ein unbekannter Wert faellt hier
+      # auf und nicht erst, wenn ein Universum fehlt.
+      - name: Stufe bestimmen
+        id: pick
+        run: |
+          GATE='${{ github.event_name == 'workflow_dispatch' && inputs.gate || '' }}'
+          if [ -z "$GATE" ]; then
+            MSG=$(git log -1 --pretty=%B)
+            GATE=$(printf '%s' "$MSG" | grep -oE '\[tiingo-scale:[A-Z_0-9]+\]' | head -1 | sed -E 's/.*:([A-Z_0-9]+)\]/\1/')
+          fi
+          [ -z "$GATE" ] && GATE='GATE_100'
+          case "$GATE" in
+            CANARY|GATE_100|GATE_500|GATE_2000|FULL_UNIVERSE) ;;
+            *) echo "Unbekannte Stufe '$GATE'."; exit 1 ;;
+          esac
+          echo "Stufe: $GATE"
+          echo "gate=$GATE" >> "$GITHUB_OUTPUT"
+
       - name: Gate-Universum waehlen
         run: |
-          GATE='${{ github.event_name == 'workflow_dispatch' && inputs.gate || 'GATE_100' }}'
+          GATE='${{ steps.pick.outputs.gate }}'
           # Gates sind geschachtelt: das kleinere muss vorliegen, damit das
           # groessere es vollstaendig enthaelt.
           case "$GATE" in
@@ -272,7 +326,7 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
-          GATE='${{ github.event_name == 'workflow_dispatch' && inputs.gate || 'GATE_100' }}'
+          GATE='${{ steps.pick.outputs.gate }}'
           echo "gate=$GATE" >> "$GITHUB_OUTPUT"
           # Ein FAIL-Urteil ist ein Ergebnis und kein Werkzeugfehler: der
           # Lauf soll den Bericht schreiben und die Auswertung erreichen.

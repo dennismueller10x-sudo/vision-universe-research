@@ -106,8 +106,19 @@ const canarySymbols = SCALE.canary.symbols.map((t) => ({
   securityId: "ref_" + t, ticker: t, exchange: null, mic: null
 }));
 
+/* Die Benchmark. Sie steht NICHT im Gate-Universum, weil sie ein ETF ist
+   und damit ausdruecklich nicht screenerfaehig - gebraucht wird sie
+   trotzdem: ohne sie bleibt die relative Staerke fuer jeden Titel
+   SOURCE_MISSING, in den Faktoren wie in der Technical Intelligence.
+   Genau das war das Ergebnis des ersten GATE_100-Laufs. Kostet eine
+   Anfrage je Lauf. */
+const benchmarkSpec = SCALE.benchmark
+  ? { securityId: SCALE.benchmark.securityId, ticker: SCALE.benchmark.symbol,
+      exchange: null, mic: null }
+  : null;
+
 const registry = SymbolMapping.createRegistry(
-  allSymbols.concat(canarySymbols).map((s) => ({
+  allSymbols.concat(canarySymbols, benchmarkSpec ? [benchmarkSpec] : []).map((s) => ({
     securityId: s.securityId, providerId: Tiingo.PROVIDER_ID,
     providerSymbol: s.ticker, ticker: s.ticker, exchange: s.exchange,
     currency: "USD", country: "US", confidence: "inferred",
@@ -271,6 +282,32 @@ async function main() {
     process.exit(0);
   }
 
+  /* Zuerst die Benchmark, dann der Canary, dann das Gate. Die
+     Reihenfolge ist keine Vorliebe: die Benchmark wird von den
+     Auswertungsschritten gebraucht, und wenn sie fehlt, soll das im
+     Bericht dieses Laufs stehen und nicht erst im naechsten auffallen. */
+  let benchmark = null;
+  if (benchmarkSpec) {
+    const b = await fetchAndAssess(benchmarkSpec, { incremental: true });
+    benchmark = {
+      symbol: benchmarkSpec.ticker,
+      securityId: benchmarkSpec.securityId,
+      status: b.providerError ? "UNAVAILABLE"
+             : b.assessment ? b.assessment.status : "UNAVAILABLE",
+      bars: b.assessment && b.assessment.metrics ? b.assessment.metrics.bars : 0,
+      first: b.assessment && b.assessment.metrics ? b.assessment.metrics.first : null,
+      last: b.assessment && b.assessment.metrics ? b.assessment.metrics.last : null,
+      providerError: b.providerError || null,
+      note: "Vergleichsgroesse fuer relative Staerke. Nicht Teil des Gate-Universums und " +
+            "nicht in der Bilanz - sie wird gebraucht, nicht bewertet."
+    };
+    console.log(`\n  Benchmark ${benchmarkSpec.ticker}: ` +
+                (benchmark.status === "UNAVAILABLE"
+                  ? `NICHT VERFUEGBAR (${benchmark.providerError ? benchmark.providerError.reason : "?"}) — ` +
+                    "die relative Staerke bleibt fuer alle Titel leer."
+                  : `${benchmark.bars} Bars, ${benchmark.first} → ${benchmark.last}`));
+  }
+
   let canary = null;
   if (!SKIP_CANARY) {
     canary = await runCanary();
@@ -281,7 +318,7 @@ async function main() {
         generatedAt: new Date().toISOString(), gate: GATE, provider: "tiingo",
         verdict: "FAIL", verdictReason: "canaryRegression",
         message: "Canary-Regression vor dem Gate. Kein Full-Universe-Durchlauf.",
-        requested: securities.length, canary,
+        requested: securities.length, canary, benchmark,
         runtimeMs: Date.now() - t0
       });
       process.exit(1);
@@ -310,8 +347,23 @@ async function main() {
     processed++;
     if (processed % 25 === 0 || processed === pending.length) {
       const rate = processed / Math.max(1, (Date.now() - t1) / 1000);
+      const heapMB = Math.round(process.memoryUsage().heapUsed / 1048576);
       console.log(`    ${String(processed).padStart(5)}/${pending.length}  ` +
-                  `${rate.toFixed(1)} Titel/s`);
+                  `${rate.toFixed(1)} Titel/s  ${heapMB} MB Heap`);
+
+      /* Den Antwortzwischenspeicher leeren.
+
+         Der MarketClient haelt jede Antwort bis zum Ablauf ihrer
+         Lebensdauer - bei Historienabrufen 30 Tage. Das ist fuer eine
+         Oberflaeche richtig und fuer einen Gate-Lauf falsch: hier wird
+         jeder Titel genau einmal abgerufen, und eine volle Historie ist
+         je Titel mehrere Megabyte im Speicher. Ueber 2.000 Titel waeren
+         das mehrere Gigabyte fuer Daten, die niemand mehr anfragt - der
+         Lauf wuerde am Speicher scheitern, nicht am Kontingent (§32).
+
+         Ein Treffer geht dabei nicht verloren, weil es keinen geben
+         kann. Die Zaehler (Anfragen, Bytes) bleiben unberuehrt. */
+      provider.clearCache();
     }
     if (!r.providerError) {
       checkpoint.done.push(sec.securityId);
@@ -453,7 +505,13 @@ async function main() {
       storageMB: Math.round(storageBytes / 1048576 * 10) / 10,
       storageMBPer1000Symbols: counts.requested
         ? Math.round(storageBytes / 1048576 / counts.requested * 1000 * 10) / 10 : null,
-      quota: quota
+      quota: quota,
+      /* Was der Lauf an Speicher gebraucht hat. Die Zahl entscheidet
+         mit, ob die naechste Stufe auf demselben Weg laufen kann (§24,
+         §32) - eine Hochrechnung aus der Titelzahl allein wuerde den
+         Zwischenspeicher uebersehen. */
+      peakHeapMB: Math.round(process.memoryUsage().heapUsed / 1048576),
+      rssMB: Math.round(process.memoryUsage().rss / 1048576)
     },
     historyCoverage: {
       minBars: SCALE.pass.historyCoverageMinBars,
@@ -471,6 +529,7 @@ async function main() {
       UNAVAILABLE: counts.unavailable, reasons: qualityReasons
     },
     canary,
+    benchmark,
     checks,
     perSymbol,
     note: "Kein Feld dieses Berichts ist geschaetzt. Fehlende Werte stehen als null mit " +
