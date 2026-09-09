@@ -171,11 +171,15 @@ function measureStream(opts) {
       const running = series.last();
       const stats = series.stats();
 
+      const phaseAtEnd = MarketHours.sessionAt(Date.now(), { calendar, exchange: "XNYS" }).phase;
       resolve(Object.assign({
         result,
         thresholdLevel,
         symbols,
         durationSeconds: Math.round(durationMs / 1000),
+        sessionPhaseAtStart: phaseAtStart,
+        sessionPhaseAtEnd: phaseAtEnd,
+        sessionPhaseChanged: phaseAtStart !== phaseAtEnd,
         connection: {
           opened,
           openedAfterMs: openedAt && openedAt - startedAt,
@@ -238,6 +242,11 @@ function measureStream(opts) {
     };
 
     const startedAt = Date.now();
+    /* Die Sitzungsphase am Anfang UND am Ende der Messung. Ein Lauf, der
+       ueber die Eroeffnung hinweggeht, misst zwei verschiedene Dinge -
+       und ein Bericht, der nur eine Phase nennt, laesst das nicht
+       erkennen. */
+    const phaseAtStart = MarketHours.sessionAt(startedAt, { calendar, exchange: "XNYS" }).phase;
     const timer = setTimeout(() => {
       stop(opened
         ? (events.length >= MIN_EVENTS_FOR_STREAM ? "PASSED"
