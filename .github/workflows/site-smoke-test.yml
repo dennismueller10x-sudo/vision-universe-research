@@ -1,0 +1,90 @@
+# =====================================================================
+# Live-Rauchtest der ausgelieferten Seite
+#
+# Warum ein eigener Lauf: research.visionuniverse.de ist aus der
+# Entwicklungsumgebung nicht erreichbar (Egress-Sperre, 403 auf CONNECT).
+# Ein Rauchtest ohne echte Antwort waere keiner - also laeuft er dort, wo
+# das Netz offen ist. Dasselbe Muster wie bei den Anbieternachweisen.
+#
+# Der Lauf baut nichts und aendert nichts. Er sieht nach.
+# =====================================================================
+name: Live-Rauchtest
+
+on:
+  workflow_dispatch:
+    inputs:
+      base:
+        description: "Basisadresse der ausgelieferten Seite"
+        required: false
+        default: "https://research.visionuniverse.de"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/site/smoke-test.mjs"
+      - ".github/workflows/site-smoke-test.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Rauchtest
+    runs-on: ubuntu-latest
+    concurrency:
+      group: site-smoke-test
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Browser bereitstellen
+        run: |
+          npm install --no-save playwright@1.48.0
+          npx playwright install --with-deps chromium
+
+      # Der Rauchtest ruft ausschliesslich oeffentlich ausgelieferte
+      # Seiten auf. Er braucht keinen Schluessel und bekommt keinen.
+      - name: Seiten aufrufen
+        run: |
+          BASE='${{ github.event.inputs.base || 'https://research.visionuniverse.de' }}'
+          node scripts/site/smoke-test.mjs --base "$BASE"
+
+      - name: Bericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-smoke-test
+          path: quant/data/site/smoke-test.json
+          if-no-files-found: warn
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Live-Rauchtest'
+            echo ''
+            if [ -f quant/data/site/smoke-test.json ]; then
+              node -e '
+                const r = require("./quant/data/site/smoke-test.json");
+                console.log("Basis: **" + r.base + "**");
+                console.log("");
+                console.log("Ergebnis: **" + r.verdict.status + "** — " +
+                            r.verdict.pagesChecked + " Seitenaufrufe, " +
+                            r.verdict.pagesFailed + " fehlerhaft");
+                console.log("Schluessel im ausgelieferten Inhalt: **" + r.secrets.status + "**");
+                console.log("");
+                console.log("| Ansicht | Seite | HTTP | Inhalt | Konsole | Fehlgeschlagen | Ergebnis |");
+                console.log("|---|---|---|---|---|---|---|");
+                for (const p of r.pages) {
+                  console.log("| " + p.viewport + " | " + p.label + " | " +
+                    (p.httpStatus || "-") + " | " + (p.contentRendered ? "ja" : "**nein**") + " | " +
+                    (p.consoleErrors.length + p.pageErrors.length) + " | " +
+                    p.failedRequests.length + " | " + p.result + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
