@@ -461,11 +461,13 @@ test("T28 · Der echte Nachweis im Baum belegt, was er behauptet", () => {
 });
 
 test("T29 · Die Grenzen des kostenpflichtigen Tarifs sind als Annahme gekennzeichnet", () => {
-  // Es besteht kein kostenpflichtiger Zugang. Die Zahlen stehen im Code,
-  // damit der Umschaltweg gebaut werden kann - nicht weil jemand sie
-  // nachgesehen haette. Eine Annahme, auf die man ein Kontingent stuetzt,
-  // ist ein Ausfall mit Ansage; also muss sie sich als Annahme zu
-  // erkennen geben, und zwar in den Daten und nicht nur im Kommentar.
+  // Stand 2026-09 besteht ein kostenpflichtiger Zugang (Tiingo Commercial
+  // Internal Use). Daran aendert sich fuer diesen Test nichts: die Zahlen
+  // sind weiterhin nicht gemessen worden. Ein bestehender Vertrag sagt,
+  // dass mehr erlaubt ist - nicht wie viel mehr. Eine Annahme, auf die
+  // man ein Kontingent stuetzt, ist ein Ausfall mit Ansage; also muss sie
+  // sich als Annahme zu erkennen geben, und zwar in den Daten und nicht
+  // nur im Kommentar.
   assert.equal(Tiingo.COMMERCIAL_LIMITS.verified, false);
   assert.match(Tiingo.COMMERCIAL_LIMITS.note, /Platzhalter|ungeprueft/);
   // Die Grenzen des Free-Tarifs sind dagegen in Betrieb: der Import

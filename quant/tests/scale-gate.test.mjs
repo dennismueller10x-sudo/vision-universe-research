@@ -15,7 +15,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdtempSync, writeFileSync, readFileSync, mkdirSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, cpSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -320,6 +320,123 @@ test("SG5 — eine Canary-Regression stoppt das Gate, bevor ein Titel geladen wi
     assert.ok(report.canary.regression);
     /* Der eigentliche Beweis: das Gate-Universum wurde nicht angefasst. */
     assert.ok(!report.perSymbol, "nach einer Canary-Regression darf kein Gate-Titel geladen werden");
+  } finally {
+    provider.server.close();
+  }
+});
+
+test("SG6 — Faktoren, Screener, Technical und Gesundheitsbericht laufen auf demselben Bestand", async () => {
+  /* Die vollstaendige Kette in einem Lauf: Gate -> Faktoren -> Screener ->
+     Technical Intelligence -> Gesundheitsbericht. Sie einzeln zu pruefen
+     wuerde genau den Fehler durchlassen, auf den es hier ankommt: dass
+     der naechste Schritt den Bestand des vorherigen nicht findet. */
+  const dir = sandbox();
+  const provider = await startProvider();
+  try {
+    const scaleDir = join(dir, "scale");
+    const cache = join(dir, "cache");
+    const tickers = ["AAPL", "MSFT", "NVDA", "JPM", "XOM", "SPY", "AAA", "BBB"];
+    writeFileSync(join(scaleDir, "universe-GATE_100.json"), JSON.stringify({
+      gate: "GATE_100", targetSize: 100, actualSize: tickers.length, method: "TEST",
+      bySector: {}, byExchange: {},
+      securities: tickers.map((t) => ({
+        securityId: "ref_" + t, ticker: t, exchange: "NASDAQ", currency: "USD",
+        instrumentType: "COMMON_STOCK", provider: "tiingo", providerSymbol: t,
+        sector: "Technology", sectorStatus: "CURATED", selection: "seed"
+      }))
+    }));
+
+    await run("scripts/market/run-scale-gate.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache],
+      { TIINGO_API_KEY: "test-key", TIINGO_BASE_URL: `http://127.0.0.1:${provider.port}` });
+
+    /* ------------------------------------------------- Faktoren */
+    const factorsDir = join(dir, "factors");
+    await run("scripts/market/build-market-factors.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+       "--out", factorsDir, "--benchmark", "SPY"]);
+
+    const factors = JSON.parse(readFileSync(join(factorsDir, "factors-GATE_100.json"), "utf8"));
+    assert.ok(factors.securities.length > 0);
+    const one = factors.securities[0];
+    for (const p of [20, 50, 100, 200]) {
+      assert.ok("priceAboveSMA" + p in one.values, `priceAboveSMA${p} fehlt`);
+      assert.ok("distanceToSMA" + p in one.values, `distanceToSMA${p} fehlt`);
+    }
+    /* §34: keine Kursniveaus im ausgelieferten Faktorsatz. */
+    assert.ok(!("sma200" in one.values), "SMA-Niveaus gehoeren nicht in das Artefakt");
+    assert.ok(!("high52w" in one.values));
+    assert.equal(one.fieldStatus.sma200, "WITHHELD_REDISTRIBUTION");
+    /* Die Benchmark lag vor, also muss die relative Staerke gerechnet sein. */
+    assert.equal(factors.benchmark.id, "SPY");
+    assert.equal(one.fieldStatus.relativeStrength["12M"], "CALCULATED");
+
+    /* ------------------------------------------------- Screener */
+    const screener = JSON.parse(readFileSync(join(factorsDir, "screener-GATE_100.json"), "utf8"));
+    const ids = screener.questions.map((q) => q.id);
+    for (const expected of ["aboveSMA20", "aboveSMA50", "aboveSMA200",
+                            "aboveSMA20And50And200", "newHigh52w", "within5PctOf52wHigh",
+                            "strongestMomentum12M", "strongestRelativeStrength12M",
+                            "volumeBreakout", "trendAcceleration",
+                            "highVolatility", "lowVolatility"]) {
+      assert.ok(ids.includes(expected), `Screener-Frage fehlt: ${expected}`);
+    }
+    /* Der Kern von §15/§30: jede boolesche Frage traegt drei Zahlen, und
+       Treffer plus Nichttreffer plus nicht-entscheidbar ergibt das
+       bewertete Universum. Ohne das liest sich eine Luecke wie ein Befund. */
+    for (const q of screener.questions.filter((x) => x.kind === "boolean")) {
+      assert.equal(q.matched + q.notMatched + q.notEvaluable, q.evaluatedOf,
+                   `${q.id}: die drei Zahlen ergeben nicht das bewertete Universum`);
+    }
+
+    /* ------------------------------------------------ Technical */
+    const techDir = join(dir, "technical");
+    await run("scripts/technical/run-technical-scale.mjs",
+      ["--gate", "GATE_100", "--scale-dir", scaleDir, "--work-dir", cache,
+       "--out", techDir, "--benchmark", "SPY"]);
+
+    const tech = JSON.parse(readFileSync(
+      join(techDir, "technical-coverage-GATE_100.json"), "utf8"));
+    assert.equal(tech.requested, tickers.length);
+    const sum = Object.values(tech.coverage).reduce((a, b) => a + b, 0);
+    assert.equal(sum, tickers.length, "jeder Titel braucht genau einen Deckungsstatus");
+    assert.ok(tech.coverage.TECHNICAL_READY > 0, "auf 600 sauberen Bars muss die Analyse laufen");
+    for (const t of tickers) {
+      assert.ok(tech.perSymbol[t], `${t} fehlt im Deckungsbericht`);
+    }
+    /* §18: die Elliott-Faecher, und Laufzeit statt Vermutung. */
+    const elliottSum = Object.values(tech.elliott.coverage).reduce((a, b) => a + b, 0);
+    assert.equal(elliottSum, tickers.length);
+    assert.ok(tech.performance.msPerSymbol > 0);
+    assert.ok(tech.performance.projected.minutesFor2000 > 0);
+    /* §26/§34: der Deckungsbericht traegt keine Bundles und keine Kurse. */
+    const techText = JSON.stringify(tech);
+    assert.ok(!techText.includes('"close"'), "keine Kurse im Deckungsbericht");
+    assert.ok(!techText.includes('"timestamps"'), "keine Kursreihen im Deckungsbericht");
+
+    /* --------------------------------------- Gesundheitsbericht */
+    const dataRoot = join(dir, "dataroot");
+    mkdirSync(join(dataRoot, "market"), { recursive: true });
+    cpSync(scaleDir, join(dataRoot, "market", "scale"), { recursive: true });
+    cpSync(factorsDir, join(dataRoot, "market", "factors"), { recursive: true });
+    cpSync(techDir, join(dataRoot, "technical", "scale"), { recursive: true });
+
+    const healthDir = join(dir, "health");
+    await run("scripts/market/build-health-report.mjs",
+      ["--data-root", dataRoot, "--out", healthDir]);
+
+    const health = JSON.parse(readFileSync(join(healthDir, "health.json"), "utf8"));
+    /* §29/§30: was nicht gelaufen ist, steht als MISSING da - nicht als 0. */
+    assert.equal(health.universe.status, "MISSING");
+    assert.equal(health.commercialCapabilities.status, "MISSING");
+    assert.equal(health.realtime.LIVE_CHART_READY, "UNKNOWN");
+    assert.ok(health.gates.GATE_100, "das gelaufene Gate muss im Bericht stehen");
+    assert.ok(health.gates.GATE_100.factors.smaCoverage);
+    assert.ok(health.gates.GATE_100.technical.READY >= 0);
+    assert.ok(health.gates.GATE_100.canary);
+    /* Ohne Universum ist die Kette nicht betriebsbereit, egal wie gut das
+       Gate lief. Genau das muss der Gesamtbefund sagen. */
+    assert.equal(health.overall, "NOT_READY");
   } finally {
     provider.server.close();
   }

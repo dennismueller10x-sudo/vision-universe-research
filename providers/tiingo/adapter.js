@@ -85,8 +85,9 @@ const COMMERCIAL_LIMITS = {
   /* Die Kennzeichnung ist Teil der Daten, nicht nur des Kommentars: ein
      Kommentar wird nicht mitgeliefert, wenn jemand das Objekt ausgibt. */
   verified: false,
-  note: "Commercial-Zugang besteht (Stand 2026-09), die Kontingente sind aber ungemessen. " +
-        "Die Werte sind bewusst konservativ; sie werden erst durch einen Lauf angehoben."
+  note: "Commercial-Zugang besteht (Stand 2026-09); die Kontingente bleiben ungeprueft. " +
+        "Ein Vertrag ist keine Messung. Die Werte sind bewusst konservativ und werden erst " +
+        "durch einen Lauf angehoben, der sie misst."
 };
 
 /* ==========================================================================
@@ -710,6 +711,20 @@ function createTiingoProvider(options) {
             open: num(row.open), high: num(row.high), low: num(row.low),
             volume: num(row.volume) === null ? 0 : num(row.volume),
             timestamp: row.timestamp || null,
+
+            /* Tiingos eigener Referenzkurs (tngoLast) neben dem letzten
+               Boersenkurs (last). Die beiden sind nicht dasselbe: `last`
+               ist der letzte an IEX ausgefuehrte Trade, `tngoLast` Tiingos
+               konsolidierter Referenzwert. Ausserhalb der regulaeren
+               Sitzung und bei duenn gehandelten Titeln unterscheiden sie
+               sich - und dann ist es wichtig zu wissen, welchen man
+               ansieht. Beide bleiben getrennt; keiner ersetzt den anderen.
+               null heisst: das Feld kam nicht mit, nicht "kein Kurs". */
+            referencePrice: num(row.tngoLast),
+            bid: num(row.bidPrice), ask: num(row.askPrice), mid: num(row.mid),
+            quoteTimestamp: row.quoteTimestamp || null,
+            lastSaleTimestamp: row.lastSaleTimeStamp || null,
+
             currency: "USD",
             dataSourceId: DATA_SOURCE_ID
           };

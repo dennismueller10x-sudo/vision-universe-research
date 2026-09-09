@@ -126,6 +126,80 @@ if (existsSync(join(root, "quant", "data", "market", "tiingo-realtime-verificati
                 "artifact-only (see .github/workflows/tiingo-verify.yml) - it must never be committed to the repository.");
 }
 
+/* Tiingo Commercial, Scale-Phase: die neuen abgeleiteten Artefakte.
+
+   quant/data/market/{universe,scale,factors,health} und
+   quant/data/technical/scale werden ausgeliefert. Sie duerfen Zustaende,
+   Abstaende, Anzahlen und Renditen tragen - aber keine Kursniveaus und
+   keine Kursreihen. Der Unterschied ist der ganze Grund, warum diese
+   Dateien ueberhaupt committet werden duerfen: "5 % unter dem
+   52-Wochen-Hoch" ist eine abgeleitete Aussage, "das Hoch liegt bei
+   184,20" ist der Kurs des Anbieters.
+
+   Geprueft wird das erzeugte Artefakt und nicht die Absicht des Skripts -
+   aus demselben Grund wie oben: ein Schreibpfad, den jemand spaeter
+   hinzufuegt, faellt hier auf und nicht erst beim Anbieter. */
+const scaleTrees = [
+  ["quant", "data", "market", "universe"],
+  ["quant", "data", "market", "scale"],
+  ["quant", "data", "market", "factors"],
+  ["quant", "data", "market", "health"],
+  ["quant", "data", "market", "commercial"],
+  ["quant", "data", "technical", "scale"]
+];
+
+/* Feldnamen, die ein Kursniveau tragen. adjustedClose und Freunde stehen
+   bewusst mit drin: eine bereinigte Reihe ist genauso Anbieterinhalt wie
+   eine rohe. */
+const PRICE_LEVEL_KEYS = new Set([
+  "close", "open", "high", "low",
+  "adjustedClose", "adjustedOpen", "adjustedHigh", "adjustedLow",
+  "adjClose", "adjOpen", "adjHigh", "adjLow",
+  "sma20", "sma50", "sma100", "sma200",
+  "high52w", "low52w", "price", "last", "previousClose", "referencePrice"
+]);
+
+function scanForPriceLevels(value, path, into) {
+  if (value === null || value === undefined) return;
+  if (Array.isArray(value)) {
+    /* Nur die ersten Elemente: eine Kursreihe faellt im ersten Element
+       auf, und ein vollstaendiger Durchlauf ueber tausende Eintraege
+       kostet bei jedem CI-Lauf Zeit ohne zusaetzliche Aussage. */
+    for (let i = 0; i < Math.min(value.length, 25); i++) {
+      scanForPriceLevels(value[i], `${path}[${i}]`, into);
+    }
+    return;
+  }
+  if (typeof value !== "object") return;
+  for (const [key, child] of Object.entries(value)) {
+    if (PRICE_LEVEL_KEYS.has(key) && typeof child === "number") {
+      into.push(`${path}.${key}`);
+      continue;
+    }
+    scanForPriceLevels(child, `${path}.${key}`, into);
+  }
+}
+
+for (const parts of scaleTrees) {
+  const dir = join(root, ...parts);
+  if (!existsSync(dir)) continue;
+  const relativeDir = parts.join("/");
+  for (const name of readdirSync(dir).filter((name) => name.endsWith(".json"))) {
+    const payload = json(join(relativeDir, name));
+    if (!payload) continue;
+    if (hasBars(payload)) {
+      findings.push(`${relativeDir}/${name}: raw bars in a delivered scale artefact`);
+      continue;
+    }
+    const hits = [];
+    scanForPriceLevels(payload, "", hits);
+    if (hits.length) {
+      findings.push(`${relativeDir}/${name}: provider price levels in a delivered scale artefact ` +
+                    `(${hits.slice(0, 3).join(", ")}${hits.length > 3 ? `, +${hits.length - 3}` : ""})`);
+    }
+  }
+}
+
 if (findings.length) {
   console.error("PUBLIC DATA HYGIENE FAILED");
   findings.forEach((finding) => console.error(`  - ${finding}`));
