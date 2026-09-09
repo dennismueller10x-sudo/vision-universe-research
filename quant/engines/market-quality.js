@@ -465,9 +465,239 @@
              findings: findings, observed: observed };
   }
 
-  var api = { DEFAULTS: DEFAULTS, validateBars: validateBars, validateBatch: validateBatch,
+
+  /* ======================================================================
+     BEURTEILUNG EINER REIHE ALS GANZES   (Tiingo Commercial, §11, §30)
+
+     validateBars() beantwortet "darf diese Bar in den Bestand?". Bei
+     tausend Titeln ist das nicht die Frage, die jemand stellt. Die Frage
+     lautet: ist dieser Titel brauchbar, eingeschraenkt brauchbar oder
+     nicht da - und warum.
+
+     assessSeries() beantwortet genau diese und nur diese. Es rechnet
+     nichts neu, was validateBars() schon rechnet; es ergaenzt die
+     Pruefungen, die eine einzelne Bar nicht sehen kann:
+
+       - veraltete letzte Bar (der Titel wird nicht mehr geliefert)
+       - zu kurze Historie (SMA200 und 12M-Momentum sind nicht rechenbar)
+       - fehlende Provenienz (die Reihe weiss nicht, woher sie kommt)
+       - widerspruechliche Kapitalmassnahmen
+
+     Vier Ergebnisse, und kein fuenftes:
+
+       PASS         verwendbar
+       WARNING      verwendbar, mit benannter Einschraenkung
+       FAIL         nicht verwendbar, Daten liegen vor
+       UNAVAILABLE  keine Daten - und das ist kein FAIL, sondern ein
+                    anderer Befund. Wer beides zusammenwirft, kann
+                    einen Anbieterausfall nicht von einem Datenfehler
+                    unterscheiden.
+     ====================================================================== */
+
+  var ASSESS_DEFAULTS = {
+    /* Ab wann ist die letzte Bar veraltet? Fuenf Handelstage sind ein
+       verlaengertes Wochenende plus Feiertag - alles darueber heisst,
+       dass der Titel nicht mehr geliefert wird. */
+    maxStaleTradingDays: 5,
+    /* Was eine Reihe koennen muss, um im Screener zu zaehlen: SMA200
+       braucht 200 Bars, 12M-Momentum 252. Darunter ist die Reihe nicht
+       falsch, sondern zu kurz - ein eigener Befund. */
+    minBarsForFactors: 252,
+    minBarsUsable: 30,
+    /* Ein Splitfaktor jenseits dieser Grenzen ist keine Kapitalmassnahme
+       mehr, sondern ein Datenfehler. 1:1000 gibt es; 1:100000 nicht. */
+    maxSplitRatio: 1000,
+    minSplitRatio: 0.001
+  };
+
+  /**
+   * Wie viele Handelstage liegen zwischen zwei Datumsangaben?
+   *
+   * Naeherung ueber Wochentage - ohne Feiertagskalender. Sie wird
+   * ausschliesslich fuer die Frage "ist die letzte Bar veraltet?"
+   * benutzt, und dort genuegt sie: der Unterschied zwischen fuenf und
+   * sechs Handelstagen entscheidet nichts, der zwischen fuenf und
+   * fuenfzig schon.
+   */
+  function weekdaysBetween(fromDate, toDate) {
+    var from = Date.parse(fromDate + "T00:00:00Z");
+    var to = Date.parse(toDate + "T00:00:00Z");
+    if (!isFinite(from) || !isFinite(to) || to <= from) return 0;
+    /* Geschlossene Formel statt Schleife: bei 2.000 Titeln und einer
+       jahrealten Reihe waeren das Millionen Iterationen fuer eine Zahl,
+       die sich in vier Zeilen ergibt (§32). */
+    var days = Math.round((to - from) / 86400000);
+    var startDow = new Date(from).getUTCDay();
+    var fullWeeks = Math.floor(days / 7);
+    var count = fullWeeks * 5;
+    var rest = days - fullWeeks * 7;
+    for (var i = 1; i <= rest; i++) {
+      var d = (startDow + i) % 7;
+      if (d !== 0 && d !== 6) count++;
+    }
+    return count;
+  }
+
+  /**
+   * Beurteilt eine gespeicherte Kursreihe.
+   *
+   * @param {object} payload  {bars, adjustmentStatus, provenance, ticker, ...}
+   * @param {object} [options] {today, config, tradingDays, expectFactors}
+   * @returns {object} {status, statusReason, findings, metrics}
+   */
+  function assessSeries(payload, options) {
+    options = options || {};
+    var cfg = Object.assign({}, ASSESS_DEFAULTS, options.config || {});
+    var today = options.today || new Date().toISOString().slice(0, 10);
+    var findings = [];
+
+    if (!payload || !Array.isArray(payload.bars) || payload.bars.length === 0) {
+      return {
+        status: "UNAVAILABLE",
+        statusReason: !payload ? "noSeries" : "emptySeries",
+        findings: [finding("error", "no_data",
+          "Keine Kursreihe vorhanden. Das ist kein Datenfehler, sondern ein fehlender Abruf.")],
+        metrics: { bars: 0, usable: 0, first: null, last: null,
+                   staleTradingDays: null, historyYears: null }
+      };
+    }
+
+    var bars = payload.bars;
+    var base = validateBars(bars, {
+      today: today,
+      adjustmentStatus: payload.adjustmentStatus,
+      tradingDays: options.tradingDays,
+      config: options.barConfig
+    });
+    findings = findings.concat(base.findings);
+
+    /* --- Veraltete letzte Bar ------------------------------------- */
+    var last = bars[bars.length - 1] && bars[bars.length - 1].date;
+    var stale = last ? weekdaysBetween(last, today) : null;
+    if (stale !== null && stale > cfg.maxStaleTradingDays) {
+      findings.push(finding("error", "stale_last_bar",
+        "Die letzte Bar ist vom " + last + " - rund " + stale + " Handelstage alt " +
+        "(Schwelle " + cfg.maxStaleTradingDays + "). Der Titel wird nicht mehr aktuell " +
+        "geliefert; jede daraus abgeleitete Kennzahl beschreibt die Vergangenheit."));
+    }
+
+    /* --- Zu kurze Historie ---------------------------------------- */
+    var usable = base.stats ? base.stats.usable : 0;
+    if (usable < cfg.minBarsUsable) {
+      findings.push(finding("error", "insufficient_history",
+        "Nur " + usable + " verwertbare Bars. Unter " + cfg.minBarsUsable +
+        " laesst sich nichts rechnen, was ein Ergebnis waere."));
+    } else if (usable < cfg.minBarsForFactors) {
+      findings.push(finding("warning", "insufficient_history_for_factors",
+        usable + " verwertbare Bars. SMA200 und 12-Monats-Momentum brauchen mindestens " +
+        cfg.minBarsForFactors + "; sie bleiben fuer diesen Titel leer - mit Grund, nicht mit Null."));
+    }
+
+    /* --- Provenienz ------------------------------------------------ */
+    var prov = payload.provenance || null;
+    var hasProvider = !!(payload.provider || (prov && (prov.provider || prov.source)) ||
+                         payload.dataSourceId ||
+                         (bars[0] && bars[0].dataSourceId));
+    if (!hasProvider) {
+      findings.push(finding("error", "missing_provenance",
+        "Die Reihe nennt keine Quelle. Eine Kursreihe ohne Herkunft laesst sich weder " +
+        "pruefen noch lizenzrechtlich einordnen."));
+    }
+    if (!payload.adjustmentStatus) {
+      findings.push(finding("warning", "missing_adjustment_status",
+        "Die Reihe nennt keine Bereinigungsstufe. Ob sie fuer Total-Return-Kennzahlen " +
+        "taugt, ist damit offen."));
+    }
+
+    /* --- Kapitalmassnahmen ----------------------------------------- */
+    var splits = 0, dividends = 0, absurdSplits = 0, negativeDividends = 0;
+    for (var i = 0; i < bars.length; i++) {
+      var b = bars[i];
+      if (isNum(b.splitFactor) && b.splitFactor !== 1) {
+        splits++;
+        if (b.splitFactor > cfg.maxSplitRatio || b.splitFactor < cfg.minSplitRatio) {
+          absurdSplits++;
+          findings.push(finding("error", "implausible_split",
+            "Splitfaktor " + b.splitFactor + " am " + b.date + " liegt ausserhalb jeder " +
+            "plausiblen Kapitalmassnahme.", { date: b.date }));
+        }
+      }
+      if (isNum(b.dividend) && b.dividend !== 0) {
+        if (b.dividend < 0) {
+          negativeDividends++;
+          findings.push(finding("error", "negative_dividend",
+            "Negative Ausschuettung " + b.dividend + " am " + b.date + ".", { date: b.date }));
+        } else dividends++;
+      }
+    }
+
+    /* --- Bereinigungssemantik -------------------------------------- */
+    var adjustment = null;
+    if (options.checkAdjustment !== false && base.bars.length > 1) {
+      adjustment = validateAdjustmentConsistency(base.bars, {
+        claimedStatus: payload.adjustmentStatus
+      });
+      findings = findings.concat(adjustment.findings);
+    }
+
+    var errors = findings.filter(function (f) { return f.severity === "error"; });
+    var warnings = findings.filter(function (f) { return f.severity === "warning"; });
+
+    var status = errors.length ? "FAIL" : warnings.length ? "WARNING" : "PASS";
+    var statusReason = errors.length
+      ? errors[0].code
+      : warnings.length ? warnings[0].code : "clean";
+
+    var first = bars[0] && bars[0].date;
+    var historyYears = first && last
+      ? Math.round((Date.parse(last) - Date.parse(first)) / 31557600000 * 10) / 10
+      : null;
+
+    return {
+      status: status,
+      statusReason: statusReason,
+      findings: findings,
+      metrics: {
+        bars: bars.length,
+        usable: usable,
+        first: first || null,
+        last: last || null,
+        staleTradingDays: stale,
+        historyYears: historyYears,
+        splits: splits,
+        dividends: dividends,
+        implausibleSplits: absurdSplits,
+        negativeDividends: negativeDividends,
+        errors: errors.length,
+        warnings: warnings.length,
+        continuityBasis: base.stats ? base.stats.continuityBasis : null,
+        adjustmentClaimed: adjustment ? adjustment.claimedStatus : null,
+        adjustmentInferred: adjustment ? adjustment.inferredStatus : null,
+        factorReady: usable >= cfg.minBarsForFactors && !errors.length
+      }
+    };
+  }
+
+  /** Beurteilt viele Reihen und zaehlt die Ergebnisse aus. */
+  function assessBatch(payloadsById, options) {
+    var results = {}, summary = { PASS: 0, WARNING: 0, FAIL: 0, UNAVAILABLE: 0 };
+    var reasons = {};
+    Object.keys(payloadsById || {}).forEach(function (id) {
+      var r = assessSeries(payloadsById[id], options);
+      results[id] = r;
+      summary[r.status]++;
+      reasons[r.statusReason] = (reasons[r.statusReason] || 0) + 1;
+    });
+    summary.total = Object.keys(results).length;
+    return { results: results, summary: summary, reasons: reasons };
+  }
+
+  var api = { DEFAULTS: DEFAULTS, ASSESS_DEFAULTS: ASSESS_DEFAULTS,
+              validateBars: validateBars, validateBatch: validateBatch,
               looksLikeSplit: looksLikeSplit, adjustmentFactors: adjustmentFactors,
-              validateAdjustmentConsistency: validateAdjustmentConsistency };
+              validateAdjustmentConsistency: validateAdjustmentConsistency,
+              weekdaysBetween: weekdaysBetween,
+              assessSeries: assessSeries, assessBatch: assessBatch };
 
   if (isNode) module.exports = api;
   else global.VUMarketQuality = api;

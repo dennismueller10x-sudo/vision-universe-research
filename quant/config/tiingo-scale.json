@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "universeId": "TIINGO_COMMERCIAL_SCALE",
+  "provider": "tiingo",
+  "createdAt": "2026-09-09",
+  "purpose": "Skalierungsplan fuer das Tiingo-Commercial-Marktdatenuniversum. Die Golden Five sind ab hier NICHT mehr das Zieluniversum, sondern der Canary-/Regressionssatz vor jedem Gate.",
+
+  "canary": {
+    "symbols": ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
+    "role": "CANARY_REGRESSION_SET",
+    "note": "Vor jedem Scale Gate zu pruefen. Eine Regression an diesen fuenf Titeln stoppt den Lauf, bevor ein groesseres Universum angefasst wird. Sie sind kein Qualitaetsbeweis fuer das Universum - sie sind der Beweis, dass sich die Pipeline nicht veraendert hat.",
+    "regression": {
+      "minBars": 400,
+      "maxStaleTradingDays": 5,
+      "requireAdjustmentConsistency": true,
+      "requireSplitsPresent": ["AAPL", "NVDA"]
+    }
+  },
+
+  "gates": [
+    { "id": "CANARY", "size": 5,    "next": "GATE_100" },
+    { "id": "GATE_100",  "size": 100,  "next": "GATE_500" },
+    { "id": "GATE_500",  "size": 500,  "next": "GATE_2000" },
+    { "id": "GATE_2000", "size": 2000, "next": "FULL_UNIVERSE" },
+    { "id": "FULL_UNIVERSE", "size": null, "next": null,
+      "note": "Groesse ergibt sich aus dem Anbieter, nicht aus einer Zielzahl. Liefert Tiingo 8.700 relevante Common Stocks, sind es 8.700." }
+  ],
+
+  "pass": {
+    "note": "Schwellen fuer ein PASS. Sie sind Politik, keine Messung - deshalb stehen sie hier und nicht im Skript.",
+    "minResolvedRate": 0.95,
+    "minSuccessRate": 0.90,
+    "maxFailRate": 0.05,
+    "minHistoryCoverageRate": 0.90,
+    "minCanaryPassRate": 1.0,
+    "historyCoverageMinBars": 250,
+    "note_historyCoverage": "Ein Titel gilt als historisch abgedeckt, wenn er mindestens 250 verwertbare Handelstage traegt - ein Jahr. Darunter sind Momentum-12M und SMA200 nicht berechenbar, und ein Screener, der solche Titel mitzaehlt, zaehlt Luecken."
+  },
+
+  "history": {
+    "initialFrom": "1990-01-01",
+    "policy": "MAX_AVAILABLE",
+    "note": "Keine kuenstliche Begrenzung auf 400 Bars, 5 oder 10 Jahre. 1990-01-01 ist kein Zielzeitraum, sondern ein Anschlag weit vor dem Beginn jeder Tiingo-Historie: der Anbieter liefert, was er hat, und das Startdatum schneidet nichts ab."
+  },
+
+  "storage": {
+    "workingDir": ".market-cache",
+    "committedArtifacts": [
+      "quant/data/market/universe/**",
+      "quant/data/market/scale/**",
+      "quant/data/market/factors/**",
+      "quant/data/market/health/**"
+    ],
+    "note": "Vollstaendige Kursreihen bleiben in der Arbeitsablage (gitignored). Committet werden ausschliesslich kompakte, abgeleitete Artefakte: Universum, Gate-Bilanzen, Faktoren, Gesundheitsbericht. Eine Megabyte-grosse Kursreihe je Titel mal 2.000 Titel gehoert nicht in ein Git-Repository - weder technisch noch lizenzrechtlich."
+  },
+
+  "realtime": {
+    "tiers": {
+      "HOT":  { "description": "Aktuell geoeffnete Titel. WebSocket-Realtime.", "transport": "REALTIME_STREAM" },
+      "WARM": { "description": "Watchlists und stark frequentierte Titel. Kurs-Polling oder geteilter Strom.", "transport": "REALTIME_QUOTE" },
+      "COLD": { "description": "Restliches Universum. EOD, bei Bedarf Intraday-Letztstand.", "transport": "EOD" }
+    },
+    "note": "Der Browser verbindet sich nie direkt mit Tiingo. Der Schluessel liegt serverseitig; das Backend verteilt die Stroeme.",
+    "capacity": {
+      "maxStreamSubscriptions": null,
+      "maxConnections": null,
+      "source": "UNMEASURED",
+      "note": "Bewusst null. Die Grenzen des Commercial-Zugangs sind ungeprueft; eine geratene Zahl waere ein Ausfall mit Ansage. scripts/market/verify-live-candle.mjs misst, was messbar ist."
+    }
+  },
+
+  "sectorTargets": {
+    "note": "Zielverteilung fuer GATE_100. Keine Quote, sondern eine Vorgabe gegen ein reines Mega-Cap-Universum: ein Gate, das nur Technologiewerte prueft, prueft nicht das Universum.",
+    "Technology": 18,
+    "Financials": 14,
+    "Health Care": 13,
+    "Consumer Discretionary": 11,
+    "Consumer Staples": 9,
+    "Industrials": 12,
+    "Energy": 8,
+    "Utilities": 7,
+    "Real Estate": 8
+  }
+}

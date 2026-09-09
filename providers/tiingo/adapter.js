@@ -63,18 +63,17 @@ const FREE_LIMITS = {
 
 /* Der kostenpflichtige Zugang aendert ausschliesslich diese Zahlen, nicht
    den Adapter. Genau das ist der Sinn der Trennung (§28).
-   
-   ACHTUNG: Diese Zahlen sind PLATZHALTER. Es besteht kein
-   kostenpflichtiger Zugang, und die Konditionen wurden nicht geprueft -
-   weder in der Anbieterdokumentation noch vertraglich. Sie stehen hier,
-   damit der Umschaltweg gebaut und getestet werden kann, nicht weil
-   jemand sie nachgesehen haette.
-   
-   Wer diesen Tarif in Betrieb nimmt, ersetzt sie durch die zugesagten
-   Werte. Bis dahin gilt: die Zahlen unten sind eine Annahme, und eine
-   Annahme, auf die man ein Kontingent stuetzt, ist ein Ausfall mit
-   Ansage. FREE_LIMITS dagegen sind gemessen - der Import laeuft gegen
-   sie. */
+
+   STAND 2026-09: Ein Commercial-Zugang BESTEHT (Tiingo Commercial
+   Internal Use). Was sich damit NICHT geaendert hat: die Zahlen unten
+   sind weiterhin ungeprueft. Ein bestehender Vertrag ist keine Messung -
+   er sagt, dass mehr erlaubt ist, nicht wie viel mehr.
+
+   Die Zahlen bleiben deshalb konservativ und tragen verified:false. Sie
+   werden angehoben, wenn ein Lauf sie misst (scripts/market/
+   run-scale-gate.mjs meldet Anfragen, Bytes und Kontingentstaende je
+   Gate), nicht wenn jemand eine Tarifseite liest. Eine Annahme, auf die
+   man ein Kontingent stuetzt, ist ein Ausfall mit Ansage. */
 const COMMERCIAL_LIMITS = {
   requestsPerMinute: 100,
   requestsPerHour: 5000,
@@ -86,7 +85,8 @@ const COMMERCIAL_LIMITS = {
   /* Die Kennzeichnung ist Teil der Daten, nicht nur des Kommentars: ein
      Kommentar wird nicht mitgeliefert, wenn jemand das Objekt ausgibt. */
   verified: false,
-  note: "Platzhalter. Kein kostenpflichtiger Zugang vorhanden, Konditionen ungeprueft."
+  note: "Commercial-Zugang besteht (Stand 2026-09), die Kontingente sind aber ungemessen. " +
+        "Die Werte sind bewusst konservativ; sie werden erst durch einen Lauf angehoben."
 };
 
 /* ==========================================================================
