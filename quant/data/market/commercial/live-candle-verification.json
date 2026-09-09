@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T14:13:22.436Z",
+  "generatedAt": "2026-09-09T15:26:35.735Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "realtimeStreamAndLiveCandle",
@@ -8,8 +8,8 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "34361816697",
-    "commit": "db5a8d67e5d9d55ce3a0b536c1027b61922878c0",
+    "runId": "34369902099",
+    "commit": "d4ab4e15fa1314e2b0be8ed90621574c4b00ab24",
     "ref": "claude/tiingo-commercial-phase-1-4j0581",
     "wsUrl": "wss://api.tiingo.com/iex",
     "secondsPerMeasurement": 90
@@ -17,7 +17,7 @@
   "sessionAtRun": {
     "phase": "REGULAR",
     "localDate": "2026-09-09",
-    "localTime": "10:10:12",
+    "localTime": "11:23:26",
     "closedReason": null,
     "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
   },
@@ -27,6 +27,55 @@
   },
   "LIVE_CHART_READY": "TRUE",
   "liveChartReason": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
+  "priceSemantics": {
+    "outcome": "UNSPECIFIED",
+    "priceType": "UNSPECIFIED",
+    "classification": "PROVIDER_CONFIRMATION_REQUIRED",
+    "probes": 24,
+    "matchesByField": {
+      "tngoLast": 13,
+      "mid": 7
+    },
+    "fieldsPresent": {
+      "tngoLast": 24,
+      "mid": 24,
+      "prevClose": 24,
+      "open": 24,
+      "high": 24,
+      "low": 24
+    },
+    "withinBidAsk": null,
+    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen.",
+    "known": "Es kommen fortlaufend Kurse, und sie bauen eine bewegte Minutenkerze.",
+    "unknown": "Was die Zahl bedeutet - Abschluss, Referenz, Mitte oder Quote - ist offen.",
+    "safeForIntradayIntelligence": false,
+    "providerConfirmationRequired": true,
+    "intradayIntelligence": {
+      "status": "BLOCKED",
+      "blockedUses": [
+        "intradaySignals",
+        "technicalSignalGeneration",
+        "backtesting",
+        "executionSimulation",
+        "tradeBasedVolumeAnalysis",
+        "tradeBasedOHLC"
+      ],
+      "permittedUses": [
+        "liveMovingChart"
+      ],
+      "labelling": {
+        "forbidden": [
+          "Last Trade",
+          "Official Trade Price",
+          "Realtime Trade"
+        ],
+        "required": "Die Unsicherheit muss am Kurs sichtbar bleiben.",
+        "machineReadableField": "priceSemantics.outcome"
+      },
+      "sourceOfTruth": "Die geprueften historischen und Intraday-Datensaetze bleiben die Rechengrundlage, bis die Kursart belegt ist.",
+      "note": "Kein Verbot des Charts - ein Verbot, auf dieser Kerze zu rechnen und sie zu beschriften, als waere sie etwas Belegtes."
+    }
+  },
   "streamFindings": {
     "connectionAccepted": true,
     "acceptedThresholdLevels": [
@@ -42,7 +91,7 @@
     "tradeStreamAvailable": false,
     "quoteMessagesObserved": 0,
     "tradeMessagesObserved": 0,
-    "unparsedPriceMessages": 116,
+    "unparsedPriceMessages": 131,
     "observedMessageShape": [
       {
         "service": "iex",
@@ -129,17 +178,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 440,
+        "openedAfterMs": 200,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 118,
+        "messages": 133,
         "adminMessages": 2,
         "messageTypes": {
-          "noTypeField": 116
+          "noTypeField": 131
         },
         "messageShape": [
           {
@@ -170,7 +219,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 116,
+        "unparsedPriceMessages": 131,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -180,66 +229,86 @@
         "stableForFullDuration": true
       },
       "events": {
-        "count": 116,
-        "firstAfterMs": 671,
-        "lastAfterMs": 89498,
-        "perSecond": 1.31,
+        "count": 131,
+        "firstAfterMs": 527,
+        "lastAfterMs": 88188,
+        "perSecond": 1.49,
         "gapMs": {
-          "min": 435,
-          "median": 591,
-          "p90": 1185,
-          "max": 3117
+          "min": 471,
+          "median": 561,
+          "p90": 1043,
+          "max": 2125
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
           "max": 0
         },
-        "withTimestamp": 116,
-        "withSymbol": 116,
+        "withTimestamp": 131,
+        "withSymbol": 131,
         "bySymbol": {
-          "NVDA": 116
+          "NVDA": 131
         },
         "consecutive": true
       },
       "candle": {
         "symbol": "NVDA",
-        "bucket": "2026-09-09T10:11",
-        "ticksInBucket": 57,
+        "bucket": "2026-09-09T11:24",
+        "ticksInBucket": 82,
         "perSymbol": {
           "NVDA": {
             "bars": 2,
-            "ticksInLastBar": 57,
-            "maxTicksInAnyBar": 58,
-            "rangeRelative": 0.00127
+            "ticksInLastBar": 82,
+            "maxTicksInAnyBar": 82,
+            "rangeRelative": 0.000693
           }
         },
-        "maxTicksInAnyBucket": 58,
+        "maxTicksInAnyBucket": 82,
         "barsFormed": 2,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.00127,
-        "closeMovedFromOpen": -0.001226,
+        "rangeRelative": 0.000693,
+        "closeMovedFromOpen": -0.000603,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 116
+          "UNSPECIFIED": 131
         },
         "messageForms": {
-          "iexNoTypeField": 116
+          "iexNoTypeField": 131
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 115,
+          "ticks": 131,
           "accepted": 2,
           "rejectedFuture": 0,
-          "rejectedConfirmed": 1,
+          "rejectedConfirmed": 0,
           "rejectedMalformed": 0
         },
         "multipleUpdatesInSameCandle": true
+      },
+      "priceFieldProbe": {
+        "probes": 8,
+        "fieldsPresent": {
+          "tngoLast": 8,
+          "mid": 8,
+          "prevClose": 8,
+          "open": 8,
+          "high": 8,
+          "low": 8
+        },
+        "matchesByField": {
+          "tngoLast": 3,
+          "mid": 3
+        },
+        "withinBidAskOf": 0,
+        "withinBidAsk": 0,
+        "medianStreamPriceAgeMs": 632,
+        "error": null,
+        "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }
     },
     {
@@ -255,7 +324,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 31,
+        "openedAfterMs": 78,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -327,6 +396,7 @@
         },
         "multipleUpdatesInSameCandle": false
       },
+      "priceFieldProbe": null,
       "closedEarly": true
     },
     {
@@ -342,7 +412,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 35,
+        "openedAfterMs": 168,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -414,6 +484,7 @@
         },
         "multipleUpdatesInSameCandle": false
       },
+      "priceFieldProbe": null,
       "closedEarly": true
     },
     {
@@ -430,17 +501,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 111,
+        "openedAfterMs": 72,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 113,
+        "messages": 128,
         "adminMessages": 2,
         "messageTypes": {
-          "noTypeField": 111
+          "noTypeField": 126
         },
         "messageShape": [
           {
@@ -471,7 +542,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 111,
+        "unparsedPriceMessages": 126,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -481,73 +552,93 @@
         "stableForFullDuration": true
       },
       "events": {
-        "count": 111,
-        "firstAfterMs": 168,
-        "lastAfterMs": 89699,
-        "perSecond": 1.24,
+        "count": 126,
+        "firstAfterMs": 217,
+        "lastAfterMs": 88410,
+        "perSecond": 1.43,
         "gapMs": {
-          "min": 11,
-          "median": 627,
-          "p90": 1462,
-          "max": 4042
+          "min": 3,
+          "median": 604,
+          "p90": 1222,
+          "max": 2860
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
           "max": 0
         },
-        "withTimestamp": 111,
-        "withSymbol": 111,
+        "withTimestamp": 126,
+        "withSymbol": 126,
         "bySymbol": {
-          "AAPL": 85,
-          "MSFT": 26
+          "AAPL": 105,
+          "MSFT": 21
         },
         "consecutive": true
       },
       "candle": {
         "symbol": "AAPL",
-        "bucket": "2026-09-09T10:13",
-        "ticksInBucket": 21,
+        "bucket": "2026-09-09T11:26",
+        "ticksInBucket": 40,
         "perSymbol": {
           "AAPL": {
-            "bars": 3,
-            "ticksInLastBar": 21,
-            "maxTicksInAnyBar": 56,
-            "rangeRelative": 0.000933
+            "bars": 2,
+            "ticksInLastBar": 40,
+            "maxTicksInAnyBar": 65,
+            "rangeRelative": 0.000352
           },
           "MSFT": {
-            "bars": 3,
-            "ticksInLastBar": 5,
-            "maxTicksInAnyBar": 18,
-            "rangeRelative": 0.000773
+            "bars": 2,
+            "ticksInLastBar": 7,
+            "maxTicksInAnyBar": 14,
+            "rangeRelative": 0.000132
           }
         },
-        "maxTicksInAnyBucket": 56,
-        "barsFormed": 3,
+        "maxTicksInAnyBucket": 65,
+        "barsFormed": 2,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.000933,
-        "closeMovedFromOpen": 0.000332,
+        "rangeRelative": 0.000352,
+        "closeMovedFromOpen": 0.00008,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 111
+          "UNSPECIFIED": 126
         },
         "messageForms": {
-          "iexNoTypeField": 111
+          "iexNoTypeField": 126
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 85,
-          "accepted": 3,
+          "ticks": 105,
+          "accepted": 2,
           "rejectedFuture": 0,
           "rejectedConfirmed": 0,
           "rejectedMalformed": 0
         },
         "multipleUpdatesInSameCandle": true
+      },
+      "priceFieldProbe": {
+        "probes": 16,
+        "fieldsPresent": {
+          "tngoLast": 16,
+          "mid": 16,
+          "prevClose": 16,
+          "open": 16,
+          "high": 16,
+          "low": 16
+        },
+        "matchesByField": {
+          "mid": 4,
+          "tngoLast": 10
+        },
+        "withinBidAskOf": 0,
+        "withinBidAsk": 0,
+        "medianStreamPriceAgeMs": 1159,
+        "error": null,
+        "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }
     }
   ]
