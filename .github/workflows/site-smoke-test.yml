@@ -43,10 +43,15 @@ jobs:
         with:
           node-version: '22'
 
+      # Ohne --with-deps: das ruft apt-get update auf, und der Runner
+      # traegt eine Google-Chrome-Paketquelle, deren Index gerade nicht
+      # zu seiner Pruefsumme passt (Hash Sum mismatch). Der Rauchtest
+      # waere daran gescheitert, ohne dass die Seite etwas damit zu tun
+      # haette. Die Systembibliotheken bringt ubuntu-latest bereits mit.
       - name: Browser bereitstellen
         run: |
           npm install --no-save playwright@1.48.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
 
       # Der Rauchtest ruft ausschliesslich oeffentlich ausgelieferte
       # Seiten auf. Er braucht keinen Schluessel und bekommt keinen.
