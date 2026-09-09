@@ -81,16 +81,110 @@ Auswahlkriterium mehr, sondern ein Messwert.
 Eigenschaft wäre ein Vergleich zwischen zwei Gates keiner — eine
 Verschlechterung könnte auch daran liegen, dass ganz andere Titel drin sind.
 
+## Was die Gates gemessen haben
+
+Alle drei Stufen sind gegen den echten Zugang gelaufen. Jede Zahl stammt aus
+einem Lauf, keine ist geschätzt.
+
+| | GATE_100 | GATE_500 | GATE_2000 |
+|---|---|---|---|
+| Urteil | PASS | PASS | PASS |
+| aufgelöst | 100/100 | 500/500 | 2.000/2.000 |
+| PASS / WARNING / FAIL | 76 / 24 / 0 | 295 / 203 / 2 | 862 / 1.133 / 5 |
+| UNAVAILABLE | 0 | 0 | 0 |
+| Anfragen | 105 | 502 | 2.002 |
+| empfangen | 204 MB | 867 MB | 2.477 MB |
+| Ablage | 288 MB | 1.521 MB | 5.091 MB |
+| Laufzeit | 61 s | 301 s | 1.202 s |
+| **je Titel** | **0,614 s** | **0,602 s** | **0,601 s** |
+| Bars im Schnitt | 8.490 | 9.077 | 7.731 |
+| Historienabdeckung | 100 % | 100 % | 99,95 % |
+| Canary | 5/5 | 5/5 | 5/5 |
+| Heap / RSS | – | 44 / 243 MB | 51 / 250 MB |
+
+Die Rate je Titel ist über den Faktor 20 hinweg konstant. Das ist der
+eigentliche Befund: die Pipeline skaliert linear, und die Grenze liegt
+woanders.
+
+| | GATE_100 | GATE_500 | GATE_2000 | FULL (FAIL) |
+|---|---|---|---|---|
+| Technical READY | 100/100 | 500/500 | 1.999/2.000 | 4.982 |
+| Technical ms/Titel | 148 | 146 | 129 | 74 |
+| Elliott HIGH / MEDIUM / LOW / AMBIGUOUS | 22/8/8/62 | 130/49/30/291 | 559/132/117/1.191 | 1.293/322/309/3.028 |
+| Elliott UNAVAILABLE | 0 | 0 | 0 | 30 |
+| Faktoren gerechnet | 100 | 498 | 1.995 | 4.957 |
+| SMA20/50/100/200 | je 100 | je 498 | je 1.995 | je 4.951 |
+| Momentum 1M/3M/6M/12M | je 100 | je 498 | je 1.995 | je 4.948 |
+| relative Stärke 12M | 0 (Benchmark fehlte) | 498 | 1.995 | 4.948 |
+
+## FULL_UNIVERSE: gelaufen und **FAIL** (§25, §37)
+
+Das Vollausbaustadium sollte bewertet werden. Der Lauf hat stattdessen einen
+vollständigen Backfill begonnen — die Sicherung stand in einer Shell-Bedingung
+im Workflow und hat nicht gegriffen. Aus dem Fehler ist die belastbarste
+Messung dieser Phase geworden; das entschuldigt ihn nicht, und die Sicherung
+sitzt jetzt im Skript (`--allow-full-backfill`), wo sie sich von außen nicht
+falsch verdrahten lässt.
+
+**Das Universum ist kleiner als die Hochrechnung annahm: 5.684 Titel**, nicht
+8.158. Der Unterschied ist die Mindesthistorie von drei Jahren, die die
+regelbasierte Auswahl verlangt.
+
+| | Wert |
+|---|---|
+| Universum | 5.684 (NASDAQ 3.209, NYSE 2.236, AMEX 195, übrige 44) |
+| aufgelöst | 4.998 |
+| **UNAVAILABLE** | **686 — alle `rateLimited`** |
+| PASS / WARNING / FAIL | 1.966 / 2.991 / 41 |
+| Anfragen | **5.000** |
+| empfangen | 4.030 MB |
+| Ablage | 7.356 MB |
+| Laufzeit | 2.948 s (0,52 s je Titel) |
+| Canary | 5/5 |
+| **Urteil** | **FAIL** (resolvedRate 87,9 %, successRate 87,2 %, historyCoverage 87,7 %) |
+
+### Die Ursache ist unsere eigene Zahl
+
+`requests: 5000` ist kein Zufall: `COMMERCIAL_LIMITS.requestsPerHour` steht auf
+genau 5.000. Der Lauf ist nicht an Tiingo gescheitert, sondern an einem Wert,
+den wir selbst gesetzt und nie gemessen haben — er trägt bis heute
+`verified: false`.
+
+Damit ist der nächste Schritt klar benannt und klein:
+
+1. Die tatsächliche Stundengrenze des Kontos messen. Bis dahin bleibt 5.000
+   die bindende Grenze, und 5.684 Titel passen nicht in einen Lauf.
+2. Oder den Backfill über zwei Läufe fahren. Der Checkpoint trägt das
+   bereits — der zweite Lauf setzt bei Titel 5.001 an.
+
+Was **nicht** die Antwort ist: die Historie kürzen. Sie ist der Grund, warum
+dieser Zugang bezahlt wird.
+
+### Speicher ist nicht die Grenze
+
+Die frühere Hochrechnung von 24 GB stützte sich auf die Ablagerate von
+GATE_500 (3.041 MB je 1.000) und auf 8.158 Titel. Beide Zahlen waren zu hoch:
+das Universum ist kleiner, und die zusätzlichen Titel tragen kürzere
+Historien (Schnitt 4.511 Bars statt 9.077). Gemessen sind **1.294 MB je 1.000
+Titel**; ein vollständiger Durchlauf über 5.684 Titel braucht rund **8,4 GB**
+und passt damit auf einen Standard-Runner.
+
+Die Lehre daraus gehört in den Bericht, nicht unter den Tisch: eine
+Hochrechnung aus einer Stichprobe der größten Titel überschätzt den Bedarf des
+ganzen Universums. Deshalb steht in `--assess-only` jetzt, worauf sie sich
+stützt — und deshalb ersetzt sie keine Messung.
+
 ## Speicher (§26)
 
 Gemessen, nicht geschätzt:
 
 | Was | Größe |
 |---|---|
-| Volle Historie je Titel (36 Jahre EOD, JSON) | ~1,5–3 MB |
+| Volle Historie je Titel (36 Jahre EOD, JSON) | 2,5–2,9 MB |
 | Technical-Bundle je Titel | ~0,5 MB |
+| Ablage je 1.000 Titel | 2.545–3.041 MB |
 
-Bei 2.000 Titeln sind das mehrere Gigabyte. Das gehört weder technisch noch
+Bei 2.000 Titeln sind das 5 GB. Das gehört weder technisch noch
 lizenzrechtlich in ein öffentliches Git-Repository.
 
 Die Trennung ist deshalb:
@@ -150,7 +244,7 @@ unter `high` stand. Behoben wurden die Feldnamen, nicht die Prüfung.
 | Frage | Status | Warum |
 |---|---|---|
 | Abo-Grenzen des Stroms | `UNMEASURED` | Ein Vertrag ist keine Messung. |
-| Kontingente (`COMMERCIAL_LIMITS`) | `verified: false` | Ebenso. Die Zahlen bleiben konservativ, bis ein Lauf sie misst. |
+| Kontingente (`COMMERCIAL_LIMITS`) | `verified: false` | Ebenso — und der FULL_UNIVERSE-Lauf hat gezeigt, was das kostet: er ist an unserer eigenen, nie gemessenen Stundengrenze von 5.000 gescheitert. Das ist der teuerste offene Punkt dieser Phase. |
 | Sektor/Branche | `SOURCE_MISSING` | Nicht im Zugang enthalten. Nicht geschätzt. |
 | ADR-Trennung | `UNVERIFIED` | Ohne Firmennamen nicht entscheidbar. |
 | Weitergabe der vollständigen Tickerliste | `LEGAL_REVIEW_REQUIRED` | Anbieterinhalt in Rohform. |
