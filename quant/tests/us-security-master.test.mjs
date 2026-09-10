@@ -641,6 +641,21 @@ test("SM63 die Backfill-Schaetzung verlangt eine Freigabe und startet nichts", (
   const est = JSON.parse(readFileSync(file, "utf8"));
   assert.equal(est.approvalRequired, true);
   assert.equal(est.estimate.fullRerun.necessary, false);
+  /* Beendete Listings gehoeren nicht in die Nachholliste: ihre
+     Historie ist vollstaendig, ein erneuter Abruf liefert dieselbe
+     Reihe. Die Zahl kommt aus dem Referenzlauf und nicht aus dem
+     active-Feld. */
+  const inc = est.estimate.incremental;
+  assert.equal(inc.symbolsToFetch, inc.newSymbols + inc.staleSymbols);
+  assert.ok(inc.staleBasis.includes("stale_last_bar"), inc.staleBasis);
+  /* Die Zahl kommt aus dem Referenzlauf und wird dort nachgelesen -
+     nicht aus dem active-Feld des Stamms abgeleitet. */
+  const gateFile = join(root, "quant", "data", "market", "scale", "gate-FULL_UNIVERSE.json");
+  if (existsSync(gateFile)) {
+    const gate = JSON.parse(readFileSync(gateFile, "utf8"));
+    assert.equal(inc.staleSymbols, gate.dataQuality.reasons.stale_last_bar || 0,
+                 "stale kommt aus dataQuality.reasons.stale_last_bar des Referenzlaufs");
+  }
   assert.ok(est.estimate.aggregatesToRebuild.mustRebuild.length > 0);
   assert.ok(est.estimate.aggregatesToRebuild.mustNotRebuild.length > 0);
   /* Kein Pfad darf zugleich neu zu bauen und zu erhalten sein. */

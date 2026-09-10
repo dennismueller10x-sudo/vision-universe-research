@@ -1,6 +1,7 @@
 # VU US Security Master — Entdeckung, Klassifikation, Abgleich
 
 **Stand:** 2026-09-10 · **Engine:** `us-security-master-1.0.0` ·
+**Anbieterlauf:** CI 34515827288 (108.589 Zeilen, 0 Kurs-Anfragen) ·
 **Phase:** `DISCOVERY_ONLY_NO_BACKFILL`
 
 Dieses Dokument beschreibt einen eigenen Datenstrang. Er beruehrt die
@@ -44,7 +45,7 @@ verkleinert, bricht ab und liefert nicht.
 |---|---|
 | `quant/engines/us-security-master.js` | Klassifikation und Abgleich. Reine Logik, einzeln testbar. |
 | `scripts/market/build-us-security-master.mjs` | Der Lauf: Liste holen, klassifizieren, abgleichen, schreiben. |
-| `quant/tests/us-security-master.test.mjs` | 33 Tests, davon fuenf Mutationstests. |
+| `quant/tests/us-security-master.test.mjs` | 34 Tests, davon fuenf Mutationstests. |
 | `.github/workflows/tiingo-us-discovery.yml` | Der einzige Ort, an dem die Anbieterliste wirklich geladen wird. |
 | `quant/data/market/security-master/summary.json` | Bilanz. |
 | `quant/data/market/security-master/us-security-master.json` | Der Wertpapierstamm, eine Zeile je Titel. |
@@ -118,19 +119,23 @@ Handelsplatz, Waehrung, Aktivitaet.
 
 ## 6. Der Fund im Bestand
 
-Der Abgleich hat den gelieferten Bestand zum ersten Mal mit der feinen
-Gattungsliste gelesen. **327 der 5.684 Titel** stehen jetzt auf
-`REVIEW`. Alle bleiben im Bestand.
+Gemessen im Anbieterlauf **34515827288** gegen 108.589 Anbieterzeilen.
+**511 der 5.684 Bestandstitel** stehen auf `REVIEW`. Alle bleiben im
+Bestand.
 
-| Befund | Anzahl | Schwere |
+| Befund | Titel | Schwere |
 |---|---:|---|
-| `BASELINE_PREFERRED_CONTAMINATION` | 308 | HIGH |
-| `BASELINE_INACTIVE_LISTINGS` | 16 | MEDIUM |
+| `BASELINE_PREFERRED_CONTAMINATION` | 292 | HIGH |
+| `BASELINE_MATCH_AMBIGUOUS` | 208 | HIGH |
+| `BASELINE_INACTIVE_LISTINGS` | 8 | MEDIUM |
 | `BASELINE_WARRANT_CONTAMINATION` | 3 | MEDIUM |
-| `BASELINE_ETF_CONTAMINATION` | 2 | HIGH |
 | `BASELINE_NON_PRIMARY_VENUE` | 1 | MEDIUM |
 
-### 6.1 Warum 308 Vorzuege durchgerutscht sind
+Die Rechnung geht auf: **5.173 bestaetigt + 511 zur Pruefung = 5.684**.
+Ein dritter Ausgang existiert nicht, und `BASELINE_ACCOUNTED_FOR` im
+Bericht ist der Ort, an dem er auffiele.
+
+### 6.1 Warum 292 Vorzuege durchgerutscht sind
 
 Tiingo schreibt Sondergattungen als Suffix. Der bestehende Klassierer
 kennt die **zweiteilige** Form (`BAC-PB` → Vorzug) und die
@@ -146,28 +151,45 @@ BAC-P-E   →  Regel /-P[A-Z]?$/ trifft nicht (endet auf "-E")
 Genau diese Form benutzt Tiingo fuer die Vorzugsserien der grossen
 Emittenten: `WFC-P-Y`, `PCG-P-A`, `GS-P-C`, `JPM-P-D`, `MS-P-F`, …
 
-Der neue Klassierer erkennt sie (`tickerMarker`, `basis:
-"tickerSuffix3"`) und setzt zusaetzlich das Kennzeichen
-`BASE_CLASSIFIER_MISSED_SUFFIX` — der Befund sagt also nicht nur, was
-das Papier ist, sondern auch, warum es bisher anders gefuehrt wurde.
+Der Effekt ist im ganzen Anbieteruniversum messbar, und zwar exakt:
+
+| Gattung | grober Klassierer | feiner Klassierer | Differenz |
+|---|---:|---:|---:|
+| COMMON_STOCK / EQUITY_COMMON | 47.888 | 47.035 | **−853** |
+| PREFERRED | 29 | 882 | **+853** |
+
+Dieselbe Zahl auf beiden Seiten. Die 853 sind nicht verschwunden — sie
+standen im falschen Fach. (`coarseVsFine` im Abgleich; die grobe Seite
+stammt aus `universe/summary.json` vom 09.09., die feine aus diesem
+Lauf.)
 
 Dieselbe Luecke betrifft `-WS-A` (Optionsscheine): `VST-WS-A`,
-`SATX-WS-A`, `NE-WS-A`.
+`SATX-WS-A`, `NE-WS-A`. Und `-U-x` / `-RT-x`: der grobe Klassierer
+fuehrte 494 Papiere als `OTHER`, der feine trennt sie in 395 `UNIT` und
+141 `RIGHT`.
 
 ### 6.2 Die uebrigen Befunde
 
-* **2 ETF** (`BNY`, `GHI`) — beide vom Anbieter selbst als
-  `assetType: ETF` gefuehrt und beide inaktiv. Sie stammen aus der
-  Nestung ueber `GATE_2000`.
-* **16 inaktive Listings**, darunter `SUNE`, `COHR`, `SIRI`, `FLNA`.
+* **208 mehrdeutige Zuordnungen** — der Anbieter fuehrt den Ticker
+  mehrfach und keine Zeile steht auf dem Handelsplatz des Bestands.
+  426 Zeilen, davon 215 inaktiv (fast alle davon Vorgaenger eines
+  wiederverwendeten Symbols), aufgeteilt in 385 `EQUITY_COMMON`,
+  32 `PREFERRED`, 9 `ETF`. Welche Zeile gemeint ist, entscheidet dieser
+  Lauf **nicht**.
+* **8 beendete Listings** unter den sauber zugeordneten Titeln.
+* **3 Optionsscheine** (`VST-WS-A`, `SATX-WS-A`, `NE-WS-A`).
 * **1 Titel auf `EXPM`** (`EFOR`) — Expert Market, ein
   Ausserboersen-Segment. Er kam ueber die kuratierte `GATE_100`-Saat
   herein, die den OTC-Filter der regelbasierten Auswahl nicht
   durchlaeuft.
-* **0 doppelte Ticker** im Bestand. Der Bestand ist in diesem Punkt
-  sauber.
+* **118 Bestandsticker** tragen zusaetzlich ein zweites Anbieterlisting
+  (`ALTERNATE_LISTING_OF_BASELINE_TICKER`). Sie zaehlen **nicht** als
+  Neuzugang.
+* Im ganzen Anbieteruniversum: **2.202 doppelte Ticker**, davon 1.067
+  ohne Zeitraumueberschneidung — das ist Symbolwiederverwendung und
+  keine Doppelnotierung.
 
-## 6.3 Wie ein Bestandstitel einer Anbieterzeile zugeordnet wird
+### 6.3 Wie ein Bestandstitel einer Anbieterzeile zugeordnet wird
 
 Tiingo fuehrt denselben Ticker mehrfach: an zwei Handelsplaetzen, oder
 nacheinander fuer zwei verschiedene Emittenten
@@ -193,69 +215,74 @@ wie er es soll. `baselinePreserved` zaehlt jetzt TITEL,
 `baselineMemberRows` zaehlt ZEILEN, und wo beide auseinandergehen, steht
 ein Befund (SM42, SM46, SM47).
 
-## 7. Was zu einer Erweiterung fehlt
+## 7. Das Anbieteruniversum
 
-Die Anbieterliste selbst konnte in der Werkstatt **nicht geladen**
-werden: `apimedia.tiingo.com` ist vom Egress-Regelwerk der Umgebung
-gesperrt (`connect_rejected`, HTTP 403 am Gateway), und `.market-cache/`
-ist gitignored und in einem frischen Klon leer.
+Gemessen, nicht geschaetzt. `apimedia.tiingo.com` ist vom Egress-
+Regelwerk der Arbeitsumgebung gesperrt; geladen wird die Liste deshalb
+in `.github/workflows/tiingo-us-discovery.yml`, wo das Netz offen ist.
+Der Lauf kostet **null Anfragen an die Kurs-API** — er laedt eine offene
+Datei von rund 800 KB in etwa einer Sekunde.
 
-Der Lauf meldet das als Befund und raet nicht:
+| Kennzahl | Wert |
+|---|---:|
+| `RAW_US_PROVIDER_CANDIDATES` | 108.589 |
+| `ACTIVE_US_COMMON_EQUITIES` | 7.785 |
+| `NEW_ELIGIBLE_ADDITIONS` | **2.116** |
+| `FINAL_PROPOSED_US_EQUITY_COUNT` | **7.800** |
+| `OTC_COMMON_DEFERRED` | 16.641 |
+| `INACTIVE` | 42.483 |
+| `EXCLUDED_NEW_CANDIDATES` | 60.642 |
+| `REVIEW_NEW_CANDIDATES` | 39.929 |
 
-```
-RAW_US_PROVIDER_CANDIDATES      NOT_FETCHED_THIS_RUN
-NEW_ELIGIBLE_ADDITIONS          NOT_MEASURABLE_WITHOUT_PROVIDER_LIST
-FINAL_PROPOSED_US_EQUITY_COUNT  PENDING_PROVIDER_FETCH (floor: 5.684)
-```
+Gattungen im ganzen Anbieteruniversum: 49.878 `MUTUAL_FUND`, 9.592
+`ETF`, 882 `PREFERRED`, 666 `WARRANT`, 395 `UNIT`, 141 `RIGHT`. `ADR`,
+`REIT`, `SPAC`, `TRUST`, `ETN`, `ETP`, `CEF` und `INDEX` stehen bei
+**0** — nicht weil es sie nicht gibt, sondern weil die Tickerliste
+keinen Namen traegt (§5). Diese acht Zahlen sind Untergrenzen und
+ausdruecklich keine Zaehlung.
 
-`.github/workflows/tiingo-us-discovery.yml` ist der Ort, an dem die
-Liste geladen wird — dort ist das Netz offen. Der Lauf kostet **null
-Anfragen an die Kurs-API**; er laedt eine offene Datei von rund 800 KB.
+### 7.1 Wo die 2.116 Neuzugaenge liegen
 
-### 7.1 Was sich aus der committeten Bilanz ableiten laesst
+| Handelsplatz | Neuzugaenge |
+|---|---:|
+| NASDAQ | 1.465 |
+| NYSE | 375 |
+| BATS | 208 |
+| AMEX | 45 |
+| NYSE ARCA | 14 |
+| NYSE MKT | 9 |
 
-`quant/data/market/universe/summary.json` traegt Zahlen ueber die
-108.573 Anbieterzeilen des Laufs vom 2026-09-09 — Zahlen ueber die
-Liste, nicht die Liste. Daraus:
+### 7.2 Warum sie gefehlt haben — die Antwort ist eindeutig
 
-| US-Regelplatz | screenerfaehig (grob) | im Bestand | Differenz |
-|---|---:|---:|---:|
-| NASDAQ | 4.908 | 3.215 | 1.693 |
-| NYSE | 2.718 | 2.229 | 489 |
-| AMEX | 252 | 197 | 55 |
-| BATS | 225 | 15 | 210 |
-| NYSE MKT | 32 | 18 | 14 |
-| NYSE ARCA | 23 | 9 | 14 |
-| **Summe** | **8.158** | **5.683** | **2.475** |
+| Erstnotierung laut Anbieter | Neuzugaenge |
+|---|---:|
+| 2023 (ab 10.09.) | 90 |
+| 2024 | 389 |
+| 2025 | 717 |
+| 2026 | 920 |
 
-(Der 5.684. Titel steht auf `EXPM` und faellt in dieser Tabelle nicht an.)
+**Alle 2.116 liegen nach dem 10.09.2023.** Kein einziger davor.
 
-**Diese 2.475 sind eine Obergrenze, keine Untergrenze.** Die Bilanz
-zaehlt in der groben Gattungsliste, in der Vorzuege in dreiteiliger
-Schreibweise und Optionsscheine als Stammaktie mitlaufen. Die Zahl der
-tatsaechlichen Neuzugaenge liegt darunter. Der Wert traegt im Artefakt
-das Etikett `COARSE_CLASSIFIER_UPPER_BOUND`.
+Das ist keine Anbieterluecke und keine Gattungsfrage. Es ist **unsere
+eigene Auswahlregel**: `ruleBasedCandidates()` in
+`select-gate-universe.mjs` verlangt `minHistoryYears: 3`. Wer nach dem
+Stichtag erstmals gehandelt wurde, war fuer `FULL_UNIVERSE` nicht
+waehlbar — unabhaengig davon, was er ist.
 
-### 7.2 Woher die Differenz kommt
+Der neue Klassierer wendet die Regel auf die Foerderfaehigkeit **nicht**
+an (Test SM21). Ein Titel von gestern ist eine Aktie. Ob er in ein
+Momentumuniversum gehoert, ist eine andere Frage und gehoert in die
+Auswahl, nicht in den Stamm.
 
-Nicht aus einem Anbieterlimit. Aus **unserer eigenen Auswahlregel**:
-`ruleBasedCandidates()` in `select-gate-universe.mjs` verlangt
-`minHistoryYears: 3`. Ein Titel, der nach dem 2023-09 erstmals
-gehandelt wurde, war fuer `FULL_UNIVERSE` nicht waehlbar.
+### 7.3 Was bewusst draussen bleibt
 
-Das ist eine **Auswahlregel und keine Gattungsfrage**. Ein Titel von
-gestern ist eine Aktie. Der neue Klassierer wendet die Drei-Jahres-Regel
-deshalb **nicht** auf die Foerderfaehigkeit an (Test SM21) — sie
-gehoert in die Backfill-Bereitschaft, nicht in die Universumsfrage.
-
-Der zweite Block sind ausserboerslich gehandelte Stammaktien: 17.109
-screenerfaehige OTC-Zeilen. Sie sind US-gelistet und sie sind Aktien.
-Sie stehen trotzdem nicht in der Primaerzahl, weil der Bestand keine
-enthaelt und sie nachtraeglich einzurechnen eine **Politikentscheidung**
-waere. Sie bekommen `eligibility_reason:
+**16.641 ausserboerslich gehandelte Stammaktien.** Sie sind US-gelistet
+und sie sind Aktien. Sie stehen trotzdem nicht in der Primaerzahl, weil
+der Bestand keine enthaelt und sie nachtraeglich einzurechnen eine
+**Politikentscheidung** waere. Sie tragen `eligibility_reason:
 OTC_VENUE_OUT_OF_CURRENT_POLICY` und werden gezaehlt
 (`OTC_COMMON_DEFERRED`), damit die Entscheidung mit einer Zahl
-getroffen werden kann.
+getroffen werden kann — nicht mit einem Gefuehl.
 
 ## 8. Backfill-Schaetzung (§10)
 
@@ -270,24 +297,33 @@ Nicht getippt, sondern aus dem letzten echten Lauf gerechnet
 | Belegter Speicher | 1,40 MB |
 | Faktorrechnung | 10,2 ms |
 
-Hochgerechnet auf eine Erweiterung:
+Fuer die gemessenen 2.116 Neuzugaenge plus die 34 Titel, deren letzte
+Kerze im Referenzlauf veraltet war:
 
-| Neue Titel | Anfragen | Laufzeit | Download | Speicher | Faktoren |
-|---:|---:|---:|---:|---:|---:|
-| 500 | ~500 | ~5 min | ~376 MB | ~682 MB | ~5 s |
-| 1.000 | ~1.000 | ~10 min | ~734 MB | ~1,4 GB | ~10 s |
-| 2.475 (Obergrenze) | ~2.476 | ~24 min | ~1,8 GB | ~3,2 GB | ~25 s |
+| | Wert |
+|---|---:|
+| Nachzuholende Titel | 2.116 neu + 34 stale = **2.150** |
+| Anfragen | ~2.151 |
+| Laufzeit | **~21 min** |
+| Download | ~1,6 GB |
+| Zusaetzlicher Speicher | ~3,0 GB |
+| Faktorrechnung | ~22 s |
+
+Beendete Listings zaehlen ausdruecklich **nicht** mit: ihre Historie ist
+vollstaendig, ein erneuter Abruf liefert dieselbe Reihe. `staleSymbols`
+kommt aus `dataQuality.reasons.stale_last_bar` des Referenzlaufs und
+nicht aus dem `active`-Feld (Test SM63).
 
 Das Stundenbudget liegt bei 12.000 Anfragen; der Anbieter hat in einem
-Lauf mit 5.686 Anfragen keine einzige abgelehnt. **Jede dieser Groessen
+Lauf mit 5.686 Anfragen keine einzige abgelehnt. **Der ganze Nachlauf
 passt in einen einzigen Lauf.**
 
 **Ein vollstaendiger Neulauf ist nicht noetig.** `resumable.status` des
 letzten Laufs ist `COMPLETE` fuer alle 5.684 Titel, und die Reihen
 liegen je Titel getrennt in der Arbeitsablage. Einen unveraenderten
 Titel erneut zu holen liefert dieselbe Reihe — kein Gewinn, derselbe
-Verkehr. Ein voller Neulauf kostete ~56 min und ~4,2 GB Download fuer
-nichts.
+Verkehr. Ein voller Neulauf ueber 8.023 Titel kostete ~79 min und
+~5,9 GB Download; ~74 Prozent davon fuer Daten, die schon da sind.
 
 ## 9. Anhaengende Erweiterung (§11)
 
@@ -339,7 +375,7 @@ Unveraendert bindend:
 
 ## 11. Tests (§13)
 
-33 Tests in `quant/tests/us-security-master.test.mjs`.
+34 Tests in `quant/tests/us-security-master.test.mjs`.
 
 | Bereich | Tests |
 |---|---|
@@ -349,7 +385,7 @@ Unveraendert bindend:
 | Klassifikation | SM30–SM38 |
 | Kontamination, Doppel und Zuordnung | SM40–SM47 |
 | Auszaehlung | SM50 |
-| Das erzeugte Artefakt | SM60–SM64 |
+| Das erzeugte Artefakt | SM60–SM65 |
 
 **Mutationstests.** SM12 greift die nicht-destruktive Wache selbst an:
 Titel weg → wirft; Titel als `ADDED` → wirft; Titel als
@@ -361,11 +397,40 @@ SM35/SM36 pruefen die andere Richtung: ein Klassierer ohne Beleg muss
 `EQUITY_COMMON`. **Ein kaputter Klassierer faellt nach REVIEW/UNKNOWN
 und entfernt nichts.**
 
-## 12. Naechster Schritt
+## 12. Der Stand, in einem Satz je Zeile
 
-Ein Push auf einen `claude/**`-Branch mit der Marke
-`[tiingo-discovery]`, der eine der vier beobachteten Dateien aendert,
-laedt die Anbieterliste und fuellt die offenen Zahlen.
+| | |
+|---|---|
+| Bestand | 5.684 Titel, **vollstaendig erhalten**, 0 entfernt |
+| Davon bestaetigt | 5.173 |
+| Davon zur Pruefung | 511 — markiert, nicht angefasst |
+| Anbieteruniversum | 108.589 Zeilen |
+| Echte neue US-Aktien | **2.116** |
+| Erweitertes Universum | **7.800** |
+| Grund fuer den Abstand | unsere Drei-Jahres-Regel, nicht der Anbieter |
+| Naechster Lauf | ~21 min, ~2.151 Anfragen, ein einziger Lauf |
+| Voller Neulauf noetig | **nein** |
+| Backfill gestartet | **nein** |
 
-**Danach ist Schluss.** Der historische Backfill braucht die
-ausdrueckliche Freigabe des Eigentuemers.
+## 13. Naechster Schritt
+
+Die Entdeckung ist abgeschlossen und reproduzierbar. Ein erneuter Lauf
+entsteht durch einen Push auf einen `claude/**`-Branch mit der Marke
+`[tiingo-discovery]`, der eine der vier beobachteten Dateien aendert.
+
+Die Erweiterung des Universums um die 2.116 Titel ist der naechste
+Schritt und **nicht Teil dieser Aufgabe**. Sie braucht die
+ausdrueckliche Freigabe des Eigentuemers, und sie faellt in drei
+Entscheidungen, die getrennt getroffen werden koennen:
+
+1. **Die 2.116 aufnehmen?** Ein Lauf von ~21 Minuten. Anhaengend, ohne
+   Neulauf. Die Drei-Jahres-Regel in `select-gate-universe.mjs` muss
+   dafuer bewusst gelockert oder ersetzt werden — sie ist der Grund,
+   warum die Titel fehlen.
+2. **Die 511 Bestandstitel bereinigen?** 292 Vorzuege, 208 mehrdeutige
+   Zuordnungen, 8 beendete Listings, 3 Optionsscheine, 1 EXPM-Titel.
+   Eine eigene, ausdruecklich freizugebende Migration — nicht diese.
+3. **Die 16.641 OTC-Stammaktien?** Eine Politikentscheidung ueber die
+   Reichweite des Produkts, keine Datenfrage.
+
+**Bis dahin ist Schluss.** Es laeuft kein Backfill.

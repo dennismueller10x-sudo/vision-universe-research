@@ -218,7 +218,7 @@ function providerAggregateFromSummary() {
    Lauf gerechnet: gate-FULL_UNIVERSE.json traegt Anfragen, Laufzeit,
    empfangene Bytes und belegten Speicher fuer 5.684 Titel. Wer eine
    Zahl aus diesem Abschnitt anzweifelt, kann sie dort nachlesen. */
-function backfillEstimate(newSymbols, staleSymbols) {
+function backfillEstimate(newSymbols, staleFromReferenceRun) {
   const gateFile = join(root, "quant", "data", "market", "scale", "gate-FULL_UNIVERSE.json");
   const factorsFile = join(root, "quant", "data", "market", "factors",
                            "factors-FULL_UNIVERSE-summary.json");
@@ -243,7 +243,21 @@ function backfillEstimate(newSymbols, staleSymbols) {
     }
   }
 
-  const total = newSymbols + staleSymbols;
+  /* Was muss wirklich neu geholt werden?
+
+     Die Neuzugaenge - klar. Und die Titel, deren letzte Kerze im
+     Referenzlauf veraltet war: sie sind der einzige Teil des Bestands,
+     bei dem ein erneuter Abruf etwas liefert, das noch nicht da ist.
+
+     Ausdruecklich NICHT: beendete Listings. Ein delisteter Titel hat
+     seine Historie vollstaendig; ihn erneut zu holen liefert dieselbe
+     Reihe. Der erste Entwurf hat "inaktiv" mit "stale" verwechselt und
+     223 Titel zum Nachholen vorgeschlagen - eine Zahl, die ausserdem
+     Zeilen statt Titel zaehlte. */
+  const stale = staleFromReferenceRun !== null ? staleFromReferenceRun
+    : (g.dataQuality && g.dataQuality.reasons
+        ? (g.dataQuality.reasons.stale_last_bar || 0) : 0);
+  const total = newSymbols + stale;
   const budgetPerHour = a.requestBudget?.requestsPerHour ?? null;
   const observedLowerBound = a.providerObserved?.highestRequestsInThisRun ?? null;
 
@@ -266,7 +280,12 @@ function backfillEstimate(newSymbols, staleSymbols) {
       factorRuntimeMs: factorMsPerSymbol === null ? null : round(factorMsPerSymbol, 2)
     },
     incremental: {
-      newSymbols, staleSymbols, symbolsToFetch: total,
+      newSymbols,
+      staleSymbols: stale,
+      staleBasis: "gate-FULL_UNIVERSE.json dataQuality.reasons.stale_last_bar - Titel, deren " +
+                  "letzte Kerze im Referenzlauf veraltet war. Beendete Listings zaehlen " +
+                  "ausdruecklich nicht mit: ihre Historie ist vollstaendig.",
+      symbolsToFetch: total,
       estimatedRequests: Math.ceil(total * requestsPerSymbol),
       estimatedRuntimeMinutes: round(total * secondsPerSymbol / 60, 1),
       estimatedDownloadMB: round(total * bytesPerSymbol / 1048576, 1),
@@ -709,7 +728,9 @@ async function main() {
 
   const estimate = backfillEstimate(
     result.providerAvailable ? newEligible.length : 0,
-    result.rows.filter((r) => r.baseline_member && r.active_status === "INACTIVE").length
+    /* null = aus dem Referenzlauf lesen. Der Aufrufer kennt die Zahl
+       nicht besser als der Lauf, der sie gemessen hat. */
+    null
   );
   writeFileSync(join(OUT_DIR, "backfill-estimate.json"), JSON.stringify({
     generatedAt: stamp, version: Master.VERSION, provider: "tiingo",
