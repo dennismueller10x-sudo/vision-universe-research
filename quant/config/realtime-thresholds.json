@@ -25,15 +25,32 @@
       "basis": "Relativ zum Bar-Intervall statt absolut: eine 5-Minuten-Bar ist nach 6 Minuten normal, eine 1-Minuten-Bar nicht."
     },
     "EOD": {
+      "freshTradingDays": 1,
+      "degradedTradingDays": 3,
       "freshMsAfterCloseHours": 30,
       "degradedMsAfterCloseHours": 96,
-      "basis": "Ein Tagesschluss ist bis zum naechsten Schluss aktuell. Erst wenn mehrere Handelstage fehlen, stimmt etwas nicht."
+      "basis": "Gemessen in Handelstagen, nicht in Kalenderstunden. Ein Schluss vom Freitag ist am Dienstag nach einem langen Wochenende 108 Stunden alt und trotzdem taufrisch - wer das in Stunden misst, meldet nach jedem Feiertag einen Ausfall, den es nicht gibt. Die Stundenwerte bleiben als Rueckfall, wenn kein Handelskalender vorliegt."
     }
   },
   "sessions": {
-    "REGULAR": { "applies": true, "factor": 1 },
-    "PRE": { "applies": false, "factor": 4, "note": "Erweiterte Zeiten sind duenn. Ein stiller Kurs ist dort kein Befund, solange nicht ausdruecklich erweiterte Daten bezogen werden." },
-    "AFTER": { "applies": false, "factor": 4, "note": "Wie PRE." },
-    "CLOSED": { "applies": false, "factor": null, "note": "Bei geschlossener Boerse gibt es keine Staleness. Ein unveraenderter Kurs ist dann die richtige Antwort - er wird nur nicht mehr LIVE genannt." }
+    "REGULAR": {
+      "applies": true,
+      "factor": 1
+    },
+    "PRE": {
+      "applies": false,
+      "factor": 4,
+      "note": "Erweiterte Zeiten sind duenn. Ein stiller Kurs ist dort kein Befund, solange nicht ausdruecklich erweiterte Daten bezogen werden."
+    },
+    "AFTER": {
+      "applies": false,
+      "factor": 4,
+      "note": "Wie PRE."
+    },
+    "CLOSED": {
+      "applies": false,
+      "factor": null,
+      "note": "Bei geschlossener Boerse gibt es keine Staleness. Ein unveraenderter Kurs ist dann die richtige Antwort - er wird nur nicht mehr LIVE genannt."
+    }
   }
 }

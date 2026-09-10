@@ -201,6 +201,65 @@
    * keine. Deshalb ist "nichts passiert" nur in einem dieser Faelle ein
    * Befund und in den anderen der Normalzustand.
    */
+  /**
+   * Wie viele Handelstage liegen zwischen zwei Zeitpunkten?
+   *
+   * Der Grund fuer diese Funktion ist ein Befund aus dem echten Betrieb:
+   * ein Tagesschluss vom Freitag ist am Dienstag danach 108
+   * Kalenderstunden alt und trotzdem taufrisch, wenn dazwischen ein
+   * Wochenende und der Labor Day lagen. Wer EOD-Verfall in Stunden misst,
+   * meldet nach jedem langen Wochenende einen Ausfall, den es nicht gibt -
+   * und schult den Nutzer darauf, die Warnung zu ignorieren.
+   *
+   * Gezaehlt werden die Handelstage NACH `fromMs` bis einschliesslich des
+   * Tages von `toMs`. Ein Schluss von gestern ergibt damit 1, einer von
+   * heute 0.
+   */
+  function tradingDaysBetween(fromMs, toMs, opts) {
+    opts = opts || {};
+    var calendar = opts.calendar || BUILTIN;
+    var exchangeId = opts.exchange || DEFAULT_EXCHANGE;
+    var ex = (calendar.exchanges && calendar.exchanges[exchangeId]) ||
+             BUILTIN.exchanges[DEFAULT_EXCHANGE];
+    var tz = ex.timezone || "America/New_York";
+    var weekdays = ex.weekdays || [1, 2, 3, 4, 5];
+    var holidays = ex.holidays || [];
+
+    /* Ein Handelstag ist ein Datum, kein Zeitpunkt. Wer ihn als
+       "YYYY-MM-DD" uebergibt, meint genau diesen Tag - und er wird NICHT
+       durch eine Zeitzone geschickt. Sonst wird aus dem Schlusskurs vom
+       4. September der vom 3.: Mitternacht UTC ist in New York der
+       Vorabend. Genau dieser Fehler ist beim Anbinden an echte Daten
+       aufgefallen. */
+    var vonDatum = typeof fromMs === "string" && /^\d{4}-\d{2}-\d{2}/.test(fromMs)
+      ? fromMs.slice(0, 10)
+      : (localParts(fromMs, tz) || {}).date;
+    var bisDatum = typeof toMs === "string" && /^\d{4}-\d{2}-\d{2}T/.test(toMs)
+      ? (localParts(toMs, tz) || {}).date
+      : (typeof toMs === "string" && /^\d{4}-\d{2}-\d{2}$/.test(toMs)
+          ? toMs
+          : (localParts(toMs, tz) || {}).date);
+    if (!vonDatum || !bisDatum) return null;
+    if (bisDatum <= vonDatum) return 0;
+    var von = { date: vonDatum };
+    var bis = { date: bisDatum };
+
+    /* Tageweise vorwaerts. Der Abstand, um den es geht, ist klein - ein
+       Tagesschluss, der Hunderte Handelstage alt ist, hat sein Urteil
+       laengst. Die Obergrenze verhindert nur, dass ein kaputter
+       Zeitstempel eine Endlosschleife ergibt. */
+    var count = 0;
+    var d = new Date(von.date + "T12:00:00Z");
+    for (var i = 0; i < 400; i++) {
+      d.setUTCDate(d.getUTCDate() + 1);
+      var iso = d.toISOString().slice(0, 10);
+      if (iso > bis.date) break;
+      var wd = d.getUTCDay();
+      if (weekdays.indexOf(wd) !== -1 && holidays.indexOf(iso) === -1) count++;
+    }
+    return count;
+  }
+
   function expectsUpdates(session, includeExtended) {
     if (!session) return false;
     if (session.phase === "REGULAR") return true;
@@ -214,6 +273,7 @@
     BUILTIN_CALENDAR: BUILTIN,
     localParts: localParts,
     sessionAt: sessionAt,
+    tradingDaysBetween: tradingDaysBetween,
     expectsUpdates: expectsUpdates
   };
 
