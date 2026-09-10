@@ -424,7 +424,7 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
  <div class="zahlen" id="zahlen"></div>
  <div class="titel" id="titel" hidden></div>
  <div class="werkzeuge">
-   <input id="suche" type="search" placeholder="Ticker suchen — alle 5.684 Titel" autocomplete="off">
+   <input id="suche" type="search" placeholder="Ticker suchen" autocomplete="off">
    <select id="boerse"><option value="">Alle Boersen</option></select>
    <select id="guete"><option value="">Alle Qualitaeten</option></select>
    <select id="bereinigung"><option value="">Alle Bereinigungsstufen</option></select>
@@ -440,7 +440,7 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
      <th data-s="technical">Technical</th><th data-s="elliott">Elliott</th>
    </tr></thead><tbody id="koerper"></tbody>
  </table></div>
- <div class="fragen"><h2 style="font-size:15px">Screener — echte Zaehlungen ueber 5.639 auswertbare Titel</h2>
+ <div class="fragen"><h2 style="font-size:15px">Screener — echte Zaehlungen ueber <span id="auswertbar">…</span> auswertbare Titel</h2>
    <p style="color:var(--leise);font-size:12px;margin:0 0 8px">Zaehlfragen tragen
    vollstaendige Zahlen. Rangfragen zeigen die ersten 50 mit ihrem Wert und der
    Datenqualitaet des Titels — ein Ausreisser an der Spitze ist fast immer eine
@@ -637,6 +637,20 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
       '. ' + zahl(f.notEvaluable) + ' Titel nicht entscheidbar — kein Wert, keine Null.</p>' +
       '</details>';
   }).join("");
+
+  /* ZAHLEN GEHOEREN GELESEN, NICHT GETIPPT.
+
+     Platzhalter und Screener-Ueberschrift trugen ihre Grundgesamtheit
+     als festen Text. Der naechste FULL_UNIVERSE-Lauf loeste eine andere
+     Zahl auf, und schon behauptete die Seite etwas, das ihr eigener
+     Datensatz nicht hergab. Eine Oberflaeche, die ihre Grundgesamtheit
+     tippt statt sie zu lesen, wird bei jedem Lauf ein Stueck unwahrer. */
+  q("suche").placeholder = "Ticker suchen — alle " +
+    d.rows.length.toLocaleString("de-DE") + " Titel";
+  const auswertbar = d.screenerQuestions
+    .map((f) => f.evaluatedOf).filter((n) => typeof n === "number");
+  q("auswertbar").textContent = auswertbar.length
+    ? Math.max(...auswertbar).toLocaleString("de-DE") : "—";
 
   /* Erster Aufbau. DIESER AUFRUF FEHLTE: die Seite zeigte Kopfzeile und
      Filter, aber eine leere Tabelle, bis jemand etwas tippte - genau die

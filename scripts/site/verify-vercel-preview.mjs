@@ -234,13 +234,39 @@ async function main() {
       const u = datensatz.datasetScope || {};
       const text = JSON.stringify(datensatz);
       const kursDrin = /"price":\s*[0-9]|"close":\s*[0-9]|"bars":\s*\[/.test(text);
+      /* DIE ERWARTUNG WIRD GELESEN, NICHT GETIPPT.
+
+         Hier stand `=== 5684`. Der naechste FULL_UNIVERSE-Lauf loeste
+         5.683 Titel auf, und der Nachweis haette FAIL gemeldet - nicht
+         weil die Vorschau unvollstaendig ist, sondern weil eine Zahl im
+         Pruefcode veraltet war. Ein Nachweis, der bei jedem Lauf des
+         Anbieters nachgetippt werden muss, ist keiner.
+
+         Die Erwartung kommt deshalb aus demselben committeten Artefakt,
+         aus dem der Bauschritt seine Zeilen nimmt. Stimmen Vorschau und
+         Artefakt ueberein, ist der Datensatz vollstaendig - was auch
+         immer der Lauf ergeben hat. Fehlt das Artefakt, bleibt die
+         Untergrenze als schwaechere, aber ehrliche Aussage. */
+      let erwartet = null;
+      try {
+        const uni = JSON.parse(readFileSync(
+          join(root, "quant/data/market/scale/universe-FULL_UNIVERSE.json"), "utf8"));
+        erwartet = (uni.securities || []).length || null;
+      } catch (err) { erwartet = null; }
+
+      const zeilen = (datensatz.rows || []).length;
+      const zahlStimmt = erwartet ? zeilen === erwartet : zeilen > 5000;
       const gut = datensatz.kind === "DERIVED_UNIVERSE" &&
-                  (datensatz.rows || []).length === 5684 &&
+                  zahlStimmt &&
                   u.fullHistoricalOhlcvStore && u.fullHistoricalOhlcvStore.status === "NOT_DEPLOYED" &&
                   !kursDrin;
       pruefe("V3", "Abgeleiteter Datensatz vollstaendig", gut ? "PASS" : "FAIL", {
         kind: datensatz.kind,
-        securities: (datensatz.rows || []).length,
+        securities: zeilen,
+        expectedFromArtefact: erwartet,
+        expectationSource: erwartet
+          ? "quant/data/market/scale/universe-FULL_UNIVERSE.json"
+          : "Artefakt nicht lesbar - nur Untergrenze >5000 geprueft",
         derivedUniverse: u.derivedUniverse ? u.derivedUniverse.status : null,
         fullHistoricalOhlcvStore: u.fullHistoricalOhlcvStore ? u.fullHistoricalOhlcvStore.status : null,
         priceLevels: u.priceLevels ? u.priceLevels.status : null,
@@ -352,7 +378,16 @@ async function main() {
             return {
               textLength: t.replace(/\s+/g, " ").trim().length,
               dataRows: document.querySelectorAll("tbody tr").length,
-              screenerRows: document.querySelectorAll(".frage").length,
+              /* BEIDE SORTEN ZAEHLEN. Hier stand nur ".frage" - das
+                 sind die Zaehlfragen. Solange die Ranglisten fehlten,
+                 rendarten auch sie als ".frage" und die 18 kamen
+                 zusammen; mit echten Ranglisten sind neun davon
+                 <details class="rangfrage"> und der Nachweis haette 9
+                 gezaehlt und FAIL gemeldet - fuer einen Screener, der
+                 gerade vollstaendig geworden ist. */
+              screenerRows: document.querySelectorAll(".frage, details.rangfrage").length,
+              screenerCounting: document.querySelectorAll(".frage").length,
+              screenerRanked: document.querySelectorAll("details.rangfrage").length,
               detailVisible: !!(k && !k.hidden && /ORCL/.test(k.innerText || "")),
               detailText: k ? (k.innerText || "").replace(/\s+/g, " ").slice(0, 300) : "",
               treffer: (document.getElementById("treffer") || {}).textContent || "",
