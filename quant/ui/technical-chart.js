@@ -77,7 +77,7 @@
    */
   function technicalChart(opts) {
     var bars = opts.bars, range = opts.range || "5Y", mode = opts.mode || (RANGES[range] > 300 ? "line" : "candles");
-    var w = 1000, h = opts.height || 460, volH = opts.showVolume === false ? 0 : 60;
+    var w = Number.isFinite(opts.width) && opts.width >= 300 ? opts.width : 1000, h = opts.height || 460, volH = opts.showVolume === false ? 0 : 60;
     var PAD = { top: 16, right: 64, bottom: 24 + volH, left: 12 };
     var vis = visibleRange(bars, range);
     var futureBars = opts.futureBars === undefined ? Math.max(8, Math.round((vis[1] - vis[0]) * 0.18)) : opts.futureBars;
@@ -114,7 +114,7 @@
       svg.appendChild(svgEl("line", { class: "grid", x1: PAD.left, x2: w - PAD.right, y1: ys(t), y2: ys(t) }));
       svg.appendChild(svgEl("text", { class: "axis", x: w - PAD.right + 6, y: ys(t) + 3.5, "text-anchor": "start", text: fmt(t) }));
     });
-    var labelCount = 6;
+    var labelCount = w < 500 ? 3 : 6;
     for (var k = 0; k < labelCount; k++) {
       var idx = Math.round(i0 + (i1 - i0) * (k / (labelCount - 1)));
       svg.appendChild(svgEl("text", { class: "axis", x: xs(idx), y: h - 8, "text-anchor": k === 0 ? "start" : k === labelCount - 1 ? "end" : "middle", text: QC.shortDate(bars.timestamps[idx]) }));

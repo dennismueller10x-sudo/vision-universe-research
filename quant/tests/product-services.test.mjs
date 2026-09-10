@@ -38,3 +38,6 @@ test('Historical Fundamentals service preserves actual SEC identity and current 
  const history=await api.getHistoricalFundamentals('NVDA',{metric:'revenue',period:'annual'});assert.equal(history.state,'AVAILABLE');assert.equal(history.pitEligibility,'NOT_CERTIFIED');
  const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'OUTSIDE_PREVIEW_SCOPE');assert.equal(reads.length,before);
 });
+test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
+ const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);
+});

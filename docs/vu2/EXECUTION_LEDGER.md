@@ -73,3 +73,7 @@ PR66 Historical Fundamentals: initial browser24 checks PASS, all directory links
 ## Research gate and next Screener phase
 PR66 head5e4e981: Browser34485877376, Quant34485877292, SEC34485877089 all SUCCESS. Final Fundamentals390 viewport inspected: condensed controls and visible chart; original timestamps retained. Separate review PASS. Foundation/preview evolution continues; no full-product readiness claim.
 Next branch workstream/vu2-screener-workspace extends canonical rule editing to combined business/market criteria, with serialized base on PR66. Context phases/04-screener-workspace.md.14 focused tests PASS; browser gate pending. All previous worktrees and PRs preserved.
+
+## Combined Screener gate and Technical migration
+PR67 head5d3216c: Browser34512943551, Quant34512943619, SEC34512943538 SUCCESS. Desktop and390px Screener screenshots inspected, editable rules and saved-link roundtrip validated.
+Technical/Elliott migration is active in workstream/vu2-technical-workspace, stacked on PR67; context phases/05-technical-workspaces.md. Existing chart engine, complete wave counts and all scenarios retained.15 focused tests PASS. Independent contract review and desktop/mobile visual gate pending. Public display scope, SEC contracts and provider pipelines unchanged. PRODUCT_BUILD=IN_PROGRESS; no production rollout claim.
