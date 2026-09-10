@@ -1,0 +1,83 @@
+name: Vercel — Nachweis der geschuetzten Vorschau
+
+# Prueft die auf Vercel ausgelieferte Vorschau von aussen. Zwei Fragen,
+# die getrennt bleiben muessen:
+#
+#   OHNE Zugangsmittel  -> muss abgewiesen werden
+#   MIT  Zugangsmittel  -> muss die vollen 5.684 Titel zeigen
+#
+# Der wichtigere Teil braucht KEIN Geheimnis: die Abweisung ist genau der
+# Fall "ein Fremder ruft auf". Er laeuft deshalb immer.
+#
+# Das Zugangsmittel ist Vercels Protection-Bypass-Token fuer Automaten.
+# Es belegt, dass die Schutzschicht einen berechtigten Aufrufer
+# durchlaesst - NICHT, dass die SSO-Anmeldung eines Menschen funktioniert.
+# Der Bericht schreibt diesen Unterschied selbst hin.
+#
+# Einrichtung siehe docs/VERCEL_PROTECTED_PREVIEW.md. Ohne die beiden
+# Eintraege laeuft der Workflow trotzdem - er weist dann aus, was er
+# nicht pruefen konnte, statt es als bestanden zu melden.
+
+on:
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: 'Adresse der Vercel-Vorschau (leer = Variable VERCEL_PREVIEW_URL)'
+        required: false
+        type: string
+  # Nach jedem Push auf den Vorschauzweig: die Schutzschicht ist eine
+  # Projekteinstellung, und Einstellungen aendert man versehentlich.
+  push:
+    branches:
+      - 'claude/vercel-protected-preview'
+    paths:
+      - 'vercel.json'
+      - '.vercelignore'
+      - 'scripts/preview/**'
+      - 'scripts/site/verify-vercel-preview.mjs'
+      - '.github/workflows/vercel-preview-verify.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  nachweis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Ohne Browser laufen V1 bis V5 und V8/V9; V6/V7 werden dann
+      # ausdruecklich als nicht geprueft ausgewiesen. Mit Browser laufen
+      # sie mit. --with-deps bleibt weg: der apt-Schritt ist an einem
+      # fremden Paketspiegel gescheitert, der mit dieser Seite nichts zu
+      # tun hat.
+      - name: Browser holen
+        run: npm i -D playwright@1.47.2 && npx playwright install chromium
+        continue-on-error: true
+
+      - name: Vorschau pruefen
+        env:
+          VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
+          # Optional. Fehlt es, bleibt der Zugang von innen ungeprueft -
+          # und der Bericht sagt das.
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          if [ -z "$VERCEL_PREVIEW_URL" ]; then
+            echo "::error::Keine Vorschau-Adresse. Repository-Variable VERCEL_PREVIEW_URL setzen"
+            echo "::error::oder die Adresse beim manuellen Start eintragen."
+            exit 2
+          fi
+          node scripts/site/verify-vercel-preview.mjs --base "$VERCEL_PREVIEW_URL"
+
+      - name: Bericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-preview-verification
+          path: quant/data/site/vercel-preview-verification.json
+          if-no-files-found: warn

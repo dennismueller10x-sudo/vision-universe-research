@@ -184,3 +184,79 @@ test("PD8 — keine oeffentliche Datei wurde fuer die Vorschau veraendert", () =
   assert.equal(gates.gates.ENABLE_PUBLIC_LIVE_MARKET_DATA.enabled, false);
   assert.equal(gates.gates.ENABLE_LIVE_MARKET_DATA.enabled, false);
 });
+
+test("PD9 — die Ansicht baut ihre Tabelle beim Laden auf", () => {
+  /* DIESER AUFRUF FEHLTE. Die Seite lieferte Kopfzeile, Filter und eine
+     leere Tabelle aus, bis jemand etwas tippte - also genau die Sorte
+     "erreichbar, aber nichts zu sehen", die schon einmal faelschlich als
+     bestanden gemeldet wurde. Der Test haelt den Aufruf fest. */
+  const dir = mkdtempSync(join(tmpdir(), "vu-pd-"));
+  baue(dir);
+  const seite = readFileSync(join(root, "preview-universe", "index.html"), "utf8");
+
+  /* Ein Aufruf von zeichne() ausserhalb jedes Handlers. Die beiden
+     Handler-Zeilen werden ausgeschlossen, damit der Test nicht deren
+     Aufrufe als Erstaufbau durchgehen laesst. */
+  const ersterAufbau = seite.split("\n").filter((z) =>
+    /^\s*zeichne\(\);\s*$/.test(z) && !/addEventListener/.test(z));
+  assert.ok(ersterAufbau.length >= 1,
+    "ohne Erstaufbau zeigt die Vorschau eine leere Tabelle");
+
+  /* Und der Einzeltitel, den die Suche braucht: ohne Ziel ist
+     'auffindbar' nur die Haelfte der Zusage. */
+  assert.match(seite, /function zeigeTitel/, "die Ansicht braucht einen Einzeltitel");
+  assert.match(seite, /\?ticker=/, "der Einzeltitel braucht einen tiefen Link");
+});
+
+test("PD10 — eine leere Rangliste wird ausgewiesen, nicht getarnt", () => {
+  const d = baue(mkdtempSync(join(tmpdir(), "vu-pd-")));
+  const fragen = d.screenerQuestions;
+
+  /* Jede Frage sagt, ob ihr Ergebnis da ist. Eine leere Liste ohne
+     Status rendert als nichts - und "nichts" liest sich wie "keine
+     Treffer". Das ist die stille Null in anderer Verkleidung. */
+  for (const f of fragen) {
+    assert.ok(["PRESENT", "NOT_IN_DELIVERED_ARTEFACTS"].includes(f.resultStatus),
+      `${f.id} traegt keinen Ergebnisstatus`);
+  }
+
+  const zaehlend = fragen.filter((f) => f.kind === "boolean");
+  const ordnend = fragen.filter((f) => f.kind === "ranked");
+  assert.equal(zaehlend.length, 9);
+  assert.equal(ordnend.length, 9);
+
+  /* Die Zaehlfragen tragen echte, vollstaendige Zahlen. */
+  assert.ok(zaehlend.every((f) => f.resultStatus === "PRESENT" && typeof f.matched === "number"));
+
+  /* Die Rangfragen tragen keine - und begruenden das. Der Grund ist
+     derselbe wie bei factorsStatus: die Faktorwerte je Titel fehlen. */
+  assert.ok(ordnend.every((f) => f.resultStatus === "NOT_IN_DELIVERED_ARTEFACTS"));
+  assert.ok(ordnend.every((f) => /Faktorwerte/.test(f.resultStatusReason || "")));
+
+  const seite = readFileSync(join(root, "preview-universe", "index.html"), "utf8");
+  assert.match(seite, /Rangliste nicht ausgeliefert/,
+    "die Ansicht muss den Mangel benennen, nicht eine leere Zeile zeigen");
+});
+
+test("PD11 — der Vorschau-Nachweis nennt die Reichweite seines Zugangsbelegs", () => {
+  /* Der Bypass-Token belegt, dass die Schutzschicht einen berechtigten
+     Aufrufer durchlaesst - nicht, dass ein Mensch sich anmelden kann.
+     Wer das verwechselt, behauptet einen Nachweis, den es nicht gibt. */
+  const s = readFileSync(join(root, "scripts/site/verify-vercel-preview.mjs"), "utf8");
+  assert.match(s, /authenticationProofScope/);
+  assert.match(s, /NICHT.*SSO-Anmeldung eines Menschen/s);
+
+  /* Ein uebersprungener Nachweis darf nie als bestanden zaehlen. Geprueft
+     wird die Urteilslogik selbst, nicht ein Wortabstand: ein Suchmuster
+     ueber "SKIPPED ... PASS" schlug auf das Wort BYPASS an, in dem PASS
+     steckt - dieselbe Sorte Fehlalarm wie schon zweimal zuvor. */
+  assert.match(s, /status === "SKIPPED" \|\| c\.status === "UNKNOWN"/,
+    "SKIPPED und UNKNOWN muessen gemeinsam als 'nicht belegt' gefuehrt werden");
+  assert.match(s, /offenGeblieben\.length\s*\?\s*"PARTIALLY_VERIFIED"/,
+    "was uebersprungen wurde, darf das Urteil nicht auf bestanden lassen");
+  assert.match(s, /"PREVIEW_VERIFIED"/);
+
+  /* Und das Token selbst darf in keinem Bericht landen. */
+  assert.match(s, /function entschaerfe/);
+  assert.match(s, /entschaerfe\(JSON\.stringify\(bericht/);
+});

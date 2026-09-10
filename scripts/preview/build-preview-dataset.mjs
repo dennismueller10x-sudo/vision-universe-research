@@ -195,6 +195,26 @@ const datensatz = {
     tickersTruncated: !!q.tickersTruncated,
     tickersNote: q.tickersTruncated
       ? "Die Namensliste ist im Artefakt auf 50 gekuerzt. Die Zahl links ist vollstaendig."
+      : null,
+    /* DIE RANGFRAGEN TRAGEN KEINE NAMEN.
+
+       Eine Rangliste braucht Faktorwerte je Titel - Momentum, Abstand
+       zum SMA, Lage im 52-Wochen-Band. Genau die entstanden im Lauf und
+       liegen nicht in den ausgelieferten Artefakten (dasselbe Loch wie
+       bei factorsStatus je Zeile). Das Artefakt liefert deshalb eine
+       leere Liste.
+
+       Eine leere Liste, die als Liste ausgeliefert wird, rendert als
+       nichts - und "nichts" sieht aus wie "keine Treffer". Das ist der
+       Unterschied, um den es hier die ganze Zeit geht. Der Zustand wird
+       deshalb benannt. */
+    resultStatus: q.kind === "ranked"
+      ? ((q.tickers || []).length ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS")
+      : (q.matched === undefined || q.matched === null ? "NOT_IN_DELIVERED_ARTEFACTS" : "PRESENT"),
+    resultStatusReason: q.kind === "ranked" && !(q.tickers || []).length
+      ? "Rangliste braucht Faktorwerte je Titel; die liegen nicht in den " +
+        "ausgelieferten Artefakten. Erst ein erneuter FULL_UNIVERSE-Lauf, dessen " +
+        "abgeleitete Zeilen committet werden, fuellt sie."
       : null
   })) : [],
 
@@ -264,6 +284,18 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
  .PASS,.PASS_NOT_ITEMISED { color:var(--gut); } .WARNING { color:var(--warn); }
  .FAIL,.UNAVAILABLE { color:var(--schlecht); }
  .fehlt { color:var(--leise); font-style:italic; }
+ .titel { background:var(--karte); border:1px solid var(--rand); border-radius:8px;
+          padding:14px 16px; margin:0 0 16px; }
+ .titel h2 { margin:0 0 2px; font-size:18px; }
+ .titel .weg { float:right; background:none; border:1px solid var(--rand); color:var(--leise);
+               border-radius:6px; padding:4px 10px; cursor:pointer; font-size:12px; }
+ .titel dl { display:grid; gap:6px 18px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+             margin:12px 0 0; }
+ .titel dt { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--leise); }
+ .titel dd { margin:0 0 6px; font-variant-numeric:tabular-nums; }
+ .titel .luecke { margin:12px 0 0; padding:8px 10px; border-left:2px solid var(--warn);
+                  color:var(--leise); font-size:12px; line-height:1.6; }
+ tbody tr { cursor:pointer; }
  .fragen { margin:26px 0 0; }
  .frage { display:flex; justify-content:space-between; gap:12px; padding:8px 12px;
           border-bottom:1px solid #21262d; }
@@ -275,6 +307,7 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
  <h1>Full Universe</h1>
  <div class="umfang" id="umfang"></div>
  <div class="zahlen" id="zahlen"></div>
+ <div class="titel" id="titel" hidden></div>
  <div class="werkzeuge">
    <input id="suche" type="search" placeholder="Ticker suchen — alle 5.684 Titel" autocomplete="off">
    <select id="boerse"><option value="">Alle Boersen</option></select>
@@ -293,6 +326,9 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
    </tr></thead><tbody id="koerper"></tbody>
  </table></div>
  <div class="fragen"><h2 style="font-size:15px">Screener — echte Zaehlungen ueber 5.639 auswertbare Titel</h2>
+   <p style="color:var(--leise);font-size:12px;margin:0 0 8px">Die Zaehlfragen tragen
+   vollstaendige Zahlen aus dem Lauf. Die Rangfragen brauchen Faktorwerte je Titel;
+   die liegen nicht in den ausgelieferten Artefakten und sind unten so ausgewiesen.</p>
    <div id="fragenliste"></div></div>
  <footer id="fuss"></footer>
 </div>
@@ -348,14 +384,81 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
       '</td><td>' + z(x.dividends) + '</td><td>' + z(x.adjustment) + '</td><td>' + z(x.technical) +
       '</td><td>' + z(x.elliott) + '</td></tr>').join("");
   }
+
+  /* EINZELTITEL — die Suche braucht ein Ziel.
+
+     "Titel ausserhalb der Golden Five sind auffindbar" ist erst dann
+     wahr, wenn man einen davon auch OEFFNEN kann. Die Ansicht zeigt
+     ausschliesslich, was gemessen wurde, und benennt darunter, was in
+     den ausgelieferten Artefakten fehlt - kein leeres Feld, das wie ein
+     Nullwert aussieht. */
+  function zeigeTitel(ticker){
+    const x = d.rows.find(r => r.ticker === ticker);
+    const k = q("titel");
+    if (!x) { k.hidden = true; return; }
+    const paare = [
+      ["Boerse", z(x.exchange)], ["Anlageklasse", z(x.assetType)],
+      ["Datenqualitaet", z(x.dataQuality)], ["Bars", x.bars === null ? z(null) : x.bars.toLocaleString("de-DE")],
+      ["Historie ab", z(x.historyFrom)], ["Historie bis", z(x.historyTo)],
+      ["Jahre", z(x.historyYears)], ["Handelstage veraltet", z(x.staleTradingDays)],
+      ["Splits", z(x.splits)], ["Dividenden", z(x.dividends)],
+      ["Bereinigung", z(x.adjustment)], ["Faktorbereit", x.factorReady === null ? z(null) : (x.factorReady ? "ja" : "nein")],
+      ["Technical", z(x.technical)], ["Elliott", z(x.elliott)]
+    ];
+    const luecken = [];
+    if (x.factorsStatus !== "PRESENT")
+      luecken.push("Faktorzeile (Momentum, SMA-Abstand, 52-Wochen-Lage): " + x.factorsStatus +
+                   " — die Zeilen entstanden im Lauf und liegen nicht in den ausgelieferten Artefakten.");
+    if (x.nameStatus === "SOURCE_MISSING")
+      luecken.push("Firmenname und Sektor: im Zugang nicht enthalten — ausgewiesen, nicht geraten.");
+    luecken.push("Kursniveaus und Kursreihen: zurueckgehalten (Lizenzpruefung offen). " +
+                 "Der Kurshistorien-Bestand von rund 7,4 GB ist nicht ausgeliefert.");
+    k.hidden = false;
+    k.innerHTML = '<button class="weg" id="titelZu">schliessen</button>' +
+      '<h2>' + x.ticker + '</h2>' +
+      '<p class="marke">' + (x.name ? x.name : 'Firmenname nicht im Zugang enthalten') + '</p>' +
+      '<dl>' + paare.map(([b,w]) => '<dt>' + b + '</dt><dd>' + w + '</dd>').join("") + '</dl>' +
+      '<div class="luecke"><b>Nicht vorhanden</b><br>' + luecken.join("<br>") + '</div>';
+    q("titelZu").addEventListener("click", () => {
+      k.hidden = true;
+      history.replaceState(null, "", location.pathname);
+    });
+    k.scrollIntoView({ block: "nearest" });
+  }
+  q("koerper").addEventListener("click", (e) => {
+    const tr = e.target.closest("tr"); if (!tr) return;
+    const t = tr.querySelector("strong").textContent;
+    history.replaceState(null, "", location.pathname + "?ticker=" + encodeURIComponent(t));
+    zeigeTitel(t);
+  });
+
   ["suche","boerse","guete","bereinigung"].forEach(i => q(i).addEventListener("input", zeichne));
   document.querySelectorAll("th[data-s]").forEach(th => th.addEventListener("click", () => {
     const s = th.dataset.s; sortAuf = sortSpalte === s ? !sortAuf : true; sortSpalte = s; zeichne(); }));
 
   q("fragenliste").innerHTML = d.screenerQuestions.map(f =>
     '<div class="frage"><span>' + f.label + '</span><span>' +
-    (f.matched === null ? "Rangliste" : f.matched.toLocaleString("de-DE") + " Treffer") +
+    (f.resultStatus === "NOT_IN_DELIVERED_ARTEFACTS"
+      ? '<span class="fehlt" title="' + (f.resultStatusReason || "") +
+        '">Rangliste nicht ausgeliefert</span>'
+      : f.matched === null
+        ? f.tickers.length + " Namen"
+        : f.matched.toLocaleString("de-DE") + " Treffer") +
     (f.notEvaluable ? " · " + f.notEvaluable + " nicht entscheidbar" : "") + '</span></div>').join("");
+
+  /* Erster Aufbau. DIESER AUFRUF FEHLTE: die Seite zeigte Kopfzeile und
+     Filter, aber eine leere Tabelle, bis jemand etwas tippte - genau die
+     Sorte "erreichbar, aber nichts zu sehen", die schon einmal als
+     bestanden durchging. */
+  zeichne();
+
+  /* Tiefer Link: /preview-universe/?ticker=ORCL oeffnet den Titel direkt. */
+  const gewuenscht = new URLSearchParams(location.search).get("ticker");
+  if (gewuenscht) {
+    q("suche").value = gewuenscht.toUpperCase();
+    zeichne();
+    zeigeTitel(gewuenscht.toUpperCase());
+  }
 
   q("fuss").innerHTML = "Stand " + (d.asOf || "unbekannt") + " · " + d.dataSnapshotId +
     "<br>Abgeleitetes Universum aus geprueften Artefakten. Keine Kursniveaus, keine Kursreihen. " +
