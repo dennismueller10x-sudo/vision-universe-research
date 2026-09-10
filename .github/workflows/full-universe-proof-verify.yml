@@ -1,0 +1,74 @@
+name: Full Universe — Nachweis des Produktnachweises
+
+# Prueft die ausgelieferte Vorschau von aussen, mit einem echten Browser.
+# Der lokale Bau kann das nicht belegen: was der Eigentuemer sieht, wenn
+# er die geschuetzte Adresse oeffnet.
+#
+#   OHNE Zugangsmittel  -> Seiten UND Datensatz muessen abgewiesen werden
+#   MIT  Zugangsmittel  -> Suche, Einzeltitel, Screener und Chart muessen
+#                          laufen, auf 1440 px und auf 390 px
+#
+# Ohne Bypass-Token laeuft nur die Abweisung. Der Rest wird dann als
+# SKIPPED ausgewiesen, nicht als bestanden. Einrichtung siehe
+# docs/VERCEL_PROTECTED_PREVIEW.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: 'Adresse der Vercel-Vorschau (leer = Variable VERCEL_PREVIEW_URL)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  nachweis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Ohne Browser laufen P1, P2, P3, P8 und P10; P4 bis P7 und P9
+      # werden dann ausdruecklich als nicht geprueft ausgewiesen.
+      # --with-deps bleibt weg: der apt-Schritt ist an einem fremden
+      # Paketspiegel gescheitert, der mit dieser Seite nichts zu tun hat.
+      - name: Browser holen
+        run: npm i -D playwright@1.47.2 && npx playwright install chromium
+        continue-on-error: true
+
+      - name: Produktnachweis pruefen
+        env:
+          VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          if [ -z "$VERCEL_PREVIEW_URL" ]; then
+            {
+              echo "## Nicht geprueft — keine Adresse"
+              echo ""
+              echo "**Der Code ist nicht defekt.** Es fehlt die Adresse der Vorschau,"
+              echo "also konnte nichts gemessen werden. Ein unbelegter Nachweis wird hier"
+              echo "bewusst nicht gruen gemeldet."
+              echo ""
+              echo "Adresse als Eingabe uebergeben oder als Repository-Variable"
+              echo "\`VERCEL_PREVIEW_URL\` setzen (Settings → Secrets and variables → Actions)."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Vorschau-Adresse fehlt::VERCEL_PREVIEW_URL setzen oder als Eingabe uebergeben"
+            exit 2
+          fi
+          node scripts/proof/verify-product-proof.mjs --base "$VERCEL_PREVIEW_URL"
+
+      - name: Bericht und Bildschirmfotos sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-universe-proof-verification
+          path: |
+            quant/data/site/full-universe-proof-verification.json
+            quant/data/site/proof-shots/**
+          if-no-files-found: warn

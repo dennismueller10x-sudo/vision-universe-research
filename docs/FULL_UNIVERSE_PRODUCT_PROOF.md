@@ -215,6 +215,20 @@ waere schlimmer als gar keine.
 
 ## 6. Nachweise
 
+### Die Tuer ist gemessen zu
+
+Lauf 34515642252 (`vercel-preview-verify.yml`) gegen die Auslieferung
+dieses Zweigs, Ergebnis **PREVIEW_VERIFIED**, 10 von 10:
+
+* ohne Zugangsmittel antworten `/`, `/preview-universe/` **und**
+  `/quant/data/preview/universe.json` mit HTTP 302 auf die
+  Vercel-Anmeldung — die Tuer ist zu, auch fuer die JSON-Datei;
+* mit Zugangsmittel: 5.683 Titel, 5.636 auswertbar, keine Kursdaten,
+  `X-Robots-Tag: noindex, nofollow, noarchive`;
+* auf GitHub Pages: die Vorschaupfade und das Faktorartefakt jeweils
+  HTTP 404, die oeffentlichen Dateien Byte fuer Byte identisch;
+* kein Schluessel im ausgelieferten Inhalt.
+
 ### Tests
 
 `quant/tests/product-proof.test.mjs`, PP1–PP10, laufen in der Quant CI mit:
@@ -252,9 +266,36 @@ Chromium, `1440x960` und `390x844`, gegen den lokal gebauten Stand.
 
 Was diese QA **nicht** belegt: den Zustand der ausgelieferten Vorschau.
 Dieser Arbeitsplatz erreicht `*.vercel.app` nicht (der Ausgangsproxy
-lehnt die Verbindung ab, `connect_rejected`). Geprueft ist der Stand, der
-gebaut wird — nicht die Auslieferung selbst. Der Nachweis am lebenden
-System ist `.github/workflows/vercel-preview-verify.yml`.
+lehnt die Verbindung ab, `connect_rejected`). Geprueft ist damit der
+Stand, der gebaut wird — nicht die Auslieferung selbst.
+
+### Nachweis am lebenden System
+
+Dafuer gibt es zwei Laeufe in GitHub Actions, wo das Netz offen ist:
+
+| Workflow | Was er misst |
+|---|---|
+| `vercel-preview-verify.yml` | die geschuetzte Vorschau insgesamt (V1–V10) |
+| `full-universe-proof-verify.yml` | **diesen** Produktnachweis (P1–P10) |
+
+`scripts/proof/verify-product-proof.mjs` faehrt dazu einen echten
+Browser gegen die ausgelieferte Adresse:
+
+| | Frage |
+|---|---|
+| P1 | Werden Seiten **und** Datensatz ohne Zugangsmittel abgewiesen? |
+| P2 | Traegt der ausgelieferte Datensatz das ganze Universum? |
+| P3 | Liefert **jedes** der 64 Buendel seinen Titel aus? |
+| P4 | Findet die Suche einen **zufaellig** gezogenen Titel, und oeffnet er sich? |
+| P5 | Zeichnet der Chart echte Kerzen — auf 1440 px und auf 390 px? |
+| P6 | Rechnet der Screener auf dem vollen Universum, und wirkt eine strengere Regel? |
+| P7 | Laeuft bei 390 px nichts quer? |
+| P8 | Steht ein Schluessel im ausgelieferten Inhalt? |
+| P9 | Macht die Seite einen Strom auf, den niemand belegt hat? |
+| P10 | Kennt GitHub Pages den Nachweis nicht (404)? |
+
+Der zufaellig gezogene Titel in P4 ist Absicht: eine Vorfuehrung mit
+denselben fuenf Namen beweist genau das, was hier nicht gefragt ist.
 
 ---
 
