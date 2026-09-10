@@ -1,30 +1,30 @@
 {
-  "generatedAt": "2026-09-09T17:17:10.900Z",
+  "generatedAt": "2026-09-10T15:07:25.939Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null,
+    "source": "github-actions",
+    "runId": "34486165298",
+    "commit": "22410507fd29ec6a868699b70d991502104a4d48",
     "staleAfterHours": 72
   },
   "overall": "READY_FOR_FULL_MARKET_DATA_INGEST",
   "overallReason": "FULL_UNIVERSE bestanden.",
-  "lastSuccessfulUpdate": "2026-09-09T17:04:45.556Z",
+  "lastSuccessfulUpdate": "2026-09-10T14:57:23.768Z",
   "latestPassedGate": "FULL_UNIVERSE",
   "universe": {
     "status": "OK",
-    "generatedAt": "2026-09-09T16:07:59.333Z",
-    "ageHours": 1.2,
-    "rows": 108573,
-    "screenerEligible": 31320,
+    "generatedAt": "2026-09-10T14:00:32.950Z",
+    "ageHours": 1.1,
+    "rows": 108589,
+    "screenerEligible": 31328,
     "byInstrumentType": {
-      "COMMON_STOCK": 47888,
+      "COMMON_STOCK": 47898,
       "ADR": 0,
       "PREFERRED": 29,
-      "ETF": 9587,
+      "ETF": 9593,
       "ETN": 0,
       "FUND": 49878,
       "WARRANT": 697,
@@ -93,7 +93,7 @@
     "FULL_UNIVERSE": {
       "gate": {
         "status": "OK",
-        "generatedAt": "2026-09-09T17:04:45.556Z",
+        "generatedAt": "2026-09-10T14:57:23.768Z",
         "ageHours": 0.2,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
@@ -102,7 +102,7 @@
       "resumable": {
         "status": "COMPLETE",
         "pending": 0,
-        "completed": 5684
+        "completed": 5683
       },
       "universeQuality": {
         "status": "PASSED_WITH_WARNINGS",
@@ -122,34 +122,34 @@
           {
             "severity": "WARNING",
             "check": "dateAlignment",
-            "message": "34 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.6 % der aufgeloesten)."
+            "message": "37 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.7 % der aufgeloesten)."
           }
         ]
       },
       "marketData": {
-        "requested": 5684,
-        "resolved": 5684,
-        "PASS": 2238,
-        "WARNING": 3401,
-        "FAIL": 45,
+        "requested": 5683,
+        "resolved": 5683,
+        "PASS": 2239,
+        "WARNING": 3397,
+        "FAIL": 47,
         "UNAVAILABLE": 0,
-        "historyCoverageRate": 0.9963,
-        "factorReadyRate": 0.9893,
-        "averageBars": 4085,
-        "storageMB": 7566.4,
-        "runtimeMs": 3367169
+        "historyCoverageRate": 0.9965,
+        "factorReadyRate": 0.9889,
+        "averageBars": 4087,
+        "storageMB": 7568.2,
+        "runtimeMs": 3369382
       },
       "backtestReadiness": {
-        "symbols": 3446,
+        "symbols": 3444,
         "byInferredAdjustment": {
           "TOTAL_RETURN": 1286,
-          "SPLIT_ADJUSTED": 826,
-          "UNKNOWN": 1334
+          "SPLIT_ADJUSTED": 827,
+          "UNKNOWN": 1331
         },
         "adjustmentContradicted": 0,
-        "withCorporateActions": 2292,
+        "withCorporateActions": 2291,
         "rejectedForFutureBars": 0,
-        "notFactorReady": 61,
+        "notFactorReady": 63,
         "rawAndAdjustedStoredSeparately": true,
         "note": "Roh- und bereinigte Spalte liegen in der Arbeitsablage nebeneinander; die Bereinigungsstufe wird gemessen und nicht uebernommen. Zukunftsbars werden verworfen, bevor sie den Bestand erreichen. Ein Leistungsversprechen ist damit nicht verbunden.",
         "readiness": "DATA_SUPPORTS_BACKTEST",
@@ -169,144 +169,144 @@
       },
       "factors": {
         "status": "OK",
-        "computed": 5639,
-        "skipped": 45,
+        "computed": 5636,
+        "skipped": 47,
         "skippedByReason": {
-          "FAIL": 45
+          "FAIL": 47
         },
         "smaCoverage": {
-          "sma20Calculated": 5639,
-          "sma50Calculated": 5638,
-          "sma100Calculated": 5634,
-          "sma200Calculated": 5626
+          "sma20Calculated": 5636,
+          "sma50Calculated": 5635,
+          "sma100Calculated": 5631,
+          "sma200Calculated": 5623
         },
         "momentumCoverage": {
-          "1M": 5639,
-          "3M": 5638,
-          "6M": 5632,
-          "12M": 5623
+          "1M": 5636,
+          "3M": 5635,
+          "6M": 5629,
+          "12M": 5620
         },
         "relativeStrengthCoverage": {
-          "calculated": 5623,
+          "calculated": 5620,
           "sourceMissing": 0,
           "insufficientHistory": 16
         },
         "riskCoverage": {
-          "volatility60d": 5638,
-          "maxDrawdown252d": 5623
+          "volatility60d": 5635,
+          "maxDrawdown252d": 5620
         }
       },
       "screener": {
         "status": "OK",
-        "evaluable": 5639,
-        "notEvaluable": 45,
+        "evaluable": 5636,
+        "notEvaluable": 47,
         "questions": [
           {
             "id": "aboveSMA20",
             "kind": "boolean",
-            "matched": 2096,
+            "matched": 1772,
             "notEvaluable": 0
           },
           {
             "id": "aboveSMA50",
             "kind": "boolean",
-            "matched": 2540,
+            "matched": 2311,
             "notEvaluable": 1
           },
           {
             "id": "aboveSMA100",
             "kind": "boolean",
-            "matched": 2748,
+            "matched": 2558,
             "notEvaluable": 5
           },
           {
             "id": "aboveSMA200",
             "kind": "boolean",
-            "matched": 2926,
+            "matched": 2821,
             "notEvaluable": 13
           },
           {
             "id": "aboveSMA20And50And200",
             "kind": "boolean",
-            "matched": 1216,
+            "matched": 1046,
             "notEvaluable": 13
           },
           {
             "id": "aboveAllSMA",
             "kind": "boolean",
-            "matched": 1130,
+            "matched": 967,
             "notEvaluable": 13
           },
           {
             "id": "newHigh52w",
             "kind": "boolean",
-            "matched": 224,
+            "matched": 190,
             "notEvaluable": 16
           },
           {
             "id": "within5PctOf52wHigh",
             "kind": "boolean",
-            "matched": 912,
+            "matched": 835,
             "notEvaluable": 16
           },
           {
             "id": "volumeBreakout",
             "kind": "boolean",
-            "matched": 349,
+            "matched": 313,
             "notEvaluable": 431
           },
           {
             "id": "strongestMomentum12M",
             "kind": "ranked",
-            "matched": 5623,
+            "matched": 5620,
             "notEvaluable": 16
           },
           {
             "id": "strongestMomentum6M",
             "kind": "ranked",
-            "matched": 5632,
+            "matched": 5629,
             "notEvaluable": 7
           },
           {
             "id": "strongestMomentum12M1M",
             "kind": "ranked",
-            "matched": 5623,
+            "matched": 5620,
             "notEvaluable": 16
           },
           {
             "id": "strongestRelativeStrength12M",
             "kind": "ranked",
-            "matched": 5623,
+            "matched": 5620,
             "notEvaluable": 16
           },
           {
             "id": "trendAcceleration",
             "kind": "ranked",
-            "matched": 5638,
+            "matched": 5635,
             "notEvaluable": 1
           },
           {
             "id": "highVolatility",
             "kind": "ranked",
-            "matched": 5638,
+            "matched": 5635,
             "notEvaluable": 1
           },
           {
             "id": "lowVolatility",
             "kind": "ranked",
-            "matched": 5638,
+            "matched": 5635,
             "notEvaluable": 1
           },
           {
             "id": "nearest52wHigh",
             "kind": "ranked",
-            "matched": 5623,
+            "matched": 5620,
             "notEvaluable": 16
           },
           {
             "id": "deepestDrawdown",
             "kind": "ranked",
-            "matched": 5623,
+            "matched": 5620,
             "notEvaluable": 16
           }
         ]
@@ -316,16 +316,16 @@
         "READY": 5661,
         "PARTIAL": 0,
         "FAILED": 0,
-        "INSUFFICIENT_HISTORY": 23,
+        "INSUFFICIENT_HISTORY": 22,
         "SOURCE_MISSING": 0,
-        "msPerSymbol": 65,
+        "msPerSymbol": 68,
         "elliott": {
-          "HIGH_CONFIDENCE": 1430,
-          "MEDIUM_CONFIDENCE": 355,
-          "LOW_CONFIDENCE": 383,
-          "AMBIGUOUS": 3453,
+          "HIGH_CONFIDENCE": 1423,
+          "MEDIUM_CONFIDENCE": 349,
+          "LOW_CONFIDENCE": 381,
+          "AMBIGUOUS": 3468,
           "UNAVAILABLE": 40,
-          "NOT_RUN": 23
+          "NOT_RUN": 22
         }
       }
     },
@@ -333,7 +333,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 7.3,
+        "ageHours": 29.2,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -570,7 +570,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 6.6,
+        "ageHours": 28.4,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -805,7 +805,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 7,
+        "ageHours": 28.8,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null

@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-09T16:07:59.333Z",
+  "generatedAt": "2026-09-10T14:00:32.950Z",
   "provider": "tiingo",
   "status": "OK",
   "classificationVersion": "instrument-classification-1.0.0",
   "source": {
     "kind": "providerDownload",
     "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-    "fetchedAt": "2026-09-09T16:07:58.644Z",
-    "bytes": 794106,
+    "fetchedAt": "2026-09-10T14:00:32.311Z",
+    "bytes": 794783,
     "columns": [
       "ticker",
       "exchange",
@@ -19,38 +19,38 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "34374652149",
-    "commit": "49fc460e745f1a902463c489da2df6048d45be2e",
+    "runId": "34486165298",
+    "commit": "22410507fd29ec6a868699b70d991502104a4d48",
     "classificationRuntimeMs": 317
   },
   "totals": {
-    "rows": 108573,
+    "rows": 108589,
     "byInstrumentType": {
-      "COMMON_STOCK": 47888,
+      "COMMON_STOCK": 47898,
       "ADR": 0,
       "PREFERRED": 29,
-      "ETF": 9587,
+      "ETF": 9593,
       "ETN": 0,
       "FUND": 49878,
       "WARRANT": 697,
       "OTHER": 494,
       "UNKNOWN": 0
     },
-    "screenerEligible": 31320,
+    "screenerEligible": 31328,
     "screenerEligibleByExchange": {
-      "SHE": 3213,
+      "SHE": 3214,
       "SHG": 2837,
       "NYSE": 2718,
       "NYSE ARCA": 23,
-      "PINK": 15801,
-      "NASDAQ": 4908,
-      "OTCMKTS": 836,
-      "OTCGREY": 176,
+      "PINK": 15796,
+      "NASDAQ": 4909,
+      "OTCMKTS": 845,
+      "OTCGREY": 178,
       "BATS": 225,
-      "OTCQB": 205,
+      "OTCQB": 206,
       "OTCD": 29,
       "EXPM": 33,
-      "AMEX": 252,
+      "AMEX": 251,
       "OTCQX": 15,
       "OTCCE": 10,
       "NYSE MKT": 32,
@@ -59,16 +59,16 @@
       "NMFQS": 2
     },
     "byCurrency": {
-      "USD": 101338,
+      "USD": 101354,
       "CNY": 7178,
       "HKD": 52,
       "AUD": 5
     },
-    "activeTrue": 66111,
-    "activeFalse": 42462,
+    "activeTrue": 66106,
+    "activeFalse": 42483,
     "activeUnknown": 0,
-    "otc": 17109,
-    "nonOtc": 14211
+    "otc": 17116,
+    "nonOtc": 14212
   },
   "coverageGaps": {
     "company": {
