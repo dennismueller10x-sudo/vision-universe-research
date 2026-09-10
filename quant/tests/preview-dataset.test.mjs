@@ -17,7 +17,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, existsSync, mkdtempSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -159,7 +159,45 @@ test("PD7 — die Vercel-Konfiguration baut den Datensatz und schliesst die Arbe
   const ignoriert = readFileSync(join(root, ".vercelignore"), "utf8");
   assert.match(ignoriert, /^\.market-cache$/m,
     "die Arbeitsablage mit den Kursreihen darf nie in eine Auslieferung");
-  assert.match(ignoriert, /^preview$/m,
+
+  /* HIER STAND DER FEHLER, UND DER TEST HIELT IHN FEST.
+
+     Geprueft wurde /^preview$/ - also genau das Muster, das jede
+     Vorschau-Auslieferung rot machte. .vercelignore liest wie
+     .gitignore: ein Muster ohne Schraegstrich trifft JEDEN Abschnitt
+     dieses Namens. "preview" traf damit scripts/preview/ - das
+     Bauskript selbst - und quant/data/preview/ - den Datensatz, den
+     die Seite laedt. Vercel brach mit "Cannot find module" ab.
+
+     Ein Test, der eine Zeichenkette abfragt, kann so etwas nicht sehen.
+     Deshalb fragt er jetzt nach der WIRKUNG, mit denselben Regeln, die
+     Vercel anwendet: git check-ignore gegen eine Ablage, deren
+     .gitignore unser .vercelignore IST. Was der Bauschritt braucht,
+     muss durchkommen; das Schloss am Wurzelverzeichnis muss draussen
+     bleiben. */
+  const probe = mkdtempSync(join(tmpdir(), "vu-vignore-"));
+  const git = (...a) => execFileSync("git", a, { cwd: probe, encoding: "utf8" });
+  git("init", "-q", ".");
+  writeFileSync(join(probe, ".gitignore"), ignoriert);
+
+  const ausgeschlossen = (pfad) => {
+    try { git("check-ignore", "-q", "--no-index", pfad); return true; }
+    catch (err) { return false; }
+  };
+
+  /* Der Pfad aus dem Baubefehl selbst - nicht abgeschrieben, sondern
+     gelesen. Wer den Befehl aendert, prueft damit den neuen Pfad. */
+  const bauPfad = String(v.buildCommand).match(/\S+\.mjs/)[0];
+  assert.equal(ausgeschlossen(bauPfad), false,
+    `.vercelignore schliesst das Bauskript ${bauPfad} aus - Vercel kann dann nicht bauen`);
+  assert.equal(ausgeschlossen("quant/data/preview/universe.json"), false,
+    ".vercelignore schliesst den Datensatz aus, den die Ansicht laedt");
+  assert.equal(ausgeschlossen("preview-universe/index.html"), false,
+    ".vercelignore schliesst die Vorschauseite selbst aus");
+
+  /* Und die urspruengliche Absicht haelt weiter: ein Schloss im
+     Wurzelverzeichnis bleibt aus der Auslieferung heraus. */
+  assert.equal(ausgeschlossen("preview/index.html"), true,
     "das eigene Schloss bleibt draussen - Vercel schuetzt ueber seine Zugangsschicht");
 });
 

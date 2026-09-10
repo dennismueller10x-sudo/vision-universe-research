@@ -8,4 +8,16 @@ node_modules
 # Das eigene Vorschauschloss bleibt aus der Vercel-Auslieferung heraus.
 # Vercel schuetzt ueber seine eigene Zugangsschicht; zwei Schloesser
 # nebeneinander waeren eines zu viel und beide schlechter zu pruefen.
-preview
+#
+# DER FUEHRENDE SCHRAEGSTRICH IST DER GANZE PUNKT. Hier stand "preview",
+# und .vercelignore liest wie .gitignore: ein Muster ohne Schraegstrich
+# trifft JEDEN Pfadabschnitt dieses Namens, auf jeder Ebene. Es traf
+# damit nicht das Schloss - das es im Baum gar nicht gibt -, sondern
+# scripts/preview/, also das Bauskript SELBST. Vercel lud es nie hoch und
+# brach mit "Cannot find module .../build-preview-dataset.mjs" ab: jede
+# Vorschau-Auslieferung seit der ersten war rot, waehrend die Produktion
+# auf main gruen blieb, weil sie ohne vercel.json gar nicht baut.
+# Getroffen haette es ausserdem quant/data/preview/ - den Datensatz, den
+# die Seite laedt. Ein Muster, das den Bauschritt und seine Ausgabe
+# loescht, ist keine zweite Sperre, sondern ein Ausfall.
+/preview/
