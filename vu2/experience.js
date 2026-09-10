@@ -8,7 +8,7 @@ const n=(m,d=1)=>m&&Number.isFinite(m.value)?m.value.toLocaleString('de-DE',{max
 const nav=[['home','Home'],['markets','Markets'],['discover','Discover'],['research','Research'],['strategies','Strategies'],['portfolio','Portfolio']];
 const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
- ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Technical Intelligence',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant','/quant/'],['Vergleichen',href('compare')]]],
+ ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Technical Intelligence',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
  ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
  ['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
  ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
@@ -59,6 +59,18 @@ async function technicalWorkspacePage(ticker,elliottMode){
  const wave=el('section',{class:'section'},[el('h2',{text:'Elliott · Zählungen und Grenzen'}),el('p',{class:'muted',text:'Method Fit bewertet, wie gut die Zählung zu den Regeln passt. Es ist keine Eintrittswahrscheinlichkeit.'}),countSection(data.elliott.primary,'Basiszählung'),countSection(data.elliott.alternative,'Alternative Zählung'),el('details',{},[el('summary',{text:'Confidence & Methodik'}),el('p',{text:'Method Fit: '+price(data.elliott.methodFit)+'/100. '+(data.elliott.disclaimer||'Keine Wahrscheinlichkeit.')}),el('p',{class:'muted',text:data.elliott.methodology})])]);
  const scenarios=el('section',{class:'section'},[el('h2',{text:'Szenarien & Invalidation'}),...data.scenarios.map(s=>el('article',{class:'scenario-row'},[el('div',{},[el('h3',{text:s.label}),el('span',{class:'muted',text:s.status})]),el('div',{},[el('p',{text:s.confirmation||'Bestätigungsbedingung nicht verfügbar'}),el('p',{text:'Invalidation: '+price(s.invalidation?.price)+' · '+(s.invalidation?.rule||'Bedingung nicht verfügbar')}),el('p',{text:'Zielzonen: '+(s.targets.map(t=>price(t.zoneLow)+'–'+price(t.zoneHigh)).join(' · ')||'Keine verfügbar')}),el('details',{},[el('summary',{text:'Evidenz und Gegenargumente'}),el('p',{text:s.expiration||'Ablaufbedingung nicht verfügbar'}),...s.support.map(e=>el('p',{text:'Dafür: '+e.statement})),...s.conflicts.map(e=>el('p',{text:'Dagegen: '+e.statement}))])])]))]);
  main.append(...(elliottMode?[wave,scenarios]:[scenarios,wave]),actions([{label:'Alle technischen Details im bestehenden Workspace',href:data.legacyHref},{label:'Vollständige Kursgeschichte',href:data.priceHistoryHref},{label:'Fundamentals',href:href('fundamentals',ticker)}]));
+}
+async function quantPage(ticker){
+ const data=await api.getQuantWorkspace(ticker);main.append(heading('Das Unternehmen in Zahlen',data.name||ticker));
+ if(data.state!=='AVAILABLE'){main.append(notice('Kennzahlen derzeit nicht verfügbar','Die vorhandenen Quellen reichen für diese Ansicht nicht aus.'));return;}
+ const company=el('select',{'aria-label':'Quant Unternehmen'},universe.stocks.map(s=>el('option',{value:s.ticker,text:s.ticker+' · '+s.name})));company.value=ticker;company.onchange=()=>location.assign(href('quant',company.value));
+ const format=m=>m.value===null?'Nicht verfügbar':m.value.toLocaleString('de-DE',{maximumFractionDigits:2})+(m.metricId==='marginExpansion'?' Prozentpunkte':m.unit==='pct'?' %':m.unit==='x'?' ×':'');
+ main.append(el('div',{class:'workspace-controls'},[company]),el('p',{class:'muted',text:'Geschäftsdaten bis '+data.fundamentalsAsOf+' · verfügbar seit '+data.availableAt+' · Kurse bis '+data.asOf}),
+ el('nav',{class:'factor-nav','aria-label':'Faktorbereiche'},data.families.map(f=>link(f.label,'#factor-'+f.id))));
+ for(const family of data.families){main.append(el('section',{class:'factor-section',id:'factor-'+family.id},[
+  el('div',{},[el('span',{class:'eyebrow',text:family.label}),el('h2',{text:family.question})]),
+  el('div',{class:'factor-evidence'},family.metrics.map(m=>el('div',{class:'factor-metric'},[el('div',{},[el('span',{text:m.label}),el('strong',{text:format(m)})]),el('details',{},[el('summary',{text:'Definition & Datenstand'}),el('p',{text:m.description||'Bestehender Faktor-Rohwert; vollständige Definition und Herkunft im Dateninspektor.'}),el('p',{class:'muted',text:'Stand '+m.asOf+' · Kennzahl '+m.metricId+' · '+m.owner+' · '+m.panelVersion})])])))]));}
+ main.append(notice('Einordnen ohne scheinpräzisen Rang','Diese fünf Unternehmen bilden keine ausreichend große Vergleichsgruppe. Deshalb gibt es hier keinen Quant Score und keine Marktperzentile. Die Kennzahlen beschreiben vorhandene Daten; sie sind keine Empfehlung.'),el('details',{},[el('summary',{text:'Historischer Kontext & Methodik'}),el('p',{text:'Aktuelle Faktor-Rohwerte sind kein historischer Backtest. Bewertung verbindet Geschäftsdaten mit dem angegebenen Kursstand. Unterschiedliche Berichtsperioden und branchenspezifische Definitionen müssen bei Vergleichen berücksichtigt werden.'})]),actions([{label:'Fundamental-Historie',href:href('fundamentals',ticker)},{label:'Vergleichen',href:href('compare',ticker)},{label:'Dateninspektor',href:data.methodologyHref},{label:'Bestehender Quant Workspace',href:data.legacyHref}]));
 }
 async function fundamentalsPage(){
  main.append(heading('Wie entwickelt sich das Geschäft?','Geschäftszahlen über die Zeit verstehen – mit Berichtszeiträumen und nachvollziehbarer Herkunft.'));
@@ -126,6 +138,7 @@ async function screenPage(){
 async function render(){universe=await api.getUniverse();
  if(view==='stock')await stockPage(params.get('ticker')||'NVDA');
  else if(view==='technical'||view==='elliott')await technicalWorkspacePage(params.get('ticker')||'NVDA',view==='elliott');
+ else if(view==='quant')await quantPage(params.get('ticker')||'NVDA');
  else if(view==='fundamentals')await fundamentalsPage();
  else if(view==='markets')await marketsPage();
  else if(view==='discover')await discoverPage();

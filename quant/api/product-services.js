@@ -3,6 +3,7 @@
  * Financial values come from existing validated panel; no new factor engine. */
 (function(g){
 'use strict';
+const QuantWorkspace=typeof module!=='undefined'&&module.exports?require('./quant-workspace-contract.js'):g.VUQuantWorkspaceContract;
 const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
 function create(options){
@@ -39,7 +40,7 @@ function create(options){
  function workspaces(t){const q=encodeURIComponent(t);return [
   ['Full Chart','/quant/stock/?ticker='+q],['Technical','/vu2/?view=technical&ticker='+q],
   ['Elliott Wave','/vu2/?view=elliott&ticker='+q],
-  ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/quant/stock/?ticker='+q],
+  ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/vu2/?view=quant&ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie testen','/quant/strategies/builder/']
  ].map(([label,href])=>({label,href}));}
  async function getUniverse(){try{const c=await init();const stocks=(c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)).filter(Boolean);return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'APPROVED_DISPLAY_SET',totalMarketState:'UNAVAILABLE',reason:'NO_APPROVED_FULL_MARKET_VIEW'};}catch{return unavailable('SOURCE_MISSING');}}
@@ -79,6 +80,12 @@ function create(options){
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}return stock;
   }catch{return unavailable('SOURCE_MISSING');}}
+ async function getQuantWorkspace(ticker){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
+   return QuantWorkspace.build(row(c,ticker),c.panel.securities[ticker],c.panel.versions);
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  async function getTechnicalWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)||!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
@@ -108,7 +115,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
