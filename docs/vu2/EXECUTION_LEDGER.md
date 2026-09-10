@@ -82,3 +82,5 @@ PR68 initial Browser34514434725 PASS (28 checks). Screenshots inspected Technica
 
 ## Quant workspace implementation
 Continues in separate workstream/vu2-quant-workspace after PR68 contract review. Eighteen existing factor metrics, five question-led families, Catalog definitions, explicit unavailability and legacy access. No synthetic score or new formula.15 focused service tests PASS; browser/remote gate pending. Context phases/06-quant-workspace.md. Technical mobile/test repairs integrated without dropping the new Quant journey.
+
+PR69 initial gate: Browser34542974197, Quant34542974241, SEC34542974231 SUCCESS. Quant1440/390 screenshots inspected. Visual repair: company selector receives44px touch target and consistent styling; excess closed-definition spacing reduced while retaining44px disclosure targets. Refreshed screenshots pending.
