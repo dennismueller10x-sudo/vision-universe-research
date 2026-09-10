@@ -34,3 +34,7 @@ test('Technical summary rejects future, mocked and mismatched bundles',async()=>
  assert.equal((await guarded.getTechnicalIntelligence('NVDA')).reason,'INVALID_TECHNICAL_PROVENANCE');
  }
 });
+test('Historical Fundamentals service preserves actual SEC identity and current scope',async()=>{
+ const history=await api.getHistoricalFundamentals('NVDA',{metric:'revenue',period:'annual'});assert.equal(history.state,'AVAILABLE');assert.equal(history.pitEligibility,'NOT_CERTIFIED');
+ const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'OUTSIDE_PREVIEW_SCOPE');assert.equal(reads.length,before);
+});
