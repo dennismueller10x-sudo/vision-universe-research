@@ -19,6 +19,9 @@
   var RANGES = ["1M", "3M", "6M", "YTD", "1Y", "5Y", "MAX"];
   var state = { layer: "AUTO", range: "5Y", mode: null, showAlt: false, showAltCount: false };
 
+  var requestedLayer = S.param("layer");
+  if (LAYERS.some(function (l) { return l[0] === requestedLayer; })) state.layer = requestedLayer;
+
   S.page({
     nav: S.BASE + "technical/",
     need: [],

@@ -1,6 +1,8 @@
 # Vision Universe® 2.0 — execution status, 2026-09-10
 
-**Status: BLOCKED for the requested full migration.** Audit and two bounded internal foundation increments are complete. This is not VU2 completion, FOUNDATION_READY, or a production-readiness claim.
+**Current product build: IN_PROGRESS. Visual migration: IN_PROGRESS.** The earlier global BLOCKED classification is superseded by the explicit continuation instruction. Public full-universe display alone remains BLOCKED_LEGAL_REVIEW.
+
+The following table records the previous foundation checkpoint; current progress is in EXECUTION_LEDGER.md. Audit and two bounded internal foundation increments are complete. This is not VU2 completion, FOUNDATION_READY, or a production-readiness claim.
 
 | # | Requested report item | Evidence / status |
 |---|---|---|

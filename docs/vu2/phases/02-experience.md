@@ -1,0 +1,7 @@
+# Active pack — product services and experience foundation
+Requirements: current user §§1–17; R2 meaning → explanation → evidence → workspace; preserve all modules; Master §§39–42,55,67,68.
+Files: quant/api/product-services.js; vu2/ preview; scripts/vu2 browser QA; focused tests. SEC and existing production pages excluded.
+Contracts: current approved SEC panel and scoped Golden-Five EOD files behind existing DisplayPolicy; no new calculations or provider payloads in UI. Research directory maintains full workspace access.
+Acceptance: Home/Markets/Discover/Stock/Research coherent on desktop and390px; search opens stock; chart ranges reuse current engine; missing total-market state explicit; discover rules editable; no synthetic fallback; all professional/editorial destinations reachable.
+QA: User explicitly authorizes local static server + Playwright/Chromium or Actions, superseding the previous skill preview-only limitation for this repository. Local browser test produces screenshots and interaction assertions. No production deployment.
+Flags: preview route /vu2/ is opt-in, no root-navigation change. Owner VU2 workstream; remove preview isolation only after parity, visual and release gates.
