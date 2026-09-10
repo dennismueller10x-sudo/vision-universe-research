@@ -571,6 +571,14 @@ test("SM62 der Abgleich sagt, dass er nichts angefasst hat - und nennt die Phase
   assert.equal(recon.invariants.destructiveViolations, 0);
   assert.equal(recon.headline.BASELINE_COUNT, baseline.length);
   assert.equal(typeof recon.headline.REVIEW_EXISTING, "number");
+  /* Die Kernzusage als Rechnung: jeder Bestandstitel ist entweder
+     bestaetigt oder zur Pruefung gestellt. Ein dritter Ausgang - etwa
+     "entfernt" - existiert nicht, und diese Summe ist der Ort, an dem
+     er auffiele. */
+  assert.equal(recon.headline.MATCHED_EXISTING + recon.headline.REVIEW_EXISTING,
+               baseline.length,
+               "MATCHED_EXISTING + REVIEW_EXISTING muss BASELINE_COUNT ergeben");
+  assert.equal(recon.headline.BASELINE_ACCOUNTED_FOR, baseline.length);
   /* Ein Bestandstitel darf im ausgelieferten Artefakt nie als
      Neuaufnahme oder Ausschluss stehen. */
   for (const row of recon.rows.filter((r) => r.baseline_member)) {

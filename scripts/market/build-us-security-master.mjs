@@ -390,8 +390,22 @@ async function main() {
 
   const c = result.counts;
   const newEligible = result.rows.filter((r) => r.reconciliation_status === "ADDED");
-  const reviewExisting = result.rows.filter(
-    (r) => r.baseline_member && r.reconciliation_status === "REVIEW");
+
+  /* MATCHED_EXISTING und REVIEW_EXISTING zaehlen TITEL, nicht Zeilen -
+     und ihre Summe muss BASELINE_COUNT sein.
+
+     Als Zeilenzahlen gelesen ergaben sie im ersten Anbieterlauf 5.173 +
+     729 = 5.902, und wer 5.684 erwartet, sucht dann 218 Titel, die es
+     nicht gibt: es waren zusaetzliche Zeilen zu mehrdeutig
+     zugeordneten Titeln. Ein Bericht, dessen Zahlen sich nicht
+     aufaddieren, kostet mehr Zeit, als er spart. Die Zeilenzahlen
+     stehen daneben. */
+  const baselineRows = result.rows.filter((r) => r.baseline_member);
+  const reviewExistingTickers = new Set(
+    baselineRows.filter((r) => r.reconciliation_status === "REVIEW").map((r) => r.ticker));
+  const matchedExistingTickers = new Set(
+    baselineRows.map((r) => r.ticker).filter((t) => !reviewExistingTickers.has(t)));
+  const reviewExisting = baselineRows.filter((r) => r.reconciliation_status === "REVIEW");
   const excludedNew = result.rows.filter(
     (r) => r.reconciliation_status === "EXCLUDED_CANDIDATE");
   const reviewNew = result.rows.filter(
@@ -423,7 +437,7 @@ async function main() {
       ? providerRows.length
       : { status: "NOT_FETCHED_THIS_RUN", derivedFromCommittedSummary:
           providerAggregate ? providerAggregate.rawProviderRows : null },
-    MATCHED_EXISTING: c.byReconciliationStatus.EXISTING,
+    MATCHED_EXISTING: matchedExistingTickers.size,
     NEW_ELIGIBLE_ADDITIONS: result.providerAvailable
       ? newEligible.length
       : { status: "NOT_MEASURABLE_WITHOUT_PROVIDER_LIST",
@@ -447,7 +461,12 @@ async function main() {
           },
           gapNote: "Obergrenze. Die feine Klassifikation zieht davon Vorzuege, " +
                    "Optionsscheine, Units und Bezugsrechte ab." },
-    REVIEW_EXISTING: reviewExisting.length,
+    REVIEW_EXISTING: reviewExistingTickers.size,
+    /* Die Gegenprobe steht im Bericht und nicht nur im Test. */
+    BASELINE_ACCOUNTED_FOR: matchedExistingTickers.size + reviewExistingTickers.size,
+    MATCHED_EXISTING_ROWS: c.byReconciliationStatus.EXISTING,
+    REVIEW_EXISTING_ROWS: reviewExisting.length,
+    BASELINE_TICKERS_WITH_AMBIGUOUS_MATCH: c.baselineTickersWithAmbiguousMatch,
     EXCLUDED_NEW_CANDIDATES: result.providerAvailable
       ? excludedNew.length : { status: "NOT_MEASURABLE_WITHOUT_PROVIDER_LIST" },
     REVIEW_NEW_CANDIDATES: result.providerAvailable

@@ -771,41 +771,61 @@
                  examples: (examples || []).slice(0, 10) });
     }
 
+    /* Nur die SAUBER zugeordneten Bestandszeilen zaehlen als Befund
+       ueber den Bestand.
+
+       Eine mehrdeutig zugeordnete Gruppe traegt mehrere Zeilen zu EINEM
+       Titel, darunter typischerweise die alte, delistete Zeile eines
+       wiederverwendeten Symbols. Sie in die Kontaminationszahlen zu
+       mischen hat im ersten Anbieterlauf 223 angeblich beendete
+       Bestandslistings gemeldet, wo acht stehen. Die Mehrdeutigkeit ist
+       ein eigener Befund mit eigener Aufteilung - sie wird nicht
+       versteckt, sondern getrennt. */
     var baselineReview = rows.filter(function (r) {
-      return r.baseline_member && r.reconciliation_status === "REVIEW";
+      return r.baseline_member && r.reconciliation_status === "REVIEW" &&
+             r.baseline_match !== "AMBIGUOUS";
     });
+    /* Gezaehlt werden TITEL. Ein Titel mit zwei auffaelligen Zeilen ist
+       ein Fall und nicht zwei. */
+    function tickersOf(list) {
+      var seen = {}, out = [];
+      list.forEach(function (r) {
+        if (!seen[r.ticker]) { seen[r.ticker] = true; out.push(r.ticker); }
+      });
+      return out;
+    }
     function ofFlag(flag) {
       return baselineReview.filter(function (r) { return r.review_flags.indexOf(flag) >= 0; });
     }
 
-    var pref = baselineReview.filter(function (r) { return r.instrument_type === "PREFERRED"; });
+    var pref = tickersOf(baselineReview.filter(function (r) {
+      return r.instrument_type === "PREFERRED"; }));
     if (pref.length) {
       add("BASELINE_PREFERRED_CONTAMINATION", "HIGH", pref.length,
           "Bestandstitel, deren Ticker eine Vorzugsserie ausweist. Der Basis-Klassierer kennt " +
           "die dreiteilige Schreibweise (XXX-P-Y) nicht und hat sie als Stammaktie gefuehrt. " +
-          "Sie bleiben im Bestand und werden NICHT entfernt.",
-          pref.map(function (r) { return r.ticker; }));
+          "Sie bleiben im Bestand und werden NICHT entfernt.", pref);
     }
     ["ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX", "WARRANT", "UNIT", "RIGHT",
      "TRUST", "ADR", "REIT", "SPAC"].forEach(function (cls) {
-      var hits = baselineReview.filter(function (r) { return r.instrument_type === cls; });
+      var hits = tickersOf(baselineReview.filter(function (r) { return r.instrument_type === cls; }));
       if (hits.length) {
         add("BASELINE_" + cls + "_CONTAMINATION", cls === "ETF" || cls === "MUTUAL_FUND" ? "HIGH" : "MEDIUM",
             hits.length, "Bestandstitel, die nach dieser Klassifikation " + cls + " sind. " +
             "Sie bleiben im Bestand; die Entscheidung ist eine eigene, ausdruecklich " +
-            "freizugebende Migration.", hits.map(function (r) { return r.ticker; }));
+            "freizugebende Migration.", hits);
       }
     });
 
-    var inactive = ofFlag("LISTING_INACTIVE");
+    var inactive = tickersOf(ofFlag("LISTING_INACTIVE"));
     if (inactive.length) {
       add("BASELINE_INACTIVE_LISTINGS", "MEDIUM", inactive.length,
           "Bestandstitel, deren Listing nach Anbieterangabe beendet ist. Ihre gelieferten " +
-          "Daten bleiben erhalten.", inactive.map(function (r) { return r.ticker; }));
+          "Daten bleiben erhalten.", inactive);
     }
     var venue = baselineReview.filter(function (r) { return r.venue_tier !== "PRIMARY"; });
     if (venue.length) {
-      add("BASELINE_NON_PRIMARY_VENUE", "MEDIUM", venue.length,
+      add("BASELINE_NON_PRIMARY_VENUE", "MEDIUM", tickersOf(venue).length,
           "Bestandstitel an einem Platz, der kein regulaerer US-Handelsplatz ist.",
           venue.map(function (r) { return r.ticker + "@" + r.exchange; }));
     }
@@ -813,32 +833,45 @@
       return r.baseline_member && r.baseline_match === "AMBIGUOUS";
     });
     if (ambiguousMatch.length) {
-      var ambTickers = {};
-      ambiguousMatch.forEach(function (r) { ambTickers[r.ticker] = true; });
-      add("BASELINE_MATCH_AMBIGUOUS", "HIGH", Object.keys(ambTickers).length,
-          "Bestandstitel, die sich keiner einzelnen Anbieterzeile zuordnen lassen - der " +
-          "Anbieter fuehrt den Ticker mehrfach und keine Zeile steht auf dem Handelsplatz " +
-          "des Bestands. Alle betroffenen Zeilen behalten den Bestandsbezug; welche gemeint " +
-          "ist, entscheidet dieser Lauf nicht.", Object.keys(ambTickers));
+      var ambTickers = {}, ambByClass = {}, ambInactiveRows = 0;
+      ambiguousMatch.forEach(function (r) {
+        ambTickers[r.ticker] = true;
+        ambByClass[r.instrument_type] = (ambByClass[r.instrument_type] || 0) + 1;
+        if (r.active_status === "INACTIVE") ambInactiveRows++;
+      });
+      out.push({
+        id: "BASELINE_MATCH_AMBIGUOUS", severity: "HIGH",
+        count: Object.keys(ambTickers).length,
+        note: "Bestandstitel, die sich keiner einzelnen Anbieterzeile zuordnen lassen - der " +
+              "Anbieter fuehrt den Ticker mehrfach und keine Zeile steht auf dem Handelsplatz " +
+              "des Bestands. Alle betroffenen Zeilen behalten den Bestandsbezug; welche " +
+              "gemeint ist, entscheidet dieser Lauf nicht. Die Aufteilung unten ist der " +
+              "Grund, warum diese Zeilen NICHT in den Kontaminationszahlen mitlaufen: sie " +
+              "enthalten typischerweise die alte, delistete Zeile eines wiederverwendeten " +
+              "Symbols.",
+        rows: ambiguousMatch.length,
+        inactiveRows: ambInactiveRows,
+        byInstrumentType: ambByClass,
+        examples: Object.keys(ambTickers).slice(0, 10)
+      });
     }
     var alternates = rows.filter(function (r) { return r.baseline_match === "ALTERNATE_LISTING"; });
     if (alternates.length) {
       var altTickers = {};
       alternates.forEach(function (r) { altTickers[r.ticker] = true; });
-      add("ALTERNATE_LISTING_OF_BASELINE_TICKER", "MEDIUM", alternates.length,
-          "Weitere Anbieterzeilen zu " + Object.keys(altTickers).length + " Tickern, die wir " +
-          "schon fuehren - zweiter Handelsplatz oder ein spaeterer Emittent desselben Symbols. " +
-          "Sie werden ausdruecklich NICHT als Neuaufnahme gezaehlt.",
+      add("ALTERNATE_LISTING_OF_BASELINE_TICKER", "MEDIUM", Object.keys(altTickers).length,
+          alternates.length + " weitere Anbieterzeilen zu Tickern, die wir schon fuehren - " +
+          "zweiter Handelsplatz oder ein spaeterer Emittent desselben Symbols. Sie werden " +
+          "ausdruecklich NICHT als Neuaufnahme gezaehlt.",
           alternates.map(function (r) { return r.ticker + "@" + r.exchange; }));
     }
     var notFound = rows.filter(function (r) {
       return r.baseline_member && r.review_flags.indexOf("NOT_IN_PROVIDER_UNIVERSE") >= 0;
     });
     if (notFound.length) {
-      add("BASELINE_NOT_IN_PROVIDER_UNIVERSE", "HIGH", notFound.length,
+      add("BASELINE_NOT_IN_PROVIDER_UNIVERSE", "HIGH", tickersOf(notFound).length,
           "Bestandstitel, die in der aktuellen Anbieterliste nicht mehr vorkommen. Nicht " +
-          "loeschen: der Grund kann ein Symbolwechsel sein.",
-          notFound.map(function (r) { return r.ticker; }));
+          "loeschen: der Grund kann ein Symbolwechsel sein.", tickersOf(notFound));
     }
     if (duplicates.length) {
       var reuse = duplicates.filter(function (d) { return d.kind === "POSSIBLE_SYMBOL_REUSE"; });
