@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-09-10T18:39:30.185Z",
+  "generatedAt": "2026-09-10T18:41:08.757Z",
   "version": "us-security-master-1.0.0",
   "provider": "tiingo",
-  "status": "MODEL_ONLY_PENDING_PROVIDER_FETCH",
+  "status": "ESTIMATE_FOR_MEASURED_ADDITIONS",
   "approvalRequired": true,
   "approvalNote": "Diese Schaetzung loest keinen Lauf aus. Ein Backfill startet erst nach ausdruecklicher Freigabe des Eigentuemers.",
   "estimate": {
@@ -24,23 +24,23 @@
       "factorRuntimeMs": 10.2
     },
     "incremental": {
-      "newSymbols": 0,
-      "staleSymbols": 16,
-      "symbolsToFetch": 16,
-      "estimatedRequests": 17,
-      "estimatedRuntimeMinutes": 0.2,
-      "estimatedDownloadMB": 11.7,
-      "estimatedAdditionalStorageMB": 21.3,
-      "estimatedFactorRuntimeSeconds": 0.2,
+      "newSymbols": 2116,
+      "staleSymbols": 223,
+      "symbolsToFetch": 2339,
+      "estimatedRequests": 2340,
+      "estimatedRuntimeMinutes": 23.1,
+      "estimatedDownloadMB": 1716.8,
+      "estimatedAdditionalStorageMB": 3113.6,
+      "estimatedFactorRuntimeSeconds": 23.9,
       "fitsInOneHourBudget": true,
       "requestBudgetPerHour": 12000,
       "providerObservedLowerBoundPerRun": 5686
     },
     "fullRerun": {
-      "symbols": 5700,
-      "estimatedRequests": 5703,
-      "estimatedRuntimeMinutes": 56.3,
-      "estimatedDownloadMB": 4183.8,
+      "symbols": 8023,
+      "estimatedRequests": 8026,
+      "estimatedRuntimeMinutes": 79.2,
+      "estimatedDownloadMB": 5888.9,
       "necessary": false,
       "reason": "Die vorhandenen Historien liegen in der Arbeitsablage und sind nach Titel getrennt. Ein Titel, der sich nicht geaendert hat, liefert dieselbe Reihe noch einmal - das ist kein Gewinn, sondern derselbe Verkehr."
     },
