@@ -9,3 +9,5 @@
 .collection>div,.row>*{min-width:0}.row.eyebrow span{overflow-wrap:anywhere;hyphens:auto}@media(max-width:650px){.row.eyebrow{font-size:11px;letter-spacing:.7px}}
 
 .history-header{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center}.history-header .quote{font-size:36px}.q-chart .bar.pos{fill:var(--ink)}.q-chart .bar.neg{fill:var(--negative)}.q-chart .zero{stroke:var(--line)}@media(max-width:650px){.history-header{grid-template-columns:1fr;gap:10px}.history-header .quote{font-size:30px}}
+
+.history-controls{display:grid;grid-template-columns:1.2fr 1fr 1fr}.history-controls select{width:100%;min-width:0}@media(max-width:650px){.history-controls{grid-template-columns:1fr 1fr}.history-controls select:first-child{grid-column:1/-1}.history-controls select{font-size:14px;padding:12px 8px}}

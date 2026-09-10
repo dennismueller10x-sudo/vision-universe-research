@@ -13,3 +13,7 @@ Acceptance: all displayed facts have validated identity, dates, units, quality a
 Validation: targeted contract/service tests; existing Actions browser with screenshots and journey checks. No full-universe/provider rerun. Rollback: remove the additive route/service and restore prior inspector links; existing inspector untouched.
 
 Status: implementation in progress; visual gate pending new route screenshots.
+
+## Review and visual iteration
+Initial Browser34485242919 PASS for24 view/width journeys (including full Elliott). All research directory destinations respond. Inspected Fundamentals1440 and390 viewport, Elliott390 full page. Mobile controls condensed to two rows so the historical chart moves higher.
+Adversarial review identified ambiguous derived-quarter intervals, empty XOM ticker metadata and acceptance-before-official-filing compatibility. Repairs: only AS_REPORTED quarterly values render; ambiguous derived rows remain unavailable with reason; index-bound exact CIK accepts an empty ticker list; original acceptance timestamp retained in UI. Existing canonical.py and normalize.py explicitly describe acceptance preceding effective filing date. No SEC changes. Six focused history-contract and11 product-service tests PASS (17 total); independent re-review PASS with no remaining critical/high finding. TTM and ambiguous transformed quarters remain bounded dependencies.
