@@ -139,7 +139,7 @@
     var ys = scale(ext, [h - PAD.bottom, PAD.top]);
     var yFormat = opts.yFormat || function (v) { return String(Math.round(v)); };
 
-    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }), yFormat, xLabelsFor(dates, xs, 5));
+    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }), yFormat, xLabelsFor(dates, xs, w < 500 ? 3 : 5));
 
     opts.series.forEach(function (s) {
       var pts = s.values.map(function (v, i) { return [xs(i), isNum(v) ? ys(v) : null]; });

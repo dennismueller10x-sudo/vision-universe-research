@@ -14,3 +14,9 @@ test('future and mock panel rows are rejected before stock and screener consumpt
  }
 });
 test('screen source failures are typed',async()=>{const bad=Service.create({loadJSON:async()=>{throw Error('offline')},displayPolicy:Policy,queryEngine:Query});assert.equal((await bad.screen(Query.createQuery({}))).state,'UNAVAILABLE');});
+test('Discover recipes reproduce identical editable Screener queries and preserve their defaults',async()=>{
+ const discovered=await api.getDiscover();assert.equal(discovered.collections.length,3);
+ for(const c of discovered.collections){const screened=await api.screen(c.query);assert.equal(c.result.queryHash,screened.queryHash);assert.deepEqual(c.result.stocks,screened.stocks);assert.equal(c.result.eligible,5);}
+ const recipes=api.getRecipes();recipes[0].query.filters[0].value=999;
+ assert.equal(api.getRecipes()[0].query.filters[0].value,0);
+});

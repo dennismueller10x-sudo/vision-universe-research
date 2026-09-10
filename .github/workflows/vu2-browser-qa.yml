@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'vu2/**'
+      - 'quant/ui/charts.js'
+      - 'quant/technical/app.js'
       - 'quant/api/product-services.js'
       - 'scripts/vu2/**'
       - '.github/workflows/vu2-browser-qa.yml'

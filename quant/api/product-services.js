@@ -50,13 +50,19 @@ function create(options){
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}return stock;
   }catch{return unavailable('SOURCE_MISSING');}}
+ function getRecipes(){return [
+  {id:'positive-momentum',title:'Kursstärke entdecken',explanation:'Unternehmen mit positiver Kursentwicklung über sechs Monate.',field:'momentum6m',threshold:0,rule:'Kursentwicklung über 6 Monate ≥ 0 %'},
+  {id:'growing-business',title:'Wachsendes Geschäft',explanation:'Unternehmen, deren ausgewiesenes Umsatzwachstum mindestens 20 Prozent beträgt.',field:'revenueGrowth',threshold:20,rule:'Umsatzwachstum ≥ 20 %'},
+  {id:'above-long-trend',title:'Über dem langfristigen Trend',explanation:'Unternehmen, deren Kurs auf oder über dem 200-Tage-Durchschnitt liegt.',field:'priceTo200dma',threshold:0,rule:'Abstand zum 200-Tage-Durchschnitt ≥ 0 %'}
+ ].map(recipe=>({...recipe,version:'1.0.0',query:queryEngine.createQuery({filters:[{field:recipe.field,operator:'gte',value:recipe.threshold,scale:'raw'}],sort:[{field:recipe.field,direction:'desc'}],limit:50})}));}
+ async function getDiscover(){const collections=await Promise.all(getRecipes().map(async recipe=>({...recipe,result:await screen(recipe.query)})));return {collections,scope:'APPROVED_DISPLAY_SET'};}
  async function screen(query){try{const c=await init();const universe=await getUniverse();if(universe.state!=='AVAILABLE')return universe;
   const rows=universe.stocks.map(s=>({...c.panel.securities[s.ticker].fundamentals,ticker:s.ticker,securityId:s.securityId,status:'active'}));
   const result=queryEngine.execute(query,rows);
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {getUniverse,getStockIntelligence,screen,workspaces};
+ return {getUniverse,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
