@@ -398,7 +398,17 @@ async function main() {
     (r) => !r.baseline_member && r.reconciliation_status === "REVIEW");
 
   /* --------------------------------------- Der Berichtsblock aus §9/§14 */
-  const providerAggregate = result.providerAvailable ? null : providerAggregateFromSummary();
+  /* Die committete Bilanz wird IMMER gelesen, nicht nur wenn der
+     Anbieter fehlt.
+
+     Im Offline-Lauf ist sie die einzige Aussage ueber die
+     Anbieterseite. Im Anbieterlauf ist sie etwas Besseres: eine zweite,
+     unabhaengig entstandene Zaehlung derselben Liste - mit dem GROBEN
+     Klassierer. Wo die feine und die grobe Zaehlung auseinandergehen,
+     steht die Luecke, die dieser Strang gefunden hat. Sie
+     wegzuwerfen, sobald die Liste da ist, hiesse den Vergleich
+     wegzuwerfen, der die Zahl erklaert. */
+  const providerAggregate = providerAggregateFromSummary();
   /* Die Differenz muss GLEICHES mit GLEICHEM vergleichen: die Bilanz
      zaehlt screenerfaehige Zeilen auf US-Regelplaetzen, also gehoert auf
      die andere Seite die Zahl der Bestandstitel AUF EBEN DIESEN
@@ -509,6 +519,18 @@ async function main() {
           consequence: "Jede Zahl ueber NEUE Titel bleibt in diesem Lauf offen. Der " +
                        "Abgleich beschreibt den gelieferten Bestand vollstaendig." },
     providerAggregate,
+    coarseVsFine: providerAggregate && result.providerAvailable
+      ? {
+          note: "Zwei Zaehlungen derselben Anbieterliste: die committete Bilanz mit dem " +
+                "groben Klassierer, dieser Lauf mit dem feinen. Die Differenz je Gattung " +
+                "ist der Fund und nicht ein Fehler.",
+          coarseRows: providerAggregate.rawProviderRows,
+          fineRows: providerRows.length,
+          coarseByInstrumentType: providerAggregate.byInstrumentTypeCoarse,
+          fineByInstrumentType: c.byInstrumentType,
+          coarseSummaryGeneratedAt: providerAggregate.generatedAt
+        }
+      : null,
     headline,
     counts: c,
     invariants: result.invariants,
