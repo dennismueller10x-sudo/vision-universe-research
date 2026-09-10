@@ -309,6 +309,27 @@ Browser gegen die ausgelieferte Adresse:
 Der zufaellig gezogene Titel in P4 ist Absicht: eine Vorfuehrung mit
 denselben fuenf Namen beweist genau das, was hier nicht gefragt ist.
 
+#### Ergebnis des Laufs
+
+Lauf 34516187013 gegen die Auslieferung dieses Zweigs — **PROOF_VERIFIED,
+10 von 10**:
+
+| | Gemessen |
+|---|---|
+| P1 | `/universe/`, `/universe/screener/`, `/universe/stock/?ticker=ORCL` **und** `/quant/data/proof/index.json`: je HTTP 302 auf die Vercel-Anmeldung |
+| P2 | 5.683 Titel, davon 5.636 mit Faktorzeile — Bilanz in sich stimmig |
+| P3 | 64 von 64 Buendeln liefern ihren Titel |
+| P4 | zufaellig gezogen: **EBON** — Suche findet ihn, die Seite oeffnet sich, Zaehler 5.683 (Desktop und 390 px) |
+| P5 | AAPL-Chart 1200x320 bzw. 360x320, je **252 Kerzen** |
+| P6 | 990 Treffer → 416 nach strengerer Regel (Desktop und 390 px) |
+| P7 | 0 px Querlauf auf allen drei Seiten, in beiden Breiten |
+| P8 | kein Schluessel in fuenf ausgelieferten Dateien |
+| P9 | **0** WebSocket-Verbindungen · Realtime-Status `UNAVAILABLE_IN_THIS_DELIVERY` |
+| P10 | GitHub Pages: HTTP 404 fuer `/universe/` |
+
+Bildschirmfotos beider Breiten haengen als Artefakt am Lauf
+(`full-universe-proof-verification`).
+
 ---
 
 ## 7. Grenzen dieses Nachweises
