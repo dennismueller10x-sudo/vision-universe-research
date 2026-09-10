@@ -41,3 +41,14 @@ test('Historical Fundamentals service preserves actual SEC identity and current 
 test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
  const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);
 });
+test('Quant workspace preserves raw factor values and refuses small-universe scores',async()=>{
+ for(const ticker of ['AAPL','MSFT','NVDA','JPM','XOM']){const model=await api.getQuantWorkspace(ticker);assert.equal(model.state,'AVAILABLE');assert.equal(model.families.flatMap(f=>f.metrics).length,18);assert.equal(model.score.state,'UNAVAILABLE');assert.equal(model.pitEligible,false);}
+ const model=await api.getQuantWorkspace('NVDA'),metrics=model.families.flatMap(f=>f.metrics);assert.equal(metrics.find(m=>m.metricId==='momentum6m').value,23.734);assert.equal(metrics.find(m=>m.metricId==='roic').value,65.062);assert.equal((await api.getQuantWorkspace('TSLA')).reason,'OUTSIDE_PREVIEW_SCOPE');
+});
+test('Quant workspace suppresses market-dependent valuation and risk when display permission is absent',async()=>{
+ const denied=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:{...Policy,check:()=>({allowed:false})},queryEngine:Query});
+ const model=await denied.getQuantWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))assert.ok(family.metrics.every(m=>m.value===null&&m.reason==='DISPLAY_NOT_PERMITTED'));assert.ok(model.families[0].metrics.some(m=>m.state==='AVAILABLE'));
+});
+test('Quant values are not zero-filled and unknown panel versions are unavailable',async()=>{
+ for(const unknown of [false,true]){const changed=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.endsWith('quant-factor-inputs.json')){x.securities.NVDA.fundamentals.roic=null;x.securities.NVDA.fundamentals.fcfMargin=0;if(unknown)x.versions.buildScript='unknown';}return x;},displayPolicy:Policy,queryEngine:Query});const model=await changed.getQuantWorkspace('NVDA');if(unknown)assert.equal(model.state,'UNAVAILABLE');else {const m=model.families[0].metrics;assert.equal(m.find(x=>x.metricId==='roic').state,'SOURCE_MISSING');assert.equal(m.find(x=>x.metricId==='fcfMargin').value,0);}}
+});
