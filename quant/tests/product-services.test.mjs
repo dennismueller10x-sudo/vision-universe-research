@@ -20,3 +20,17 @@ test('Discover recipes reproduce identical editable Screener queries and preserv
  const recipes=api.getRecipes();recipes[0].query.filters[0].value=999;
  assert.equal(api.getRecipes()[0].query.filters[0].value,0);
 });
+test('Market Intelligence exposes scoped evidence without a synthetic market pulse',async()=>{
+ const market=await api.getMarketIntelligence();assert.equal(market.marketPulse.state,'UNAVAILABLE');assert.equal(market.observations.length,5);
+ const nvda=market.observations.find(x=>x.stock.ticker==='NVDA');assert.equal(nvda.trend.state,'AVAILABLE');assert.equal(nvda.trend.evidence[1].metric.value,nvda.stock.above200.value);
+});
+test('Technical summary consumes the existing real bundle without converting Elliott confidence to probability',async()=>{
+ const technical=await api.getTechnicalIntelligence('NVDA');assert.equal(technical.state,'AVAILABLE');assert.equal(technical.trend.label,'Aufwärtstrend');assert.equal(technical.elliott.label,'Mehrere mögliche Zählungen');assert.equal(technical.isProbability,false);assert.equal(technical.confidence,undefined);
+ const before=reads.length;assert.equal((await api.getTechnicalIntelligence('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);
+});
+test('Technical summary rejects future, mocked and mismatched bundles',async()=>{
+ for(const mutate of [s=>s.isMock=true,s=>s.bundle.dataCutoff='2099-01-01',s=>s.bundle.instrumentId='MSFT']){
+ const guarded=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.includes('/technical/instruments/'))mutate(x);return x;},displayPolicy:Policy,queryEngine:Query});
+ assert.equal((await guarded.getTechnicalIntelligence('NVDA')).reason,'INVALID_TECHNICAL_PROVENANCE');
+ }
+});

@@ -18,10 +18,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
  if(overflow)throw Error('page overflow '+view+' '+width);
  if(view==='home'){if(await page.locator('a.row').count()!==5)throw Error('real scope missing');await page.getByRole('button',{name:'Suche',exact:true}).click();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).waitFor();await page.getByRole('button',{name:'Schließen'}).click();}
- if(view==='stock'){await page.getByRole('button',{name:'Max',exact:true}).click();if(await page.locator('.q-chart').count()!==1)throw Error('MAX chart missing');await page.getByRole('button',{name:'1J',exact:true}).click();}
+ if(view==='stock'){await page.getByRole('heading',{name:'Technical Intelligence',exact:true}).waitFor();await page.getByRole('heading',{name:'Aufwärtstrend',exact:true}).waitFor();await page.getByRole('button',{name:'Max',exact:true}).click();if(await page.locator('.q-chart').count()!==1)throw Error('MAX chart missing');await page.getByRole('button',{name:'1J',exact:true}).click();}
+ if(view==='markets'){if(await page.locator('.market-observation').count()!==5)throw Error('market observations missing');await page.getByText('Warum?',{exact:true}).first().click();await page.getByText(/Abstand zum 200-Tage-Durchschnitt:/).first().waitFor();}
  if(view==='discover'){if(await page.locator('.collection').count()!==3)throw Error('collections missing');await page.getByRole('link',{name:'Regeln im Screener bearbeiten'}).nth(1).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()!=='revenueGrowth'||await page.getByRole('spinbutton').inputValue()!=='20')throw Error('recipe handoff lost');await page.goto(origin+'/vu2/?view=discover');await page.locator('main footer').waitFor();}
  if(view==='screener'){await page.getByRole('spinbutton').fill('999');await page.getByRole('button',{name:'Anwenden'}).click();await page.getByText('0 Treffer in 5 verfügbaren Unternehmen · kein Gesamtmarkt-Ranking').waitFor();}
- await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});checks.push({view,width,pass:true});
+ await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}checks.push({view,width,pass:true});
  }
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
  await writeFile(out+'/results.json',JSON.stringify({checks},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));

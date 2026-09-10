@@ -12,3 +12,5 @@ Affected contracts: existing Query AST and scoped Product Services; recipe versi
 Files: product-services.js, experience.js/css, charts.js, browser-qa.mjs.
 Acceptance: recipe results equal direct query results; growth recipe opens at20%; mobile dates legible; all professional/editorial entry points searchable.
 Tests: seven service tests; existing Actions browser workflow screenshots and handoff interaction. No provider-scale test required.
+
+Market/Stock extension: Master15/16/20/23/24/39/42. Product service projects existing trend/momentum/volatility/Elliott states; unknown states remain unavailable. Markets shows scoped observations, never a synthetic full-market pulse. Acceptance: actual NVDA bundle projection, out-of-scope denial before read, reject future/mock/mismatched bundles, browser evidence disclosure and full workspace links. No metric engine changed.
