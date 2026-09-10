@@ -145,6 +145,10 @@ const scaleTrees = [
   ["quant", "data", "market", "factors"],
   ["quant", "data", "market", "health"],
   ["quant", "data", "market", "commercial"],
+  /* Der US-Wertpapierstamm. Er traegt Ticker, Gattungen und Zaehlungen -
+     keine Kurse. Der Pfad steht hier, damit das auch dann noch geprueft
+     wird, wenn spaeter jemand ein Feld ergaenzt. */
+  ["quant", "data", "market", "security-master"],
   ["quant", "data", "technical", "scale"]
 ];
 
