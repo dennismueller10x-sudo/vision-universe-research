@@ -411,6 +411,50 @@ async function main() {
   const reviewNew = result.rows.filter(
     (r) => !r.baseline_member && r.reconciliation_status === "REVIEW");
 
+  /* Die Aufteilung der NEUZUGAENGE. Zahlen ueber die Zeilen, nicht die
+     Zeilen selbst - damit sie ausgeliefert werden duerfen, solange die
+     Redistribution der Tickerliste offen ist.
+
+     byStartYear beantwortet die Frage, die den ganzen Abstand erklaert:
+     das bestehende Universum wurde mit ruleBasedCandidates() gezogen,
+     und die Regel verlangt drei Jahre Historie. Wie viele der
+     Neuzugaenge daran gescheitert sind - und nicht an einer
+     Gattungsfrage -, steht hier. */
+  const historyCutoff = (() => {
+    const d = new Date(Date.parse(TODAY + "T00:00:00Z"));
+    d.setUTCFullYear(d.getUTCFullYear() - 3);
+    return d.toISOString().slice(0, 10);
+  })();
+  const additionBreakdown = (() => {
+    if (!result.providerAvailable) return { status: "NOT_MEASURABLE_WITHOUT_PROVIDER_LIST" };
+    const byExchange = {}, byStartYear = {};
+    let belowHistoryRule = 0, noStartDate = 0;
+    for (const r of newEligible) {
+      byExchange[r.exchange || "UNKNOWN"] = (byExchange[r.exchange || "UNKNOWN"] || 0) + 1;
+      const y = r.start_date ? r.start_date.slice(0, 4) : "UNKNOWN";
+      byStartYear[y] = (byStartYear[y] || 0) + 1;
+      if (!r.start_date) noStartDate++;
+      else if (r.start_date > historyCutoff) belowHistoryRule++;
+    }
+    return {
+      total: newEligible.length,
+      byExchange,
+      byStartYear,
+      historyRule: {
+        rule: "select-gate-universe.mjs ruleBasedCandidates(): minHistoryYears = 3",
+        cutoff: historyCutoff,
+        belowRule: belowHistoryRule,
+        atOrAboveRule: newEligible.length - belowHistoryRule - noStartDate,
+        noStartDate,
+        note: "belowRule sind Titel, die das bestehende Universum NICHT wegen ihrer Gattung " +
+              "verfehlt haben, sondern wegen einer Auswahlregel. Diese Klassifikation wendet " +
+              "die Regel auf die Foerderfaehigkeit nicht an - ein Titel von gestern ist eine " +
+              "Aktie. Ob er in ein Momentumuniversum gehoert, ist eine andere Frage und " +
+              "gehoert in die Auswahl, nicht in den Stamm."
+      }
+    };
+  })();
+
   /* --------------------------------------- Der Berichtsblock aus §9/§14 */
   /* Die committete Bilanz wird IMMER gelesen, nicht nur wenn der
      Anbieter fehlt.
@@ -551,6 +595,7 @@ async function main() {
         }
       : null,
     headline,
+    additions: additionBreakdown,
     counts: c,
     invariants: result.invariants,
     nonDestructive: {
@@ -653,6 +698,7 @@ async function main() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 8)
       .map((f) => ({ id: f.id, severity: f.severity, count: f.count })),
+    additions: additionBreakdown,
     newSecuritiesNotInBaseline: result.providerAvailable
       ? result.rows.filter((r) => !r.baseline_member).length
       : { status: "NOT_MEASURABLE_WITHOUT_PROVIDER_LIST" },

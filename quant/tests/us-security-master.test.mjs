@@ -615,6 +615,26 @@ test("SM64 Abgleich und Stammtabelle widersprechen sich nicht", (t) => {
   }
 });
 
+test("SM65 die Aufteilung der Neuzugaenge zaehlt genauso viele wie die Kennzahl", (t) => {
+  if (!existsSync(RECON)) return t.skip("Kein Abgleich ausgeliefert.");
+  const recon = JSON.parse(readFileSync(RECON, "utf8"));
+  const a = recon.additions;
+  if (!a || a.status === "NOT_MEASURABLE_WITHOUT_PROVIDER_LIST") {
+    /* Ohne Anbieterliste gibt es keine Neuzugaenge zu zaehlen - dann
+       muss die Kennzahl das genauso sagen und darf keine Zahl nennen. */
+    assert.equal(typeof recon.headline.NEW_ELIGIBLE_ADDITIONS, "object");
+    return;
+  }
+  assert.equal(a.total, recon.headline.NEW_ELIGIBLE_ADDITIONS);
+  const sumExchanges = Object.values(a.byExchange).reduce((x, y) => x + y, 0);
+  assert.equal(sumExchanges, a.total, "Boersenaufteilung muss sich zur Gesamtzahl addieren");
+  const sumYears = Object.values(a.byStartYear).reduce((x, y) => x + y, 0);
+  assert.equal(sumYears, a.total, "Jahresaufteilung muss sich zur Gesamtzahl addieren");
+  const h = a.historyRule;
+  assert.equal(h.belowRule + h.atOrAboveRule + h.noStartDate, a.total,
+               "Die Drei-Jahres-Regel teilt die Neuzugaenge vollstaendig auf");
+});
+
 test("SM63 die Backfill-Schaetzung verlangt eine Freigabe und startet nichts", (t) => {
   const file = join(root, "quant", "data", "market", "security-master", "backfill-estimate.json");
   if (!existsSync(file)) return t.skip("Keine Schaetzung ausgeliefert.");
