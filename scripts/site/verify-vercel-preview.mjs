@@ -451,6 +451,56 @@ async function main() {
             "dann gegen den ausgelieferten Commit pruefen, nicht gegen HEAD." });
 
   /* ------------------------------------------------------------------
+     V10 — Das dauerhafte Faktorartefakt: in der Vorschau, nicht
+     oeffentlich.
+
+     Die Datei _preview-data/factors-FULL_UNIVERSE.json traegt die
+     Faktorzeilen aller Titel. Zwei Aussagen ueber sie stehen im
+     Artefakt selbst und muessen gemessen werden, nicht angenommen:
+
+       Vercel liefert sie aus  -> sonst hat die Vorschau keine Faktoren
+       Pages liefert sie NICHT -> sonst ist die Vorschau umsonst gebaut
+
+     Die zweite ist der Grund, warum diese Pruefung existiert. Heute
+     liegt die Datei nur auf dem Vorschauzweig, also kann Pages sie
+     ohnehin nicht haben; sobald sie je auf main landet, haengt alles am
+     fuehrenden Unterstrich und an Jekyll. Das ist eine Konvention, und
+     eine Konvention gehoert gemessen.
+     ------------------------------------------------------------------ */
+  const ARTEFAKT = "/_preview-data/factors-FULL_UNIVERSE.json";
+  const oeffentlich = await hole(PAGES + ARTEFAKT);
+  const oeffentlichDa = oeffentlich.ok && oeffentlich.status === 200 &&
+                        /DERIVED_FACTOR_ROWS/.test(oeffentlich.body || "");
+  let inVorschau = null, zeilen = null;
+  if (BYPASS) {
+    const v = await hole(BASE + ARTEFAKT, { bypass: true });
+    if (v.ok && v.status === 200 && /DERIVED_FACTOR_ROWS/.test(v.body || "")) {
+      inVorschau = true;
+      try {
+        const a = JSON.parse(v.body);
+        zeilen = (a.securities || []).length;
+      } catch (err) { zeilen = null; }
+    } else {
+      inVorschau = false;
+    }
+  }
+  pruefe("V10", "Faktorartefakt in der Vorschau, nicht oeffentlich",
+    oeffentlichDa ? "FAIL"
+      : inVorschau === false ? "FAIL"
+      : inVorschau === null ? "UNKNOWN"
+      : "PASS",
+    { publicSite: { path: ARTEFAKT, status: oeffentlich.status, served: oeffentlichDa },
+      preview: { served: inVorschau, securities: zeilen },
+      note: oeffentlichDa
+        ? "Pages liefert das Artefakt aus. Die Substanz der geschuetzten Vorschau ist damit oeffentlich."
+        : inVorschau === null
+          ? "Ohne Zugangsmittel ist nicht messbar, ob die Vorschau das Artefakt fuehrt."
+          : inVorschau
+            ? "Vorschau fuehrt es, Pages nicht - genau die Trennung, auf der die Vorschau steht."
+            : "Die Vorschau fuehrt das Artefakt NICHT. Dann trage die Faktorzeilen dort " +
+              "nichts, und der Screener bleibt bei den Zaehlfragen." });
+
+  /* ------------------------------------------------------------------
      Gesamturteil. PASS nur, wenn nichts uebersprungen wurde - sonst
      PARTIALLY_VERIFIED. Ein Nachweis, der die Haelfte auslaesst, heisst
      nicht "bestanden".
