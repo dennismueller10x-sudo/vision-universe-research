@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T16:07:01.820Z",
+  "generatedAt": "2026-09-10T14:00:11.242Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "requestLimits",
@@ -7,9 +7,9 @@
   "note": "Der Bericht sucht Anbieteraussagen. Er erzeugt keinen Missbrauchsverkehr und bestimmt keine Decke durch Dagegenlaufen. Was er nicht findet, bleibt UNKNOWN.",
   "run": {
     "source": "github-actions",
-    "runId": "34374652149",
-    "commit": "49fc460e745f1a902463c489da2df6048d45be2e",
-    "ref": "claude/tiingo-commercial-phase-1-4j0581",
+    "runId": "34486165298",
+    "commit": "22410507fd29ec6a868699b70d991502104a4d48",
+    "ref": "claude/vercel-protected-preview",
     "probesAllowed": 12
   },
   "configuredLimits": {
@@ -28,6 +28,21 @@
     "note": "Diese Zahlen sind unser Budget. Sie sagen nichts darueber, was Tiingo erlaubt."
   },
   "evidence": [
+    {
+      "source": "observedRuns",
+      "evidenceRank": 4,
+      "status": "LOWER_BOUND_ONLY",
+      "highestRequestsInOneHourWithoutRefusal": 5686,
+      "http429EverSeen": false,
+      "runs": [
+        "gate-FULL_UNIVERSE.json: 5686 Anfragen, 429 nein",
+        "gate-GATE_100.json: 105 Anfragen, 429 nein",
+        "gate-GATE_2000.json: 2002 Anfragen, 429 nein",
+        "gate-GATE_500.json: 502 Anfragen, 429 nein"
+      ],
+      "interpretation": "In den bisherigen Laeufen wurden bis zu 5686 Anfragen in einer Stunde gestellt, ohne dass Tiingo eine einzige abgelehnt haette. Belegt ist damit eine UNTERGRENZE: die tatsaechliche Grenze liegt bei mindestens 5686/h. Wo genau, sagt kein Lauf - dazu muesste einer abgelehnt werden.",
+      "sourceFiles": "quant/data/market/scale/gate-*.json, accounting.requests und providerObserved"
+    },
     {
       "source": "accountEndpoint/api/test",
       "evidenceRank": 1,
@@ -81,14 +96,6 @@
         "x-frame-options"
       ],
       "interpretation": "Tiingo sendet keine Kontingentkoepfe. Es gibt damit keinen Weg, den Stand des Kontos zu erfahren, ausser abzuwarten, ob eine Anfrage abgelehnt wird."
-    },
-    {
-      "source": "quant/data/market/scale/gate-*.json, accounting.providerObserved",
-      "evidenceRank": 4,
-      "status": "LOWER_BOUND_ONLY",
-      "highestRequestsInOneHourWithoutRefusal": 5000,
-      "http429EverSeen": false,
-      "interpretation": "In den Laeufen GATE_100/500/2000 und FULL_UNIVERSE wurden bis zu 5.000 Anfragen in einer Stunde gestellt, ohne dass Tiingo eine einzige abgelehnt haette. Bei 5.000 hat UNSER Budget gestoppt, nicht der Anbieter. Belegt ist damit: die tatsaechliche Grenze liegt bei mindestens 5.000/h. Wo genau, ist offen."
     }
   ],
   "requestsMade": 8,
@@ -96,9 +103,9 @@
     "status": "UNKNOWN",
     "classification": "PROVIDER_CONFIRMATION_REQUIRED",
     "requestsPerHour": null,
-    "lowerBound": 5000,
-    "lowerBoundNote": "Mindestens 5.000/h gingen ohne Ablehnung durch. Das ist eine Untergrenze aus Beobachtung, keine Zusage.",
-    "note": "Tiingo nennt sein Kontingent weder in einem Kontoendpunkt noch in Antwortkoepfen. Die tatsaechliche Grenze dieses Kontos ist damit UNBEKANNT und nur beim Anbieter zu erfahren. Die 5.000 im Code bleiben SAFETY_CEILING - unsere Zahl. Sie darf nirgends als Tiingos Limit auftreten.",
+    "lowerBound": 5686,
+    "lowerBoundNote": "Mindestens 5686/h gingen ohne Ablehnung durch. Das ist eine Untergrenze aus Beobachtung, keine Zusage.",
+    "note": "Tiingo nennt sein Kontingent weder in einem Kontoendpunkt noch in Antwortkoepfen. Die tatsaechliche Grenze dieses Kontos ist damit UNBEKANNT und nur beim Anbieter zu erfahren. Die Zahlen im Code bleiben SAFETY_CEILING - unsere Zahlen. Sie duerfen nirgends als Tiingos Limit auftreten.",
     "nextStep": "Beim Anbieter nachfragen (Vertrag/Support). Bis dahin faehrt der Backfill ueber Checkpoints und ein ausdrueckliches eigenes Budget."
   }
 }
