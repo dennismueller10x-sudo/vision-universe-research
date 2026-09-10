@@ -52,8 +52,10 @@ nicht neu erfindet:
 | `_proof-src/universe/**` | die Oberflaeche des Nachweises (Quelltext) |
 | `scripts/proof/build-product-proof.mjs` | Bauskript (Daten + Kopie der Oberflaeche) |
 | `quant/tests/product-proof.test.mjs` | PP1–PP10 |
+| `scripts/proof/verify-product-proof.mjs` | Nachweis am ausgelieferten System (P1–P10) |
 | `docs/FULL_UNIVERSE_PRODUCT_PROOF.md` | dieses Dokument |
 | `vercel.json` | **eine** Zeile: der zweite Bauschritt, plus ein Header-Block |
+| `.github/workflows/vercel-preview-verify.yml` | **ein** Schritt: der Nachweis am ausgelieferten System |
 | `.gitignore` | zwei Bauzeit-Pfade |
 
 Keine Datei unter `quant/ui/`, `quant/engines/`, `quant/stock/`,
@@ -271,12 +273,22 @@ Stand, der gebaut wird — nicht die Auslieferung selbst.
 
 ### Nachweis am lebenden System
 
-Dafuer gibt es zwei Laeufe in GitHub Actions, wo das Netz offen ist:
+Dafuer laeuft der Nachweis dort, wo das Netz offen ist: in GitHub
+Actions, Workflow *Vercel — Nachweis der geschuetzten Vorschau*
+(`vercel-preview-verify.yml`, **Run workflow** mit der Vorschauadresse).
+Er fuehrt zwei Schritte:
 
-| Workflow | Was er misst |
+| Schritt | Was er misst |
 |---|---|
-| `vercel-preview-verify.yml` | die geschuetzte Vorschau insgesamt (V1–V10) |
-| `full-universe-proof-verify.yml` | **diesen** Produktnachweis (P1–P10) |
+| `verify-vercel-preview.mjs` | die geschuetzte Vorschau insgesamt (V1–V10) |
+| `verify-product-proof.mjs` | **diesen** Produktnachweis (P1–P10) |
+
+> Der zweite Schritt haette gern eine eigene Workflow-Datei, und er hatte
+> sie auch. GitHub nimmt sie nicht an: ein Workflow ist erst dispatchbar,
+> wenn seine Datei auf dem **Standardzweig** liegt — der Aufruf endete mit
+> 404. Dieser Zweig darf `main` nicht anfassen, also haengt der Schritt
+> zweiglokal am bereits eingetragenen Workflow. Kommt die Datei je auf
+> main, gehoert er in eine eigene.
 
 `scripts/proof/verify-product-proof.mjs` faehrt dazu einen echten
 Browser gegen die ausgelieferte Adresse:

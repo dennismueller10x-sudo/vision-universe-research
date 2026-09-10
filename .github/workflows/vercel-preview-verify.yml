@@ -97,10 +97,34 @@ jobs:
           fi
           node scripts/site/verify-vercel-preview.mjs --base "$VERCEL_PREVIEW_URL"
 
+      # ------------------------------------------------------------------
+      # ZWEIGLOKAL: der Produktnachweis auf dem vollen Universum.
+      #
+      # Er haette gern eine eigene Datei, und die gab es auch schon
+      # (full-universe-proof-verify.yml). GitHub hat sie nicht angenommen:
+      # ein Workflow ist erst dispatchbar, wenn seine Datei auf dem
+      # Standardzweig liegt - der Aufruf endete mit 404. Dieser Zweig darf
+      # main nicht anfassen, also haengt der Schritt hier an einem bereits
+      # eingetragenen Workflow.
+      #
+      # Er misst etwas anderes als die Schritte darueber: nicht die
+      # interne Pruefansicht, sondern /universe/ - Suche, Einzeltitel,
+      # Screener und Chart, mit einem echten Browser auf 1440 px und
+      # 390 px. Faellt die Datei weg, faellt nur dieser Schritt weg.
+      - name: Full-Universe-Produktnachweis pruefen
+        if: hashFiles('scripts/proof/verify-product-proof.mjs') != ''
+        env:
+          VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: node scripts/proof/verify-product-proof.mjs --base "$VERCEL_PREVIEW_URL"
+
       - name: Bericht sichern
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vercel-preview-verification
-          path: quant/data/site/vercel-preview-verification.json
+          path: |
+            quant/data/site/vercel-preview-verification.json
+            quant/data/site/full-universe-proof-verification.json
+            quant/data/site/proof-shots/**
           if-no-files-found: warn
