@@ -27,3 +27,8 @@ scripts/quant/**/__pycache__/
 # zu gross, und Rohdaten-, Display- sowie Derived-Data-Rechte sind
 # ungeklärt. Auch Ausschnitte bleiben bis zur Lizenzfreigabe intern.
 .market-cache/
+
+# Die Vorschau liest ihre Zugangsdaten aus der Umgebung, nie aus einer
+# Datei. Falls jemand trotzdem eine anlegt, soll sie nicht mitkommen.
+preview/.env
+preview/.env.*
