@@ -132,7 +132,16 @@ Drei Dinge, die regelmaessig verwechselt werden:
 
 ### Die Faktorzeilen als dauerhaftes Artefakt
 
-`_preview-data/factors-FULL_UNIVERSE.json`
+`_preview-data/factors-FULL_UNIVERSE.json` — **vorhanden**, erzeugt im
+Lauf 34486165298 (Urteil PASS, 57 Minuten, 5.636 Zeilen, 6,2 MB).
+
+> **Keine Zahlen aus diesem Dokument abschreiben.** Universumsgroesse,
+> Trefferzahlen und Zeilenzahl aendern sich mit jedem Lauf — ein Titel
+> verschwindet aus den Stammdaten, ein Handelstag verschiebt jede
+> SMA-Zaehlung. Die oben genannten Werte gelten fuer den genannten Lauf.
+> Der aktuelle Stand steht in `coverage` des Artefakts selbst. Dieselbe
+> Verwechslung hat vier Tests fehlschlagen lassen, die eine Messung als
+> Invariante festgeschrieben hatten.
 
 Bis hierher liefen die Faktorzeilen aller Titel (Momentum, SMA-Abstand,
 Lage im 52-Wochen-Band, Volatilitaet, Rueckgang) in die Arbeitsablage des
@@ -170,8 +179,8 @@ gefangen.
 
 Alle 18 Fragen tragen echte Ergebnisse:
 
-* **9 Zaehlfragen** — vollstaendige Zahlen ueber 5.639 auswertbare Titel
-  (2.926 ueber SMA200, 224 auf neuem 52-Wochen-Hoch, …).
+* **9 Zaehlfragen** — vollstaendige Zahlen ueber alle auswertbaren Titel
+  (etwa: „ueber SMA200", „auf neuem 52-Wochen-Hoch").
 * **9 Rangfragen** — die ersten 50 je Frage, mit Rangwert **und** der
   Datenqualitaet des Titels.
 

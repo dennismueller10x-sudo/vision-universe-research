@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-09T17:19:50.436Z",
+  "generatedAt": "2026-09-10T15:07:25.860Z",
   "note": "Pruefungen, die erst ueber viele Titel sichtbar werden. Je Titel prueft market-quality.js; beide zusammen ergeben das Urteil.",
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null
+    "source": "github-actions",
+    "runId": "34486165298",
+    "commit": "22410507fd29ec6a868699b70d991502104a4d48"
   },
   "thresholds": {
     "maxDateSpreadTradingDays": 5,
@@ -28,47 +28,47 @@
     {
       "severity": "WARNING",
       "check": "dateAlignment",
-      "message": "34 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.6 % der aufgeloesten).",
+      "message": "37 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.7 % der aufgeloesten).",
       "examples": [
         {
           "ticker": "WBS",
-          "staleTradingDays": 14
+          "staleTradingDays": 15
         },
         {
           "ticker": "LEG",
-          "staleTradingDays": 9
+          "staleTradingDays": 10
         },
         {
           "ticker": "AVB",
-          "staleTradingDays": 17
+          "staleTradingDays": 18
         },
         {
           "ticker": "HLX",
-          "staleTradingDays": 6
+          "staleTradingDays": 7
         },
         {
           "ticker": "AREN",
-          "staleTradingDays": 8
-        },
-        {
-          "ticker": "TWO",
-          "staleTradingDays": 11
-        },
-        {
-          "ticker": "BCAR",
           "staleTradingDays": 9
         },
         {
+          "ticker": "TWO",
+          "staleTradingDays": 12
+        },
+        {
+          "ticker": "BCAR",
+          "staleTradingDays": 10
+        },
+        {
           "ticker": "RMAX",
-          "staleTradingDays": 11
+          "staleTradingDays": 12
         },
         {
           "ticker": "LBRDA",
-          "staleTradingDays": 13
+          "staleTradingDays": 14
         },
         {
           "ticker": "LBRDK",
-          "staleTradingDays": 13
+          "staleTradingDays": 14
         }
       ]
     }
