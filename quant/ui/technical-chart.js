@@ -161,6 +161,7 @@
 
     var placed = [];   // Kollisionsvermeidung fuer Labels
     function placeLabel(x, y, text, cls, anchor) {
+      if (opts.annotationLabels === false) return;
       /* Labels bleiben im Zeichenbereich: nie ueber dem oberen Rand, nie im Volumen. */
       var yy = Math.min(h - PAD.bottom - 4, Math.max(PAD.top + 10, y));
       for (var tries = 0; tries < 6; tries++) {
