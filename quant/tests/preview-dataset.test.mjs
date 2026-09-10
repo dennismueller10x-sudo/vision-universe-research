@@ -208,34 +208,45 @@ test("PD9 — die Ansicht baut ihre Tabelle beim Laden auf", () => {
   assert.match(seite, /\?ticker=/, "der Einzeltitel braucht einen tiefen Link");
 });
 
-test("PD10 — eine leere Rangliste wird ausgewiesen, nicht getarnt", () => {
+test("PD10 — die Rangfragen tragen echte Ranglisten mit Wert und Qualitaet", () => {
   const d = baue(mkdtempSync(join(tmpdir(), "vu-pd-")));
   const fragen = d.screenerQuestions;
 
-  /* Jede Frage sagt, ob ihr Ergebnis da ist. Eine leere Liste ohne
-     Status rendert als nichts - und "nichts" liest sich wie "keine
-     Treffer". Das ist die stille Null in anderer Verkleidung. */
-  for (const f of fragen) {
-    assert.ok(["PRESENT", "NOT_IN_DELIVERED_ARTEFACTS"].includes(f.resultStatus),
-      `${f.id} traegt keinen Ergebnisstatus`);
-  }
-
+  /* HIER LAG EIN FEHLER, UND ZWAR MEINER: die Rangfragen wurden auf
+     q.tickers abgebildet, ein Feld, das nur die Zaehlfragen fuehren. Die
+     Rangfragen legen ihre Namen unter q.top ab - sie lagen die ganze Zeit
+     im Artefakt. Gemeldet wurde "die Rangliste fehlt". Es fehlte nichts.
+     Dieser Test haelt fest, dass sie ankommen. */
   const zaehlend = fragen.filter((f) => f.kind === "boolean");
   const ordnend = fragen.filter((f) => f.kind === "ranked");
   assert.equal(zaehlend.length, 9);
   assert.equal(ordnend.length, 9);
 
-  /* Die Zaehlfragen tragen echte, vollstaendige Zahlen. */
+  for (const f of fragen) {
+    assert.ok(["PRESENT", "NOT_IN_DELIVERED_ARTEFACTS"].includes(f.resultStatus),
+      `${f.id} traegt keinen Ergebnisstatus`);
+  }
   assert.ok(zaehlend.every((f) => f.resultStatus === "PRESENT" && typeof f.matched === "number"));
+  assert.ok(ordnend.every((f) => f.resultStatus === "PRESENT"),
+    "die Ranglisten liegen im Artefakt vor und muessen ankommen");
 
-  /* Die Rangfragen tragen keine - und begruenden das. Der Grund ist
-     derselbe wie bei factorsStatus: die Faktorwerte je Titel fehlen. */
-  assert.ok(ordnend.every((f) => f.resultStatus === "NOT_IN_DELIVERED_ARTEFACTS"));
-  assert.ok(ordnend.every((f) => /Faktorwerte/.test(f.resultStatusReason || "")));
+  const momentum = fragen.find((f) => f.id === "strongestMomentum12M");
+  assert.equal(momentum.entries.length, 50);
+  assert.ok(momentum.evaluated > 5000, "die Rangliste laeuft ueber das Universum");
+
+  /* Der WERT muss mit. An der Spitze stehen Titel mit Werten, die kein
+     Kursverlauf hergibt, sondern eine Bereinigungsluecke - ohne Wert und
+     ohne Qualitaetsmerkmal liest sich das wie der staerkste Titel des
+     Universums. */
+  for (const e of momentum.entries) {
+    assert.equal(typeof e.value, "number", `${e.ticker} ohne Rangwert`);
+    assert.ok(e.dataQuality, `${e.ticker} ohne Qualitaetsmerkmal`);
+  }
 
   const seite = readFileSync(join(root, "preview-universe", "index.html"), "utf8");
-  assert.match(seite, /Rangliste nicht ausgeliefert/,
-    "die Ansicht muss den Mangel benennen, nicht eine leere Zeile zeigen");
+  assert.match(seite, /class="rangzeile"/, "die Ansicht muss die Rangliste zeigen");
+  assert.match(seite, /nicht entscheidbar/,
+    "die nicht entscheidbaren Titel gehoeren neben die Liste - sonst liest sich eine Luecke wie ein Befund");
 });
 
 test("PD11 — der Vorschau-Nachweis nennt die Reichweite seines Zugangsbelegs", () => {
@@ -259,4 +270,80 @@ test("PD11 — der Vorschau-Nachweis nennt die Reichweite seines Zugangsbelegs",
   /* Und das Token selbst darf in keinem Bericht landen. */
   assert.match(s, /function entschaerfe/);
   assert.match(s, /entschaerfe\(JSON\.stringify\(bericht/);
+});
+
+test("PD12 — das dauerhafte Faktorartefakt verliert nichts und traegt keinen Kurs", () => {
+  /* Der Kern der Anforderung: die Faktorzeilen sollen den Runner
+     ueberleben. Geprueft wird an GATE_500, dessen Zeilen im Repository
+     liegen - so braucht dieser Test keinen Anbieterlauf. */
+  const dir = mkdtempSync(join(tmpdir(), "vu-fa-"));
+  execFileSync(process.execPath,
+    [join(root, "scripts/preview/build-factor-artefact.mjs"), "--gate", "GATE_500", "--out", dir],
+    { encoding: "utf8", cwd: root });
+  const a = JSON.parse(readFileSync(join(dir, "factors-GATE_500.json"), "utf8"));
+  const orig = JSON.parse(readFileSync(
+    join(root, "quant/data/market/factors/factors-GATE_500.json"), "utf8")).securities;
+
+  assert.equal(a.kind, "DERIVED_FACTOR_ROWS");
+  assert.equal(a.securities.length, orig.length);
+
+  /* VERLUSTFREI. Eine Verdichtung, die etwas wegwirft, ist keine
+     Verdichtung, sondern ein stiller Datenverlust. */
+  const ordne = (o) => JSON.stringify(o, Object.keys(o).sort());
+  for (let i = 0; i < orig.length; i++) {
+    const r = Object.assign({}, a.securities[i]);
+    const ref = r.fieldStatusRef;
+    delete r.fieldStatusRef;
+    r.fieldStatus = a.fieldStatusTemplates[ref];
+    assert.equal(ordne(r), ordne(orig[i]), `${orig[i].ticker} kam nicht unveraendert zurueck`);
+  }
+
+  /* Und kleiner: fieldStatus war ueber die Haelfte des Umfangs und nimmt
+     nur zwei Formen an. */
+  assert.ok(a.fieldStatusTemplates.length <= 4,
+    `${a.fieldStatusTemplates.length} Vorlagen - die Verdichtung greift nicht`);
+  assert.ok(JSON.stringify(a).length < JSON.stringify(orig).length,
+    "das Artefakt muss kleiner sein als die Zeilen, aus denen es entsteht");
+
+  /* Kein Kursniveau. Das Skript weigert sich zu schreiben, wenn eines
+     drin ist - hier die Gegenprobe am Ergebnis. */
+  const text = JSON.stringify(a.securities);
+  assert.ok(!/"sma200":\s*[0-9]/.test(text), "ein SMA-Kursniveau ist im Artefakt");
+  assert.ok(!/"close":\s*[0-9]/.test(text));
+  assert.ok(!/"high52w":\s*[0-9]/.test(text));
+
+  /* Die Berechtigung steht IM Artefakt - wer es kopiert, kann sie nicht
+     uebersehen. */
+  assert.equal(a.entitlement.delivery, "PROTECTED_PREVIEW_ONLY");
+  assert.equal(a.entitlement.publicPages, "NOT_DELIVERED");
+});
+
+test("PD13 — das Artefakt liegt nicht im oeffentlich ausgelieferten Baum", () => {
+  /* quant/data/market/factors/ liefert Pages oeffentlich aus - dort
+     liegen die Zeilen von GATE_100 und GATE_500 schon. Die Zeilen ALLER
+     Titel dorthin zu legen hiesse, die Substanz der geschuetzten
+     Vorschau oeffentlich zu machen. */
+  const s = readFileSync(join(root, "scripts/preview/build-factor-artefact.mjs"), "utf8");
+  assert.match(s, /_preview-data/, "das Artefakt gehoert nicht in den oeffentlichen Baum");
+  assert.ok(!/join\(root, "quant", "data", "market", "factors"\)\s*\)?\s*;?\s*$/m.test(
+    s.split("const OUT_DIR")[1].split("\n")[0] || ""),
+    "OUT_DIR darf nicht auf den oeffentlichen Faktorbaum zeigen");
+
+  /* Der Waechter muss den neuen Pfad kennen. Ohne ihn waere ein Kurs im
+     Artefakt erst beim Anbieter aufgefallen. */
+  const w = readFileSync(join(root, "scripts/market/assert-public-data-hygiene.mjs"), "utf8");
+  assert.match(w, /_preview-data/,
+    "assert-public-data-hygiene.mjs muss den Artefaktpfad pruefen");
+  assert.match(w, /PROTECTED_PREVIEW_ONLY/,
+    "der Waechter muss die Berechtigung im Artefakt verlangen");
+
+  /* Und heute die harte Zusicherung: nicht auf main. Pages liefert von
+     main; was dort nicht liegt, kann dort nicht erscheinen. */
+  let aufMain = "";
+  try {
+    aufMain = execFileSync("git", ["ls-tree", "-r", "--name-only", "origin/main", "_preview-data"],
+      { cwd: root, encoding: "utf8" }).trim();
+  } catch (err) { return; }              /* kein origin/main: nichts zu pruefen */
+  assert.equal(aufMain, "",
+    `das Artefakt liegt auf main und damit im Pages-Baum: ${aufMain}`);
 });

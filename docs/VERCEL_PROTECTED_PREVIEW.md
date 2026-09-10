@@ -130,23 +130,56 @@ Drei Dinge, die regelmaessig verwechselt werden:
 | **Kurshistorien-Bestand** — rund 7,4 GB Kursreihen | **NICHT ausgeliefert**, existiert in keinem Zweig dieses Repositorys |
 | **Kursniveaus** — einzelne Kurse, SMA-Werte, 52-Wochen-Marken | **zurueckgehalten**, Lizenzpruefung offen |
 
-Ausserdem fehlt eines, und es fehlt sichtbar:
+### Die Faktorzeilen als dauerhaftes Artefakt
 
-**Die Faktorzeilen je Titel** (Momentum, SMA-Abstand, Lage im
-52-Wochen-Band) liegen nur fuer die fuenf Canary-Titel vor. Sie
-entstanden im FULL_UNIVERSE-Lauf in der Arbeitsablage des Runners und
-gingen mit ihm. Folgen:
+`_preview-data/factors-FULL_UNIVERSE.json`
 
-* Jede Zeile traegt `factorsStatus: "NOT_IN_DELIVERED_ARTEFACTS"` — kein
-  leeres Feld, das wie ein Nullwert aussieht.
-* Die neun **Rangfragen** des Screeners tragen keine Namen und weisen das
-  aus (`resultStatus: "NOT_IN_DELIVERED_ARTEFACTS"`). Die neun
-  **Zaehlfragen** tragen vollstaendige, echte Zahlen aus dem Lauf.
+Bis hierher liefen die Faktorzeilen aller Titel (Momentum, SMA-Abstand,
+Lage im 52-Wochen-Band, Volatilitaet, Rueckgang) in die Arbeitsablage des
+Runners — `build-market-factors.mjs` liefert sie oberhalb von 500 Titeln
+nicht aus (§26) — und starben mit ihm. Jetzt erzeugt
+`scripts/preview/build-factor-artefact.mjs` daraus ein committetes
+Artefakt, **noch im selben Job, solange die Arbeitsablage existiert**.
 
-Das schliesst sich mit einem erneuten FULL_UNIVERSE-Lauf, dessen
-abgeleitete Zeilen anschliessend committet werden. Sie enthalten keine
-Kursniveaus und liegen bei rund 8 MB — der teure Teil, der Abruf beim
-Anbieter, ist bereits bezahlt, aber ein erneuter Lauf kostet ihn wieder.
+Zwei Entscheidungen darin:
+
+**Verdichtet, nicht gekuerzt.** `fieldStatus` — welche Felder berechnet
+und welche zurueckgehalten sind — war ueber die Haelfte des Umfangs und
+nimmt nur zwei Formen an. Er steht jetzt einmal oben in
+`fieldStatusTemplates`, die Zeile verweist mit `fieldStatusRef` darauf.
+Ergebnis an GATE_500 gemessen: 66 % kleiner, und der Rueckweg ist
+verlustfrei (PD12 prueft jede Zeile einzeln gegen das Original).
+
+**Nicht im oeffentlichen Baum.** `quant/data/market/factors/` liefert
+Pages oeffentlich aus. Die Zeilen aller Titel dorthin zu legen hiesse,
+die Substanz der geschuetzten Vorschau oeffentlich zu machen. Der Schutz
+heute ist hart und pruefbar: die Datei liegt auf dem Vorschauzweig und
+nicht auf main, und Pages liefert von main (`git ls-tree origin/main` —
+PD13 prueft es). Der fuehrende Unterstrich haelt das Verzeichnis
+zusaetzlich aus der Jekyll-Ausgabe, falls es je auf main landet; das ist
+eine Konvention und wird dann von V10 am lebenden System gemessen, nicht
+angenommen.
+
+`assert-public-data-hygiene.mjs` prueft den neuen Pfad mit: keine Bars,
+keine Kursniveaus, und `entitlement.delivery` muss
+`PROTECTED_PREVIEW_ONLY` sein. Beide Regeln sind gegengeprueft — ein
+eingeschmuggeltes `sma200` und ein entferntes `entitlement` werden
+gefangen.
+
+### Was der Screener zeigt
+
+Alle 18 Fragen tragen echte Ergebnisse:
+
+* **9 Zaehlfragen** — vollstaendige Zahlen ueber 5.639 auswertbare Titel
+  (2.926 ueber SMA200, 224 auf neuem 52-Wochen-Hoch, …).
+* **9 Rangfragen** — die ersten 50 je Frage, mit Rangwert **und** der
+  Datenqualitaet des Titels.
+
+Das Qualitaetsmerkmal steht bewusst neben jedem Rangwert: an der Spitze
+der Momentumliste stehen Titel mit Werten, die kein Kursverlauf hergibt,
+sondern eine Bereinigungsluecke — alle mit `WARNING` markiert. Ohne
+Wert und Merkmal liest sich so eine Zeile wie der staerkste Titel des
+Universums.
 
 ---
 

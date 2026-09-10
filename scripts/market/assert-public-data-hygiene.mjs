@@ -201,6 +201,58 @@ for (const parts of scaleTrees) {
 }
 
 /* ==========================================================================
+   DAS DAUERHAFTE FAKTORARTEFAKT — _preview-data/
+
+   Die Faktorzeilen aller 5.684 Titel liefen bisher in die Arbeitsablage
+   des Runners und starben mit ihm. Als committetes Artefakt ueberleben
+   sie - und damit gilt fuer sie dieselbe Grenze wie fuer jeden anderen
+   ausgelieferten Pfad: Zustaende, Abstaende, Anzahlen und Renditen ja,
+   Kursniveaus und Kursreihen nein.
+
+   Zwei Gruende, warum diese Pruefung hier stehen MUSS und nicht nur im
+   erzeugenden Skript:
+
+   ERSTENS ist ein committetes Artefakt fuer immer in der
+   Versionsgeschichte. "Spaeter entfernt" ist dort kein Zustand.
+
+   ZWEITENS prueft dieser Waechter grundsaetzlich das ERZEUGTE Artefakt
+   und nicht die Absicht eines Skripts - genau deshalb, weil ein
+   Schreibpfad, den jemand spaeter hinzufuegt, hier auffallen soll und
+   nicht erst beim Anbieter.
+
+   Der Pfad liegt bewusst NICHT unter quant/data/market/factors/: den
+   liefert Pages oeffentlich aus. Ein fuehrender Unterstrich haelt das
+   Verzeichnis aus der Jekyll-Ausgabe. Diese Pruefung ersetzt jene Trennung
+   nicht - sie stellt sicher, dass das Artefakt selbst harmlos ist, falls
+   die Trennung je faellt.
+   ========================================================================== */
+const previewArtefacts = join(root, "_preview-data");
+if (existsSync(previewArtefacts)) {
+  for (const name of readdirSync(previewArtefacts).filter((name) => name.endsWith(".json"))) {
+    const rel = join("_preview-data", name);
+    const payload = json(rel);
+    if (!payload) continue;
+    if (hasBars(payload)) {
+      findings.push(`${rel}: raw bars in a committed preview artefact`);
+      continue;
+    }
+    const hits = [];
+    scanForPriceLevels(payload, "", hits);
+    if (hits.length) {
+      findings.push(`${rel}: provider price levels in a committed preview artefact ` +
+                    `(${hits.slice(0, 3).join(", ")}${hits.length > 3 ? `, +${hits.length - 3}` : ""})`);
+    }
+    /* Die Berechtigung muss IM Artefakt stehen. Ohne sie kopiert jemand
+       die Datei irgendwann in einen oeffentlichen Pfad und weiss nicht,
+       dass er es tut. */
+    if (!payload.entitlement || payload.entitlement.delivery !== "PROTECTED_PREVIEW_ONLY") {
+      findings.push(`${rel}: committed preview artefact without ` +
+                    `entitlement.delivery = "PROTECTED_PREVIEW_ONLY"`);
+    }
+  }
+}
+
+/* ==========================================================================
    UNBELEGTE KURSART DARF NICHT BELEGT KLINGEN (§10/§11 der Nacharbeit)
 
    Der Echtzeitstrom liefert [Zeitstempel, Ticker, Kurs] ohne Typfeld.

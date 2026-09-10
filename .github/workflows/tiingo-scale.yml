@@ -459,6 +459,28 @@ jobs:
           GATE='${{ steps.gate.outputs.gate }}'
           node scripts/market/build-market-factors.mjs --gate "$GATE"
 
+      # DIE FAKTORZEILEN SOLLEN DEN RUNNER UEBERLEBEN.
+      #
+      # Bisher endete es hier: build-market-factors.mjs legt die Zeilen
+      # oberhalb von 500 Titeln in die Arbeitsablage (§26, DETAIL_LIMIT),
+      # der Runner wird recycelt, und die Zeilen sind weg. Die Vorschau
+      # trug danach factorsStatus NOT_IN_DELIVERED_ARTEFACTS fuer 5.679
+      # Titel, und wer sie zurueckwollte, musste 5.686 Anfragen erneut
+      # bezahlen.
+      #
+      # Dieser Schritt macht daraus ein committetes Artefakt. Er laeuft
+      # NOCH IN DIESEM JOB, solange die Arbeitsablage existiert - danach
+      # gibt es nichts mehr zu retten. Er holt keinen Kurs.
+      #
+      # Das Ziel ist _preview-data/ und nicht quant/data/market/factors/:
+      # den liefert Pages oeffentlich aus, und die Zeilen aller Titel sind
+      # die Substanz der geschuetzten Vorschau.
+      - name: Faktorzeilen als dauerhaftes Artefakt sichern
+        if: always() && steps.gate.outputs.mode != '--assess-only'
+        run: |
+          GATE='${{ steps.gate.outputs.gate }}'
+          node scripts/preview/build-factor-artefact.mjs --gate "$GATE"
+
       - name: Technical Intelligence und Elliott im Massstab
         if: always() && steps.gate.outputs.mode != '--assess-only'
         run: |
@@ -551,6 +573,7 @@ jobs:
             quant/data/market/factors/
             quant/data/market/health/
             quant/data/technical/scale/
+            _preview-data/
           if-no-files-found: warn
 
       - name: Berichte committen
@@ -564,7 +587,8 @@ jobs:
           # dass auch die geglueckten Berichte nicht committet werden.
           for p in quant/data/market/universe quant/data/market/scale \
                    quant/data/market/factors quant/data/market/health \
-                   quant/data/market/commercial quant/data/technical/scale; do
+                   quant/data/market/commercial quant/data/technical/scale \
+                   _preview-data; do
             [ -e "$p" ] && git add "$p"
           done
           if git diff --cached --quiet; then

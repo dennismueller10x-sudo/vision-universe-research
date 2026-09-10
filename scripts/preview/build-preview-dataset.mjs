@@ -60,6 +60,32 @@ const screener = lies(join(root, "quant/data/market/factors", `screener-${GATE}.
 const faktoren = lies(join(root, "quant/data/market/factors", `factors-${GATE}-summary.json`));
 const technical = lies(join(root, "quant/data/technical/scale", `technical-coverage-${GATE}.json`));
 
+/* DAS DAUERHAFTE FAKTORARTEFAKT.
+
+   Bisher gab es Faktorzeilen nur fuer den Canary: die Zeilen aller Titel
+   lagen in der Arbeitsablage des Runners und starben mit ihm. Liegt das
+   committete Artefakt vor, kommen sie von dort - bei JEDEM Build, ohne
+   eine einzige Anbieteranfrage.
+
+   Fehlt es, aendert sich nichts am Verhalten von vorher: der Canary
+   traegt Faktoren, alle anderen tragen NOT_IN_DELIVERED_ARTEFACTS. Ein
+   fehlendes Artefakt darf nicht dazu fuehren, dass irgendwo eine Null
+   steht, wo eine Aussage fehlt. */
+const faktorArtefakt = lies(arg("--factor-artefact",
+  join(root, "_preview-data", `factors-${GATE}.json`)));
+
+/* fieldStatus steht im Artefakt einmal oben als Vorlage. Hier wird er je
+   Zeile wieder aufgelegt - sonst traegt die Vorschau Werte ohne die
+   Angabe, welche davon berechnet und welche zurueckgehalten sind. */
+const artefaktZeilen = new Map();
+if (faktorArtefakt && Array.isArray(faktorArtefakt.securities)) {
+  const vorlagen = faktorArtefakt.fieldStatusTemplates || [];
+  for (const z of faktorArtefakt.securities) {
+    const fieldStatus = typeof z.fieldStatusRef === "number" ? vorlagen[z.fieldStatusRef] : null;
+    artefaktZeilen.set(z.ticker, Object.assign({}, z, { fieldStatus }));
+  }
+}
+
 if (!universum || !gate) {
   console.error(`\n  Kein Universum oder Gate-Bericht fuer ${GATE}. Es wird nichts gebaut.\n`);
   process.exit(1);
@@ -83,7 +109,9 @@ let mitQualitaet = 0, mitTechnical = 0, mitFaktoren = 0;
 const zeilen = universum.securities.map((s) => {
   const q = qualitaet[s.ticker] || null;
   const t = technischeZeilen[s.ticker] || null;
-  const f = canaryFaktoren.get(s.ticker) || null;
+  /* Das Artefakt zuerst, der Canary-Satz als Rueckfall. Beide tragen
+     dieselbe Form; das Artefakt deckt alle Titel, der Canary fuenf. */
+  const f = artefaktZeilen.get(s.ticker) || canaryFaktoren.get(s.ticker) || null;
   if (q) mitQualitaet++;
   if (t) mitTechnical++;
   if (f) mitFaktoren++;
@@ -125,10 +153,14 @@ const zeilen = universum.securities.map((s) => {
     elliottConfidence: t ? (t.elliottConfidence === undefined ? null : t.elliottConfidence) : null,
     trend: t ? (t.trend || null) : null,
 
-    /* Faktoren gibt es nur fuer den Canary. Fuer alle anderen ist das
+    /* Faktoren kommen aus dem dauerhaften Artefakt, wenn es vorliegt -
+       sonst nur fuer den Canary. Fuer alle anderen ist das
        Feld ausdruecklich als fehlend gekennzeichnet, nicht leer. */
     factors: f ? { values: f.values, fieldStatus: f.fieldStatus, asOf: f.asOf, basis: f.basis } : null,
     factorsStatus: f ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS",
+    factorsSource: f
+      ? (artefaktZeilen.has(s.ticker) ? "DURABLE_ARTEFACT" : "CANARY_IN_SUMMARY")
+      : null,
 
     isCanary: canarySatz.has(s.ticker),
     isMock: false
@@ -182,41 +214,67 @@ const datensatz = {
           "aber nicht einzeln ausgewiesen (Detailgrenze §26)."
   },
 
-  /* Die echten Screener-Zaehlungen ueber alle 5.639 auswertbaren Titel.
+  /* Die echten Screener-Zaehlungen und Ranglisten ueber alle auswertbaren
+     Titel.
+
+     HIER LAG EIN FEHLER, UND ZWAR MEINER. Die Rangfragen wurden auf
+     q.tickers abgebildet - ein Feld, das nur die ZAEHLFRAGEN fuehren.
+     Die Rangfragen legen ihre Namen unter q.top ab, mit Wert je Titel,
+     und die lagen die ganze Zeit im Artefakt. Gemeldet habe ich
+     stattdessen "die Rangliste fehlt in den ausgelieferten Artefakten".
+     Es fehlte nichts; es wurde am falschen Feld gesucht.
+
      Die Zahlen sind vollstaendig; die Namenslisten sind auf 50 gekuerzt,
      weil das Artefakt sie so ausliefert. Beides steht dabei. */
-  screenerQuestions: screener ? screener.questions.map((q) => ({
-    id: q.id, label: q.label, kind: q.kind,
-    matched: q.matched === undefined ? null : q.matched,
-    notMatched: q.notMatched === undefined ? null : q.notMatched,
-    notEvaluable: q.notEvaluable === undefined ? null : q.notEvaluable,
-    evaluatedOf: q.evaluatedOf === undefined ? null : q.evaluatedOf,
-    tickers: q.tickers || [],
-    tickersTruncated: !!q.tickersTruncated,
-    tickersNote: q.tickersTruncated
-      ? "Die Namensliste ist im Artefakt auf 50 gekuerzt. Die Zahl links ist vollstaendig."
-      : null,
-    /* DIE RANGFRAGEN TRAGEN KEINE NAMEN.
+  screenerQuestions: screener ? screener.questions.map((q) => {
+    const rang = q.kind === "ranked";
+    /* Der Rangwert kommt mit. Eine Rangliste ohne Werte laesst sich nicht
+       nachrechnen - und bei diesen Daten ist genau das noetig: an der
+       Spitze der Momentumliste stehen Titel mit Werten, die kein
+       Kursverlauf hergibt, sondern eine Bereinigungsluecke. Der Wert
+       daneben macht das sichtbar, ein blosser Name nicht.
 
-       Eine Rangliste braucht Faktorwerte je Titel - Momentum, Abstand
-       zum SMA, Lage im 52-Wochen-Band. Genau die entstanden im Lauf und
-       liegen nicht in den ausgelieferten Artefakten (dasselbe Loch wie
-       bei factorsStatus je Zeile). Das Artefakt liefert deshalb eine
-       leere Liste.
-
-       Eine leere Liste, die als Liste ausgeliefert wird, rendert als
-       nichts - und "nichts" sieht aus wie "keine Treffer". Das ist der
-       Unterschied, um den es hier die ganze Zeit geht. Der Zustand wird
-       deshalb benannt. */
-    resultStatus: q.kind === "ranked"
-      ? ((q.tickers || []).length ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS")
-      : (q.matched === undefined || q.matched === null ? "NOT_IN_DELIVERED_ARTEFACTS" : "PRESENT"),
-    resultStatusReason: q.kind === "ranked" && !(q.tickers || []).length
-      ? "Rangliste braucht Faktorwerte je Titel; die liegen nicht in den " +
-        "ausgelieferten Artefakten. Erst ein erneuter FULL_UNIVERSE-Lauf, dessen " +
-        "abgeleitete Zeilen committet werden, fuellt sie."
-      : null
-  })) : [],
+       Deshalb steht auch die Datenqualitaet des Titels dabei: sie ist
+       die Erklaerung fuer den Ausreisser, und ohne sie liest sich eine
+       kaputte Reihe wie der staerkste Titel des Universums. */
+    const eintraege = rang
+      ? (q.top || []).map((t) => ({
+          ticker: t.ticker,
+          value: t.value,
+          dataQuality: (qualitaet[t.ticker] && qualitaet[t.ticker].status) || "PASS_NOT_ITEMISED"
+        }))
+      : (q.tickers || []).map((t) => ({ ticker: t, value: null, dataQuality: null }));
+    const gekuerzt = rang
+      ? (q.evaluated || 0) > eintraege.length
+      : !!q.tickersTruncated;
+    return {
+      id: q.id, label: q.label, kind: q.kind,
+      direction: q.direction || null,
+      matched: q.matched === undefined ? null : q.matched,
+      notMatched: q.notMatched === undefined ? null : q.notMatched,
+      notEvaluable: q.notEvaluable === undefined ? null : q.notEvaluable,
+      evaluated: q.evaluated === undefined ? null : q.evaluated,
+      evaluatedOf: q.evaluatedOf === undefined ? null : q.evaluatedOf,
+      entries: eintraege,
+      /* tickers bleibt als reine Namensliste erhalten - die Ansicht und
+         aeltere Leser stuetzen sich darauf. */
+      tickers: eintraege.map((e) => e.ticker),
+      tickersTruncated: gekuerzt,
+      tickersNote: gekuerzt
+        ? "Die Namensliste ist im Artefakt auf 50 gekuerzt. Die Zahlen links sind vollstaendig."
+        : null,
+      /* Ob das Ergebnis da ist, sagt die Frage von sich aus. Eine leere
+         Liste ohne Status rendert als nichts - und nichts liest sich wie
+         "keine Treffer". */
+      resultStatus: rang
+        ? (eintraege.length ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS")
+        : (q.matched === undefined || q.matched === null ? "NOT_IN_DELIVERED_ARTEFACTS" : "PRESENT"),
+      resultStatusReason: rang && !eintraege.length
+        ? "Rangliste braucht Faktorwerte je Titel; die liegen nicht in den " +
+          "ausgelieferten Artefakten."
+        : null
+    };
+  }) : [],
 
   factorCoverage: faktoren ? faktoren.coverage : null,
   technicalCoverage: technical ? { coverage: technical.coverage, elliott: technical.elliott } : null,
@@ -297,6 +355,20 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
                   color:var(--leise); font-size:12px; line-height:1.6; }
  tbody tr { cursor:pointer; }
  .fragen { margin:26px 0 0; }
+ .rangfrage { border-bottom:1px solid #21262d; }
+ .rangfrage summary { display:flex; justify-content:space-between; gap:12px; padding:8px 12px;
+                      cursor:pointer; list-style:none; }
+ .rangfrage summary::-webkit-details-marker { display:none; }
+ .rangfrage summary:hover { background:#1c2128; }
+ .rangfrage summary span:last-child { color:var(--leise); font-variant-numeric:tabular-nums; }
+ .rangzeile { display:flex; justify-content:space-between; gap:12px;
+              padding:4px 12px 4px 26px; font-size:12px; }
+ .rangzeile span:last-child { font-variant-numeric:tabular-nums; color:var(--leise); }
+ .rangzeile .WARNING { color:var(--warn); font-size:10px; letter-spacing:.05em; }
+ .rangzeile .FAIL { color:var(--schlecht); font-size:10px; letter-spacing:.05em; }
+ .rangzeile .PASS, .rangzeile .PASS_NOT_ITEMISED { color:var(--gut); font-size:10px;
+              letter-spacing:.05em; }
+ .hinweis { color:var(--leise); font-size:11px; padding:6px 12px 10px 26px; margin:0; }
  .frage { display:flex; justify-content:space-between; gap:12px; padding:8px 12px;
           border-bottom:1px solid #21262d; }
  .frage span:last-child { color:var(--leise); font-variant-numeric:tabular-nums; }
@@ -326,9 +398,10 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
    </tr></thead><tbody id="koerper"></tbody>
  </table></div>
  <div class="fragen"><h2 style="font-size:15px">Screener — echte Zaehlungen ueber 5.639 auswertbare Titel</h2>
-   <p style="color:var(--leise);font-size:12px;margin:0 0 8px">Die Zaehlfragen tragen
-   vollstaendige Zahlen aus dem Lauf. Die Rangfragen brauchen Faktorwerte je Titel;
-   die liegen nicht in den ausgelieferten Artefakten und sind unten so ausgewiesen.</p>
+   <p style="color:var(--leise);font-size:12px;margin:0 0 8px">Zaehlfragen tragen
+   vollstaendige Zahlen. Rangfragen zeigen die ersten 50 mit ihrem Wert und der
+   Datenqualitaet des Titels — ein Ausreisser an der Spitze ist fast immer eine
+   Bereinigungsluecke und keine Kursbewegung. Aufklappen zeigt die Liste.</p>
    <div id="fragenliste"></div></div>
  <footer id="fuss"></footer>
 </div>
@@ -436,15 +509,35 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
   document.querySelectorAll("th[data-s]").forEach(th => th.addEventListener("click", () => {
     const s = th.dataset.s; sortAuf = sortSpalte === s ? !sortAuf : true; sortSpalte = s; zeichne(); }));
 
-  q("fragenliste").innerHTML = d.screenerQuestions.map(f =>
-    '<div class="frage"><span>' + f.label + '</span><span>' +
-    (f.resultStatus === "NOT_IN_DELIVERED_ARTEFACTS"
-      ? '<span class="fehlt" title="' + (f.resultStatusReason || "") +
-        '">Rangliste nicht ausgeliefert</span>'
-      : f.matched === null
-        ? f.tickers.length + " Namen"
-        : f.matched.toLocaleString("de-DE") + " Treffer") +
-    (f.notEvaluable ? " · " + f.notEvaluable + " nicht entscheidbar" : "") + '</span></div>').join("");
+  /* Zaehlfrage: eine Zeile mit Zahl. Rangfrage: aufklappbar mit den
+     ersten 50, Wert und Qualitaetsmerkmal.
+
+     Der Wert MUSS mit: an der Spitze der Momentumliste stehen Titel mit
+     Werten, die kein Kursverlauf hergibt. Wer nur die Namen zeigt,
+     verkauft eine Bereinigungsluecke als den staerksten Titel des
+     Universums. */
+  const zahl = (n) => n === null || n === undefined ? "—" : n.toLocaleString("de-DE");
+  const prozent = (v) => (v * 100).toLocaleString("de-DE",
+    { maximumFractionDigits: 1 }) + " %";
+  q("fragenliste").innerHTML = d.screenerQuestions.map(f => {
+    if (f.resultStatus !== "PRESENT")
+      return '<div class="frage"><span>' + f.label + '</span><span class="fehlt" title="' +
+             (f.resultStatusReason || "") + '">nicht ausgeliefert</span></div>';
+    if (f.kind === "boolean")
+      return '<div class="frage"><span>' + f.label + '</span><span>' + zahl(f.matched) +
+             " Treffer" + (f.notEvaluable ? " · " + zahl(f.notEvaluable) +
+             " nicht entscheidbar" : "") + '</span></div>';
+    const liste = f.entries.map((e, i) =>
+      '<div class="rangzeile"><span>' + (i + 1) + '. <strong>' + e.ticker + '</strong>' +
+      ' <span class="' + (e.dataQuality || "") + '">' + (e.dataQuality || "") + '</span></span>' +
+      '<span>' + prozent(e.value) + '</span></div>').join("");
+    return '<details class="rangfrage"><summary><span>' + f.label + '</span><span>' +
+      zahl(f.evaluated) + " von " + zahl(f.evaluatedOf) + " bewertet · erste " +
+      f.entries.length + '</span></summary>' + liste +
+      '<p class="hinweis">Sortiert ' + (f.direction === "asc" ? "aufsteigend" : "absteigend") +
+      '. ' + zahl(f.notEvaluable) + ' Titel nicht entscheidbar — kein Wert, keine Null.</p>' +
+      '</details>';
+  }).join("");
 
   /* Erster Aufbau. DIESER AUFRUF FEHLTE: die Seite zeigte Kopfzeile und
      Filter, aber eine leere Tabelle, bis jemand etwas tippte - genau die
