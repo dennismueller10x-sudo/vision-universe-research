@@ -77,13 +77,32 @@ const faktorArtefakt = lies(arg("--factor-artefact",
 /* fieldStatus steht im Artefakt einmal oben als Vorlage. Hier wird er je
    Zeile wieder aufgelegt - sonst traegt die Vorschau Werte ohne die
    Angabe, welche davon berechnet und welche zurueckgehalten sind. */
+/* Die Vorlagen bleiben VORLAGEN, auch hier.
+
+   Ein erster Versuch legte fieldStatus je Zeile wieder auf - und blies
+   den Vorschaudatensatz von 3,8 MB auf 15 MB auf. Genau die
+   Wiederholung, die im Artefakt herausgerechnet wurde, war damit wieder
+   drin: dasselbe Schema 5.636 mal. Der Datensatz traegt die Vorlagen
+   deshalb einmal oben, die Zeile verweist darauf. */
+const fieldStatusVorlagen = (faktorArtefakt && faktorArtefakt.fieldStatusTemplates) || [];
 const artefaktZeilen = new Map();
 if (faktorArtefakt && Array.isArray(faktorArtefakt.securities)) {
-  const vorlagen = faktorArtefakt.fieldStatusTemplates || [];
-  for (const z of faktorArtefakt.securities) {
-    const fieldStatus = typeof z.fieldStatusRef === "number" ? vorlagen[z.fieldStatusRef] : null;
-    artefaktZeilen.set(z.ticker, Object.assign({}, z, { fieldStatus }));
+  for (const z of faktorArtefakt.securities) artefaktZeilen.set(z.ticker, z);
+}
+
+/* Der Canary aus der Zusammenfassung traegt seinen fieldStatus als
+   Objekt. Damit die Zeile EINE Form hat, bekommt er eine eigene Vorlage
+   angehaengt - sonst haette dieselbe Angabe je nach Herkunft zwei
+   Gestalten, und jeder Leser muesste beide kennen. */
+function vorlagenVerweis(f) {
+  if (typeof f.fieldStatusRef === "number") return f.fieldStatusRef;
+  if (!f.fieldStatus) return null;
+  const key = JSON.stringify(f.fieldStatus);
+  for (let i = 0; i < fieldStatusVorlagen.length; i++) {
+    if (JSON.stringify(fieldStatusVorlagen[i]) === key) return i;
   }
+  fieldStatusVorlagen.push(f.fieldStatus);
+  return fieldStatusVorlagen.length - 1;
 }
 
 if (!universum || !gate) {
@@ -156,7 +175,8 @@ const zeilen = universum.securities.map((s) => {
     /* Faktoren kommen aus dem dauerhaften Artefakt, wenn es vorliegt -
        sonst nur fuer den Canary. Fuer alle anderen ist das
        Feld ausdruecklich als fehlend gekennzeichnet, nicht leer. */
-    factors: f ? { values: f.values, fieldStatus: f.fieldStatus, asOf: f.asOf, basis: f.basis } : null,
+    factors: f ? { values: f.values, fieldStatusRef: vorlagenVerweis(f),
+                   asOf: f.asOf, basis: f.basis } : null,
     factorsStatus: f ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS",
     factorsSource: f
       ? (artefaktZeilen.has(s.ticker) ? "DURABLE_ARTEFACT" : "CANARY_IN_SUMMARY")
@@ -276,6 +296,20 @@ const datensatz = {
     };
   }) : [],
 
+  /* Die fieldStatus-Vorlagen, auf die jede Faktorzeile verweist.
+     Auflegen: zeile.factors.fieldStatus =
+       datensatz.fieldStatusTemplates[zeile.factors.fieldStatusRef]. */
+  fieldStatusTemplates: fieldStatusVorlagen,
+  factorArtefact: faktorArtefakt
+    ? { present: true, gate: faktorArtefakt.gate,
+        securities: (faktorArtefakt.securities || []).length,
+        generatedAt: faktorArtefakt.generatedAt,
+        derivedFrom: faktorArtefakt.derivedFrom || null,
+        entitlement: faktorArtefakt.entitlement ? faktorArtefakt.entitlement.delivery : null }
+    : { present: false,
+        note: "Ohne das dauerhafte Artefakt tragen nur die Canary-Titel Faktorzeilen. " +
+              "Es entsteht im Gate-Lauf (scripts/preview/build-factor-artefact.mjs) und " +
+              "wird committet - sonst stirbt es mit dem Runner." },
   factorCoverage: faktoren ? faktoren.coverage : null,
   technicalCoverage: technical ? { coverage: technical.coverage, elliott: technical.elliott } : null,
 
@@ -353,6 +387,15 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
  .titel dd { margin:0 0 6px; font-variant-numeric:tabular-nums; }
  .titel .luecke { margin:12px 0 0; padding:8px 10px; border-left:2px solid var(--warn);
                   color:var(--leise); font-size:12px; line-height:1.6; }
+ .faktoren { margin:14px 0 0; padding:12px 0 0; border-top:1px solid var(--rand); }
+ .faktoren > b { font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+ .faktoren .quelle { color:var(--leise); font-size:11px; }
+ .faktoren .fgruppe { margin:10px 0 0; }
+ .fkopf { display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+          color:var(--leise); margin-bottom:3px; }
+ .fzeile { display:flex; justify-content:space-between; gap:12px; font-size:12px;
+           padding:2px 0; border-bottom:1px solid #21262d; }
+ .fzeile span:last-child { font-variant-numeric:tabular-nums; }
  tbody tr { cursor:pointer; }
  .fragen { margin:26px 0 0; }
  .rangfrage { border-bottom:1px solid #21262d; }
@@ -478,6 +521,61 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
       ["Bereinigung", z(x.adjustment)], ["Faktorbereit", x.factorReady === null ? z(null) : (x.factorReady ? "ja" : "nein")],
       ["Technical", z(x.technical)], ["Elliott", z(x.elliott)]
     ];
+    /* DIE FAKTOREN. Sie liegen seit dem dauerhaften Artefakt fuer jeden
+       auswertbaren Titel vor - sie hier nicht zu zeigen hiesse, einen
+       57-Minuten-Lauf ins Leere rechnen zu lassen.
+
+       Kursniveaus stehen NICHT dabei und koennen es nicht: das Artefakt
+       traegt keine. Was dasteht, ist der Zustand und der ABSTAND - "3,4 %
+       unter dem SMA200" ist eine abgeleitete Aussage, "das SMA200 liegt
+       bei 184,20" waere der Kurs des Anbieters. Die Vorlage sagt das je
+       Feld, und die Fusszeile des Blocks schreibt es hin. */
+    let faktorBlock = "";
+    if (x.factorsStatus === "PRESENT" && x.factors && x.factors.values) {
+      const v = x.factors.values;
+      const pz = (w) => w === null || w === undefined || !isFinite(w)
+        ? '<span class="fehlt">—</span>'
+        : '<span class="' + (w >= 0 ? "ja" : "nein") + '">' +
+          (w >= 0 ? "+" : "") + (w * 100).toLocaleString("de-DE",
+            { maximumFractionDigits: 1 }) + " %</span>";
+      const zu = (b) => b === true ? '<span class="ja">darueber</span>'
+        : b === false ? '<span class="nein">darunter</span>' : '<span class="fehlt">—</span>';
+      const r = v.returns || {}, rs = v.relativeStrength || {};
+      const gruppen = [
+        ["Momentum", [["1 Monat", pz(r["1M"])], ["3 Monate", pz(r["3M"])],
+                      ["6 Monate", pz(r["6M"])], ["12 Monate", pz(r["12M"])],
+                      ["12M ohne den letzten", pz(v.return12M1M)]]],
+        ["Relative Staerke", [["1 Monat", pz(rs["1M"])], ["3 Monate", pz(rs["3M"])],
+                              ["6 Monate", pz(rs["6M"])], ["12 Monate", pz(rs["12M"])]]],
+        ["Gleitende Durchschnitte", [
+          ["SMA20", zu(v.priceAboveSMA20) + " " + pz(v.distanceToSMA20)],
+          ["SMA50", zu(v.priceAboveSMA50) + " " + pz(v.distanceToSMA50)],
+          ["SMA100", zu(v.priceAboveSMA100) + " " + pz(v.distanceToSMA100)],
+          ["SMA200", zu(v.priceAboveSMA200) + " " + pz(v.distanceToSMA200)],
+          ["ueber allen", v.aboveAllSMA === true ? '<span class="ja">ja</span>' : "nein"]]],
+        ["52-Wochen-Fenster", [
+          ["Abstand zum Hoch", pz(v.distanceTo52wHigh)],
+          ["Abstand zum Tief", pz(v.distanceTo52wLow)],
+          ["neues Hoch", v.newHigh52w === true ? '<span class="ja">ja</span>' : "nein"],
+          ["innerhalb 5 %", v.within5PctOf52wHigh === true ? '<span class="ja">ja</span>' : "nein"]]],
+        ["Risiko", [["Volatilitaet 20 T.", pz(v.volatility20d)],
+                    ["Volatilitaet 60 T.", pz(v.volatility60d)],
+                    ["Volatilitaet 252 T.", pz(v.volatility252d)],
+                    ["max. Rueckgang 252 T.", pz(v.maxDrawdown252d)]]]
+      ];
+      faktorBlock = '<div class="faktoren"><b>Faktoren</b> <span class="quelle">' +
+        (x.factorsSource === "DURABLE_ARTEFACT" ? "dauerhaftes Artefakt" : "Canary-Satz") +
+        " · Stand " + (x.factors.asOf || "unbekannt") + " · gerechnet auf " +
+        (x.factors.basis || "unbekannt") + '</span>' +
+        gruppen.map(([titel, paare]) =>
+          '<div class="fgruppe"><span class="fkopf">' + titel + '</span>' +
+          paare.map(([b, w]) => '<div class="fzeile"><span>' + b + '</span><span>' + w +
+            '</span></div>').join("") + '</div>').join("") +
+        '<p class="hinweis">Zustaende und Abstaende, keine Kursniveaus: SMA-Werte und ' +
+        '52-Wochen-Marken sind Anbieterkurse und bleiben zurueckgehalten ' +
+        '(WITHHELD_REDISTRIBUTION).</p></div>';
+    }
+
     const luecken = [];
     if (x.factorsStatus !== "PRESENT")
       luecken.push("Faktorzeile (Momentum, SMA-Abstand, 52-Wochen-Lage): " + x.factorsStatus +
@@ -491,6 +589,7 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
       '<h2>' + x.ticker + '</h2>' +
       '<p class="marke">' + (x.name ? x.name : 'Firmenname nicht im Zugang enthalten') + '</p>' +
       '<dl>' + paare.map(([b,w]) => '<dt>' + b + '</dt><dd>' + w + '</dd>').join("") + '</dl>' +
+      faktorBlock +
       '<div class="luecke"><b>Nicht vorhanden</b><br>' + luecken.join("<br>") + '</div>';
     q("titelZu").addEventListener("click", () => {
       k.hidden = true;
@@ -566,7 +665,9 @@ console.log(`  Gate:            ${GATE}`);
 console.log(`  Titel:           ${zeilen.length}`);
 console.log(`  mit Qualitaetszeile: ${mitQualitaet}  (ohne: ${zeilen.length - mitQualitaet}, sauber durchgelaufen)`);
 console.log(`  mit Technical:   ${mitTechnical}`);
-console.log(`  mit Faktoren:    ${mitFaktoren}  (nur Canary - der Rest fehlt in den Artefakten)`);
+console.log(`  mit Faktoren:    ${mitFaktoren}  ` + (faktorArtefakt
+  ? `(aus dem dauerhaften Artefakt, ${(faktorArtefakt.securities || []).length} Zeilen)`
+  : "(nur Canary - ohne das dauerhafte Artefakt fehlt der Rest)"));
 console.log(`  Screenerfragen:  ${datensatz.screenerQuestions.length}`);
 console.log(`  Groesse:         ${mb} MB`);
 console.log(`\n  ABGELEITETES UNIVERSUM: vorhanden`);

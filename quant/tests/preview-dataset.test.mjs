@@ -31,11 +31,26 @@ function baue(outDir) {
   return JSON.parse(readFileSync(join(outDir, "universe.json"), "utf8"));
 }
 
-test("PD1 — der Datensatz traegt alle 5.684 Titel und echte Historie ausserhalb der Golden Five", () => {
+test("PD1 — der Datensatz traegt das ganze Universum und echte Historie ausserhalb der Golden Five", () => {
   const d = baue(mkdtempSync(join(tmpdir(), "vu-pd-")));
 
   assert.equal(d.kind, "DERIVED_UNIVERSE");
-  assert.equal(d.rows.length, 5684, "alle Titel des Universums muessen auffindbar sein");
+
+  /* HIER STAND EINE FESTE 5684, UND DAS WAR FALSCH. Die Zahl stammte
+     aus einem Lauf; der naechste lieferte 5.683, weil ein Titel aus
+     Tiingos Stammdaten verschwand. Ein Test, der eine MESSUNG als
+     Invariante festschreibt, meldet dann die Wirklichkeit als Fehler.
+
+     Geprueft wird jetzt die Beziehung: der Datensatz traegt genau das
+     Universum, das im Gate-Artefakt steht - wie gross es gerade ist,
+     entscheidet der Anbieter. Die Untergrenze faengt den Fall ab, dass
+     das Universum still zusammenschrumpft. */
+  const universum = JSON.parse(readFileSync(
+    join(root, "quant/data/market/scale/universe-FULL_UNIVERSE.json"), "utf8"));
+  assert.equal(d.rows.length, universum.securities.length,
+    "jeder Titel des Gate-Universums muss auffindbar sein");
+  assert.ok(d.rows.length > 5000,
+    `nur ${d.rows.length} Titel - das Universum ist zusammengeschrumpft`);
 
   /* Der Kern der Anforderung: Titel ausserhalb des Canary sind
      auffindbar UND tragen belegte Werte, nicht nur einen Namen. */
@@ -61,7 +76,8 @@ test("PD2 — abgeleitetes Universum und Kurshistorien-Bestand sind unterschiede
   const u = d.datasetScope;
 
   assert.equal(u.derivedUniverse.status, "PRESENT");
-  assert.equal(u.derivedUniverse.securities, 5684);
+  assert.equal(u.derivedUniverse.securities, d.rows.length,
+    "die Bilanz muss zaehlen, was wirklich dasteht");
 
   /* Die Aussage, auf die es ankommt: der grosse Bestand ist NICHT da,
      und der Datensatz sagt das von sich aus. */
@@ -91,11 +107,43 @@ test("PD3 — kein Kursniveau und keine Kursreihe im Datensatz", () => {
 test("PD4 — was fehlt, sagt der Datensatz selbst", () => {
   const d = baue(mkdtempSync(join(tmpdir(), "vu-pd-")));
 
-  /* Die Faktorzeilen je Titel starben mit der Arbeitsablage. Der
-     Datensatz darf das nicht als leeres Feld tarnen. */
-  const ohneFaktoren = d.rows.filter((r) => r.factorsStatus === "NOT_IN_DELIVERED_ARTEFACTS");
-  assert.ok(ohneFaktoren.length > 5000, "die fehlenden Faktoren muessen benannt sein");
-  assert.equal(d.coverage.withFactorRow, 5, "nur der Canary hat Faktorzeilen");
+  /* DIESE PRUEFUNG SCHRIEB EINEN MANGEL FEST. Sie verlangte
+     withFactorRow === 5 und ueber 5.000 Titel OHNE Faktoren - der
+     Zustand, als die Zeilen noch mit der Arbeitsablage starben. Seit es
+     das dauerhafte Artefakt gibt, ist das Gegenteil richtig, und der
+     Test meldete den Fortschritt als Fehler.
+
+     Ein Test darf einen Mangel beschreiben, aber nie verlangen. Geprueft
+     wird deshalb, was in beiden Welten gilt: die Zaehlung stimmt mit den
+     Zeilen ueberein, und was fehlt, ist benannt. */
+  const mitFaktoren = d.rows.filter((r) => r.factorsStatus === "PRESENT");
+  const ohneFaktoren = d.rows.filter((r) => r.factorsStatus !== "PRESENT");
+  assert.equal(d.coverage.withFactorRow, mitFaktoren.length,
+    "die Bilanz muss zaehlen, was wirklich dasteht");
+  assert.equal(mitFaktoren.length + ohneFaktoren.length, d.rows.length);
+
+  /* Jede Zeile ohne Faktoren sagt das ausdruecklich - kein leeres Feld,
+     das wie ein Nullwert aussieht. */
+  assert.ok(ohneFaktoren.every((r) => r.factorsStatus === "NOT_IN_DELIVERED_ARTEFACTS"),
+    "ein fehlender Faktorsatz muss benannt sein");
+  assert.ok(ohneFaktoren.every((r) => r.factors === null));
+  assert.ok(mitFaktoren.every((r) => r.factors && r.factors.values),
+    "PRESENT ohne Werte waere die schlimmste Variante");
+
+  /* Und wenn das Artefakt vorliegt, muss es auch ankommen: sonst haette
+     der Lauf umsonst gerechnet. */
+  if (d.factorArtefact && d.factorArtefact.present) {
+    assert.ok(mitFaktoren.length > 5000,
+      `Artefakt mit ${d.factorArtefact.securities} Zeilen, aber nur ${mitFaktoren.length} im Datensatz`);
+    assert.ok(mitFaktoren.some((r) => r.factorsSource === "DURABLE_ARTEFACT"));
+    /* Die Verweise muessen aufloesbar sein - ein Verweis ins Leere ist
+       schlimmer als ein fehlendes Feld. */
+    for (const r of mitFaktoren.slice(0, 200)) {
+      assert.equal(typeof r.factors.fieldStatusRef, "number", `${r.ticker} ohne Vorlagenverweis`);
+      assert.ok(d.fieldStatusTemplates[r.factors.fieldStatusRef],
+        `${r.ticker} verweist auf eine Vorlage, die es nicht gibt`);
+    }
+  }
 
   /* Titel ohne eigene Qualitaetszeile sind sauber durchgelaufen - nicht
      "unbekannt". Der Unterschied steht im Feld. */
@@ -115,8 +163,22 @@ test("PD5 — die Screener-Zaehlungen sind echt und vollstaendig, die Namenslist
   assert.equal(d.screenerQuestions.length, 18);
 
   const ueberSMA200 = d.screenerQuestions.find((q) => q.id === "aboveSMA200");
-  assert.equal(ueberSMA200.matched, 2926, "die Zaehlung stammt aus dem echten Lauf");
-  assert.equal(ueberSMA200.evaluatedOf, 5639);
+
+  /* AUCH HIER STAND EINE MESSUNG ALS INVARIANTE: matched === 2926. Das
+     ist die Zahl eines Handelstages. Am naechsten waren es 2.821, und
+     der Test meldete den Markt als Fehler.
+
+     Was wirklich gelten MUSS, ist die Bilanz: Treffer, Nichttreffer und
+     nicht entscheidbar ergeben zusammen die Grundgesamtheit. Faellt die
+     auseinander, ist eine Zaehlung kaputt - und DAS faengt kein
+     Literalwert. */
+  assert.equal(typeof ueberSMA200.matched, "number");
+  assert.equal(ueberSMA200.matched + ueberSMA200.notMatched + ueberSMA200.notEvaluable,
+    ueberSMA200.evaluatedOf,
+    "Treffer + Nichttreffer + nicht entscheidbar muss die Grundgesamtheit ergeben");
+  assert.ok(ueberSMA200.matched > 0 && ueberSMA200.matched < ueberSMA200.evaluatedOf,
+    "eine Zaehlung an einem der beiden Anschlaege ist verdaechtig, nicht plausibel");
+  assert.ok(ueberSMA200.evaluatedOf > 5000, "die Frage laeuft ueber das Universum");
 
   /* Die Kuerzung wird ausgewiesen. Eine Liste mit 50 Namen neben einer
      Zahl von 2.926 waere sonst irrefuehrend. */
@@ -206,6 +268,17 @@ test("PD9 — die Ansicht baut ihre Tabelle beim Laden auf", () => {
      'auffindbar' nur die Haelfte der Zusage. */
   assert.match(seite, /function zeigeTitel/, "die Ansicht braucht einen Einzeltitel");
   assert.match(seite, /\?ticker=/, "der Einzeltitel braucht einen tiefen Link");
+
+  /* Und die Faktoren werden GEZEIGT. Sie fuer jeden auswertbaren Titel zu
+     berechnen, zu committen und dann nicht anzuzeigen waere ein Lauf ins
+     Leere. */
+  assert.match(seite, /class="faktoren"/, "der Einzeltitel muss die Faktoren zeigen");
+  assert.match(seite, /Gleitende Durchschnitte/);
+  assert.match(seite, /52-Wochen-Fenster/);
+  /* Mit dem Hinweis, dass die Kursniveaus dahinter fehlen - ein Abstand
+     ohne diese Angabe liest sich wie ein vollstaendiger Datensatz. */
+  assert.match(seite, /WITHHELD_REDISTRIBUTION/,
+    "der Block muss sagen, dass die Kursniveaus zurueckgehalten sind");
 });
 
 test("PD10 — die Rangfragen tragen echte Ranglisten mit Wert und Qualitaet", () => {
