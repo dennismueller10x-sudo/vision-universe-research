@@ -187,8 +187,56 @@ Universums.
 
 Der eigenstaendige Auth-Gate auf Zweig `claude/preview-auth-gate` bleibt
 unangetastet, bis der Vercel-Schutz nachgewiesen ist. `.vercelignore`
-schliesst `preview` aus der Auslieferung aus: zwei Schloesser an einer
+schliesst `/preview/` aus der Auslieferung aus: zwei Schloesser an einer
 Tuer sind eines zu viel, und das schwaechere entscheidet dann.
 
 Erst wenn V1 und V2 in einem echten Lauf gruen sind, ist der Gate
 entbehrlich.
+
+### Der fuehrende Schraegstrich ist nicht Kosmetik
+
+Hier stand `preview` ohne Schraegstrich, und das hat jede
+Vorschau-Auslieferung rot gemacht - die erste (`daf7c94`) wie die letzte
+(`ca04acc`). `.vercelignore` liest wie `.gitignore`: ein Muster ohne
+Schraegstrich trifft **jeden Pfadabschnitt dieses Namens, auf jeder
+Ebene**. Das Schloss liegt unter `preview/` im Wurzelverzeichnis und nur
+auf `claude/preview-auth-gate`; getroffen hat das Muster stattdessen
+
+* `scripts/preview/` — das Bauskript selbst, und
+* `quant/data/preview/` — den Datensatz, den die Ansicht laedt.
+
+Vercel lud das Bauskript nie hoch und brach ab:
+
+```
+Error: Cannot find module '/vercel/path0/scripts/preview/build-preview-dataset.mjs'
+```
+
+Die Produktion auf `main` blieb dabei gruen, was den Fehler lange
+verdeckt hat: `main` traegt keine `vercel.json`, baut also gar nicht.
+Rot war nur, was baut.
+
+`/preview/` trifft ausschliesslich das Wurzelverzeichnis. Die Absicht
+bleibt damit erhalten, und PD7 prueft sie jetzt nicht mehr als
+Zeichenkette, sondern als Wirkung: mit `git check-ignore` gegen eine
+Ablage, deren `.gitignore` unser `.vercelignore` ist. Den Skriptpfad
+liest der Test aus `buildCommand`, statt ihn abzuschreiben.
+
+## 5. Wenn eine Vorschau rot ist
+
+Die Vercel-Baulogs sind ohne Anmeldung nicht lesbar. Der Zustand jeder
+Auslieferung steht aber in GitHubs Deployments-API, und dort auch die
+Adresse:
+
+```
+/repos/<owner>/<repo>/deployments?sha=<commit>
+/repos/<owner>/<repo>/deployments/<id>/statuses
+```
+
+`state` ist `success` oder `failure`, `environment_url` traegt die
+Vorschau-Adresse. `Preview` und `Production` sind zwei verschiedene
+Umgebungen - eine gruene Produktion sagt nichts ueber die Vorschau.
+
+Der Bauschritt laesst sich ausserdem so nachstellen, wie Vercel ihn
+fuehrt: die Quelldateien durch denselben Filter schicken und den
+Baubefehl darin ausfuehren. Was `.vercelignore` entfernt, fehlt dann
+auch hier - genau daran war der Fehler oben zu sehen.
