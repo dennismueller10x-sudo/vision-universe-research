@@ -3,6 +3,7 @@
  * Financial values come from existing validated panel; no new factor engine. */
 (function(g){
 'use strict';
+const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready;
@@ -36,8 +37,8 @@ function create(options){
    workspaces:workspaces(ticker)};
  }
  function workspaces(t){const q=encodeURIComponent(t);return [
-  ['Full Chart','/quant/stock/?ticker='+q],['Technical','/quant/technical/?symbol='+q],
-  ['Elliott Wave','/quant/technical/?symbol='+q+'&layer=ELLIOTT'],
+  ['Full Chart','/quant/stock/?ticker='+q],['Technical','/vu2/?view=technical&ticker='+q],
+  ['Elliott Wave','/vu2/?view=elliott&ticker='+q],
   ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/quant/stock/?ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie testen','/quant/strategies/builder/']
  ].map(([label,href])=>({label,href}));}
@@ -66,7 +67,7 @@ function create(options){
     volatility:status(b.volatility?.regime,{NORMAL:'Normal',HIGH:'Erhöht',LOW:'Niedrig',EXTREME:'Sehr hoch'}),
     elliott:status(b.elliott?.status,{AMBIGUOUS:'Mehrere mögliche Zählungen',VALID:'Gültige Zählung',INSUFFICIENT_DATA:'Historie reicht nicht aus',NO_VALID_COUNT:'Keine gültige Zählung'}),
     elliottMethodology:b.elliottMethodologyVersion||null,isProbability:false,
-    workspace:'/quant/technical/?symbol='+encodeURIComponent(ticker),elliottWorkspace:'/quant/technical/?symbol='+encodeURIComponent(ticker)+'&layer=ELLIOTT'};
+    workspace:'/vu2/?view=technical&ticker='+encodeURIComponent(ticker),elliottWorkspace:'/vu2/?view=elliott&ticker='+encodeURIComponent(ticker)};
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getStockIntelligence(ticker){ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
@@ -78,6 +79,14 @@ function create(options){
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}return stock;
   }catch{return unavailable('SOURCE_MISSING');}}
+ async function getTechnicalWorkspace(ticker){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)||!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
+   const source=await load('/quant/data/technical/instruments/'+ticker+'.json');
+   if(source.source!=='tiingo')return unavailable('UNSUPPORTED_MARKET_SOURCE');
+   return TechnicalWorkspace.build(source,{ticker});
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  async function getHistoricalFundamentals(ticker,selection={}){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
@@ -99,7 +108,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
