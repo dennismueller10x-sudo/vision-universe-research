@@ -83,4 +83,11 @@ PR68 initial Browser34514434725 PASS (28 checks). Screenshots inspected Technica
 ## Quant workspace implementation
 Continues in separate workstream/vu2-quant-workspace after PR68 contract review. Eighteen existing factor metrics, five question-led families, Catalog definitions, explicit unavailability and legacy access. No synthetic score or new formula.15 focused service tests PASS; browser/remote gate pending. Context phases/06-quant-workspace.md. Technical mobile/test repairs integrated without dropping the new Quant journey.
 
+## Technical final gate and Strategy workstream
+PR68 heada7dc9d0: Browser34515009983, Quant34515009869, SEC34515009901 SUCCESS. Technical/Elliott390 screenshots inspected after annotation-control repair. Existing Elliott journey retained.
+PR69 head422c85b: Browser34542974197, Quant34542974241, SEC34542974231 SUCCESS. Quant screenshots pending inspection. Prior automatic commit approval was temporarily rejected due usage limit; user continued after reset and normal connector commit succeeded, no workaround.
+Strategy definitions/current-filter preview now implemented in workstream/vu2-strategy-workspace, context phases/07-strategy-workspace.md.18 targeted tests PASS, independent review pending. No historic return claims; remaining real backtest gates explicit.
+
 PR69 initial gate: Browser34542974197, Quant34542974241, SEC34542974231 SUCCESS. Quant1440/390 screenshots inspected. Visual repair: company selector receives44px touch target and consistent styling; excess closed-definition spacing reduced while retaining44px disclosure targets. Refreshed screenshots pending.
+
+Strategy counter-review PASS after preserving first-version reason and distinguishing unavailable current selection from zero matches. Three persistence tests pass. Browser failure-path coverage added; remote gate pending.

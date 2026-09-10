@@ -3,6 +3,8 @@
  * Financial values come from existing validated panel; no new factor engine. */
 (function(g){
 'use strict';
+const Methodology=typeof module!=='undefined'&&module.exports?require('../engines/methodology.js'):g.VUMethodology;
+const Strategy=typeof module!=='undefined'&&module.exports?require('../engines/strategy.js'):g.VUStrategy;
 const QuantWorkspace=typeof module!=='undefined'&&module.exports?require('./quant-workspace-contract.js'):g.VUQuantWorkspaceContract;
 const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
@@ -80,6 +82,14 @@ function create(options){
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}return stock;
   }catch{return unavailable('SOURCE_MISSING');}}
+ async function getStrategyContext(){
+  try{const [quant,backtest]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json')]);
+   Methodology.configure({quant,backtest});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
+    rebalance:backtest.rebalance.allowed,timings:backtest.execution.allowedTimings,costs:backtest.costs,constraints:backtest.constraints,
+    methodology:backtest.methodologyVersion,backtest:{state:'UNAVAILABLE',reason:'REAL_BACKTEST_GATE_NOT_VALIDATED',
+     checks:[['Historische Fundamentaldaten','Aktuelle Faktorwerte sind kein historischer Point-in-Time-Datensatz.'],['Historisches Universum','Delistings und zeitabhängige Mitgliedschaft sind für diese Vorschau nicht validiert.'],['Kapitalmaßnahmen','Kurse, Splits, Ausschüttungen und Ausführung müssen gemeinsam geprüft sein.'],['Vergleichsindex','Für diese Vorschau ist kein echter Benchmark freigegeben.'],['Ausführung & Reproduktion','Kostenannahmen sind definiert; ein geprüfter historischer Lauf liegt noch nicht vor.']]}};
+  }catch{return unavailable('STRATEGY_METHODOLOGY_MISSING');}
+ }
  async function getQuantWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
@@ -115,7 +125,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
