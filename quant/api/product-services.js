@@ -3,6 +3,7 @@
  * Financial values come from existing validated panel; no new factor engine. */
 (function(g){
 'use strict';
+const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready;
  function init(){if(!ready)ready=Promise.all([
@@ -37,7 +38,7 @@ function create(options){
  function workspaces(t){const q=encodeURIComponent(t);return [
   ['Full Chart','/quant/stock/?ticker='+q],['Technical','/quant/technical/?symbol='+q],
   ['Elliott Wave','/quant/technical/?symbol='+q+'&layer=ELLIOTT'],
-  ['Historische Fundamentals','/quant/data-inspector/'],['Quant','/quant/stock/?ticker='+q],
+  ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/quant/stock/?ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie testen','/quant/strategies/builder/']
  ].map(([label,href])=>({label,href}));}
  async function getUniverse(){try{const c=await init();const stocks=(c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)).filter(Boolean);return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'APPROVED_DISPLAY_SET',totalMarketState:'UNAVAILABLE',reason:'NO_APPROVED_FULL_MARKET_VIEW'};}catch{return unavailable('SOURCE_MISSING');}}
@@ -77,6 +78,15 @@ function create(options){
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}return stock;
   }catch{return unavailable('SOURCE_MISSING');}}
+ async function getHistoricalFundamentals(ticker,selection={}){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
+   const index=await load('/quant/data/sec/inspector_index.json'),identity=index.companies?.find(s=>s.ticker===ticker);
+   if(!identity?.cik)return unavailable('SOURCE_MISSING');
+   const source=await load('/quant/data/sec/inspector/'+ticker+'.json');
+   return History.build(source,{ticker,cik:identity.cik,metric:selection.metric,period:selection.period});
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  function getRecipes(){return [
   {id:'positive-momentum',title:'Kursstärke entdecken',explanation:'Unternehmen mit nicht negativer Kursentwicklung über sechs Monate.',field:'momentum6m',threshold:0,rule:'Kursentwicklung über 6 Monate ≥ 0 %'},
   {id:'growing-business',title:'Wachsendes Geschäft',explanation:'Unternehmen, deren ausgewiesenes Umsatzwachstum mindestens 20 Prozent beträgt.',field:'revenueGrowth',threshold:20,rule:'Umsatzwachstum ≥ 20 %'},
@@ -89,7 +99,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

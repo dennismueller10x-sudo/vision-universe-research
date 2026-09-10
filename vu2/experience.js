@@ -8,7 +8,7 @@ const n=(m,d=1)=>m&&Number.isFinite(m.value)?m.value.toLocaleString('de-DE',{max
 const nav=[['home','Home'],['markets','Markets'],['discover','Discover'],['research','Research'],['strategies','Strategies'],['portfolio','Portfolio']];
 const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
- ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie','/quant/data-inspector/'],['Technical Intelligence','/quant/technical/?symbol=NVDA'],['Elliott Wave','/quant/technical/?symbol=NVDA&layer=ELLIOTT'],['Quant','/quant/'],['Vergleichen',href('compare')]]],
+ ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Technical Intelligence','/quant/technical/?symbol=NVDA'],['Elliott Wave','/quant/technical/?symbol=NVDA&layer=ELLIOTT'],['Quant','/quant/'],['Vergleichen',href('compare')]]],
  ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
  ['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
  ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
@@ -44,6 +44,23 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  }else section.append(notice('Technische Analyse derzeit nicht verfügbar','Der vollständige Workspace bleibt über die Analysezugänge erreichbar.'));
  main.append(section);
 }
+async function fundamentalsPage(){
+ main.append(heading('Wie entwickelt sich das Geschäft?','Geschäftszahlen über die Zeit verstehen – mit Berichtszeiträumen und nachvollziehbarer Herkunft.'));
+ const company=el('select',{'aria-label':'Unternehmen'},universe.stocks.map(s=>el('option',{value:s.ticker,text:s.ticker+' · '+s.name}))),metric=el('select',{'aria-label':'Fundamentale Kennzahl'},VUFundamentalsContract.metrics.map(m=>el('option',{value:m.id,text:m.label}))),period=el('select',{'aria-label':'Berichtsart'},[['annual','Geschäftsjahre'],['quarterly','Quartalsmeldungen'],['ttm','Letzte zwölf Monate (TTM)']].map(([value,text])=>el('option',{value,text}))),target=el('section',{'aria-live':'polite'});
+ company.value=universe.stocks.some(s=>s.ticker===params.get('ticker'))?params.get('ticker'):'NVDA';
+ main.append(el('div',{class:'filter history-controls'},[company,metric,period]),target);let request=0;
+ async function update(){const current=++request;const result=await api.getHistoricalFundamentals(company.value,{metric:metric.value,period:period.value});if(current!==request)return;S.clear(target);
+  if(result.state!=='AVAILABLE'){target.append(notice(result.reason==='TTM_NOT_VALIDATED'?'TTM noch nicht verfügbar':result.reason==='PERIOD_SEMANTICS_NOT_VALIDATED'?'Quartalsabgrenzung noch nicht bestätigt':'Historie derzeit nicht verfügbar',result.reason==='TTM_NOT_VALIDATED'?'Für diese Ansicht liegt noch keine validierte Zwölfmonats-Reihe vor. Geschäftsjahre und Quartalsmeldungen bleiben zugänglich.':result.reason==='PERIOD_SEMANTICS_NOT_VALIDATED'?'Die vorhandenen abgeleiteten Werte lassen sich noch nicht sicher einem einzelnen Quartal zuordnen. Die Geschäftsjahres-Historie und der SEC-Dateninspektor bleiben verfügbar.':'Es fehlen belastbare Daten für diese Auswahl. Werte werden nicht ersetzt oder geschätzt.'));return;}
+  const known=result.rows.filter(r=>r.state==='AVAILABLE'),latest=known.at(-1),scale=result.metric.unit==='USD/shares'?1:1e9,unit=result.metric.unit==='USD/shares'?'USD je Aktie':result.metric.unit==='shares'?'Mrd. Aktien':'Mrd. USD';
+  const value=r=>(r.value/scale).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+  target.append(el('div',{class:'history-header'},[el('div',{},[el('span',{class:'eyebrow',text:result.name}),el('h2',{text:result.metric.label}),el('div',{class:'quote',text:value(latest)+' '+unit}),el('p',{class:'muted',text:latest.label+' · '+(latest.start?latest.start+' bis ':'Stichtag ')+latest.end})]),el('p',{class:'muted',text:'Aktuell bekannter Berichtsstand. Frühere Angaben können nachträglich angepasst sein.'})]));
+  target.append(QuantCharts.barChart({title:result.metric.label+' nach Berichtsperiode',description:'Verfügbare gemeldete Werte. Exakte Zahlen und fehlende Perioden stehen in der Tabelle.',width:Math.min(1100,innerWidth-40),maxLabels:innerWidth<650?3:8,height:300,items:known.map(r=>({label:period.value==='annual'?String(r.fiscalYear):r.fiscalPeriod+' '+String(r.fiscalYear).slice(-2),value:r.value/scale})),yFormat:v=>v.toLocaleString('de-DE',{maximumFractionDigits:1})}),el('p',{class:'muted',text:'Skala: '+unit+' · '+known.length+' verfügbare Berichtsperioden. '+result.missing+' Perioden ohne darstellbaren Wert.'}));
+  if(period.value==='quarterly')target.append(notice('Berichtszeitraum beachten','Gezeigt werden direkt gemeldete Werte mit ihrem Quellenzeitraum. Dieser kann seit Geschäftsjahresbeginn kumuliert sein. Abgeleitete Quartalswerte bleiben ausgeblendet, solange ihre zeitliche Abgrenzung nicht bestätigt ist.'));
+  const body=result.rows.slice().reverse().map(r=>el('tr',{},[el('th',{scope:'row',text:r.label}),el('td',{text:r.state==='AVAILABLE'?value(r)+' '+unit:r.state==='PIPELINE_ERROR'?'Datenprüfung erforderlich':r.reason==='PERIOD_SEMANTICS_NOT_VALIDATED'?'Quartalsabgrenzung offen':'Nicht verfügbar'}),el('td',{text:r.state==='AVAILABLE'?(r.start?r.start+' → ':'')+r.end:'—'}),el('td',{text:r.state==='AVAILABLE'?r.availableFrom.replace('T',' ').replace('.000Z',' UTC'):'—'})]));
+  target.append(el('h2',{class:'section',text:'Die Zahlen im Detail'}),el('div',{class:'table-wrap',tabindex:'0','aria-label':'Historische Geschäftszahlen, horizontal scrollbar'},[el('table',{},[el('thead',{},[el('tr',{},['Berichtsperiode',result.metric.label,'Zeitraum / Stichtag','Bekannt seit · Originalzeitpunkt'].map(text=>el('th',{scope:'col',text})))]),el('tbody',{},body)])]),el('details',{},[el('summary',{text:'Quellen und Methodik'}),el('p',{text:'Diese rückblickende Ansicht ist kein damaliger Informationsstand für Backtests. Quelle: SEC EDGAR. Stand der Aufbereitung: '+result.generatedAt.slice(0,10)+'. Gemeldete und bereits im bestehenden SEC-Workstream abgeleitete Werte werden unverändert übernommen.'}),el('p',{text:'Letzter Wert, ungerundet: '+latest.value.toLocaleString('de-DE',{maximumFractionDigits:12})+' '+latest.unit+'. Meldung: '+latest.accession+'. '+(latest.source==='VISION_UNIVERSE_DERIVED'?'Abgeleitete Kennzahl nach vorhandener SEC-Methodik.':'Gemeldete SEC-Kennzahl.')})]),actions([{label:'Alle Quellen im Dateninspektor',href:'/quant/data-inspector/'},{label:'Zur Aktienanalyse',href:href('stock',company.value)}]));
+ }
+ company.onchange=metric.onchange=period.onchange=update;await update();
+}
 async function marketsPage(){
  const market=await api.getMarketIntelligence();
  main.append(heading('Den Markt einordnen','Kursstrukturen untersuchen. Den Kontext verstehen. Die Evidenz prüfen.'),notice('Gesamtmarkt-Einordnung noch nicht verfügbar','Die freigegebene Vorschau umfasst fünf Unternehmen. Ihre Entwicklung beschreibt nicht die Marktbreite oder das Marktregime.'));
@@ -73,6 +90,7 @@ async function screenPage(){main.append(heading('Dein Screener','Kriterien verä
 }
 async function render(){universe=await api.getUniverse();
  if(view==='stock')await stockPage(params.get('ticker')||'NVDA');
+ else if(view==='fundamentals')await fundamentalsPage();
  else if(view==='markets')await marketsPage();
  else if(view==='discover')await discoverPage();
  else if(view==='screener')await screenPage();
