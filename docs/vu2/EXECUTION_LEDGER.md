@@ -30,3 +30,14 @@
 
 ## Evidence policy
 Use small phases/*.md packs. Targeted tests while implementing, broader regressions at meaningful gates. Never repeat provider/full-universe scale unless a changed contract requires it. Fetch before large phases and before PR readiness. Shared overlap invalidates plan and requires delta review. Record FAIL, missing evidence and unresolved parity honestly. Final status currently AUDIT_COMPLETE only after documentation review; not FOUNDATION_READY.
+
+## Phase 0 gate — 2026-09-10
+PASS for audit handoff. PR #61: https://github.com/dennismueller10x-sudo/vision-universe-research/pull/61
+Remote audit commit 6cdc48229473757441dbeef96edc36bec5a86aaa has the same tree as local audit commit b8fd26a. GitHub connector is used because shell push has no credentials. Main remains 533245e after phase1 fetch; only smoke branch advanced.
+
+## Phase 1a implementation
+Branch workstream/vu2-lifecycle-foundation. Owned paths: market-store.js, ingest-tiingo.mjs, market-lifecycle.test.mjs and this ledger/context pack. 23 targeted tests PASS; Node compatibility gate 687/687 PASS before final malformed-shape additions, which have focused PASS. No provider calls, no persisted history or SEC changes. Independent counter-review requested; gate pending review.
+
+Browser QA constraint: available supervised Sites preview explicitly does not support this repository's plain static architecture. Browser connected, but no application page tested. Do not claim visual/mobile PASS or publish a redesign without that gate. No replatform merely to create a preview.
+
+Phase 1a final gate: PASS for bounded hardening. Counter-review repaired structural corruption, impossible dates, inventory errors and empty-response completion. 23 focused tests PASS; final broader Node result recorded below. Durable persistence, session-finality and corporate-action reconciliation remain separate unresolved requirements. No phase claims production EOD readiness.
