@@ -33,3 +33,12 @@ scripts/quant/**/__pycache__/
 # dort gibt es diese Dateien nicht.
 quant/data/preview/
 preview-universe/
+
+# Der Produktnachweis auf dem vollen Universum entsteht ebenfalls zur
+# BAUZEIT: scripts/proof/build-product-proof.mjs baut den Datensatz und
+# kopiert die Oberflaeche aus _proof-src/ nach /universe/. Beides wird nie
+# committet — die Quelle der Oberflaeche liegt unter _proof-src/ und ist
+# als Code lesbar; die Auslieferung existiert nur in der geschuetzten
+# Vorschau.
+quant/data/proof/
+/universe/

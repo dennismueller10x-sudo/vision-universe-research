@@ -1,0 +1,41 @@
+/* =========================================================================
+   VISION UNIVERSE — universe/ui/proof.css
+
+   NUR WAS quant.css NICHT HAT. Alles Uebrige - Farben, Typografie,
+   Karten, Tabellen, Chips, Zustandsboxen - kommt unveraendert aus
+   /quant/ui/quant.css. Ein zweites Designsystem waere genau der Fehler,
+   den dieser Nachweis vermeiden soll.
+   ========================================================================= */
+
+/* Suchfeld mit Ergebniszaehler daneben. */
+.u-search { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.u-search .q-field { flex: 1 1 260px; min-width: 0; }
+.u-search .q-input { width: 100%; }
+
+.u-facets { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 12px; }
+.u-facets .q-select { width: 100%; }
+
+/* Der Zaehler ueber der Trefferliste: die volle Zahl links, die
+   angezeigte rechts. Beides gehoert nebeneinander, sonst liest sich
+   "100 Zeilen" wie "100 Treffer". */
+.u-count { display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+           flex-wrap: wrap; margin: 18px 0 10px; }
+.u-count b { font-size: 18px; }
+
+/* Lange Tabellen bekommen einen mitlaufenden Kopf. q-table bringt den
+   Rahmen mit; hier klebt nur die Kopfzeile. */
+.u-sticky thead th { position: sticky; top: 0; z-index: 1; }
+
+/* Faktorblock des Einzeltitels: dieselbe Kachelgroesse wie q-metrics,
+   aber mit einem Zustand statt einer Zahl in der Mitte. */
+.u-factor-group { margin-top: 14px; }
+.u-factor-group > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .08em;
+                       text-transform: uppercase; color: var(--muted, #6b7280); }
+
+/* Trefferzeile der Suchvorschlaege. */
+.u-suggest { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+.u-suggest a { text-decoration: none; }
+
+@media (max-width: 560px) {
+  .u-count b { font-size: 16px; }
+}

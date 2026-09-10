@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "node scripts/preview/build-preview-dataset.mjs",
+  "buildCommand": "node scripts/preview/build-preview-dataset.mjs && node scripts/proof/build-product-proof.mjs",
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": true,
@@ -13,6 +13,13 @@
         { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    },
+    {
+      "source": "/quant/data/proof/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, private" },
+        { "key": "X-Vision-Universe-Dataset", "value": "DERIVED_UNIVERSE; ohlcv-store=NOT_DEPLOYED" }
       ]
     },
     {
