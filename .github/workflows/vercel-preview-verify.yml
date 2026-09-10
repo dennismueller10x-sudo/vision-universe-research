@@ -67,9 +67,32 @@ jobs:
           # und der Bericht sagt das.
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
+          # Ohne Adresse kann dieser Lauf nichts messen. Er meldet dann
+          # ROT - nicht weil etwas kaputt ist, sondern weil "geschuetzt"
+          # unbelegt bleibt, und ein unbelegter Schutz darf nicht gruen
+          # aussehen. Die Zusammenfassung sagt, was fehlt.
           if [ -z "$VERCEL_PREVIEW_URL" ]; then
-            echo "::error::Keine Vorschau-Adresse. Repository-Variable VERCEL_PREVIEW_URL setzen"
-            echo "::error::oder die Adresse beim manuellen Start eintragen."
+            {
+              echo "## Nicht geprueft — Einrichtung unvollstaendig"
+              echo ""
+              echo "**Der Code ist nicht defekt.** Es fehlt die Adresse der Vorschau,"
+              echo "also konnte nichts gemessen werden. Ein unbelegter Schutz wird hier"
+              echo "bewusst nicht gruen gemeldet."
+              echo ""
+              echo "Zu setzen unter *Settings → Secrets and variables → Actions*:"
+              echo ""
+              echo "| Art | Name | Wert |"
+              echo "|---|---|---|"
+              echo "| Variable | \`VERCEL_PREVIEW_URL\` | \`https://<projekt>.vercel.app\` |"
+              echo "| Secret (optional) | \`VERCEL_AUTOMATION_BYPASS_SECRET\` | Vercel → Protection Bypass for Automation |"
+              echo ""
+              echo "Ohne das Secret laeuft der wichtigste Teil trotzdem: die Abweisung"
+              echo "eines Aufrufs ohne Zugangsmittel. Alles Weitere wird dann als"
+              echo "\`SKIPPED\` ausgewiesen, nicht als bestanden."
+              echo ""
+              echo "Anleitung: \`docs/VERCEL_PROTECTED_PREVIEW.md\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Vorschau-Adresse fehlt::Repository-Variable VERCEL_PREVIEW_URL setzen (siehe Zusammenfassung)"
             exit 2
           fi
           node scripts/site/verify-vercel-preview.mjs --base "$VERCEL_PREVIEW_URL"
