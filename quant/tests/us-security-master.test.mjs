@@ -389,16 +389,82 @@ test("SM41 doppelte Ticker: Doppelnotierung und Symbolwiederverwendung getrennt"
   assert.equal(both.duplicates[0].kind, "MULTIPLE_LISTINGS");
 });
 
-test("SM42 ein doppelter Bestandsticker bleibt Bestand - REVIEW, nicht Verlust", () => {
+test("SM42 der Bestandstitel wird ueber den Handelsplatz zugeordnet, nicht ueber den Ticker allein", () => {
+  /* Das wiederverwendete Symbol: eine alte, delistete NYSE-Zeile und
+     eine laufende NASDAQ-Zeile. Der Bestand steht auf NASDAQ.
+
+     Beide Zeilen zum Bestandstitel zu erklaeren, nur weil der Ticker
+     passt, war der Fehler des ersten Anbieterlaufs: er meldete 6.024
+     erhaltene Bestandstitel statt 5.684 und 333 angeblich beendete
+     Bestandslistings statt 16. Die alte Zeile schlug auf den lebenden
+     Titel durch. */
   const r = build([
     providerRow({ ticker: "DUP", exchange: "NYSE", startDate: "1990-01-02", endDate: "2001-08-31" }),
     providerRow({ ticker: "DUP", exchange: "NASDAQ", startDate: "2015-03-02", endDate: "2026-09-09" })
-  ], [baselineRow({ ticker: "DUP" })]);
+  ], [baselineRow({ ticker: "DUP", exchange: "NASDAQ" })]);
+
   const rows = r.rows.filter((x) => x.ticker === "DUP");
   assert.equal(rows.length, 2);
-  assert.ok(rows.every((x) => x.baseline_member === true));
-  assert.ok(rows.every((x) => x.reconciliation_status === "REVIEW"));
+
+  const match = rows.filter((x) => x.baseline_member);
+  assert.equal(match.length, 1, "genau eine Zeile ist der Bestandstitel");
+  assert.equal(match[0].exchange, "NASDAQ");
+  assert.equal(match[0].baseline_match, "EXCHANGE_MATCH");
+  assert.equal(match[0].reconciliation_status, "EXISTING");
+  assert.equal(match[0].active_status, "ACTIVE");
+  /* Das Kennzeichen bleibt an ihr - wer die Symbolgeschichte braucht,
+     findet sie -, aber es stellt sie nicht zur Pruefung. */
+  assert.ok(match[0].review_flags.some((f) => f.startsWith("DUPLICATE_TICKER_")));
+
+  const other = rows.find((x) => !x.baseline_member);
+  assert.equal(other.exchange, "NYSE");
+  assert.equal(other.baseline_match, "ALTERNATE_LISTING");
+  assert.equal(other.reconciliation_status, "REVIEW");
+  assert.equal(other.reconciliation_reason, "ALTERNATE_LISTING_OF_BASELINE_TICKER");
+  /* Und ausdruecklich nicht ADDED: eine zweite Zeile zu einem Ticker,
+     den wir schon fuehren, ist kein neuer Titel. */
+  assert.notEqual(other.reconciliation_status, "ADDED");
+
+  assert.equal(r.counts.baselinePreserved, 1);
+  assert.equal(r.counts.baselineMemberRows, 1);
   assert.equal(r.invariants.destructiveViolations, 0);
+});
+
+test("SM46 laesst sich der Bestandstitel nicht eindeutig zuordnen, sagt der Lauf das", () => {
+  /* Zwei Anbieterzeilen, keine auf dem Handelsplatz des Bestands. Eine
+     davon zu waehlen waere geraten. Beide behalten den Bestandsbezug -
+     den Titel zu verlieren waere schlimmer als ihn doppelt zu fuehren -
+     und beide stehen zur Pruefung. */
+  const r = build([
+    providerRow({ ticker: "AMB", exchange: "NYSE", startDate: "1990-01-02", endDate: "2026-09-09" }),
+    providerRow({ ticker: "AMB", exchange: "BATS", startDate: "2015-03-02", endDate: "2026-09-09" })
+  ], [baselineRow({ ticker: "AMB", exchange: "NASDAQ" })]);
+
+  const rows = r.rows.filter((x) => x.ticker === "AMB");
+  assert.equal(rows.length, 2);
+  assert.ok(rows.every((x) => x.baseline_member === true));
+  assert.ok(rows.every((x) => x.baseline_match === "AMBIGUOUS"));
+  assert.ok(rows.every((x) => x.reconciliation_status === "REVIEW"));
+  assert.ok(rows.every((x) => x.review_flags.includes("BASELINE_MATCH_AMBIGUOUS")));
+
+  /* Ein Titel, zwei Zeilen: erhalten ist der TITEL. */
+  assert.equal(r.counts.baselinePreserved, 1);
+  assert.equal(r.counts.baselineMemberRows, 2);
+  assert.equal(r.counts.baselineTickersWithAmbiguousMatch, 1);
+  assert.equal(r.invariants.destructiveViolations, 0);
+  assert.ok(r.findings.some((f) => f.id === "BASELINE_MATCH_AMBIGUOUS" && f.count === 1));
+});
+
+test("SM47 ein einzelnes Anbieterlisting an anderem Platz bleibt der Bestandstitel", () => {
+  /* Der Handelsplatz hat gewechselt. Es gibt nur eine Anbieterzeile -
+     dann ist sie es, und der Wechsel ist kein Grund, den Titel als
+     verschwunden zu fuehren. */
+  const r = build([providerRow({ ticker: "MOVED", exchange: "NYSE" })],
+                  [baselineRow({ ticker: "MOVED", exchange: "NASDAQ" })]);
+  assert.equal(r.rows.length, 1);
+  assert.equal(r.rows[0].baseline_member, true);
+  assert.equal(r.rows[0].baseline_match, "EXCHANGE_MATCH");
+  assert.equal(r.counts.baselinePreserved, 1);
 });
 
 test("SM43 inaktive Listings: erkannt, nicht foerderfaehig, nicht entfernt", () => {

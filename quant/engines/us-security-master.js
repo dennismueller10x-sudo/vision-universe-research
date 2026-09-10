@@ -435,17 +435,84 @@
     });
     var baselineTickers = Object.keys(baselineByTicker);
 
-    /* --------------------------------------------- 1. Anbieterzeilen */
+    /* --------------------------------------------- 1. Anbieterzeilen
+
+       Zuerst nach Ticker gruppieren, dann zuordnen. Die Reihenfolge ist
+       nicht Geschmack, sondern der Unterschied zwischen einer Zahl und
+       einer falschen Zahl.
+
+       Tiingo fuehrt denselben Ticker mehrfach: an zwei Handelsplaetzen,
+       oder nacheinander fuer zwei verschiedene Emittenten
+       (Symbolwiederverwendung). Der erste Lauf hat jede dieser Zeilen
+       zum Bestandstitel erklaert, weil der Ticker passte - und meldete
+       6.024 Bestandstitel, wo 5.684 stehen. Die 340 zu viel waren
+       keine zusaetzlichen Titel; es waren zusaetzliche ZEILEN zu
+       denselben Titeln. Aus derselben Verwechslung kamen 333 angeblich
+       beendete Bestandslistings (es sind 16): die alte, delistete
+       Zeile eines wiederverwendeten Symbols schlug auf den lebenden
+       Titel durch.
+
+       Die Zuordnung geht deshalb ueber Ticker UND Handelsplatz, und wo
+       sie nicht eindeutig ist, sagt sie das (§5: "whether it maps
+       cleanly to one provider security"). */
     var rows = [];
     var providerSeen = {};
     var tickerRowCount = {};
+    var providerByTicker = {};
+    var tickerOrder = [];
 
     providerRows.forEach(function (r) {
       var c = classifySecurity(r, { today: today, staleDays: input.staleDays });
       if (!c.ticker) return;
+      if (!providerByTicker[c.ticker]) { providerByTicker[c.ticker] = []; tickerOrder.push(c.ticker); }
+      providerByTicker[c.ticker].push(c);
       providerSeen[c.ticker] = true;
       tickerRowCount[c.ticker] = (tickerRowCount[c.ticker] || 0) + 1;
-      rows.push(makeRow(c, baselineByTicker[c.ticker] || null, "PROVIDER_SUPPORTED_TICKERS", stamp));
+    });
+
+    tickerOrder.forEach(function (t) {
+      var group = providerByTicker[t];
+      var baseEntries = baselineByTicker[t] || null;
+
+      /* Welche Anbieterzeile IST der Bestandstitel? */
+      var matchIndex = -1, ambiguous = false;
+      if (baseEntries) {
+        var baseExchange = upper(baseEntries[0].exchange);
+        var exact = [];
+        group.forEach(function (c, i) { if (upper(c.exchange) === baseExchange) exact.push(i); });
+        if (exact.length === 1) matchIndex = exact[0];
+        else if (exact.length === 0 && group.length === 1) matchIndex = 0;
+        else ambiguous = true;
+      }
+
+      group.forEach(function (c, i) {
+        /* Bei Mehrdeutigkeit traegt JEDE Zeile der Gruppe den
+           Bestandsbezug. Eine davon willkuerlich zu waehlen waere eine
+           Entscheidung, und die trifft dieser Lauf nicht - aber den
+           Bezug ganz fallen zu lassen hiesse, den Titel zu verlieren. */
+        var isMatch = !!baseEntries && (ambiguous || i === matchIndex);
+        var row = makeRow(c, isMatch ? baseEntries : null, "PROVIDER_SUPPORTED_TICKERS", stamp);
+        row.baseline_match = !baseEntries ? "NOT_A_BASELINE_TICKER"
+          : ambiguous ? "AMBIGUOUS"
+          : isMatch ? "EXCHANGE_MATCH"
+          : "ALTERNATE_LISTING";
+
+        if (baseEntries && !isMatch) {
+          /* Dieselbe Tickerschreibweise, ein anderes Listing. Es wird
+             nicht als Neuaufnahme gefuehrt: ob das ein zweiter
+             Handelsplatz desselben Unternehmens oder ein spaeterer
+             Emittent desselben Symbols ist, entscheidet der Anbieter
+             nicht - und dieser Lauf auch nicht. */
+          row.review_flags.push("SHARES_TICKER_WITH_BASELINE");
+          row.reconciliation_status = "REVIEW";
+          row.reconciliation_reason = "ALTERNATE_LISTING_OF_BASELINE_TICKER";
+        } else if (isMatch && ambiguous) {
+          row.review_flags.push("BASELINE_MATCH_AMBIGUOUS");
+          row.reconciliation_status = "REVIEW";
+          row.reconciliation_reason = "BASELINE_MATCH_AMBIGUOUS";
+        }
+        rows.push(row);
+      });
     });
 
     /* ------------------------------- 2. Bestand ohne Anbieterzeile
@@ -498,21 +565,27 @@
     var duplicateTickers = {};
     duplicates.forEach(function (d) { duplicateTickers[d.ticker] = d.kind; });
     rows.forEach(function (r) {
-      if (duplicateTickers[r.ticker]) {
-        r.review_flags.push("DUPLICATE_TICKER_" + duplicateTickers[r.ticker]);
-        /* Ein doppelter Ticker macht aus einer Neuaufnahme einen Fall
-           fuer die Pruefung: welcher der beiden ist gemeint?
+      if (!duplicateTickers[r.ticker]) return;
+      r.review_flags.push("DUPLICATE_TICKER_" + duplicateTickers[r.ticker]);
 
-           Der Grund wird ANGEHAENGT und nicht ersetzt. Eine Zeile, die
-           schon aus einem anderen Grund zur Pruefung steht, hat jetzt
-           zwei - und wer nur den zuletzt geschriebenen liest, sucht
-           spaeter den ersten. */
-        if (r.reconciliation_status === "ADDED" || r.reconciliation_status === "EXISTING") {
-          r.reconciliation_status = "REVIEW";
-          r.reconciliation_reason = "AMBIGUOUS_DUPLICATE_TICKER";
-        } else if (r.reconciliation_reason.indexOf("AMBIGUOUS_DUPLICATE_TICKER") < 0) {
-          r.reconciliation_reason = r.reconciliation_reason + "+AMBIGUOUS_DUPLICATE_TICKER";
-        }
+      /* Der Ticker ist doppelt - aber nicht jede Zeile ist deshalb
+         unklar. Eine Bestandszeile, die ueber den Handelsplatz sauber
+         zugeordnet wurde, ist zugeordnet; sie wegen einer zweiten,
+         delisteten Zeile desselben Symbols zur Pruefung zu stellen
+         hiesse 340 gesunde Titel mit einem Verdacht zu belegen, den es
+         nicht gibt. Das Kennzeichen steht trotzdem an ihr: wer die
+         Symbolgeschichte braucht, findet sie.
+
+         Zur Pruefung kommt, was WIRKLICH offen ist: eine Neuaufnahme,
+         die sich einen Ticker mit einer anderen Neuaufnahme teilt. */
+      if (r.reconciliation_status === "ADDED") {
+        r.reconciliation_status = "REVIEW";
+        r.reconciliation_reason = "AMBIGUOUS_DUPLICATE_TICKER";
+      } else if (r.reconciliation_status === "REVIEW" &&
+                 r.reconciliation_reason.indexOf("AMBIGUOUS_DUPLICATE_TICKER") < 0 &&
+                 r.reconciliation_reason.indexOf("ALTERNATE_LISTING") < 0 &&
+                 r.reconciliation_reason.indexOf("BASELINE_MATCH_AMBIGUOUS") < 0) {
+        r.reconciliation_reason = r.reconciliation_reason + "+AMBIGUOUS_DUPLICATE_TICKER";
       }
     });
 
@@ -640,7 +713,12 @@
     var byExchange = {}, byVenue = {}, byActive = { ACTIVE: 0, INACTIVE: 0, UNKNOWN: 0 };
     var byClassificationStatus = { CLASSIFIED: 0, REVIEW: 0, UNKNOWN: 0 };
 
-    var activeCommon = 0, otcCommonDeferred = 0, baselinePreserved = 0;
+    var activeCommon = 0, otcCommonDeferred = 0;
+    /* Erhalten wird ein TITEL, nicht eine Zeile. Der Unterschied ist
+       genau der Fehler, den der erste Anbieterlauf gemeldet hat. */
+    var baselineTickersSeen = {};
+    var baselineMemberRows = 0;
+    var baselineTickersWithMultipleRows = {};
     var newByClass = {};
     CLASSES.forEach(function (c) { newByClass[c] = 0; });
 
@@ -652,7 +730,11 @@
       byActive[r.active_status] = (byActive[r.active_status] || 0) + 1;
       byClassificationStatus[r.classification_status] =
         (byClassificationStatus[r.classification_status] || 0) + 1;
-      if (r.baseline_member) baselinePreserved++;
+      if (r.baseline_member) {
+        baselineMemberRows++;
+        if (baselineTickersSeen[r.ticker]) baselineTickersWithMultipleRows[r.ticker] = true;
+        baselineTickersSeen[r.ticker] = true;
+      }
       if (!r.baseline_member) newByClass[r.instrument_type] = (newByClass[r.instrument_type] || 0) + 1;
       if (r.instrument_type === "EQUITY_COMMON" && r.active_status !== "INACTIVE" &&
           r.venue_tier === "PRIMARY" && r.country === "US") activeCommon++;
@@ -662,7 +744,13 @@
     return {
       rowsTotal: rows.length,
       baselineCount: baselineCount,
-      baselinePreserved: baselinePreserved,
+      /* Zahl der erhaltenen BESTANDSTITEL. Muss baselineCount sein. */
+      baselinePreserved: Object.keys(baselineTickersSeen).length,
+      /* Zahl der ZEILEN, die einen Bestandstitel tragen. Darf groesser
+         sein - dann ist die Zuordnung mehrdeutig, und das ist ein
+         Befund und kein Verlust. */
+      baselineMemberRows: baselineMemberRows,
+      baselineTickersWithAmbiguousMatch: Object.keys(baselineTickersWithMultipleRows).length,
       byInstrumentType: byClass,
       newByInstrumentType: newByClass,
       byReconciliationStatus: byStatus,
@@ -720,6 +808,28 @@
       add("BASELINE_NON_PRIMARY_VENUE", "MEDIUM", venue.length,
           "Bestandstitel an einem Platz, der kein regulaerer US-Handelsplatz ist.",
           venue.map(function (r) { return r.ticker + "@" + r.exchange; }));
+    }
+    var ambiguousMatch = rows.filter(function (r) {
+      return r.baseline_member && r.baseline_match === "AMBIGUOUS";
+    });
+    if (ambiguousMatch.length) {
+      var ambTickers = {};
+      ambiguousMatch.forEach(function (r) { ambTickers[r.ticker] = true; });
+      add("BASELINE_MATCH_AMBIGUOUS", "HIGH", Object.keys(ambTickers).length,
+          "Bestandstitel, die sich keiner einzelnen Anbieterzeile zuordnen lassen - der " +
+          "Anbieter fuehrt den Ticker mehrfach und keine Zeile steht auf dem Handelsplatz " +
+          "des Bestands. Alle betroffenen Zeilen behalten den Bestandsbezug; welche gemeint " +
+          "ist, entscheidet dieser Lauf nicht.", Object.keys(ambTickers));
+    }
+    var alternates = rows.filter(function (r) { return r.baseline_match === "ALTERNATE_LISTING"; });
+    if (alternates.length) {
+      var altTickers = {};
+      alternates.forEach(function (r) { altTickers[r.ticker] = true; });
+      add("ALTERNATE_LISTING_OF_BASELINE_TICKER", "MEDIUM", alternates.length,
+          "Weitere Anbieterzeilen zu " + Object.keys(altTickers).length + " Tickern, die wir " +
+          "schon fuehren - zweiter Handelsplatz oder ein spaeterer Emittent desselben Symbols. " +
+          "Sie werden ausdruecklich NICHT als Neuaufnahme gezaehlt.",
+          alternates.map(function (r) { return r.ticker + "@" + r.exchange; }));
     }
     var notFound = rows.filter(function (r) {
       return r.baseline_member && r.review_flags.indexOf("NOT_IN_PROVIDER_UNIVERSE") >= 0;

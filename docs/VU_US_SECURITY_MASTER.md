@@ -44,7 +44,7 @@ verkleinert, bricht ab und liefert nicht.
 |---|---|
 | `quant/engines/us-security-master.js` | Klassifikation und Abgleich. Reine Logik, einzeln testbar. |
 | `scripts/market/build-us-security-master.mjs` | Der Lauf: Liste holen, klassifizieren, abgleichen, schreiben. |
-| `quant/tests/us-security-master.test.mjs` | 31 Tests, davon fuenf Mutationstests. |
+| `quant/tests/us-security-master.test.mjs` | 33 Tests, davon fuenf Mutationstests. |
 | `.github/workflows/tiingo-us-discovery.yml` | Der einzige Ort, an dem die Anbieterliste wirklich geladen wird. |
 | `quant/data/market/security-master/summary.json` | Bilanz. |
 | `quant/data/market/security-master/us-security-master.json` | Der Wertpapierstamm, eine Zeile je Titel. |
@@ -166,6 +166,32 @@ Dieselbe Luecke betrifft `-WS-A` (Optionsscheine): `VST-WS-A`,
   durchlaeuft.
 * **0 doppelte Ticker** im Bestand. Der Bestand ist in diesem Punkt
   sauber.
+
+## 6.3 Wie ein Bestandstitel einer Anbieterzeile zugeordnet wird
+
+Tiingo fuehrt denselben Ticker mehrfach: an zwei Handelsplaetzen, oder
+nacheinander fuer zwei verschiedene Emittenten
+(Symbolwiederverwendung). Die Zuordnung geht deshalb ueber **Ticker UND
+Handelsplatz**:
+
+| Fall | `baseline_match` | Folge |
+|---|---|---|
+| Genau eine Anbieterzeile auf dem Handelsplatz des Bestands | `EXCHANGE_MATCH` | sie ist der Bestandstitel |
+| Genau eine Anbieterzeile ueberhaupt, anderer Platz | `EXCHANGE_MATCH` | sie ist es auch (Platzwechsel) |
+| Mehrere Zeilen, keine auf dem Platz des Bestands | `AMBIGUOUS` | **alle** behalten den Bezug, alle auf `REVIEW` |
+| Weitere Zeilen neben einer sauberen Zuordnung | `ALTERNATE_LISTING` | `REVIEW`, ausdruecklich **nicht** `ADDED` |
+
+Der erste Anbieterlauf (CI 34514590057) hatte das noch ueber den Ticker
+allein gemacht — und meldete **6.024 erhaltene Bestandstitel statt
+5.684** sowie **333 angeblich beendete Bestandslistings statt 16**. Die
+340 zu viel waren keine zusaetzlichen Titel, sondern zusaetzliche Zeilen
+zu denselben Titeln; die alte, delistete Zeile eines wiederverwendeten
+Symbols schlug auf den lebenden Titel durch.
+
+Der Lauf ist daran **abgebrochen** und hat nichts committet — genau so,
+wie er es soll. `baselinePreserved` zaehlt jetzt TITEL,
+`baselineMemberRows` zaehlt ZEILEN, und wo beide auseinandergehen, steht
+ein Befund (SM42, SM46, SM47).
 
 ## 7. Was zu einer Erweiterung fehlt
 
@@ -313,7 +339,7 @@ Unveraendert bindend:
 
 ## 11. Tests (§13)
 
-31 Tests in `quant/tests/us-security-master.test.mjs`.
+33 Tests in `quant/tests/us-security-master.test.mjs`.
 
 | Bereich | Tests |
 |---|---|
@@ -321,7 +347,7 @@ Unveraendert bindend:
 | Nicht-destruktiv | SM10–SM13 |
 | Anhaengende Aufnahme | SM20–SM22 |
 | Klassifikation | SM30–SM38 |
-| Kontamination und Doppel | SM40–SM45 |
+| Kontamination, Doppel und Zuordnung | SM40–SM47 |
 | Auszaehlung | SM50 |
 | Das erzeugte Artefakt | SM60–SM64 |
 
