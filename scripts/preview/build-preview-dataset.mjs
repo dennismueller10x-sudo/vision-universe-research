@@ -1,0 +1,379 @@
+/* =========================================================================
+   VISION UNIVERSE — build-preview-dataset.mjs
+
+   BAUT DEN DATENSATZ FUER DIE GESCHUETZTE VORSCHAU.
+
+   Er entsteht zur BAUZEIT und wird nie committet. Das ist der Kern der
+   Trennung: dasselbe Repository speist zwei Auslieferungen, und nur die
+   geschuetzte bekommt diese Dateien. GitHub Pages baut ohne diesen
+   Schritt und bleibt damit Byte fuer Byte, was es war.
+
+   WORAUS - UND WORAUS NICHT
+
+   Quelle sind ausschliesslich die bereits geprueften, committeten
+   Artefakte des FULL_UNIVERSE-Laufs. Es wird nichts beim Anbieter
+   geholt, nichts nachgerechnet und nichts geschaetzt.
+
+   ABGELEITETES UNIVERSUM ist nicht der KURSHISTORIEN-BESTAND.
+
+   Was hier entsteht, sind Zustaende, Zaehlungen und Einordnungen je
+   Titel. Die rund 7,4 GB Kursreihen sind NICHT dabei - sie lagen in der
+   Arbeitsablage eines Actions-Laufs, der laengst freigegeben ist. Kein
+   Kursniveau verlaesst diesen Schritt; das ist zugleich die
+   Lizenzbedingung (§34) und der Grund, warum der Rest ausgeliefert
+   werden darf.
+
+   WAS FEHLT UND WARUM
+
+   Die Faktorzeilen je Titel (SMA-Zustaende, Momentum, relative Staerke)
+   fuer alle 5.639 auswertbaren Titel liegen ebenfalls nur in jener
+   Arbeitsablage. Committet wurden Deckungsbilanz, Screener-Zaehlungen
+   und der Canary-Satz - so sah es die Detailgrenze (§26) vor. Dieser
+   Schritt erfindet sie nicht. Er liefert, was belegt ist, und sagt beim
+   Rest, dass er fehlt.
+
+   Ausfuehren:
+     node scripts/preview/build-preview-dataset.mjs
+   ========================================================================= */
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+const argv = process.argv.slice(2);
+function arg(name, fallback) {
+  const i = argv.indexOf(name);
+  return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
+}
+const GATE = arg("--gate", "FULL_UNIVERSE");
+const OUT_DIR = arg("--out", join(root, "quant", "data", "preview"));
+
+function lies(pfad) {
+  if (!existsSync(pfad)) return null;
+  try { return JSON.parse(readFileSync(pfad, "utf8")); } catch (err) { return null; }
+}
+
+const universum = lies(join(root, "quant/data/market/scale", `universe-${GATE}.json`));
+const gate = lies(join(root, "quant/data/market/scale", `gate-${GATE}.json`));
+const screener = lies(join(root, "quant/data/market/factors", `screener-${GATE}.json`));
+const faktoren = lies(join(root, "quant/data/market/factors", `factors-${GATE}-summary.json`));
+const technical = lies(join(root, "quant/data/technical/scale", `technical-coverage-${GATE}.json`));
+
+if (!universum || !gate) {
+  console.error(`\n  Kein Universum oder Gate-Bericht fuer ${GATE}. Es wird nichts gebaut.\n`);
+  process.exit(1);
+}
+
+/* ------------------------------------------------------------- Zeilen */
+
+/* Je Titel: was aus den Artefakten wirklich hervorgeht.
+
+   Die Felder sind bewusst ANDERS benannt als im synthetischen
+   Modelluniversum. Dieselben Namen mit anderer Bedeutung waeren die
+   schlimmste Variante: eine Oberflaeche, die "momentum12m" anzeigt, wo
+   in Wahrheit nichts gerechnet wurde. */
+const qualitaet = gate.perSymbol || {};
+const technischeZeilen = (technical && technical.perSymbol) || {};
+const canaryFaktoren = new Map(((faktoren && faktoren.canary) || []).map((c) => [c.ticker, c]));
+const canarySatz = new Set((gate.canary && gate.canary.symbols) || []);
+
+let mitQualitaet = 0, mitTechnical = 0, mitFaktoren = 0;
+
+const zeilen = universum.securities.map((s) => {
+  const q = qualitaet[s.ticker] || null;
+  const t = technischeZeilen[s.ticker] || null;
+  const f = canaryFaktoren.get(s.ticker) || null;
+  if (q) mitQualitaet++;
+  if (t) mitTechnical++;
+  if (f) mitFaktoren++;
+
+  return {
+    securityId: s.securityId,
+    ticker: s.ticker,
+    /* Der Firmenname fehlt im Zugang. Nicht den Ticker als Namen
+       ausgeben - das saehe aus wie eine Auskunft. */
+    name: s.company || null,
+    nameStatus: s.company ? "PRESENT" : "SOURCE_MISSING",
+    exchange: s.exchange || null,
+    country: s.country || null,
+    currency: s.currency || null,
+    instrumentType: s.instrumentType || null,
+    sector: s.sector || null,
+    sectorStatus: s.sectorStatus || "SOURCE_MISSING",
+    active: s.active === undefined ? null : s.active,
+    listedSince: s.startDate || null,
+
+    /* Belegte Historie und Qualitaet. Fuer Titel ohne eigene Zeile im
+       Bericht steht hier ausdruecklich der Grund - nicht null als
+       stiller Platzhalter (§30). */
+    dataQuality: q ? q.status : (s.ticker ? "PASS_NOT_ITEMISED" : null),
+    dataQualityReason: q ? (q.reason || null)
+      : "Sauber durchgelaufen; PASS-Zeilen wurden nicht einzeln ausgeliefert (§26).",
+    bars: q ? q.bars : null,
+    historyFrom: q ? q.first : null,
+    historyTo: q ? q.last : null,
+    historyYears: q ? q.historyYears : null,
+    staleTradingDays: q ? q.staleTradingDays : null,
+    splits: q ? q.splits : null,
+    dividends: q ? q.dividends : null,
+    adjustment: q ? q.adjustmentInferred : null,
+    factorReady: q ? q.factorReady : null,
+
+    technical: t ? t.technical : null,
+    elliott: t ? t.elliott : null,
+    elliottConfidence: t ? (t.elliottConfidence === undefined ? null : t.elliottConfidence) : null,
+    trend: t ? (t.trend || null) : null,
+
+    /* Faktoren gibt es nur fuer den Canary. Fuer alle anderen ist das
+       Feld ausdruecklich als fehlend gekennzeichnet, nicht leer. */
+    factors: f ? { values: f.values, fieldStatus: f.fieldStatus, asOf: f.asOf, basis: f.basis } : null,
+    factorsStatus: f ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS",
+
+    isCanary: canarySatz.has(s.ticker),
+    isMock: false
+  };
+});
+
+/* --------------------------------------------------------- Datensatz */
+
+const datensatz = {
+  generatedAt: new Date().toISOString(),
+  gate: GATE,
+  kind: "DERIVED_UNIVERSE",
+  asOf: (gate.historyCoverage && gate.historyCoverage.newestLastDate) || null,
+  dataSnapshotId: `preview_${GATE}_${(gate.run && gate.run.commit || "unbekannt").slice(0, 12)}`,
+
+  /* Die Unterscheidung, auf die es ankommt - maschinenlesbar, damit die
+     Oberflaeche sie nicht erraten muss. */
+  datasetScope: {
+    derivedUniverse: {
+      status: "PRESENT",
+      securities: zeilen.length,
+      note: "Zustaende, Zaehlungen und Einordnungen je Titel. Aus den geprueften " +
+            "Artefakten des FULL_UNIVERSE-Laufs, ohne einen einzigen Kursabruf."
+    },
+    fullHistoricalOhlcvStore: {
+      status: "NOT_DEPLOYED",
+      approximateSize: "~7.4 GB",
+      location: ".market-cache auf einem freigegebenen Actions-Runner",
+      note: "Die Kursreihen sind NICHT ausgeliefert und liegen nirgends im " +
+            "Repository. Wer sie braucht, braucht einen neuen Lauf und einen " +
+            "Ablageort ausserhalb von Git."
+    },
+    priceLevels: {
+      status: "WITHHELD_REDISTRIBUTION",
+      note: "Absolute Kursniveaus bleiben zurueck (§34). Ausgeliefert werden " +
+            "Zustaende, Abstaende und Renditen - nie ein Kurs."
+    }
+  },
+
+  coverage: {
+    securities: zeilen.length,
+    withQualityRow: mitQualitaet,
+    withoutQualityRow: zeilen.length - mitQualitaet,
+    withTechnicalRow: mitTechnical,
+    withFactorRow: mitFaktoren,
+    resolved: gate.accounting.resolved,
+    requested: gate.accounting.requested,
+    dataQuality: gate.dataQuality || null,
+    note: "withQualityRow zaehlt die Titel mit eigener Zeile im Gate-Bericht - das " +
+          "sind alle NICHT-PASS-Titel. Die uebrigen sind sauber durchgelaufen, " +
+          "aber nicht einzeln ausgewiesen (Detailgrenze §26)."
+  },
+
+  /* Die echten Screener-Zaehlungen ueber alle 5.639 auswertbaren Titel.
+     Die Zahlen sind vollstaendig; die Namenslisten sind auf 50 gekuerzt,
+     weil das Artefakt sie so ausliefert. Beides steht dabei. */
+  screenerQuestions: screener ? screener.questions.map((q) => ({
+    id: q.id, label: q.label, kind: q.kind,
+    matched: q.matched === undefined ? null : q.matched,
+    notMatched: q.notMatched === undefined ? null : q.notMatched,
+    notEvaluable: q.notEvaluable === undefined ? null : q.notEvaluable,
+    evaluatedOf: q.evaluatedOf === undefined ? null : q.evaluatedOf,
+    tickers: q.tickers || [],
+    tickersTruncated: !!q.tickersTruncated,
+    tickersNote: q.tickersTruncated
+      ? "Die Namensliste ist im Artefakt auf 50 gekuerzt. Die Zahl links ist vollstaendig."
+      : null
+  })) : [],
+
+  factorCoverage: faktoren ? faktoren.coverage : null,
+  technicalCoverage: technical ? { coverage: technical.coverage, elliott: technical.elliott } : null,
+
+  rows: zeilen
+};
+
+mkdirSync(OUT_DIR, { recursive: true });
+const datei = join(OUT_DIR, "universe.json");
+writeFileSync(datei, JSON.stringify(datensatz));
+
+/* Eine kleine Bilanz daneben - fuer den Zustandsbericht und fuer den
+   Nachweis, ohne die grosse Datei laden zu muessen. */
+const bilanz = Object.assign({}, datensatz, { rows: undefined, screenerQuestions: undefined });
+delete bilanz.rows; delete bilanz.screenerQuestions;
+bilanz.screenerQuestionCount = datensatz.screenerQuestions.length;
+writeFileSync(join(OUT_DIR, "summary.json"), JSON.stringify(bilanz, null, 2) + "\n");
+
+/* ------------------------------------------------------- Die Ansicht
+
+   Auch die Seite entsteht zur Bauzeit und wird nie committet. Damit
+   bleibt GitHub Pages Byte fuer Byte, was es war: dort gibt es diese
+   Datei schlicht nicht.
+
+   Sie ist bewusst klein und eigenstaendig - kein Umbau der Anwendung,
+   kein Vorgriff auf Vision Universe 2.0. Ein Fenster auf das, was
+   gemessen wurde. */
+const ansichtsVerzeichnis = join(root, "preview-universe");
+mkdirSync(ansichtsVerzeichnis, { recursive: true });
+writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Full Universe — Interne Vorschau</title>
+<style>
+ :root { color-scheme: dark; --bg:#0d1117; --karte:#161b22; --rand:#30363d;
+         --text:#e6edf3; --leise:#8b949e; --gut:#3fb950; --warn:#d29922; --schlecht:#f85149; }
+ * { box-sizing:border-box; }
+ body { margin:0; background:var(--bg); color:var(--text); padding:20px 16px 60px;
+        font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+ .huelle { max-width:1180px; margin:0 auto; }
+ .marke { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--leise); }
+ h1 { font-size:22px; margin:4px 0 12px; }
+ .umfang { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+           margin:0 0 20px; }
+ .feld { background:var(--karte); border:1px solid var(--rand); border-radius:8px; padding:12px 14px; }
+ .feld b { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+           color:var(--leise); margin-bottom:4px; }
+ .ja { color:var(--gut); } .nein { color:var(--schlecht); } .teil { color:var(--warn); }
+ .zahlen { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); margin:0 0 20px; }
+ .zahl { background:var(--karte); border:1px solid var(--rand); border-radius:8px; padding:12px 14px; }
+ .zahl .n { font-size:22px; font-weight:600; }
+ .zahl .b { font-size:11px; color:var(--leise); text-transform:uppercase; letter-spacing:.06em; }
+ .werkzeuge { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 12px; }
+ input,select { background:#0d1117; color:var(--text); border:1px solid var(--rand);
+                border-radius:6px; padding:8px 10px; font-size:13px; }
+ input { flex:1 1 220px; min-width:0; }
+ table { width:100%; border-collapse:collapse; font-size:13px; }
+ .tabellenrahmen { overflow-x:auto; border:1px solid var(--rand); border-radius:8px;
+                   background:var(--karte); }
+ th,td { padding:7px 10px; text-align:left; white-space:nowrap; border-bottom:1px solid #21262d; }
+ th { position:sticky; top:0; background:#1c2128; font-size:11px; text-transform:uppercase;
+      letter-spacing:.05em; color:var(--leise); cursor:pointer; user-select:none; }
+ tbody tr:hover { background:#1c2128; }
+ .PASS,.PASS_NOT_ITEMISED { color:var(--gut); } .WARNING { color:var(--warn); }
+ .FAIL,.UNAVAILABLE { color:var(--schlecht); }
+ .fehlt { color:var(--leise); font-style:italic; }
+ .fragen { margin:26px 0 0; }
+ .frage { display:flex; justify-content:space-between; gap:12px; padding:8px 12px;
+          border-bottom:1px solid #21262d; }
+ .frage span:last-child { color:var(--leise); font-variant-numeric:tabular-nums; }
+ footer { margin-top:28px; color:var(--leise); font-size:12px; line-height:1.6; }
+ @media (max-width:480px){ h1{font-size:19px;} body{padding:16px 12px 48px;} }
+</style></head><body><div class="huelle">
+ <p class="marke">Vision Universe® — geschuetzte Vorschau</p>
+ <h1>Full Universe</h1>
+ <div class="umfang" id="umfang"></div>
+ <div class="zahlen" id="zahlen"></div>
+ <div class="werkzeuge">
+   <input id="suche" type="search" placeholder="Ticker suchen — alle 5.684 Titel" autocomplete="off">
+   <select id="boerse"><option value="">Alle Boersen</option></select>
+   <select id="guete"><option value="">Alle Qualitaeten</option></select>
+   <select id="bereinigung"><option value="">Alle Bereinigungsstufen</option></select>
+ </div>
+ <p id="treffer" style="color:var(--leise);font-size:12px;margin:0 0 8px"></p>
+ <div class="tabellenrahmen"><table>
+   <thead><tr>
+     <th data-s="ticker">Ticker</th><th data-s="exchange">Boerse</th>
+     <th data-s="dataQuality">Qualitaet</th><th data-s="bars">Bars</th>
+     <th data-s="historyFrom">ab</th><th data-s="historyTo">bis</th>
+     <th data-s="historyYears">Jahre</th><th data-s="splits">Splits</th>
+     <th data-s="dividends">Div.</th><th data-s="adjustment">Bereinigung</th>
+     <th data-s="technical">Technical</th><th data-s="elliott">Elliott</th>
+   </tr></thead><tbody id="koerper"></tbody>
+ </table></div>
+ <div class="fragen"><h2 style="font-size:15px">Screener — echte Zaehlungen ueber 5.639 auswertbare Titel</h2>
+   <div id="fragenliste"></div></div>
+ <footer id="fuss"></footer>
+</div>
+<script>
+(async function(){
+  const d = await (await fetch("/quant/data/preview/universe.json")).json();
+  const q = (id) => document.getElementById(id);
+
+  const u = d.datasetScope;
+  q("umfang").innerHTML =
+    '<div class="feld"><b>Abgeleitetes Universum</b><span class="ja">VORHANDEN</span> — ' +
+      u.derivedUniverse.securities.toLocaleString("de-DE") + ' Titel</div>' +
+    '<div class="feld"><b>Kurshistorien-Bestand</b><span class="nein">NICHT AUSGELIEFERT</span> — ' +
+      u.fullHistoricalOhlcvStore.approximateSize + '</div>' +
+    '<div class="feld"><b>Kursniveaus</b><span class="teil">ZURUECKGEHALTEN</span> — Lizenzpruefung offen</div>';
+
+  const c = d.coverage;
+  q("zahlen").innerHTML = [
+    ["Titel", c.securities], ["aufgeloest", c.resolved],
+    ["mit Qualitaetszeile", c.withQualityRow], ["mit Technical-Zeile", c.withTechnicalRow],
+    ["mit Faktorzeile", c.withFactorRow]
+  ].map(([b,n]) => '<div class="zahl"><div class="n">' + n.toLocaleString("de-DE") +
+     '</div><div class="b">' + b + '</div></div>').join("");
+
+  const füll = (id, werte) => { const s = q(id);
+    [...new Set(werte.filter(Boolean))].sort().forEach(v => {
+      const o = document.createElement("option"); o.value = o.textContent = v; s.appendChild(o); }); };
+  füll("boerse", d.rows.map(r => r.exchange));
+  füll("guete", d.rows.map(r => r.dataQuality));
+  füll("bereinigung", d.rows.map(r => r.adjustment));
+
+  let sortSpalte = "ticker", sortAuf = true;
+  const z = (v) => v === null || v === undefined ? '<span class="fehlt">—</span>' : v;
+
+  function zeichne(){
+    const s = q("suche").value.trim().toUpperCase();
+    const b = q("boerse").value, g = q("guete").value, a = q("bereinigung").value;
+    let r = d.rows.filter(x =>
+      (!s || x.ticker.includes(s)) && (!b || x.exchange === b) &&
+      (!g || x.dataQuality === g) && (!a || x.adjustment === a));
+    r.sort((x,y) => { const p = x[sortSpalte], k = y[sortSpalte];
+      if (p === k) return x.ticker < y.ticker ? -1 : 1;
+      if (p === null || p === undefined) return 1;
+      if (k === null || k === undefined) return -1;
+      return (p < k ? -1 : 1) * (sortAuf ? 1 : -1); });
+    q("treffer").textContent = r.length.toLocaleString("de-DE") + " von " +
+      d.rows.length.toLocaleString("de-DE") + " Titeln" + (r.length > 500 ? " — erste 500 gezeigt" : "");
+    q("koerper").innerHTML = r.slice(0,500).map(x =>
+      '<tr><td><strong>' + x.ticker + '</strong></td><td>' + z(x.exchange) +
+      '</td><td class="' + (x.dataQuality||"") + '">' + z(x.dataQuality) + '</td><td>' +
+      (x.bars === null ? z(null) : x.bars.toLocaleString("de-DE")) + '</td><td>' + z(x.historyFrom) +
+      '</td><td>' + z(x.historyTo) + '</td><td>' + z(x.historyYears) + '</td><td>' + z(x.splits) +
+      '</td><td>' + z(x.dividends) + '</td><td>' + z(x.adjustment) + '</td><td>' + z(x.technical) +
+      '</td><td>' + z(x.elliott) + '</td></tr>').join("");
+  }
+  ["suche","boerse","guete","bereinigung"].forEach(i => q(i).addEventListener("input", zeichne));
+  document.querySelectorAll("th[data-s]").forEach(th => th.addEventListener("click", () => {
+    const s = th.dataset.s; sortAuf = sortSpalte === s ? !sortAuf : true; sortSpalte = s; zeichne(); }));
+
+  q("fragenliste").innerHTML = d.screenerQuestions.map(f =>
+    '<div class="frage"><span>' + f.label + '</span><span>' +
+    (f.matched === null ? "Rangliste" : f.matched.toLocaleString("de-DE") + " Treffer") +
+    (f.notEvaluable ? " · " + f.notEvaluable + " nicht entscheidbar" : "") + '</span></div>').join("");
+
+  q("fuss").innerHTML = "Stand " + (d.asOf || "unbekannt") + " · " + d.dataSnapshotId +
+    "<br>Abgeleitetes Universum aus geprueften Artefakten. Keine Kursniveaus, keine Kursreihen. " +
+    "Der Kurshistorien-Bestand von rund 7,4 GB ist NICHT ausgeliefert." +
+    "<br>" + c.note;
+})();
+</script></body></html>`);
+
+const mb = Math.round(JSON.stringify(datensatz).length / 1048576 * 10) / 10;
+console.log("\nVision Universe — Vorschaudatensatz\n");
+console.log(`  Gate:            ${GATE}`);
+console.log(`  Titel:           ${zeilen.length}`);
+console.log(`  mit Qualitaetszeile: ${mitQualitaet}  (ohne: ${zeilen.length - mitQualitaet}, sauber durchgelaufen)`);
+console.log(`  mit Technical:   ${mitTechnical}`);
+console.log(`  mit Faktoren:    ${mitFaktoren}  (nur Canary - der Rest fehlt in den Artefakten)`);
+console.log(`  Screenerfragen:  ${datensatz.screenerQuestions.length}`);
+console.log(`  Groesse:         ${mb} MB`);
+console.log(`\n  ABGELEITETES UNIVERSUM: vorhanden`);
+console.log(`  KURSHISTORIEN-BESTAND (~7,4 GB): NICHT ausgeliefert`);
+console.log(`\n  ${datei.replace(root + "/", "")}`);
+console.log(`  preview-universe/index.html\n`);

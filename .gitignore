@@ -27,3 +27,9 @@ scripts/quant/**/__pycache__/
 # zu gross, und Rohdaten-, Display- sowie Derived-Data-Rechte sind
 # ungeklärt. Auch Ausschnitte bleiben bis zur Lizenzfreigabe intern.
 .market-cache/
+
+# Der Vorschaudatensatz und seine Ansicht entstehen zur BAUZEIT (Vercel)
+# und werden nie committet. Genau das haelt GitHub Pages unveraendert:
+# dort gibt es diese Dateien nicht.
+quant/data/preview/
+preview-universe/

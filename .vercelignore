@@ -1,0 +1,11 @@
+# Die Arbeitsablage mit den Kursreihen gehoert nirgendwo hin - schon gar
+# nicht in eine Auslieferung. Sie ist ohnehin gitignored; hier steht sie
+# als zweite Sperre.
+.market-cache
+node_modules
+.git
+
+# Das eigene Vorschauschloss bleibt aus der Vercel-Auslieferung heraus.
+# Vercel schuetzt ueber seine eigene Zugangsschicht; zwei Schloesser
+# nebeneinander waeren eines zu viel und beide schlechter zu pruefen.
+preview
