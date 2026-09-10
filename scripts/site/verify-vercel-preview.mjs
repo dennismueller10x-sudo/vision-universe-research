@@ -395,14 +395,42 @@ async function main() {
             };
           }).catch(() => null);
 
+          /* DIE UNGEFILTERTE TABELLE - der eigentliche Beweis.
+
+             Gemessen wurde bisher nur ?ticker=ORCL, und dort steht
+             genau EINE Zeile, weil der Filter greift. dataRows: 1 ist
+             dann richtig und beweist trotzdem nicht, was die Seite ohne
+             Filter zeigt. Genau diese Luecke - "erreichbar, aber nichts
+             zu sehen" - ist in diesem Projekt schon einmal als
+             bestanden durchgegangen. Also einmal ohne Filter laden und
+             die Zeilen zaehlen. */
+          await page.goto(BASE + "/preview-universe/",
+            { waitUntil: "networkidle", timeout: TIMEOUT }).catch(() => {});
+          const uf = await page.evaluate(() => {
+            const d = document.documentElement;
+            const s = document.getElementById("suche");
+            return {
+              rows: document.querySelectorAll("tbody tr").length,
+              treffer: (document.getElementById("treffer") || {}).textContent || "",
+              placeholder: s ? s.getAttribute("placeholder") : null,
+              evaluable: (document.getElementById("auswertbar") || {}).textContent || null,
+              overflowPx: Math.max(0, d.scrollWidth - d.clientWidth)
+            };
+          }).catch(() => null);
+          if (g && uf) { g.unfiltered = uf; }
+
           if (ansicht.id === "desktop") {
             pruefe("V6", "Einzeltitel oeffnet sich",
-              g && g.detailVisible && g.dataRows > 0 && g.screenerRows === 18 ? "PASS" : "FAIL",
+              g && g.detailVisible && g.dataRows > 0 && g.screenerRows === 18 &&
+              g.unfiltered && g.unfiltered.rows > 100 ? "PASS" : "FAIL",
               g || "keine Messung moeglich");
           } else {
             pruefe("V7", "Mobil 390 px ohne Ueberlauf",
-              g && g.overflowPx <= 2 && g.dataRows > 0 ? "PASS" : "FAIL",
-              g ? { overflowPx: g.overflowPx, dataRows: g.dataRows } : "keine Messung moeglich");
+              g && g.overflowPx <= 2 && g.dataRows > 0 &&
+              g.unfiltered && g.unfiltered.rows > 100 && g.unfiltered.overflowPx <= 2
+                ? "PASS" : "FAIL",
+              g ? { overflowPx: g.overflowPx, dataRows: g.dataRows,
+                    unfiltered: g.unfiltered } : "keine Messung moeglich");
           }
 
           /* Schluesselsuche im wirklich ausgelieferten Inhalt. */
