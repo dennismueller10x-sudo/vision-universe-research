@@ -124,7 +124,7 @@
    * @param {object} opts {dates, series:[{values,label,className}], height, yFormat, yDomain, title}
    */
   function lineChart(opts) {
-    var w = 900, h = opts.height || 240;
+    var w = Number.isFinite(opts.width) && opts.width >= 300 ? opts.width : 900, h = opts.height || 240;
     var svg = base(w, h, opts.title || "Zeitreihe", opts.description);
     var dates = opts.dates || [];
     var all = [];
