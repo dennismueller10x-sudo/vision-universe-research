@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-09T17:19:50.436Z",
+  "generatedAt": "2026-09-11T09:03:28.247Z",
   "note": "Pruefungen, die erst ueber viele Titel sichtbar werden. Je Titel prueft market-quality.js; beide zusammen ergeben das Urteil.",
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null
+    "source": "github-actions",
+    "runId": "34574226888",
+    "commit": "4f4aa791254403515c8d72cd23cc5ce94b141ebd"
   },
   "thresholds": {
     "maxDateSpreadTradingDays": 5,
@@ -28,47 +28,47 @@
     {
       "severity": "WARNING",
       "check": "dateAlignment",
-      "message": "34 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.6 % der aufgeloesten).",
+      "message": "63 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.8 % der aufgeloesten).",
       "examples": [
         {
           "ticker": "WBS",
-          "staleTradingDays": 14
+          "staleTradingDays": 16
         },
         {
           "ticker": "LEG",
-          "staleTradingDays": 9
+          "staleTradingDays": 11
         },
         {
           "ticker": "AVB",
-          "staleTradingDays": 17
+          "staleTradingDays": 19
         },
         {
           "ticker": "HLX",
-          "staleTradingDays": 6
-        },
-        {
-          "ticker": "AREN",
           "staleTradingDays": 8
         },
         {
+          "ticker": "AREN",
+          "staleTradingDays": 10
+        },
+        {
           "ticker": "TWO",
-          "staleTradingDays": 11
+          "staleTradingDays": 13
         },
         {
           "ticker": "BCAR",
-          "staleTradingDays": 9
-        },
-        {
-          "ticker": "RMAX",
           "staleTradingDays": 11
         },
         {
-          "ticker": "LBRDA",
+          "ticker": "RMAX",
           "staleTradingDays": 13
         },
         {
+          "ticker": "LBRDA",
+          "staleTradingDays": 15
+        },
+        {
           "ticker": "LBRDK",
-          "staleTradingDays": 13
+          "staleTradingDays": 15
         }
       ]
     }

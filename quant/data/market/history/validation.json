@@ -1,0 +1,373 @@
+{
+  "generatedAt": "2026-09-11T09:04:42.932Z",
+  "validation": "HISTORY_STORE_FULL",
+  "gate": "FULL_UNIVERSE",
+  "provider": "tiingo",
+  "market": "US",
+  "storage": {
+    "kind": "s3",
+    "prefix": "v1/tiingo/daily/US/",
+    "codec": "zstd"
+  },
+  "counts": {
+    "universeSymbols": 7803,
+    "storedSymbols": 7802,
+    "storedObjects": 7802,
+    "indexCount": 7802,
+    "missingExpected": 1,
+    "extraNotInUniverse": 0,
+    "duplicateKeys": 0,
+    "corruptObjects": 0,
+    "failedRoundTrips": 0,
+    "metadataIncomplete": 0
+  },
+  "storageBytes": 569295883,
+  "storageGB": 0.569,
+  "bars": {
+    "total": 23783891,
+    "averagePerSymbol": 3048,
+    "shortest": 1,
+    "longest": 9240,
+    "p10": 143,
+    "median": 1718,
+    "p90": 8576,
+    "oldestDate": "1990-01-02",
+    "newestDate": "2026-09-10"
+  },
+  "chartReadiness": {
+    "HISTORICAL_SERIES_READY": 6618,
+    "HISTORICAL_SERIES_MISSING": 1185,
+    "CHART_READY_PERCENT": 84.81,
+    "minBarsRequired": 250
+  },
+  "sample": {
+    "requested": 25,
+    "checked": 25,
+    "ok": 25,
+    "corrupt": 0,
+    "excludedGoldenFive": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "JPM",
+      "XOM"
+    ],
+    "rows": [
+      {
+        "ticker": "MTRX",
+        "bars": 8696,
+        "first": "1992-02-26",
+        "last": "2026-09-10",
+        "bytes": 126038
+      },
+      {
+        "ticker": "DRVN",
+        "bars": 1419,
+        "first": "2021-01-15",
+        "last": "2026-09-10",
+        "bytes": 21886
+      },
+      {
+        "ticker": "APOG",
+        "bars": 9240,
+        "first": "1990-01-02",
+        "last": "2026-09-10",
+        "bytes": 267115
+      },
+      {
+        "ticker": "AUPH",
+        "bars": 3017,
+        "first": "2014-09-03",
+        "last": "2026-09-10",
+        "bytes": 44546
+      },
+      {
+        "ticker": "SPOK",
+        "bars": 5487,
+        "first": "2004-11-17",
+        "last": "2026-09-10",
+        "bytes": 161873
+      },
+      {
+        "ticker": "IPSC",
+        "bars": 1313,
+        "first": "2021-06-18",
+        "last": "2026-09-10",
+        "bytes": 19612
+      },
+      {
+        "ticker": "BACA",
+        "bars": 862,
+        "first": "2021-11-18",
+        "last": "2026-09-10",
+        "bytes": 6795
+      },
+      {
+        "ticker": "WAVE",
+        "bars": 1304,
+        "first": "2021-07-01",
+        "last": "2026-09-10",
+        "bytes": 18692
+      },
+      {
+        "ticker": "CGEM",
+        "bars": 1424,
+        "first": "2021-01-08",
+        "last": "2026-09-10",
+        "bytes": 22437
+      },
+      {
+        "ticker": "PTORU",
+        "bars": 159,
+        "first": "2026-01-23",
+        "last": "2026-09-10",
+        "bytes": 1778
+      },
+      {
+        "ticker": "BROS",
+        "bars": 1252,
+        "first": "2021-09-15",
+        "last": "2026-09-10",
+        "bytes": 21844
+      },
+      {
+        "ticker": "RIBBR",
+        "bars": 378,
+        "first": "2025-03-07",
+        "last": "2026-09-10",
+        "bytes": 2892
+      },
+      {
+        "ticker": "TACH",
+        "bars": 321,
+        "first": "2025-06-02",
+        "last": "2026-09-10",
+        "bytes": 3156
+      },
+      {
+        "ticker": "SVMH",
+        "bars": 425,
+        "first": "2023-12-08",
+        "last": "2026-09-10",
+        "bytes": 7535
+      },
+      {
+        "ticker": "IPXGW",
+        "bars": 10,
+        "first": "2026-08-27",
+        "last": "2026-09-10",
+        "bytes": 427
+      },
+      {
+        "ticker": "TEO",
+        "bars": 7990,
+        "first": "1994-12-09",
+        "last": "2026-09-10",
+        "bytes": 219887
+      },
+      {
+        "ticker": "SCZM",
+        "bars": 161,
+        "first": "2026-01-21",
+        "last": "2026-09-10",
+        "bytes": 2926
+      },
+      {
+        "ticker": "SPGI",
+        "bars": 6454,
+        "first": "2001-01-02",
+        "last": "2026-09-10",
+        "bytes": 245995
+      },
+      {
+        "ticker": "TV",
+        "bars": 8240,
+        "first": "1993-12-14",
+        "last": "2026-09-10",
+        "bytes": 236479
+      },
+      {
+        "ticker": "TGLS",
+        "bars": 3604,
+        "first": "2012-05-10",
+        "last": "2026-09-10",
+        "bytes": 100802
+      },
+      {
+        "ticker": "BPYPM",
+        "bars": 1287,
+        "first": "2021-07-27",
+        "last": "2026-09-10",
+        "bytes": 37568
+      },
+      {
+        "ticker": "AHD",
+        "bars": 79,
+        "first": "2026-05-19",
+        "last": "2026-09-10",
+        "bytes": 2458
+      },
+      {
+        "ticker": "NGVC",
+        "bars": 3552,
+        "first": "2012-07-25",
+        "last": "2026-09-10",
+        "bytes": 112309
+      },
+      {
+        "ticker": "GXRP",
+        "bars": 199,
+        "first": "2025-11-24",
+        "last": "2026-09-10",
+        "bytes": 3529
+      },
+      {
+        "ticker": "GIBOW",
+        "bars": 335,
+        "first": "2025-05-09",
+        "last": "2026-09-10",
+        "bytes": 3176
+      }
+    ],
+    "problems": []
+  },
+  "missingSymbols": [
+    "GLMD"
+  ],
+  "zeroCost": {
+    "version": "zero-cost-guard-1.0.0",
+    "verdict": "ZERO_COST_GUARD_PASSED",
+    "operation": "VALIDATION",
+    "month": "2026-09",
+    "evaluatedAt": "2026-09-11T09:04:42.921Z",
+    "CURRENT_STORAGE_BYTES": 569295883,
+    "PROJECTED_STORAGE_BYTES": 569295883,
+    "ESTIMATED_CLASS_A": 0,
+    "ESTIMATED_CLASS_B": 0,
+    "PROJECTED_FREE_TIER_USAGE_PERCENT": 5.69,
+    "limits": [
+      {
+        "id": "STORAGE",
+        "current": 569295883,
+        "projected": 569295883,
+        "ceiling": 8000000000,
+        "freeTier": 10000000000,
+        "unit": "bytes",
+        "projectedFreeTierPercent": 5.69,
+        "projectedCeilingPercent": 7.12,
+        "headroom": 7430704117,
+        "exceeded": false
+      },
+      {
+        "id": "CLASS_A",
+        "current": 7804,
+        "projected": 8004,
+        "ceiling": 750000,
+        "freeTier": 1000000,
+        "unit": "operations",
+        "projectedFreeTierPercent": 0.8,
+        "projectedCeilingPercent": 1.07,
+        "headroom": 741996,
+        "exceeded": false
+      },
+      {
+        "id": "CLASS_B",
+        "current": 7804,
+        "projected": 8004,
+        "ceiling": 7500000,
+        "freeTier": 10000000,
+        "unit": "operations",
+        "projectedFreeTierPercent": 0.08,
+        "projectedCeilingPercent": 0.11,
+        "headroom": 7491996,
+        "exceeded": false
+      }
+    ],
+    "exceeded": [],
+    "estimate": {
+      "kind": "VALIDATION",
+      "classAOperations": 0,
+      "classBOperations": 0,
+      "breakdown": {
+        "objectWrites": 0,
+        "indexWrites": 0,
+        "listPages": 0,
+        "objectReads": 0,
+        "objectHeads": 0
+      },
+      "bytesDelta": 0,
+      "note": "LIST zaehlt als Class A, obwohl es nichts schreibt."
+    },
+    "currentUsage": {
+      "month": "2026-09",
+      "classAOperations": 7804,
+      "classBOperations": 7804,
+      "storageBytes": 569295883,
+      "objectCount": 7802,
+      "updatedAt": "2026-09-11T08:55:25.509Z"
+    },
+    "freeTier": {
+      "provider": "cloudflare-r2",
+      "storageBytes": 10000000000,
+      "classAOperations": 1000000,
+      "classBOperations": 10000000,
+      "egressBytes": null,
+      "note": "Freigrenzen laut Anbieter. Sie sind die Klippe, nicht das Ziel."
+    },
+    "ceiling": {
+      "storageBytes": 8000000000,
+      "classAOperations": 750000,
+      "classBOperations": 7500000,
+      "note": "Sicherheitsgrenzen des Eigentuemers. Ein Lauf, der sie reissen wuerde, schreibt nicht - er fragt."
+    },
+    "bookkeepingReserve": {
+      "classA": 200,
+      "classB": 200
+    },
+    "ownerDecisionRequired": false,
+    "reason": "Alle Sicherheitsgrenzen eingehalten."
+  },
+  "budgetSpent": {
+    "classA": 8,
+    "classB": 7828,
+    "bytesUploaded": 0,
+    "bytesDownloaded": 1691755,
+    "writesSkipped": 0
+  },
+  "checks": [
+    {
+      "id": "ALL_UNIVERSE_SYMBOLS_STORED",
+      "status": "FAIL",
+      "detail": "7802 gespeichert, 1 fehlen (z.B. GLMD)"
+    },
+    {
+      "id": "NO_DUPLICATE_KEYS",
+      "status": "PASS",
+      "detail": "7802 eindeutige Schluessel"
+    },
+    {
+      "id": "METADATA_COMPLETE",
+      "status": "PASS",
+      "detail": "7802/7802 mit first/last/bars"
+    },
+    {
+      "id": "SAMPLE_ROUND_TRIP",
+      "status": "PASS",
+      "detail": "25/25 Stichproben gelesen und geprueft (ausserhalb der Golden Five)"
+    },
+    {
+      "id": "CHART_READY",
+      "status": "FAIL",
+      "detail": "6618/7803 mit mindestens 250 Kerzen (84.81 %)"
+    },
+    {
+      "id": "ZERO_COST_WITHIN_CEILING",
+      "status": "PASS",
+      "detail": "Speicher 0.57 GB, Class A 7.804, Class B 7.804"
+    }
+  ],
+  "redistribution": {
+    "priceLevels": "NONE_IN_THIS_REPORT",
+    "note": "Anzahlen, Datumsgrenzen und Byte-Groessen. Keine Kurse."
+  }
+}
