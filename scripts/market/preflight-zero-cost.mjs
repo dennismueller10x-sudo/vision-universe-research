@@ -20,6 +20,7 @@
    Ausfuehren:
      node scripts/market/preflight-zero-cost.mjs --operation BACKFILL
      node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE
+     node scripts/market/preflight-zero-cost.mjs --operation READ_ONLY
      node scripts/market/preflight-zero-cost.mjs --operation BACKFILL --offline
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -50,7 +51,8 @@ const OUT = arg("--out", join(root, "quant", "data", "market", "history", "prefl
 const BYTES_PER_BAR = 40.7;
 const AVG_BARS_PER_SYMBOL = 4085;
 
-const KNOWN_OPERATIONS = ["BACKFILL", "BULK_UPLOAD", "DAILY_UPDATE", "RECOVERY", "REINDEX"];
+const KNOWN_OPERATIONS = ["BACKFILL", "BULK_UPLOAD", "DAILY_UPDATE", "RECOVERY",
+                          "REINDEX", "READ_ONLY"];
 if (!KNOWN_OPERATIONS.includes(OPERATION)) {
   console.error(`Unbekannte Operation '${OPERATION}'. Bekannt: ${KNOWN_OPERATIONS.join(", ")}`);
   process.exit(2);
@@ -125,6 +127,20 @@ function planFor(operation, ctx) {
         listPages: Math.ceil(Math.max(storedObjects, 1) / 1000),
         indexWrites: Math.max(1, Math.ceil(toFetch / 100)),
         bytesDelta: Math.round(newSymbols * AVG_BARS_PER_SYMBOL * BYTES_PER_BAR)
+      };
+    /* Ein Lauf, der NUR liest: Deckungskennzahlen, Pruefungen,
+       Auswertungen. Er schreibt nichts - auch keinen Index. Er
+       trotzdem durch die Vorpruefung zu schicken ist kein Ritual: es
+       ist die Stelle, an der ein versehentlicher Schreibzugriff
+       auffiele, weil objectWrites hier null IST und nicht null sein
+       soll. */
+    case "READ_ONLY":
+      return {
+        kind: operation,
+        objectWrites: 0, indexWrites: 0,
+        objectHeads: 1,                /* der Index selbst */
+        objectReads: Math.max(totalSymbols, 1),
+        listPages: 0, bytesDelta: 0
       };
     case "REINDEX":
       return {

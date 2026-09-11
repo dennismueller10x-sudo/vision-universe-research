@@ -1,0 +1,350 @@
+name: US-Aktienuniversum — Aufraeumen nach dem Backfill
+
+# NACH dem Backfill, nicht noch einmal davor.
+#
+# Der Backfill ist abgenommen: 7.802 Historien liegen in R2. Dieser
+# Workflow holt KEINE Kurse. Er korrigiert, was der Backfill mitgenommen
+# hat, ohne ihn rueckgaengig zu machen:
+#
+#   1. Der Klassierer kennt jetzt die punktlose NASDAQ-Schreibweise
+#      (AACBW statt AACB-W) und belegt sie am Stammsymbol.
+#   2. Eine Eignungsschicht sagt je Titel, ob er ins Produkt gehoert -
+#      NEBEN der Mitgliedschaft, nicht statt ihrer.
+#   3. Aus der einen Zahl "84,81 % CHART_READY" werden drei Kennzahlen,
+#      die drei verschiedene Fragen beantworten, plus eine
+#      Langhistorienquote auf einem Nenner, der die Frage kennt.
+#
+# DREI DINGE TUT ER AUSDRUECKLICH NICHT
+#
+#   Er holt keine Kursdaten.        TIINGO PRICE REQUESTS = 0
+#   Er loescht kein R2-Objekt.      Der Speicher wird nur gelesen.
+#   Er verkleinert den Bestand      universe-FULL_UNIVERSE.json bleibt
+#   nicht.                          zeichengleich; das wird nachgerechnet.
+#
+# Die einzige Anbieteranfrage ist supported_tickers.zip - eine offene
+# Datei von rund 800 KB, kein Kursabruf.
+#
+# AUSLOESER
+#
+#   [us-cleanup]        auf einem Entwicklungsbranch
+#   workflow_dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      rebuildDerived:
+        description: 'Faktoren und Technical fuer das Produktuniversum neu rechnen (laedt alle Reihen aus R2)'
+        type: boolean
+        default: true
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'quant/engines/us-security-master.js'
+      - 'quant/engines/coverage-metrics.js'
+      - 'scripts/market/build-us-eligibility.mjs'
+      - 'scripts/market/build-coverage-metrics.mjs'
+      - 'quant/tests/coverage-metrics.test.mjs'
+      - '.github/workflows/us-equity-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    name: Aufraeumen ohne Kursabruf
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    concurrency:
+      group: us-equity-cleanup-${{ github.ref }}
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[us-cleanup]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Erst die Engines, dann der Lauf. Ein Aufraeumen auf einem
+      # kaputten Klassierer waere schlimmer als keins: es sieht aus wie
+      # ein Befund und entfernt echte Titel.
+      #
+      # Ohne job-weites env: die Regressionssuite prueft unter anderem
+      # das Verhalten OHNE Schluessel. Ein durchgereichter Schluessel
+      # laesst sie am falschen Ort bestehen.
+      - name: Engine- und Abgleichstests
+        run: |
+          node --test quant/tests/us-security-master.test.mjs
+          node --test quant/tests/coverage-metrics.test.mjs
+          node --test quant/tests/us-universe-expansion.test.mjs
+
+      - name: Bestand vor dem Lauf festhalten
+        run: |
+          node -e '
+            const { createHash } = require("crypto");
+            const fs = require("fs");
+            const p = "quant/data/market/scale/universe-FULL_UNIVERSE.json";
+            const raw = fs.readFileSync(p);
+            const u = JSON.parse(raw);
+            fs.writeFileSync("/tmp/before.json", JSON.stringify({
+              sha256: createHash("sha256").update(raw).digest("hex"),
+              count: u.securities.length,
+              tickers: u.securities.map((s) => s.ticker)
+            }));
+            console.log("Bestand vor dem Lauf: " + u.securities.length + " Titel");
+          '
+
+      # ------------------------------------------------ 1. Entdeckung neu
+      #
+      # Mit dem korrigierten Klassierer, aber derselben Quelle wie
+      # vorher: die offene Tickerliste. Der Schluessel wird
+      # mitgeschickt, wo er hinterlegt ist, damit die Anfrage dem Konto
+      # zurechenbar bleibt - die Datei liegt nicht hinter ihm.
+      - name: Entdeckung und Abgleich neu (0 Kursabfragen)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/build-us-security-master.mjs
+
+      - name: Keine Kursabfrage gestellt
+        run: |
+          node -e '
+            const r = require("./quant/data/market/security-master/reconciliation.json");
+            const f = r.providerFetch || {};
+            if (f.status !== "FETCHED") {
+              throw new Error("Die Tickerliste wurde nicht geladen: " + JSON.stringify(f));
+            }
+            if (!/supported_tickers/.test(JSON.stringify(f))) {
+              throw new Error("Unerwartete Quelle - dieser Lauf darf nur die Tickerliste holen.");
+            }
+            console.log("Anbieterquelle: supported_tickers. Kursabfragen: 0.");
+          '
+
+      # ------------------------------------------------ 2. Eignungsschicht
+      - name: Produkteignung bestimmen
+        run: node scripts/market/build-us-eligibility.mjs
+
+      - name: Die Mitgliedschaft ist unveraendert
+        run: |
+          node -e '
+            const { createHash } = require("crypto");
+            const fs = require("fs");
+            const before = JSON.parse(fs.readFileSync("/tmp/before.json", "utf8"));
+            const p = "quant/data/market/scale/universe-FULL_UNIVERSE.json";
+            const raw = fs.readFileSync(p);
+            const after = createHash("sha256").update(raw).digest("hex");
+            if (after !== before.sha256) {
+              throw new Error("universe-FULL_UNIVERSE.json wurde veraendert. Das darf dieser Lauf nicht.");
+            }
+            const e = require("./quant/data/market/security-master/eligibility.json");
+            if (e.counts.universeMembers !== before.count) {
+              throw new Error("Eignungsschicht fuehrt " + e.counts.universeMembers +
+                              " Mitglieder, erwartet " + before.count + ".");
+            }
+            const summe = e.counts.ELIGIBLE + e.counts.SEPARATE_CLASS +
+                          e.counts.EXCLUDED + e.counts.REVIEW;
+            if (summe !== before.count) {
+              throw new Error("Nicht jedes Mitglied hat ein Urteil: " + summe + " von " + before.count);
+            }
+            const rec = require("./quant/data/market/security-master/eligibility-reconciliation.json");
+            if (rec.totals.universeMembers !== before.count) throw new Error("Abgleich zaehlt falsch.");
+            if (rec.invariants.noMemberRemoved !== true) throw new Error("Mitglied entfernt.");
+            if (rec.invariants.noR2ObjectDeleted !== true) throw new Error("R2-Objekt geloescht.");
+            console.log("Mitgliedschaft unveraendert (" + before.count + "), jedes Mitglied beurteilt.");
+            console.log("Eignungsaenderungen ausgewiesen: " + rec.totals.changed);
+          '
+
+      # -------------------------------------------- 3. Nullkosten-Vorpruefung
+      #
+      # Dieser Lauf schreibt nichts nach R2. Die Vorpruefung laeuft
+      # trotzdem: sie ist die Stelle, an der ein unbeabsichtigter
+      # Schreibzugriff auffiele.
+      - name: Nullkosten-Vorpruefung (nur Lesen)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          [ -z "$VU_HISTORY_S3_BUCKET" ] && { echo "Kein R2-Eimer hinterlegt."; exit 1; }
+          node scripts/market/preflight-zero-cost.mjs \
+            --operation READ_ONLY --gate FULL_UNIVERSE
+
+      # ------------------------------------------------ 4. Kennzahlen
+      - name: Deckungskennzahlen aus dem R2-Index
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/build-coverage-metrics.mjs --gate FULL_UNIVERSE
+
+      - name: Die drei Kennzahlen sind wirklich drei
+        run: |
+          node -e '
+            const c = require("./quant/data/market/history/coverage-metrics.json");
+            const t = c.thresholds;
+            if (t.chartMinBars === t.longHistoryMinBars) {
+              throw new Error("Chart- und Langhistorienschwelle sind gleich. " +
+                              "Dann misst CHART_AVAILABILITY wieder die falsche Frage.");
+            }
+            if (t.chartMinBars !== 2) throw new Error("Chartschwelle ist nicht die der Chart-Engine.");
+            if (t.technicalMinBars !== 300) throw new Error("Technikschwelle stimmt nicht.");
+            const scale = require("./quant/config/tiingo-scale.json");
+            if (scale.pass.minHistoryCoverageRate !== 0.9) {
+              throw new Error("minHistoryCoverageRate wurde veraendert. Der Nenner war das Thema, nicht die Schwelle.");
+            }
+            const L = c.LONG_HISTORY;
+            const draussen = Object.values(L.notEligibleByReason).reduce((a, b) => a + b, 0);
+            if (L.ELIGIBLE_FOR_LONG_HISTORY_CHECK + draussen !== L.universeSize) {
+              throw new Error("Nicht jedes Mitglied steht im Nenner oder mit Grund daneben.");
+            }
+            if (L.PASS + L.FAIL !== L.ELIGIBLE_FOR_LONG_HISTORY_CHECK) {
+              throw new Error("PASS + FAIL ergibt nicht den Nenner.");
+            }
+            console.log("STORAGE_COVERAGE             " + c.STORAGE_COVERAGE.STORAGE_COVERAGE_PERCENT + " %");
+            console.log("CHART_AVAILABILITY           " + c.CHART_AVAILABILITY.CHART_AVAILABILITY_PERCENT + " %");
+            console.log("TECHNICAL_HISTORY_ELIGIBILITY " + c.TECHNICAL_HISTORY_ELIGIBILITY.TECHNICAL_HISTORY_ELIGIBILITY_PERCENT + " %");
+            console.log("LONG_HISTORY_COVERAGE_PERCENT " + L.LONG_HISTORY_COVERAGE_PERCENT + " % auf " +
+                        L.ELIGIBLE_FOR_LONG_HISTORY_CHECK + " geeigneten Titeln -> " + (L.ok ? "PASS" : "FAIL"));
+          '
+
+      # -------------------------------- 5. Abgeleitete Artefakte neu rechnen
+      #
+      # Nur die, die von der Mitgliedschaft abhaengen, und ausschliesslich
+      # aus R2. Die gelieferten FULL_UNIVERSE-Artefakte bleiben stehen -
+      # daneben entstehen die des Produktuniversums.
+      - name: Reihen aus R2 in die Arbeitsablage holen
+        if: github.event_name != 'workflow_dispatch' || inputs.rebuildDerived
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/market/sync-history-store.mjs --pull \
+            --gate ELIGIBLE_US_EQUITY --operation READ_ONLY
+
+      - name: Faktoren des Produktuniversums
+        if: github.event_name != 'workflow_dispatch' || inputs.rebuildDerived
+        run: node scripts/market/build-market-factors.mjs --gate ELIGIBLE_US_EQUITY
+
+      - name: Technical des Produktuniversums
+        if: github.event_name != 'workflow_dispatch' || inputs.rebuildDerived
+        run: node scripts/technical/run-technical-scale.mjs --gate ELIGIBLE_US_EQUITY
+
+      # ------------------------------------------------ 6. Grenzen pruefen
+      - name: Kein Schluessel im Bericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Die gelieferten Bestandsartefakte sind unberuehrt
+        run: |
+          git diff --exit-code -- \
+            quant/data/market/scale/universe-FULL_UNIVERSE.json \
+            quant/data/market/scale/universe-GATE_100.json \
+            quant/data/market/scale/universe-GATE_500.json \
+            quant/data/market/scale/universe-GATE_2000.json \
+            quant/data/market/scale/gate-FULL_UNIVERSE.json
+
+      - name: Artefakte gegen die Engines pruefen
+        run: |
+          node --test quant/tests/us-security-master.test.mjs
+          node --test quant/tests/coverage-metrics.test.mjs
+
+      - name: Berichte sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-equity-cleanup
+          path: |
+            quant/data/market/security-master/
+            quant/data/market/history/coverage-metrics.json
+          if-no-files-found: warn
+
+      - name: Ergebnis committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/security-master \
+                  quant/data/market/history \
+                  quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
+                  quant/data/market/factors quant/data/technical
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "US-Aufraeumen: Eignungsschicht und drei Deckungskennzahlen (Lauf ${{ github.run_id }})"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### US-Aktienuniversum — Aufraeumen nach dem Backfill'
+            echo ''
+            echo 'Kursabfragen: **0**   R2-Objekte geloescht: **0**'
+            echo ''
+            if [ -f quant/data/market/security-master/eligibility.json ]; then
+              node -e '
+                const e = require("./quant/data/market/security-master/eligibility.json");
+                const r = require("./quant/data/market/security-master/eligibility-reconciliation.json");
+                console.log("#### Produkteignung");
+                console.log("");
+                console.log("| Ausgang | Titel |");
+                console.log("|---|---:|");
+                for (const k of ["ELIGIBLE", "SEPARATE_CLASS", "REVIEW", "EXCLUDED"]) {
+                  console.log("| " + k + " | " + e.counts[k] + " |");
+                }
+                console.log("| _Mitglieder gesamt_ | " + e.counts.universeMembers + " |");
+                console.log("");
+                console.log("Ausgeschlossen nach Gattung: " +
+                  Object.entries(e.excludedByClass).map(([k, v]) => k + " " + v).join(", "));
+                console.log("");
+                console.log("Eignungsaenderungen einzeln ausgewiesen: **" + r.totals.changed + "**");
+              '
+            fi
+            echo ''
+            if [ -f quant/data/market/history/coverage-metrics.json ]; then
+              node -e '
+                const c = require("./quant/data/market/history/coverage-metrics.json");
+                const S = c.STORAGE_COVERAGE, C = c.CHART_AVAILABILITY,
+                      T = c.TECHNICAL_HISTORY_ELIGIBILITY, L = c.LONG_HISTORY;
+                console.log("#### Drei Kennzahlen statt einer");
+                console.log("");
+                console.log("| Kennzahl | Schwelle | Zaehler/Nenner | Wert |");
+                console.log("|---|---:|---:|---:|");
+                console.log("| STORAGE_COVERAGE | — | " + S.stored + "/" + S.denominator + " | " + S.STORAGE_COVERAGE_PERCENT + " % |");
+                console.log("| CHART_AVAILABILITY | " + c.thresholds.chartMinBars + " Bars | " + C.renderable + "/" + C.denominator + " | " + C.CHART_AVAILABILITY_PERCENT + " % |");
+                console.log("| TECHNICAL_HISTORY_ELIGIBILITY | " + c.thresholds.technicalMinBars + " Bars | " + T.eligible + "/" + T.denominator + " | " + T.TECHNICAL_HISTORY_ELIGIBILITY_PERCENT + " % |");
+                console.log("");
+                console.log("#### Langhistorie auf nennerbewusster Eignung");
+                console.log("");
+                console.log("| Feld | Wert |");
+                console.log("|---|---:|");
+                console.log("| ELIGIBLE_FOR_LONG_HISTORY_CHECK | " + L.ELIGIBLE_FOR_LONG_HISTORY_CHECK + " |");
+                console.log("| PASS | " + L.PASS + " |");
+                console.log("| FAIL | " + L.FAIL + " |");
+                console.log("| LONG_HISTORY_COVERAGE_PERCENT | " + L.LONG_HISTORY_COVERAGE_PERCENT + " % |");
+                console.log("| Schwelle (unveraendert) | " + (L.threshold * 100) + " % |");
+                console.log("| Urteil | " + (L.ok ? "PASS" : "FAIL") + " |");
+                console.log("");
+                console.log("Nicht im Nenner: " +
+                  Object.entries(L.notEligibleByReason).map(([k, v]) => k + " " + v).join(", "));
+                console.log("");
+                console.log("_Die alte Einzelkennzahl war " + c.legacy.percent + " % (" +
+                  c.legacy.pass + "/" + c.legacy.denominator + ") und mischte alle drei Fragen._");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -51,13 +51,13 @@
     ? require("./instrument-classification.js")
     : global.VUInstrumentClassification;
 
-  var VERSION = "us-security-master-1.0.0";
+  var VERSION = "us-security-master-1.1.0";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
     "EQUITY_COMMON", "ADR", "REIT", "SPAC", "PREFERRED", "TRUST",
     "ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-    "WARRANT", "UNIT", "RIGHT", "OTHER", "UNKNOWN"
+    "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "OTHER", "UNKNOWN"
   ];
 
   /* Die Politik aus der Aufgabenstellung, als Daten und nicht als
@@ -70,7 +70,7 @@
     SEPARATE: ["ADR", "REIT", "SPAC", "TRUST", "PREFERRED"],
     /* Keine Aktien. Bleiben im Stamm, zaehlen aber nirgends mit. */
     EXCLUDE: ["ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-              "WARRANT", "UNIT", "RIGHT"]
+              "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY"]
   };
 
   function policyBucket(cls) {
@@ -150,6 +150,74 @@
                root: t.slice(0, t.lastIndexOf("-")), shareClass: base.shareClass };
     }
     return null;
+  }
+
+  /* ------------------------------- NASDAQ OHNE BINDESTRICH
+
+     Die zweite Luecke, gefunden im Erweiterungslauf 34574226888: 583 der
+     2.119 Neuzugaenge waren keine Stammaktien.
+
+     Tiingo schreibt Sondergattungen mit Bindestrich. Die NASDAQ tut das
+     NICHT: sie haengt einen fuenften Buchstaben an einen vierstelligen
+     Stamm. AACB ist die Aktie, AACBU die Unit, AACBW der Optionsschein,
+     AACBR das Bezugsrecht.
+
+     DER SUFFIX ALLEIN REICHT NICHT, und das ist der Kern dieser Regel.
+     Es gibt echte vierstellige Gesellschaften, deren Name zufaellig auf
+     W, R oder U endet. Wer allein nach dem letzten Buchstaben geht,
+     wirft sie mit hinaus.
+
+     Der Beleg ist der STAMM: existiert der vierstellige Rumpf als
+     eigenes Listing, dann ist der fuenfstellige Ticker mit hoher
+     Wahrscheinlichkeit sein Derivat. 471 der 583 gefundenen Faelle
+     tragen ihren Stamm - das SPAC-Muster.
+
+     Ohne diesen Beleg bleibt es ein Verdacht: die Zeile wird als
+     Verdachtsfall gefuehrt und landet in REVIEW, nicht im Ausschluss. */
+  var FIFTH_LETTER = { W: "WARRANT", R: "RIGHT", U: "UNIT" };
+
+  function nasdaqFifthLetter(ticker, listedRoots) {
+    var t = upper(ticker);
+    /* Genau fuenf Zeichen, keine Sonderzeichen, letzter Buchstabe W/R/U. */
+    if (!/^[A-Z]{5}$/.test(t)) return null;
+    var kind = FIFTH_LETTER[t.charAt(4)];
+    if (!kind) return null;
+    var root = t.slice(0, 4);
+    var rootListed = !!(listedRoots && listedRoots[root]);
+    return {
+      type: kind, basis: rootListed ? "nasdaqFifthLetterWithListedRoot" : "nasdaqFifthLetterOnly",
+      marker: t.charAt(4), root: root, rootListed: rootListed, series: null
+    };
+  }
+
+  /* Testpapiere des Anbieters. Eng gefasst: ein Ticker, der TEST mit
+     hoechstens einem fuehrenden Buchstaben und optionaler Klasse
+     enthaelt. Weiter gefasst wuerde die Regel echte Gesellschaften
+     treffen, und ein faelschlich ausgeschlossenes Unternehmen ist
+     teurer als ein durchgerutschtes Testpapier. */
+  function looksLikeTestSecurity(ticker) {
+    return /^[A-Z]?TEST[0-9]?(-[A-Z])?$/.test(upper(ticker));
+  }
+
+  /* Der Stammbeleg. Aus einer Menge von Zeilen (Anbieterliste UND
+     gelieferter Bestand) wird die Menge der eigenstaendig gelisteten
+     Kurzticker gebildet. Nur diese Menge kann den fuenften Buchstaben
+     belegen; ohne sie ist jede Fuenfbuchstaben-Regel ein Suffixraten.
+
+     Aufgenommen wird, was selbst ein Stamm sein kann: ein bis vier
+     Grossbuchstaben ohne Sonderzeichen. Ein Vorzug (BAC-PB) ist kein
+     Stamm, ein Index ($SPX) auch nicht. */
+  function collectListedRoots() {
+    var roots = {};
+    for (var a = 0; a < arguments.length; a++) {
+      var list = arguments[a];
+      if (!list || !list.length) continue;
+      for (var i = 0; i < list.length; i++) {
+        var t = upper(list[i] && list[i].ticker);
+        if (/^[A-Z]{1,4}$/.test(t)) roots[t] = true;
+      }
+    }
+    return roots;
   }
 
   /* Indexsymbole. Tiingo fuehrt sie mit fuehrendem $ oder ^; beides ist
@@ -237,6 +305,7 @@
     var flags = [];
 
     var marker = tickerMarker(ticker);
+    var fifth = nasdaqFifthLetter(ticker, opts.listedRoots);
     var byName = nameRule(name);
 
     /* 1. Grobklasse aus dem Basis-Klassierer uebernehmen. */
@@ -257,11 +326,32 @@
     }
     reasons.push("Basisklassifikation " + base.instrumentType + " (" + Base.VERSION + ").");
 
-    /* 2. Indexsymbol. Ein fuehrendes $ oder ^ ist eindeutig und schlaegt
-       jede Anbieterangabe - kein Emittent nennt eine Aktie so. */
-    if (looksLikeIndex(ticker)) {
+    /* 2. Testpapier des Anbieters. Es ist kein Wertpapier und gehoert in
+       keine Zaehlung. */
+    if (looksLikeTestSecurity(ticker)) {
+      cls = "TEST_SECURITY"; confidence = "HIGH";
+      reasons.push("Tickerform weist das Papier als Testeintrag des Anbieters aus.");
+      flags.push("PROVIDER_TEST_SECURITY");
+    } else if (looksLikeIndex(ticker)) {
       cls = "INDEX"; confidence = "HIGH";
       reasons.push("Tickerpraefix '" + ticker.charAt(0) + "' weist das Symbol als Index aus.");
+    } else if (fifth && cls === "EQUITY_COMMON") {
+      /* Der fuenfte Buchstabe der NASDAQ. Mit Stammbeleg ist es ein
+         Befund, ohne ihn ein Verdacht - und ein Verdacht wird als
+         solcher gefuehrt, nicht als Ausschluss. */
+      cls = fifth.type;
+      if (fifth.rootListed) {
+        confidence = "HIGH";
+        reasons.push("Fuenfstelliger NASDAQ-Ticker auf '" + fifth.marker + "'; der vierstellige " +
+                     "Stamm " + fifth.root + " ist eigenstaendig gelistet - " + fifth.type + ".");
+        flags.push("NASDAQ_FIFTH_LETTER_ROOT_LISTED");
+      } else {
+        confidence = "LOW";
+        reasons.push("Fuenfstelliger NASDAQ-Ticker auf '" + fifth.marker + "', aber der Stamm " +
+                     fifth.root + " ist NICHT gelistet. Der Suffix allein belegt die Gattung " +
+                     "nicht - es gibt Gesellschaften, deren Name auf W, R oder U endet.");
+        flags.push("NASDAQ_FIFTH_LETTER_UNCONFIRMED");
+      }
     } else if (marker && marker.type && marker.basis === "tickerSuffix3") {
       /* 3. Die dreiteilige Schreibweise. Sie ist der Grund, warum es
          diese Datei gibt: der Basis-Klassierer sieht hier nur eine
@@ -461,8 +551,15 @@
     var providerByTicker = {};
     var tickerOrder = [];
 
+    /* Der Stammbeleg wird VOR der Klassifikation gebildet und aus
+       beiden Quellen gespeist. Ein Stamm, den nur der Bestand fuehrt -
+       weil der Anbieter ihn inzwischen delistet hat -, belegt sein
+       Derivat genauso. */
+    var listedRoots = input.listedRoots || collectListedRoots(providerRows, baseline);
+    var classifyOpts = { today: today, staleDays: input.staleDays, listedRoots: listedRoots };
+
     providerRows.forEach(function (r) {
-      var c = classifySecurity(r, { today: today, staleDays: input.staleDays });
+      var c = classifySecurity(r, classifyOpts);
       if (!c.ticker) return;
       if (!providerByTicker[c.ticker]) { providerByTicker[c.ticker] = []; tickerOrder.push(c.ticker); }
       providerByTicker[c.ticker].push(c);
@@ -531,7 +628,7 @@
           name: b.company, currency: b.currency, startDate: b.startDate,
           endDate: b.endDate || null,
           active: typeof b.active === "boolean" ? b.active : undefined
-        }, { today: today, staleDays: input.staleDays });
+        }, classifyOpts);
         var row = makeRow(c, [b],
           providerAvailable ? "BASELINE_ONLY_NOT_IN_PROVIDER_LIST" : "BASELINE_ARTEFACT", stamp);
         if (providerAvailable) {
@@ -652,9 +749,20 @@
     } else if (c.eligibleUsEquity) {
       status = "ADDED";
       reason = "NEW_ELIGIBLE_US_COMMON_EQUITY";
-    } else if (c.policyBucket === "EXCLUDE") {
+    } else if (c.policyBucket === "EXCLUDE" && c.classificationStatus === "CLASSIFIED") {
       status = "EXCLUDED_CANDIDATE";
       reason = "NEW_NON_EQUITY:" + c.instrumentType;
+    } else if (c.policyBucket === "EXCLUDE") {
+      /* Ausschlusskorb, aber die Klassifikation traegt ihn nicht: LOW,
+         OTHER oder UNKNOWN. Ein Verdacht schliesst nicht aus. Der Titel
+         bleibt als Verdachtsfall gefuehrt - sichtbar, nachpruefbar und
+         nicht geloescht. Wer hier EXCLUDED_CANDIDATE schriebe, liesse
+         den Klassierer ueber Titel entscheiden, die er selbst nicht
+         erkannt hat. */
+      status = "REVIEW";
+      reason = "NEW_NON_EQUITY_UNCONFIRMED:" + c.instrumentType +
+               ":" + c.classificationStatus;
+      reviewFlags.push("EXCLUSION_CANDIDATE_UNCONFIRMED");
     } else {
       status = "REVIEW";
       reason = "NEW_AMBIGUOUS:" + c.eligibilityReason;
@@ -937,6 +1045,57 @@
     };
   }
 
+  /* ------------------------------------------------ PRODUKTEIGNUNG
+
+     Vier Ausgaenge, und der vierte ist der Grund fuer diese Funktion.
+
+     Nach dem Backfill standen 583 Warrants, Units und Rights im
+     gelieferten Universum. Sie gehoeren nicht ins Produkt - aber die
+     Entscheidung, einen Titel herauszunehmen, darf nur auf einem BELEG
+     stehen, nicht auf einem Verdacht:
+
+       ELIGIBLE        Stammaktie, aktiv, Primaerhandelsplatz.
+       SEPARATE_CLASS  Belegt aktienartig, getrennt gefuehrt (Vorzuege).
+                       Im Produkt, aber nicht in der Stammaktienzahl.
+       EXCLUDED        BELEGTE Nicht-Aktie. Nur mit CLASSIFIED.
+       REVIEW          Alles uebrige: unbelegter Verdacht, inaktiv,
+                       unbekannt. Bleibt im Produkt, markiert.
+
+     Die Bedingung "classificationStatus === CLASSIFIED" vor jedem
+     Ausschluss ist die ganze Vorsicht dieser Funktion. Ohne sie
+     entschiede der Klassierer ueber Titel, die er selbst nicht erkannt
+     hat - und ein faelschlich ausgeschlossenes Unternehmen ist teurer
+     als ein durchgerutschter Warrant.
+
+     Die Ablage ist davon ausdruecklich NICHT betroffen. Eignung sagt,
+     was im Produkt erscheint; sie sagt nichts darueber, was gespeichert
+     bleibt. */
+  var PRODUCT_ELIGIBILITY = ["ELIGIBLE", "SEPARATE_CLASS", "EXCLUDED", "REVIEW"];
+  var IN_PRODUCT_UNIVERSE = ["ELIGIBLE", "SEPARATE_CLASS", "REVIEW"];
+
+  function decideProductEligibility(j) {
+    j = j || {};
+    var cls = j.instrumentType || "UNKNOWN";
+    var classified = j.classificationStatus === "CLASSIFIED";
+    var bucket = j.policyBucket || policyBucket(cls);
+
+    if (j.eligible === true) {
+      return { status: "ELIGIBLE", reason: "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+               inProductUniverse: true };
+    }
+    if (bucket === "EXCLUDE" && classified) {
+      return { status: "EXCLUDED", reason: "CONFIRMED_NON_EQUITY:" + cls,
+               inProductUniverse: false };
+    }
+    if (bucket === "SEPARATE" && classified) {
+      return { status: "SEPARATE_CLASS", reason: "CONFIRMED_SEPARATE_CLASS:" + cls,
+               inProductUniverse: true };
+    }
+    return { status: "REVIEW",
+             reason: "UNCONFIRMED:" + (j.reason || j.classificationStatus || "UNKNOWN"),
+             inProductUniverse: true };
+  }
+
   var api = {
     VERSION: VERSION,
     CLASSES: CLASSES,
@@ -945,7 +1104,13 @@
     US_PRIMARY_EXCHANGES: US_PRIMARY_EXCHANGES,
     NAME_ONLY_CLASSES: NAME_ONLY_CLASSES,
     tickerMarker: tickerMarker,
+    nasdaqFifthLetter: nasdaqFifthLetter,
+    looksLikeTestSecurity: looksLikeTestSecurity,
+    collectListedRoots: collectListedRoots,
     policyBucket: policyBucket,
+    PRODUCT_ELIGIBILITY: PRODUCT_ELIGIBILITY,
+    IN_PRODUCT_UNIVERSE: IN_PRODUCT_UNIVERSE,
+    decideProductEligibility: decideProductEligibility,
     classifySecurity: classifySecurity,
     buildSecurityMaster: buildSecurityMaster,
     /* Ausdruecklich exportiert, damit ein Test die Zusage selbst

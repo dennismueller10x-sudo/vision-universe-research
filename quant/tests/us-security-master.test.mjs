@@ -695,3 +695,309 @@ test("SM63 die Backfill-Schaetzung verlangt eine Freigabe und startet nichts", (
     assert.ok(!rebuild.has(keep.path), keep.path + " steht in beiden Listen");
   }
 });
+
+/* =========================================================================
+   SM66-SM80 — Der fuenfte Buchstabe der NASDAQ
+
+   Die Regel, die den Befund aus dem Backfill aufraeumt: 583 der 2.119
+   Neuzugaenge waren keine Stammaktien, sondern Warrants, Units und
+   Rights in der punktlosen NASDAQ-Schreibweise (AACBW statt AACB-W).
+
+   Die Tests greifen nicht die Regel an, sondern ihre GRENZE. Eine
+   Suffixregel, die allein nach dem letzten Buchstaben geht, wirft echte
+   vierstellige Gesellschaften mit hinaus, deren Ticker zufaellig auf W,
+   R oder U endet. Deshalb steht hier zuerst der Fall, in dem die Regel
+   NICHT greifen darf.
+   ========================================================================= */
+
+test("SM66 fuenfstelliger Ticker mit gelistetem Stamm ist das Derivat", () => {
+  const roots = { AACB: true };
+  for (const [ticker, expected] of [["AACBW", "WARRANT"], ["AACBU", "UNIT"], ["AACBR", "RIGHT"]]) {
+    const hit = Master.nasdaqFifthLetter(ticker, roots);
+    assert.equal(hit.type, expected, ticker);
+    assert.equal(hit.root, "AACB");
+    assert.equal(hit.rootListed, true);
+    assert.equal(hit.basis, "nasdaqFifthLetterWithListedRoot");
+  }
+});
+
+test("SM67 ohne gelisteten Stamm bleibt es ein Verdacht, kein Befund", () => {
+  const hit = Master.nasdaqFifthLetter("ZZZZW", {});
+  assert.equal(hit.type, "WARRANT");
+  assert.equal(hit.rootListed, false);
+  assert.equal(hit.basis, "nasdaqFifthLetterOnly");
+});
+
+test("SM68 die Regel greift nur bei genau fuenf Grossbuchstaben", () => {
+  for (const t of ["AACB", "AACBX", "AAC", "AACBWW", "BAC-PB", "BAC-P-E", "$SPX", "ABC.W"]) {
+    assert.equal(Master.nasdaqFifthLetter(t, { AACB: true, BAC: true, ABC: true }), null, t);
+  }
+});
+
+test("SM69 MUTATION: der Suffix allein darf keinen Titel ausschliessen", () => {
+  /* Der teuerste Fehler dieser Regel: eine echte Gesellschaft, deren
+     Ticker auf W endet, ohne dass es je ein Derivat gaebe. Sie muss in
+     REVIEW landen - sichtbar - und nicht im Ausschluss. */
+  const c = Master.classifySecurity(
+    providerRow({ ticker: "ZZZZW" }), { today: TODAY, listedRoots: {} });
+  assert.equal(c.instrumentType, "WARRANT");
+  assert.equal(c.classificationConfidence, "LOW");
+  assert.equal(c.classificationStatus, "REVIEW");
+  assert.ok(c.flags.includes("NASDAQ_FIFTH_LETTER_UNCONFIRMED"));
+  assert.equal(c.eligibleUsEquity, false);
+});
+
+test("SM70 mit Stammbeleg wird aus dem Verdacht ein Befund", () => {
+  const c = Master.classifySecurity(
+    providerRow({ ticker: "AACBW" }), { today: TODAY, listedRoots: { AACB: true } });
+  assert.equal(c.instrumentType, "WARRANT");
+  assert.equal(c.classificationConfidence, "HIGH");
+  assert.equal(c.classificationStatus, "CLASSIFIED");
+  assert.ok(c.flags.includes("NASDAQ_FIFTH_LETTER_ROOT_LISTED"));
+  assert.equal(c.policyBucket, "EXCLUDE");
+});
+
+test("SM71 der Stamm selbst bleibt Stammaktie und bleibt geeignet", () => {
+  const c = Master.classifySecurity(
+    providerRow({ ticker: "AACB" }), { today: TODAY, listedRoots: { AACB: true } });
+  assert.equal(c.instrumentType, "EQUITY_COMMON");
+  assert.equal(c.eligibleUsEquity, true);
+});
+
+test("SM72 die Regel ueberschreibt keine bereits belegte Klasse", () => {
+  /* Ein Fonds, dessen Ticker fuenf Buchstaben hat und auf U endet,
+     bleibt ein Fonds. Die Fuenfbuchstabenregel greift nur dort, wo der
+     Basis-Klassierer Stammaktie gesagt hat. */
+  const c = Master.classifySecurity(
+    providerRow({ ticker: "ABCDU", assetType: "ETF" }),
+    { today: TODAY, listedRoots: { ABCD: true } });
+  assert.equal(c.instrumentType, "ETF");
+});
+
+test("SM73 Testpapiere des Anbieters sind kein Wertpapier", () => {
+  for (const t of ["TEST", "ATEST", "ZTEST", "TEST1", "MTEST-A"]) {
+    assert.equal(Master.looksLikeTestSecurity(t), true, t);
+    const c = Master.classifySecurity(providerRow({ ticker: t }), { today: TODAY });
+    assert.equal(c.instrumentType, "TEST_SECURITY", t);
+    assert.equal(c.eligibleUsEquity, false, t);
+    assert.equal(c.policyBucket, "EXCLUDE", t);
+  }
+});
+
+test("SM74 MUTATION: die Testregel darf keine echte Gesellschaft treffen", () => {
+  /* Eng gefasst ist hier Absicht. Ein faelschlich ausgeschlossenes
+     Unternehmen ist teurer als ein durchgerutschtes Testpapier. */
+  for (const t of ["TESLA", "ATTEST", "CONTEST", "TESTED", "PROTEST", "TST"]) {
+    assert.equal(Master.looksLikeTestSecurity(t), false, t);
+  }
+});
+
+test("SM75 der Stammbeleg wird aus Anbieterliste UND Bestand gebildet", () => {
+  const roots = Master.collectListedRoots(
+    [{ ticker: "AACB" }, { ticker: "AACBW" }, { ticker: "BAC-PB" }, { ticker: "$SPX" }],
+    [{ ticker: "SNOW" }]);
+  assert.equal(roots.AACB, true);
+  assert.equal(roots.SNOW, true);
+  assert.equal(roots.AACBW, undefined, "fuenfstellig ist kein Stamm");
+  assert.equal(roots["BAC-PB"], undefined, "ein Vorzug ist kein Stamm");
+  assert.equal(roots["$SPX"], undefined, "ein Index ist kein Stamm");
+});
+
+test("SM76 ein Stamm, den nur der Bestand fuehrt, belegt sein Derivat", () => {
+  /* Der Anbieter hat den Stamm delistet, der Bestand fuehrt ihn noch.
+     Das Derivat bleibt trotzdem belegt - sonst schluege eine Delistung
+     des Stamms als neuer Zweifel auf das Derivat durch. */
+  const out = Master.buildSecurityMaster({
+    providerRows: [providerRow({ ticker: "AACBW" })],
+    baseline: [{ ticker: "AACB", exchange: "NASDAQ", company: "AACB Corp",
+                 assetType: "Stock", currency: "USD", startDate: "2024-01-02", active: true }],
+    today: TODAY
+  });
+  const w = out.rows.find((r) => r.ticker === "AACBW");
+  assert.equal(w.instrument_type, "WARRANT");
+  assert.equal(w.classification_confidence, "HIGH");
+  assert.ok(w.review_flags.includes("NASDAQ_FIFTH_LETTER_ROOT_LISTED"));
+});
+
+test("SM77 der Abgleich schliesst belegte Derivate aus und nur diese", () => {
+  const out = Master.buildSecurityMaster({
+    providerRows: [
+      providerRow({ ticker: "AACB" }),
+      providerRow({ ticker: "AACBW" }),
+      providerRow({ ticker: "AACBU" }),
+      providerRow({ ticker: "ZZZZW" }),
+      providerRow({ ticker: "MTEST-A" })
+    ],
+    baseline: [], today: TODAY
+  });
+  const by = {};
+  out.rows.forEach((r) => { by[r.ticker] = r; });
+  assert.equal(by.AACB.reconciliation_status, "ADDED");
+  assert.equal(by.AACBW.reconciliation_status, "EXCLUDED_CANDIDATE");
+  assert.equal(by.AACBU.reconciliation_status, "EXCLUDED_CANDIDATE");
+  assert.equal(by["MTEST-A"].reconciliation_status, "EXCLUDED_CANDIDATE");
+  assert.equal(by.ZZZZW.reconciliation_status, "REVIEW",
+               "ohne Stammbeleg wird bewahrt, nicht ausgeschlossen");
+  assert.ok(by.ZZZZW.review_flags.includes("EXCLUSION_CANDIDATE_UNCONFIRMED"));
+});
+
+test("SM78 MUTATION: ein unsicherer Ausschluss darf nie EXCLUDED_CANDIDATE sein", () => {
+  /* Die Zusage in einem Satz: der Ausschlusskorb steht nur Zeilen
+     offen, die der Klassierer auch wirklich erkannt hat. Faellt diese
+     Bedingung weg, faellt dieser Test. */
+  const out = Master.buildSecurityMaster({
+    providerRows: [
+      providerRow({ ticker: "ZZZZW" }),
+      providerRow({ ticker: "YYYYU" }),
+      providerRow({ ticker: "XXXXR" })
+    ],
+    baseline: [], today: TODAY
+  });
+  for (const r of out.rows) {
+    assert.notEqual(r.reconciliation_status, "EXCLUDED_CANDIDATE", r.ticker);
+    assert.equal(r.reconciliation_status, "REVIEW", r.ticker);
+    assert.equal(r.eligible_us_equity, false, r.ticker);
+  }
+});
+
+test("SM79 kein Bestandstitel wird durch die neue Regel entfernt", () => {
+  /* Selbst wenn ein gelieferter Bestandstitel unter die neue Regel
+     faellt: er verschwindet nicht, er kommt zur Pruefung. */
+  const out = Master.buildSecurityMaster({
+    providerRows: [providerRow({ ticker: "AACB" }), providerRow({ ticker: "AACBW" })],
+    baseline: [
+      { ticker: "AACBW", exchange: "NASDAQ", company: "AACB Warrant",
+        assetType: "Stock", currency: "USD", startDate: "2024-01-02", active: true }
+    ],
+    today: TODAY
+  });
+  const w = out.rows.find((r) => r.ticker === "AACBW");
+  assert.equal(w.baseline_member, true);
+  assert.ok(["EXISTING", "REVIEW"].includes(w.reconciliation_status));
+  assert.equal(out.invariants.destructiveViolations, 0);
+});
+
+test("SM80 die neuen Klassen stehen im Katalog und im Ausschluss", () => {
+  for (const c of ["WARRANT", "UNIT", "RIGHT", "TEST_SECURITY"]) {
+    assert.ok(Master.CLASSES.includes(c), c);
+    assert.ok(Master.POLICY.EXCLUDE.includes(c), c);
+  }
+});
+
+/* =========================================================================
+   SM81-SM90 — Produkteignung
+
+   Die Schicht, die nach dem Backfill entscheidet, was ins Produkt
+   gehoert. Ihr Kern ist eine Vorsichtsregel: ein Ausschluss braucht
+   einen Beleg. Die Tests greifen genau diese Regel an - denn eine
+   Vorsicht, die nie gegriffen hat, ist keine bewiesene Vorsicht.
+   ========================================================================= */
+
+test("SM81 eine geeignete Stammaktie ist ELIGIBLE", () => {
+  const d = Master.decideProductEligibility({
+    instrumentType: "EQUITY_COMMON", classificationStatus: "CLASSIFIED", eligible: true });
+  assert.equal(d.status, "ELIGIBLE");
+  assert.equal(d.inProductUniverse, true);
+});
+
+test("SM82 eine BELEGTE Nicht-Aktie ist EXCLUDED", () => {
+  for (const cls of ["WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "ETF", "INDEX"]) {
+    const d = Master.decideProductEligibility({
+      instrumentType: cls, classificationStatus: "CLASSIFIED", eligible: false });
+    assert.equal(d.status, "EXCLUDED", cls);
+    assert.equal(d.reason, "CONFIRMED_NON_EQUITY:" + cls);
+    assert.equal(d.inProductUniverse, false);
+  }
+});
+
+test("SM83 MUTATION: ohne Beleg wird nicht ausgeschlossen", () => {
+  /* Der Kern der Aufraeumregel. Faellt die CLASSIFIED-Bedingung weg,
+     faellt dieser Test - und mit ihm die Zusage, dass ein Verdacht
+     bewahrt statt geloescht wird. */
+  for (const st of ["REVIEW", "UNKNOWN"]) {
+    for (const cls of ["WARRANT", "UNIT", "RIGHT"]) {
+      const d = Master.decideProductEligibility({
+        instrumentType: cls, classificationStatus: st, eligible: false,
+        reason: "CLASS_" + cls + "_NOT_AN_EQUITY" });
+      assert.equal(d.status, "REVIEW", cls + "/" + st);
+      assert.equal(d.inProductUniverse, true,
+        "Ein unbelegter Verdacht bleibt sichtbar im Produkt, er wird nicht entfernt.");
+    }
+  }
+});
+
+test("SM84 ein belegter Vorzug ist getrennt, aber kein Verdachtsfall", () => {
+  const d = Master.decideProductEligibility({
+    instrumentType: "PREFERRED", classificationStatus: "CLASSIFIED", eligible: false });
+  assert.equal(d.status, "SEPARATE_CLASS");
+  assert.equal(d.inProductUniverse, true);
+  assert.notEqual(d.status, "REVIEW",
+    "308 einwandfrei erkannte Vorzuege als zweifelhaft zu fuehren machte die " +
+    "Verdachtsliste unbrauchbar.");
+});
+
+test("SM85 ein inaktives Listing bleibt Verdachtsfall, nicht Ausschluss", () => {
+  const d = Master.decideProductEligibility({
+    instrumentType: "EQUITY_COMMON", classificationStatus: "CLASSIFIED",
+    eligible: false, reason: "LISTING_INACTIVE" });
+  assert.equal(d.status, "REVIEW");
+  assert.equal(d.reason, "UNCONFIRMED:LISTING_INACTIVE");
+});
+
+test("SM86 jedes Urteil ist genau einer der vier Ausgaenge", () => {
+  const faelle = [
+    { eligible: true },
+    { instrumentType: "WARRANT", classificationStatus: "CLASSIFIED" },
+    { instrumentType: "PREFERRED", classificationStatus: "CLASSIFIED" },
+    { instrumentType: "UNKNOWN", classificationStatus: "UNKNOWN" },
+    {}, { instrumentType: "OTHER", classificationStatus: "REVIEW" }
+  ];
+  for (const f of faelle) {
+    const d = Master.decideProductEligibility(f);
+    assert.ok(Master.PRODUCT_ELIGIBILITY.includes(d.status), JSON.stringify(f));
+    assert.equal(d.inProductUniverse, Master.IN_PRODUCT_UNIVERSE.includes(d.status));
+  }
+});
+
+test("SM87 eine leere Eingabe fuehrt zu REVIEW, nicht zu ELIGIBLE", () => {
+  /* Fehlende Belege duerfen nie in die freundlichste Antwort fallen. */
+  const d = Master.decideProductEligibility({});
+  assert.equal(d.status, "REVIEW");
+  const d2 = Master.decideProductEligibility();
+  assert.equal(d2.status, "REVIEW");
+});
+
+test("SM88 die Eignung entscheidet ueber das Produkt, nicht ueber die Ablage", () => {
+  /* Der Ausschluss traegt keine Aussage ueber gespeicherte Historie.
+     Wer hier ein Feld faende, das "loeschen" sagt, haette die Grenze
+     dieser Schicht verletzt. */
+  const d = Master.decideProductEligibility({
+    instrumentType: "WARRANT", classificationStatus: "CLASSIFIED", eligible: false });
+  const text = JSON.stringify(d).toLowerCase();
+  for (const wort of ["delete", "remove", "purge", "drop", "loesch"]) {
+    assert.ok(!text.includes(wort), "Eignung darf nichts ueber Loeschung sagen: " + wort);
+  }
+  assert.deepEqual(Object.keys(d).sort(), ["inProductUniverse", "reason", "status"]);
+});
+
+test("SM89 der belegte Fuenfbuchstaben-Warrant geht den ganzen Weg bis EXCLUDED", () => {
+  /* Klassierer, Abgleich und Eignung in einer Kette - der Fall, um den
+     es beim Aufraeumen geht. */
+  const c = Master.classifySecurity(
+    providerRow({ ticker: "AACBW" }), { today: TODAY, listedRoots: { AACB: true } });
+  const d = Master.decideProductEligibility({
+    instrumentType: c.instrumentType, classificationStatus: c.classificationStatus,
+    policyBucket: c.policyBucket, eligible: c.eligibleUsEquity, reason: c.eligibilityReason });
+  assert.equal(d.status, "EXCLUDED");
+  assert.equal(d.reason, "CONFIRMED_NON_EQUITY:WARRANT");
+});
+
+test("SM90 derselbe Ticker ohne Stammbeleg geht bis REVIEW und nicht weiter", () => {
+  const c = Master.classifySecurity(
+    providerRow({ ticker: "AACBW" }), { today: TODAY, listedRoots: {} });
+  const d = Master.decideProductEligibility({
+    instrumentType: c.instrumentType, classificationStatus: c.classificationStatus,
+    policyBucket: c.policyBucket, eligible: c.eligibleUsEquity, reason: c.eligibilityReason });
+  assert.equal(d.status, "REVIEW");
+  assert.equal(d.inProductUniverse, true);
+});
