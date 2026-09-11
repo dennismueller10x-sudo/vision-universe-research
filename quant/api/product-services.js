@@ -35,7 +35,7 @@ function create(options){
   return {securityId:s.securityId,ticker,name:s.reference.name,industry:s.reference.industry||null,
    state:'AVAILABLE',marketState:allowed?'AVAILABLE':'UNAVAILABLE',asOf:s.marketData&&s.marketData.asOf,
    fundamentalsAsOf:s.asOfPeriodEnd,availableAt:f._asOfAvailableAt||null,
-   price:m('price','USD',true),momentum6m:m('momentum6m','percent',true),
+   price:permission(c,ticker,'raw').allowed?m('price','USD',true):{value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'},momentum6m:m('momentum6m','percent',true),
    above200:m('priceTo200dma','percent',true),above50:m('priceTo50dma','percent',true),
    revenueGrowth:m('revenueGrowth','percent'),operatingMargin:m('operatingMargin','percent'),
    fcfMargin:m('fcfMargin','percent'),roic:m('roic','percent'),drawdown:m('maxDrawdown','percent',true),
@@ -140,7 +140,10 @@ function create(options){
  ].map(recipe=>({...recipe,version:'1.0.0',query:queryEngine.createQuery({filters:[{field:recipe.field,operator:'gte',value:recipe.threshold,scale:'raw'}],sort:[{field:recipe.field,direction:'desc'}],limit:50})}));}
  async function getDiscover(){const collections=await Promise.all(getRecipes().map(async recipe=>({...recipe,result:await screen(recipe.query)})));return {collections,scope:'APPROVED_DISPLAY_SET'};}
  async function screen(query){try{const c=await init();const universe=await getUniverse();if(universe.state!=='AVAILABLE')return universe;
-  const rows=universe.stocks.map(s=>({...c.panel.securities[s.ticker].fundamentals,ticker:s.ticker,securityId:s.securityId,status:'active'}));
+  if(!queryEngine.validate(query).valid)return unavailable('INVALID_SCREEN_RULES');
+  const usesPrice=query.filters.some(f=>f.field==='price')||query.sort.some(s=>s.field==='price');
+  if(usesPrice&&universe.stocks.some(s=>!permission(c,s.ticker,'raw').allowed))return unavailable('PRICE_DISPLAY_NOT_PERMITTED');
+  const rows=universe.stocks.map(s=>({...c.panel.securities[s.ticker].fundamentals,price:s.price.value,ticker:s.ticker,securityId:s.securityId,status:'active'}));
   const result=queryEngine.execute(query,rows);
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
