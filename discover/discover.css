@@ -151,6 +151,12 @@
   display:flex;gap:var(--d-gap);overflow-x:auto;scroll-snap-type:x proximity;
   padding:6px var(--d-rail-pad) 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   scroll-behavior:smooth;
+  /* Ohne diese Zeile frisst der Snap-Mechanismus die linke Polsterung: der
+     Browser rastet die erste Karte an der Kante des Scrollports ein, und
+     die Reihe steht beim Laden um genau die Polsterung verschoben - die
+     erste Karte klebt am Bildschirmrand, waehrend die Ueberschrift darueber
+     eingerueckt ist. scroll-padding verschiebt den Einrastpunkt mit. */
+  scroll-padding:0 var(--d-rail-pad);
 }
 .d-rail::-webkit-scrollbar{display:none}
 .d-nav{
