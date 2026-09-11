@@ -46,18 +46,18 @@ const WS_URL = "wss://api.tiingo.com/iex";
    abgeschnittener Strom sieht im Browser aus wie ein Fehler, ein sauber
    geschlossener nicht. Der Browser verbindet danach neu. */
 const STREAM_MS = 50000;
-/* DIE ZAHL IST EINE TARIFFRAGE, KEINE GESCHMACKSFRAGE.
+/* KEINE STUFE MEHR - DER TARIF ENTSCHEIDET.
 
-   Hier stand 5 (Trades UND Quotes). Der Anbieter hat das Abonnement
-   abgelehnt:
+   Hier stand erst 5 (Trades und Quotes), dann 0. Der Anbieter hat BEIDE
+   abgelehnt, mit derselben Meldung:
 
      "thresholdLevel not valid for your subscription tier"  (Code 400)
 
-   Der Schluessel war dabei in Ordnung - die Anmeldung kam durch, nur die
-   Stufe nicht. 0 liefert die tatsaechlichen Abschluesse, und genau die
-   braucht ein laufender Chart. Quotes waeren ohnehin das schwaechere
-   Signal: eine Mitte aus Geld und Brief ist kein gehandelter Kurs. */
-const THRESHOLD_LEVEL = 0;
+   Damit ist die Zahl nicht die Frage. Wer eine Stufe nennt, die sein
+   Tarif nicht kennt, wird abgewiesen - also wird keine genannt. Der
+   Anbieter setzt dann die Stufe, die zum Konto gehoert. Bleibt es bei
+   der Ablehnung, liegt es am Tarif und nicht an dieser Datei; die
+   Meldung des Anbieters steht dann unveraendert im Bericht. */
 
 function lies(pfad, fallback) {
   try { return JSON.parse(readFileSync(join(process.cwd(), pfad), "utf8")); }
@@ -184,7 +184,7 @@ module.exports = async function handler(req, res) {
     socket.send(JSON.stringify({
       eventName: "subscribe",
       authorization: key,
-      eventData: { thresholdLevel: THRESHOLD_LEVEL, tickers }
+      eventData: { tickers }
     }));
     sende(res, "status", {
       state: "CONNECTED",
@@ -256,9 +256,10 @@ function deuteIexZeile(zeile) {
     return { ticker, kind: "TRADE", price: preis, size: menge, at: zeitstempel || null,
              priceTypeConfirmed: false };
   }
-  /* Bei thresholdLevel 0 kommen ausschliesslich "T"-Zeilen. Der
-     Quote-Zweig bleibt trotzdem stehen: er kostet nichts und faengt den
-     Fall ab, dass ein hoeherer Tarif spaeter mehr liefert. */
+  /* Welche Zeilen kommen, entscheidet der Tarif. Beide Arten werden
+     gedeutet: "T" ist ein Abschluss, "Q" die Mitte aus Geld und Brief.
+     Der Chart nimmt, was kommt - und schreibt nie "Handelskurs", wenn
+     es eine Quote-Mitte war. */
   if (art === "Q") {
     const bid = zahl(zeile[5]), mid = zahl(zeile[6]), ask = zahl(zeile[7]);
     const preis = mid !== null ? mid : (bid !== null && ask !== null ? (bid + ask) / 2 : null);
