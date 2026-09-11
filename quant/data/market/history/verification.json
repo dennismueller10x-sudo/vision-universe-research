@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-11T05:59:25.156Z",
+  "generatedAt": "2026-09-11T06:04:47.162Z",
   "verification": "HISTORY_STORE_SAMPLE",
   "access": {
     "touchedKeys": 48,
@@ -13,7 +13,7 @@
     "allowedPrefix": "verify/v1/",
     "outsideAllowedPrefix": 0,
     "productionKeysTouched": 0,
-    "deleteScope": "(Dateisystem, Wegwerfpfad)",
+    "deleteScope": "verify/v1/",
     "note": "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb des Nachweis-Praefixes. Diese Zahlen sind mitgeschrieben, nicht zugesagt."
   },
   "cleanup": {
@@ -25,13 +25,13 @@
   "budget": {
     "classA": 10,
     "classB": 28,
-    "bytesUploaded": 849293,
+    "bytesUploaded": 849298,
     "bytesDownloaded": 1224296,
     "writesSkipped": 1
   },
   "storage": {
-    "kind": "fs",
-    "endpoint": "(Dateisystem)",
+    "kind": "s3",
+    "endpoint": "https://bd3d267913ac952c70a429fbf6e63265.r2.cloudflarestorage.com",
     "prefix": "verify/v1/tiingo/daily/VERIFY/",
     "codec": "zstd",
     "format": "bar-codec-1.0.0"
