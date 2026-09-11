@@ -151,7 +151,26 @@ jobs:
           node scripts/proof/build-product-proof.mjs
           node scripts/proof/measure-live-chart.mjs --window-ms 75000
 
-      # Ganz zum Schluss, in zwei Zeilen: was melden die beiden
+      - name: Bericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-preview-verification
+          path: |
+            quant/data/site/vercel-preview-verification.json
+            quant/data/site/full-universe-proof-verification.json
+            quant/data/site/proof-shots/**
+            quant/data/site/owner-preview-verification.json
+            quant/data/site/owner-preview-shots/**
+            quant/data/site/live-chart-measurement.json
+            quant/data/site/live-chart-shots/**
+          if-no-files-found: warn
+
+      # WIRKLICH ganz zum Schluss - nach dem Hochladen. Vorher stand
+      # dieser Schritt davor, und die 25 Zeilen des Upload-Schritts haben
+      # ihn aus jedem Protokollausschnitt gedraengt, den man sich ansieht.
+      # Ein Befund, den niemand findet, ist keiner.
+      # In zwei Zeilen: was melden die beiden
       # Serverfunktionen der AUSGELIEFERTEN Vorschau gerade? Die
       # ausfuehrlichen Nachweise stehen weiter oben; diese Zeilen stehen
       # hier, weil sie die Frage sind, die nach einer Aenderung an der
@@ -194,18 +213,3 @@ jobs:
                 (grund ? " · " + grund : ""));
             })();
           '
-
-      - name: Bericht sichern
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vercel-preview-verification
-          path: |
-            quant/data/site/vercel-preview-verification.json
-            quant/data/site/full-universe-proof-verification.json
-            quant/data/site/proof-shots/**
-            quant/data/site/owner-preview-verification.json
-            quant/data/site/owner-preview-shots/**
-            quant/data/site/live-chart-measurement.json
-            quant/data/site/live-chart-shots/**
-          if-no-files-found: warn
