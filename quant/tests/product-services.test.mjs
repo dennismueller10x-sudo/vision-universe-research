@@ -54,3 +54,5 @@ test('Quant values are not zero-filled and unknown panel versions are unavailabl
 });
 
 test('Strategy context uses existing methodology without enabling real historical results',async()=>{const c=await api.getStrategyContext();assert.equal(c.state,'AVAILABLE');assert.equal(c.definition.execution.timing,'next_open');assert.equal(c.backtest.state,'UNAVAILABLE');assert.equal(c.backtest.checks.length,5);assert.ok(!('results' in c.backtest));});
+
+test('Portfolio valuation requires raw permission and never widens a derived-only grant',async()=>{const onlyDerived=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:{...Policy,check:args=>({allowed:args.form==='derived'})},queryEngine:Query});const result=await onlyDerived.getPortfolioIntelligence([{ticker:'NVDA',quantity:1}]);assert.equal(result.state,'INCOMPLETE');assert.equal(result.total,null);assert.equal(result.positions[0].price,null);assert.equal(result.positions[0].weight,null);});

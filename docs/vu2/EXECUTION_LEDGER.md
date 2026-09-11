@@ -91,3 +91,9 @@ Strategy definitions/current-filter preview now implemented in workstream/vu2-st
 PR69 initial gate: Browser34542974197, Quant34542974241, SEC34542974231 SUCCESS. Quant1440/390 screenshots inspected. Visual repair: company selector receives44px touch target and consistent styling; excess closed-definition spacing reduced while retaining44px disclosure targets. Refreshed screenshots pending.
 
 Strategy counter-review PASS after preserving first-version reason and distinguishing unavailable current selection from zero matches. Three persistence tests pass. Browser failure-path coverage added; remote gate pending.
+
+## Strategy gate and portfolio implementation
+PR70 head9acee5d: Browser34543613734, Quant34543613751, SEC34543613768 SUCCESS. Screenshots pending inspection. Quant final390 inspected after styling/density fix; no collapsed or inaccessible controls.
+Portfolio workstream implements manually entered holdings and honest current valuation, with explicit incomplete state. No seed/mock positions or made-up performance. Context phases/08-portfolio-workspace.md. Initial test identified normal binary floating-point representation; reference assertion now uses a1e-9 tolerance, no hidden financial rounding introduced. Browser and review gates pending.
+
+Portfolio counter-review found a raw-versus-derived permission gap and tiny-fraction display rounding. Repaired both: raw grant checked per stock before portfolio projection, regression covers derived-only denial; quantity uses15 significant digits.21 focused tests PASS. Strategy1440/390 inspected: coherent controls, complete trust section; criterion labels now show actual percent/USD units instead of developer terminology, re-render in the next browser gate.
