@@ -120,6 +120,17 @@ jobs:
             }).catch((e) => { console.error(e.message); process.exit(1); });
           '
 
+      # Der echte Bestand, nicht nur die Bauart. Kostet Lesevorgaenge und
+      # null Tiingo-Anfragen.
+      - name: R2-Bestand pruefen
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/validate-history-store.mjs --gate FULL_UNIVERSE --sample 30
+
       - name: Kein Schluessel in den Berichten
         run: node scripts/market/assert-no-secrets.mjs
 

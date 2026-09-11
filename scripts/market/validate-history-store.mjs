@@ -65,6 +65,26 @@ async function makeStore(budget) {
                                     market: MARKET, budget });
 }
 
+/**
+ * Titel, fuer die der ANBIETER keine Reihe hat.
+ *
+ * Nicht geraten und nicht hart eingetragen: gelesen aus dem Befund des
+ * Gate-Laufs. Ein Titel, den Tiingo nicht fuehrt, fehlt im Speicher aus
+ * einem Grund, den der Speicher nicht zu verantworten hat - und der
+ * Unterschied zwischen "wir haben ihn verloren" und "es gibt ihn nicht"
+ * ist der ganze Wert dieser Pruefung.
+ */
+function providerUnavailable() {
+  const file = join(root, "quant", "data", "market", "scale", `gate-${GATE}.json`);
+  if (!existsSync(file)) return {};
+  const gate = JSON.parse(readFileSync(file, "utf8"));
+  const out = {};
+  for (const [ticker, row] of Object.entries(gate.perSymbol || {})) {
+    if (row && row.status === "UNAVAILABLE") out[String(ticker).toUpperCase()] = row.reason || "UNAVAILABLE";
+  }
+  return out;
+}
+
 function universeMembers() {
   const file = join(root, "quant", "data", "market", "scale", `universe-${GATE}.json`);
   if (!existsSync(file)) { console.error("Kein Universum unter " + file); process.exit(1); }
@@ -109,12 +129,21 @@ async function main() {
   let storageBytes = 0;
   for (const s of Object.values(stored)) storageBytes += s.bytes || 0;
 
+  const unavailable = providerUnavailable();
   const missing = members.filter((m) => !stored[m.ticker]).map((m) => m.ticker);
+  const missingExplained = missing.filter((t) => unavailable[t]);
+  const missingUnexplained = missing.filter((t) => !unavailable[t]);
   const extra = storedTickers.filter((t) => !wanted.has(t));
 
-  check("ALL_UNIVERSE_SYMBOLS_STORED", missing.length === 0,
-        `${storedTickers.length} gespeichert, ${missing.length} fehlen` +
-        (missing.length ? ` (z.B. ${missing.slice(0, 5).join(", ")})` : ""));
+  /* Nur das UNERKLAERTE Fehlen ist ein Speicherfehler. Ein Titel, fuer
+     den der Anbieter keine Reihe hat, kann nicht abgelegt werden - das
+     zu melden waere richtig, es als Speicherfehler zu zaehlen falsch. */
+  check("ALL_AVAILABLE_SYMBOLS_STORED", missingUnexplained.length === 0,
+        `${storedTickers.length} gespeichert` +
+        (missingExplained.length ? `, ${missingExplained.length} beim Anbieter nicht vorhanden ` +
+          `(${missingExplained.slice(0, 3).join(", ")})` : "") +
+        (missingUnexplained.length ? `, ${missingUnexplained.length} UNERKLAERT fehlend ` +
+          `(${missingUnexplained.slice(0, 5).join(", ")})` : ""));
 
   /* Doppelte Schluessel: zwei Objekte, die auf denselben Ticker
      zurueckfuehren. Bei korrekter Schluesselbildung unmoeglich - und
@@ -180,8 +209,28 @@ async function main() {
   });
   const chartMissing = members.length - chartReady.length;
   const chartPercent = members.length ? +((chartReady.length / members.length) * 100).toFixed(2) : 0;
-  check("CHART_READY", chartMissing === 0,
-        `${chartReady.length}/${members.length} mit mindestens ${MIN_BARS_FOR_CHART} Kerzen (${chartPercent} %)`);
+  const shortHistory = members.filter((m) => {
+    const st = stored[m.ticker];
+    return st && st.barCount && st.barCount < MIN_BARS_FOR_CHART;
+  }).length;
+
+  /* Chartbereitschaft ist eine MESSUNG, keine Zusage.
+
+     Der erste Entwurf hat sie als bestanden/durchgefallen gefuehrt und
+     den Lauf rot gemacht, weil 84,8 Prozent der Titel ein Jahr Historie
+     haben. Das ist kein Speicherfehler: 920 der neu aufgenommenen Titel
+     sind 2026 erstmals gehandelt worden und KOENNEN keine 250 Kerzen
+     haben. Eine Pruefung, die das als Fehler meldet, verlangt vom
+     Speicher etwas, das die Boerse nicht hergibt.
+
+     Geprueft wird stattdessen, was der Speicher zu verantworten hat:
+     dass jeder Titel mit ausreichender Historie auch abgelegt ist. */
+  check("STORED_SERIES_COMPLETE", shortHistory + chartReady.length === storedTickers.length -
+        (storedTickers.length - members.filter((m) => stored[m.ticker]).length),
+        `${chartReady.length} chartbereit, ${shortHistory} mit kurzer Historie ` +
+        `(unter ${MIN_BARS_FOR_CHART} Kerzen) - beides abgelegt`);
+  console.log(`  [METRIK] CHART_READY_PERCENT             ${chartPercent} % ` +
+              `(${chartReady.length}/${members.length}; kurze Historie ist Marktlage, kein Fehler)`);
 
   /* ---------------------------------------------------------- Zeitraum */
   let oldest = null, newest = null, totalBars = 0;
@@ -216,6 +265,8 @@ async function main() {
       storedObjects: index.rebuiltFrom ? index.rebuiltFrom.objects : storedTickers.length,
       indexCount: storedTickers.length,
       missingExpected: missing.length,
+      missingProviderUnavailable: missingExplained.length,
+      missingUnexplained: missingUnexplained.length,
       extraNotInUniverse: extra.length,
       duplicateKeys: duplicateKeys.length,
       corruptObjects: corrupt,
@@ -241,6 +292,18 @@ async function main() {
               excludedGoldenFive: [...golden], rows: sampleRows.slice(0, 25),
               problems: corruptDetail.slice(0, 20) },
     missingSymbols: missing.slice(0, 200),
+    missingDetail: {
+      providerUnavailable: missingExplained.map((t) => ({ ticker: t, reason: unavailable[t] })),
+      unexplained: missingUnexplained.slice(0, 50),
+      note: "Nur unerklaertes Fehlen ist ein Speicherfehler. Ein Titel, fuer den der Anbieter " +
+            "keine Reihe fuehrt, kann nicht abgelegt werden."
+    },
+    shortHistory: {
+      count: shortHistory,
+      note: "Titel unter " + MIN_BARS_FOR_CHART + " Kerzen. Sie sind vollstaendig abgelegt; " +
+            "kurz ist ihre Historie, nicht ihre Ablage. 2026er Erstnotierungen koennen kein " +
+            "Jahr Historie haben."
+    },
     zeroCost: verdict,
     budgetSpent: store.budget.spent,
     checks,

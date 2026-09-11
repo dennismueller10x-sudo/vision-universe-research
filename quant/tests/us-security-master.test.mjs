@@ -524,7 +524,22 @@ test("SM50 die Auszaehlung addiert sich und zaehlt nichts doppelt", () => {
 const SM_DIR = join(root, "quant", "data", "market", "security-master");
 const RECON = join(SM_DIR, "reconciliation.json");
 const MASTER = join(SM_DIR, "us-security-master.json");
-const BASELINE = join(root, "quant", "data", "market", "scale", "universe-FULL_UNIVERSE.json");
+/* Der Bestand, gegen den der Abgleich GEMACHT wurde - nicht der, der
+   heute im Universum steht.
+
+   Seit der anhaengenden Erweiterung sind das zwei verschiedene Dinge:
+   universe-FULL_UNIVERSE.json fuehrt 7.803 Titel, der Wertpapierstamm
+   beschreibt den Abgleich gegen die 5.684 davor. Beide zu vergleichen
+   hiesse, dem Abgleich vorzuwerfen, dass er die Zukunft nicht kannte.
+
+   expand-us-universe.mjs legt den Stand vor der Erweiterung daneben ab -
+   genau dafuer. Liegt er nicht vor, hat noch keine Erweiterung
+   stattgefunden, und das Universum IST der Bestand. */
+const PRE_EXPANSION = join(root, "quant", "data", "market", "security-master",
+                           "universe-FULL_UNIVERSE.before-expansion.json");
+const BASELINE = existsSync(PRE_EXPANSION)
+  ? PRE_EXPANSION
+  : join(root, "quant", "data", "market", "scale", "universe-FULL_UNIVERSE.json");
 
 test("SM60 die ausgelieferte Stammtabelle enthaelt jeden Bestandstitel", (t) => {
   if (!existsSync(MASTER)) return t.skip("Keine Stammtabelle ausgeliefert.");
@@ -653,8 +668,24 @@ test("SM63 die Backfill-Schaetzung verlangt eine Freigabe und startet nichts", (
   const gateFile = join(root, "quant", "data", "market", "scale", "gate-FULL_UNIVERSE.json");
   if (existsSync(gateFile)) {
     const gate = JSON.parse(readFileSync(gateFile, "utf8"));
-    assert.equal(inc.staleSymbols, gate.dataQuality.reasons.stale_last_bar || 0,
-                 "stale kommt aus dataQuality.reasons.stale_last_bar des Referenzlaufs");
+    /* Nur vergleichen, wenn beide vom SELBEN Lauf stammen.
+
+       Die Schaetzung ist eine Momentaufnahme vor einem Lauf; die
+       Gate-Bilanz entsteht danach. Nach der Erweiterung liegt eine
+       neuere Bilanz vor (stale_last_bar 58 statt 34), und die
+       Schaetzung von vorher dagegen zu halten hiesse, ihr vorzuwerfen,
+       dass sie den Lauf nicht kannte, den sie geplant hat. */
+    const sameRun = est.estimate.referenceRun &&
+                    String(est.estimate.referenceRun.runId) === String(gate.run && gate.run.runId);
+    if (sameRun) {
+      assert.equal(inc.staleSymbols, gate.dataQuality.reasons.stale_last_bar || 0,
+                   "stale kommt aus dataQuality.reasons.stale_last_bar des Referenzlaufs");
+    } else {
+      /* Andernfalls muss die Schaetzung wenigstens sagen, auf welchen
+         Lauf sie sich beruft - sonst ist sie nicht nachpruefbar. */
+      assert.ok(est.estimate.referenceRun && est.estimate.referenceRun.runId,
+                "eine Schaetzung ohne Referenzlauf ist nicht nachpruefbar");
+    }
   }
   assert.ok(est.estimate.aggregatesToRebuild.mustRebuild.length > 0);
   assert.ok(est.estimate.aggregatesToRebuild.mustNotRebuild.length > 0);
