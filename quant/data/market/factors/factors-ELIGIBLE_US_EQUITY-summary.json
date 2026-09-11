@@ -1,0 +1,1490 @@
+{
+  "generatedAt": "2026-09-11T14:46:34.648Z",
+  "gate": "ELIGIBLE_US_EQUITY",
+  "provider": "tiingo",
+  "engine": "market-factors-1.0.0",
+  "benchmark": {
+    "id": "SPY",
+    "status": "SOURCE_MISSING",
+    "note": "Keine Benchmarkreihe in der Arbeitsablage. Relative Staerke bleibt fuer alle Titel leer."
+  },
+  "run": {
+    "source": "github-actions",
+    "runId": "34611793308",
+    "commit": "7fa3b141cfe8a9b96495b28b715bc30061a75bd6",
+    "runtimeMs": 59252,
+    "msPerSymbol": 9
+  },
+  "redistribution": {
+    "priceLevels": "WITHHELD",
+    "note": "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, Abstaende und Renditen."
+  },
+  "coverage": {
+    "requested": 7004,
+    "computed": 6863,
+    "skipped": 141,
+    "skippedByReason": {
+      "FAIL": 140,
+      "SOURCE_MISSING": 1
+    },
+    "fieldCoverage": {
+      "sma20": {
+        "CALCULATED": 6863,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA20": {
+        "CALCULATED": 6863,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA20": {
+        "CALCULATED": 6863,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "sma50": {
+        "CALCULATED": 6820,
+        "INSUFFICIENT_HISTORY": 43,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA50": {
+        "CALCULATED": 6820,
+        "INSUFFICIENT_HISTORY": 43,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA50": {
+        "CALCULATED": 6820,
+        "INSUFFICIENT_HISTORY": 43,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "sma100": {
+        "CALCULATED": 6491,
+        "INSUFFICIENT_HISTORY": 372,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA100": {
+        "CALCULATED": 6491,
+        "INSUFFICIENT_HISTORY": 372,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA100": {
+        "CALCULATED": 6491,
+        "INSUFFICIENT_HISTORY": 372,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "sma200": {
+        "CALCULATED": 6160,
+        "INSUFFICIENT_HISTORY": 703,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "priceAboveSMA200": {
+        "CALCULATED": 6160,
+        "INSUFFICIENT_HISTORY": 703,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceToSMA200": {
+        "CALCULATED": 6160,
+        "INSUFFICIENT_HISTORY": 703,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "aboveAllSMA": {
+        "CALCULATED": 6160,
+        "INSUFFICIENT_HISTORY": 703,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "aboveSMA20And50And200": {
+        "CALCULATED": 6160,
+        "INSUFFICIENT_HISTORY": 703,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "high52w": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "low52w": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceTo52wHigh": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "distanceTo52wLow": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "newHigh52w": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "closeAtHigh52w": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "within5PctOf52wHigh": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.1M": {
+        "CALCULATED": 6863,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.3M": {
+        "CALCULATED": 6755,
+        "INSUFFICIENT_HISTORY": 108,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.6M": {
+        "CALCULATED": 6397,
+        "INSUFFICIENT_HISTORY": 466,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "returns.12M": {
+        "CALCULATED": 6047,
+        "INSUFFICIENT_HISTORY": 816,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "return12M1M": {
+        "CALCULATED": 6047,
+        "INSUFFICIENT_HISTORY": 816,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "momentumAcceleration": {
+        "CALCULATED": 6755,
+        "INSUFFICIENT_HISTORY": 108,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volatility20d": {
+        "CALCULATED": 6863,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volatility60d": {
+        "CALCULATED": 6763,
+        "INSUFFICIENT_HISTORY": 100,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volatility252d": {
+        "CALCULATED": 6047,
+        "INSUFFICIENT_HISTORY": 816,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "maxDrawdown252d": {
+        "CALCULATED": 6052,
+        "INSUFFICIENT_HISTORY": 811,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "avgVolume20d": {
+        "CALCULATED": 6863,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "avgVolume60d": {
+        "CALCULATED": 6764,
+        "INSUFFICIENT_HISTORY": 99,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volumeRatio20over60": {
+        "CALCULATED": 6409,
+        "INSUFFICIENT_HISTORY": 454,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "volumeSpikeRatio": {
+        "CALCULATED": 6382,
+        "INSUFFICIENT_HISTORY": 454,
+        "SOURCE_MISSING": 27,
+        "NOT_APPLICABLE": 0
+      },
+      "volumeBreakout": {
+        "CALCULATED": 6382,
+        "INSUFFICIENT_HISTORY": 481,
+        "SOURCE_MISSING": 0,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.1M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 6863,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.3M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 6863,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.6M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 6863,
+        "NOT_APPLICABLE": 0
+      },
+      "relativeStrength.12M": {
+        "CALCULATED": 0,
+        "INSUFFICIENT_HISTORY": 0,
+        "SOURCE_MISSING": 6863,
+        "NOT_APPLICABLE": 0
+      }
+    }
+  },
+  "skipped": [
+    {
+      "ticker": "WBS",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "LEG",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "AVB",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "HLX",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "NXH",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "ASTI",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "AREN",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "MRDN",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "TWO",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "PMCB",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "BCAR",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "GOVX",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "BRTX",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "RMAX",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "GLMD",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "LBRDA",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "LBRDK",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "ZTEK",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "FBRX",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "NCSM",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "NCPL",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "RCAT",
+      "reason": "FAIL",
+      "message": "implausible_split"
+    },
+    {
+      "ticker": "WBS-P-F",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "CRNX",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "JUPGF",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "EDVA",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BTOG",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "TALK",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "LBRDP",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "RNWWW",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "IWFL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "IWML",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "MTUL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "QULL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "SCDL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "COOL",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "CNL",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "MDV-P-A",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "WBS-P-G",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "MDV",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "HRYU",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "NCNC",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "ADAMK",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "ADBT",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "AIHS",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "AMAC",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "APMD",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "ATLQ",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "ATTO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "AXICY",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BBBYW",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BCCQ",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BLSM",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BNRG",
+      "reason": "FAIL",
+      "message": "too_few_bars"
+    },
+    {
+      "ticker": "BNZI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BRTM",
+      "reason": "FAIL",
+      "message": "too_few_bars"
+    },
+    {
+      "ticker": "BRVE",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BRZD",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BRZL",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "BURU",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "CCCT",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "CGCF",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "CHTRP",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "CMII",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "DACL",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "DVXE",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "EWAV",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "FBDT",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "FDMM",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "FJDIU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "FTRK",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "FWAC",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "GHXI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "GIXI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "GLYC",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "HONDW",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "HONIV",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "HOOZ",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "HYGD",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "HYGU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "IPCX",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "IPHXU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "IPXG",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "JAB",
+      "reason": "FAIL",
+      "message": "too_few_bars"
+    },
+    {
+      "ticker": "JABRR",
+      "reason": "FAIL",
+      "message": "too_few_bars"
+    },
+    {
+      "ticker": "JABRU",
+      "reason": "FAIL",
+      "message": "too_few_bars"
+    },
+    {
+      "ticker": "JABRW",
+      "reason": "FAIL",
+      "message": "too_few_bars"
+    },
+    {
+      "ticker": "JONE",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "JPND",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "JPNU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "JTTT",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "LQDD",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "LQDU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "LTGO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "LYNX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "MEGX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "MESA",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "MIAC",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "MNGU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "MRCO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "NCO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "NCOOR",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "NCOOW",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "NSAI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "NXAT",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "NYMT",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "OCAC",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "OCLTU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "PAAI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "PLCI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "PSQL",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "QVCG",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "RNAQU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "RVII",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SAMO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SAX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SCATU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SGLD",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SGRX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SITX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SMHU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "SNSC",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TAWN",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TBCVU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TCGX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "THEO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TLACU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TP",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TPEI",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "TREO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "USGX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "USLX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "USMX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "VOGX",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "WATR",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "WILC",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "WLCO",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "XIIIU",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "XLAB",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "XTER",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    },
+    {
+      "ticker": "XTND",
+      "reason": "FAIL",
+      "message": "insufficient_history"
+    }
+  ],
+  "detail": {
+    "location": "workingStore",
+    "file": ".market-cache/tiingo/factors/factors-ELIGIBLE_US_EQUITY.json",
+    "symbols": 6863,
+    "canaryAlwaysIncluded": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "JPM",
+      "XOM"
+    ],
+    "reason": "Mehr als 500 Titel. Die Einzelzeilen bleiben in der Arbeitsablage; ausgeliefert werden Deckungsbilanz, Screener und der Canary-Satz (§12, §26)."
+  },
+  "canary": [
+    {
+      "ticker": "AAPL",
+      "securityId": "ref_AAPL",
+      "exchange": "NASDAQ",
+      "sector": "Technology",
+      "sectorStatus": "CURATED",
+      "instrumentType": "COMMON_STOCK",
+      "dataQuality": "WARNING",
+      "dataQualityReason": "large_move_matching_split_ratio",
+      "bars": 9240,
+      "asOf": "2026-09-10",
+      "basis": "adjustedClose",
+      "values": {
+        "priceAboveSMA20": true,
+        "distanceToSMA20": 0.035824,
+        "priceAboveSMA50": true,
+        "distanceToSMA50": 0.029977,
+        "priceAboveSMA100": true,
+        "distanceToSMA100": 0.072514,
+        "priceAboveSMA200": true,
+        "distanceToSMA200": 0.148984,
+        "aboveAllSMA": true,
+        "aboveSMA20And50And200": true,
+        "distanceTo52wHigh": -0.051409,
+        "distanceTo52wLow": 0.45069,
+        "newHigh52w": false,
+        "closeAtHigh52w": false,
+        "within5PctOf52wHigh": false,
+        "returns": {
+          "1M": 0.071037,
+          "3M": 0.120982,
+          "6M": 0.25439,
+          "12M": 0.398691
+        },
+        "return12M1M": 0.305922,
+        "momentumAcceleration": 0.03071,
+        "volatility20d": 0.227604,
+        "volatility60d": 0.321148,
+        "volatility252d": 0.252539,
+        "maxDrawdown252d": -0.137985,
+        "avgVolume20d": 42014939,
+        "avgVolume60d": 54255574,
+        "volumeRatio20over60": 0.7744,
+        "volumeSpikeRatio": 1.6664,
+        "volumeBreakout": false,
+        "relativeStrength": {
+          "1M": null,
+          "3M": null,
+          "6M": null,
+          "12M": null
+        }
+      },
+      "fieldStatus": {
+        "sma20": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA20": "CALCULATED",
+        "distanceToSMA20": "CALCULATED",
+        "sma50": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA50": "CALCULATED",
+        "distanceToSMA50": "CALCULATED",
+        "sma100": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA100": "CALCULATED",
+        "distanceToSMA100": "CALCULATED",
+        "sma200": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA200": "CALCULATED",
+        "distanceToSMA200": "CALCULATED",
+        "aboveAllSMA": "CALCULATED",
+        "aboveSMA20And50And200": "CALCULATED",
+        "high52w": "WITHHELD_REDISTRIBUTION",
+        "low52w": "WITHHELD_REDISTRIBUTION",
+        "distanceTo52wHigh": "CALCULATED",
+        "distanceTo52wLow": "CALCULATED",
+        "newHigh52w": "CALCULATED",
+        "closeAtHigh52w": "CALCULATED",
+        "within5PctOf52wHigh": "CALCULATED",
+        "returns": {
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
+        },
+        "return12M1M": "CALCULATED",
+        "momentumAcceleration": "CALCULATED",
+        "volatility20d": "CALCULATED",
+        "volatility60d": "CALCULATED",
+        "volatility252d": "CALCULATED",
+        "maxDrawdown252d": "CALCULATED",
+        "avgVolume20d": "CALCULATED",
+        "avgVolume60d": "CALCULATED",
+        "volumeRatio20over60": "CALCULATED",
+        "volumeSpikeRatio": "CALCULATED",
+        "volumeBreakout": "CALCULATED",
+        "relativeStrength": {
+          "1M": "SOURCE_MISSING",
+          "3M": "SOURCE_MISSING",
+          "6M": "SOURCE_MISSING",
+          "12M": "SOURCE_MISSING"
+        }
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "securityId": "ref_MSFT",
+      "exchange": "NASDAQ",
+      "sector": "Technology",
+      "sectorStatus": "CURATED",
+      "instrumentType": "COMMON_STOCK",
+      "dataQuality": "PASS",
+      "dataQualityReason": "clean",
+      "bars": 9240,
+      "asOf": "2026-09-10",
+      "basis": "adjustedClose",
+      "values": {
+        "priceAboveSMA20": false,
+        "distanceToSMA20": -0.003695,
+        "priceAboveSMA50": true,
+        "distanceToSMA50": 0.092197,
+        "priceAboveSMA100": true,
+        "distanceToSMA100": 0.147039,
+        "priceAboveSMA200": true,
+        "distanceToSMA200": 0.146499,
+        "aboveAllSMA": false,
+        "aboveSMA20And50And200": false,
+        "distanceTo52wHigh": -0.103311,
+        "distanceTo52wLow": 0.412862,
+        "newHigh52w": false,
+        "closeAtHigh52w": false,
+        "within5PctOf52wHigh": false,
+        "returns": {
+          "1M": -0.020719,
+          "3M": 0.241623,
+          "6M": 0.221208,
+          "12M": -0.003803
+        },
+        "return12M1M": 0.017274,
+        "momentumAcceleration": -0.10126,
+        "volatility20d": 0.212826,
+        "volatility60d": 0.419074,
+        "volatility252d": 0.319911,
+        "maxDrawdown252d": -0.34496,
+        "avgVolume20d": 21225422,
+        "avgVolume60d": 35851979,
+        "volumeRatio20over60": 0.592,
+        "volumeSpikeRatio": 0.7556,
+        "volumeBreakout": false,
+        "relativeStrength": {
+          "1M": null,
+          "3M": null,
+          "6M": null,
+          "12M": null
+        }
+      },
+      "fieldStatus": {
+        "sma20": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA20": "CALCULATED",
+        "distanceToSMA20": "CALCULATED",
+        "sma50": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA50": "CALCULATED",
+        "distanceToSMA50": "CALCULATED",
+        "sma100": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA100": "CALCULATED",
+        "distanceToSMA100": "CALCULATED",
+        "sma200": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA200": "CALCULATED",
+        "distanceToSMA200": "CALCULATED",
+        "aboveAllSMA": "CALCULATED",
+        "aboveSMA20And50And200": "CALCULATED",
+        "high52w": "WITHHELD_REDISTRIBUTION",
+        "low52w": "WITHHELD_REDISTRIBUTION",
+        "distanceTo52wHigh": "CALCULATED",
+        "distanceTo52wLow": "CALCULATED",
+        "newHigh52w": "CALCULATED",
+        "closeAtHigh52w": "CALCULATED",
+        "within5PctOf52wHigh": "CALCULATED",
+        "returns": {
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
+        },
+        "return12M1M": "CALCULATED",
+        "momentumAcceleration": "CALCULATED",
+        "volatility20d": "CALCULATED",
+        "volatility60d": "CALCULATED",
+        "volatility252d": "CALCULATED",
+        "maxDrawdown252d": "CALCULATED",
+        "avgVolume20d": "CALCULATED",
+        "avgVolume60d": "CALCULATED",
+        "volumeRatio20over60": "CALCULATED",
+        "volumeSpikeRatio": "CALCULATED",
+        "volumeBreakout": "CALCULATED",
+        "relativeStrength": {
+          "1M": "SOURCE_MISSING",
+          "3M": "SOURCE_MISSING",
+          "6M": "SOURCE_MISSING",
+          "12M": "SOURCE_MISSING"
+        }
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "securityId": "ref_NVDA",
+      "exchange": "NASDAQ",
+      "sector": "Technology",
+      "sectorStatus": "CURATED",
+      "instrumentType": "COMMON_STOCK",
+      "dataQuality": "WARNING",
+      "dataQualityReason": "large_move",
+      "bars": 6951,
+      "asOf": "2026-09-10",
+      "basis": "adjustedClose",
+      "values": {
+        "priceAboveSMA20": false,
+        "distanceToSMA20": -0.008686,
+        "priceAboveSMA50": true,
+        "distanceToSMA50": 0.03033,
+        "priceAboveSMA100": true,
+        "distanceToSMA100": 0.036053,
+        "priceAboveSMA200": true,
+        "distanceToSMA200": 0.108968,
+        "aboveAllSMA": false,
+        "aboveSMA20And50And200": false,
+        "distanceTo52wHigh": -0.074744,
+        "distanceTo52wLow": 0.332318,
+        "newHigh52w": false,
+        "closeAtHigh52w": false,
+        "within5PctOf52wHigh": false,
+        "returns": {
+          "1M": 0.005103,
+          "3M": 0.090759,
+          "6M": 0.176477,
+          "12M": 0.281893
+        },
+        "return12M1M": 0.275384,
+        "momentumAcceleration": -0.02515,
+        "volatility20d": 0.426383,
+        "volatility60d": 0.400322,
+        "volatility252d": 0.379478,
+        "maxDrawdown252d": -0.202145,
+        "avgVolume20d": 128209391,
+        "avgVolume60d": 132527164,
+        "volumeRatio20over60": 0.9674,
+        "volumeSpikeRatio": 0.825,
+        "volumeBreakout": false,
+        "relativeStrength": {
+          "1M": null,
+          "3M": null,
+          "6M": null,
+          "12M": null
+        }
+      },
+      "fieldStatus": {
+        "sma20": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA20": "CALCULATED",
+        "distanceToSMA20": "CALCULATED",
+        "sma50": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA50": "CALCULATED",
+        "distanceToSMA50": "CALCULATED",
+        "sma100": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA100": "CALCULATED",
+        "distanceToSMA100": "CALCULATED",
+        "sma200": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA200": "CALCULATED",
+        "distanceToSMA200": "CALCULATED",
+        "aboveAllSMA": "CALCULATED",
+        "aboveSMA20And50And200": "CALCULATED",
+        "high52w": "WITHHELD_REDISTRIBUTION",
+        "low52w": "WITHHELD_REDISTRIBUTION",
+        "distanceTo52wHigh": "CALCULATED",
+        "distanceTo52wLow": "CALCULATED",
+        "newHigh52w": "CALCULATED",
+        "closeAtHigh52w": "CALCULATED",
+        "within5PctOf52wHigh": "CALCULATED",
+        "returns": {
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
+        },
+        "return12M1M": "CALCULATED",
+        "momentumAcceleration": "CALCULATED",
+        "volatility20d": "CALCULATED",
+        "volatility60d": "CALCULATED",
+        "volatility252d": "CALCULATED",
+        "maxDrawdown252d": "CALCULATED",
+        "avgVolume20d": "CALCULATED",
+        "avgVolume60d": "CALCULATED",
+        "volumeRatio20over60": "CALCULATED",
+        "volumeSpikeRatio": "CALCULATED",
+        "volumeBreakout": "CALCULATED",
+        "relativeStrength": {
+          "1M": "SOURCE_MISSING",
+          "3M": "SOURCE_MISSING",
+          "6M": "SOURCE_MISSING",
+          "12M": "SOURCE_MISSING"
+        }
+      }
+    },
+    {
+      "ticker": "JPM",
+      "securityId": "ref_JPM",
+      "exchange": "NYSE",
+      "sector": "Financials",
+      "sectorStatus": "CURATED",
+      "instrumentType": "COMMON_STOCK",
+      "dataQuality": "PASS",
+      "dataQualityReason": "clean",
+      "bars": 9240,
+      "asOf": "2026-09-10",
+      "basis": "adjustedClose",
+      "values": {
+        "priceAboveSMA20": false,
+        "distanceToSMA20": -0.009863,
+        "priceAboveSMA50": true,
+        "distanceToSMA50": 0.006616,
+        "priceAboveSMA100": true,
+        "distanceToSMA100": 0.068645,
+        "priceAboveSMA200": true,
+        "distanceToSMA200": 0.114588,
+        "aboveAllSMA": false,
+        "aboveSMA20And50And200": false,
+        "distanceTo52wHigh": -0.035307,
+        "distanceTo52wLow": 0.278873,
+        "newHigh52w": false,
+        "closeAtHigh52w": false,
+        "within5PctOf52wHigh": true,
+        "returns": {
+          "1M": -0.023423,
+          "3M": 0.148769,
+          "6M": 0.241421,
+          "12M": 0.209578
+        },
+        "return12M1M": 0.238589,
+        "momentumAcceleration": -0.073013,
+        "volatility20d": 0.138742,
+        "volatility60d": 0.198316,
+        "volatility252d": 0.220762,
+        "maxDrawdown252d": -0.154717,
+        "avgVolume20d": 5551309,
+        "avgVolume60d": 7995797,
+        "volumeRatio20over60": 0.6943,
+        "volumeSpikeRatio": 0.7541,
+        "volumeBreakout": false,
+        "relativeStrength": {
+          "1M": null,
+          "3M": null,
+          "6M": null,
+          "12M": null
+        }
+      },
+      "fieldStatus": {
+        "sma20": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA20": "CALCULATED",
+        "distanceToSMA20": "CALCULATED",
+        "sma50": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA50": "CALCULATED",
+        "distanceToSMA50": "CALCULATED",
+        "sma100": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA100": "CALCULATED",
+        "distanceToSMA100": "CALCULATED",
+        "sma200": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA200": "CALCULATED",
+        "distanceToSMA200": "CALCULATED",
+        "aboveAllSMA": "CALCULATED",
+        "aboveSMA20And50And200": "CALCULATED",
+        "high52w": "WITHHELD_REDISTRIBUTION",
+        "low52w": "WITHHELD_REDISTRIBUTION",
+        "distanceTo52wHigh": "CALCULATED",
+        "distanceTo52wLow": "CALCULATED",
+        "newHigh52w": "CALCULATED",
+        "closeAtHigh52w": "CALCULATED",
+        "within5PctOf52wHigh": "CALCULATED",
+        "returns": {
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
+        },
+        "return12M1M": "CALCULATED",
+        "momentumAcceleration": "CALCULATED",
+        "volatility20d": "CALCULATED",
+        "volatility60d": "CALCULATED",
+        "volatility252d": "CALCULATED",
+        "maxDrawdown252d": "CALCULATED",
+        "avgVolume20d": "CALCULATED",
+        "avgVolume60d": "CALCULATED",
+        "volumeRatio20over60": "CALCULATED",
+        "volumeSpikeRatio": "CALCULATED",
+        "volumeBreakout": "CALCULATED",
+        "relativeStrength": {
+          "1M": "SOURCE_MISSING",
+          "3M": "SOURCE_MISSING",
+          "6M": "SOURCE_MISSING",
+          "12M": "SOURCE_MISSING"
+        }
+      }
+    },
+    {
+      "ticker": "XOM",
+      "securityId": "ref_XOM",
+      "exchange": "NYSE",
+      "sector": "Energy",
+      "sectorStatus": "CURATED",
+      "instrumentType": "COMMON_STOCK",
+      "dataQuality": "PASS",
+      "dataQualityReason": "clean",
+      "bars": 9240,
+      "asOf": "2026-09-10",
+      "basis": "adjustedClose",
+      "values": {
+        "priceAboveSMA20": true,
+        "distanceToSMA20": 0.020814,
+        "priceAboveSMA50": true,
+        "distanceToSMA50": 0.073153,
+        "priceAboveSMA100": true,
+        "distanceToSMA100": 0.09784,
+        "priceAboveSMA200": true,
+        "distanceToSMA200": 0.148867,
+        "aboveAllSMA": true,
+        "aboveSMA20And50And200": true,
+        "distanceTo52wHigh": -0.051252,
+        "distanceTo52wLow": 0.539824,
+        "newHigh52w": false,
+        "closeAtHigh52w": false,
+        "within5PctOf52wHigh": false,
+        "returns": {
+          "1M": 0.040576,
+          "3M": 0.103997,
+          "6M": 0.10416,
+          "12M": 0.536136
+        },
+        "return12M1M": 0.476236,
+        "momentumAcceleration": 0.00591,
+        "volatility20d": 0.227259,
+        "volatility60d": 0.241183,
+        "volatility252d": 0.25618,
+        "maxDrawdown252d": -0.201333,
+        "avgVolume20d": 13830814,
+        "avgVolume60d": 15311568,
+        "volumeRatio20over60": 0.9033,
+        "volumeSpikeRatio": 1.2019,
+        "volumeBreakout": false,
+        "relativeStrength": {
+          "1M": null,
+          "3M": null,
+          "6M": null,
+          "12M": null
+        }
+      },
+      "fieldStatus": {
+        "sma20": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA20": "CALCULATED",
+        "distanceToSMA20": "CALCULATED",
+        "sma50": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA50": "CALCULATED",
+        "distanceToSMA50": "CALCULATED",
+        "sma100": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA100": "CALCULATED",
+        "distanceToSMA100": "CALCULATED",
+        "sma200": "WITHHELD_REDISTRIBUTION",
+        "priceAboveSMA200": "CALCULATED",
+        "distanceToSMA200": "CALCULATED",
+        "aboveAllSMA": "CALCULATED",
+        "aboveSMA20And50And200": "CALCULATED",
+        "high52w": "WITHHELD_REDISTRIBUTION",
+        "low52w": "WITHHELD_REDISTRIBUTION",
+        "distanceTo52wHigh": "CALCULATED",
+        "distanceTo52wLow": "CALCULATED",
+        "newHigh52w": "CALCULATED",
+        "closeAtHigh52w": "CALCULATED",
+        "within5PctOf52wHigh": "CALCULATED",
+        "returns": {
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
+        },
+        "return12M1M": "CALCULATED",
+        "momentumAcceleration": "CALCULATED",
+        "volatility20d": "CALCULATED",
+        "volatility60d": "CALCULATED",
+        "volatility252d": "CALCULATED",
+        "maxDrawdown252d": "CALCULATED",
+        "avgVolume20d": "CALCULATED",
+        "avgVolume60d": "CALCULATED",
+        "volumeRatio20over60": "CALCULATED",
+        "volumeSpikeRatio": "CALCULATED",
+        "volumeBreakout": "CALCULATED",
+        "relativeStrength": {
+          "1M": "SOURCE_MISSING",
+          "3M": "SOURCE_MISSING",
+          "6M": "SOURCE_MISSING",
+          "12M": "SOURCE_MISSING"
+        }
+      }
+    }
+  ]
+}

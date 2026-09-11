@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-11T07:25:38.952Z",
-  "version": "us-security-master-1.0.0",
+  "generatedAt": "2026-09-11T14:43:20.305Z",
+  "version": "us-security-master-1.1.0",
   "provider": "tiingo",
   "status": "ESTIMATE_FOR_MEASURED_ADDITIONS",
   "approvalRequired": true,
@@ -9,39 +9,39 @@
     "status": "ESTIMATED_FROM_LAST_FULL_RUN",
     "referenceRun": {
       "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
-      "runId": "34374652149",
-      "symbols": 5684,
-      "requests": 5686,
-      "runtimeMs": 3367169,
-      "bytesReceived": 4374734986,
-      "storageBytes": 7933981108
+      "runId": "34574226888",
+      "symbols": 7803,
+      "requests": 7809,
+      "runtimeMs": 4685219,
+      "bytesReceived": 5621286838,
+      "storageBytes": 8118540788
     },
     "perSymbol": {
-      "requests": 1.0004,
-      "seconds": 0.592,
-      "bytesReceived": 769658,
-      "storageBytes": 1395845,
-      "factorRuntimeMs": 10.2
+      "requests": 1.0008,
+      "seconds": 0.6,
+      "bytesReceived": 720401,
+      "storageBytes": 1040438,
+      "factorRuntimeMs": 6.38
     },
     "incremental": {
-      "newSymbols": 2119,
-      "staleSymbols": 34,
+      "newSymbols": 1,
+      "staleSymbols": 58,
       "staleBasis": "gate-FULL_UNIVERSE.json dataQuality.reasons.stale_last_bar - Titel, deren letzte Kerze im Referenzlauf veraltet war. Beendete Listings zaehlen ausdruecklich nicht mit: ihre Historie ist vollstaendig.",
-      "symbolsToFetch": 2153,
-      "estimatedRequests": 2154,
-      "estimatedRuntimeMinutes": 21.3,
-      "estimatedDownloadMB": 1580.3,
-      "estimatedAdditionalStorageMB": 2866,
-      "estimatedFactorRuntimeSeconds": 22,
+      "symbolsToFetch": 59,
+      "estimatedRequests": 60,
+      "estimatedRuntimeMinutes": 0.6,
+      "estimatedDownloadMB": 40.5,
+      "estimatedAdditionalStorageMB": 58.5,
+      "estimatedFactorRuntimeSeconds": 0.4,
       "fitsInOneHourBudget": true,
       "requestBudgetPerHour": 12000,
-      "providerObservedLowerBoundPerRun": 5686
+      "providerObservedLowerBoundPerRun": 7809
     },
     "fullRerun": {
-      "symbols": 7837,
-      "estimatedRequests": 7840,
-      "estimatedRuntimeMinutes": 77.4,
-      "estimatedDownloadMB": 5752.4,
+      "symbols": 7862,
+      "estimatedRequests": 7869,
+      "estimatedRuntimeMinutes": 78.7,
+      "estimatedDownloadMB": 5401.4,
       "necessary": false,
       "reason": "Die vorhandenen Historien liegen in der Arbeitsablage und sind nach Titel getrennt. Ein Titel, der sich nicht geaendert hat, liefert dieselbe Reihe noch einmal - das ist kein Gewinn, sondern derselbe Verkehr."
     },

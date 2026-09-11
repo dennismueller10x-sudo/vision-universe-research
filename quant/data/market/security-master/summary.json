@@ -1,26 +1,26 @@
 {
-  "generatedAt": "2026-09-11T07:25:38.952Z",
-  "version": "us-security-master-1.0.0",
+  "generatedAt": "2026-09-11T14:43:20.305Z",
+  "version": "us-security-master-1.1.0",
   "provider": "tiingo",
   "today": "2026-09-11",
   "status": "OK",
   "headline": {
-    "BASELINE_COUNT": 5684,
-    "RAW_US_PROVIDER_CANDIDATES": 108610,
-    "MATCHED_EXISTING": 5171,
-    "NEW_ELIGIBLE_ADDITIONS": 2119,
-    "REVIEW_EXISTING": 513,
-    "BASELINE_ACCOUNTED_FOR": 5684,
-    "MATCHED_EXISTING_ROWS": 5171,
-    "REVIEW_EXISTING_ROWS": 731,
+    "BASELINE_COUNT": 7803,
+    "RAW_US_PROVIDER_CANDIDATES": 108594,
+    "MATCHED_EXISTING": 6395,
+    "NEW_ELIGIBLE_ADDITIONS": 1,
+    "REVIEW_EXISTING": 1408,
+    "BASELINE_ACCOUNTED_FOR": 7803,
+    "MATCHED_EXISTING_ROWS": 6395,
+    "REVIEW_EXISTING_ROWS": 1626,
     "BASELINE_TICKERS_WITH_AMBIGUOUS_MATCH": 208,
-    "EXCLUDED_NEW_CANDIDATES": 60657,
-    "REVIEW_NEW_CANDIDATES": 39933,
-    "ACTIVE_US_COMMON_EQUITIES": 7783,
+    "EXCLUDED_NEW_CANDIDATES": 61394,
+    "REVIEW_NEW_CANDIDATES": 39180,
+    "ACTIVE_US_COMMON_EQUITIES": 6828,
     "ADR": 0,
     "REIT": 0,
     "SPAC": 0,
-    "PREFERRED": 882,
+    "PREFERRED": 880,
     "TRUST": 0,
     "ETF_EXCLUDED": 9606,
     "ETN_EXCLUDED": 0,
@@ -28,28 +28,28 @@
     "FUND_EXCLUDED": 49878,
     "CEF_EXCLUDED": 0,
     "INDEX_EXCLUDED": 0,
-    "WARRANT": 666,
-    "UNIT": 395,
-    "RIGHT": 142,
+    "WARRANT": 2205,
+    "UNIT": 1536,
+    "RIGHT": 428,
     "OTHER": 0,
-    "INACTIVE": 42497,
+    "INACTIVE": 42494,
     "UNKNOWN": 0,
-    "DUPLICATES": 2202,
-    "OTC_COMMON_DEFERRED": 16642,
-    "FINAL_PROPOSED_US_EQUITY_COUNT": 7803
+    "DUPLICATES": 2203,
+    "OTC_COMMON_DEFERRED": 16368,
+    "FINAL_PROPOSED_US_EQUITY_COUNT": 7804
   },
   "counts": {
-    "rowsTotal": 108611,
-    "baselineCount": 5684,
-    "baselinePreserved": 5684,
-    "baselineMemberRows": 5902,
+    "rowsTotal": 108596,
+    "baselineCount": 7803,
+    "baselinePreserved": 7803,
+    "baselineMemberRows": 8021,
     "baselineTickersWithAmbiguousMatch": 208,
     "byInstrumentType": {
-      "EQUITY_COMMON": 47042,
+      "EQUITY_COMMON": 43991,
       "ADR": 0,
       "REIT": 0,
       "SPAC": 0,
-      "PREFERRED": 882,
+      "PREFERRED": 880,
       "TRUST": 0,
       "ETF": 9606,
       "ETN": 0,
@@ -57,18 +57,19 @@
       "MUTUAL_FUND": 49878,
       "CEF": 0,
       "INDEX": 0,
-      "WARRANT": 666,
-      "UNIT": 395,
-      "RIGHT": 142,
+      "WARRANT": 2205,
+      "UNIT": 1536,
+      "RIGHT": 428,
+      "TEST_SECURITY": 72,
       "OTHER": 0,
       "UNKNOWN": 0
     },
     "newByInstrumentType": {
-      "EQUITY_COMMON": 41476,
+      "EQUITY_COMMON": 37217,
       "ADR": 0,
       "REIT": 0,
       "SPAC": 0,
-      "PREFERRED": 558,
+      "PREFERRED": 556,
       "TRUST": 0,
       "ETF": 9597,
       "ETN": 0,
@@ -76,42 +77,43 @@
       "MUTUAL_FUND": 49878,
       "CEF": 0,
       "INDEX": 0,
-      "WARRANT": 663,
-      "UNIT": 395,
-      "RIGHT": 142,
+      "WARRANT": 1745,
+      "UNIT": 1243,
+      "RIGHT": 297,
+      "TEST_SECURITY": 42,
       "OTHER": 0,
       "UNKNOWN": 0
     },
     "byReconciliationStatus": {
-      "EXISTING": 5171,
-      "ADDED": 2119,
-      "REVIEW": 40664,
-      "EXCLUDED_CANDIDATE": 60657
+      "EXISTING": 6395,
+      "ADDED": 1,
+      "REVIEW": 40806,
+      "EXCLUDED_CANDIDATE": 61394
     },
     "byClassificationStatus": {
-      "CLASSIFIED": 101132,
-      "REVIEW": 7479,
+      "CLASSIFIED": 100503,
+      "REVIEW": 8093,
       "UNKNOWN": 0
     },
     "byExchange": {
       "NASDAQ": 10980,
-      "SHE": 3809,
-      "PINK": 20683,
+      "SHE": 3792,
+      "PINK": 20681,
       "OTCGREY": 1523,
       "SHEB": 42,
-      "SHG": 3432,
+      "SHG": 3433,
       "SHGB": 44,
       "NYSE": 9298,
       "OTCBB": 602,
       "BATS": 2024,
       "NMFQS": 49827,
       "NYSE ARCA": 1534,
-      "OTCMKTS": 2019,
+      "OTCMKTS": 2021,
       "OTCQB": 450,
       "OTCQX": 204,
       "EXPM": 928,
       "OTCD": 61,
-      "NYSE MKT": 224,
+      "NYSE MKT": 225,
       "OTCCE": 389,
       "AMEX": 386,
       "UNKNOWN": 138,
@@ -119,39 +121,39 @@
       "NYSE NAT": 3
     },
     "byVenueTier": {
-      "PRIMARY": 24446,
-      "NON_US_OR_UNKNOWN": 7341,
+      "PRIMARY": 24447,
+      "NON_US_OR_UNKNOWN": 7325,
       "OTC": 76686,
       "UNKNOWN": 138
     },
     "byActiveStatus": {
-      "ACTIVE": 66114,
-      "INACTIVE": 42497,
+      "ACTIVE": 66102,
+      "INACTIVE": 42494,
       "UNKNOWN": 0
     },
-    "activeUsPrimaryCommonEquities": 7783,
-    "otcCommonDeferred": 16642,
+    "activeUsPrimaryCommonEquities": 6828,
+    "otcCommonDeferred": 16368,
     "providerAvailable": true
   },
   "exchangeBreakdown": {
     "NASDAQ": 10980,
-    "SHE": 3809,
-    "PINK": 20683,
+    "SHE": 3792,
+    "PINK": 20681,
     "OTCGREY": 1523,
     "SHEB": 42,
-    "SHG": 3432,
+    "SHG": 3433,
     "SHGB": 44,
     "NYSE": 9298,
     "OTCBB": 602,
     "BATS": 2024,
     "NMFQS": 49827,
     "NYSE ARCA": 1534,
-    "OTCMKTS": 2019,
+    "OTCMKTS": 2021,
     "OTCQB": 450,
     "OTCQX": 204,
     "EXPM": 928,
     "OTCD": 61,
-    "NYSE MKT": 224,
+    "NYSE MKT": 225,
     "OTCCE": 389,
     "AMEX": 386,
     "UNKNOWN": 138,
@@ -159,31 +161,36 @@
     "NYSE NAT": 3
   },
   "venueBreakdown": {
-    "PRIMARY": 24446,
-    "NON_US_OR_UNKNOWN": 7341,
+    "PRIMARY": 24447,
+    "NON_US_OR_UNKNOWN": 7325,
     "OTC": 76686,
     "UNKNOWN": 138
   },
   "activeBreakdown": {
-    "ACTIVE": 66114,
-    "INACTIVE": 42497,
+    "ACTIVE": 66102,
+    "INACTIVE": 42494,
     "UNKNOWN": 0
   },
   "classificationBreakdown": {
-    "CLASSIFIED": 101132,
-    "REVIEW": 7479,
+    "CLASSIFIED": 100503,
+    "REVIEW": 8093,
     "UNKNOWN": 0
   },
   "largestContaminationCategories": [
     {
       "id": "NAME_EVIDENCE_UNAVAILABLE",
       "severity": "HIGH",
-      "count": 108611
+      "count": 108596
     },
     {
       "id": "DUPLICATE_TICKERS",
       "severity": "HIGH",
-      "count": 2202
+      "count": 2203
+    },
+    {
+      "id": "BASELINE_WARRANT_CONTAMINATION",
+      "severity": "MEDIUM",
+      "count": 454
     },
     {
       "id": "BASELINE_PREFERRED_CONTAMINATION",
@@ -191,58 +198,44 @@
       "count": 292
     },
     {
+      "id": "BASELINE_UNIT_CONTAMINATION",
+      "severity": "MEDIUM",
+      "count": 287
+    },
+    {
       "id": "BASELINE_MATCH_AMBIGUOUS",
       "severity": "HIGH",
       "count": 208
     },
     {
+      "id": "BASELINE_RIGHT_CONTAMINATION",
+      "severity": "MEDIUM",
+      "count": 127
+    },
+    {
       "id": "ALTERNATE_LISTING_OF_BASELINE_TICKER",
       "severity": "MEDIUM",
       "count": 118
-    },
-    {
-      "id": "BASELINE_INACTIVE_LISTINGS",
-      "severity": "MEDIUM",
-      "count": 9
-    },
-    {
-      "id": "BASELINE_WARRANT_CONTAMINATION",
-      "severity": "MEDIUM",
-      "count": 3
-    },
-    {
-      "id": "BASELINE_NON_PRIMARY_VENUE",
-      "severity": "MEDIUM",
-      "count": 1
     }
   ],
   "additions": {
-    "total": 2119,
+    "total": 1,
     "byExchange": {
-      "NYSE": 375,
-      "NYSE ARCA": 14,
-      "NASDAQ": 1468,
-      "BATS": 208,
-      "NYSE MKT": 9,
-      "AMEX": 45
+      "NYSE MKT": 1
     },
     "byStartYear": {
-      "2014": 1,
-      "2023": 90,
-      "2024": 389,
-      "2025": 717,
-      "2026": 922
+      "2019": 1
     },
     "historyRule": {
       "rule": "select-gate-universe.mjs ruleBasedCandidates(): minHistoryYears = 3",
       "cutoff": "2023-09-11",
-      "belowRule": 2118,
+      "belowRule": 0,
       "atOrAboveRule": 1,
       "noStartDate": 0,
       "note": "belowRule sind Titel, die das bestehende Universum NICHT wegen ihrer Gattung verfehlt haben, sondern wegen einer Auswahlregel. Diese Klassifikation wendet die Regel auf die Foerderfaehigkeit nicht an - ein Titel von gestern ist eine Aktie. Ob er in ein Momentumuniversum gehoert, ist eine andere Frage und gehoert in die Auswahl, nicht in den Stamm."
     }
   },
-  "newSecuritiesNotInBaseline": 102709,
+  "newSecuritiesNotInBaseline": 100575,
   "providerAggregate": {
     "basis": "COMMITTED_SUMMARY_AGGREGATE",
     "file": "quant/data/market/universe/summary.json",
