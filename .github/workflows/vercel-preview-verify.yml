@@ -118,6 +118,17 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: node scripts/proof/verify-product-proof.mjs --base "$VERCEL_PREVIEW_URL"
 
+      # Und die integrierte Eigentuemer-Vorschau (/vu2/ mit der Bruecke).
+      # Auch dieser Schritt haengt zweiglokal hier, aus demselben Grund:
+      # eine eigene Workflow-Datei ist erst dispatchbar, wenn sie auf dem
+      # Standardzweig liegt.
+      - name: Integrierte Eigentuemer-Vorschau pruefen
+        if: hashFiles('scripts/proof/verify-owner-preview.mjs') != ''
+        env:
+          VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: node scripts/proof/verify-owner-preview.mjs --base "$VERCEL_PREVIEW_URL"
+
       - name: Bericht sichern
         if: always()
         uses: actions/upload-artifact@v4
@@ -127,4 +138,6 @@ jobs:
             quant/data/site/vercel-preview-verification.json
             quant/data/site/full-universe-proof-verification.json
             quant/data/site/proof-shots/**
+            quant/data/site/owner-preview-verification.json
+            quant/data/site/owner-preview-shots/**
           if-no-files-found: warn
