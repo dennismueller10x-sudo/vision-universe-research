@@ -141,7 +141,52 @@ export function createS3Driver(cfg) {
                     "Erwartet VU_HISTORY_S3_ACCESS_KEY_ID und VU_HISTORY_S3_SECRET_ACCESS_KEY.");
   }
 
+  /* ------------------------------------------ NULLKOSTEN-HAERTUNG
+
+     Der Treiber kann nur, was er koennen muss: Objekte schreiben,
+     lesen, pruefen, auflisten. Alles andere ist gesperrt - nicht, weil
+     es gefaehrlich waere, sondern weil es GELD KOSTEN kann und niemand
+     es entschieden hat.
+
+     Gesperrt sind ausdruecklich: Speicherklassen (x-amz-storage-class),
+     Aufbewahrungsregeln (?lifecycle), Versionierung, Replikation,
+     Inventar/Analytics/Metriken, Object Lock, KMS-Verschluesselung und
+     der R2 Data Catalog. Wer eines davon braucht, aendert diese Liste -
+     und trifft damit eine Entscheidung, statt eine zu umgehen. */
+  const FORBIDDEN_HEADERS = [
+    "x-amz-storage-class",
+    "x-amz-website-redirect-location",
+    "x-amz-server-side-encryption-aws-kms-key-id",
+    "x-amz-object-lock-mode",
+    "x-amz-object-lock-retain-until-date",
+    "x-amz-object-lock-legal-hold"
+  ];
+  const ALLOWED_QUERY_KEYS = [
+    "list-type", "prefix", "max-keys", "continuation-token", "delimiter", "start-after"
+  ];
+  const ALLOWED_METHODS = ["GET", "PUT", "HEAD"];
+
+  function assertZeroCostSafe(method, query, extraHeaders) {
+    if (!ALLOWED_METHODS.includes(method)) {
+      throw new Error("ZERO_COST_GUARD_BLOCKED: Methode " + method + " ist nicht freigegeben.");
+    }
+    for (const k of Object.keys(extraHeaders || {})) {
+      if (FORBIDDEN_HEADERS.includes(k.toLowerCase())) {
+        throw new Error("ZERO_COST_GUARD_BLOCKED: Kopfzeile '" + k + "' kann kostenpflichtige " +
+                        "Eigenschaften aktivieren und ist gesperrt.");
+      }
+    }
+    for (const k of Object.keys(query || {})) {
+      if (!ALLOWED_QUERY_KEYS.includes(k.toLowerCase())) {
+        throw new Error("ZERO_COST_GUARD_BLOCKED: Abfrageparameter '" + k + "' ist nicht " +
+                        "freigegeben (Aufbewahrung, Versionierung, Katalog und aehnliche " +
+                        "Unterressourcen sind gesperrt).");
+      }
+    }
+  }
+
   async function request(method, key, { body, query, extraHeaders } = {}) {
+    assertZeroCostSafe(method, query, extraHeaders);
     const path = "/" + uriEncode(bucket, false) + (key ? "/" + uriEncode(key, false) : "");
     const payload = body || Buffer.alloc(0);
     const payloadHash = body ? sha256Hex(payload) : EMPTY_SHA256;
@@ -230,6 +275,10 @@ export function createS3Driver(cfg) {
         metadata
       };
     },
+
+    /* Fuer den Test: die Haertung ist Teil der oeffentlichen Flaeche,
+       damit sie angegriffen werden kann. */
+    assertZeroCostSafe,
 
     /* LIST ist die Wiederherstellung: geht der Index verloren, sagt der
        Speicher selbst, was er hat. 1.000 Schluessel je Seite - fuer

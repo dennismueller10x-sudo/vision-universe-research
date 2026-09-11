@@ -282,6 +282,133 @@ wird hier nicht angefasst.
 
 ---
 
+## 12a. Die Nullkostenschranke
+
+Waehrend der Entwicklung darf die Ablage **nichts** kosten. Das ist eine
+Betriebsregel, keine Sparsamkeit: eine Rechnung, die durch einen
+automatischen Lauf entsteht, hat niemand entschieden.
+
+### Gegen was geplant wird
+
+| | Freigrenze | **Sicherheitsgrenze** | Abstand |
+|---|---:|---:|---:|
+| Speicher | 10 GB | **8,0 GB** | 20 % |
+| Class A (Schreiben, LIST) | 1.000.000 | **750.000** | 25 % |
+| Class B (Lesen, HEAD) | 10.000.000 | **7.500.000** | 25 % |
+
+Der Abstand faengt ab, was eine Schaetzung nicht wissen kann: ein
+zweiter Lauf am selben Tag, ein Wiederherstellungslauf, eine Reihe, die
+laenger ist als der Durchschnitt.
+
+**LIST zaehlt als Class A**, obwohl es nichts schreibt. Wer es als
+Lesevorgang einplant, verschaetzt sich beim Wiederaufbau genau an der
+Stelle, die weh tut.
+
+### Die Rechnung laeuft VORHER
+
+`scripts/market/preflight-zero-cost.mjs` laeuft vor **jedem** Backfill,
+Massenupload, Tagesabgleich, Wiederherstellungs- und Reindex-Lauf. Ein
+Lauf, der bei Objekt 6.000 merkt, dass er die Freigrenze reisst, hat sie
+schon gerissen.
+
+Ausgegeben werden die Kennzahlen, die der Eigentuemer verlangt hat:
+`CURRENT_STORAGE_BYTES`, `PROJECTED_STORAGE_BYTES`, `ESTIMATED_CLASS_A`,
+`ESTIMATED_CLASS_B`, `PROJECTED_FREE_TIER_USAGE_PERCENT`.
+
+Bei Ueberschreitung: **`ZERO_COST_GUARD_BLOCKED`**, Austrittscode 3,
+kein Byte geschrieben, keine automatische Fortsetzung — mit Angabe,
+welche Grenze, durch welche Operation, und `OWNER DECISION REQUIRED`.
+
+### Die Schranke ist hart, nicht beratend
+
+Drei Ebenen, damit sie sich nicht vergessen laesst:
+
+1. **Ablage ohne Budget schreibt nicht.** `createHistoryStore` wirft,
+   wenn gegen einen kostenpflichtigen Dienst ohne Budget geschrieben
+   werden soll. Gegen ein Verzeichnis darf es fehlen — dort kostet
+   nichts.
+2. **Das Budget wird gelesen, nicht gerechnet.** `sync-history-store.mjs`
+   liest `preflight.json`; fehlt es, gilt es nicht der laufenden
+   Operation oder hat es nicht freigegeben, bricht der Lauf mit Code 3
+   ab. Ein Skript, das sich sein eigenes Budget ausstellt, ist keine
+   Schranke.
+3. **Das Budget wirft im Lauf.** Ein Schaetzfehler fuehrt zum Abbruch,
+   nicht zum Weiterschreiben.
+
+### Keine unnoetigen Schreibvorgaenge
+
+Der teuerste Fehler waere ein taeglicher Lauf, der jedes Objekt neu
+schreibt, obwohl sich nichts geaendert hat. Zwei Sperren:
+
+* **Kein neuer Tag → kein Schreibvorgang.** `mergeBars` unterscheidet
+  `identical` von `replaced`: gleicher Tag UND gleicher Inhalt ist keine
+  Ersetzung. Ohne diese Unterscheidung schreibt der Tagesabgleich alle
+  7.800 Objekte neu, weil er mit einem Tag Ueberlappung holt.
+* **Gleicher Inhalt → kein Schreibvorgang.** Vor jedem `PUT` wird der
+  SHA-256 des fertigen Objekts gegen den gespeicherten gehalten. Die
+  Kompression ist deterministisch, also heisst gleicher Hash:
+  identisches Objekt.
+
+Gemessen an drei echten Reihen ueber drei Laeufe:
+
+```
+Lauf 1   Class A 5   geschrieben 3
+Lauf 2   Class A 1   geschrieben 0   (nur der Nutzungsstand)
+Lauf 3   Class A 1   geschrieben 0
+```
+
+### Nutzungsstand je Monat
+
+`v1/_usage/tiingo-US-YYYY-MM.json` liegt **im Eimer**, nicht im Runner:
+ein Stand, der bei jedem Lauf wieder bei null anfaengt, meldet nie eine
+Ueberschreitung — er meldet jeden Lauf als den ersten des Monats. Ein
+Stand aus einem anderen Monat wird nicht uebernommen.
+
+Operationen summieren sich, **Speicher ist ein Stand** und wird gesetzt.
+Wer ihn addiert, meldet nach zehn Laeufen das Zehnfache dessen, was im
+Eimer liegt.
+
+Der Nutzungsstand wird **auch nach einem Lauf ohne Aenderung**
+fortgeschrieben: seine Lesevorgaenge haben stattgefunden und zaehlen.
+
+### Was der Treiber nicht kann
+
+Gesperrt auf Ebene der Anfrage, nicht der Absicht: Speicherklassen
+(`x-amz-storage-class`), Aufbewahrungsregeln (`?lifecycle`),
+Versionierung, Replikation, Inventar/Analytics/Metriken, Object Lock,
+KMS-Verschluesselung, R2 Data Catalog und `DELETE`. Erlaubt sind
+ausschliesslich `GET`, `PUT`, `HEAD` und die sechs LIST-Parameter.
+
+Wer eines davon braucht, aendert die Liste — und **trifft damit eine
+Entscheidung, statt eine zu umgehen**.
+
+### Trockenlauf
+
+`--dry-run` rechnet vollstaendig und schreibt nichts: Groessen und
+Operationen werden ermittelt, kein Objekt entsteht, kein Schreibbudget
+wird verbraucht.
+
+### Die Pflichtrechnung fuer den 7.800er-Backfill
+
+`preflight-backfill-7800.json`, erzeugt mit
+`--operation BACKFILL --symbols 7800`:
+
+| Kennzahl | Wert | Grenze | Auslastung |
+|---|---:|---:|---:|
+| `CURRENT_STORAGE_BYTES` | 0 | — | — |
+| `PROJECTED_STORAGE_BYTES` | 1.296.824.100 (1,30 GB) | 8,0 GB | 16,2 % |
+| `ESTIMATED_CLASS_A` | 7.886 | 750.000 | 1,1 % |
+| `ESTIMATED_CLASS_B` | 15.600 | 7.500.000 | 0,2 % |
+| `PROJECTED_FREE_TIER_USAGE_PERCENT` | **12,97 %** | 100 % | — |
+
+**`ZERO_COST_GUARD_PASSED`.** Der Backfill bleibt unter allen
+Sicherheitsgrenzen.
+
+Dauerbetrieb gegengerechnet (ZC51): 30 Tage Tagesabgleich ueber 7.800
+Titel bleiben ebenfalls darunter. Und ZC52 zeigt, dass die Schranke beim
+Ausbau auf ~60.000 Titel **im Monat ausloest** — sie meldet den Ausbau,
+bevor ihn jemand startet. Das ist ihr Zweck.
+
 ## 13. Ablauf des spaeteren 7.800er-Backfills
 
 **Er ist nicht gestartet und braucht die Freigabe des Eigentuemers.**
@@ -293,15 +420,21 @@ Voraussetzung: R2-Eimer angelegt und fuenf Secrets hinterlegt
 ```
  1  Wertpapierstamm bauen            (~6 s, 0 Kurs-Anfragen)
  2  Universum anhaengend erweitern   5.684 + 2.116 = 7.800
- 3  --pull aus der Ablage            beim ERSTEN Lauf leer
- 4  Plan rechnen                     full / incremental / current
- 5  Gate laufen lassen               holt NUR, was der Plan nennt
- 6  --push in die Ablage             ~1,21 GB, ueberlebt den Runner
- 7  Faktoren + Technical             aus .market-cache wie bisher
- 8  Die sieben Aggregate neu bauen
- 9  Qualitaet, Hygiene, Regression
-10  Berichte committen
+ 3  VORABRECHNUNG                    preflight-zero-cost --operation BACKFILL
+                                     BLOCKED -> Abbruch, Eigentuemer entscheidet
+ 4  --pull aus der Ablage            beim ERSTEN Lauf leer
+ 5  Plan rechnen                     full / incremental / current
+ 6  Gate laufen lassen               holt NUR, was der Plan nennt
+ 7  --push in die Ablage             mit dem Budget aus Schritt 3
+ 8  Nutzungsstand fortschreiben      im Eimer, nicht im Runner
+ 9  Faktoren + Technical             aus .market-cache wie bisher
+10  Die sieben Aggregate neu bauen
+11  Qualitaet, Hygiene, Regression
+12  Berichte committen
 ```
+
+Schritt 3 ist keine Formsache: ohne freigegebene Vorabrechnung bricht
+Schritt 7 mit Code 3 ab, bevor ein Byte hinausgeht.
 
 **Erster Lauf:** ~7.803 Anfragen, ~78 min Abruf, ~5,9 GB Download,
 ~10,9 GB Platte im Runner (von ~14 GB frei — knapp, aber gemessen

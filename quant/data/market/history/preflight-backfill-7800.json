@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-09-11T05:35:05.510Z",
+  "operation": "BACKFILL",
+  "gate": "FULL_UNIVERSE",
+  "provider": "tiingo",
+  "market": "US",
+  "measured": false,
+  "offline": true,
+  "basis": {
+    "bytesPerBar": 40.7,
+    "avgBarsPerSymbol": 4085,
+    "source": "verify-history-store.mjs an fuenf echten Tiingo-Reihen; Kerzen je Titel aus gate-FULL_UNIVERSE.json"
+  },
+  "plan": {
+    "toFetch": 7800,
+    "newSymbols": 7800,
+    "totalSymbols": 7800,
+    "storedObjects": 0
+  },
+  "symbolOverride": 7800,
+  "verdict": {
+    "version": "zero-cost-guard-1.0.0",
+    "verdict": "ZERO_COST_GUARD_PASSED",
+    "operation": "BACKFILL",
+    "month": "2026-09",
+    "evaluatedAt": "2026-09-11T05:35:05.490Z",
+    "CURRENT_STORAGE_BYTES": 0,
+    "PROJECTED_STORAGE_BYTES": 1296824100,
+    "ESTIMATED_CLASS_A": 7886,
+    "ESTIMATED_CLASS_B": 15600,
+    "PROJECTED_FREE_TIER_USAGE_PERCENT": 12.97,
+    "limits": [
+      {
+        "id": "STORAGE",
+        "current": 0,
+        "projected": 1296824100,
+        "ceiling": 8000000000,
+        "freeTier": 10000000000,
+        "unit": "bytes",
+        "projectedFreeTierPercent": 12.97,
+        "projectedCeilingPercent": 16.21,
+        "headroom": 6703175900,
+        "exceeded": false
+      },
+      {
+        "id": "CLASS_A",
+        "current": 0,
+        "projected": 8086,
+        "ceiling": 750000,
+        "freeTier": 1000000,
+        "unit": "operations",
+        "projectedFreeTierPercent": 0.81,
+        "projectedCeilingPercent": 1.08,
+        "headroom": 741914,
+        "exceeded": false
+      },
+      {
+        "id": "CLASS_B",
+        "current": 0,
+        "projected": 15800,
+        "ceiling": 7500000,
+        "freeTier": 10000000,
+        "unit": "operations",
+        "projectedFreeTierPercent": 0.16,
+        "projectedCeilingPercent": 0.21,
+        "headroom": 7484200,
+        "exceeded": false
+      }
+    ],
+    "exceeded": [],
+    "estimate": {
+      "kind": "BACKFILL",
+      "classAOperations": 7886,
+      "classBOperations": 15600,
+      "breakdown": {
+        "objectWrites": 7800,
+        "indexWrites": 78,
+        "listPages": 8,
+        "objectReads": 7800,
+        "objectHeads": 7800
+      },
+      "bytesDelta": 1296824100,
+      "note": "LIST zaehlt als Class A, obwohl es nichts schreibt."
+    },
+    "currentUsage": {
+      "month": "2026-09",
+      "classAOperations": 0,
+      "classBOperations": 0,
+      "storageBytes": 0,
+      "objectCount": 0,
+      "updatedAt": null
+    },
+    "freeTier": {
+      "provider": "cloudflare-r2",
+      "storageBytes": 10000000000,
+      "classAOperations": 1000000,
+      "classBOperations": 10000000,
+      "egressBytes": null,
+      "note": "Freigrenzen laut Anbieter. Sie sind die Klippe, nicht das Ziel."
+    },
+    "ceiling": {
+      "storageBytes": 8000000000,
+      "classAOperations": 750000,
+      "classBOperations": 7500000,
+      "note": "Sicherheitsgrenzen des Eigentuemers. Ein Lauf, der sie reissen wuerde, schreibt nicht - er fragt."
+    },
+    "bookkeepingReserve": {
+      "classA": 200,
+      "classB": 200
+    },
+    "ownerDecisionRequired": false,
+    "reason": "Alle Sicherheitsgrenzen eingehalten."
+  },
+  "budgetForRun": {
+    "classAOperations": 8086,
+    "classBOperations": 15800
+  },
+  "ownerDecisionRequired": false,
+  "note": "Keine Kursniveaus in diesem Bericht - nur Anzahlen und Byte-Groessen."
+}

@@ -27,6 +27,7 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Codec = require(join(root, "quant", "engines", "bar-codec.js"));
 const Store = require(join(root, "quant", "engines", "history-store.js"));
+const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 const { createFsDriver } = await import(join(root, "scripts", "market", "storage", "fs-driver.mjs"));
 const { createS3Driver, signRequest, parseListXml, uriEncode } =
   await import(join(root, "scripts", "market", "storage", "s3-driver.mjs"));
@@ -108,6 +109,7 @@ test("HS04 bei gleichem Datum gewinnt die neue Kerze", () => {
   assert.equal(m.bars.length, 3);
   assert.equal(m.replaced, 1);
   assert.equal(m.added, 1);
+  assert.equal(m.changed, 2);
   assert.equal(m.bars[1].adjustedClose, 5.5, "die neue Kerze setzt sich durch");
   assert.deepEqual(m.bars.map((b) => b.date),
                    ["2026-09-07", "2026-09-08", "2026-09-09"], "und die Reihe bleibt sortiert");
@@ -362,7 +364,10 @@ test("HS40 dieselbe Ablage laeuft unveraendert gegen einen S3-Dienst", async () 
       endpoint: `http://127.0.0.1:${mock.port}`, bucket: "vu-history", region: "auto",
       accessKeyId: "test", secretAccessKey: "secret", maxRetries: 0
     });
-    const store = Store.createHistoryStore({ driver, provider: "tiingo", market: "US" });
+    const store = Store.createHistoryStore({
+      driver, provider: "tiingo", market: "US",
+      budget: Guard.createBudget({ classAOperations: 50, classBOperations: 50 })
+    });
 
     const bars = synthBars(200);
     const meta = await store.putSeries({ ticker: "BRK-B", securityId: "ref_BRK_B", bars });
@@ -397,7 +402,10 @@ test("HS41 LIST blaettert - 7.800 Titel sind nicht eine Antwort", async () => {
       endpoint: `http://127.0.0.1:${mock.port}`, bucket: "vu-history", region: "auto",
       accessKeyId: "test", secretAccessKey: "secret", maxRetries: 0
     });
-    const store = Store.createHistoryStore({ driver, provider: "tiingo", market: "US" });
+    const store = Store.createHistoryStore({
+      driver, provider: "tiingo", market: "US",
+      budget: Guard.createBudget({ classAOperations: 100, classBOperations: 100 })
+    });
     for (let i = 0; i < 12; i++) {
       await store.putSeries({ ticker: "T" + String(i).padStart(3, "0"), bars: synthBars(3) });
     }
@@ -419,7 +427,10 @@ test("HS42 ein 500 des Dienstes wird wiederholt, ein 403 nicht", async () => {
       endpoint: `http://127.0.0.1:${mock.port}`, bucket: "vu-history", region: "auto",
       accessKeyId: "test", secretAccessKey: "secret", maxRetries: 3
     });
-    const store = Store.createHistoryStore({ driver, provider: "tiingo", market: "US" });
+    const store = Store.createHistoryStore({
+      driver, provider: "tiingo", market: "US",
+      budget: Guard.createBudget({ classAOperations: 20, classBOperations: 20 })
+    });
     mock.setFailNext(2);
     const meta = await store.putSeries({ ticker: "FLAKY", bars: synthBars(5) });
     assert.equal(meta.barCount, 5, "nach zwei 500ern muss der dritte Versuch durchgehen");
@@ -450,4 +461,162 @@ test("HS43 der XML-Auszug liest Schluessel, Groesse und die Fortsetzung", () => 
   assert.equal(p.truncated, true);
   assert.equal(p.nextToken, "tok123");
   assert.equal(parseListXml("<ListBucketResult><IsTruncated>false</IsTruncated></ListBucketResult>").truncated, false);
+});
+
+
+/* ================================================ NULLKOSTENSCHRANKE */
+
+test("HS50 gegen einen kostenpflichtigen Dienst gibt es kein Schreiben ohne Budget", async () => {
+  const mock = await startMockS3();
+  try {
+    const driver = createS3Driver({
+      endpoint: `http://127.0.0.1:${mock.port}`, bucket: "b", region: "auto",
+      accessKeyId: "k", secretAccessKey: "s", maxRetries: 0
+    });
+    /* Die Schranke sitzt im Bau der Ablage, nicht in einem Aufrufer.
+       Ein Lauf, der die Vorabrechnung vergisst, kommt gar nicht erst
+       zum Schreiben. */
+    assert.throws(() => Store.createHistoryStore({ driver, provider: "tiingo", market: "US" }),
+                  new RegExp(Guard.BLOCKED));
+    /* Gegen ein Verzeichnis kostet nichts - dort darf es fehlen. */
+    const dir = mkdtempSync(join(tmpdir(), "vu-hist-"));
+    try {
+      assert.ok(Store.createHistoryStore({ driver: createFsDriver(dir), provider: "tiingo", market: "US" }));
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  } finally { await mock.close(); }
+});
+
+test("HS51 ein erschoepftes Budget bricht ab, statt weiterzuschreiben", async () => {
+  const mock = await startMockS3();
+  try {
+    const driver = createS3Driver({
+      endpoint: `http://127.0.0.1:${mock.port}`, bucket: "b", region: "auto",
+      accessKeyId: "k", secretAccessKey: "s", maxRetries: 0
+    });
+    const store = Store.createHistoryStore({
+      driver, provider: "tiingo", market: "US",
+      /* Genug fuer zwei Titel: je ein HEAD und ein PUT. */
+      budget: Guard.createBudget({ classAOperations: 2, classBOperations: 10 })
+    });
+    await store.putSeries({ ticker: "A", bars: synthBars(5) });
+    await store.putSeries({ ticker: "B", bars: synthBars(5) });
+    await assert.rejects(() => store.putSeries({ ticker: "C", bars: synthBars(5) }),
+                         new RegExp(Guard.BLOCKED));
+    /* Und der dritte Titel liegt NICHT im Eimer. */
+    assert.equal(await driver.get(store.seriesKey("C")), null);
+  } finally { await mock.close(); }
+});
+
+test("HS52 unveraenderte Titel werden nicht neu geschrieben", async () => {
+  const { dir, store } = tmpStore({
+    budget: Guard.createBudget({ classAOperations: 100, classBOperations: 100 })
+  });
+  try {
+    const bars = synthBars(80);
+    const first = await store.putSeries({ ticker: "SAME", bars });
+    assert.ok(!first.skipped);
+
+    /* Derselbe Inhalt ein zweites Mal: kein Schreibgrund. Das ist der
+       Unterschied zwischen einer Erweiterung und einem zweiten
+       Erstimport. */
+    const second = await store.putSeries({ ticker: "SAME", bars });
+    assert.equal(second.skipped, true);
+    assert.equal(second.reason, "UNCHANGED_SHA256");
+    assert.equal(store.budget.spent.writesSkipped, 1);
+
+    /* Eine echte Aenderung wird sehr wohl geschrieben. */
+    const changed = bars.slice(0, 79).concat([{ ...bars[79], adjustedClose: 7 }]);
+    const third = await store.putSeries({ ticker: "SAME", bars: changed });
+    assert.ok(!third.skipped);
+    assert.notEqual(third.sha256, first.sha256);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("HS53 die Kompression ist deterministisch - sonst taugt der Hashvergleich nicht", () => {
+  const bars = synthBars(200);
+  const a = Codec.encode({ ticker: "T", bars });
+  const b = Codec.encode({ ticker: "T", bars });
+  assert.equal(a.meta.sha256, b.meta.sha256);
+  assert.ok(a.buffer.equals(b.buffer));
+});
+
+test("HS54 der Trockenlauf schreibt nichts und rechnet trotzdem", async () => {
+  const { dir, store } = tmpStore({
+    dryRun: true, budget: Guard.createBudget({ classAOperations: 100, classBOperations: 100 })
+  });
+  try {
+    const meta = await store.putSeries({ ticker: "DRY", bars: synthBars(40) });
+    assert.equal(meta.dryRun, true);
+    assert.ok(meta.bytes > 0, "die Groesse wird gerechnet, auch wenn nichts entsteht");
+    assert.equal(await store.getSeries("DRY"), null, "und es liegt nichts im Speicher");
+    assert.equal(store.budget.spent.classA, 0, "ein Trockenlauf verbraucht kein Schreibbudget");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("HS55 der Nutzungsstand ueberlebt und faellt nicht auf einen fremden Monat zurueck", async () => {
+  const { dir, store } = tmpStore({
+    budget: Guard.createBudget({ classAOperations: 100, classBOperations: 100 })
+  });
+  try {
+    const month = Guard.monthKey();
+    const fresh = await store.readUsage(month);
+    assert.equal(fresh.classAOperations, 0);
+
+    const updated = Guard.applyUsage(fresh, { classAOperations: 7800, classBOperations: 7800,
+                                              storageBytes: 1.21e9, objectCount: 7800 });
+    await store.writeUsage(updated);
+
+    const back = await store.readUsage(month);
+    assert.equal(back.classAOperations, 7800);
+    assert.equal(back.storageBytes, 1.21e9);
+
+    /* Ein Stand aus einem anderen Monat ist kein Stand fuer diesen. */
+    const other = await store.readUsage("1999-01");
+    assert.equal(other.classAOperations, 0);
+    assert.equal(other.month, "1999-01");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("HS56 ein identischer Tag ist keine Ersetzung - sonst wird alles neu geschrieben", () => {
+  /* Der taegliche Nachlauf holt mit einem Tag Ueberlappung. Zaehlt man
+     die ueberlappende Kerze als ersetzt, schreibt jeder Lauf jedes
+     Objekt neu - bei 7.800 Titeln 7.800 unnoetige Schreibvorgaenge. */
+  const bars = synthBars(10);
+  const m = Codec.mergeBars(bars, bars.slice(-1));
+  assert.equal(m.added, 0);
+  assert.equal(m.replaced, 0);
+  assert.equal(m.identical, 1);
+  assert.equal(m.changed, 0, "nichts hat sich geaendert");
+
+  /* Aber ein geaenderter Wert am selben Tag zaehlt sehr wohl. */
+  const changed = [{ ...bars[9], adjustedClose: 123 }];
+  const m2 = Codec.mergeBars(bars, changed);
+  assert.equal(m2.replaced, 1);
+  assert.equal(m2.changed, 1);
+});
+
+test("HS57 ein zweiter Lauf ueber unveraenderte Titel schreibt nichts", async () => {
+  const { dir, store } = tmpStore({
+    budget: Guard.createBudget({ classAOperations: 100, classBOperations: 100 })
+  });
+  try {
+    const bars = synthBars(60);
+    await store.appendSeries("SAME", bars, { adjustmentStatus: "adjusted" });
+    const classAAfterFirst = store.budget.spent.classA;
+    assert.ok(classAAfterFirst > 0);
+
+    /* Dieselben Kerzen noch einmal - der Normalfall an einem Tag ohne
+       neuen Handelstag. */
+    const second = await store.appendSeries("SAME", bars, { adjustmentStatus: "adjusted" });
+    assert.equal(second.skipped, true);
+    assert.equal(second.reason, "NO_NEW_BARS");
+    assert.equal(store.budget.spent.classA, classAAfterFirst, "kein weiterer Schreibvorgang");
+    assert.equal(store.budget.spent.writesSkipped, 1);
+
+    /* Ein echter neuer Tag wird sehr wohl geschrieben. */
+    const third = await store.appendSeries("SAME", synthBars(1, "2030-01-02"),
+                                           { adjustmentStatus: "adjusted" });
+    assert.ok(!third.skipped);
+    assert.equal(store.budget.spent.classA, classAAfterFirst + 1);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

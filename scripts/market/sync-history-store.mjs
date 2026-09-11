@@ -34,6 +34,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Store = require(join(root, "quant", "engines", "history-store.js"));
+const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
 const argv = process.argv.slice(2);
@@ -52,19 +53,64 @@ const LIMIT = parseInt(arg("--limit", "0"), 10) || 0;
 const LOCAL_ROOT = arg("--local-root", null);
 const WORK_DIR = arg("--work-dir", join(root, SCALE.storage.workingDir));
 const OUT = arg("--report", join(root, "quant", "data", "market", "history", "sync.json"));
+const OPERATION = (arg("--operation", PUSH_DEFAULT_OP()) || "BULK_UPLOAD").toUpperCase();
+const PREFLIGHT = arg("--preflight", join(root, "quant", "data", "market", "history", "preflight.json"));
+function PUSH_DEFAULT_OP() { return argv.includes("--pull") ? "RECOVERY" : "BULK_UPLOAD"; }
 
 if (PULL === PUSH) {
   console.error("Genau eine Richtung angeben: --pull oder --push.");
   process.exit(2);
 }
 
-async function makeStore() {
+/**
+ * Das Budget aus der Vorabrechnung.
+ *
+ * Es wird GELESEN und nicht hier gerechnet. Ein Skript, das sich sein
+ * eigenes Budget ausstellt, ist keine Schranke - die Rechnung gehoert
+ * vor den Lauf und in eine eigene Datei, die man nachlesen kann.
+ */
+function loadBudget() {
+  if (DRY_RUN) {
+    /* Ein Trockenlauf schreibt nichts. Er darf trotzdem lesen, um zu
+       rechnen - und zaehlt, was ein echter Lauf kosten wuerde. */
+    return { budget: Guard.createBudget({ unmetered: true }), preflight: null };
+  }
+  if (!existsSync(PREFLIGHT)) {
+    console.error(Guard.BLOCKED + ": keine Vorabrechnung unter " + PREFLIGHT.replace(root + "/", "") + ".");
+    console.error("  Zuerst: node scripts/market/preflight-zero-cost.mjs --operation " + OPERATION);
+    process.exit(3);
+  }
+  const pf = JSON.parse(readFileSync(PREFLIGHT, "utf8"));
+  if (!pf.verdict || pf.verdict.verdict !== Guard.ALLOWED) {
+    console.error(Guard.BLOCKED + ": die Vorabrechnung hat nicht freigegeben " +
+                  `(${pf.verdict && pf.verdict.verdict}).`);
+    console.error("  Ueberschritten: " + ((pf.verdict && pf.verdict.exceeded) || []).join(", "));
+    console.error("  OWNER DECISION REQUIRED.");
+    process.exit(3);
+  }
+  if (pf.operation !== OPERATION) {
+    /* Eine Freigabe fuer eine andere Operation ist keine Freigabe.
+       Sonst deckte eine Rechnung fuer den Tagesabgleich einen
+       vollstaendigen Backfill. */
+    console.error(Guard.BLOCKED + `: die Vorabrechnung gilt fuer '${pf.operation}', ` +
+                  `dieser Lauf ist '${OPERATION}'.`);
+    process.exit(3);
+  }
+  const b = pf.budgetForRun;
+  console.log(`  Vorabrechnung: ${pf.operation} freigegeben ` +
+              `(Class A ${b.classAOperations}, Class B ${b.classBOperations})`);
+  return { budget: Guard.createBudget(b), preflight: pf };
+}
+
+async function makeStore(budget) {
   if (LOCAL_ROOT) {
     const { createFsDriver } = await import(join(root, "scripts", "market", "storage", "fs-driver.mjs"));
-    return Store.createHistoryStore({ driver: createFsDriver(LOCAL_ROOT), provider: PROVIDER, market: MARKET });
+    return Store.createHistoryStore({ driver: createFsDriver(LOCAL_ROOT), provider: PROVIDER,
+                                      market: MARKET, budget, dryRun: DRY_RUN });
   }
   const { createS3DriverFromEnv } = await import(join(root, "scripts", "market", "storage", "s3-driver.mjs"));
-  return Store.createHistoryStore({ driver: createS3DriverFromEnv(), provider: PROVIDER, market: MARKET });
+  return Store.createHistoryStore({ driver: createS3DriverFromEnv(), provider: PROVIDER,
+                                    market: MARKET, budget, dryRun: DRY_RUN });
 }
 
 function universeMembers() {
@@ -99,7 +145,8 @@ async function pool(items, width, fn) {
 
 async function main() {
   const members = universeMembers();
-  const store = await makeStore();
+  const { budget, preflight } = loadBudget();
+  const store = await makeStore(budget);
   const started = Date.now();
 
   console.log(`Vision Universe — Historienablage ${PULL ? "lesen" : "schreiben"}\n`);
@@ -108,7 +155,8 @@ async function main() {
   console.log(`  Praefix:   ${store.seriesPrefix}`);
   console.log(`  Kodierung: ${store.codec}\n`);
 
-  const tally = { requested: members.length, ok: 0, missing: 0, skipped: 0, failed: 0, bytes: 0, bars: 0 };
+  const tally = { requested: members.length, ok: 0, missing: 0, skipped: 0, unchanged: 0,
+                  failed: 0, bytes: 0, bars: 0 };
   const failures = [];
 
   if (PULL) {
@@ -164,19 +212,63 @@ async function main() {
       else if (r.skipped) tally.skipped++;
       else {
         tally.ok++; tally.bars += r.bars; tally.bytes += r.bytes || 0;
-        if (r.meta) symbols[r.ticker] = r.meta;
+        /* Unveraendert heisst geschrieben-haette-nichts-gebracht. Es
+           zaehlt getrennt, damit ein Lauf, der nichts zu tun hatte,
+           nicht wie ein Lauf aussieht, der nichts getan hat. */
+        if (r.meta && r.meta.skipped) {
+          tally.unchanged++;
+          /* Ein uebersprungener Titel bekommt KEINEN neuen Indexeintrag.
+             Der alte steht schon da und traegt seine Byte-Groesse; ihn
+             durch einen Eintrag ohne Groesse zu ersetzen liesse den
+             belegten Speicher auf null fallen - und die naechste
+             Vorabrechnung haette keine Grundlage mehr. */
+        } else if (r.meta) {
+          symbols[r.ticker] = r.meta;
+        }
       }
     }
-    if (!DRY_RUN && Object.keys(symbols).length) {
+    if (!DRY_RUN) {
       const idx = await store.readIndex();
       const merged = Object.assign({}, idx.symbols || {}, symbols);
-      const written = await store.writeIndex({ symbols: merged });
-      console.log(`  Index:     ${written.symbols} Titel, ${written.bytes} Byte`);
+
+      /* Der Index wird nur geschrieben, wenn sich etwas geaendert hat.
+         Ein Lauf ohne Aenderung soll KEINEN Schreibvorgang kosten. */
+      if (Object.keys(symbols).length) {
+        const written = await store.writeIndex({ symbols: merged });
+        console.log(`  Index:     ${written.symbols} Titel, ${written.bytes} Byte`);
+      } else {
+        console.log("  Index:     unveraendert, nicht geschrieben");
+      }
+
+      /* Der Nutzungsstand dagegen wird IMMER fortgeschrieben - auch nach
+         einem Lauf ohne Aenderung. Seine Lesevorgaenge haben stattgefunden
+         und zaehlen gegen die Freigrenze; ein Stand, der sie verschweigt,
+         laeuft ueber die Monate aus dem Tritt. */
+      const month = Guard.monthKey();
+      const usage = await store.readUsage(month);
+      const spent = store.budget.spent;
+      const totalBytes = Object.values(merged).reduce((a, m) => a + (m.bytes || 0), 0);
+      await store.writeUsage(Guard.applyUsage(usage, {
+        /* +1 fuer den Schreibvorgang, der diesen Stand selbst ablegt.
+           Ohne ihn zaehlt die Buchfuehrung sich selbst nicht mit und
+           laeuft ueber die Monate langsam aus dem Tritt. */
+        classAOperations: spent.classA + 1, classBOperations: spent.classB,
+        storageBytes: totalBytes, objectCount: Object.keys(merged).length,
+        bytesUploaded: spent.bytesUploaded, bytesDownloaded: spent.bytesDownloaded,
+        run: { at: new Date().toISOString(), operation: OPERATION,
+               classA: spent.classA, classB: spent.classB,
+               runId: process.env.GITHUB_RUN_ID || null }
+      }));
+      console.log(`  Nutzung:   Monat ${month} fortgeschrieben`);
     }
   }
 
   const runtimeMs = Date.now() - started;
-  console.log(`\n  ok ${tally.ok}   fehlend ${tally.missing}   uebersprungen ${tally.skipped}   Fehler ${tally.failed}`);
+  console.log(`\n  ok ${tally.ok}   unveraendert ${tally.unchanged}   fehlend ${tally.missing}` +
+              `   uebersprungen ${tally.skipped}   Fehler ${tally.failed}`);
+  const spent = store.budget.spent;
+  console.log(`  Operationen: Class A ${spent.classA}, Class B ${spent.classB}` +
+              `, nicht geschrieben ${spent.writesSkipped}`);
   console.log(`  Kerzen ${tally.bars.toLocaleString("de-DE")}` +
               (tally.bytes ? `   Ablage ${(tally.bytes / 1048576).toFixed(1)} MB` : ""));
   console.log(`  Laufzeit ${(runtimeMs / 1000).toFixed(1)} s`);
@@ -195,6 +287,14 @@ async function main() {
       run: { source: process.env.GITHUB_ACTIONS ? "github-actions" : "local",
              runId: process.env.GITHUB_RUN_ID || null, runtimeMs },
       tally,
+      operation: OPERATION,
+      zeroCost: {
+        preflight: preflight ? { operation: preflight.operation,
+                                 verdict: preflight.verdict.verdict,
+                                 generatedAt: preflight.generatedAt } : null,
+        spent: store.budget.spent,
+        remaining: store.budget.remaining
+      },
       failures: failures.slice(0, 20),
       note: "Keine Kursniveaus in diesem Bericht - nur Anzahlen."
     }, null, 2) + "\n");

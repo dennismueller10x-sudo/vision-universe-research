@@ -32,8 +32,9 @@
 "use strict";
 
 const Codec = require("./bar-codec.js");
+const Guard = require("./zero-cost-guard.js");
 
-const VERSION = "history-store-1.0.0";
+const VERSION = "history-store-1.1.0";
 const LAYOUT = "v1";
 
 /**
@@ -73,17 +74,78 @@ function createHistoryStore(options) {
   const prefix = (opts.prefix || LAYOUT).replace(/\/+$/, "");
   const codec = Codec.availableCodec(opts.codec);
 
+  /* Das Budget ist keine Option, sondern die Nullkostenschranke im
+     Schreibweg.
+
+     Gegen ein Verzeichnis kostet nichts, dort darf es fehlen. Gegen
+     einen kostenpflichtigen Dienst NICHT: ein Lauf ohne Budget koennte
+     die Vorabrechnung einfach uebergehen, und dann waere sie eine
+     Absichtserklaerung statt einer Schranke. */
+  const budget = opts.budget || null;
+  if (!budget && driver.kind !== "fs") {
+    throw new Error(Guard.BLOCKED + ": Schreiben gegen '" + driver.kind + "' ohne Budget. " +
+                    "Zuerst scripts/market/preflight-zero-cost.mjs laufen lassen.");
+  }
+  const meter = budget || Guard.createBudget({ unmetered: true });
+  const dryRun = opts.dryRun === true;
+
   const seriesPrefix = `${prefix}/${provider}/daily/${market}/`;
   const indexKey = `${prefix}/${provider}/daily/${market}/_index.json.${codec === "gzip" ? "gz" : "zst"}`;
+  /* Der Nutzungsstand liegt im Eimer und nicht im Runner: er muss den
+     Lauf ueberleben, sonst faengt jede Rechnung wieder bei null an. */
+  const usageKey = `${prefix}/_usage/${provider}-${market}-MONTH.json`;
 
   function seriesKey(ticker) {
     return seriesPrefix + keyForTicker(ticker) + ".json." + (codec === "gzip" ? "gz" : "zst");
   }
 
-  /** Eine Reihe schreiben. Gibt die Metadaten zurueck, die in den Index gehoeren. */
-  async function putSeries(series) {
+  /**
+   * Eine Reihe schreiben.
+   *
+   * Vorher wird geprueft, ob sich ueberhaupt etwas geaendert hat. Ein
+   * erneuter Lauf ueber unveraenderte Titel soll NICHTS schreiben - das
+   * ist der Unterschied zwischen einer Erweiterung und einem zweiten
+   * Erstimport, und er entscheidet, ob die Freigrenze haelt.
+   *
+   * Der Vergleich laeuft ueber den Hash des fertigen Objekts. Die
+   * Kompression ist bei gleicher Eingabe deterministisch, also heisst
+   * gleicher Hash: identisches Objekt, kein Schreibgrund.
+   */
+  async function putSeries(series, putOpts) {
+    const po = putOpts || {};
     const enc = Codec.encode(series, { codec });
     const key = seriesKey(series.ticker);
+
+    if (po.skipIfUnchanged !== false) {
+      let storedSha = po.knownSha256 || null;
+      if (!storedSha && po.checkRemote !== false) {
+        meter.consumeClassB(1, "HEAD " + key);
+        const head = await driver.head(key);
+        storedSha = head && head.metadata ? head.metadata.sha256 : null;
+        if (head) meter.noteDownload(0);
+      }
+      if (storedSha && storedSha === enc.meta.sha256) {
+        meter.noteSkippedWrite();
+        return {
+          ticker: series.ticker, key, skipped: true, reason: "UNCHANGED_SHA256",
+          first: enc.meta.first, last: enc.meta.last, barCount: enc.meta.barCount,
+          bytes: enc.meta.storedBytes, bytesPerBar: enc.meta.bytesPerBar,
+          sha256: enc.meta.sha256, codec, updatedAt: null
+        };
+      }
+    }
+
+    if (dryRun) {
+      return {
+        ticker: series.ticker, key, dryRun: true,
+        first: enc.meta.first, last: enc.meta.last, barCount: enc.meta.barCount,
+        bytes: enc.meta.storedBytes, bytesPerBar: enc.meta.bytesPerBar,
+        sha256: enc.meta.sha256, codec, updatedAt: null
+      };
+    }
+
+    meter.consumeClassA(1, "PUT " + key);
+    meter.noteUpload(enc.buffer.length);
     await driver.put(key, enc.buffer, {
       contentType: "application/json",
       contentEncoding: codec === "none" ? undefined : codec,
@@ -103,8 +165,10 @@ function createHistoryStore(options) {
 
   /** Eine Reihe lesen. Fehlt sie, ist das null und kein Fehler. */
   async function getSeries(ticker) {
+    meter.consumeClassB(1, "GET " + ticker);
     const buf = await driver.get(seriesKey(ticker));
     if (!buf) return null;
+    meter.noteDownload(buf.length);
     return Codec.decode(buf);
   }
 
@@ -127,7 +191,27 @@ function createHistoryStore(options) {
                         (existing && existing.adjustmentStatus) || null,
       bars: merged.bars
     });
-    const meta = await putSeries(series);
+    /* Hat sich ueberhaupt etwas geaendert?
+
+       Die alte Reihe wurde gerade gelesen. Ergibt der Abgleich weder
+       eine neue noch eine ersetzte Kerze, ist das Objekt identisch -
+       dann braucht es weder ein HEAD noch ein PUT. Im taeglichen
+       Betrieb ist das der Normalfall fuer jeden Titel ohne neuen
+       Handelstag, und es ist der Unterschied zwischen 7.800
+       Schreibvorgaengen und keinem. */
+    if (existing && merged.changed === 0) {
+      meter.noteSkippedWrite();
+      return {
+        ticker, key: seriesKey(ticker), skipped: true, reason: "NO_NEW_BARS",
+        first: existing.first, last: existing.last, barCount: existing.bars.length,
+        bytes: null, sha256: null, codec, updatedAt: null,
+        barsBefore: existing.bars.length, barsAdded: 0, barsReplaced: 0
+      };
+    }
+
+    /* Der Inhalt hat sich geaendert - ein HEAD zur Gegenprobe waere
+       eine Anfrage fuer eine Antwort, die schon feststeht. */
+    const meta = await putSeries(series, { checkRemote: false });
     return Object.assign(meta, {
       barsBefore: existing ? existing.bars.length : 0,
       barsAdded: merged.added, barsReplaced: merged.replaced
@@ -140,6 +224,7 @@ function createHistoryStore(options) {
      fortgesetzter Lauf 7.800 HEAD-Anfragen, um zu wissen, wo er steht.
      Mit ihm ist es eine. */
   async function readIndex() {
+    meter.consumeClassB(1, "GET " + indexKey);
     const buf = await driver.get(indexKey);
     if (!buf) {
       return { version: VERSION, layout: prefix, provider, market,
@@ -161,6 +246,9 @@ function createHistoryStore(options) {
     const zlib = require("node:zlib");
     const buf = codec === "gzip" ? zlib.gzipSync(raw, { level: 9 })
               : zlib.zstdCompressSync(raw, { params: { [zlib.constants.ZSTD_c_compressionLevel]: 19 } });
+    if (dryRun) return { key: indexKey, bytes: buf.length, symbols: payload.symbolCount, dryRun: true };
+    meter.consumeClassA(1, "PUT " + indexKey);
+    meter.noteUpload(buf.length);
     await driver.put(indexKey, buf, { contentType: "application/json" });
     return { key: indexKey, bytes: buf.length, symbols: payload.symbolCount };
   }
@@ -176,6 +264,9 @@ function createHistoryStore(options) {
   async function rebuildIndexFromStorage(opts2) {
     opts2 = opts2 || {};
     const concurrency = opts2.concurrency || 32;
+    /* LIST zaehlt bei R2 als Class A, obwohl es nichts schreibt. Eine
+       Seite fasst 1.000 Schluessel. */
+    meter.consumeClassA(Math.max(1, Math.ceil((opts2.expectedObjects || 1000) / 1000)), "LIST " + seriesPrefix);
     const objects = (await driver.list(seriesPrefix)).filter((o) => o.key !== indexKey);
 
     /* LIST liefert Schluessel und Groesse - aber KEINE Benutzermetadaten.
@@ -199,6 +290,7 @@ function createHistoryStore(options) {
         const o = objects[cursor++];
         const base = o.key.slice(seriesPrefix.length).replace(/\.json\.(zst|gz)$/, "");
         const ticker = tickerFromKey(base);
+        meter.consumeClassB(1, "HEAD " + o.key);
         const head = await driver.head(o.key);
         const md = (head && head.metadata) || {};
         symbols[ticker] = {
@@ -260,11 +352,56 @@ function createHistoryStore(options) {
     });
   }
 
+  /* ---------------------------------------------------- NUTZUNGSSTAND
+
+     Er liegt im Eimer, weil er den Runner ueberleben muss. Ein Stand,
+     der bei jedem Lauf wieder bei null anfaengt, meldet nie eine
+     Ueberschreitung - er meldet jeden Lauf als den ersten des Monats. */
+  function usageKeyFor(month) {
+    return usageKey.replace("MONTH", month || Guard.monthKey());
+  }
+
+  async function readUsage(month) {
+    const m = month || Guard.monthKey();
+    meter.consumeClassB(1, "GET usage " + m);
+    const buf = await driver.get(usageKeyFor(m));
+    if (!buf) return Guard.emptyUsage(m);
+    try {
+      const parsed = JSON.parse(buf.toString("utf8"));
+      /* Ein Stand aus einem anderen Monat ist kein Stand fuer diesen.
+         Ihn zu uebernehmen waere die bequeme und falsche Antwort. */
+      return parsed && parsed.month === m ? parsed : Guard.emptyUsage(m);
+    } catch (err) {
+      return Guard.emptyUsage(m);
+    }
+  }
+
+  async function writeUsage(state) {
+    const payload = Object.assign({}, state, { updatedAt: new Date().toISOString() });
+    const buf = Buffer.from(JSON.stringify(payload, null, 2));
+    if (dryRun) return { key: usageKeyFor(payload.month), bytes: buf.length, dryRun: true };
+    meter.consumeClassA(1, "PUT usage " + payload.month);
+    await driver.put(usageKeyFor(payload.month), buf, { contentType: "application/json" });
+    return { key: usageKeyFor(payload.month), bytes: buf.length };
+  }
+
+  /** Belegter Speicher und Objektzahl aus dem Speicher selbst. */
+  async function measureStorage(opts2) {
+    opts2 = opts2 || {};
+    meter.consumeClassA(Math.max(1, Math.ceil((opts2.expectedObjects || 1000) / 1000)), "LIST " + prefix);
+    const objects = await driver.list(prefix + "/");
+    let bytes = 0;
+    for (const o of objects) bytes += o.size || 0;
+    return { objectCount: objects.length, storageBytes: bytes };
+  }
+
   return {
-    VERSION, codec, provider, market,
-    seriesPrefix, indexKey, seriesKey, keyForTicker, tickerFromKey,
+    VERSION, codec, provider, market, dryRun,
+    seriesPrefix, indexKey, usageKey, seriesKey, keyForTicker, tickerFromKey,
     putSeries, getSeries, appendSeries,
     readIndex, writeIndex, rebuildIndexFromStorage, planBackfill,
+    readUsage, writeUsage, measureStorage,
+    budget: meter,
     driver
   };
 }

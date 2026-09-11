@@ -205,16 +205,41 @@ function sniff(buffer) {
 function mergeBars(existing, incoming) {
   const byDate = new Map();
   for (const b of existing || []) byDate.set(b.date, b);
-  let replaced = 0, added = 0;
+  let replaced = 0, added = 0, identical = 0;
   for (const b of incoming || []) {
-    if (byDate.has(b.date)) replaced++; else added++;
+    const old = byDate.get(b.date);
+    if (old === undefined) { added++; }
+    else if (barsEqual(old, b)) {
+      /* Gleicher Tag UND gleicher Inhalt ist KEINE Ersetzung.
+
+         Der Unterschied entscheidet ueber die Kosten: der taegliche
+         Nachlauf holt mit einem Tag Ueberlappung, und wer die
+         ueberlappende Kerze als "ersetzt" zaehlt, schreibt jedes Objekt
+         neu - auch das, an dem sich nichts geaendert hat. Bei 7.800
+         Titeln sind das 7.800 unnoetige Schreibvorgaenge je Lauf. */
+      identical++;
+      continue;
+    } else { replaced++; }
     byDate.set(b.date, b);
   }
   const bars = Array.from(byDate.values()).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-  return { bars, replaced, added };
+  return { bars, replaced, added, identical, changed: replaced + added };
+}
+
+/** Wertgleichheit zweier Kerzen, unabhaengig von der Feldreihenfolge. */
+function barsEqual(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  const ka = Object.keys(a), kb = Object.keys(b);
+  if (ka.length !== kb.length) return false;
+  for (const k of ka) {
+    if (!Object.prototype.hasOwnProperty.call(b, k)) return false;
+    if (a[k] !== b[k]) return false;
+  }
+  return true;
 }
 
 module.exports = {
   VERSION, DEFAULT_COLUMNS, CODECS: Object.keys(CODECS),
-  availableCodec, encode, decode, sniff, mergeBars
+  availableCodec, encode, decode, sniff, mergeBars, barsEqual
 };
