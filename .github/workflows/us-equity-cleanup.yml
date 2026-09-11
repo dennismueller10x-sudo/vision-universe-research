@@ -262,8 +262,23 @@ jobs:
             quant/data/market/scale/gate-FULL_UNIVERSE.json
 
       # Jetzt die Artefakttests: sie lesen, was dieser Lauf erzeugt hat.
+      #
+      # Mit Auszug der Fehlschlaege. Der TAP-Strom von 822 Tests endet mit
+      # "fail 2" und nennt nicht, WELCHE zwei - die Zeilen stehen
+      # irgendwo in der Mitte. Ein roter Lauf, der nicht sagt, was rot
+      # ist, kostet einen zweiten Lauf, nur um es zu erfahren.
       - name: Artefakte gegen die Engines pruefen
-        run: node --test "quant/tests/*.test.mjs"
+        run: |
+          set +e
+          node --test "quant/tests/*.test.mjs" > /tmp/tests.tap 2>&1
+          code=$?
+          tail -12 /tmp/tests.tap
+          if [ $code -ne 0 ]; then
+            echo ''
+            echo '--- Fehlgeschlagene Tests ---'
+            grep -A 14 '^not ok' /tmp/tests.tap
+          fi
+          exit $code
 
       - name: Berichte sichern
         if: always()
