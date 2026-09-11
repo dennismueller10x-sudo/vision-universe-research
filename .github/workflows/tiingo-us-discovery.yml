@@ -66,6 +66,8 @@ jobs:
       # Zuerst die Engine, dann der Lauf. Ein Abgleich, der auf einem
       # kaputten Klassierer beruht, ist schlimmer als keiner: er sieht
       # aus wie ein Befund.
+      # Ohne die Artefakttests: die pruefen das AUSGELIEFERTE Artefakt
+      # gegen die laufende Engine, und das erzeugt dieser Lauf erst.
       - name: Engine- und Abgleichstests
         run: node --test quant/tests/us-security-master.test.mjs
 
@@ -127,7 +129,9 @@ jobs:
       # Nach dem Lauf noch einmal: die Tests unter SM60-SM63 lesen das
       # ERZEUGTE Artefakt und nicht nur die Engine.
       - name: Das erzeugte Artefakt gegen die Engine pruefen
-        run: node --test quant/tests/us-security-master.test.mjs
+        run: |
+          node --test quant/tests/us-security-master.test.mjs
+          node --test quant/tests/us-security-master-artefacts.test.mjs
 
       - name: Bericht sichern
         uses: actions/upload-artifact@v4

@@ -74,6 +74,10 @@ jobs:
       # Ohne job-weites env: die Regressionssuite prueft unter anderem
       # das Verhalten OHNE Schluessel. Ein durchgereichter Schluessel
       # laesst sie am falschen Ort bestehen.
+      # Ausdruecklich OHNE die Artefakttests. Die pruefen, ob das
+      # AUSGELIEFERTE Artefakt zur laufenden Engine passt - und genau
+      # das soll dieser Lauf ja erst herstellen. Sie stehen weiter
+      # unten, nach dem Lauf, wo sie etwas aussagen.
       - name: Engine- und Abgleichstests
         run: |
           node --test quant/tests/us-security-master.test.mjs
@@ -257,10 +261,9 @@ jobs:
             quant/data/market/scale/universe-GATE_2000.json \
             quant/data/market/scale/gate-FULL_UNIVERSE.json
 
+      # Jetzt die Artefakttests: sie lesen, was dieser Lauf erzeugt hat.
       - name: Artefakte gegen die Engines pruefen
-        run: |
-          node --test quant/tests/us-security-master.test.mjs
-          node --test quant/tests/coverage-metrics.test.mjs
+        run: node --test "quant/tests/*.test.mjs"
 
       - name: Berichte sichern
         if: always()
