@@ -46,13 +46,18 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, '[us-expansion]')
-    env:
-      TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-      VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-      VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-      VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-      VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-      VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+    # KEIN env-Block auf Jobebene.
+    #
+    # Lauf 34570619102 ist genau daran gescheitert: die Regressionssuite
+    # sah TIINGO_API_KEY, und SG18/SG20 pruefen ausdruecklich das
+    # Verhalten OHNE Zugang - der Stromnachweis darf ohne Schluessel
+    # keine Kursart behaupten, der Grenzennachweis kein Anbieterlimit
+    # erfinden. Mit Schluessel in der Umgebung tun beide etwas anderes,
+    # und die Tests haben das zu Recht gemeldet.
+    #
+    # Die Zugaenge stehen deshalb an den Schritten, die sie brauchen -
+    # so wie in tiingo-scale.yml. Ein Geheimnis, das ein Schritt nicht
+    # braucht, gehoert nicht in seine Umgebung.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,6 +65,13 @@ jobs:
           node-version: '22'
 
       - name: Zugaenge vorhanden?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           [ -z "$TIINGO_API_KEY" ] && { echo "Kein TIINGO_API_KEY."; exit 1; }
           [ -z "$VU_HISTORY_S3_BUCKET" ] && { echo "Kein R2-Eimer."; exit 1; }
@@ -121,12 +133,24 @@ jobs:
 
       # --- 3. HARTE KOSTENSCHRANKE -----------------------------------
       - name: Nullkosten-Vorabrechnung
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           node scripts/market/preflight-zero-cost.mjs --operation BACKFILL
           echo "Freigegeben. Erst jetzt wird geholt."
 
       # --- 4. Fortsetzen: was liegt schon in R2? ---------------------
       - name: Vorhandene Historien aus R2 holen
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           node scripts/market/sync-history-store.mjs --pull --operation RECOVERY \
             --gate FULL_UNIVERSE --concurrency 24 || true
@@ -139,6 +163,8 @@ jobs:
       # --- 5. Der Abruf. Holt nur, was fehlt. ------------------------
       - name: Gate laufen lassen (nur fehlende Titel)
         id: gate
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
           node scripts/market/run-scale-gate.mjs --gate FULL_UNIVERSE \
             --allow-full-backfill --request-budget 12000 --max-wait-ms 900000 \
@@ -149,6 +175,12 @@ jobs:
       # Zuerst sichern, dann weiterrechnen: geht der Runner nach dem
       # Abruf verloren, waeren sonst 78 Minuten weg.
       - name: Historien nach R2 schreiben
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           node scripts/market/preflight-zero-cost.mjs --operation BULK_UPLOAD
           node scripts/market/sync-history-store.mjs --push --operation BULK_UPLOAD \
@@ -159,6 +191,12 @@ jobs:
         run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE
 
       - name: Faktorzeilen nach R2
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           F=.market-cache/tiingo/factors/factors-FULL_UNIVERSE.json
           if [ -f "$F" ]; then
@@ -179,10 +217,23 @@ jobs:
 
       # --- 8. Den Speicher selbst pruefen ---------------------------
       - name: R2-Bestand pruefen
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/market/validate-history-store.mjs --gate FULL_UNIVERSE --sample 25
 
       # --- 9. Waechter ----------------------------------------------
       - name: Kein Schluessel in den Berichten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/market/assert-no-secrets.mjs
 
       - name: Public-Data-Hygiene
