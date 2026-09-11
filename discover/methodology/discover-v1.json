@@ -240,13 +240,14 @@
       "subtitle": "Aktien, die neues Kursterrain erreichen.",
       "sort": "distanceTo52wHigh",
       "direction": "desc",
-      "limit": 24,
+      "limit": 30,
       "require": [
         "distanceTo52wHigh"
       ],
       "filter": "nearOrAtHigh",
       "secondarySort": "leadershipScore",
-      "signalFirst": "new52WeekHigh"
+      "signalFirst": "new52WeekHigh",
+      "world": "highs"
     },
     {
       "id": "market-leaders",
@@ -254,10 +255,11 @@
       "subtitle": "Die aktuell stärksten Titel des Universums.",
       "sort": "leadershipScore",
       "direction": "desc",
-      "limit": 24,
+      "limit": 30,
       "require": [
         "leadershipScore"
-      ]
+      ],
+      "world": "leadership"
     },
     {
       "id": "momentum-leaders",
@@ -265,10 +267,11 @@
       "subtitle": "Stärkste Kursdynamik über 3, 6 und 12 Monate.",
       "sort": "momentumScore",
       "direction": "desc",
-      "limit": 24,
+      "limit": 30,
       "require": [
         "momentumScore"
-      ]
+      ],
+      "world": "momentum"
     },
     {
       "id": "breakout-watch",
@@ -276,12 +279,13 @@
       "subtitle": "Ausbruch mit Volumenbestätigung.",
       "sort": "breakoutScore",
       "direction": "desc",
-      "limit": 24,
+      "limit": 30,
       "require": [
         "breakoutScore"
       ],
       "filter": "breakout",
-      "signalFirst": "breakout"
+      "signalFirst": "breakout",
+      "world": "breakout"
     },
     {
       "id": "relative-strength",
@@ -289,11 +293,12 @@
       "subtitle": "Vorsprung gegenüber dem Vergleichsindex.",
       "sort": "relativeStrengthScore",
       "direction": "desc",
-      "limit": 24,
+      "limit": 30,
       "require": [
         "relativeStrengthScore"
       ],
-      "secondarySort": "momentumScore"
+      "secondarySort": "momentumScore",
+      "world": "strength"
     },
     {
       "id": "trend-quality",
@@ -301,18 +306,20 @@
       "subtitle": "Über allen vier gleitenden Durchschnitten.",
       "sort": "leadershipScore",
       "direction": "desc",
-      "limit": 24,
+      "limit": 30,
       "require": [
         "leadershipScore"
       ],
-      "filter": "trendIntact"
+      "filter": "trendIntact",
+      "world": "quality"
     }
   ],
   "sectorRows": {
     "id": "sector-leaders",
     "title": "SECTOR LEADERS",
     "limitPerSector": 10,
-    "minSecuritiesPerSector": 3
+    "minSecuritiesPerSector": 3,
+    "world": "sectors"
   },
   "capBuckets": [
     {
@@ -342,6 +349,80 @@
     "title": "TOP 10 MARKET LEADERS",
     "subtitle": "Die zehn stärksten Titel — nach Leadership Score des Universums.",
     "source": "market-leaders",
-    "limit": 10
+    "limit": 10,
+    "world": "leadership"
+  },
+  "visualLanguage": {
+    "note": "Category Color System: jede Discovery-Welt hat eine eigene Atmosphäre. Die Farbe ist eine Zuordnung, kein Schmuck - sie sagt, in welcher Welt man sich befindet, und sie steht nie allein: jedes Signal trägt zusätzlich seinen Namen im Text (§24).",
+    "worlds": {
+      "leadership": {
+        "label": "Market Leadership",
+        "hint": "Indigo / Electric Blue"
+      },
+      "highs": {
+        "label": "52-Wochen-Hochs",
+        "hint": "Ice Blue / Cyan"
+      },
+      "momentum": {
+        "label": "Momentum",
+        "hint": "Violet / Magenta"
+      },
+      "breakout": {
+        "label": "Breakouts",
+        "hint": "Amber / Orange"
+      },
+      "strength": {
+        "label": "Relative Stärke",
+        "hint": "Emerald / Teal"
+      },
+      "quality": {
+        "label": "Trendqualität",
+        "hint": "Gold"
+      },
+      "sectors": {
+        "label": "Sektoren",
+        "hint": "je Sektor eine eigene Tönung"
+      },
+      "risk": {
+        "label": "Schwäche / Risiko",
+        "hint": "Coral"
+      }
+    },
+    "sectorWorlds": {
+      "Technology": "tech",
+      "Health Care": "health",
+      "Financials": "finance",
+      "Industrials": "industry",
+      "Consumer Discretionary": "consumer",
+      "Consumer Staples": "staples",
+      "Energy": "energy",
+      "Utilities": "utility",
+      "Real Estate": "estate",
+      "Communication Services": "comms",
+      "Materials": "materials"
+    },
+    "signalWorlds": {
+      "new52WeekHigh": "highs",
+      "nearHigh": "highs",
+      "marketLeader": "leadership",
+      "momentumLeader": "momentum",
+      "relativeStrengthLeader": "strength",
+      "breakout": "breakout",
+      "trendIntact": "quality",
+      "sectorLeader": "sectors"
+    },
+    "artwork": {
+      "engine": "discover-artwork-1.0.0",
+      "inputs": {
+        "Verlaufslinie": "sparkline (wo ausgeliefert), sonst performancePath",
+        "Schwankungsband": "volatility252d",
+        "Lichtschein": "Position in der Jahresspanne (Ort), leadershipPercentile (Stärke)",
+        "Jahresspannen-Leiste": "distanceTo52wHigh / distanceTo52wLow",
+        "Hochmarke": "signals.new52WeekHigh",
+        "Tickertypografie": "symbol",
+        "Farbwelt": "Kategorie der Reihe bzw. stärkstes Signal"
+      },
+      "boundary": "Keine Form entsteht aus Zufall, Hash oder Namen. Zwischen den Stützstellen des Renditepfades wird nichts interpoliert; das Schwankungsband ist eine Hüllkurve aus einer Kennzahl, keine Kursspanne."
+    }
   }
 }

@@ -85,13 +85,51 @@ function write(rel, data) {
    Ticker als Ueberschrift. */
 function buildNameMap() {
   const map = new Map();
+  const merke = (ticker, name, quelle, sector) => {
+    if (!ticker || !name || map.has(ticker)) return;
+    map.set(ticker, { name: String(name).trim(), sector: sector || null, source: quelle });
+  };
+
+  /* Reihenfolge = Vorrang. Bestehende Repository-Quellen zuerst, die
+     redaktionelle Liste zuletzt: sie fuellt nur, was sonst fehlt. */
   for (const file of ["market-universe.json", "tiingo-universe.json"]) {
     const cfg = readJSON(join(root, "quant", "config", file));
-    for (const s of cfg.securities || []) {
-      if (s.ticker && s.name) map.set(s.ticker, { name: s.name, sector: s.sector || null });
+    for (const s of cfg.securities || []) merke(s.ticker, s.name, "quant/config/" + file, s.sector);
+  }
+
+  const dashboardUniverse = join(root, "dashboard", "config", "universe.json");
+  if (existsSync(dashboardUniverse)) {
+    const cfg = readJSON(dashboardUniverse);
+    const rows = Array.isArray(cfg) ? cfg : (cfg.symbols || cfg.universe || []);
+    for (const s of rows) merke(s.ticker || s.symbol, s.name || s.company, "dashboard/config/universe.json");
+  }
+
+  /* Die SEC fuehrt den Namen der einreichenden Gesellschaft. Er steht in
+     Versalien ("JPMORGAN CHASE & CO") - fuer eine Ueberschrift ist das
+     Schreien, deshalb nur, wenn sonst nichts vorliegt. */
+  const secIndex = join(root, "quant", "data", "sec", "inspector_index.json");
+  if (existsSync(secIndex)) {
+    for (const c of readJSON(secIndex).companies || []) {
+      merke(c.ticker, titelSchreibweise(c.name), "quant/data/sec/inspector_index.json");
+    }
+  }
+
+  const kuratiert = join(root, "discover", "config", "company-names.json");
+  if (existsSync(kuratiert)) {
+    const cfg = readJSON(kuratiert);
+    for (const [ticker, name] of Object.entries(cfg.names || {})) {
+      merke(ticker, name, "discover/config/company-names.json");
     }
   }
   return map;
+}
+
+/** "JPMORGAN CHASE & CO" -> "JPMorgan Chase & Co" ist nicht ableitbar;
+    "MERCK & CO INC" -> "Merck & Co Inc" dagegen schon. Mehr wird nicht
+    versucht - eine falsche Binnenmajuskel ist schlimmer als Versalien. */
+function titelSchreibweise(name) {
+  if (!name || name !== name.toUpperCase()) return name;
+  return name.toLowerCase().replace(/(^|[\s&/(-])([a-z])/g, (m, vor, buchstabe) => vor + buchstabe.toUpperCase());
 }
 
 /* ------------------------------------------- Bars aus den Golden-Five-Daten */
@@ -431,6 +469,7 @@ function applyPercentilesAndSignals(universe) {
                          v.priceAboveSMA50 === true && isNum(s.metrics.distanceTo52wHigh) &&
                          s.metrics.distanceTo52wHigh >= -0.10;
     s.badges = badgesFor(s);
+    s.world = heroWorld(s);
     const eligibility = discoveryEligibility(s);
     s.discoveryEligible = eligibility.eligible;
     s.ineligibleReason = eligibility.reason;
@@ -582,6 +621,7 @@ function buildRow(universe, config) {
 
   return {
     rowId: config.id, title: config.title, subtitle: config.subtitle,
+    world: config.world || "leadership",
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     methodologyVersion: METHODOLOGY.methodologyVersion,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
@@ -717,6 +757,18 @@ function buildFeatured(universe, anzahl) {
   }));
 }
 
+/* Welche Farbwelt trägt ein Titel? Die seines stärksten belegten Signals -
+   dieselbe Zuordnung, die auch die Reihen färbt (Category Color System).
+   Die Farbe steht nie allein: das Signal trägt daneben immer seinen Namen. */
+function heroWorld(stock) {
+  const zuordnung = METHODOLOGY.visualLanguage.signalWorlds;
+  for (const signal of ["new52WeekHigh", "marketLeader", "breakout", "momentumLeader",
+                        "relativeStrengthLeader", "trendIntact"]) {
+    if (stock.signals[signal] && zuordnung[signal]) return zuordnung[signal];
+  }
+  return "leadership";
+}
+
 /** Die eine Zeile ueber der Aktie. Aus dem staerksten belegten Signal. */
 function heroHeadline(stock) {
   if (stock.signals.new52WeekHigh && stock.signals.marketLeader) {
@@ -832,6 +884,10 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
       universeSize: universe.stocks.length
     },
     rawValues: stock.rawValues,
+    /* Die Farbwelt des staerksten Signals. Sie steht hier, weil die
+       Detailseite dieselbe Zuordnung braucht wie die Reihe, aus der man
+       kommt - und eine zweite Zuordnung waere eine zweite Wahrheit. */
+    world: stock.world || null,
     /* Weiter entdecken: wo steht dieser Titel noch, und wer steht ihm nahe? */
     memberships: (memberships && memberships.get(stock.symbol)) || [],
     similar: buildSimilar(universe, stock, 8),
@@ -920,6 +976,7 @@ for (const universe of universes) {
   sectorPayload.sort((a, b) => b.count - a.count);
   write(`rows/${universe.universeId}/sector-leaders.json`, {
     rowId: "sector-leaders", title: METHODOLOGY.sectorRows.title,
+    world: METHODOLOGY.sectorRows.world || "sectors",
     subtitle: "Die stärksten Titel je Sektor - gerechnet nur dort, wo die Sektorzuordnung kuratiert ist.",
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
@@ -953,7 +1010,12 @@ for (const universe of universes) {
       s: s.symbol, n: s.companyName, sec: s.sector, m: s.dataMode === "real" ? 1 : 0,
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,
       d: isNum(s.metrics.distanceTo52wHigh) ? round(s.metrics.distanceTo52wHigh, 4) : null,
-      h: s.signals.new52WeekHigh ? 1 : 0
+      h: s.signals.new52WeekHigh ? 1 : 0,
+      /* Ein Buchstabenkuerzel je Farbwelt. Der Suchindex traegt alle
+         Titel eines Universums; jedes zusaetzliche Feld kostet hier
+         hundertfach, deshalb die Welt und sonst nichts - sie genuegt,
+         damit ein Treffer aussieht wie die Reihe, aus der er kaeme. */
+      w: s.world || null
     }))
   });
 }
@@ -1002,6 +1064,8 @@ const meta = {
   moduleVersion: "discover-1.0.0",
   contractVersion: Contract.CONTRACT_VERSION,
   methodologyVersion: METHODOLOGY.methodologyVersion,
+  visualLanguage: METHODOLOGY.visualLanguage,
+  topTen: METHODOLOGY.top10,
   engines: {
     high52w: High52w.ENGINE_VERSION, scoring: Scoring.ENGINE_VERSION,
     indicators: Indicators.ENGINE_VERSION, technicalIntelligence: TI.ENGINE_VERSION,

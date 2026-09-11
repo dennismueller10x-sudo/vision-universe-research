@@ -97,8 +97,13 @@
       }
       hint.textContent = treffer.length + " Treffer in »" + index.universeLabel + "«";
       treffer.forEach(function (hit, i) {
+        /* Ein Treffer traegt dieselbe Farbwelt wie die Reihe, in der er
+           stuende - und dasselbe Gestaltungsmittel: das Kuerzel gross im
+           Hintergrund. Die Suche ist damit kein Verzeichnis mehr, sondern
+           derselbe Ort in schmal. */
         var knopf = el("button", { class: "dx-result", type: "button", role: "option",
-                                   "aria-selected": "false" }, [
+                                   "aria-selected": "false", "data-world": hit.w || null }, [
+          el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
           el("span", { class: "sym", text: hit.s }),
           el("span", { class: "nm" }, [
             document.createTextNode(hit.n || "Name nicht ausgeliefert"),
@@ -127,10 +132,17 @@
       if (!isNum(hit.d)) return node;
       var anteil = Math.max(0, Math.min(1, 1 + hit.d / 0.5));   // -50 % .. 0 %
       node.appendChild(C().svg("line", { class: "grid", x1: 0, x2: 96, y1: 22, y2: 22 }));
+      /* Der Balken traegt die Weltfarbe, der Punkt markiert den Stand.
+         Ein Titel am Jahreshoch bekommt zusaetzlich einen Ring - die
+         Unterscheidung haengt damit nicht an der Farbe allein, und im
+         Text der Zeile steht sie ohnehin. */
       node.appendChild(C().svg("rect", { x: 0, y: 20, width: (anteil * 96).toFixed(1), height: 4,
-                                         rx: 2, fill: hit.h ? "var(--discover-up)" : "rgba(255,255,255,.35)" }));
-      node.appendChild(C().svg("circle", { cx: (anteil * 96).toFixed(1), cy: 22, r: 3.4,
-                                           fill: hit.h ? "var(--discover-up)" : "var(--discover-muted)" }));
+                                         rx: 2, fill: "var(--w)",
+                                         "fill-opacity": hit.h ? "0.95" : "0.55" }));
+      node.appendChild(C().svg("circle", { cx: (anteil * 96).toFixed(1), cy: 22, r: hit.h ? 4 : 3.4,
+                                           fill: "var(--w)",
+                                           stroke: hit.h ? "var(--w)" : "none",
+                                           "stroke-opacity": "0.35", "stroke-width": hit.h ? 4 : 0 }));
       return node;
     }
 

@@ -43,7 +43,12 @@
   /* Wie viele Poster eine Reihe auf der Startseite zeigt. Mehr als etwa
      zwanzig wischt ohnehin niemand durch; die vollständige Rangliste steht
      hinter "Alle anzeigen". */
-  var RAIL_LIMIT = 18;
+  /* Wie viele Karten eine Reihe auf der Startseite zeigt. Die Zahl steht
+     bewusst unter dem, was die Rangliste liefert (30): die Differenz ist
+     der Vorrat, aus dem die Mehrfachnennungs-Regeln weiter unten schöpfen
+     können, ohne dass eine Reihe kurz wird. Die vollständige Rangliste
+     steht auf der Kategorieseite. */
+  var RAIL_LIMIT = 12;
 
   var state = { meta: null, universeId: "US_REAL", calendar: null, search: null, searchUi: null };
 
@@ -165,6 +170,27 @@
   function openSearch() { ensureSearch().open(); }
 
   /* -------------------------------------------------------- Startseite */
+  /**
+   * Der Hinweis zur Datenlage. Er erklaert, warum die Poster zeigen, was
+   * sie zeigen - und er ist keine Warnung, also steht er auch in keinem
+   * Kasten.
+   *
+   * Warum <details>: am Telefon kostet der volle Wortlaut den Platz, an dem
+   * die erste Reihe anfangen muesste. Abschneiden kam nicht in Frage - ein
+   * Satz, den man nicht zu Ende lesen kann, ist schlechter als einer, den
+   * man aufklappt. Auf breiten Schirmen ist er offen und sieht aus wie
+   * vorher; das Dreieck blendet das Stylesheet aus.
+   */
+  function datenhinweis(marke, kurz, lang) {
+    var offen = !global.matchMedia || global.matchMedia("(min-width:861px)").matches;
+    var node = el("details", { class: "dx-inline-note" }, [
+      el("summary", {}, [el("b", { text: marke + " · " }), document.createTextNode(kurz)]),
+      el("p", { text: lang })
+    ]);
+    if (offen) node.setAttribute("open", "open");
+    return node;
+  }
+
   function renderHome(root) {
     S.clear(root);
     var app = el("div", { class: "dx-app" });
@@ -193,21 +219,16 @@
        in einen Kasten: er erklärt, warum die Poster zeigen, was sie zeigen —
        er ist keine Warnung. */
     if (universe.kind === "mock") {
-      body.appendChild(el("p", { class: "dx-inline-note" }, [
-        el("b", { text: "Modelluniversum · " }),
-        document.createTextNode("Alle " + universe.securities + " Titel dieser Ansicht sind " +
-          "synthetisch erzeugt. Sie tragen vollständige Kursreihen und zeigen deshalb Kurs, " +
-          "Verlauf und Chart — aber keine reale Marktaussage. Ranglisten werden ausschließlich " +
-          "innerhalb dieses Universums gerechnet.")
-      ]));
+      body.appendChild(datenhinweis("Modelluniversum",
+        "Alle " + universe.securities + " Titel dieser Ansicht sind synthetisch erzeugt.",
+        "Sie tragen vollständige Kursreihen und zeigen deshalb Kurs, Verlauf und Chart — aber " +
+        "keine reale Marktaussage. Ranglisten werden ausschließlich innerhalb dieses " +
+        "Universums gerechnet."));
     } else if (universe.redistribution) {
-      body.appendChild(el("p", { class: "dx-inline-note" }, [
-        el("b", { text: "Kursniveaus · " }),
-        document.createTextNode("Absolute Kurse realer Titel sind Anbieterdaten und bleiben " +
-          "zurück. Die Poster zeigen deshalb den rebasierten Renditepfad, Abstände und Scores — " +
-          "bei " + universe.withPriceSeries + " freigegebenen Titeln zusätzlich Kurs und " +
-          "Kursverlauf.")
-      ]));
+      body.appendChild(datenhinweis("Kursniveaus",
+        "Absolute Kurse realer Titel sind Anbieterdaten und bleiben zurück.",
+        "Die Poster zeigen deshalb den rebasierten Renditepfad, Abstände und Scores — bei " +
+        universe.withPriceSeries + " freigegebenen Titeln zusätzlich Kurs und Kursverlauf."));
     }
 
     var plaetze = {};
@@ -222,13 +243,66 @@
 
        Der Grund ist nicht die Optik, sondern die Wiederholung: die
        stärksten Titel eines Marktes stehen naturgemäß in mehreren
-       Ranglisten zugleich, und eine Startseite, auf der fünfmal dieselben
-       vier Namen stehen, ist keine Entdeckung mehr. Ein Titel erscheint
-       deshalb auf der Startseite nur einmal — die vollständige Rangliste
-       jeder Kategorie bleibt über "Alle anzeigen" erreichbar und wird
-       nicht verändert. Die Ausnahme ist die Signature-Reihe: TOP 10 zeigt
-       immer die echte Reihenfolge, sonst wäre sie keine. */
-    var gezeigt = Object.create(null);
+       Ranglisten zugleich. Die erste Fassung dieser Seite hat daraus die
+       einfachste Regel gemacht — jeder Titel nur einmal. Sie war zu
+       streng. Dass ein Marktführer zugleich ein neues Jahreshoch hat, ist
+       gerade die Aussage, die man sehen will; sie zu verstecken, damit die
+       Seite abwechslungsreicher wirkt, verschweigt einen Befund.
+
+       Die Regeln stehen deshalb hier, an einer Stelle, zusammen — und sie
+       entfernen nur, sie sortieren nie um. Eine Rangliste, deren
+       Reihenfolge die Darstellung ändert, wäre keine mehr. */
+    var DEDUP = {
+      /* Wie oft darf ein Titel auf der Startseite stehen? Zweimal: die
+         Mehrfachnennung ist die Aussage, die dritte ist Monotonie. */
+      maxAuftritte: 2,
+      /* Und wie viele Zweitnennungen verträgt eine einzelne Reihe? Drei
+         von zwölf. Darüber liest sich die Reihe als Wiederholung der
+         vorigen, nicht als eigene Kategorie. */
+      maxWiederholungenJeReihe: 3,
+      /* Direkt untereinander nicht: derselbe Titel in zwei aufeinander
+         folgenden Reihen sieht wie ein Fehler aus, auch wenn er keiner
+         ist. Eine Reihe Abstand genügt, damit die Zweitnennung als
+         zweite Nennung gelesen wird. */
+      nichtInFolge: true
+    };
+
+    /* Was bisher gezeigt wurde: Anzahl der Auftritte je Titel und die
+       Reihe, in der er zuerst stand - letztere nur, um die Zweitnennung
+       beschriften zu können. */
+    var auftritte = Object.create(null);
+    var herkunft = Object.create(null);
+    var vorigeReihe = Object.create(null);
+
+    /**
+     * Wählt aus einer Rangliste die Karten, die diese Reihe zeigt.
+     * Reihenfolge bleibt; entfernt wird nach den Regeln oben.
+     */
+    function auswahl(cards, limit) {
+      var raus = [], wiederholt = 0, uebersprungen = 0;
+      for (var i = 0; i < cards.length && raus.length < limit; i++) {
+        var c = cards[i], n = auftritte[c.symbol] || 0;
+        if (n > 0) {
+          if (n >= DEDUP.maxAuftritte) { uebersprungen++; continue; }
+          if (wiederholt >= DEDUP.maxWiederholungenJeReihe) { uebersprungen++; continue; }
+          if (DEDUP.nichtInFolge && vorigeReihe[c.symbol]) { uebersprungen++; continue; }
+          wiederholt++;
+        }
+        raus.push(c);
+      }
+      return { cards: raus, wiederholt: wiederholt, uebersprungen: uebersprungen };
+    }
+
+    function vormerken(cards, titel) {
+      var neu = Object.create(null);
+      cards.forEach(function (c) {
+        auftritte[c.symbol] = (auftritte[c.symbol] || 0) + 1;
+        if (!herkunft[c.symbol]) herkunft[c.symbol] = titel;
+        neu[c.symbol] = true;
+      });
+      vorigeReihe = neu;
+    }
+
     var kette = Promise.resolve();
 
     HOME_SEQUENCE.forEach(function (schritt) {
@@ -238,22 +312,41 @@
           var host = plaetze[schritt.as || schritt.rowId];
           S.clear(host);
           if (schritt.variant === "sector") {
+            /* Die Sektorkacheln sind keine Reihe im selben Sinn: sie zeigen
+               je Sektor die Spitze und sind der Ort, an dem ein Titel
+               auftauchen DARF, den man oben schon gesehen hat - sonst
+               stünde in einem Sektor nicht sein stärkster Titel. Sie
+               zählen deshalb nicht in die Auftritte hinein. */
             host.appendChild(sectorRail(row));
+            vorigeReihe = Object.create(null);
           } else if (schritt.as === "top-10") {
+            /* Die Signature-Reihe wird nie gefiltert: TOP 10 zeigt die
+               echte Rangliste, sonst wäre sie keine. */
             host.appendChild(topTen(row));
-            (row.cards || []).slice(0, 10).forEach(function (c) { gezeigt[c.symbol] = true; });
+            vormerken((row.cards || []).slice(0, 10), "TOP 10");
+            /* Die Nachbarschaftsregel gilt zwischen zwei gleichartigen
+               Reihen. Nach der Signature-Reihe gilt sie nicht: TOP 10
+               sieht anders aus als eine Reihe - grosse Ziffern, andere
+               Kachel -, und ein Name, der dort stand und gleich darunter
+               unter NEUE 52-WOCHEN-HOCHS wieder auftaucht, liest sich
+               nicht als Dublette, sondern als die Aussage, um die es
+               geht: dieser Marktfuehrer macht gerade ein neues Hoch. */
+            vorigeReihe = Object.create(null);
           } else {
-            var gefiltert = (row.cards || []).filter(function (c) { return !gezeigt[c.symbol]; });
-            var entfernt = (row.cards || []).length - gefiltert.length;
-            /* Gezeigt wird genau so viel, wie auch vorgemerkt wird - sonst
-               taucht ein Titel, der in dieser Reihe auf Platz 20 stand,
-               weiter unten ein zweites Mal auf. */
-            var sichtbar = Object.assign({}, row, { cards: gefiltert.slice(0, RAIL_LIMIT) });
+            var gewaehlt = auswahl(row.cards || [], RAIL_LIMIT);
+            var sichtbar = Object.assign({}, row, { cards: gewaehlt.cards });
+            var hinweise = Object.create(null);
+            gewaehlt.cards.forEach(function (c) {
+              if (auftritte[c.symbol]) hinweise[c.symbol] = herkunft[c.symbol];
+            });
             host.appendChild(C().rail(sichtbar, {
               variant: schritt.variant, universeId: state.universeId, limit: RAIL_LIMIT,
-              countSuffix: entfernt ? " · ohne bereits gezeigte" : null
+              hinweise: hinweise,
+              countSuffix: gewaehlt.uebersprungen
+                ? " · " + gewaehlt.uebersprungen + " mehrfach genannte ausgeblendet"
+                : null
             }));
-            sichtbar.cards.forEach(function (c) { gezeigt[c.symbol] = true; });
+            vormerken(gewaehlt.cards, row.title);
           }
           C().revealOnScroll(host);
         }).catch(function (err) {
@@ -307,9 +400,12 @@
       return section;
     }
 
+    section.setAttribute("data-world", payload.world || "sectors");
     var track = el("div", { class: "dx-rail", role: "list", "aria-label": "Sektoren" });
+    var sektorWelten = (state.meta.visualLanguage && state.meta.visualLanguage.sectorWorlds) || {};
     payload.sectors.forEach(function (sector) {
-      var tile = C().sectorTile(sector, { universeId: state.universeId });
+      var tile = C().sectorTile(sector, { universeId: state.universeId,
+                                          world: sektorWelten[sector.sector] || "sectors" });
       tile.setAttribute("role", "listitem");
       track.appendChild(tile);
     });
@@ -344,6 +440,7 @@
         return;
       }
 
+      if (row.world) body.setAttribute("data-world", row.world);
       body.appendChild(C().railHead(row.title, row.subtitle, {
         count: row.coverage.matched + " von " + row.coverage.universeSize,
         href: "#/u/" + universeId, moreLabel: "Zurück zu Discover"
@@ -365,7 +462,8 @@
             "Mit diesem Filter bleibt in »" + row.title + "« kein Titel übrig."));
           return;
         }
-        host.appendChild(C().grid(cards, { rowId: row.rowId, universeId: universeId }));
+        host.appendChild(C().grid(cards, { rowId: row.rowId, universeId: universeId,
+                                           world: row.world }));
       }
 
       function chip(label, onClick, aktiv) {

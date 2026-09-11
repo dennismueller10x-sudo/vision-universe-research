@@ -142,6 +142,7 @@
       metrics: {},
       metricStatus: {},
       badges: Array.isArray(raw.badges) ? raw.badges : [],
+      world: raw.world || null,
       dataQuality: raw.dataQuality || null,
       dataQualityReason: raw.dataQualityReason || null,
       asOf: raw.asOf || null,
@@ -229,6 +230,7 @@
       sparklineStatus: stock.sparklineStatus,
       performancePath: stock.performancePath,
       performancePathStatus: stock.performancePathStatus,
+      world: stock.world || null,
       signals: stock.signals,
       metrics: stock.metrics,
       metricStatus: stock.metricStatus,
@@ -247,7 +249,7 @@
   function toMiniCard(stock) {
     return {
       symbol: stock.symbol, companyName: stock.companyName, sector: stock.sector,
-      dataMode: stock.dataMode,
+      dataMode: stock.dataMode, world: stock.world || null,
       price: stock.price, changePercent: stock.changePercent,
       performancePath: stock.performancePath,
       badges: (stock.badges || []).slice(0, 1),

@@ -172,33 +172,34 @@
     return node;
   }
 
-  /** Das Verlaufsbild einer Karte: Kursreihe, sonst Renditepfad. */
+  /**
+   * Das Artwork einer Karte. Es ersetzt die frühere Sparkline: dieselbe
+   * Datengrundlage, aber als Komposition aus Verlauf, Schwankungsband,
+   * Jahresspanne, Lichtschein und - wo Platz ist - dem Kürzel als Fläche.
+   * Die Herleitung steht in discover/ui/artwork.js.
+   */
   function posterMedia(card, opts) {
     opts = opts || {};
     var host = el("div", { class: "dx-poster-media" });
-    if (Array.isArray(card.sparkline) && card.sparkline.length > 2) {
-      host.appendChild(areaChart(card.sparkline, {
-        height: opts.height, label: card.symbol + ": Kursverlauf der letzten 52 Wochen" }));
-      return host;
-    }
-    if (Array.isArray(card.performancePath) && card.performancePath.length > 2) {
-      host.appendChild(pathChart(card.performancePath, {
-        height: opts.height, labels: opts.labels,
-        label: card.symbol + ": Renditepfad über zwölf Monate, rebasiert auf 100" }));
-      return host;
-    }
-    host.appendChild(el("div", {
-      style: "display:grid;place-items:center;height:100%;font-size:11px;color:var(--discover-dim)",
-      text: "Kein Verlauf ausgeliefert"
+    host.appendChild(D().Artwork.stockArtwork(card, {
+      width: opts.width || 300, height: opts.height || 104,
+      ticker: opts.ticker === true, band: opts.band !== false,
+      scale: opts.scale || "poster"
     }));
     return host;
   }
 
+  function D() { return global.VUDiscover; }
+
   /* ------------------------------------------------------------- Signale */
+  /* Welche Farbwelt gehört zu welchem Signal? Dieselbe Zuordnung wie im
+     Build (discover-v1.json → visualLanguage.signalWorlds); sie steht hier
+     noch einmal, weil die Karte auch ohne geladene Methodik rendern muss. */
   var SIGNAL_TONE = {
-    new52WeekHigh: "up", nearHigh: "up", marketLeader: "accent", momentumLeader: "violet",
-    relativeStrengthLeader: "accent", breakout: "warm", trendIntact: "muted",
-    sectorLeader: "muted", notTrading: "muted"
+    new52WeekHigh: "highs", nearHigh: "highs", marketLeader: "leadership",
+    momentumLeader: "momentum", relativeStrengthLeader: "strength",
+    breakout: "breakout", trendIntact: "quality", sectorLeader: "sectors",
+    notTrading: "muted"
   };
 
   function signalChip(badge) {
@@ -258,6 +259,10 @@
     var node = el("a", {
       class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : ""),
       href: "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
+      /* Die Karte trägt die Welt ihrer REIHE; das Signal darauf trägt seine
+         eigene. So bleibt die Reihe als Welt erkennbar, ohne dass ein
+         abweichendes Signal verschwiegen wird. */
+      "data-world": options.world || card.world || null,
       "aria-label": (card.companyName || card.symbol) + " öffnen"
     }, [
       el("div", { class: "dx-poster-top" }, [
@@ -269,7 +274,20 @@
         rechts
       ]),
       signalChip((card.badges || [])[0]),
-      posterMedia(card, { height: kompakt ? 74 : (breit ? 148 : 104), labels: !kompakt })
+      /* Eine Zweitnennung ist kein Duplikat, sondern ein Befund: dieser
+         Titel steht in mehreren Ranglisten weit vorn. Damit sie nicht wie
+         ein Fehler aussieht, sagt sie, woher man ihn kennt - als Text,
+         nicht als Farbe. */
+      options.hinweis ? el("span", { class: "dx-echo" }, [
+        el("span", { class: "dx-echo-dot", "aria-hidden": "true" }),
+        document.createTextNode("auch in " + options.hinweis)
+      ]) : null,
+      posterMedia(card, {
+        height: kompakt ? 74 : (breit ? 148 : 104),
+        width: breit ? 392 : (kompakt ? 224 : 300),
+        ticker: breit === true || options.variant === "rank",
+        scale: kompakt ? "mini" : "poster"
+      })
     ]);
 
     /* Fusszeile: Leadership als feiner Balken. Eine Zahl, die man nicht
@@ -309,7 +327,7 @@
   function rankPoster(card, options) {
     options = options || {};
     var nummer = String(options.rank);
-    return el("div", { class: "dx-rank" }, [
+    return el("div", { class: "dx-rank", "data-world": options.world || null }, [
       el("div", { class: "dx-rank-num", "aria-hidden": "true",
                   text: nummer.length < 2 ? "0" + nummer : nummer }),
       poster(card, options)
@@ -332,7 +350,7 @@
       ]);
     });
     var node = el("a", {
-      class: "dx-sector",
+      class: "dx-sector", "data-world": options.world || null,
       href: "#/c/" + (options.universeId || "US_REAL") + "/sector-leaders",
       "aria-label": "Sektor " + sector.sector + " ansehen"
     }, [
@@ -393,6 +411,8 @@
       href: options.showMore === false ? null : "#/c/" + row.universeId + "/" + row.rowId
     }));
 
+    var welt = options.world || row.world || null;
+    if (welt) section.setAttribute("data-world", welt);
     var cards = (row.cards || []).slice(0, options.limit || 24);
     if (!cards.length) {
       section.appendChild(emptyState("Keine Treffer",
@@ -403,9 +423,12 @@
 
     var track = el("div", { class: "dx-rail", role: "list", "aria-label": row.title });
     cards.forEach(function (card, index) {
+      var hinweis = options.hinweise ? options.hinweise[card.symbol] : null;
       var item = variant === "rank"
-        ? rankPoster(card, { rowId: row.rowId, universeId: row.universeId, rank: index + 1 })
-        : poster(card, { rowId: row.rowId, universeId: row.universeId, variant: variant });
+        ? rankPoster(card, { rowId: row.rowId, universeId: row.universeId, rank: index + 1,
+                             world: welt, variant: "rank" })
+        : poster(card, { rowId: row.rowId, universeId: row.universeId, variant: variant,
+                         world: welt, hinweis: hinweis });
       item.setAttribute("role", "listitem");
       track.appendChild(item);
     });
@@ -450,7 +473,7 @@
     var host = el("div", { class: "dx-grid" });
     cards.forEach(function (card, index) {
       host.appendChild(poster(card, { rowId: options.rowId, universeId: options.universeId,
-                                      rank: index + 1 }));
+                                      rank: index + 1, world: options.world }));
     });
     return host;
   }
@@ -481,6 +504,7 @@
     toneClass: toneClass, valueOf: valueOf, statusOf: statusOf, STATUS_TEXT: STATUS_TEXT,
     svg: svg, ensureDefs: ensureDefs,
     areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia,
+    SIGNAL_TONE: SIGNAL_TONE,
     signalChip: signalChip, poster: poster, rankPoster: rankPoster, sectorTile: sectorTile,
     rail: rail, railHead: railHead, withRailNav: withRailNav, grid: grid,
     skeletonRail: skeletonRail, emptyState: emptyState, note: note,

@@ -77,6 +77,44 @@ body.dx{
   overflow-x:hidden;
 }
 
+/* ==================================================== CATEGORY COLOR SYSTEM
+
+   Jede Discovery-Welt hat eine Farbe. Sie ist eine Zuordnung, kein Schmuck:
+   sie sagt, in welcher Welt man gerade ist, und sie steht NIE allein - jedes
+   Signal trägt daneben immer seinen Namen im Text (§24, Zugänglichkeit).
+
+   Die Farbe wird an EINER Stelle gesetzt (data-world am Abschnitt) und von
+   allen Bausteinen darin geerbt: Artwork, Verlaufslinie, Signalplakette,
+   Rangziffer, Lichtschein. Deshalb gibt es keine "blaue Karte" und keine
+   "orange Karte" - es gibt eine Atmosphäre, in der dunkle Karten liegen. */
+body.dx{
+  --w:#6f9dff;                       /* Grundton, wenn keine Welt gesetzt ist */
+  --w-2:#9ab6ff;
+  --w-glow:rgba(111,157,255,.16);
+  --w-soft:rgba(111,157,255,.10);
+}
+[data-world="leadership"]{--w:#5b7cff;--w-2:#93a9ff;--w-glow:rgba(91,124,255,.22);--w-soft:rgba(91,124,255,.10)}
+[data-world="highs"]     {--w:#4fd2e6;--w-2:#9fe8f2;--w-glow:rgba(79,210,230,.20);--w-soft:rgba(79,210,230,.09)}
+[data-world="momentum"]  {--w:#b07bff;--w-2:#d0b0ff;--w-glow:rgba(176,123,255,.20);--w-soft:rgba(176,123,255,.09)}
+[data-world="breakout"]  {--w:#f0a93c;--w-2:#f7cd8a;--w-glow:rgba(240,169,60,.18);--w-soft:rgba(240,169,60,.08)}
+[data-world="strength"]  {--w:#3fd9a4;--w-2:#8fe9c8;--w-glow:rgba(63,217,164,.18);--w-soft:rgba(63,217,164,.08)}
+[data-world="quality"]   {--w:#d9bc6a;--w-2:#ecd9a6;--w-glow:rgba(217,188,106,.16);--w-soft:rgba(217,188,106,.07)}
+[data-world="sectors"]   {--w:#8fa8cf;--w-2:#bccbe4;--w-glow:rgba(143,168,207,.16);--w-soft:rgba(143,168,207,.07)}
+[data-world="risk"]      {--w:#f0675c;--w-2:#f7a49c;--w-glow:rgba(240,103,92,.18);--w-soft:rgba(240,103,92,.08)}
+
+/* Sektorwelten - dieselbe Familie, nur anders gestimmt. */
+[data-world="tech"]     {--w:#8e8bff;--w-glow:rgba(142,139,255,.20);--w-soft:rgba(142,139,255,.09)}
+[data-world="health"]   {--w:#46cfc4;--w-glow:rgba(70,207,196,.18);--w-soft:rgba(70,207,196,.08)}
+[data-world="finance"]  {--w:#6f9dff;--w-glow:rgba(111,157,255,.18);--w-soft:rgba(111,157,255,.08)}
+[data-world="industry"] {--w:#f09a55;--w-glow:rgba(240,154,85,.17);--w-soft:rgba(240,154,85,.08)}
+[data-world="consumer"] {--w:#e88fb8;--w-glow:rgba(232,143,184,.16);--w-soft:rgba(232,143,184,.07)}
+[data-world="staples"]  {--w:#9fc58a;--w-glow:rgba(159,197,138,.16);--w-soft:rgba(159,197,138,.07)}
+[data-world="energy"]   {--w:#e8b44c;--w-glow:rgba(232,180,76,.17);--w-soft:rgba(232,180,76,.08)}
+[data-world="utility"]  {--w:#7fb8d8;--w-glow:rgba(127,184,216,.16);--w-soft:rgba(127,184,216,.07)}
+[data-world="estate"]   {--w:#c4a78f;--w-glow:rgba(196,167,143,.16);--w-soft:rgba(196,167,143,.07)}
+[data-world="comms"]    {--w:#a08fff;--w-glow:rgba(160,143,255,.18);--w-soft:rgba(160,143,255,.08)}
+[data-world="materials"]{--w:#b9a56f;--w-glow:rgba(185,165,111,.16);--w-soft:rgba(185,165,111,.07)}
+
 body.dx ::selection{background:rgba(111,157,255,.32)}
 body.dx :focus-visible{outline:2px solid var(--discover-accent);outline-offset:3px;border-radius:6px}
 .dx-app{min-height:100vh;background:var(--discover-bg)}
@@ -148,19 +186,25 @@ body.dx .num{font-variant-numeric:tabular-nums}
    Grund der Seite. Der Verlauf unten laeuft in die erste Reihe hinein,
    damit die Seite nicht in Abschnitte zerfaellt. */
 .dx-hero{position:relative;min-height:var(--discover-hero-height);display:flex;align-items:center;overflow:hidden}
+/* Die Eingangsfläche atmet in der Farbe ihres Signals. Zwei weiche Lichter
+   und ein sehr flacher Verlauf - kein Farbblock, keine sichtbare Kante. */
 .dx-hero-bg{
   position:absolute;inset:0;
   background:
-    radial-gradient(120% 80% at 78% 18%, rgba(111,157,255,.18), transparent 62%),
-    radial-gradient(90% 70% at 12% 8%, rgba(167,139,250,.12), transparent 60%),
-    linear-gradient(180deg,#0b0b10 0%, #08080a 72%);
-  transition:opacity var(--discover-motion-slow) var(--discover-ease);
+    radial-gradient(105% 78% at 76% 14%, var(--w-glow), transparent 64%),
+    radial-gradient(80% 66% at 10% 4%, var(--w-soft), transparent 66%),
+    linear-gradient(180deg, color-mix(in srgb, var(--w) 5%, #0a0a0e) 0%, var(--discover-bg) 74%);
+  transition:background var(--discover-motion-slow) var(--discover-ease);
 }
-.dx-hero--up .dx-hero-bg{
-  background:
-    radial-gradient(120% 80% at 78% 18%, rgba(63,208,127,.16), transparent 62%),
-    radial-gradient(90% 70% at 12% 8%, rgba(111,157,255,.10), transparent 60%),
-    linear-gradient(180deg,#0a0f0c 0%, #08080a 72%);
+/* Ein sehr feines Liniengitter in der Weltfarbe - es macht die Fläche
+   materiell, ohne ein Muster zu erfinden: die Linien stehen im Raster der
+   Typografie, nicht im Zufall. */
+.dx-hero-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(90deg, color-mix(in srgb, var(--w) 9%, transparent) 1px, transparent 1px);
+  background-size:96px 100%;
+  mask-image:radial-gradient(75% 70% at 70% 30%, #000 10%, transparent 72%);
+  -webkit-mask-image:radial-gradient(75% 70% at 70% 30%, #000 10%, transparent 72%);
 }
 .dx-hero-fade{position:absolute;left:0;right:0;bottom:0;height:200px;background:linear-gradient(180deg,transparent,var(--discover-bg));pointer-events:none}
 
@@ -172,7 +216,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-kicker{
   display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;
   font-size:11px;font-weight:800;letter-spacing:.20em;text-transform:uppercase;
-  color:var(--discover-up);
+  color:var(--w-2,var(--w));
 }
 .dx-kicker::before{content:"";width:22px;height:1px;background:currentColor;opacity:.7}
 .dx-hero-sym{
@@ -199,19 +243,18 @@ body.dx .num{font-variant-numeric:tabular-nums}
              background var(--discover-motion-fast) var(--discover-ease);
 }
 .dx-btn:hover{transform:translateY(-1px);background:#fff}
-.dx-btn--ghost{background:transparent;color:var(--discover-text);border:1px solid var(--discover-line-strong)}
-.dx-btn--ghost:hover{background:rgba(255,255,255,.07)}
+.dx-btn--ghost{background:transparent;color:var(--discover-text);
+  border:1px solid color-mix(in srgb, var(--w) 40%, var(--discover-line-strong))}
+.dx-btn--ghost:hover{background:color-mix(in srgb, var(--w) 12%, transparent)}
 
 /* Das Datenbild der Eingangsflaeche. */
 .dx-hero-media{position:relative;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;gap:14px}
 .dx-hero-chart{width:100%;height:clamp(220px,30vh,320px);display:block;overflow:visible}
-.dx-hero-chart .line{fill:none;stroke:var(--discover-up);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.dx-hero-chart .line.down{stroke:var(--discover-down)}
-.dx-hero-chart .area{fill:url(#dxHeroFill);stroke:none}
-.dx-hero-chart .node{fill:var(--discover-bg);stroke:var(--discover-up);stroke-width:2}
-.dx-hero-chart .node.down{stroke:var(--discover-down)}
-.dx-hero-chart .tick{fill:var(--discover-dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
-.dx-hero-chart .zero{stroke:var(--discover-line);stroke-dasharray:2 4}
+.dx-hero-chart{color:var(--w)}
+.dx-hero-chart .dx-art-line{stroke-width:2.4}
+.dx-hero-chart .dx-art-ticker{font-size:150px;fill:color-mix(in srgb, var(--w) 9%, transparent)}
+.dx-hero-chart .dx-art-tick{fill:rgba(255,255,255,.14)}
+.dx-hero-chart .dx-art-tick.on{fill:var(--w)}
 .dx-hero-caption{font-size:11px;color:var(--discover-dim);line-height:1.5;max-width:52ch}
 
 /* Umschalter zwischen den Featured-Titeln: Striche, keine Punkte - sie
@@ -223,11 +266,33 @@ body.dx .num{font-variant-numeric:tabular-nums}
   transition:background var(--discover-motion-fast) var(--discover-ease),
              width var(--discover-motion-normal) var(--discover-ease);
 }
-.dx-hero-nav button[aria-current="true"]{background:var(--discover-text);width:52px}
+.dx-hero-nav button[aria-current="true"]{background:var(--w-2,var(--discover-text));width:52px}
 .dx-hero-nav button:hover{background:rgba(255,255,255,.5)}
 
 /* =================================================================== Rails */
-.dx-rail-section{margin:44px 0 0;position:relative}
+/* Die Atmosphäre einer Reihe: ein weiches Licht in der Farbe ihrer Welt,
+   ohne Kante und ohne Rechteck. Es liegt HINTER den Karten und endet
+   weich - deshalb ein Radialverlauf und kein Hintergrundblock. */
+/* scroll-margin-top haelt die Ueberschrift frei, wenn eine Reihe
+   angesprungen wird: darueber steht die klebende App-Leiste, und ohne
+   diesen Abstand landet der Kopf der Reihe dahinter. */
+.dx-rail-section{margin:44px 0 0;position:relative;isolation:isolate;scroll-margin-top:96px}
+.dx-rail-section::before{
+  /* Links und rechts buendig, nicht darueber hinaus: eine Flaeche, die
+     6 % breiter ist als die Seite, erzeugt am Telefon echten
+     Seitwaerts-Scroll - dort ist der Rand nicht abgeschnitten, sondern
+     erreichbar. Die Breite braucht die Atmosphaere auch nicht; ihre
+     weichen Raender kommen aus den Gradienten selbst. */
+  content:"";position:absolute;z-index:-1;left:0;right:0;top:-60px;bottom:-60px;
+  background:
+    radial-gradient(52% 62% at 14% 34%, var(--w-glow), transparent 72%),
+    radial-gradient(44% 52% at 86% 72%, var(--w-soft), transparent 76%);
+  /* Die Maske nimmt der Fläche ihre Kanten: oben und unten läuft sie aus,
+     damit zwei Welten ineinander übergehen statt aneinanderzustoßen. */
+  mask-image:linear-gradient(180deg,transparent 0%,#000 22%,#000 74%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 22%,#000 74%,transparent 100%);
+  opacity:.9;pointer-events:none;
+}
 .dx-rail-section--tight{margin-top:30px}
 .dx-rail-head{
   display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
@@ -235,6 +300,13 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-rail-head h2{
   margin:0;font-size:clamp(17px,1.7vw,21px);font-weight:700;letter-spacing:-.015em;
+  display:flex;align-items:center;gap:11px;
+}
+/* Der Punkt vor der Überschrift ist die Farbmarke der Welt - klein, aber
+   er verbindet Überschrift und Atmosphäre sichtbar miteinander. */
+.dx-rail-head h2::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:var(--w);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--w) 16%, transparent);flex:0 0 auto;
 }
 .dx-rail-head p{margin:0;font-size:13px;color:var(--discover-muted);letter-spacing:0}
 .dx-rail-head .dx-more{
@@ -281,8 +353,13 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-poster{
   position:relative;flex:0 0 var(--discover-card-width);width:var(--discover-card-width);
   display:flex;flex-direction:column;
-  border-radius:var(--discover-radius);text-decoration:none;color:inherit;
-  background:linear-gradient(180deg,var(--discover-surface),var(--discover-bg-2));
+  border-radius:var(--discover-radius);text-decoration:none;
+  /* `color` trägt die Weltfarbe: das Artwork zeichnet seinen Lichtschein
+     mit currentColor, die Linie und die Plakette greifen auf --w zu. */
+  color:var(--discover-text);
+  background:
+    radial-gradient(120% 90% at 50% 112%, var(--w-soft), transparent 62%),
+    linear-gradient(180deg,var(--discover-surface),var(--discover-bg-2));
   border:1px solid var(--discover-line);
   overflow:hidden;isolation:isolate;
   transition:transform var(--discover-motion-normal) var(--discover-ease),
@@ -291,8 +368,10 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-poster:hover,.dx-poster:focus-visible{
   transform:translateY(-6px) scale(1.025);
-  border-color:var(--discover-line-strong);
-  box-shadow:0 24px 60px -26px rgba(0,0,0,.9),0 2px 0 0 rgba(255,255,255,.05) inset;
+  border-color:color-mix(in srgb, var(--w) 42%, var(--discover-line-strong));
+  box-shadow:0 24px 60px -26px rgba(0,0,0,.92),
+             0 0 0 1px color-mix(in srgb, var(--w) 22%, transparent) inset,
+             0 26px 70px -40px var(--w);
   z-index:5;
 }
 .dx-poster:active{transform:translateY(-2px) scale(1.01)}
@@ -315,14 +394,59 @@ body.dx .num{font-variant-numeric:tabular-nums}
   padding:5px 10px;border-radius:7px;white-space:nowrap;max-width:calc(100% - 32px);
 }
 .dx-sig small{font-weight:600;letter-spacing:.02em;text-transform:none;font-size:11px;opacity:.8;overflow:hidden;text-overflow:ellipsis}
-.dx-sig--up{background:var(--discover-up-soft);color:var(--discover-up)}
-.dx-sig--accent{background:var(--discover-accent-soft);color:var(--discover-accent)}
-.dx-sig--violet{background:var(--discover-violet-soft);color:var(--discover-violet)}
-.dx-sig--warm{background:var(--discover-warm-soft);color:var(--discover-warm)}
-.dx-sig--muted{background:rgba(255,255,255,.06);color:var(--discover-muted)}
+/* Die Plakette trägt die Farbe ihres eigenen Signals - nicht die der
+   Reihe. Ein Titel, der in der Momentum-Reihe steht, aber ein neues
+   Jahreshoch hat, zeigt das auch. */
+.dx-sig{background:color-mix(in srgb, var(--sig) 15%, transparent);color:var(--sig);
+  --sig:var(--w);border:1px solid color-mix(in srgb, var(--sig) 26%, transparent)}
+.dx-sig--highs{--sig:#4fd2e6}
+.dx-sig--leadership{--sig:#93a9ff}
+.dx-sig--momentum{--sig:#c6a3ff}
+.dx-sig--breakout{--sig:#f0a93c}
+.dx-sig--strength{--sig:#3fd9a4}
+.dx-sig--quality{--sig:#d9bc6a}
+.dx-sig--sectors{--sig:#a8bcd8}
+.dx-sig--muted{--sig:#9d9da8;background:rgba(255,255,255,.05)}
 
-.dx-poster-media{position:relative;margin-top:auto;height:104px}
+/* Die Zweitnennung. Sie steht unter der Signalplakette, in der Schrift
+   der Nebensachen - sie erklaert eine Beobachtung, sie behauptet nichts.
+   Der Punkt davor traegt die Weltfarbe, der Text traegt sie nicht: Farbe
+   ist hier Schmuck, die Information steht im Wort. */
+.dx-echo{
+  display:inline-flex;align-items:center;gap:6px;margin:8px 16px 0;align-self:flex-start;
+  font-size:10.5px;letter-spacing:.04em;color:var(--discover-dim);white-space:nowrap;
+  max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis;
+}
+.dx-echo-dot{width:4px;height:4px;border-radius:50%;background:var(--w);opacity:.75;flex:0 0 auto}
+
+.dx-poster-media{position:relative;margin-top:auto;height:104px;color:var(--w);
+  -webkit-mask-image:linear-gradient(180deg,#000 84%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 84%,transparent 100%)}
 .dx-poster-media svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* ------------------------------------------------------- Stock Artwork
+   Jede Linie hier hat ihre Kennzahl (siehe discover/ui/artwork.js). */
+.dx-art{color:var(--w);overflow:visible}
+.dx-art-line{fill:none;stroke:var(--w);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;
+  vector-effect:non-scaling-stroke}
+.dx-art-fill{stroke:none}
+.dx-art-band{fill:color-mix(in srgb, var(--w) 7%, transparent);stroke:none}
+.dx-art-node{fill:var(--w)}
+.dx-art-base{stroke:rgba(255,255,255,.16);stroke-dasharray:2 4;stroke-width:1}
+.dx-art-high{stroke:var(--w);stroke-width:1;stroke-dasharray:3 3;opacity:.75}
+.dx-art-high-mark{fill:var(--w)}
+.dx-art-tick{fill:rgba(255,255,255,.18)}
+.dx-art-tick.on{fill:var(--w)}
+.dx-art-none{fill:var(--discover-dim);font-size:11px;font-family:var(--sans)}
+.dx-art-ticker{
+  fill:color-mix(in srgb, var(--w) 8%, rgba(255,255,255,.035));
+  font-family:var(--sans);font-weight:800;letter-spacing:-.05em;
+}
+/* Fällt der Verlauf über den gezeigten Zeitraum, wird die Linie korallrot -
+   die Weltfarbe bleibt in Fläche und Licht, die RICHTUNG bleibt eindeutig. */
+.dx-art[data-direction="down"] .dx-art-line{stroke:var(--discover-down)}
+.dx-art[data-direction="down"] .dx-art-node{fill:var(--discover-down)}
+.dx-art[data-direction="down"] .dx-art-fill{fill:rgba(240,103,92,.12)}
 .dx-spark .line{fill:none;stroke:var(--discover-up);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .dx-spark .line.down{stroke:var(--discover-down)}
 .dx-spark .area{fill:url(#dxUp);stroke:none}
@@ -338,7 +462,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-poster-foot .dx-meter{flex:1}
 .dx-meter{height:2px;border-radius:2px;background:rgba(255,255,255,.10);overflow:hidden}
-.dx-meter i{display:block;height:100%;background:var(--discover-text);opacity:.75;border-radius:2px;
+.dx-meter i{display:block;height:100%;background:var(--w);opacity:.9;border-radius:2px;
   transition:width var(--discover-motion-slow) var(--discover-ease)}
 
 /* Der Hover-Vorhang: zusaetzliche Intelligence, nur auf Geraeten mit Zeiger. */
@@ -373,11 +497,11 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-rank-num{
   flex:0 0 102px;display:flex;align-items:center;justify-content:flex-start;
   font-size:clamp(76px,7vw,112px);line-height:1;font-weight:800;letter-spacing:-.07em;
-  color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.28);
+  color:transparent;-webkit-text-stroke:2px color-mix(in srgb, var(--w) 55%, rgba(255,255,255,.22));
   user-select:none;pointer-events:none;overflow:visible;
   transition:-webkit-text-stroke-color var(--discover-motion-normal) var(--discover-ease);
 }
-.dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:rgba(255,255,255,.7)}
+.dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:color-mix(in srgb, var(--w) 90%, #fff)}
 .dx-rank .dx-poster{flex:1 1 auto;width:auto;margin-left:-18px}
 
 /* --------------------------------------------------- Poster: Landschaft
@@ -437,6 +561,10 @@ body.dx .num{font-variant-numeric:tabular-nums}
   border-left:2px solid var(--discover-line-strong);padding-left:14px;
 }
 .dx-inline-note b{color:var(--discover-muted);font-weight:600}
+.dx-inline-note summary{cursor:default;list-style:none}
+.dx-inline-note summary::-webkit-details-marker{display:none}
+.dx-inline-note p{margin:0}
+.dx-inline-note[open] summary{margin-bottom:2px}
 
 .dx-empty,.dx-note{
   margin:0 var(--discover-gutter);max-width:820px;
@@ -479,17 +607,44 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-search-close:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
 .dx-search-hint{margin:14px 0 0;font-size:12px;color:var(--discover-dim)}
-.dx-results{margin-top:22px;overflow-y:auto;display:grid;gap:6px;padding-bottom:20px}
+/* align-content:start ist hier kein Feinschliff: ohne die Zeile verteilt
+   das Raster seine Hoehe auf die Treffer, die Zeilen werden gestaucht und
+   die zweite Textzeile eines Treffers laeuft in den naechsten hinein.
+   Sichtbar wurde das erst, als die Zeile einen eigenen Hintergrund bekam -
+   vorher hat sich der Ueberlauf nur ueberlagert. */
+.dx-results{margin-top:22px;overflow-y:auto;display:grid;gap:6px;padding-bottom:20px;
+  align-content:start;grid-auto-rows:min-content}
 .dx-result{
+  position:relative;overflow:hidden;
   display:grid;grid-template-columns:78px 1fr 96px 84px;align-items:center;gap:16px;
   padding:13px 14px;border-radius:12px;border:1px solid transparent;
   background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;
   transition:background var(--discover-motion-fast) var(--discover-ease),
              border-color var(--discover-motion-fast) var(--discover-ease);
 }
-.dx-result:hover,.dx-result:focus-visible,.dx-result[aria-selected="true"]{
-  background:var(--discover-surface);border-color:var(--discover-line);
+/* Das Kuerzel als Flaeche - dasselbe Mittel wie auf dem Poster, nur
+   liegend. Es ist im Ruhezustand fast nicht da und tritt erst hervor,
+   wenn die Zeile gemeint ist; eine Trefferliste, in der zwanzig
+   Wasserzeichen gleichzeitig leuchten, waere Tapete. */
+.dx-result-mark{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:44px;font-weight:800;letter-spacing:-.05em;line-height:1;
+  color:var(--w);opacity:0;pointer-events:none;
+  transition:opacity var(--discover-motion-normal) var(--discover-ease);
 }
+.dx-result::before{
+  content:"";position:absolute;left:0;top:8px;bottom:8px;width:2px;border-radius:2px;
+  background:var(--w);opacity:0;
+  transition:opacity var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-result:hover,.dx-result:focus-visible,.dx-result[aria-selected="true"]{
+  background:linear-gradient(90deg, color-mix(in srgb, var(--w) 11%, transparent), var(--discover-surface) 42%);
+  border-color:color-mix(in srgb, var(--w) 26%, var(--discover-line));
+}
+.dx-result:hover::before,.dx-result:focus-visible::before,.dx-result[aria-selected="true"]::before{opacity:.9}
+.dx-result:hover .dx-result-mark,.dx-result[aria-selected="true"] .dx-result-mark{opacity:.09}
+.dx-result .sym,.dx-result .nm,.dx-result svg,.dx-result .val{position:relative}
+.dx-result[aria-selected="true"] .sym{color:var(--w)}
 .dx-result .sym{font-size:16px;font-weight:800;letter-spacing:-.02em}
 .dx-result .nm{font-size:13px;color:var(--discover-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dx-result .nm em{font-style:normal;color:var(--discover-dim);font-size:11.5px;display:block;margin-top:2px}
@@ -506,12 +661,51 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-back:hover{color:var(--discover-text);gap:11px}
 
+/* Die Detailseite in zwei Temperaturen.
+
+   Oben traegt sie die Farbwelt ihres Signals: man kommt aus einer Reihe
+   und soll sehen, dass man noch in derselben Geschichte ist. Ab dem
+   Kursverlauf hoert die Atmosphaere auf. Analyse braucht einen neutralen
+   Grund - eine Kategoriefarbe, die ueber einem RSI leuchtet, ist eine
+   Behauptung ueber ein Ergebnis, das man gerade erst liest. Der Uebergang
+   ist kein Schnitt, sondern ein Abklingen: Kopf voll, Befund halb, Chart
+   und alles darunter neutral. */
 .dx-dhero{position:relative;padding:34px var(--discover-gutter) 26px;overflow:hidden}
 .dx-dhero-bg{
   position:absolute;inset:0;
-  background:radial-gradient(90% 120% at 82% 0%, rgba(111,157,255,.13), transparent 60%);
+  background:
+    radial-gradient(76% 132% at 76% -12%, color-mix(in srgb, var(--w) 30%, transparent), transparent 64%),
+    radial-gradient(64% 96% at 6% 112%, color-mix(in srgb, var(--w) 14%, transparent), transparent 68%);
   pointer-events:none;
 }
+/* Das Datenbild liegt hinter der Schrift, nicht neben ihr - es ist
+   Hintergrund, kein zweites Diagramm. Es endet weich, damit darunter kein
+   sichtbarer Kasten steht. */
+.dx-dhero-art{
+  position:absolute;right:0;bottom:-18px;width:min(58%,720px);height:190px;
+  opacity:.42;pointer-events:none;color:var(--w);
+  /* Weich nach links UND nach oben: die Zahlen rechts oben muessen lesbar
+     bleiben, sonst laeuft eine Linie mitten durch den Score. */
+  -webkit-mask-image:linear-gradient(to right, transparent, #000 40%),
+                     linear-gradient(to top, #000 40%, transparent);
+  mask-image:linear-gradient(to right, transparent, #000 40%),
+             linear-gradient(to top, #000 40%, transparent);
+  -webkit-mask-composite:source-in;mask-composite:intersect;
+}
+.dx-dhero-art .dx-art{width:100%;height:100%;display:block}
+/* Der Befund traegt die Welt noch als Linie, nicht mehr als Flaeche. */
+.dx-detail[data-world] .dx-why h2::before{
+  content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--w);margin-right:10px;vertical-align:middle;opacity:.85;
+}
+/* Ab hier ist die Seite neutral. Die Weltfarbe wird nicht abgeschwaecht,
+   sondern ersetzt: alles, was unterhalb noch --w liest, bekommt den
+   ruhigen Akzent des Moduls. */
+.dx-detail .dx-chapter,
+.dx-detail .dx-foot{--w:var(--discover-accent);--w-2:var(--discover-accent)}
+/* Ausgenommen sind die Poster in "Weiter entdecken": sie tragen ihre
+   eigene Welt, weil sie wieder Entdeckung sind und nicht Analyse - und
+   sie setzen --w ohnehin selbst. */
 .dx-dhero-inner{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:36px;align-items:end}
 .dx-dhero h1{margin:0;font-size:clamp(34px,6vw,72px);line-height:.94;letter-spacing:-.04em;font-weight:800}
 .dx-dhero-meta{margin:12px 0 0;font-size:13px;color:var(--discover-muted);display:flex;gap:10px;flex-wrap:wrap}
@@ -687,15 +881,22 @@ body.dx .num{font-variant-numeric:tabular-nums}
   .dx-searchbtn{order:2;padding:7px 13px}
   .dx-searchbtn kbd{display:none}
   .dx-status{order:3;font-size:10px;margin-left:auto}
-  .dx-rail-section{margin-top:30px}
+  .dx-rail-section{margin-top:30px;scroll-margin-top:150px}
   .dx-rail{padding-bottom:18px}
+  /* Zugeklappt ist der Hinweis ein Satz. Das Pluszeichen sagt, dass es
+     weitergeht - sonst waere der Rest verschwunden statt verstaut. */
+  .dx-inline-note{margin-top:18px;font-size:11.5px;line-height:1.55}
+  .dx-inline-note summary{cursor:pointer;position:relative;padding-right:20px}
+  .dx-inline-note summary b{white-space:nowrap}
+  .dx-inline-note summary::after{content:"+";position:absolute;right:0;top:0;font-size:14px;color:var(--discover-muted)}
+  .dx-inline-note[open] summary::after{content:"–"}
   /* Die Eingangsfläche auf dem Telefon: Wirkung ja, aber nach einem Daumen-
      wisch muss die erste Reihe da sein. Deshalb kürzere Typo, Kennzahlen
      nebeneinander statt untereinander, flacherer Chart. */
   .dx-hero{display:block}
-  .dx-hero-inner{grid-template-columns:1fr;gap:18px;padding:26px var(--discover-gutter) 54px}
+  .dx-hero-inner{grid-template-columns:1fr;gap:14px;padding:22px var(--discover-gutter) 34px}
   .dx-hero-media{min-height:0;order:2;gap:8px}
-  .dx-hero-chart{height:150px}
+  .dx-hero-chart{height:122px}
   .dx-hero-copy{order:1}
   .dx-hero-title{font-size:clamp(30px,8.4vw,40px);margin-bottom:10px}
   .dx-hero-line{font-size:14px;margin-bottom:18px}
@@ -706,13 +907,23 @@ body.dx .num{font-variant-numeric:tabular-nums}
   .dx-stat small{font-size:10px}
   /* Die Bildunterschrift bleibt - aber auf zwei Zeilen. Der vollstaendige
      Wortlaut steht im title-Attribut und auf der Detailseite. */
-  .dx-hero-caption{font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;
+  /* Die Bildunterschrift traegt die Einordnung des Datenbildes; die
+     ersten Worte - "Rebasierter Renditepfad - keine Kurskurve" - muessen
+     ungekuerzt stehen, alles danach erklaert. Drei Zeilen reichen dafuer. */
+  .dx-hero-caption{font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;
     -webkit-box-orient:vertical;overflow:hidden}
   .dx-cta{gap:8px;flex-wrap:nowrap}
   .dx-btn{flex:1 1 auto;justify-content:center;padding:12px 14px;font-size:12.5px;white-space:nowrap;
     overflow:hidden;text-overflow:ellipsis}
   .dx-hero-nav{left:var(--discover-gutter);bottom:16px}
   .dx-hero-fade{height:70px}
+  /* Reihenfolge auf dem Telefon: zuerst das Signal, dann der Titel, dann
+     das Bild. Am Schreibtisch liest man die Karte als Flaeche und der
+     Name darf oben stehen; am Daumen liest man von oben nach unten, und
+     die erste Zeile muss sagen, WARUM diese Karte hier ist. Geaendert
+     wird nur die Reihenfolge, nicht das Markup - die Vorlesereihenfolge
+     bleibt damit dieselbe wie am Schreibtisch. */
+  .dx-poster .dx-sig{order:-1;margin-top:14px}
   .dx-rank{--discover-card-width:206px}
   .dx-poster--wide{flex-basis:300px;width:300px}
   .dx-poster--wide .dx-poster-media{height:118px}

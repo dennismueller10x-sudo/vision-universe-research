@@ -32,9 +32,21 @@ schreibt ausschliesslich nach `discover/data/**`.
 | Marktdaten | `quant/data/market/**`, `quant/data/securities.json` | Universen und Faktoren |
 | Modelluniversum | `quant/engines/mock-generator.js`, `mock-provider.js` | Synthetische Kursreihen |
 
-**Veraendert:** eine Zeile in `assets/site-navigation.js` (Menueeintrag
-`Discover`). Ohne sie waere das Modul nur ueber die direkte URL erreichbar;
-die Datei ist laut `scripts/NAVIGATION.md` genau der vorgesehene Ort dafuer.
+**Veraendert:** ausschliesslich `assets/site-navigation.js`, in zwei
+Schritten und beide Male ausdruecklich beauftragt:
+
+1. Der Menueeintrag `Discover`. Ohne ihn waere das Modul nur ueber die
+   direkte URL erreichbar; die Datei ist laut `scripts/NAVIGATION.md`
+   genau der vorgesehene Ort dafuer.
+2. Ein isolierter Theme-Zustand: `THEMES.light` (unveraenderte Werte,
+   Standard fuer jede Seite) und `THEMES.dark`, das ausschliesslich greift,
+   wenn `theme="dark"` am Element steht — gesetzt wird das an einer
+   einzigen Stelle, in `discover/index.html`. Geaendert wurden nur
+   Farbwerte; Menue, Links, Markup und Logik sind fuer alle Seiten
+   identisch geblieben. Nachgewiesen von
+   `discover/tests/navigation-theme.test.mjs` (Quelle) und der Browser-QA
+   (fuenf fremde Seiten im Browser).
+
 Sonst keine bestehende Datei.
 
 ## 3. Zwei Universen, getrennt gerechnet
@@ -102,6 +114,10 @@ gebunden; keine bestehende Vision-Universe-Seite kann davon betroffen sein.
 | Suche | `discover/ui/search.js` | Vollbild-Overlay, Tastatur (`/`, ↑↓, Enter, Esc) |
 | Begründung | `discover/engines/narrative.js` | „Warum steht dieser Titel hier?" — deterministisch |
 | Renditepfad | `scripts/discover/build-discover-data.mjs` | `performancePath`: fünf Stützstellen aus r12/r6/r3/r1 |
+| Stock-Artwork | `discover/ui/artwork.js` | Das Datenbild je Titel — Verlauf, Volatilitätsband, Spannenlage, Hochmarke, Wasserzeichen |
+| Farbwelten | `discover/methodology/discover-v1.json`, `discover/discover.css` | `data-world` → `--w/-2/-glow/-soft`; Atmosphäre statt gefärbter Kacheln |
+| Firmennamen | `discover/config/company-names.json` | 188 kuratierte Schreibweisen, `CURATED_EDITORIAL`, nachrangig zu den vier Repository-Quellen |
+| Dunkler Header | `assets/site-navigation.js` | `theme="dark"`, ausschließlich von `discover/index.html` gesetzt |
 
 **Der Renditepfad** ist die Antwort auf die Redistributionsgrenze: aus den
 freigegebenen Renditen lässt sich der Kursstand relativ zu heute
@@ -110,12 +126,15 @@ reale Titel einen sichtbaren Verlauf — ohne ein einziges absolutes
 Kursniveau. Die Stützstellen sind markiert; zwischen ihnen wird nichts
 interpoliert.
 
-**Keine Wiederholung:** die stärksten Titel stehen naturgemäß in mehreren
-Ranglisten. Die Startseite zeigt einen Titel deshalb nur einmal (Ausnahme:
-die Signature-Reihe TOP 10, die immer die echte Reihenfolge zeigt). Die
-vollständigen Ranglisten bleiben über „Alle anzeigen" erreichbar und werden
-nicht verändert; die Kopfzeile weist die Filterung mit „ohne bereits
-gezeigte" aus.
+**Mehrfachnennungen** (Regeln in `discover/app.js`, `DEDUP`): die
+stärksten Titel stehen naturgemäß in mehreren Ranglisten, und dass ein
+Marktführer zugleich ein neues Jahreshoch macht, ist der Befund, den man
+sehen will. Ein Titel darf deshalb zweimal auf der Startseite stehen, eine
+Reihe verträgt höchstens drei Zweitnennungen, und derselbe Titel steht nie
+in zwei gleichartigen Reihen direkt untereinander. Jede Zweitnennung sagt
+als Text, woher man den Titel kennt. Sortiert wird nie um — es wird nur
+entfernt, und TOP 10 wird gar nicht gefiltert. Die vollständigen
+Ranglisten bleiben über „Alle anzeigen" erreichbar.
 
 **Bewegung** folgt drei Tokens (150 / 260 / 520 ms) und respektiert
 `prefers-reduced-motion` vollständig: keine Einblendungen, kein

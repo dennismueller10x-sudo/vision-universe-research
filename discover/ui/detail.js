@@ -103,6 +103,16 @@
     var state = createState(detail);
     S.clear(root);
 
+    /* Die Farbwelt des Titels steht am Kopf der Seite und hoert weiter
+       unten auf. Das ist keine Laune: oben wird entdeckt, unten wird
+       gelesen. Ein Chart, um den herum eine Kategoriefarbe leuchtet,
+       faerbt die Lektuere - und ein RSI ist nicht blau, weil der Titel ein
+       Marktfuehrer ist. Die Regel steckt deshalb im Markup: das Attribut
+       haengt am Kopfbereich, nicht am ganzen Dokument. */
+    var welt = detail.world || null;
+    if (welt) root.setAttribute("data-world", welt);
+    else root.removeAttribute("data-world");
+
     root.appendChild(el("a", { class: "dx-back", href: "#/u/" + (options.universeId || "US_REAL") }, [
       document.createTextNode("← Discover")
     ]));
@@ -162,8 +172,15 @@
                               "Kein Kurs ausgeliefert" })
         ]);
 
-    return el("section", { class: "dx-dhero dx-fade in" }, [
+    return el("section", { class: "dx-dhero dx-fade in", "data-world": detail.world || null }, [
       el("div", { class: "dx-dhero-bg" }),
+      /* Dasselbe Datenbild wie auf dem Poster, nur groesser - damit die
+         Seite nicht bei null anfaengt, sondern dort weitermacht, wo man
+         geklickt hat. */
+      D.Artwork ? el("div", { class: "dx-dhero-art", "aria-hidden": "true" }, [
+        D.Artwork.stockArtwork(detail, { width: 720, height: 220, ticker: false,
+                                         scale: "hero", nodes: true })
+      ]) : null,
       el("div", { class: "dx-dhero-inner" }, [
         el("div", {}, [
           el("h1", { text: detail.companyName || detail.symbol }),
@@ -188,6 +205,29 @@
           ])
         : null
     ]);
+  }
+
+  /**
+   * Der Marktstruktur-Zustand als Satz.
+   *
+   * Die bestehende Engine liefert hier ein Objekt - Regime, Labels des
+   * letzten Hochs und Tiefs, Pivots mit Kursniveaus. Frueher stand dieses
+   * Objekt ungefiltert in der Zeile und der Browser schrieb dafuer
+   * "[object Object]". Gelesen werden deshalb genau die drei Felder, die
+   * eine Aussage tragen; die Pivotkurse bleiben aussen vor - sie waeren
+   * absolute Kursniveaus, und die gehoeren nicht in eine Uebersicht.
+   */
+  function strukturText(state) {
+    if (!state || typeof state !== "object") return "verfügbar";
+    var REGIME = { BULLISH: "Aufwärtsstruktur", BEARISH: "Abwärtsstruktur",
+                   NEUTRAL: "keine klare Struktur", RANGE: "Seitwärtsspanne" };
+    var teile = [];
+    var regime = state.confirmedRegime || state.regime;
+    if (regime) teile.push(REGIME[regime] || String(regime));
+    if (state.lastHighLabel && state.lastLowLabel) {
+      teile.push(state.lastHighLabel + "/" + state.lastLowLabel);
+    }
+    return teile.length ? teile.join(" · ") : "verfügbar";
   }
 
   /* --------------------------------------------- Warum ist er hier? (§12) */
@@ -683,7 +723,7 @@
       if (!layer) return;
       weitere.push(kvText(key === "marketStructure" ? "Marktstruktur" : "Support / Resistance",
         layer.status === "available"
-          ? (key === "marketStructure" ? (layer.state || "verfügbar") : layer.zones + " Zonen")
+          ? (key === "marketStructure" ? strukturText(layer.state) : layer.zones + " Zonen")
           : "nicht verfügbar"));
     });
     if (weitere.length) body.push(el("div", { class: "dx-kv" }, weitere));

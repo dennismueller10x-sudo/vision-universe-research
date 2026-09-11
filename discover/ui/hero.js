@@ -59,10 +59,12 @@
     }
 
     var bg = el("div", { class: "dx-hero-bg" });
+    var grid = el("div", { class: "dx-hero-grid", "aria-hidden": "true" });
     var fade = el("div", { class: "dx-hero-fade" });
     var inner = el("div", { class: "dx-hero-inner" });
     var nav = el("div", { class: "dx-hero-nav", role: "tablist", "aria-label": "Featured Titel" });
     host.appendChild(bg);
+    host.appendChild(grid);
     host.appendChild(inner);
     host.appendChild(fade);
     host.appendChild(nav);
@@ -85,8 +87,9 @@
       S.clear(inner);
       inner.appendChild(copy(stock, options));
       inner.appendChild(media(stock));
-      host.classList.toggle("dx-hero--up", !!(stock.signals && (stock.signals.new52WeekHigh ||
-        stock.signals.marketLeader)));
+      /* Die Eingangsfläche übernimmt die Farbwelt des Signals, das sie
+         zeigt: ein neues Jahreshoch leuchtet anders als ein Ausbruch. */
+      host.setAttribute("data-world", stock.world || "leadership");
       Array.prototype.forEach.call(nav.children, function (knopf, i) {
         knopf.setAttribute("aria-current", String(i === index));
       });
@@ -158,26 +161,23 @@
     var chartHost = el("div", { style: "position:relative" });
     host.appendChild(chartHost);
 
+    var kunst = D.Artwork.stockArtwork(stock, { width: 640, height: 320, ticker: true,
+                                                band: true, scale: "hero" });
+    kunst.classList.add("dx-hero-chart");
+    chartHost.appendChild(kunst);
+
     if (Array.isArray(stock.sparkline) && stock.sparkline.length > 2) {
-      var chart = C().areaChart(stock.sparkline, { width: 600, height: 300,
-        label: stock.symbol + ": Kursverlauf der letzten 52 Wochen" });
-      chart.setAttribute("class", "dx-spark dx-hero-chart");
-      chartHost.appendChild(chart);
-      host.appendChild(el("p", { class: "dx-hero-caption", title: CAPTION_PATH,
-        text: "Kursverlauf der letzten 52 Wochen, split-bereinigt. " +
-              "Freigegeben für diesen Titel in der Anzeigerichtlinie." }));
+      host.appendChild(el("p", { class: "dx-hero-caption",
+        text: "Kursverlauf der letzten 52 Wochen, split-bereinigt, mit Schwankungsband aus der " +
+              "Jahresvolatilität. Freigegeben für diesen Titel in der Anzeigerichtlinie." }));
       return host;
     }
     if (Array.isArray(stock.performancePath) && stock.performancePath.length > 2) {
-      var pfad = C().pathChart(stock.performancePath, { width: 600, height: 300,
-        label: stock.symbol + ": Renditepfad über zwölf Monate" });
-      pfad.setAttribute("class", "dx-spark dx-hero-chart");
-      chartHost.appendChild(pfad);
       host.appendChild(el("p", { class: "dx-hero-caption", title: CAPTION_PATH,
-        text: "Renditepfad über zwölf Monate, rebasiert auf 100 — zurückgerechnet aus den " +
-              "ausgelieferten Renditen über 12, 6, 3 und 1 Monat. Vier Stützstellen und der " +
-              "heutige Stand; dazwischen wird nichts behauptet. Absolute Kursniveaus dieses " +
-              "Titels sind Anbieterdaten und bleiben zurück." }));
+        text: "Rebasierter Renditepfad — keine Kurskurve: fünf Stützstellen aus den " +
+              "ausgelieferten Renditen über 12, 6, 3 und 1 Monat, auf 100 normiert. Das Band " +
+              "zeigt die Jahresvolatilität, die Marken unten die Position in der Jahresspanne. " +
+              "Absolute Kursniveaus dieses Titels sind Anbieterdaten und bleiben zurück." }));
       return host;
     }
     host.appendChild(el("p", { class: "dx-hero-caption",

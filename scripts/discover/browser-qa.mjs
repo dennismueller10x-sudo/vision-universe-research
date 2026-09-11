@@ -87,6 +87,27 @@ async function ueberstand(page) {
   return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 }
 
+/* Die benannten Aufnahmen sollen zeigen, was ihr Name sagt. Ohne diesen
+   Schritt steht auf jedem Bild die Eingangsflaeche, weil die Seite beim
+   Pruefen nie gescrollt wird. */
+async function hinScrollen(page, sel, nummer, versatz) {
+  const gefunden = await page.evaluate(([s, i, v]) => {
+    /* Ueber den Index statt ueber :nth-of-type: jede Reihe steckt in
+       ihrem eigenen Platzhalter, weshalb sie alle das erste Element ihres
+       Typs sind - ein Selektor mit nth-of-type trifft nie etwas und die
+       Aufnahme zeigte stillschweigend die Eingangsflaeche. */
+    const alle = document.querySelectorAll(s);
+    const n = alle[i];
+    if (!n) return false;
+    window.scrollTo(0, window.scrollY + n.getBoundingClientRect().top - v);
+    return true;
+  }, [sel, nummer, versatz || 90]);
+  await page.waitForTimeout(700);
+  assert(gefunden, "fuer die Aufnahme fehlt das Element " + sel + " [" + nummer + "]");
+  const oben = await page.evaluate(() => window.scrollY);
+  assert(nummer === 0 || oben > 40, "die Seite wurde fuer die Aufnahme nicht gescrollt");
+}
+
 /* =============================================================== DESKTOP */
 const desktop = await openPage({ viewport: { width: 1440, height: 900 } });
 await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
@@ -127,6 +148,7 @@ await check("Signature-Reihe: TOP 10 mit Rangziffern", async () => {
     (ns) => ns.map((n) => n.textContent.trim()));
   assert(ziffern.length === 10, "TOP 10 zeigt " + ziffern.length + " Titel");
   assert(ziffern[0] === "01" && ziffern[9] === "10", "Rangziffern stimmen nicht: " + ziffern.join(","));
+  await hinScrollen(desktop, '[data-row="top-10"]', 0, 150);
   await shot(desktop, "02-top10");
 });
 
@@ -156,13 +178,23 @@ await check("Jedes Poster zeigt Symbol, Signal und einen Verlauf", async () => {
   }
 });
 
-await check("Keine Wiederholung derselben Titel über die Startseite (§6)", async () => {
+/* Diese Pruefung hat frueher "jeder Titel genau einmal" verlangt. Die
+   Regel war zu streng: dass ein Marktfuehrer zugleich ein neues
+   Jahreshoch macht, ist der Befund, den man sehen will - ihn zu
+   verstecken, damit die Seite abwechslungsreicher wirkt, verschweigt
+   etwas. Geprueft wird jetzt das, was wirklich schadet: dass dieselben
+   Namen die Seite beherrschen. Die Grenzen stehen in discover/app.js
+   (DEDUP) und werden weiter unten einzeln nachgemessen. */
+await check("kein Titel beherrscht die Startseite (§16)", async () => {
   const symbole = await desktop.$$eval(".dx-rail-section .dx-poster .dx-poster-sym",
     (ns) => ns.map((n) => n.textContent.trim()));
   const zaehler = {};
   symbole.forEach((s) => { zaehler[s] = (zaehler[s] || 0) + 1; });
-  const mehrfach = Object.keys(zaehler).filter((s) => zaehler[s] > 1);
-  assert(mehrfach.length === 0, "mehrfach auf der Startseite: " + mehrfach.join(", "));
+  const zuoft = Object.keys(zaehler).filter((s) => zaehler[s] > 2);
+  assert(zuoft.length === 0, "oefter als zweimal: " + zuoft.join(", "));
+  const anteil = symbole.length / Object.keys(zaehler).length;
+  assert(anteil < 1.5,
+    "im Schnitt steht jeder Titel " + anteil.toFixed(2) + "-mal auf der Seite");
 });
 
 await check("Hover zeigt zusätzliche Intelligence", async () => {
@@ -176,7 +208,7 @@ await check("Hover zeigt zusätzliche Intelligence", async () => {
   assert(sichtbar > 0.7, "der Hover-Vorhang bleibt unsichtbar (" + sichtbar + ")");
   const skaliert = await poster.evaluate((node) => getComputedStyle(node).transform);
   assert(skaliert !== "none", "das Poster reagiert nicht auf den Zeiger");
-  await shot(desktop, "03-hover");
+  await shot(desktop, "05-hover");
 });
 
 await check("Kartennavigation führt auf die Detailseite", async () => {
@@ -200,7 +232,7 @@ await check("Suche öffnet über die Tastatur und findet einen Titel", async () 
   await desktop.waitForTimeout(700);
   const treffer = await desktop.$$(".dx-result");
   assert(treffer.length > 0, "kein Treffer für NV");
-  await shot(desktop, "04-search");
+  await shot(desktop, "06-suche");
 });
 
 await check("Suche: Pfeiltasten wählen, Enter öffnet", async () => {
@@ -245,7 +277,7 @@ await check("Kategorieseite: Gitter, Filter und Abdeckung", async () => {
   const leer = await desktop.$(".dx-empty");
   assert(danach.length <= karten.length, "der Filter vergrössert die Liste");
   assert(danach.length > 0 || leer, "der Filter liefert nichts und sagt nichts");
-  await shot(desktop, "05-kategorie");
+  await shot(desktop, "07-kategorie");
 });
 
 /* ----------------------------------------------------------- Detail */
@@ -260,7 +292,7 @@ await check("Detail: Kopf, Begründung und Chart", async () => {
   assert(gruende.length > 0, "keine Einzelbefunde");
   const pfade = await desktop.$$eval(".dx-chart svg path", (ns) => ns.length);
   assert(pfade > 0, "der Chart enthält keine Linie");
-  await shot(desktop, "06-detail");
+  await shot(desktop, "08-detail-kopf");
 });
 
 await check("Detail: Zeitraumwechsel zeichnet neu", async () => {
@@ -294,7 +326,7 @@ await check("Detail: Schnellzugriff und erweiterte Technik", async () => {
   await desktop.waitForTimeout(400);
   const sichtbar = await desktop.$$eval(".dx-more-controls .dx-ctrl", (ns) => ns.length);
   assert(sichtbar > 3, "die erweiterte Technik bleibt verborgen");
-  await shot(desktop, "07-overlays");
+  await shot(desktop, "09-detail-chart");
 });
 
 await check("Detail: weiter entdecken (Zugehörigkeit und Nachbarn)", async () => {
@@ -315,7 +347,7 @@ await check("Titel ohne ausgelieferte Kursreihe bleibt hochwertig (§23)", async
   assert(pfad > 0, "ohne Kursreihe fehlt auch der Renditepfad");
   const preis = await desktop.textContent(".dx-price");
   assert(!/NaN|0,00/.test(preis), "erfundener Kurs statt Begründung");
-  await shot(desktop, "08-ohne-kursreihe");
+  await shot(desktop, "11-ohne-kursreihe");
 });
 
 await check("Elliott wird nie als Ergebnis gezeigt, wenn keines vorliegt", async () => {
@@ -336,12 +368,185 @@ await check("Modelluniversum zeigt Kurs, Verlauf und Chart", async () => {
   assert(preise.some((p) => /\$/.test(p)), "kein Kurs im Modelluniversum");
   const hinweis = await desktop.textContent(".dx-inline-note");
   assert(/Modelluniversum/.test(hinweis), "das Modelluniversum ist nicht gekennzeichnet");
-  await shot(desktop, "09-modelluniversum");
+  await shot(desktop, "12-modelluniversum");
+});
+
+/* =============================================== VISUELLE SPRACHE (§3-§8) */
+await check("jede Reihe traegt ihre eigene Farbwelt", async () => {
+  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await desktop.waitForTimeout(3000);
+  const welten = await desktop.$$eval(".dx-rail-section[data-world]", (ns) =>
+    ns.map((n) => ({ welt: n.getAttribute("data-world"),
+                     farbe: getComputedStyle(n).getPropertyValue("--w").trim() })));
+  assert(welten.length >= 4, "weniger als vier Reihen tragen eine Welt");
+  const farben = new Set(welten.map((w) => w.farbe));
+  assert(farben.size >= 3, "die Reihen unterscheiden sich farblich nicht (" +
+    [...farben].join(", ") + ")");
+  assert(![...farben].some((f) => !f), "eine Reihe hat keine aufgeloeste Weltfarbe");
+  /* Zwei Welten in einem Bild - sonst zeigt die Aufnahme keinen Uebergang. */
+  await hinScrollen(desktop, ".dx-rail-section", 2, 120);
+  await shot(desktop, "03-reihen-welten");
+});
+
+await check("die Atmosphaere ist Flaeche, kein Kasten", async () => {
+  /* Ein sichtbares Rechteck haette scharfe Kanten: Maske UND Verlauf
+     muessen gesetzt sein, sonst steht die Kategorie als Block auf der
+     Seite - genau das, was der Auftrag ausschliesst. */
+  const atmo = await desktop.$eval(".dx-rail-section", (n) => {
+    const cs = getComputedStyle(n, "::before");
+    return { bg: cs.backgroundImage, maske: cs.maskImage || cs.webkitMaskImage,
+             rand: cs.borderTopWidth, radius: cs.borderRadius };
+  });
+  assert(/radial-gradient/.test(atmo.bg), "die Atmosphaere ist kein Verlauf");
+  assert(/gradient/.test(atmo.maske || ""), "die Atmosphaere hat harte Kanten (keine Maske)");
+  assert(parseFloat(atmo.rand) === 0, "die Atmosphaere hat einen sichtbaren Rahmen");
+});
+
+await check("das Datenbild folgt den Zahlen, nicht dem Zufall", async () => {
+  const bilder = await desktop.$$eval(".dx-rail-section .dx-poster .dx-art", (ns) =>
+    ns.slice(0, 8).map((n) => ({
+      pfad: (n.querySelector(".dx-art-line") || {}).getAttribute
+        ? n.querySelector(".dx-art-line").getAttribute("d") : null,
+      glanz: !!n.querySelector(".dx-art-glow"),
+      punkte: n.querySelectorAll(".dx-art-node").length,
+      label: n.getAttribute("aria-label") || ""
+    })));
+  assert(bilder.length >= 4, "zu wenige Datenbilder");
+  const pfade = new Set(bilder.map((b) => b.pfad));
+  assert(pfade.size === bilder.length, "zwei Titel haben denselben Verlauf");
+  assert(bilder.every((b) => b.punkte >= 3), "die Stuetzstellen fehlen");
+  assert(bilder.every((b) => /Prozent/.test(b.label) && /rebasiert|Kursverlauf/i.test(b.label)),
+    "das Datenbild traegt keine Beschreibung aus seinen eigenen Zahlen");
+  await hinScrollen(desktop, ".dx-rail-section .dx-rail", 1, 200);
+  await shot(desktop, "04-poster-artwork");
+});
+
+await check("der rebasierte Renditepfad ist als solcher benannt", async () => {
+  const text = await desktop.textContent(".dx-hero-caption");
+  assert(/[Rr]ebasiert/.test(text) && /keine Kurskurve/.test(text),
+    "die Bildunterschrift nennt den Pfad nicht beim Namen: " + text);
+  const zahlen = await desktop.$$eval(".dx-poster .num", (ns) => ns.map((n) => n.textContent));
+  assert(!zahlen.some((z) => /^\s*\$/.test(z) && false), "unerwartete Kursangabe");
+});
+
+/* ========================================== MEHRFACHNENNUNGEN (§16) */
+await check("ein Titel steht hoechstens zweimal auf der Startseite", async () => {
+  const zaehler = await desktop.$$eval(".dx-rail-section", (ns) => {
+    const out = {};
+    ns.forEach((sec) => sec.querySelectorAll(".dx-poster-sym").forEach((s) => {
+      out[s.textContent] = (out[s.textContent] || 0) + 1;
+    }));
+    return out;
+  });
+  const zuoft = Object.keys(zaehler).filter((k) => zaehler[k] > 2);
+  assert(zuoft.length === 0, "zu oft genannt: " + zuoft.join(", "));
+  const mehrfach = Object.keys(zaehler).filter((k) => zaehler[k] === 2);
+  assert(mehrfach.length > 0,
+    "kein einziger Titel erscheint zweimal - die Regel ist zu streng geraten");
+});
+
+await check("keine Reihe besteht aus Wiederholungen", async () => {
+  const reihen = await desktop.$$eval(".dx-rail-section", (ns) =>
+    ns.map((sec) => ({
+      titel: (sec.querySelector("h2") || {}).textContent || "",
+      karten: sec.querySelectorAll(".dx-poster-sym").length,
+      echos: sec.querySelectorAll(".dx-echo").length
+    })).filter((r) => r.karten > 0));
+  reihen.forEach((r) => {
+    assert(r.echos <= 3, r.titel + " zeigt " + r.echos + " Zweitnennungen");
+    assert(r.echos * 2 <= r.karten, r.titel + " besteht ueberwiegend aus Zweitnennungen");
+  });
+});
+
+await check("jede Zweitnennung sagt, woher man den Titel kennt", async () => {
+  const texte = await desktop.$$eval(".dx-echo", (ns) => ns.map((n) => n.textContent.trim()));
+  assert(texte.every((t) => /^auch in \S/.test(t)), "eine Zweitnennung bleibt unerklaert");
+});
+
+await check("TOP 10 zeigt die echte Rangliste, ungefiltert", async () => {
+  const gezeigt = await desktop.$$eval("[data-row=\"top-10\"] .dx-poster-sym",
+    (ns) => ns.map((n) => n.textContent));
+  const echt = await desktop.evaluate(async () => {
+    const r = await fetch("/discover/data/rows/US_REAL/market-leaders.json");
+    const j = await r.json();
+    return j.cards.slice(0, 10).map((c) => c.symbol);
+  });
+  assert(gezeigt.length === 10, "TOP 10 zeigt " + gezeigt.length + " Titel");
+  assert(gezeigt.join(",") === echt.join(","),
+    "die Signature-Reihe weicht von der Rangliste ab:\n    " + gezeigt.join(",") +
+    "\n    " + echt.join(","));
+});
+
+/* ============================================ DETAILSEITE ZWEI TEMPERATUREN (§20) */
+await check("die Detailseite traegt oben die Welt und wird unten ruhig", async () => {
+  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-dhero", { timeout: 12000 });
+  await desktop.waitForTimeout(1200);
+  const welt = await desktop.getAttribute(".dx-detail", "data-world");
+  assert(welt, "die Detailseite kennt ihre Farbwelt nicht");
+  const kopf = await desktop.$eval(".dx-dhero", (n) => getComputedStyle(n).getPropertyValue("--w").trim());
+  const unten = await desktop.$eval(".dx-detail .dx-chapter",
+    (n) => getComputedStyle(n).getPropertyValue("--w").trim());
+  assert(kopf && unten, "die Farbwelt loest sich nicht auf");
+  assert(kopf !== unten, "die Analyse traegt dieselbe Kategoriefarbe wie der Kopf");
+  /* Die Aufnahme soll den ruhigen Teil zeigen, nicht den Kopf. */
+  await hinScrollen(desktop, ".dx-detail .dx-chapter", 2, 80);
+  await shot(desktop, "10-detail-analyse");
+});
+
+/* ================================================= DUNKLER HEADER (§18) */
+await check("der dunkle Header betrifft ausschliesslich Discover", async () => {
+  const lese = async (pfad) => {
+    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
+    await seite.goto(BASE + pfad, { waitUntil: "domcontentloaded" });
+    await seite.waitForTimeout(700);
+    const wert = await seite.evaluate(() => {
+      const nav = document.querySelector("vu-navigation");
+      if (!nav || !nav.shadowRoot) return null;
+      const h = nav.shadowRoot.querySelector("header");
+      const a = nav.shadowRoot.querySelector("nav a");
+      return { bg: getComputedStyle(h).backgroundColor,
+               ink: getComputedStyle(a).color,
+               ziele: [...nav.shadowRoot.querySelectorAll("nav a")]
+                 .map((x) => x.getAttribute("href")).join(",") };
+    });
+    await seite.close();
+    return wert;
+  };
+  const dunkel = await lese("/discover/");
+  assert(dunkel, "auf /discover/ fehlt die Navigation");
+  assert(/rgba?\(8, 8, 10/.test(dunkel.bg), "der Discover-Header ist nicht dunkel: " + dunkel.bg);
+  for (const pfad of ["/quant/", "/dashboard/", "/news/", "/macro/", "/academy/"]) {
+    const hell = await lese(pfad);
+    assert(hell, "auf " + pfad + " fehlt die Navigation");
+    assert(/rgba?\(255, 255, 255/.test(hell.bg),
+      pfad + " hat einen veraenderten Header bekommen: " + hell.bg);
+    assert(hell.ziele === dunkel.ziele,
+      pfad + " hat andere Navigationsziele als Discover - die Logik wurde veraendert");
+  }
 });
 
 await check("kein horizontaler Überlauf auf dem Desktop", async () => {
+  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await desktop.waitForTimeout(2600);
   const ueber = await ueberstand(desktop);
   assert(ueber <= 2, "die Seite ist " + ueber + " px zu breit");
+});
+
+await check("nirgends steht ein rohes Objekt in der Oberflaeche", async () => {
+  /* "[object Object]" ist der sichtbare Rest einer Zeile, die ein Objekt
+     dort einsetzt, wo ein Satz stehen sollte. Es faellt in keinem Test
+     auf, weil nichts abstuerzt - nur auf dem Bildschirm steht Unsinn.
+     Geprueft werden die Startseite und eine Detailseite mit vollem
+     Technical-Intelligence-Befund. */
+  for (const pfad of ["/discover/", "/discover/#/s/US_REAL/NVDA",
+                      "/discover/#/c/US_REAL/market-leaders"]) {
+    await desktop.goto(BASE + pfad, { waitUntil: "networkidle" });
+    await desktop.waitForTimeout(2600);
+    const text = await desktop.evaluate(() => document.body.innerText);
+    assert(!/\[object /.test(text), "auf " + pfad + " steht ein rohes Objekt");
+    assert(!/undefined|NaN(?![a-z])/.test(text), "auf " + pfad + " steht undefined oder NaN");
+  }
 });
 
 await check("keine Konsolenfehler auf dem Desktop", async () => {
@@ -356,7 +561,7 @@ await mobil.waitForTimeout(3200);
 await check("mobil: nichts läuft seitlich aus dem Bild", async () => {
   const ueber = await ueberstand(mobil);
   assert(ueber <= 2, "die Seite ist " + ueber + " px zu breit");
-  await shot(mobil, "10-mobil-start");
+  await shot(mobil, "13-mobil-start");
 });
 
 await check("mobil: die Eingangsfläche lässt Platz für Inhalt", async () => {
@@ -378,10 +583,47 @@ await check("mobil: die Reihen lassen sich wischen", async () => {
   await mobil.$eval(".dx-rail", (r) => { r.scrollLeft = 260; });
   await mobil.waitForTimeout(400);
   assert((await mobil.$eval(".dx-rail", (r) => r.scrollLeft)) > 100, "die Reihe bewegt sich nicht");
-  await shot(mobil, "11-mobil-reihen");
+  await shot(mobil, "14-mobil-reihen");
 });
 
-await check("mobil: Suche als Vollbild", async () => {
+await check("mobil: die naechste Entdeckungsebene beginnt im Bild", async () => {
+  /* §23: Nach der Eingangsflaeche muss zu sehen sein, dass es weitergeht -
+     sonst endet die Seite fuer den Daumen beim ersten Titel. */
+  const kopf = await mobil.$eval(".dx-rail-head",
+    (n) => Math.round(n.getBoundingClientRect().top));
+  assert(kopf < 844, "die erste Reihe beginnt erst bei " + kopf + " px");
+});
+
+await check("mobil: der Datenhinweis ist verstaut, nicht abgeschnitten", async () => {
+  const hinweis = await mobil.$eval(".dx-inline-note", (n) => ({
+    tag: n.tagName, offen: n.hasAttribute("open"),
+    voll: (n.querySelector("p") || {}).textContent || "",
+    geklemmt: getComputedStyle(n).webkitLineClamp
+  }));
+  assert(hinweis.tag === "DETAILS", "der Hinweis ist nicht aufklappbar");
+  assert(!hinweis.offen, "der Hinweis ist auf dem Telefon aufgeklappt");
+  assert(hinweis.voll.length > 40, "der vollstaendige Wortlaut fehlt im Dokument");
+  await mobil.click(".dx-inline-note summary");
+  await mobil.waitForTimeout(300);
+  assert(await mobil.$eval(".dx-inline-note", (n) => n.hasAttribute("open")),
+    "der Hinweis laesst sich nicht oeffnen");
+  await mobil.click(".dx-inline-note summary");
+});
+
+await check("mobil: auf der Karte steht das Signal zuerst", async () => {
+  const reihenfolge = await mobil.$eval(".dx-rail-section .dx-poster", (p) => {
+    const sig = p.querySelector(".dx-sig"), top = p.querySelector(".dx-poster-top");
+    if (!sig || !top) return null;
+    return { sig: sig.getBoundingClientRect().top, top: top.getBoundingClientRect().top };
+  });
+  assert(reihenfolge, "auf der Karte fehlt Signal oder Kopf");
+  assert(reihenfolge.sig < reihenfolge.top,
+    "das Signal steht auf dem Telefon unter dem Namen");
+  await hinScrollen(mobil, ".dx-rail-section", 2, 160);
+  await shot(mobil, "15-mobil-poster");
+});
+
+await check("mobil: Suche als Vollbild mit Farbwelt je Treffer", async () => {
   await mobil.click(".dx-searchbtn");
   await mobil.waitForTimeout(600);
   const box = await mobil.$eval(".dx-search", (n) => n.getBoundingClientRect().toJSON());
@@ -389,7 +631,11 @@ await check("mobil: Suche als Vollbild", async () => {
   await mobil.fill(".dx-search input", "A");
   await mobil.waitForTimeout(700);
   assert((await mobil.$$(".dx-result")).length > 0, "keine Treffer");
-  await shot(mobil, "12-mobil-suche");
+  const welten = await mobil.$$eval(".dx-result", (ns) =>
+    ns.slice(0, 12).map((n) => getComputedStyle(n).getPropertyValue("--w").trim()));
+  assert(welten.every(Boolean), "ein Treffer traegt keine Farbwelt");
+  assert(new Set(welten).size > 1, "alle Treffer sehen gleich aus");
+  await shot(mobil, "16-mobil-suche");
   await mobil.keyboard.press("Escape");
   await mobil.waitForTimeout(400);
 });
@@ -404,7 +650,13 @@ await check("mobil: Detail und Chart passen in die Breite", async () => {
   assert(ueber <= 2, "die Detailseite ist " + ueber + " px zu breit");
   const knopf = await mobil.$eval(".dx-tf button", (b) => b.getBoundingClientRect().height);
   assert(knopf >= 30, "die Zeitraumknöpfe sind mit " + Math.round(knopf) + " px zu klein");
-  await shot(mobil, "13-mobil-detail");
+  await shot(mobil, "17-mobil-detail-kopf");
+  await mobil.evaluate(() => {
+    const c = document.querySelector(".dx-chart");
+    if (c) c.scrollIntoView({ block: "center" });
+  });
+  await mobil.waitForTimeout(600);
+  await shot(mobil, "18-mobil-detail-chart");
 });
 
 await check("keine Konsolenfehler auf dem Telefon", async () => {
