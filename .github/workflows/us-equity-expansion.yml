@@ -1,0 +1,257 @@
+name: US-Aktienuniversum erweitern (7.800) mit R2-Persistenz
+
+# Der genehmigte Lauf: 5.684 + 2.116 = ~7.800 Titel, Historien dauerhaft
+# in Cloudflare R2.
+#
+# ANHAENGEND. Der Bestand von 5.684 Titeln bleibt vollstaendig erhalten,
+# die 511 REVIEW-Titel bleiben unangetastet, OTC bleibt draussen. Kein
+# Titel wird entfernt.
+#
+# FORTSETZBAR. Die Historien liegen in R2 und ueberleben den Runner.
+# Bricht der Lauf ab, holt der naechste NUR, was fehlt - der Speicher
+# selbst ist der Checkpoint.
+#
+# HARTE KOSTENSCHRANKE. Vor dem ersten Byte rechnet die Vorabrechnung.
+# ZERO_COST_GUARD_BLOCKED haelt den Lauf an, bevor Kosten entstehen.
+#
+# Marke: [us-expansion]
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Nur die ersten N Titel (0 = alle). Fuer einen Probelauf.'
+        type: string
+        default: '0'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/us-equity-expansion.yml'
+      - 'scripts/market/expand-us-universe.mjs'
+      - 'scripts/market/sync-history-store.mjs'
+      - 'scripts/market/validate-history-store.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    name: Erweitern, laden, persistieren
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    concurrency:
+      group: us-equity-expansion
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[us-expansion]')
+    env:
+      TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+      VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+      VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+      VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+      VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+      VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Zugaenge vorhanden?
+        run: |
+          [ -z "$TIINGO_API_KEY" ] && { echo "Kein TIINGO_API_KEY."; exit 1; }
+          [ -z "$VU_HISTORY_S3_BUCKET" ] && { echo "Kein R2-Eimer."; exit 1; }
+          echo "Tiingo und R2 hinterlegt. (Werte werden nicht ausgegeben.)"
+
+      - name: Regressionssuite vor dem Lauf
+        run: node --test --test-reporter=dot "quant/tests/*.test.mjs"
+
+      - name: Platz vor dem Lauf
+        run: df -h / | tail -1
+
+      # Der Bestand, bevor irgendetwas passiert. Er wird am Ende
+      # Zeichen fuer Zeichen dagegen gehalten.
+      - name: Bestand festhalten
+        run: |
+          node -e '
+            const u = require("./quant/data/market/scale/universe-FULL_UNIVERSE.json");
+            require("fs").writeFileSync("/tmp/baseline.json",
+              JSON.stringify(u.securities.map((s) => s.ticker)));
+            console.log("Bestand: " + u.securities.length + " Titel");
+          '
+          cp quant/data/market/scale/universe-FULL_UNIVERSE.json /tmp/universe-before.json
+
+      # --- 1. Entdeckung: der Wertpapierstamm aus der Anbieterliste ----
+      - name: Wertpapierstamm bauen
+        run: node scripts/market/build-us-security-master.mjs
+
+      # --- 2. Anhaengende Erweiterung auf ~7.800 ----------------------
+      - name: Universum anhaengend erweitern
+        run: node scripts/market/expand-us-universe.mjs
+
+      - name: Der Bestand ist zeichengleich erhalten
+        run: |
+          node -e '
+            const before = require("/tmp/baseline.json");
+            const beforeDoc = require("/tmp/universe-before.json");
+            const after = require("./quant/data/market/scale/universe-FULL_UNIVERSE.json");
+            const tickers = after.securities.map((s) => s.ticker);
+            for (let i = 0; i < before.length; i++) {
+              if (tickers[i] !== before[i]) {
+                throw new Error("Bestandstitel " + i + " verschoben: " + before[i] + " -> " + tickers[i]);
+              }
+            }
+            const fields = ["securityId","ticker","company","exchange","country","currency",
+                            "assetType","instrumentType","active","providerSymbol","provider",
+                            "sector","sectorStatus","industry","industryStatus","startDate","selection"];
+            for (let i = 0; i < beforeDoc.securities.length; i++) {
+              const a = beforeDoc.securities[i], b = after.securities[i];
+              for (const f of fields) {
+                if ((a[f] === undefined ? null : a[f]) !== (b[f] === undefined ? null : b[f])) {
+                  throw new Error("Feld geaendert an " + a.ticker + "." + f);
+                }
+              }
+            }
+            console.log("Bestand unveraendert: " + before.length + " Titel, " +
+                        (tickers.length - before.length) + " angehaengt, " +
+                        "neues Universum " + tickers.length);
+          '
+
+      # --- 3. HARTE KOSTENSCHRANKE -----------------------------------
+      - name: Nullkosten-Vorabrechnung
+        run: |
+          node scripts/market/preflight-zero-cost.mjs --operation BACKFILL
+          echo "Freigegeben. Erst jetzt wird geholt."
+
+      # --- 4. Fortsetzen: was liegt schon in R2? ---------------------
+      - name: Vorhandene Historien aus R2 holen
+        run: |
+          node scripts/market/sync-history-store.mjs --pull --operation RECOVERY \
+            --gate FULL_UNIVERSE --concurrency 24 || true
+          if [ -d .market-cache/tiingo/daily ]; then
+            echo "Aus R2 wiederhergestellt: $(ls .market-cache/tiingo/daily | wc -l) Reihen"
+          else
+            echo "Nichts in R2 - dies ist der erste Lauf."
+          fi
+
+      # --- 5. Der Abruf. Holt nur, was fehlt. ------------------------
+      - name: Gate laufen lassen (nur fehlende Titel)
+        id: gate
+        run: |
+          node scripts/market/run-scale-gate.mjs --gate FULL_UNIVERSE \
+            --allow-full-backfill --request-budget 12000 --max-wait-ms 900000 \
+            || echo "gateFailed=1" >> "$GITHUB_OUTPUT"
+          df -h / | tail -1
+
+      # --- 6. Persistieren, bevor irgendetwas anderes passiert -------
+      # Zuerst sichern, dann weiterrechnen: geht der Runner nach dem
+      # Abruf verloren, waeren sonst 78 Minuten weg.
+      - name: Historien nach R2 schreiben
+        run: |
+          node scripts/market/preflight-zero-cost.mjs --operation BULK_UPLOAD
+          node scripts/market/sync-history-store.mjs --push --operation BULK_UPLOAD \
+            --gate FULL_UNIVERSE --concurrency 24
+
+      # --- 7. Abgeleitete Schichten neu bauen ------------------------
+      - name: Marktfaktoren und Screener
+        run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE
+
+      - name: Faktorzeilen nach R2
+        run: |
+          F=.market-cache/tiingo/factors/factors-FULL_UNIVERSE.json
+          if [ -f "$F" ]; then
+            node scripts/market/push-derived-artefact.mjs --file "$F" \
+              --key derived/factors/US/FULL_UNIVERSE.json
+          else
+            echo "Keine Faktorzeilen in der Arbeitsablage (unter der Detailgrenze)."
+          fi
+
+      - name: Technical Intelligence im Massstab
+        run: node scripts/technical/run-technical-scale.mjs --gate FULL_UNIVERSE || true
+
+      - name: Universumsweite Qualitaetspruefung
+        run: node scripts/market/assert-universe-quality.mjs --gate FULL_UNIVERSE || true
+
+      - name: Gesundheitsbericht
+        run: node scripts/market/build-health-report.mjs || true
+
+      # --- 8. Den Speicher selbst pruefen ---------------------------
+      - name: R2-Bestand pruefen
+        run: node scripts/market/validate-history-store.mjs --gate FULL_UNIVERSE --sample 25
+
+      # --- 9. Waechter ----------------------------------------------
+      - name: Kein Schluessel in den Berichten
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Keine Rohkurse im Repository
+        run: |
+          if git status --porcelain | grep -qE "quant/data/market/daily|\.market-cache"; then
+            echo "Rohdaten wuerden committet."; exit 1
+          fi
+          echo "Keine Rohkurse im Arbeitsbaum."
+
+      - name: Regressionssuite nach dem Lauf
+        run: node --test --test-reporter=dot "quant/tests/*.test.mjs"
+
+      - name: Berichte sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-equity-expansion
+          path: |
+            quant/data/market/scale/
+            quant/data/market/factors/
+            quant/data/market/health/
+            quant/data/market/history/
+            quant/data/market/security-master/
+          if-no-files-found: warn
+
+      - name: Berichte committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market quant/data/technical
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "US-Erweiterung: Lauf ${{ github.run_id }} (7.800 Titel, R2-Persistenz)"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### US-Aktienuniversum erweitert'
+            echo ''
+            node -e '
+              const fs = require("fs");
+              const read = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch (e) { return null; } };
+              const u = read("./quant/data/market/scale/universe-FULL_UNIVERSE.json");
+              const g = read("./quant/data/market/scale/gate-FULL_UNIVERSE.json");
+              const f = read("./quant/data/market/factors/factors-FULL_UNIVERSE-summary.json");
+              const v = read("./quant/data/market/history/validation.json");
+              const s = read("./quant/data/market/history/sync.json");
+              console.log("| Kennzahl | Wert |"); console.log("|---|---:|");
+              if (u) { console.log("| Universum | " + u.actualSize + " |");
+                       if (u.expansion) console.log("| davon angehaengt | " + u.expansion.appended + " |"); }
+              if (g) { console.log("| Gate-Urteil | " + g.verdict + " |");
+                       console.log("| Anfragen | " + (g.accounting && g.accounting.requests) + " |");
+                       console.log("| Laufzeit | " + Math.round((g.run && g.run.runtimeMs || 0) / 60000) + " min |"); }
+              if (f) { console.log("| Faktorzeilen | " + (f.coverage && f.coverage.computed) + " |");
+                       console.log("| nicht rechenbar | " + (f.coverage && f.coverage.skipped) + " |"); }
+              if (v) { console.log("| R2 Titel | " + v.counts.storedSymbols + " |");
+                       console.log("| R2 Speicher | " + v.storageGB + " GB |");
+                       console.log("| Chartbereit | " + v.chartReadiness.HISTORICAL_SERIES_READY +
+                                   " (" + v.chartReadiness.CHART_READY_PERCENT + " %) |"); }
+              if (s && s.zeroCost) console.log("| Class A / B | " + s.zeroCost.spent.classA +
+                                               " / " + s.zeroCost.spent.classB + " |");
+            ' || echo 'Kein Bericht lesbar.'
+          } >> "$GITHUB_STEP_SUMMARY"
