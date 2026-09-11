@@ -28,7 +28,9 @@ const lies = (p) => readFileSync(join(root, p), "utf8");
 
 /* Die Zweige, aus denen gemergt wurde. Aus ihnen stammende Dateien sind
    fremdes Eigentum - unveraendert zu lassen ist die ganze Zusage. */
-const FREMDE_ZWEIGE = ["origin/workstream/vu2-strategy-workspace", "origin/workstream/vu2-eod-gates"];
+/* Die Spitze zuerst: vu2-signals-workspace enthaelt portfolio,
+   strategy und alles davor. eod-gates liegt daneben. */
+const FREMDE_ZWEIGE = ["origin/workstream/vu2-signals-workspace", "origin/workstream/vu2-eod-gates"];
 
 function blob(ref, datei) {
   try {

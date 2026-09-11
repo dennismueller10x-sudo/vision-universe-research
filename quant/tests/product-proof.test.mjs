@@ -40,7 +40,7 @@ const src = join(root, "_proof-src", "universe");
    als UNVERAENDERT, wenn ihr Blob identisch mit dem des gemergten
    Zweiges ist. Wer eine davon anfasst, faellt weiter auf. */
 function ausFremdemZweig(datei) {
-  const zweige = ["origin/workstream/vu2-strategy-workspace", "origin/workstream/vu2-eod-gates"];
+  const zweige = ["origin/workstream/vu2-signals-workspace", "origin/workstream/vu2-eod-gates"];
   let hier;
   try {
     hier = execFileSync("git", ["rev-parse", `HEAD:${datei}`], { cwd: root, encoding: "utf8" }).trim();
