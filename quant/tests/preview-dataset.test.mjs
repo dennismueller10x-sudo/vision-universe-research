@@ -33,7 +33,12 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
    als UNVERAENDERT, wenn ihr Blob identisch mit dem des gemergten
    Zweiges ist. Wer eine davon anfasst, faellt weiter auf. */
 function ausFremdemZweig(datei) {
-  const zweige = ["origin/workstream/vu2-signals-workspace", "origin/workstream/vu2-eod-gates"];
+  const zweige = ["origin/workstream/vu2-signals-workspace", "origin/workstream/vu2-eod-gates",
+                  /* Der Datenstrang (Wertpapierstamm, Deckungskennzahlen,
+                     Historienablage). Er ist genauso hereingemergt wie die
+                     VU2-Workstreams und wird von dieser Arbeit nicht
+                     veraendert - gleiche Regel, gleiche Ausnahme. */
+                  "origin/claude/tiingo-us-equity-discovery-k5j4bc"];
   let hier;
   try {
     hier = execFileSync("git", ["rev-parse", `HEAD:${datei}`], { cwd: root, encoding: "utf8" }).trim();
@@ -102,10 +107,35 @@ test("PD2 — abgeleitetes Universum und Kurshistorien-Bestand sind unterschiede
   assert.equal(u.derivedUniverse.securities, d.rows.length,
     "die Bilanz muss zaehlen, was wirklich dasteht");
 
-  /* Die Aussage, auf die es ankommt: der grosse Bestand ist NICHT da,
-     und der Datensatz sagt das von sich aus. */
-  assert.equal(u.fullHistoricalOhlcvStore.status, "NOT_DEPLOYED");
-  assert.match(u.fullHistoricalOhlcvStore.approximateSize, /7\.4 GB/);
+  /* DIESE PRUEFUNG SCHRIEB EINEN ZUSTAND FEST, KEINE ZUSAGE.
+
+     Sie verlangte NOT_DEPLOYED und "~7,4 GB" - richtig, solange die
+     Reihen in der Arbeitsablage eines Runners lagen und mit ihm starben.
+     Seit dem Backfill liegen sie dauerhaft in Cloudflare R2. Eine
+     Pruefung, die das als Fehler meldet, meldet die Wirklichkeit.
+
+     Die ZUSAGE dahinter ist eine andere, und sie gilt unveraendert:
+     dieser Datensatz traegt den Bestand nicht aus. Ob er anderswo
+     existiert, aendert daran nichts - geprueft wird deshalb, dass der
+     Datensatz die beiden Dinge UNTERSCHEIDET und den Bestand hier nicht
+     serviert. PD3 prueft daneben, dass wirklich kein Kurs drinsteht. */
+  assert.ok(["NOT_DEPLOYED", "DEPLOYED_NOT_SERVED_HERE", "UNKNOWN"]
+    .includes(u.fullHistoricalOhlcvStore.status),
+    "der Datensatz muss sich zum Bestand aeussern: " + u.fullHistoricalOhlcvStore.status);
+  assert.notEqual(u.fullHistoricalOhlcvStore.status, "SERVED",
+    "diese Auslieferung serviert den Bestand nicht");
+  assert.ok(typeof u.fullHistoricalOhlcvStore.note === "string" &&
+            u.fullHistoricalOhlcvStore.note.length > 0,
+    "der Zustand ohne Begruendung ist eine Behauptung");
+
+  /* Ist er abgelegt, muss die Angabe belegt sein - eine Zahl und ein
+     Ort, nicht bloss ein Wort. */
+  if (u.fullHistoricalOhlcvStore.status === "DEPLOYED_NOT_SERVED_HERE") {
+    assert.ok(Number.isFinite(u.fullHistoricalOhlcvStore.objects) &&
+              u.fullHistoricalOhlcvStore.objects > 0,
+      "ein abgelegter Bestand ohne gezaehlte Objekte ist unbelegt");
+    assert.match(u.fullHistoricalOhlcvStore.location, /R2/);
+  }
   assert.equal(u.priceLevels.status, "WITHHELD_REDISTRIBUTION");
 });
 

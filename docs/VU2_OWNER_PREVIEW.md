@@ -1,6 +1,8 @@
 # Vision Universe 2.0 — Integrierte Eigentuemer-Vorschau
 
-**Stand:** 2026-09-11 · Zweig `claude/vu2-owner-preview-integration`
+**Stand:** 2026-09-11 · Zweig `claude/vu2-data-stack-integration`
+(aus `claude/vu2-owner-preview-integration`, dazu der abgenommene
+Datenstand aus `claude/tiingo-us-equity-discovery-k5j4bc`)
 **Zweck:** das tatsaechliche Produkt einmal ansehen. Kein neuer
 Produktabschnitt, keine Neugestaltung, keine Architektur.
 
@@ -60,8 +62,9 @@ Bruecke kennt.
 |---|---|---|
 | Shell, Navigation, Suche | `vu2/experience.js` (Astra) | vollstaendig; Suche ersetzt durch die Volluniversum-Suche |
 | Home, Markets, Discover | Astra | vollstaendig, auf dem vollen Universum |
-| Screener | Astra + Bruecke | Regeln von Astra, Grundgesamtheit 5.636 Faktorzeilen |
-| Stock Intelligence | Astra + Bruecke | jeder der 5.683 Titel oeffnet sich |
+| Screener | Astra + Bruecke | Regeln von Astra, Grundgesamtheit 5.357 Faktorzeilen des Produktuniversums |
+| Stock Intelligence | Astra + Bruecke | jeder der 7.803 Titel oeffnet sich — auch die ausgeschlossenen |
+| Produkteignung | Datenstrang + Bruecke | 7.004 Produkttitel von 7.803 Mitgliedern; als Feld im bestehenden Screener filterbar |
 | Quant Workspace | Astra + Bruecke | Golden Five: SEC-Faktoren; alle uebrigen: gemessene Kursfaktoren |
 | Fundamentals & Historie | Astra | fuenf SEC-Titel — dafuer gibt es keine weiteren Daten |
 | Technical, Elliott | Astra | wo ein Technical-Bundle vorliegt |
@@ -79,9 +82,37 @@ prueft das an der laufenden Bruecke, nicht am Quelltext.
 ### Listen und Suche
 
 Die Listenansichten zeigen die meistgehandelten Titel (Messung, keine
-Bewertung). **Suche und Screener sehen immer alle.** Das Kopfband nennt
-auf jeder Seite den wahren Umfang — ohne diese Zeile laesen sich
-48 Zeilen wie "mehr gibt es nicht".
+Bewertung). **Die Suche sieht weiterhin alles; Listen und Screener
+rechnen ueber das Produktuniversum.** Das Kopfband nennt auf jeder
+Seite beide Zahlen — ohne diese Zeile laesen sich 48 Zeilen wie "mehr
+gibt es nicht".
+
+### Der aufgeraeumte Datenstand
+
+Der Backfill hat 7.803 Titel geholt, darunter 799 **belegte** Warrants,
+Units, Rights und Testpapiere in der punktlosen NASDAQ-Schreibweise
+(`AACBW` ist der Warrant auf `AACB`). Sie bleiben Mitglieder — geloescht
+wird nichts — und sind ueber die Suche weiter erreichbar, aber sie
+zaehlen nicht mehr in Listen, Screener und Ranglisten.
+
+| Ausgang | Titel | Im Produkt |
+|---|---:|---|
+| `ELIGIBLE` | 6.477 | ja |
+| `SEPARATE_CLASS` (belegte Vorzuege) | 308 | ja |
+| `REVIEW` (Verdacht **ohne** Stammbeleg) | 219 | ja, markiert |
+| `EXCLUDED` (belegte Nicht-Aktie) | 799 | nein |
+
+Die Regel der Bruecke lautet **"nicht EXCLUDED"** und nicht "gleich
+ELIGIBLE". Der Unterschied sind 527 Titel: belegte Vorzuege, die
+handelbar sind, und 219 Verdachtsfaelle, die nie widerlegt wurden. Ein
+Verdacht ist kein Befund — `IN4` macht den Fehler absichtlich und
+verlangt, dass er auffaellt.
+
+Statt der einen Zahl `CHART_READY 84,81 %` tragen Kopfband und
+`meta.json` jetzt drei, mit drei Schwellen aus den Stellen, die sie
+anwenden: Ablage 99,99 %, zeichenbar 99,9 % (ab 2 Bars,
+`chart-ranges.js`), Technik 85,14 % (ab 300 Bars,
+`run-technical-scale.mjs`).
 
 ---
 
@@ -160,8 +191,21 @@ Handelskurs". **OP4** prueft die Beschriftung.
 | `verify-owner-preview.mjs` (O1–O10, am ausgelieferten System) | alle Produktpruefungen belegt; O7/O8 uebersprungen wegen des fehlenden Schluessels |
 | `measure-live-chart.mjs` (Browser + echter Anbieter) | `CONNECTED_NO_EVENTS` — Weg steht, Boerse zu |
 | `owner-preview.test.mjs` (OP1–OP5) | 5/5 |
-| Gesamtsuite | 766 Tests |
+| `vu2-data-stack-integration.test.mjs` (IN1–IN10) | 10/10 |
+| Gesamtsuite | 914 Tests, 912 bestanden |
 | Datenhygiene, Schluesselpruefung | gruen |
+
+**PD8 und PP5 sind rot, und zwar schon vorher.** Beide pruefen, dass die
+Vorschau keine oeffentliche Datei veraendert, und rechnen den Diff gegen
+`main`. Sie nehmen Dateien aus, deren Blob mit einem der beiden
+genannten VU2-Workstream-Zweige uebereinstimmt — 15 Dateien unter
+`quant/api/`, `quant/ui/`, `quant/technical/` und `quant/engines/`
+stammen aber aus *anderen* Merges und stehen in keiner der beiden
+Listen. Das war auf `claude/vu2-owner-preview-integration` schon so und
+ist unabhaengig von dieser Arbeit; nachgerechnet an einem Worktree des
+unveraenderten Zweiges. Die fuenf Engines des Datenstrangs sind in die
+Ausnahmeliste aufgenommen — dieselbe Regel, gleicher Blob heisst nicht
+angefasst —, damit diese Arbeit den Befund nicht vergroessert.
 
 Ein uebersprungener Nachweis ist ausdruecklich **kein** bestandener.
 

@@ -88,6 +88,12 @@ const FELDER = [
   { id: "exchange", label: "Boerse", type: "enum", category: "reference" },
   { id: "sector", label: "Sektor", type: "enum", category: "reference" },
   { id: "instrumentType", label: "Instrumententyp", type: "enum", category: "reference" },
+  /* Die Produkteignung als FELD, nicht als Filter im Code. Damit taucht
+     sie dort auf, wo die Oberflaeche ohnehin Felder anbietet - im
+     Screener, in der Tabelle, im Einzeltitel -, und niemand muss eine
+     neue Ansicht bauen, um sie zu sehen. */
+  { id: "productEligibility", label: "Produkteignung", type: "enum", category: "reference" },
+  { id: "securityClass", label: "Gattung", type: "enum", category: "reference" },
   { id: "active", label: "Aktiv gelistet", type: "bool", category: "reference" },
   { id: "dataQuality", label: "Datenqualitaet", type: "enum", category: "reference" },
   { id: "adjustment", label: "Kursbereinigung", type: "enum", category: "reference" },
@@ -137,7 +143,8 @@ const FELDER = [
 ];
 
 const REFERENZ = new Set(["exchange", "sector", "instrumentType", "active", "dataQuality",
-                          "adjustment", "historyYears", "bars", "splits", "dividends"]);
+                          "adjustment", "historyYears", "bars", "splits", "dividends",
+                          "productEligibility", "securityClass"]);
 
 function faktorWert(zeile, id) {
   const w = zeile.factors && zeile.factors.values;
@@ -228,6 +235,8 @@ const meta = {
   dataSnapshotId: quelle.dataSnapshotId,
   sourceGeneratedAt: quelle.generatedAt,
   datasetScope: quelle.datasetScope,
+  productUniverse: quelle.productUniverse,
+  coverageMetrics: quelle.coverageMetrics,
   coverage: quelle.coverage,
   factorArtefact: quelle.factorArtefact,
   factorCoverage: quelle.factorCoverage,
@@ -275,9 +284,16 @@ function chartLage() {
       scope: mitReihe,
       series: reihen,
       basis: freigabe ? freigabe.decidedBy : null,
+      /* Der zweite Satz war lange richtig und ist es nicht mehr: der
+         Bestand liegt jetzt in R2. Am AUSGELIEFERTEN aendert das
+         nichts - der Browser kommt an den Speicher nicht heran -, und
+         genau diese Trennung muss der Satz tragen. Wer sie einebnet,
+         verspricht Kerzen, die diese Seite nicht holen kann. */
       note: "Echte Tiingo-EOD-Kurse. Die Freigabe gilt genau fuer diese Titel " +
-            "(quant/config/development-preview.json); fuer alle anderen Titel des Universums " +
-            "ist keine Kursreihe ausgeliefert - der Bestand von rund 7,4 GB liegt in keinem Zweig."
+            "(quant/config/development-preview.json). Fuer alle anderen Titel ist in " +
+            "DIESER Auslieferung keine Kursreihe abrufbar. Der Bestand selbst ist " +
+            "vorhanden und dauerhaft abgelegt (siehe datasetScope." +
+            "fullHistoricalOhlcvStore); er wird hier nicht serviert."
     },
     intraday: {
       status: "UNAVAILABLE",

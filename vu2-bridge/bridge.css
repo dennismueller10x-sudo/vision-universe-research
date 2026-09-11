@@ -59,3 +59,14 @@ dialog.vu-search .button { margin-top: 16px; }
   .vu-scope-button { width: 100%; }
   .vu-live .quote { font-size: 28px; }
 }
+
+/* Die Eignungsmarke im Suchtreffer. Sie soll lesbar sein und den
+   Treffer nicht ueberstimmen: ein ausgeschlossener Titel ist kein
+   Fehler, nur eine andere Gattung. */
+.vu-search-tag {
+  margin-left: .5em;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: .7;
+}

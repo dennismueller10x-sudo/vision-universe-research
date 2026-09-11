@@ -17,11 +17,12 @@
    ABGELEITETES UNIVERSUM ist nicht der KURSHISTORIEN-BESTAND.
 
    Was hier entsteht, sind Zustaende, Zaehlungen und Einordnungen je
-   Titel. Die rund 7,4 GB Kursreihen sind NICHT dabei - sie lagen in der
-   Arbeitsablage eines Actions-Laufs, der laengst freigegeben ist. Kein
-   Kursniveau verlaesst diesen Schritt; das ist zugleich die
-   Lizenzbedingung (§34) und der Grund, warum der Rest ausgeliefert
-   werden darf.
+   Titel. Die Kursreihen sind NICHT dabei. Sie lagen frueher in der
+   Arbeitsablage eines Actions-Laufs und starben mit ihm; seit dem
+   Backfill liegen sie dauerhaft in Cloudflare R2. Beides aendert nichts
+   an dieser Datei: kein Kursniveau verlaesst diesen Schritt. Das ist
+   zugleich die Lizenzbedingung (§34) und der Grund, warum der Rest
+   ausgeliefert werden darf.
 
    WAS FEHLT UND WARUM
 
@@ -59,6 +60,44 @@ const gate = lies(join(root, "quant/data/market/scale", `gate-${GATE}.json`));
 const screener = lies(join(root, "quant/data/market/factors", `screener-${GATE}.json`));
 const faktoren = lies(join(root, "quant/data/market/factors", `factors-${GATE}-summary.json`));
 const technical = lies(join(root, "quant/data/technical/scale", `technical-coverage-${GATE}.json`));
+
+/* DER AUFGERAEUMTE STAND NACH DEM BACKFILL.
+
+   Zwei Artefakte, die es zum Zeitpunkt des ersten Vorschaubaus noch
+   nicht gab, und die beide etwas geraderuecken:
+
+   eligibility.json  sagt je Titel, ob er ins Produkt gehoert. Das
+     Universum fuehrt 7.803 Mitglieder - darunter 799 belegte Warrants,
+     Units, Rights und Testpapiere, die der Backfill mitgenommen hat.
+     Sie bleiben Mitglieder (nichts wird geloescht), aber sie sind keine
+     Produkttitel.
+
+   coverage-metrics.json  ersetzt die eine Zahl "84,81 % CHART_READY"
+     durch drei, die drei verschiedene Fragen beantworten. Als
+     Chartaussage gelesen war die alte Zahl falsch: die Chart-Engine
+     zeichnet ab zwei Bars, nicht ab 250.
+
+   Fehlt eines von beiden, faellt die Vorschau auf das zurueck, was sie
+   vorher war - jeder Titel gilt als Produkttitel, und die Kennzahlen
+   fehlen ausdruecklich. Ein fehlendes Artefakt darf nie dazu fuehren,
+   dass irgendwo eine Null steht, wo eine Aussage fehlt. */
+const eignung = lies(join(root, "quant/data/market/security-master/eligibility.json"));
+const deckung = lies(join(root, "quant/data/market/history/coverage-metrics.json"));
+
+/* Ein Satz ueber den Bestand, aus der Messung gebildet statt dreimal
+   getippt. Er muss zwei Dinge zugleich sagen koennen - abgelegt JA,
+   hier serviert NEIN -, und er darf nicht altern: die Zahl kommt aus
+   coverage-metrics.json und nicht aus dem Gedaechtnis. */
+const bestandSatz = deckung && deckung.STORAGE_COVERAGE
+  ? `Die Kursreihen liegen dauerhaft im privaten Objektspeicher ` +
+    `(${deckung.STORAGE_COVERAGE.stored} von ${deckung.STORAGE_COVERAGE.denominator} Titeln, ` +
+    `${deckung.STORAGE_COVERAGE.STORAGE_COVERAGE_PERCENT} %). Diese Auslieferung serviert sie nicht.`
+  : "Ueber den Kurshistorien-Bestand liegt keine Messung vor.";
+
+const eignungNachTicker = new Map();
+if (eignung && Array.isArray(eignung.decisions)) {
+  for (const d of eignung.decisions) eignungNachTicker.set(d.ticker, d);
+}
 
 /* DAS DAUERHAFTE FAKTORARTEFAKT.
 
@@ -131,6 +170,7 @@ const zeilen = universum.securities.map((s) => {
   /* Das Artefakt zuerst, der Canary-Satz als Rueckfall. Beide tragen
      dieselbe Form; das Artefakt deckt alle Titel, der Canary fuenf. */
   const f = artefaktZeilen.get(s.ticker) || canaryFaktoren.get(s.ticker) || null;
+  const e = eignungNachTicker.get(s.ticker) || null;
   if (q) mitQualitaet++;
   if (t) mitTechnical++;
   if (f) mitFaktoren++;
@@ -182,6 +222,17 @@ const zeilen = universum.securities.map((s) => {
       ? (artefaktZeilen.has(s.ticker) ? "DURABLE_ARTEFACT" : "CANARY_IN_SUMMARY")
       : null,
 
+    /* Produkteignung. Vier Ausgaenge, und der Unterschied zwischen dem
+       dritten und dem vierten ist der ganze Punkt: EXCLUDED ist ein
+       BELEG (der vierstellige Stamm ist eigenstaendig gelistet, also ist
+       AACBW sein Warrant), REVIEW ist ein Verdacht ohne Beleg. Ein
+       Verdacht wird gefuehrt, nicht entfernt. */
+    productEligibility: e ? e.product_eligibility : null,
+    productEligibilityReason: e ? e.product_eligibility_reason : null,
+    productEligibilityStatus: e ? "PRESENT" : "NOT_IN_DELIVERED_ARTEFACTS",
+    securityClass: e ? e.instrument_type : null,
+    classificationConfidence: e ? e.classification_confidence : null,
+
     isCanary: canarySatz.has(s.ticker),
     isMock: false
   };
@@ -205,19 +256,86 @@ const datensatz = {
       note: "Zustaende, Zaehlungen und Einordnungen je Titel. Aus den geprueften " +
             "Artefakten des FULL_UNIVERSE-Laufs, ohne einen einzigen Kursabruf."
     },
-    fullHistoricalOhlcvStore: {
-      status: "NOT_DEPLOYED",
-      approximateSize: "~7.4 GB",
-      location: ".market-cache auf einem freigegebenen Actions-Runner",
-      note: "Die Kursreihen sind NICHT ausgeliefert und liegen nirgends im " +
-            "Repository. Wer sie braucht, braucht einen neuen Lauf und einen " +
-            "Ablageort ausserhalb von Git."
+    /* DIESE ANGABE WAR EINMAL RICHTIG UND IST ES NICHT MEHR.
+
+       Sie sagte "NOT_DEPLOYED, ~7,4 GB in der Arbeitsablage eines
+       freigegebenen Actions-Runners". Das stimmte, solange es keinen
+       Ablageort ausserhalb von Git gab. Inzwischen gibt es ihn: der
+       Backfill hat die Reihen nach Cloudflare R2 geschrieben, und sie
+       ueberleben dort jeden Runner.
+
+       Zwei Dinge bleiben trotzdem wahr und duerfen nicht
+       zusammenfallen:
+
+         Der Bestand IST abgelegt.        (dauerhaft, gemessen)
+         Diese Auslieferung SERVIERT ihn NICHT. (der Browser kommt nicht an R2)
+
+       Wer das verwechselt, verspricht der Oberflaeche Kerzen, die sie
+       nicht holen kann. Deshalb stehen beide Zustaende getrennt da. */
+    fullHistoricalOhlcvStore: deckung ? {
+      status: "DEPLOYED_NOT_SERVED_HERE",
+      objects: deckung.STORAGE_COVERAGE ? deckung.STORAGE_COVERAGE.stored : null,
+      location: (deckung.storageSource && deckung.storageSource.prefix)
+        ? "Cloudflare R2 · " + deckung.storageSource.prefix
+        : "Cloudflare R2",
+      measuredAt: deckung.generatedAt || null,
+      note: "Die Kursreihen liegen dauerhaft im privaten Objektspeicher und " +
+            "nicht im Repository. Diese Auslieferung serviert sie NICHT: eine " +
+            "statische Seite muesste dafuer Zugangsdaten im Browser fuehren. " +
+            "Was der Chart hier zeigt, steht unter chart.historical."
+    } : {
+      status: "UNKNOWN",
+      note: "Ohne coverage-metrics.json laesst sich ueber den Bestand nichts " +
+            "sagen. Geraten wird nicht."
     },
     priceLevels: {
       status: "WITHHELD_REDISTRIBUTION",
       note: "Absolute Kursniveaus bleiben zurueck (§34). Ausgeliefert werden " +
             "Zustaende, Abstaende und Renditen - nie ein Kurs."
     }
+  },
+
+  /* Das Produktuniversum neben der Mitgliedschaft - nicht statt ihrer.
+     Beide Zahlen stehen da, weil beide gebraucht werden: die
+     Mitgliedschaft sagt, was wir geholt und verantwortet haben, das
+     Produktuniversum sagt, was gezeigt wird. */
+  productUniverse: eignung ? {
+    status: "PRESENT",
+    version: eignung.version,
+    members: eignung.counts.universeMembers,
+    productSecurities: eignung.counts.productUniverse,
+    eligible: eignung.counts.ELIGIBLE,
+    separateClass: eignung.counts.SEPARATE_CLASS,
+    review: eignung.counts.REVIEW,
+    excluded: eignung.counts.EXCLUDED,
+    excludedByClass: eignung.excludedByClass || {},
+    separateByClass: eignung.separateByClass || {},
+    reviewByReason: eignung.reviewByReason || {},
+    nonDestructive: eignung.nonDestructive || null,
+    note: "Ausgeschlossen werden nur BELEGTE Nicht-Aktien. Ein Verdacht ohne " +
+          "Stammbeleg bleibt als REVIEW im Produkt und traegt seine Markierung."
+  } : {
+    status: "NOT_IN_DELIVERED_ARTEFACTS",
+    note: "Ohne eligibility.json gilt jedes Universumsmitglied als Produkttitel - " +
+          "der Zustand vor dem Aufraeumen."
+  },
+
+  /* Drei Kennzahlen statt einer. Die Schwellen stammen aus den Stellen,
+     die sie anwenden; sie werden hier nur weitergereicht. */
+  coverageMetrics: deckung ? {
+    status: "PRESENT",
+    engine: deckung.engine,
+    generatedAt: deckung.generatedAt,
+    thresholds: deckung.thresholds,
+    storage: deckung.STORAGE_COVERAGE,
+    chart: deckung.CHART_AVAILABILITY,
+    technical: deckung.TECHNICAL_HISTORY_ELIGIBILITY,
+    longHistory: deckung.LONG_HISTORY,
+    legacy: deckung.legacy
+  } : {
+    status: "NOT_IN_DELIVERED_ARTEFACTS",
+    note: "Ohne coverage-metrics.json gibt es nur die alte Einzelkennzahl, und " +
+          "die beantwortet drei Fragen zugleich."
   },
 
   coverage: {
@@ -583,7 +701,7 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
     if (x.nameStatus === "SOURCE_MISSING")
       luecken.push("Firmenname und Sektor: im Zugang nicht enthalten — ausgewiesen, nicht geraten.");
     luecken.push("Kursniveaus und Kursreihen: zurueckgehalten (Lizenzpruefung offen). " +
-                 "Der Kurshistorien-Bestand von rund 7,4 GB ist nicht ausgeliefert.");
+                 ${JSON.stringify(bestandSatz)});
     k.hidden = false;
     k.innerHTML = '<button class="weg" id="titelZu">schliessen</button>' +
       '<h2>' + x.ticker + '</h2>' +
@@ -668,7 +786,7 @@ writeFileSync(join(ansichtsVerzeichnis, "index.html"), `<!doctype html>
 
   q("fuss").innerHTML = "Stand " + (d.asOf || "unbekannt") + " · " + d.dataSnapshotId +
     "<br>Abgeleitetes Universum aus geprueften Artefakten. Keine Kursniveaus, keine Kursreihen. " +
-    "Der Kurshistorien-Bestand von rund 7,4 GB ist NICHT ausgeliefert." +
+    ${JSON.stringify(bestandSatz)} +
     "<br>" + c.note;
 })();
 </script></body></html>`);
@@ -685,6 +803,14 @@ console.log(`  mit Faktoren:    ${mitFaktoren}  ` + (faktorArtefakt
 console.log(`  Screenerfragen:  ${datensatz.screenerQuestions.length}`);
 console.log(`  Groesse:         ${mb} MB`);
 console.log(`\n  ABGELEITETES UNIVERSUM: vorhanden`);
-console.log(`  KURSHISTORIEN-BESTAND (~7,4 GB): NICHT ausgeliefert`);
+console.log(`  KURSHISTORIEN-BESTAND: ${
+  datensatz.datasetScope.fullHistoricalOhlcvStore.status}${
+  datensatz.datasetScope.fullHistoricalOhlcvStore.objects
+    ? ` (${datensatz.datasetScope.fullHistoricalOhlcvStore.objects} Objekte, ${
+        datensatz.datasetScope.fullHistoricalOhlcvStore.location})` : ""}`);
+console.log(`  PRODUKTUNIVERSUM:      ${datensatz.productUniverse.status === "PRESENT"
+  ? `${datensatz.productUniverse.productSecurities} von ${datensatz.productUniverse.members} ` +
+    `(${datensatz.productUniverse.excluded} belegte Nicht-Aktien ausgeschlossen)`
+  : datensatz.productUniverse.status}`);
 console.log(`\n  ${datei.replace(root + "/", "")}`);
 console.log(`  preview-universe/index.html\n`);

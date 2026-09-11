@@ -98,15 +98,47 @@
     api.getUniverse().then(function (u) {
       var f = u.fullUniverse;
       if (!f) return;
+      /* Zwei Zahlen, nicht eine. Der Produktumfang ist das, was die
+         Ansichten zeigen; die Mitgliedschaft ist das, was geholt und
+         gespeichert wurde. Nur den Produktumfang zu nennen verschwiege
+         die 799 Titel, nur die Mitgliedschaft zu nennen zaehlte sie
+         mit. */
+      var zahl = function (n) { return Number(n).toLocaleString("de-DE"); };
+      var hatProdukt = Number.isFinite(f.productSecurities);
+      var kopf = hatProdukt
+        ? zahl(f.productSecurities) + " Titel im Produktuniversum"
+        : zahl(f.securities) + " Titel";
+      var rumpf = hatProdukt
+        ? " · " + zahl(f.securities) + " Mitglieder insgesamt, " + zahl(f.excluded) +
+          " belegte Nicht-Aktien ausgeschlossen · Datenstand " + (f.asOf || "–")
+        : " im ausgelieferten Universum · " + zahl(f.withFactors) +
+          " mit gemessenen Faktoren · Datenstand " + (f.asOf || "–");
+
+      var hinweise = ["Listen zeigen die " + f.listed +
+        " meistgehandelten Titel. Suche und Screener sehen das Produktuniversum."];
+      if (hatProdukt && f.excludedByClass) {
+        /* Woraus die 799 bestehen. Eine Zahl ohne ihre Gattungen laedt
+           zum Raten ein, und geraten wird hier nirgends. */
+        var teile = Object.keys(f.excludedByClass).sort(function (a, b) {
+          return f.excludedByClass[b] - f.excludedByClass[a];
+        }).map(function (k) { return k + " " + f.excludedByClass[k]; });
+        hinweise.push("Ausgeschlossen: " + teile.join(", ") +
+          (Number.isFinite(f.review) && f.review
+            ? " · " + f.review + " Verdachtsfaelle bleiben enthalten und sind markiert." : ""));
+      }
+      if (f.coverage) {
+        hinweise.push("Ablage " + f.coverage.storage + " % · zeichenbar " +
+          f.coverage.chart + " % (ab " + f.coverage.chartMinBars + " Bars) · Technik " +
+          f.coverage.technical + " % (ab " + f.coverage.technicalMinBars + " Bars)");
+      }
+
       S.mount(band, [
         el("span", { class: "vu-scope-text" }, [
-          el("b", { text: f.securities.toLocaleString("de-DE") + " Titel" }),
-          el("span", { text: " im ausgelieferten Universum · " +
-            f.withFactors.toLocaleString("de-DE") + " mit gemessenen Faktoren · Datenstand " +
-            (f.asOf || "–") }),
-          el("span", { class: "vu-scope-note", text:
-            "Listen zeigen die " + f.listed + " meistgehandelten Titel. Suche und Screener sehen alle." })
-        ]),
+          el("b", { text: kopf }),
+          el("span", { text: rumpf })
+        ].concat(hinweise.map(function (t) {
+          return el("span", { class: "vu-scope-note", text: t });
+        }))),
         el("button", { class: "vu-scope-button", type: "button", text: "Titel suchen",
                        onclick: function () { sucheOeffnen(); } })
       ]);
@@ -118,6 +150,16 @@
 
   /* -------------------------------------------------------------- Suche */
   var dialog = null, eingabe = null, treffer = null, tickerListe = null;
+  /* Eignung je Ticker, aus dem Index gelesen. Die Suche FINDET weiter
+     alles - ein ausgeschlossener Titel ist nicht geloescht, und wer
+     AACBW eintippt, soll ihn bekommen. Sie sagt nur dazu, was er ist. */
+  var eignungListe = null;
+
+  var EIGNUNG_LABEL = {
+    EXCLUDED: "keine Aktie",
+    REVIEW: "Verdachtsfall",
+    SEPARATE_CLASS: "Vorzug"
+  };
 
   function sucheErsetzen() {
     var knopf = Array.prototype.slice.call(document.querySelectorAll("header.top .utility button"))
@@ -144,6 +186,13 @@
     if (!tickerListe) {
       api.bridge.index().then(function (idx) {
         tickerListe = idx.tickers;
+        var spalte = idx.columns && idx.columns.productEligibility;
+        var namen = idx.enums && idx.enums.productEligibility;
+        if (spalte && namen) {
+          eignungListe = spalte.map(function (v) {
+            return v === null || v === undefined ? null : namen[v];
+          });
+        }
         aktualisiere();
       }).catch(function () {
         S.mount(treffer, el("p", { text: "Der Universumsindex ist nicht verfuegbar." }));
@@ -192,7 +241,15 @@
     });
     var zeige = gefunden.slice(0, 12);
     S.mount(treffer, zeige.map(function (t) {
-      return el("a", { text: t, href: "/vu2/?view=stock&ticker=" + encodeURIComponent(t) });
+      var marke = eignungListe ? EIGNUNG_LABEL[eignungListe[tickerListe.indexOf(t)]] : null;
+      var a = el("a", { href: "/vu2/?view=stock&ticker=" + encodeURIComponent(t) }, [
+        el("span", { text: t })
+      ]);
+      /* Die Markierung steht NEBEN dem Treffer, nicht an seiner Stelle.
+         Ein ausgeschlossener Titel bleibt anklickbar - er ist
+         gespeichert, nur eben kein Produkttitel. */
+      if (marke) a.append(el("span", { class: "vu-search-tag", text: marke }));
+      return a;
     }));
     dialog._zaehler.textContent = q
       ? gefunden.length + (gefunden.length === 400 ? "+" : "") + " Treffer von " +

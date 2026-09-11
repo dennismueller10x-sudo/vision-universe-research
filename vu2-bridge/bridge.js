@@ -51,6 +51,32 @@
      20-Tage-Durchschnittsvolumen. Keine Empfehlung, keine Rangliste. */
   var LISTE = 48;
 
+  /* ---------------------------------------------------- Produkteignung
+
+     Der Backfill hat 7.803 Titel geholt, darunter 799 belegte Warrants,
+     Units, Rights und Testpapiere in der punktlosen NASDAQ-Schreibweise
+     (AACBW ist der Warrant auf AACB). Sie bleiben Mitglieder des
+     Universums - geloescht wird nichts -, aber sie gehoeren nicht in
+     Listen, Screener und Ranglisten.
+
+     Die Regel ist ABSICHTLICH als "nicht EXCLUDED" formuliert und nicht
+     als "gleich ELIGIBLE":
+
+       ELIGIBLE        Stammaktie
+       SEPARATE_CLASS  belegter Vorzug - handelbar, nur keine Stammaktie
+       REVIEW          Verdacht OHNE Stammbeleg
+       EXCLUDED        belegte Nicht-Aktie
+
+     Ein Verdacht ist kein Befund. Wer hier auf ELIGIBLE pruefte, wuerfe
+     527 Titel aus dem Produkt, von denen 219 nie widerlegt wurden.
+
+     Faellt das Feld weg - ein aelterer Datensatz ohne Eignungsschicht -,
+     gilt jeder Titel als Produkttitel. Dann ist die Vorschau wieder
+     genau das, was sie vorher war, und nicht versehentlich leer. */
+  function imProdukt(zeile) {
+    return !zeile || zeile.productEligibility !== "EXCLUDED";
+  }
+
   // ------------------------------------------------------------ Laden
   var zwischenspeicher = {};
   function hole(load, pfad) {
@@ -239,7 +265,9 @@
           }
           /* Die meistgehandelten Titel zuerst - eine Messung, keine
              Bewertung. Wer mehr sehen will, nimmt Suche oder Screener. */
-          var weitere = zeilen.filter(function (r) { return !bekannt[r.ticker] && r.hasFactors; })
+          var weitere = zeilen.filter(function (r) {
+              return !bekannt[r.ticker] && r.hasFactors && imProdukt(r);
+            })
             .sort(function (a, b) { return (b.avgVolume20d || 0) - (a.avgVolume20d || 0); })
             .slice(0, LISTE)
             .map(indexAlsProdukt);
@@ -257,7 +285,26 @@
               listed: stocks.length + weitere.length,
               asOf: m.asOf,
               gate: m.gate,
-              approvedDisplay: (basis && basis.stocks ? basis.stocks.length : 0)
+              approvedDisplay: (basis && basis.stocks ? basis.stocks.length : 0),
+              /* Mitgliedschaft und Produktumfang stehen nebeneinander.
+                 Nur eine der beiden Zahlen zu zeigen hiesse entweder
+                 799 Warrants mitzuzaehlen oder zu verschweigen, dass
+                 sie geholt und gespeichert wurden. */
+              productSecurities: m.productUniverse && m.productUniverse.status === "PRESENT"
+                ? m.productUniverse.productSecurities : null,
+              excluded: m.productUniverse && m.productUniverse.status === "PRESENT"
+                ? m.productUniverse.excluded : null,
+              excludedByClass: m.productUniverse && m.productUniverse.status === "PRESENT"
+                ? m.productUniverse.excludedByClass : null,
+              review: m.productUniverse && m.productUniverse.status === "PRESENT"
+                ? m.productUniverse.review : null,
+              coverage: m.coverageMetrics && m.coverageMetrics.status === "PRESENT"
+                ? { storage: m.coverageMetrics.storage.STORAGE_COVERAGE_PERCENT,
+                    chart: m.coverageMetrics.chart.CHART_AVAILABILITY_PERCENT,
+                    chartMinBars: m.coverageMetrics.thresholds.chartMinBars,
+                    technical: m.coverageMetrics.technical.TECHNICAL_HISTORY_ELIGIBILITY_PERCENT,
+                    technicalMinBars: m.coverageMetrics.thresholds.technicalMinBars }
+                : null
             }
           };
         })
@@ -459,7 +506,14 @@
       try {
         var zeilen = await alleZeilen();
         var universum = await getUniverse();
-        var kandidaten = zeilen.filter(function (r) { return r.hasFactors; }).map(screenerZeile);
+        /* Der Screener rechnet ueber das Produktuniversum. Ein Warrant
+           mit 400 % Zwoelfmonatsrendite ist kein Fund, sondern ein
+           Derivat - und stand vor dem Aufraeumen an der Spitze der
+           Momentumliste. */
+        var imProduktZeilen = zeilen.filter(imProdukt);
+        var ausgeschlossen = zeilen.length - imProduktZeilen.length;
+        var kandidaten = imProduktZeilen.filter(function (r) { return r.hasFactors; })
+          .map(screenerZeile);
         var ergebnis = query.execute(abfrage, kandidaten);
         var nachTicker = {};
         universum.stocks.forEach(function (s) { nachTicker[s.ticker] = s; });
@@ -469,9 +523,11 @@
         return {
           state: "AVAILABLE",
           query: ergebnis.query, queryHash: ergebnis.queryHash,
-          scope: "FULL_UNIVERSE_PREVIEW",
+          scope: "PRODUCT_UNIVERSE_PREVIEW",
           eligible: kandidaten.length,
-          universeSize: zeilen.length,
+          universeSize: imProduktZeilen.length,
+          membershipSize: zeilen.length,
+          excludedNonEquities: ausgeschlossen,
           stocks: ergebnis.rows.map(function (r) {
             return nachTicker[r.ticker] ||
                    (zeilenNachTicker[r.ticker] ? indexAlsProdukt(zeilenNachTicker[r.ticker]) : null);

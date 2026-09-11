@@ -40,7 +40,10 @@ const src = join(root, "_proof-src", "universe");
    als UNVERAENDERT, wenn ihr Blob identisch mit dem des gemergten
    Zweiges ist. Wer eine davon anfasst, faellt weiter auf. */
 function ausFremdemZweig(datei) {
-  const zweige = ["origin/workstream/vu2-signals-workspace", "origin/workstream/vu2-eod-gates"];
+  const zweige = ["origin/workstream/vu2-signals-workspace", "origin/workstream/vu2-eod-gates",
+                  /* Der hereingemergte Datenstrang - gleiche Regel wie fuer
+                     die VU2-Workstreams: gleicher Blob heisst nicht angefasst. */
+                  "origin/claude/tiingo-us-equity-discovery-k5j4bc"];
   let hier;
   try {
     hier = execFileSync("git", ["rev-parse", `HEAD:${datei}`], { cwd: root, encoding: "utf8" }).trim();
@@ -177,9 +180,18 @@ test("PP3 — kein Kursniveau und keine Kursreihe im Nachweis", () => {
     }
   }
 
-  /* Die Bilanz sagt es ausserdem von sich aus. */
+  /* Die Bilanz sagt es ausserdem von sich aus.
+
+     Beim Bestand wird der ZUSTAND nicht mehr festgeschrieben: seit dem
+     Backfill liegen die Reihen dauerhaft in R2, und NOT_DEPLOYED waere
+     schlicht unwahr. Die Zusage, die zaehlt, steht oben - im Nachweis
+     ist keine einzige Kursreihe - und hier daneben: was auch immer der
+     Bestand tut, diese Auslieferung serviert ihn nicht. */
   assert.equal(b.meta.datasetScope.priceLevels.status, "WITHHELD_REDISTRIBUTION");
-  assert.equal(b.meta.datasetScope.fullHistoricalOhlcvStore.status, "NOT_DEPLOYED");
+  assert.ok(["NOT_DEPLOYED", "DEPLOYED_NOT_SERVED_HERE", "UNKNOWN"]
+    .includes(b.meta.datasetScope.fullHistoricalOhlcvStore.status),
+    "der Nachweis muss sich zum Bestand aeussern");
+  assert.notEqual(b.meta.datasetScope.fullHistoricalOhlcvStore.status, "SERVED");
 });
 
 test("PP4 — fehlende Werte sind ausgewiesen, nicht still", () => {
