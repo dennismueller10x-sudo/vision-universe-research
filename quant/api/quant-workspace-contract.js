@@ -2,7 +2,7 @@
  * factors.js owns calculations. Never rank a five-security display set. */
 (function(g){
 'use strict';
-const Catalog=typeof module!=='undefined'&&module.exports?require('../engines/catalog.js'):g.VUCatalog;
+const Registry=typeof module!=='undefined'&&module.exports?require('../engines/metric-registry.js'):g.VUMetricRegistry;
 const families=[
  ['quality','Ertragskraft','Wie profitabel arbeitet das Unternehmen?',['operatingMargin','fcfMargin','roic']],
  ['growth','Wachstum','Wie verändert sich das Geschäft?',['revenueGrowth','epsGrowth','fcfGrowth','marginExpansion']],
@@ -18,9 +18,9 @@ function build(stock,source,versions){
  return {state:'AVAILABLE',version:'1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf,availableAt:stock.availableAt,
   score:{state:'UNAVAILABLE',reason:'INSUFFICIENT_PEER_UNIVERSE'},pitEligible:false,
   families:families.map(([id,label,question,ids])=>({id,label,question,metrics:ids.map(metricId=>{
-   const field=Catalog.field(metricId),market=['value','momentum','risk'].includes(id),allowed=!market||stock.marketState==='AVAILABLE',value=allowed&&Number.isFinite(f[metricId])?f[metricId]:null;
-   return {metricId,label:field.label,unit:field.unit,value,state:value===null?'SOURCE_MISSING':'AVAILABLE',reason:!allowed?'DISPLAY_NOT_PERMITTED':value===null?'SOURCE_MISSING':null,
-    description:field.description,owner:'quant/engines/factors.js',catalog:'quant/engines/catalog.js',panelVersion:versions.buildScript,
+   const definition=Registry.get('factor.'+metricId),market=['value','momentum','risk'].includes(id),allowed=!market||stock.marketState==='AVAILABLE',value=allowed&&Number.isFinite(f[metricId])?f[metricId]:null;
+   return {metricId,label:definition.uxMapping.label,unit:definition.unit,value,state:value===null?'SOURCE_MISSING':'AVAILABLE',reason:!allowed?'DISPLAY_NOT_PERMITTED':value===null?'SOURCE_MISSING':null,
+    description:definition.uxMapping.explanation,owner:definition.owner,registryId:definition.metricId,definitionVersion:definition.version,catalog:'quant/engines/metric-registry.js',panelVersion:versions.buildScript,
     asOf:market?stock.asOf:stock.fundamentalsAsOf,availableAt:market?stock.asOf:stock.availableAt};
   })})),methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
 }
