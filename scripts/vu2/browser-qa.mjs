@@ -12,7 +12,7 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 const origin='http://127.0.0.1:'+server.address().port;const checks=[];
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});const errors=[];page.on('pageerror',e=>errors.push(e.message));
- for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio']){
+ for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist']){
  await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
  if(await page.locator('h1').count()!==1)throw Error('missing heading '+view);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
@@ -29,6 +29,20 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  if(view==='markets'){if(await page.locator('.market-observation').count()!==5)throw Error('market observations missing');await page.getByText('Warum?',{exact:true}).first().click();await page.getByText(/Abstand zum 200-Tage-Durchschnitt:/).first().waitFor();}
  if(view==='discover'){if(await page.locator('.collection').count()!==3)throw Error('collections missing');await page.getByRole('link',{name:'Regeln im Screener bearbeiten'}).nth(1).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()!=='revenueGrowth'||await page.getByRole('spinbutton').inputValue()!=='20')throw Error('recipe handoff lost');await page.goto(origin+'/vu2/?view=discover');await page.locator('main footer').waitFor();}
  if(view==='screener'){await page.getByRole('spinbutton').fill('999');await page.getByRole('button',{name:'Anwenden'}).click();await page.getByText('0 Treffer in 5 verfügbaren Unternehmen · kein Gesamtmarkt-Ranking').waitFor();await page.getByRole('spinbutton').fill('10');await page.getByRole('button',{name:'Kriterium hinzufügen'}).click();await page.getByRole('spinbutton').nth(1).fill('20');await page.getByRole('button',{name:'Anwenden'}).click();await page.getByText('1 Treffer in 5 verfügbaren Unternehmen · kein Gesamtmarkt-Ranking').waitFor();await page.getByText('Regeln speichern & Methodik',{exact:true}).click();const saved=await page.getByRole('link',{name:'Diese Auswahl erneut öffnen'}).getAttribute('href');await page.goto(origin+'/vu2/?view=screener&query=invalid');await page.locator('main footer').waitFor();if(await page.locator('a.row').count())throw Error('invalid rules silently replaced');await page.goto(origin+saved);await page.locator('main footer').waitFor();if(await page.getByRole('spinbutton').count()!==2)throw Error('saved rules lost');await page.getByText('1 Treffer in 5 verfügbaren Unternehmen · kein Gesamtmarkt-Ranking').waitFor();}
+ if(view==='watchlist'){
+  await page.getByRole('heading',{name:'Wen möchtest du beobachten?',exact:true}).waitFor();
+  for(const ticker of ['NVDA','TSLA']){await page.getByRole('textbox',{name:'Watchlist Ticker'}).fill(ticker);await page.getByRole('button',{name:'Titel hinzufügen',exact:true}).click();}
+  await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.watchlist-member').count()!==2)throw Error('watchlist selection not preserved');
+  await page.getByRole('button',{name:'TSLA aus Watchlist entfernen',exact:true}).click();await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();
+  await page.getByRole('link',{name:'Historische Änderungen',exact:true}).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Signals Unternehmen'}).inputValue()!=='NVDA')throw Error('watchlist signal context lost');
+  await page.goto(origin+'/vu2/?view=watchlist');await page.locator('main footer').waitFor();
+  const saved=await page.evaluate(()=>{const key='vu2.watchlist.selection.v1',value=localStorage.getItem(key);localStorage.setItem(key,'broken');return value;});
+  await page.reload();await page.getByRole('heading',{name:'Gespeicherte Watchlist nicht lesbar',exact:true}).waitFor();await page.getByRole('link',{name:'Bisherige Watchlist öffnen',exact:true}).waitFor();
+  if(await page.evaluate(()=>localStorage.getItem('vu2.watchlist.selection.v1'))!=='broken')throw Error('corrupt watchlist overwritten');
+  await page.evaluate(value=>localStorage.setItem('vu2.watchlist.selection.v1',value),saved);await page.reload();await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
+  if(await page.evaluate(()=>localStorage.getItem('vu.quant.watchlist.v1'))!==null)throw Error('legacy demo was seeded');
+ }
  await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}checks.push({view,width,pass:true});
  }
  await page.goto(origin+'/quant/technical/?symbol=NVDA&layer=ELLIOTT');await page.locator('[role="tab"][data-layer="ELLIOTT"][aria-selected="true"]').waitFor();await page.locator('.q-tech-chart-wrap svg').waitFor();await page.getByRole('heading',{name:'Szenarien',exact:true}).waitFor();await page.getByRole('button',{name:'Alternative',exact:true}).click();await page.screenshot({path:out+'/elliott-preserved-'+width+'.png',fullPage:true});checks.push({view:'elliott-preserved',width,pass:true});
