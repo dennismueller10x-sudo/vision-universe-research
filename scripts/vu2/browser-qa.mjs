@@ -12,7 +12,7 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 const origin='http://127.0.0.1:'+server.address().port;const checks=[];
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});const errors=[];page.on('pageerror',e=>errors.push(e.message));
- for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist']){
+ for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist','atlas']){
  await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
  if(await page.locator('h1').count()!==1)throw Error('missing heading '+view);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
@@ -45,6 +45,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.evaluate(value=>localStorage.setItem('vu2.watchlist.selection.v1',value),saved);await page.reload();await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
   if(await page.evaluate(()=>localStorage.getItem('vu.quant.watchlist.v1'))!==null)throw Error('legacy demo was seeded');
   await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();await page.locator('.home-watch-row').getByRole('link',{name:'NVDA',exact:true}).waitFor();await page.screenshot({path:out+'/home-personal-'+width+'.png',fullPage:true});await page.goto(origin+'/vu2/?view=watchlist');await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
+ }
+ if(view==='atlas'){
+  await page.getByText(/kein angeschlossenes Sprachmodell/).waitFor();await page.locator('.atlas-evidence').getByText('65,21 %',{exact:true}).waitFor();
+  await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('growth');await page.locator('.atlas-evidence').getByText('83,38 %',{exact:true}).waitFor();
+  await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('technical');await page.getByRole('heading',{name:'Die Kursstruktur von NVDA',exact:true}).waitFor();
+  await page.getByRole('combobox',{name:'Atlas Unternehmen'}).selectOption('JPM');await page.getByRole('heading',{name:'Die Kursstruktur von JPM',exact:true}).waitFor();
+  await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('quality');await page.getByRole('combobox',{name:'Atlas Unternehmen'}).selectOption('NVDA');await page.locator('.atlas-evidence').getByText('65,21 %',{exact:true}).waitFor();await page.getByText('Beleg & Definition',{exact:true}).first().click();
+  const calls=await page.evaluate(async()=>{const tools=VUAtlasTools.create(VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery}));return [await tools.call('runBacktest',{}),await tools.call('getQuantEvidence',{ticker:'TSLA'})];});if(calls[0].ok||calls[1].data.state==='AVAILABLE')throw Error('Atlas crossed execution/display scope');
  }
  await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}checks.push({view,width,pass:true});
  }
