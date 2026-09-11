@@ -1,0 +1,188 @@
+{
+  "generatedAt": "2026-09-11T09:13:03.225Z",
+  "verification": "HISTORY_STORE_SAMPLE",
+  "access": {
+    "touchedKeys": 48,
+    "byOperation": {
+      "LIST": 5,
+      "HEAD": 18,
+      "PUT": 8,
+      "GET": 11,
+      "DELETE": 6
+    },
+    "allowedPrefix": "verify/v1/",
+    "outsideAllowedPrefix": 0,
+    "productionKeysTouched": 0,
+    "deleteScope": "verify/v1/",
+    "note": "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb des Nachweis-Praefixes. Diese Zahlen sind mitgeschrieben, nicht zugesagt."
+  },
+  "cleanup": {
+    "objectsBefore": 6,
+    "deleted": 6,
+    "remaining": 0,
+    "failed": 0
+  },
+  "budget": {
+    "classA": 10,
+    "classB": 28,
+    "bytesUploaded": 849298,
+    "bytesDownloaded": 1224296,
+    "writesSkipped": 1
+  },
+  "storage": {
+    "kind": "s3",
+    "endpoint": "https://bd3d267913ac952c70a429fbf6e63265.r2.cloudflarestorage.com",
+    "prefix": "verify/v1/tiingo/daily/VERIFY/",
+    "codec": "zstd",
+    "format": "bar-codec-1.0.0"
+  },
+  "sample": {
+    "symbols": [
+      "AAPL",
+      "JPM",
+      "MSFT",
+      "NVDA",
+      "XOM"
+    ],
+    "bars": 14685,
+    "source": "quant/data/market/golden-preview/daily"
+  },
+  "compression": {
+    "rawBytes": 5340314,
+    "storedBytes": 598304,
+    "bytesPerBar": 40.74,
+    "ratio": 8.9,
+    "perSymbol": [
+      {
+        "ticker": "AAPL",
+        "bars": 2937,
+        "rawBytes": 1076114,
+        "storedBytes": 125197,
+        "bytesPerBar": 42.63,
+        "ratio": 8.6,
+        "exact": true
+      },
+      {
+        "ticker": "JPM",
+        "bars": 2937,
+        "rawBytes": 1065992,
+        "storedBytes": 116808,
+        "bytesPerBar": 39.77,
+        "ratio": 9.1,
+        "exact": true
+      },
+      {
+        "ticker": "MSFT",
+        "bars": 2937,
+        "rawBytes": 1073589,
+        "storedBytes": 120721,
+        "bytesPerBar": 41.1,
+        "ratio": 8.9,
+        "exact": true
+      },
+      {
+        "ticker": "NVDA",
+        "bars": 2937,
+        "rawBytes": 1064139,
+        "storedBytes": 122466,
+        "bytesPerBar": 41.7,
+        "ratio": 8.7,
+        "exact": true
+      },
+      {
+        "ticker": "XOM",
+        "bars": 2937,
+        "rawBytes": 1060480,
+        "storedBytes": 113112,
+        "bytesPerBar": 38.51,
+        "ratio": 9.4,
+        "exact": true
+      }
+    ]
+  },
+  "projection": {
+    "symbols": 7800,
+    "avgBarsPerSymbol": 4085,
+    "avgBarsBasis": "gate-FULL_UNIVERSE.json historyCoverage: 23.218.412 Kerzen / 5.684 Titel",
+    "estimatedBars": 31863000,
+    "estimatedBytes": 1298179118,
+    "estimatedGB": 1.21,
+    "uncompressedGB": 10.79
+  },
+  "checks": [
+    {
+      "id": "AUTHENTICATION",
+      "status": "PASS",
+      "detail": "LIST auf verify/v1/ beantwortet"
+    },
+    {
+      "id": "WRITE_READ_BYTE_EXACT",
+      "status": "PASS",
+      "detail": "5 echte Reihen, 14.685 Kerzen"
+    },
+    {
+      "id": "INDEX_ROUNDTRIP",
+      "status": "PASS",
+      "detail": "5 Titel im Index"
+    },
+    {
+      "id": "INDEX_REBUILD_FROM_STORAGE",
+      "status": "PASS",
+      "detail": "5 Titel aus LIST+HEAD wiederhergestellt"
+    },
+    {
+      "id": "OBJECT_METADATA",
+      "status": "PASS",
+      "detail": "ticker=AAPL bars=2937 sha256 vorhanden"
+    },
+    {
+      "id": "OVERWRITE_UPDATE",
+      "status": "PASS",
+      "detail": "geaenderte Fassung am selben Schluessel gelesen"
+    },
+    {
+      "id": "NO_UNNECESSARY_REWRITE",
+      "status": "PASS",
+      "detail": "gleicher Inhalt, kein Schreibvorgang"
+    },
+    {
+      "id": "INCREMENTAL_APPEND",
+      "status": "PASS",
+      "detail": "+1 Kerze, 1 ersetzt, statt 2937 neu zu holen"
+    },
+    {
+      "id": "RETROACTIVE_ADJUSTMENT_WINS",
+      "status": "PASS",
+      "detail": "eine rueckwirkend geaenderte Kerze ersetzt die alte"
+    },
+    {
+      "id": "NO_DUPLICATE_DATES",
+      "status": "PASS",
+      "detail": "2938 Kerzen, 2938 verschiedene Tage"
+    },
+    {
+      "id": "BACKFILL_PLAN",
+      "status": "PASS",
+      "detail": "neu 1, nachzuladen 4, aktuell 1"
+    },
+    {
+      "id": "SIZE_WITHIN_FREE_TIER",
+      "status": "PASS",
+      "detail": "1.21 GB fuer 7800 Titel (R2-Freigrenze 10 GB)"
+    },
+    {
+      "id": "CLEANUP_VERIFY_PREFIX",
+      "status": "PASS",
+      "detail": "6 Objekte entfernt, 0 verblieben"
+    },
+    {
+      "id": "NO_PRODUCTION_KEYS_TOUCHED",
+      "status": "PASS",
+      "detail": "48 Zugriffe, alle unter 'verify/v1/'"
+    }
+  ],
+  "redistribution": {
+    "priceLevels": "NONE_IN_THIS_REPORT",
+    "note": "Der Bericht traegt Anzahlen und Byte-Groessen. Kurse stehen ausschliesslich in der privaten Ablage; dieses Artefakt enthaelt keine."
+  }
+}

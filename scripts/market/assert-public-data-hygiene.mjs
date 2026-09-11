@@ -145,6 +145,15 @@ const scaleTrees = [
   ["quant", "data", "market", "factors"],
   ["quant", "data", "market", "health"],
   ["quant", "data", "market", "commercial"],
+  /* Der US-Wertpapierstamm. Er traegt Ticker, Gattungen und Zaehlungen -
+     keine Kurse. Der Pfad steht hier, damit das auch dann noch geprueft
+     wird, wenn spaeter jemand ein Feld ergaenzt. */
+  ["quant", "data", "market", "security-master"],
+  /* Die Berichte der dauerhaften Historienablage. Sie tragen Anzahlen und
+     Byte-Groessen - die Kurse selbst liegen im privaten Objektspeicher
+     und niemals hier. Der Pfad steht in dieser Liste, damit das geprueft
+     wird und nicht bloss zugesagt ist. */
+  ["quant", "data", "market", "history"],
   ["quant", "data", "technical", "scale"]
 ];
 

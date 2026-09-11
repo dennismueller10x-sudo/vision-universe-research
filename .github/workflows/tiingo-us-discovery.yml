@@ -1,0 +1,188 @@
+name: Tiingo — US-Aktienuniversum entdecken und abgleichen
+
+# Ein eigener Workflow, und zwar bewusst.
+#
+# tiingo-scale.yml faehrt die Skalierungskette: Universum, Gate-Lauf ueber
+# tausende Titel, Faktoren, Technical. Ein Lauf dort dauert eine Stunde
+# und stellt 5.686 Anfragen an einen kostenpflichtigen Zugang.
+#
+# DIESER Workflow stellt NULL Anfragen an die Kurs-API. Er laedt eine
+# einzige offene Datei - Tiingos supported_tickers.zip, rund 800 KB -,
+# klassifiziert sie und gleicht sie gegen den gelieferten Bestand ab.
+# Er holt keine Kurse, laeuft keinen Backfill und aendert kein
+# bestehendes Artefakt. Ihn an die Skalierungskette zu haengen hiesse,
+# eine Frage von Sekunden hinter einen Lauf von Stunden zu stellen.
+#
+# AUSLOESER
+#
+#   [tiingo-discovery]  auf einem Entwicklungsbranch
+#   workflow_dispatch   nach dem Merge auf den Default-Branch
+#
+# Wie in tiingo-scale.yml muss der Push eine Datei aus der paths-Liste
+# unten AENDERN - ein leerer Commit mit Marke legt bei GitHub gar keinen
+# Lauf an.
+#
+# WAS ER AUSDRUECKLICH NICHT TUT
+#
+# Er startet keinen historischen Backfill. Die Backfill-Schaetzung ist
+# eine Rechnung aus dem letzten echten Lauf und keine Freigabe; der Lauf
+# selbst bleibt eine Entscheidung des Eigentuemers.
+
+on:
+  workflow_dispatch:
+    inputs:
+      includeNewTickers:
+        description: 'Neue Anbieterticker in das ausgelieferte Artefakt schreiben (Lizenzfrage!)'
+        type: boolean
+        default: false
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'quant/engines/us-security-master.js'
+      - 'scripts/market/build-us-security-master.mjs'
+      - 'quant/tests/us-security-master.test.mjs'
+      - '.github/workflows/tiingo-us-discovery.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    name: Entdeckung und Abgleich
+    runs-on: ubuntu-latest
+    concurrency:
+      group: tiingo-us-discovery-${{ github.ref }}
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[tiingo-discovery]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Zuerst die Engine, dann der Lauf. Ein Abgleich, der auf einem
+      # kaputten Klassierer beruht, ist schlimmer als keiner: er sieht
+      # aus wie ein Befund.
+      # Ohne die Artefakttests: die pruefen das AUSGELIEFERTE Artefakt
+      # gegen die laufende Engine, und das erzeugt dieser Lauf erst.
+      - name: Engine- und Abgleichstests
+        run: node --test quant/tests/us-security-master.test.mjs
+
+      # Der Bestand VOR dem Lauf. Er wird nach dem Lauf noch einmal
+      # gelesen und verglichen - eine Zusage, die man nachrechnen kann,
+      # ist mehr wert als eine, die im Kommentar steht.
+      - name: Bestand vor dem Lauf festhalten
+        run: |
+          node -e '
+            const u = require("./quant/data/market/scale/universe-FULL_UNIVERSE.json");
+            const fs = require("fs");
+            const tickers = u.securities.map((s) => s.ticker).sort();
+            fs.writeFileSync("/tmp/baseline-before.json", JSON.stringify(tickers));
+            console.log("Bestand vor dem Lauf: " + tickers.length + " Titel");
+          '
+
+      # Die Tickerliste liegt NICHT hinter dem Schluessel. Er wird
+      # trotzdem mitgeschickt, wo er hinterlegt ist: die Anfrage soll
+      # dem Konto zurechenbar sein. Fehlt er, laeuft der Schritt
+      # trotzdem - und der Bericht sagt, mit welcher Quelle.
+      - name: US-Wertpapierstamm bauen und abgleichen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/build-us-security-master.mjs \
+            ${{ github.event_name == 'workflow_dispatch' && inputs.includeNewTickers && '--include-new-tickers' || '' }}
+
+      - name: Der Bestand ist unveraendert
+        run: |
+          node -e '
+            const before = require("/tmp/baseline-before.json");
+            const u = require("./quant/data/market/scale/universe-FULL_UNIVERSE.json");
+            const after = u.securities.map((s) => s.ticker).sort();
+            if (JSON.stringify(before) !== JSON.stringify(after)) {
+              throw new Error("Der Lauf hat den Bestand veraendert. Das darf er nicht.");
+            }
+            const recon = require("./quant/data/market/security-master/reconciliation.json");
+            if (recon.nonDestructive.baselinePreserved !== before.length) {
+              throw new Error("Abgleich fuehrt " + recon.nonDestructive.baselinePreserved +
+                              " Bestandstitel, erwartet " + before.length + ".");
+            }
+            if (recon.invariants.destructiveViolations !== 0) {
+              throw new Error("Nicht-destruktive Zusage verletzt.");
+            }
+            console.log("Bestand unveraendert: " + before.length + " Titel, 0 Verletzungen.");
+          '
+          git diff --exit-code -- quant/data/market/scale quant/data/market/factors \
+                                  quant/data/market/health quant/data/market/universe \
+                                  quant/data/technical quant/data/sec
+
+      - name: Kein Schluessel im Bericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      # Nach dem Lauf noch einmal: die Tests unter SM60-SM63 lesen das
+      # ERZEUGTE Artefakt und nicht nur die Engine.
+      - name: Das erzeugte Artefakt gegen die Engine pruefen
+        run: |
+          node --test quant/tests/us-security-master.test.mjs
+          node --test quant/tests/us-security-master-artefacts.test.mjs
+
+      - name: Bericht sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-us-security-master
+          path: quant/data/market/security-master/
+          if-no-files-found: error
+
+      - name: Bericht committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/security-master
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung am Abgleich."
+          else
+            git commit -m "Tiingo US-Entdeckung: Abgleich aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Tiingo — US-Aktienuniversum: Entdeckung und Abgleich'
+            echo ''
+            if [ -f quant/data/market/security-master/summary.json ]; then
+              node -e '
+                const s = require("./quant/data/market/security-master/summary.json");
+                console.log("Status: **" + s.status + "**  ");
+                console.log("Stand: " + s.today);
+                console.log("");
+                console.log("| Kennzahl | Wert |");
+                console.log("|---|---:|");
+                for (const [k, v] of Object.entries(s.headline)) {
+                  const shown = (v !== null && typeof v === "object")
+                    ? "_" + (v.status || JSON.stringify(v)) + "_" : v;
+                  console.log("| " + k + " | " + shown + " |");
+                }
+                console.log("");
+                console.log("| Befund | Schwere | Anzahl |");
+                console.log("|---|---|---:|");
+                for (const f of s.largestContaminationCategories) {
+                  console.log("| " + f.id + " | " + f.severity + " | " + f.count + " |");
+                }
+                console.log("");
+                console.log("Kein Backfill gestartet. Eine Erweiterung des Universums " +
+                            "braucht die ausdrueckliche Freigabe des Eigentuemers.");
+              '
+            else
+              echo 'Kein Abgleich entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

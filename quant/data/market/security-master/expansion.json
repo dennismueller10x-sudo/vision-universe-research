@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-09-11T07:25:45.040Z",
+  "today": "2026-09-11",
+  "scope": "APPEND_ONLY_US_EQUITY_EXPANSION",
+  "baselineSize": 5684,
+  "appended": 2119,
+  "universeSize": 7803,
+  "appendedByExchange": {
+    "NYSE": 375,
+    "NYSE ARCA": 14,
+    "NASDAQ": 1468,
+    "BATS": 208,
+    "NYSE MKT": 9,
+    "AMEX": 45
+  },
+  "skipped": {
+    "notAdded": 106492,
+    "notEligible": 0,
+    "notCommonEquity": 0,
+    "notPrimaryVenue": 0,
+    "alreadyInBaseline": 0,
+    "duplicateWithinAppend": 0,
+    "inactive": 0
+  },
+  "invariants": {
+    "baselineEntries": 5684,
+    "resultEntries": 7803,
+    "appended": 2119,
+    "baselineFieldChanges": 0,
+    "baselineEntriesDropped": 0,
+    "checked": [
+      "BASELINE_ENTRY_PRESENT",
+      "BASELINE_ORDER_UNCHANGED",
+      "BASELINE_FIELDS_UNCHANGED",
+      "NO_DUPLICATE_TICKER",
+      "UNIVERSE_DID_NOT_SHRINK"
+    ]
+  },
+  "backup": "quant/data/market/security-master/universe-FULL_UNIVERSE.before-expansion.json",
+  "reviewTitlesPreserved": 5684,
+  "removed": 0,
+  "note": "Der Bestand steht zeichengleich an derselben Stelle. Angehaengt wurde ans Ende."
+}

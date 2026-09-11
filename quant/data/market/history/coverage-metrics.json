@@ -1,0 +1,253 @@
+{
+ "generatedAt": "2026-09-11T14:43:34.862Z",
+ "engine": "coverage-metrics-1.0.0",
+ "gate": "FULL_UNIVERSE",
+ "provider": "tiingo",
+ "market": "US",
+ "today": "2026-09-11",
+ "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
+ "tiingoPriceRequests": 0,
+ "storageSource": {
+  "kind": "s3",
+  "how": "INDEX_OBJECT",
+  "prefix": "v1/tiingo/daily/US/",
+  "classBSpent": null
+ },
+ "eligibilitySource": {
+  "file": "quant/data/market/security-master/eligibility.json",
+  "generatedAt": "2026-09-11T14:43:26.256Z",
+  "version": "us-security-master-1.1.0"
+ },
+ "eligibilityCounts": {
+  "universeMembers": 7803,
+  "ELIGIBLE": 6477,
+  "SEPARATE_CLASS": 308,
+  "EXCLUDED": 799,
+  "REVIEW": 219,
+  "productUniverse": 7004
+ },
+ "version": "coverage-metrics-1.0.0",
+ "thresholds": {
+  "chartMinBars": 2,
+  "chartMinBarsSource": "quant/engines/chart-ranges.js:MIN_BARS",
+  "technicalMinBars": 300,
+  "technicalMinBarsSource": "scripts/technical/run-technical-scale.mjs:MIN_BARS",
+  "longHistoryMinBars": 250,
+  "longHistoryMinBarsSource": "tiingo-scale.json:pass.historyCoverageMinBars",
+  "tradingDaysPerYear": 252
+ },
+ "STORAGE_COVERAGE": {
+  "denominator": 7803,
+  "stored": 7802,
+  "missing": 1,
+  "missingProviderUnavailable": 1,
+  "missingUnexplained": 0,
+  "missingSymbols": [],
+  "STORAGE_COVERAGE_PERCENT": 99.99
+ },
+ "CHART_AVAILABILITY": {
+  "denominator": 7004,
+  "renderable": 6997,
+  "notRenderable": 7,
+  "notRenderableSymbols": [
+   "GLMD",
+   "BNRG",
+   "BRTM",
+   "JAB",
+   "JABRR",
+   "JABRU",
+   "JABRW"
+  ],
+  "CHART_AVAILABILITY_PERCENT": 99.9
+ },
+ "TECHNICAL_HISTORY_ELIGIBILITY": {
+  "denominator": 7004,
+  "eligible": 5963,
+  "tooShort": 1041,
+  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 85.14
+ },
+ "LONG_HISTORY": {
+  "universeSize": 7803,
+  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 6134,
+  "PASS": 6103,
+  "FAIL": 31,
+  "LONG_HISTORY_COVERAGE_PERCENT": 99.49,
+  "notEligibleByReason": {
+   "NOT_IN_PRODUCT_UNIVERSE": 799,
+   "LISTING_TOO_YOUNG": 869,
+   "PROVIDER_HAS_NO_SERIES": 1
+  },
+  "failSymbols": [
+   {
+    "ticker": "LILAV",
+    "bars": 79,
+    "startDate": "2015-06-22"
+   },
+   {
+    "ticker": "LILKV",
+    "bars": 78,
+    "startDate": "2015-06-23"
+   },
+   {
+    "ticker": "RIVR",
+    "bars": 49,
+    "startDate": "2016-01-04"
+   },
+   {
+    "ticker": "NGHT",
+    "bars": 179,
+    "startDate": "2017-09-25"
+   },
+   {
+    "ticker": "MYHA",
+    "bars": 236,
+    "startDate": "2017-09-26"
+   },
+   {
+    "ticker": "CRCO",
+    "bars": 249,
+    "startDate": "2017-10-02"
+   },
+   {
+    "ticker": "MDA",
+    "bars": 129,
+    "startDate": "2017-10-05"
+   },
+   {
+    "ticker": "EDVA",
+    "bars": 14,
+    "startDate": "2019-02-05"
+   },
+   {
+    "ticker": "COOL",
+    "bars": 20,
+    "startDate": "2021-02-19"
+   },
+   {
+    "ticker": "CNL",
+    "bars": 22,
+    "startDate": "2021-07-15"
+   },
+   {
+    "ticker": "MCVT",
+    "bars": 118,
+    "startDate": "2022-08-10"
+   },
+   {
+    "ticker": "LNC-P-D",
+    "bars": 150,
+    "startDate": "2022-11-17"
+   },
+   {
+    "ticker": "BNH",
+    "bars": 77,
+    "startDate": "2022-12-12"
+   },
+   {
+    "ticker": "TOROV",
+    "bars": 149,
+    "startDate": "2023-03-03"
+   },
+   {
+    "ticker": "PHXM",
+    "bars": 77,
+    "startDate": "2023-06-29"
+   },
+   {
+    "ticker": "ABLLW",
+    "bars": 165,
+    "startDate": "2023-07-05"
+   },
+   {
+    "ticker": "AAPGV",
+    "bars": 147,
+    "startDate": "2025-01-24"
+   },
+   {
+    "ticker": "ANGIV",
+    "bars": 152,
+    "startDate": "2025-03-25"
+   },
+   {
+    "ticker": "BRRWU",
+    "bars": 235,
+    "startDate": "2025-07-31"
+   },
+   {
+    "ticker": "BULLZ",
+    "bars": 199,
+    "startDate": "2025-04-11"
+   },
+   {
+    "ticker": "ESEAV",
+    "bars": 152,
+    "startDate": "2025-03-10"
+   },
+   {
+    "ticker": "FATAV",
+    "bars": 147,
+    "startDate": "2025-01-28"
+   },
+   {
+    "ticker": "FATBV",
+    "bars": 147,
+    "startDate": "2025-01-28"
+   },
+   {
+    "ticker": "GLBAV",
+    "bars": 147,
+    "startDate": "2025-07-11"
+   },
+   {
+    "ticker": "IACVV",
+    "bars": 149,
+    "startDate": "2025-03-26"
+   },
+   {
+    "ticker": "ILMNV",
+    "bars": 149,
+    "startDate": "2024-06-18"
+   },
+   {
+    "ticker": "LBDAV",
+    "bars": 146,
+    "startDate": "2025-07-14"
+   },
+   {
+    "ticker": "LBDKV",
+    "bars": 146,
+    "startDate": "2025-07-11"
+   },
+   {
+    "ticker": "MBIEL",
+    "bars": 147,
+    "startDate": "2024-11-22"
+   },
+   {
+    "ticker": "RHLDV",
+    "bars": 152,
+    "startDate": "2025-02-20"
+   },
+   {
+    "ticker": "WDCVV",
+    "bars": 152,
+    "startDate": "2025-02-13"
+   }
+  ],
+  "threshold": 0.9,
+  "thresholdSource": "tiingo-scale.json:pass.minHistoryCoverageRate",
+  "ok": true,
+  "failSymbolsTotal": 31
+ },
+ "legacy": {
+  "metric": "historyCoverageRate ueber das gesamte Universum",
+  "denominator": 7803,
+  "pass": 6618,
+  "percent": 84.81,
+  "note": "Diese Zahl mischt Ablagedeckung, Chartfaehigkeit und Listingalter. Sie wird nur noch zum Vergleich gefuehrt."
+ },
+ "redistribution": {
+  "contains": "Anzahlen, Datumsgrenzen, Gruende",
+  "doesNotContain": "Kursniveaus, Kerzen, Reihen"
+ }
+}

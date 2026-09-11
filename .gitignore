@@ -42,3 +42,14 @@ preview-universe/
 # Vorschau.
 quant/data/proof/
 /universe/
+
+# Phase "US Security Master" — Laufzustand der Nullkostenschranke.
+# preflight.json ist eine FREIGABE fuer genau einen Lauf: sie stuetzt
+# sich auf den Nutzungsstand und den belegten Speicher im Moment der
+# Rechnung. Committet waere sie eine Freigabe auf Vorrat - genau das,
+# was die Schranke verhindern soll. sync.json ist der Bericht eines
+# einzelnen Laufs und gehoert zu ihm, nicht ins Repository.
+# Die Pflichtrechnung preflight-backfill-7800.json bleibt committet:
+# sie ist eine Planungsgrundlage und keine Freigabe.
+quant/data/market/history/preflight.json
+quant/data/market/history/sync.json

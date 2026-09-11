@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-11T09:03:28.103Z",
-  "gate": "FULL_UNIVERSE",
+  "generatedAt": "2026-09-11T14:55:07.326Z",
+  "gate": "ELIGIBLE_US_EQUITY",
   "provider": "tiingo",
   "methodologyVersions": {
     "technical": "technical-v1.0.0",
@@ -9,39 +9,39 @@
   "note": "Deckungsbericht, kein Datensatz. Die Analysebundles bleiben in der Arbeitsablage - rund ein halbes Megabyte je Titel waere weder speicherbar noch weitergabefaehig. Ausgewiesen sind Zustaende und Laufzeiten, keine Kurse.",
   "run": {
     "source": "github-actions",
-    "runId": "34574226888",
-    "commit": "4f4aa791254403515c8d72cd23cc5ce94b141ebd",
+    "runId": "34611793308",
+    "commit": "7fa3b141cfe8a9b96495b28b715bc30061a75bd6",
     "elliottEnabled": true,
     "minBars": 300,
-    "benchmark": "SPY",
-    "benchmarkStatus": "OK"
+    "benchmark": null,
+    "benchmarkStatus": "SOURCE_MISSING"
   },
-  "requested": 7803,
-  "evaluated": 6436,
+  "requested": 7004,
+  "evaluated": 5963,
   "coverage": {
-    "TECHNICAL_READY": 6436,
+    "TECHNICAL_READY": 5963,
     "TECHNICAL_PARTIAL": 0,
     "TECHNICAL_FAILED": 0,
-    "INSUFFICIENT_HISTORY": 1366,
+    "INSUFFICIENT_HISTORY": 1040,
     "SOURCE_MISSING": 1
   },
-  "coverageRate": 0.8248,
+  "coverageRate": 0.8514,
   "elliott": {
     "enabled": true,
-    "symbolsRun": 6436,
+    "symbolsRun": 5963,
     "coverage": {
-      "HIGH_CONFIDENCE": 1585,
-      "MEDIUM_CONFIDENCE": 395,
-      "LOW_CONFIDENCE": 473,
-      "AMBIGUOUS": 3848,
-      "UNAVAILABLE": 135,
-      "NOT_RUN": 1367
+      "HIGH_CONFIDENCE": 1496,
+      "MEDIUM_CONFIDENCE": 364,
+      "LOW_CONFIDENCE": 403,
+      "AMBIGUOUS": 3602,
+      "UNAVAILABLE": 98,
+      "NOT_RUN": 1041
     },
     "reasons": {
-      "ambiguousCount": 3848,
-      "FIRST_LEG_ONLY": 463,
-      "lowConfidence": 10,
-      "TOO_FEW_PIVOTS": 135
+      "ambiguousCount": 3602,
+      "FIRST_LEG_ONLY": 395,
+      "lowConfidence": 8,
+      "TOO_FEW_PIVOTS": 98
     },
     "confidenceThresholds": {
       "highConfidenceFrom": 70,
@@ -51,67 +51,67 @@
     "precedenceNote": "Das eigene Urteil der Engine geht der Zahl vor. Meldet sie AMBIGUOUS oder LOW_CONFIDENCE, bleibt es dabei - auch bei hoher confidence. Der Wert bezieht sich dann auf die fuehrende von mehreren konkurrierenden Zaehlungen, und eine mehrdeutige Zaehlung wird nicht dadurch eindeutig, dass ein Zweig gut abschneidet. Die Schwellen greifen nur, wenn die Engine selbst keinen Vorbehalt gemeldet hat."
   },
   "performance": {
-    "totalRuntimeMs": 425114,
-    "analysisRuntimeMs": 302677,
-    "msPerSymbol": 47,
-    "processed": 6436,
+    "totalRuntimeMs": 512489,
+    "analysisRuntimeMs": 365652,
+    "msPerSymbol": 61,
+    "processed": 5963,
     "slowest": [
       {
         "ticker": "AAPL",
-        "ms": 246,
+        "ms": 303,
         "bars": 9240
       },
       {
         "ticker": "MSFT",
-        "ms": 171,
+        "ms": 233,
         "bars": 9240
       },
       {
-        "ticker": "TM",
-        "ms": 154,
+        "ticker": "TSRI",
+        "ms": 194,
+        "bars": 9178
+      },
+      {
+        "ticker": "AMAT",
+        "ms": 192,
         "bars": 9240
       },
       {
-        "ticker": "GTY",
-        "ms": 153,
+        "ticker": "HOG",
+        "ms": 191,
         "bars": 9240
       },
       {
-        "ticker": "ETN",
-        "ms": 152,
-        "bars": 9240
-      },
-      {
-        "ticker": "BSIN",
-        "ms": 151,
+        "ticker": "JJSF",
+        "ms": 189,
         "bars": 9182
       },
       {
-        "ticker": "ORCL",
-        "ms": 150,
+        "ticker": "HMC",
+        "ms": 187,
         "bars": 9240
       },
       {
-        "ticker": "LOW",
-        "ms": 149,
-        "bars": 9240
+        "ticker": "ODP",
+        "ms": 187,
+        "bars": 9141
       },
       {
-        "ticker": "TFX",
-        "ms": 148,
-        "bars": 9240
+        "ticker": "FL",
+        "ms": 186,
+        "bars": 9133
       },
       {
-        "ticker": "MAS",
-        "ms": 147,
+        "ticker": "WMT",
+        "ms": 185,
         "bars": 9240
       }
     ],
     "projected": {
-      "basis": "Linear aus 6436 gemessenen Titeln. Die Analyse je Titel ist unabhaengig von den anderen; es gibt keinen Schritt ueber Titelpaare.",
-      "minutesFor500": 0.4,
-      "minutesFor2000": 1.6,
-      "minutesFor10000": 7.8
+      "basis": "Linear aus 5963 gemessenen Titeln. Die Analyse je Titel ist unabhaengig von den anderen; es gibt keinen Schritt ueber Titelpaare.",
+      "minutesFor500": 0.5,
+      "minutesFor2000": 2,
+      "minutesFor10000": 10.2
     }
   },
   "perSymbol": {
@@ -183,20 +183,6 @@
       "minBars": 300,
       "reason": "Reihe hat 14 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CTEST-A": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 154,
-      "minBars": 300,
-      "reason": "Reihe hat 154 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CELGR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 210,
-      "minBars": 300,
-      "reason": "Reihe hat 210 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "VLNWF": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -210,13 +196,6 @@
       "bars": 20,
       "minBars": 300,
       "reason": "Reihe hat 20 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CMIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 135,
-      "minBars": 300,
-      "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "LEGO": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -274,13 +253,6 @@
       "minBars": 300,
       "reason": "Reihe hat 165 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "TLSIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 112,
-      "minBars": 300,
-      "reason": "Reihe hat 112 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "AAAC": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -302,42 +274,7 @@
       "minBars": 300,
       "reason": "Reihe hat 105 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "AACOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 141,
-      "minBars": 300,
-      "reason": "Reihe hat 141 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AACOW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 103,
-      "minBars": 300,
-      "reason": "Reihe hat 103 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "AACP": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AACPR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AACPU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 109,
-      "minBars": 300,
-      "reason": "Reihe hat 109 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AACPW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 73,
@@ -393,20 +330,6 @@
       "minBars": 300,
       "reason": "Reihe hat 106 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ACAAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 141,
-      "minBars": 300,
-      "reason": "Reihe hat 141 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ACAAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 104,
-      "minBars": 300,
-      "reason": "Reihe hat 104 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ACEI": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -415,20 +338,6 @@
       "reason": "Reihe hat 241 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "ACGC": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ACGCU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 109,
-      "minBars": 300,
-      "reason": "Reihe hat 109 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ACGCW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 73,
@@ -476,20 +385,6 @@
       "bars": 97,
       "minBars": 300,
       "reason": "Reihe hat 97 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ADACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 182,
-      "minBars": 300,
-      "reason": "Reihe hat 182 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ADACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 148,
-      "minBars": 300,
-      "reason": "Reihe hat 148 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "ADAMH": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -539,27 +434,6 @@
       "bars": 158,
       "minBars": 300,
       "reason": "Reihe hat 158 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AEAQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 192,
-      "minBars": 300,
-      "reason": "Reihe hat 192 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AEAQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 158,
-      "minBars": 300,
-      "reason": "Reihe hat 158 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AESPU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 69,
-      "minBars": 300,
-      "reason": "Reihe hat 69 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "AEXA": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -631,13 +505,6 @@
       "minBars": 300,
       "reason": "Reihe hat 141 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "AIFER": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 248,
-      "minBars": 300,
-      "reason": "Reihe hat 248 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "AIHS": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -701,20 +568,6 @@
       "minBars": 300,
       "reason": "Reihe hat 202 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ALISR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 202,
-      "minBars": 300,
-      "reason": "Reihe hat 202 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ALISU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 222,
-      "minBars": 300,
-      "reason": "Reihe hat 222 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ALM": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -736,35 +589,7 @@
       "minBars": 300,
       "reason": "Reihe hat 124 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ALOVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 161,
-      "minBars": 300,
-      "reason": "Reihe hat 161 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ALOVW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 122,
-      "minBars": 300,
-      "reason": "Reihe hat 122 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ALPX": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 47,
-      "minBars": 300,
-      "reason": "Reihe hat 47 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ALPXR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 47,
-      "minBars": 300,
-      "reason": "Reihe hat 47 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ALPXW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 47,
@@ -779,20 +604,6 @@
       "reason": "Reihe hat 171 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "AMAC": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 3,
-      "minBars": 300,
-      "reason": "Reihe hat 3 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AMACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 39,
-      "minBars": 300,
-      "reason": "Reihe hat 39 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "AMACW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 3,
@@ -883,33 +694,12 @@
       "minBars": 300,
       "reason": "Reihe hat 297 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "APACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 200,
-      "minBars": 300,
-      "reason": "Reihe hat 200 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "APAD": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 261,
       "minBars": 300,
       "reason": "Reihe hat 261 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "APADR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 261,
-      "minBars": 300,
-      "reason": "Reihe hat 261 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "APADU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 281,
-      "minBars": 300,
-      "reason": "Reihe hat 281 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "APDB": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -925,13 +715,6 @@
       "minBars": 300,
       "reason": "Reihe hat 142 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "APMCU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 69,
-      "minBars": 300,
-      "reason": "Reihe hat 69 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "APMD": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -946,21 +729,7 @@
       "minBars": 300,
       "reason": "Reihe hat 64 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "APURR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 64,
-      "minBars": 300,
-      "reason": "Reihe hat 64 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "APXT": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 204,
-      "minBars": 300,
-      "reason": "Reihe hat 204 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "APXTW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 204,
@@ -981,42 +750,7 @@
       "minBars": 300,
       "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ARCIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 159,
-      "minBars": 300,
-      "reason": "Reihe hat 159 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ARCIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 121,
-      "minBars": 300,
-      "reason": "Reihe hat 121 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ARCL": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 72,
-      "minBars": 300,
-      "reason": "Reihe hat 72 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ARCLR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 72,
-      "minBars": 300,
-      "reason": "Reihe hat 72 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ARCLU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 92,
-      "minBars": 300,
-      "reason": "Reihe hat 92 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ARCLW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 72,
@@ -1029,20 +763,6 @@
       "bars": 112,
       "minBars": 300,
       "reason": "Reihe hat 112 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ARTCU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 171,
-      "minBars": 300,
-      "reason": "Reihe hat 171 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ARTCW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 135,
-      "minBars": 300,
-      "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "ARXS": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -1087,27 +807,6 @@
       "reason": "Reihe hat 142 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "ATLQ": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 26,
-      "minBars": 300,
-      "reason": "Reihe hat 26 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ATLQR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 26,
-      "minBars": 300,
-      "reason": "Reihe hat 26 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ATLQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 64,
-      "minBars": 300,
-      "reason": "Reihe hat 64 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ATLQW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 26,
@@ -1226,20 +925,6 @@
       "minBars": 300,
       "reason": "Reihe hat 156 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BBCQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 160,
-      "minBars": 300,
-      "reason": "Reihe hat 160 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BBCQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 156,
-      "minBars": 300,
-      "reason": "Reihe hat 156 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BBHL": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -1261,40 +946,12 @@
       "minBars": 300,
       "reason": "Reihe hat 272 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BCARU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 271,
-      "minBars": 300,
-      "reason": "Reihe hat 271 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BCARW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 266,
-      "minBars": 300,
-      "reason": "Reihe hat 266 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BCCQ": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 28,
       "minBars": 300,
       "reason": "Reihe hat 28 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BCCQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 47,
-      "minBars": 300,
-      "reason": "Reihe hat 47 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BCCQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 26,
-      "minBars": 300,
-      "reason": "Reihe hat 26 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "BCEM": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -1344,20 +1001,6 @@
       "bars": 226,
       "minBars": 300,
       "reason": "Reihe hat 226 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BDCIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 238,
-      "minBars": 300,
-      "reason": "Reihe hat 238 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BDCIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 225,
-      "minBars": 300,
-      "reason": "Reihe hat 225 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "BEBE": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -1436,20 +1079,6 @@
       "minBars": 300,
       "reason": "Reihe hat 102 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BHAVR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 102,
-      "minBars": 300,
-      "reason": "Reihe hat 102 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BHAVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 118,
-      "minBars": 300,
-      "reason": "Reihe hat 118 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BIDWR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -1478,28 +1107,7 @@
       "minBars": 300,
       "reason": "Reihe hat 146 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BIVIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 273,
-      "minBars": 300,
-      "reason": "Reihe hat 273 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BIXI": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 183,
-      "minBars": 300,
-      "reason": "Reihe hat 183 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BIXIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 194,
-      "minBars": 300,
-      "reason": "Reihe hat 194 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BIXIW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 183,
@@ -1527,13 +1135,6 @@
       "minBars": 300,
       "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BLACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BLDX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -1555,20 +1156,6 @@
       "minBars": 300,
       "reason": "Reihe hat 153 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BLRKU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 187,
-      "minBars": 300,
-      "reason": "Reihe hat 187 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BLRKW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 152,
-      "minBars": 300,
-      "reason": "Reihe hat 152 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BLSH": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -1583,28 +1170,7 @@
       "minBars": 300,
       "reason": "Reihe hat 24 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BLUWW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BLZR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 215,
-      "minBars": 300,
-      "reason": "Reihe hat 215 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BLZRU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 253,
-      "minBars": 300,
-      "reason": "Reihe hat 253 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BLZRW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 215,
@@ -1667,13 +1233,6 @@
       "minBars": 300,
       "reason": "Reihe hat 85 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BPACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 170,
-      "minBars": 300,
-      "reason": "Reihe hat 170 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BPRE": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -1710,13 +1269,6 @@
       "reason": "Reihe hat 222 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "BREZ": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 63,
-      "minBars": 300,
-      "reason": "Reihe hat 63 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BREZR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 63,
@@ -1765,33 +1317,12 @@
       "minBars": 300,
       "reason": "Reihe hat 1 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "BRTMU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 37,
-      "minBars": 300,
-      "reason": "Reihe hat 37 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BRTMW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 1,
-      "minBars": 300,
-      "reason": "Reihe hat 1 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "BRUN": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 86,
       "minBars": 300,
       "reason": "Reihe hat 86 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BRUNW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 85,
-      "minBars": 300,
-      "reason": "Reihe hat 85 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "BRVE": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -1827,13 +1358,6 @@
       "bars": 275,
       "minBars": 300,
       "reason": "Reihe hat 275 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "BSAAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 274,
-      "minBars": 300,
-      "reason": "Reihe hat 274 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "BSP": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -1947,20 +1471,6 @@
       "minBars": 300,
       "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CAIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 93,
-      "minBars": 300,
-      "reason": "Reihe hat 93 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CAIIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 57,
-      "minBars": 300,
-      "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CAMC": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2059,26 +1569,12 @@
       "minBars": 300,
       "reason": "Reihe hat 29 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CCCTW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 29,
-      "minBars": 300,
-      "reason": "Reihe hat 29 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CCCX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 296,
       "minBars": 300,
       "reason": "Reihe hat 296 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CCCXW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 294,
-      "minBars": 300,
-      "reason": "Reihe hat 294 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "CCHH": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -2101,13 +1597,6 @@
       "minBars": 300,
       "reason": "Reihe hat 264 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CCIIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 264,
-      "minBars": 300,
-      "reason": "Reihe hat 264 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CCPX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2121,20 +1610,6 @@
       "bars": 187,
       "minBars": 300,
       "reason": "Reihe hat 187 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CCXIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 183,
-      "minBars": 300,
-      "reason": "Reihe hat 183 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CCXIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 148,
-      "minBars": 300,
-      "reason": "Reihe hat 148 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "CDNG": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -2192,13 +1667,6 @@
       "minBars": 300,
       "reason": "Reihe hat 18 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CGCFW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 18,
-      "minBars": 300,
-      "reason": "Reihe hat 18 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CGOV": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2212,20 +1680,6 @@
       "bars": 208,
       "minBars": 300,
       "reason": "Reihe hat 208 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CHECU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 248,
-      "minBars": 300,
-      "reason": "Reihe hat 248 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CHECW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 206,
-      "minBars": 300,
-      "reason": "Reihe hat 206 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "CHNL": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -2325,13 +1779,6 @@
       "minBars": 300,
       "reason": "Reihe hat 63 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CMIIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 63,
-      "minBars": 300,
-      "reason": "Reihe hat 63 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CNXU": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2387,34 +1834,6 @@
       "bars": 189,
       "minBars": 300,
       "reason": "Reihe hat 189 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CRACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 189,
-      "minBars": 300,
-      "reason": "Reihe hat 189 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CRACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 188,
-      "minBars": 300,
-      "reason": "Reihe hat 188 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CRANR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 167,
-      "minBars": 300,
-      "reason": "Reihe hat 167 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CRANU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 184,
-      "minBars": 300,
-      "reason": "Reihe hat 184 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "CRCA": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -2479,13 +1898,6 @@
       "minBars": 300,
       "reason": "Reihe hat 112 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CSHRW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 112,
-      "minBars": 300,
-      "reason": "Reihe hat 112 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CSIO": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2513,20 +1925,6 @@
       "bars": 147,
       "minBars": 300,
       "reason": "Reihe hat 147 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CTAAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 102,
-      "minBars": 300,
-      "reason": "Reihe hat 102 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CTAAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 138,
-      "minBars": 300,
-      "reason": "Reihe hat 138 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "CTGG": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -2577,20 +1975,6 @@
       "minBars": 300,
       "reason": "Reihe hat 59 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "CXIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 94,
-      "minBars": 300,
-      "reason": "Reihe hat 94 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "CXIIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 59,
-      "minBars": 300,
-      "reason": "Reihe hat 59 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "CYAB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2606,20 +1990,6 @@
       "reason": "Reihe hat 20 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "DBCA": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 137,
-      "minBars": 300,
-      "reason": "Reihe hat 137 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DBCAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 146,
-      "minBars": 300,
-      "reason": "Reihe hat 146 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DBCAW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 137,
@@ -2682,21 +2052,7 @@
       "minBars": 300,
       "reason": "Reihe hat 56 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "DFDVW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 211,
-      "minBars": 300,
-      "reason": "Reihe hat 211 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "DGAC": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 39,
-      "minBars": 300,
-      "reason": "Reihe hat 39 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DGACR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 39,
@@ -2752,20 +2108,6 @@
       "minBars": 300,
       "reason": "Reihe hat 193 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "DMIIR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 193,
-      "minBars": 300,
-      "reason": "Reihe hat 193 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DMIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 241,
-      "minBars": 300,
-      "reason": "Reihe hat 241 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "DMN": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2774,20 +2116,6 @@
       "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "DNMX": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 202,
-      "minBars": 300,
-      "reason": "Reihe hat 202 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DNMXU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 216,
-      "minBars": 300,
-      "reason": "Reihe hat 216 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DNMXW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 202,
@@ -2822,20 +2150,6 @@
       "minBars": 300,
       "reason": "Reihe hat 155 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "DSACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 155,
-      "minBars": 300,
-      "reason": "Reihe hat 155 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DUKRW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 81,
-      "minBars": 300,
-      "reason": "Reihe hat 81 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "DUSG": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -2857,33 +2171,12 @@
       "minBars": 300,
       "reason": "Reihe hat 280 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "DYNCW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 91,
-      "minBars": 300,
-      "reason": "Reihe hat 91 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "DYOR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 203,
       "minBars": 300,
       "reason": "Reihe hat 203 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DYORU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 217,
-      "minBars": 300,
-      "reason": "Reihe hat 217 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "DYORW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 202,
-      "minBars": 300,
-      "reason": "Reihe hat 202 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "EASY": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -2969,13 +2262,6 @@
       "minBars": 300,
       "reason": "Reihe hat 97 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "EMISR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 220,
-      "minBars": 300,
-      "reason": "Reihe hat 220 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "EMJN": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3018,26 +2304,12 @@
       "minBars": 300,
       "reason": "Reihe hat 64 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ENRDW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 64,
-      "minBars": 300,
-      "reason": "Reihe hat 64 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "EQPT": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 159,
       "minBars": 300,
       "reason": "Reihe hat 159 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ERNAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 149,
-      "minBars": 300,
-      "reason": "Reihe hat 149 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "EROK": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -3109,40 +2381,12 @@
       "minBars": 300,
       "reason": "Reihe hat 193 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "EVOXU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 207,
-      "minBars": 300,
-      "reason": "Reihe hat 207 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "EVOXW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 193,
-      "minBars": 300,
-      "reason": "Reihe hat 193 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "EWAV": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 19,
       "minBars": 300,
       "reason": "Reihe hat 19 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "EWAVR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 19,
-      "minBars": 300,
-      "reason": "Reihe hat 19 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "EWAVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 29,
-      "minBars": 300,
-      "reason": "Reihe hat 29 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "EXEQ": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -3152,13 +2396,6 @@
       "reason": "Reihe hat 144 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "EXYN": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 81,
-      "minBars": 300,
-      "reason": "Reihe hat 81 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "EXYNW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 81,
@@ -3242,20 +2479,6 @@
       "minBars": 300,
       "reason": "Reihe hat 27 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "FDMMU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 46,
-      "minBars": 300,
-      "reason": "Reihe hat 46 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FDMMW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 25,
-      "minBars": 300,
-      "reason": "Reihe hat 25 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "FDXF": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3277,20 +2500,6 @@
       "minBars": 300,
       "reason": "Reihe hat 125 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "FGIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 163,
-      "minBars": 300,
-      "reason": "Reihe hat 163 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FGIIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 125,
-      "minBars": 300,
-      "reason": "Reihe hat 125 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "FGRU": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3299,13 +2508,6 @@
       "reason": "Reihe hat 142 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "FIGX": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 268,
-      "minBars": 300,
-      "reason": "Reihe hat 268 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FIGXW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 268,
@@ -3374,20 +2576,6 @@
       "bars": 80,
       "minBars": 300,
       "reason": "Reihe hat 80 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FMACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 80,
-      "minBars": 300,
-      "reason": "Reihe hat 80 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FMACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 112,
-      "minBars": 300,
-      "reason": "Reihe hat 112 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "FOFO": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -3515,20 +2703,6 @@
       "minBars": 300,
       "reason": "Reihe hat 206 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "FTHAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 92,
-      "minBars": 300,
-      "reason": "Reihe hat 92 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FTHAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 57,
-      "minBars": 300,
-      "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "FTHB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3557,13 +2731,6 @@
       "minBars": 300,
       "reason": "Reihe hat 221 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "FUSEW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 221,
-      "minBars": 300,
-      "reason": "Reihe hat 221 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "FVAV": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3578,35 +2745,7 @@
       "minBars": 300,
       "reason": "Reihe hat 29 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "FWACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 29,
-      "minBars": 300,
-      "reason": "Reihe hat 29 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FWACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 29,
-      "minBars": 300,
-      "reason": "Reihe hat 29 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "FXAC": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 47,
-      "minBars": 300,
-      "reason": "Reihe hat 47 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FXACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 76,
-      "minBars": 300,
-      "reason": "Reihe hat 76 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "FXACW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 47,
@@ -3633,20 +2772,6 @@
       "bars": 57,
       "minBars": 300,
       "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GCGRU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 92,
-      "minBars": 300,
-      "reason": "Reihe hat 92 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GCGRW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 56,
-      "minBars": 300,
-      "reason": "Reihe hat 56 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "GDT": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -3683,33 +2808,12 @@
       "minBars": 300,
       "reason": "Reihe hat 44 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "GFUZW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 43,
-      "minBars": 300,
-      "reason": "Reihe hat 43 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "GHXI": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 20,
       "minBars": 300,
       "reason": "Reihe hat 20 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GHXIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 56,
-      "minBars": 300,
-      "reason": "Reihe hat 56 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GHXIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 19,
-      "minBars": 300,
-      "reason": "Reihe hat 19 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "GIEQ": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -3795,13 +2899,6 @@
       "minBars": 300,
       "reason": "Reihe hat 173 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "GLNDW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 94,
-      "minBars": 300,
-      "reason": "Reihe hat 94 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "GLOO": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3879,40 +2976,12 @@
       "minBars": 300,
       "reason": "Reihe hat 224 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "GSRFR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 224,
-      "minBars": 300,
-      "reason": "Reihe hat 224 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GSRFU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 256,
-      "minBars": 300,
-      "reason": "Reihe hat 256 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "GSRV": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 49,
       "minBars": 300,
       "reason": "Reihe hat 49 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GSRVR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 46,
-      "minBars": 300,
-      "reason": "Reihe hat 46 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GSRVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 82,
-      "minBars": 300,
-      "reason": "Reihe hat 82 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "GSUI": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -3956,20 +3025,6 @@
       "minBars": 300,
       "reason": "Reihe hat 48 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "GUACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 81,
-      "minBars": 300,
-      "reason": "Reihe hat 81 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "GUACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 48,
-      "minBars": 300,
-      "reason": "Reihe hat 48 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "GXRP": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -3991,20 +3046,6 @@
       "minBars": 300,
       "reason": "Reihe hat 110 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "HACQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 145,
-      "minBars": 300,
-      "reason": "Reihe hat 145 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "HACQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 110,
-      "minBars": 300,
-      "reason": "Reihe hat 110 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "HALX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4018,20 +3059,6 @@
       "bars": 185,
       "minBars": 300,
       "reason": "Reihe hat 185 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "HAVAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 184,
-      "minBars": 300,
-      "reason": "Reihe hat 184 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "HAVAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 221,
-      "minBars": 300,
-      "reason": "Reihe hat 221 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "HBANZ": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -4068,20 +3095,6 @@
       "minBars": 300,
       "reason": "Reihe hat 157 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "HCACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 156,
-      "minBars": 300,
-      "reason": "Reihe hat 156 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "HCICR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 113,
-      "minBars": 300,
-      "reason": "Reihe hat 113 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "HCMA": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4089,21 +3102,7 @@
       "minBars": 300,
       "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "HCMAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "HDRN": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 75,
-      "minBars": 300,
-      "reason": "Reihe hat 75 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "HDRNW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 75,
@@ -4250,20 +3249,6 @@
       "minBars": 300,
       "reason": "Reihe hat 236 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "HVMCU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 272,
-      "minBars": 300,
-      "reason": "Reihe hat 272 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "HVMCW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 236,
-      "minBars": 300,
-      "reason": "Reihe hat 236 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "HYGD": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4299,35 +3284,7 @@
       "minBars": 300,
       "reason": "Reihe hat 110 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IACOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 146,
-      "minBars": 300,
-      "reason": "Reihe hat 146 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IACOW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 110,
-      "minBars": 300,
-      "reason": "Reihe hat 110 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "IACQ": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 58,
-      "minBars": 300,
-      "reason": "Reihe hat 58 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IACQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 94,
-      "minBars": 300,
-      "reason": "Reihe hat 94 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IACQW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 58,
@@ -4397,20 +3354,6 @@
       "minBars": 300,
       "reason": "Reihe hat 48 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IDACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 81,
-      "minBars": 300,
-      "reason": "Reihe hat 81 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IDACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 48,
-      "minBars": 300,
-      "reason": "Reihe hat 48 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "IDJN": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4439,47 +3382,12 @@
       "minBars": 300,
       "reason": "Reihe hat 125 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IEAGR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 125,
-      "minBars": 300,
-      "reason": "Reihe hat 125 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IEAGU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 163,
-      "minBars": 300,
-      "reason": "Reihe hat 163 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IGACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 180,
-      "minBars": 300,
-      "reason": "Reihe hat 180 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ILLU": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 100,
       "minBars": 300,
       "reason": "Reihe hat 100 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ILLUU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 135,
-      "minBars": 300,
-      "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ILLUW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 99,
-      "minBars": 300,
-      "reason": "Reihe hat 99 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "ILMNV": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -4508,13 +3416,6 @@
       "bars": 281,
       "minBars": 300,
       "reason": "Reihe hat 281 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "INACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 279,
-      "minBars": 300,
-      "reason": "Reihe hat 279 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "INFH": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -4558,28 +3459,7 @@
       "minBars": 300,
       "reason": "Reihe hat 293 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IPCXR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 292,
-      "minBars": 300,
-      "reason": "Reihe hat 292 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "IPFX": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 80,
-      "minBars": 300,
-      "reason": "Reihe hat 80 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IPFXU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 115,
-      "minBars": 300,
-      "reason": "Reihe hat 115 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IPFXW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 80,
@@ -4600,35 +3480,7 @@
       "minBars": 300,
       "reason": "Reihe hat 33 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IPVVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 68,
-      "minBars": 300,
-      "reason": "Reihe hat 68 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IPVVW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 31,
-      "minBars": 300,
-      "reason": "Reihe hat 31 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "IPXG": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 10,
-      "minBars": 300,
-      "reason": "Reihe hat 10 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IPXGU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 146,
-      "minBars": 300,
-      "reason": "Reihe hat 146 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IPXGW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 10,
@@ -4649,13 +3501,6 @@
       "minBars": 300,
       "reason": "Reihe hat 50 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IQMXW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 49,
-      "minBars": 300,
-      "reason": "Reihe hat 49 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "IRAB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4670,20 +3515,6 @@
       "minBars": 300,
       "reason": "Reihe hat 149 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "IRHOR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 149,
-      "minBars": 300,
-      "reason": "Reihe hat 149 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "IRHOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 183,
-      "minBars": 300,
-      "reason": "Reihe hat 183 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ISNR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4691,35 +3522,7 @@
       "minBars": 300,
       "reason": "Reihe hat 30 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ISNRU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 65,
-      "minBars": 300,
-      "reason": "Reihe hat 65 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ISNRW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 30,
-      "minBars": 300,
-      "reason": "Reihe hat 30 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ITHA": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 162,
-      "minBars": 300,
-      "reason": "Reihe hat 162 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ITHAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 186,
-      "minBars": 300,
-      "reason": "Reihe hat 186 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "ITHAW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 162,
@@ -4838,20 +3641,6 @@
       "minBars": 300,
       "reason": "Reihe hat 5 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "JONER": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 5,
-      "minBars": 300,
-      "reason": "Reihe hat 5 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "JONEU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 43,
-      "minBars": 300,
-      "reason": "Reihe hat 43 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "JOUL": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -4915,28 +3704,7 @@
       "minBars": 300,
       "reason": "Reihe hat 157 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "KBONU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 187,
-      "minBars": 300,
-      "reason": "Reihe hat 187 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KBONW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 157,
-      "minBars": 300,
-      "reason": "Reihe hat 157 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "KCHV": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 288,
-      "minBars": 300,
-      "reason": "Reihe hat 288 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KCHVR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 288,
@@ -4978,20 +3746,6 @@
       "minBars": 300,
       "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "KEYYU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 69,
-      "minBars": 300,
-      "reason": "Reihe hat 69 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KEYYW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 57,
-      "minBars": 300,
-      "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "KLAR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5005,13 +3759,6 @@
       "bars": 101,
       "minBars": 300,
       "reason": "Reihe hat 101 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KLXER": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 12,
-      "minBars": 300,
-      "reason": "Reihe hat 12 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "KMCA": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -5048,20 +3795,6 @@
       "minBars": 300,
       "reason": "Reihe hat 245 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "KOYNU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 261,
-      "minBars": 300,
-      "reason": "Reihe hat 261 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KOYNW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 245,
-      "minBars": 300,
-      "reason": "Reihe hat 245 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "KPET": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5082,20 +3815,6 @@
       "bars": 117,
       "minBars": 300,
       "reason": "Reihe hat 117 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KRAQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 156,
-      "minBars": 300,
-      "reason": "Reihe hat 156 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KRAQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 116,
-      "minBars": 300,
-      "reason": "Reihe hat 116 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "KRSP": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -5118,20 +3837,6 @@
       "minBars": 300,
       "reason": "Reihe hat 151 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "KTWOR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 137,
-      "minBars": 300,
-      "reason": "Reihe hat 137 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "KTWOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 155,
-      "minBars": 300,
-      "reason": "Reihe hat 155 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "KUST": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5153,13 +3858,6 @@
       "minBars": 300,
       "reason": "Reihe hat 270 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "KYIVW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 269,
-      "minBars": 300,
-      "reason": "Reihe hat 269 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "LABT": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5174,20 +3872,6 @@
       "minBars": 300,
       "reason": "Reihe hat 197 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "LAFAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 197,
-      "minBars": 300,
-      "reason": "Reihe hat 197 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LAFAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 220,
-      "minBars": 300,
-      "reason": "Reihe hat 220 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "LASC": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5201,20 +3885,6 @@
       "bars": 209,
       "minBars": 300,
       "reason": "Reihe hat 209 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LATAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 245,
-      "minBars": 300,
-      "reason": "Reihe hat 245 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LATAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 207,
-      "minBars": 300,
-      "reason": "Reihe hat 207 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "LATR": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -5328,20 +3998,6 @@
       "minBars": 300,
       "reason": "Reihe hat 211 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "LKSPR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 210,
-      "minBars": 300,
-      "reason": "Reihe hat 210 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LKSPU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 233,
-      "minBars": 300,
-      "reason": "Reihe hat 233 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "LMRI": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5357,20 +4013,6 @@
       "reason": "Reihe hat 82 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "LPCV": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 148,
-      "minBars": 300,
-      "reason": "Reihe hat 148 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LPCVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 182,
-      "minBars": 300,
-      "reason": "Reihe hat 182 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LPCVW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 148,
@@ -5440,33 +4082,12 @@
       "minBars": 300,
       "reason": "Reihe hat 33 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "LTGRU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 68,
-      "minBars": 300,
-      "reason": "Reihe hat 68 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LTGRW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 33,
-      "minBars": 300,
-      "reason": "Reihe hat 33 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "LWAC": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 269,
       "minBars": 300,
       "reason": "Reihe hat 269 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "LWACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 268,
-      "minBars": 300,
-      "reason": "Reihe hat 268 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "LYNX": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -5510,13 +4131,6 @@
       "minBars": 300,
       "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MAYAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MAYC": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5545,20 +4159,6 @@
       "minBars": 300,
       "reason": "Reihe hat 225 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MBVIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 261,
-      "minBars": 300,
-      "reason": "Reihe hat 261 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MBVIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 224,
-      "minBars": 300,
-      "reason": "Reihe hat 224 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MCAH": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5566,28 +4166,7 @@
       "minBars": 300,
       "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MCAHR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 57,
-      "minBars": 300,
-      "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MCAHU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 92,
-      "minBars": 300,
-      "reason": "Reihe hat 92 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MCGA": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 284,
-      "minBars": 300,
-      "reason": "Reihe hat 284 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MCGAW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 284,
@@ -5636,35 +4215,7 @@
       "minBars": 300,
       "reason": "Reihe hat 154 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MESHU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 188,
-      "minBars": 300,
-      "reason": "Reihe hat 188 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MESHW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 154,
-      "minBars": 300,
-      "reason": "Reihe hat 154 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MEVO": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 141,
-      "minBars": 300,
-      "reason": "Reihe hat 141 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MEVOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 154,
-      "minBars": 300,
-      "reason": "Reihe hat 154 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MEVOW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 141,
@@ -5720,20 +4271,6 @@
       "minBars": 300,
       "reason": "Reihe hat 13 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MIACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 49,
-      "minBars": 300,
-      "reason": "Reihe hat 49 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MIACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 13,
-      "minBars": 300,
-      "reason": "Reihe hat 13 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MIAX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5762,35 +4299,7 @@
       "minBars": 300,
       "reason": "Reihe hat 236 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MKLYR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 235,
-      "minBars": 300,
-      "reason": "Reihe hat 235 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MKLYU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 272,
-      "minBars": 300,
-      "reason": "Reihe hat 272 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MLAA": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 121,
-      "minBars": 300,
-      "reason": "Reihe hat 121 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MLAAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 157,
-      "minBars": 300,
-      "reason": "Reihe hat 157 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MLAAW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 121,
@@ -5839,20 +4348,6 @@
       "minBars": 300,
       "reason": "Reihe hat 185 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MMTXU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 221,
-      "minBars": 300,
-      "reason": "Reihe hat 221 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MMTXW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 183,
-      "minBars": 300,
-      "reason": "Reihe hat 183 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MNGU": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5882,20 +4377,6 @@
       "reason": "Reihe hat 96 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "MRCO": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 18,
-      "minBars": 300,
-      "reason": "Reihe hat 18 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MRCOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 45,
-      "minBars": 300,
-      "reason": "Reihe hat 45 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MRCOW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 18,
@@ -5937,13 +4418,6 @@
       "minBars": 300,
       "reason": "Reihe hat 34 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "MTEST-A": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 266,
-      "minBars": 300,
-      "reason": "Reihe hat 266 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "MTNE": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -5952,20 +4426,6 @@
       "reason": "Reihe hat 57 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "MUZE": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 116,
-      "minBars": 300,
-      "reason": "Reihe hat 116 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MUZEU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 154,
-      "minBars": 300,
-      "reason": "Reihe hat 154 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "MUZEW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 116,
@@ -6056,20 +4516,6 @@
       "minBars": 300,
       "reason": "Reihe hat 119 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "NBRGR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 118,
-      "minBars": 300,
-      "reason": "Reihe hat 118 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NBRGU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 154,
-      "minBars": 300,
-      "reason": "Reihe hat 154 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "NCO": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6154,20 +4600,6 @@
       "minBars": 300,
       "reason": "Reihe hat 66 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "NHIVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 103,
-      "minBars": 300,
-      "reason": "Reihe hat 103 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NHIVW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 66,
-      "minBars": 300,
-      "reason": "Reihe hat 66 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "NICM": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6217,13 +4649,6 @@
       "minBars": 300,
       "reason": "Reihe hat 215 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "NOVTU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 207,
-      "minBars": 300,
-      "reason": "Reihe hat 207 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "NPFE": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6232,27 +4657,6 @@
       "reason": "Reihe hat 127 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "NSAI": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 6,
-      "minBars": 300,
-      "reason": "Reihe hat 6 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NSAIR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 6,
-      "minBars": 300,
-      "reason": "Reihe hat 6 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NSAIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 17,
-      "minBars": 300,
-      "reason": "Reihe hat 17 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NSAIW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 6,
@@ -6272,20 +4676,6 @@
       "bars": 246,
       "minBars": 300,
       "reason": "Reihe hat 246 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NUAIW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 271,
-      "minBars": 300,
-      "reason": "Reihe hat 271 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NUCLW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 137,
-      "minBars": 300,
-      "reason": "Reihe hat 137 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "NUDG": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -6314,13 +4704,6 @@
       "bars": 3,
       "minBars": 300,
       "reason": "Reihe hat 3 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "NXATW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 2,
-      "minBars": 300,
-      "reason": "Reihe hat 2 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "NXB": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -6448,20 +4831,6 @@
       "minBars": 300,
       "reason": "Reihe hat 67 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "OHACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 67,
-      "minBars": 300,
-      "reason": "Reihe hat 67 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "OHACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 77,
-      "minBars": 300,
-      "reason": "Reihe hat 77 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "OIM": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6490,13 +4859,6 @@
       "minBars": 300,
       "reason": "Reihe hat 250 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ONCHW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 250,
-      "minBars": 300,
-      "reason": "Reihe hat 250 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "ONTX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6512,13 +4874,6 @@
       "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "OPENL": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 199,
-      "minBars": 300,
-      "reason": "Reihe hat 199 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "OPENW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 199,
@@ -6546,13 +4901,6 @@
       "minBars": 300,
       "reason": "Reihe hat 253 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "ORIQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 253,
-      "minBars": 300,
-      "reason": "Reihe hat 253 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "OSSL": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6561,20 +4909,6 @@
       "reason": "Reihe hat 74 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "OTGA": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 214,
-      "minBars": 300,
-      "reason": "Reihe hat 214 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "OTGAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 250,
-      "minBars": 300,
-      "reason": "Reihe hat 250 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "OTGAW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 214,
@@ -6602,13 +4936,6 @@
       "minBars": 300,
       "reason": "Reihe hat 294 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "OYSER": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 294,
-      "minBars": 300,
-      "reason": "Reihe hat 294 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PAAI": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6623,13 +4950,6 @@
       "minBars": 300,
       "reason": "Reihe hat 269 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "PACHW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 268,
-      "minBars": 300,
-      "reason": "Reihe hat 268 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PAII": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6643,20 +4963,6 @@
       "bars": 105,
       "minBars": 300,
       "reason": "Reihe hat 105 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PALOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 141,
-      "minBars": 300,
-      "reason": "Reihe hat 141 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PALOW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 103,
-      "minBars": 300,
-      "reason": "Reihe hat 103 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "PALX": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -6693,13 +4999,6 @@
       "minBars": 300,
       "reason": "Reihe hat 56 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "PCAPW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 294,
-      "minBars": 300,
-      "reason": "Reihe hat 294 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PCEB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6735,27 +5034,6 @@
       "minBars": 300,
       "reason": "Reihe hat 68 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "PECER": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 68,
-      "minBars": 300,
-      "reason": "Reihe hat 68 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PECEU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 76,
-      "minBars": 300,
-      "reason": "Reihe hat 76 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PECEW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 68,
-      "minBars": 300,
-      "reason": "Reihe hat 68 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PEW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6783,13 +5061,6 @@
       "bars": 274,
       "minBars": 300,
       "reason": "Reihe hat 274 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PGACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 271,
-      "minBars": 300,
-      "reason": "Reihe hat 271 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "PICS": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -6825,20 +5096,6 @@
       "bars": 21,
       "minBars": 300,
       "reason": "Reihe hat 21 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PLCIR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 21,
-      "minBars": 300,
-      "reason": "Reihe hat 21 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PLCIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 34,
-      "minBars": 300,
-      "reason": "Reihe hat 34 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "PLSM": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -6924,13 +5181,6 @@
       "minBars": 300,
       "reason": "Reihe hat 89 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "PONOR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 89,
-      "minBars": 300,
-      "reason": "Reihe hat 89 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PONX": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -6994,13 +5244,6 @@
       "minBars": 300,
       "reason": "Reihe hat 9 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "PSQLW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 9,
-      "minBars": 300,
-      "reason": "Reihe hat 9 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PSUS": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7015,33 +5258,12 @@
       "minBars": 300,
       "reason": "Reihe hat 48 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "PTACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 38,
-      "minBars": 300,
-      "reason": "Reihe hat 38 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "PTOR": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 124,
       "minBars": 300,
       "reason": "Reihe hat 124 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PTORU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 159,
-      "minBars": 300,
-      "reason": "Reihe hat 159 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "PTORW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 123,
-      "minBars": 300,
-      "reason": "Reihe hat 123 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "PTRN": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -7072,20 +5294,6 @@
       "reason": "Reihe hat 231 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "QADR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 78,
-      "minBars": 300,
-      "reason": "Reihe hat 78 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "QADRU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 115,
-      "minBars": 300,
-      "reason": "Reihe hat 115 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "QADRW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 78,
@@ -7225,20 +5433,6 @@
       "minBars": 300,
       "reason": "Reihe hat 238 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "QUMSR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 237,
-      "minBars": 300,
-      "reason": "Reihe hat 237 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "QUMSU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 276,
-      "minBars": 300,
-      "reason": "Reihe hat 276 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "QVCG": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7323,20 +5517,6 @@
       "minBars": 300,
       "reason": "Reihe hat 136 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "RFAMR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 136,
-      "minBars": 300,
-      "reason": "Reihe hat 136 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "RFAMU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 144,
-      "minBars": 300,
-      "reason": "Reihe hat 144 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "RGNT": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7379,20 +5559,6 @@
       "minBars": 300,
       "reason": "Reihe hat 199 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "RNGTU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 235,
-      "minBars": 300,
-      "reason": "Reihe hat 235 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "RNGTW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 199,
-      "minBars": 300,
-      "reason": "Reihe hat 199 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "RONB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7408,20 +5574,6 @@
       "reason": "Reihe hat 228 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "RREV": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 78,
-      "minBars": 300,
-      "reason": "Reihe hat 78 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "RREVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 92,
-      "minBars": 300,
-      "reason": "Reihe hat 92 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "RREVW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 78,
@@ -7485,20 +5637,6 @@
       "reason": "Reihe hat 259 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "SAAQ": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 119,
-      "minBars": 300,
-      "reason": "Reihe hat 119 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SAAQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 156,
-      "minBars": 300,
-      "reason": "Reihe hat 156 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SAAQW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 119,
@@ -7589,20 +5727,6 @@
       "minBars": 300,
       "reason": "Reihe hat 162 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "SCIIR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 162,
-      "minBars": 300,
-      "reason": "Reihe hat 162 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SCIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 197,
-      "minBars": 300,
-      "reason": "Reihe hat 197 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "SCJN": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7639,20 +5763,6 @@
       "reason": "Reihe hat 90 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "SCPQ": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 145,
-      "minBars": 300,
-      "reason": "Reihe hat 145 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SCPQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 179,
-      "minBars": 300,
-      "reason": "Reihe hat 179 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SCPQW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 145,
@@ -7707,20 +5817,6 @@
       "bars": 5,
       "minBars": 300,
       "reason": "Reihe hat 5 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SHOTR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 39,
-      "minBars": 300,
-      "reason": "Reihe hat 39 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SHOTU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 64,
-      "minBars": 300,
-      "reason": "Reihe hat 64 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "SI": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -7820,20 +5916,6 @@
       "minBars": 300,
       "reason": "Reihe hat 255 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "SOCAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 291,
-      "minBars": 300,
-      "reason": "Reihe hat 291 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SOCAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 254,
-      "minBars": 300,
-      "reason": "Reihe hat 254 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "SOEZ": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7854,20 +5936,6 @@
       "bars": 135,
       "minBars": 300,
       "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SORNU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 171,
-      "minBars": 300,
-      "reason": "Reihe hat 171 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SORNW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 133,
-      "minBars": 300,
-      "reason": "Reihe hat 133 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "SPCI": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -7896,20 +5964,6 @@
       "bars": 253,
       "minBars": 300,
       "reason": "Reihe hat 253 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SPEGR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 254,
-      "minBars": 300,
-      "reason": "Reihe hat 254 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SPEGU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 292,
-      "minBars": 300,
-      "reason": "Reihe hat 292 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "SPI": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -7960,27 +6014,6 @@
       "minBars": 300,
       "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "SSACR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 135,
-      "minBars": 300,
-      "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SSACU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 149,
-      "minBars": 300,
-      "reason": "Reihe hat 149 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SSACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 135,
-      "minBars": 300,
-      "reason": "Reihe hat 135 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "SSCP": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -7994,20 +6027,6 @@
       "bars": 236,
       "minBars": 300,
       "reason": "Reihe hat 236 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SSEAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 236,
-      "minBars": 300,
-      "reason": "Reihe hat 236 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SSEAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 274,
-      "minBars": 300,
-      "reason": "Reihe hat 274 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "SSM": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -8128,20 +6147,6 @@
       "minBars": 300,
       "reason": "Reihe hat 100 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "SUMAR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 100,
-      "minBars": 300,
-      "reason": "Reihe hat 100 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SUMAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 127,
-      "minBars": 300,
-      "reason": "Reihe hat 127 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "SUNB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -8170,35 +6175,7 @@
       "minBars": 300,
       "reason": "Reihe hat 145 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "SVAQU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 179,
-      "minBars": 300,
-      "reason": "Reihe hat 179 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SVAQW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 145,
-      "minBars": 300,
-      "reason": "Reihe hat 145 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "SVIV": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 134,
-      "minBars": 300,
-      "reason": "Reihe hat 134 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SVIVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 147,
-      "minBars": 300,
-      "reason": "Reihe hat 147 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "SVIVW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 134,
@@ -8275,13 +6252,6 @@
       "minBars": 300,
       "reason": "Reihe hat 226 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "TDACW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 73,
-      "minBars": 300,
-      "reason": "Reihe hat 73 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "TDIC": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -8295,20 +6265,6 @@
       "bars": 190,
       "minBars": 300,
       "reason": "Reihe hat 190 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TDWDR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 190,
-      "minBars": 300,
-      "reason": "Reihe hat 190 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TDWDU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 210,
-      "minBars": 300,
-      "reason": "Reihe hat 210 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "TEMD": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -8330,20 +6286,6 @@
       "bars": 19,
       "minBars": 300,
       "reason": "Reihe hat 19 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "THEOR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 19,
-      "minBars": 300,
-      "reason": "Reihe hat 19 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "THEOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 27,
-      "minBars": 300,
-      "reason": "Reihe hat 27 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "THH": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -8381,20 +6323,6 @@
       "reason": "Reihe hat 297 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "TLNC": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 232,
-      "minBars": 300,
-      "reason": "Reihe hat 232 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TLNCU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 253,
-      "minBars": 300,
-      "reason": "Reihe hat 253 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TLNCW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 232,
@@ -8555,20 +6483,6 @@
       "minBars": 300,
       "reason": "Reihe hat 100 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "TRGSR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 100,
-      "minBars": 300,
-      "reason": "Reihe hat 100 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TRGSU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 136,
-      "minBars": 300,
-      "reason": "Reihe hat 136 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "TRINI": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -8611,40 +6525,12 @@
       "minBars": 300,
       "reason": "Reihe hat 232 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "TVAIR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 299,
-      "minBars": 300,
-      "reason": "Reihe hat 299 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "TVIV": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 43,
       "minBars": 300,
       "reason": "Reihe hat 43 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TVIVU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 58,
-      "minBars": 300,
-      "reason": "Reihe hat 58 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TVIVW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 43,
-      "minBars": 300,
-      "reason": "Reihe hat 43 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "TWLVR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 168,
-      "minBars": 300,
-      "reason": "Reihe hat 168 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "TWOU": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -8828,20 +6714,6 @@
       "minBars": 300,
       "reason": "Reihe hat 148 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "VHCPU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 182,
-      "minBars": 300,
-      "reason": "Reihe hat 182 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "VHCPW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 148,
-      "minBars": 300,
-      "reason": "Reihe hat 148 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "VHUB": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -8856,13 +6728,6 @@
       "minBars": 300,
       "reason": "Reihe hat 95 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "VMCAU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 145,
-      "minBars": 300,
-      "reason": "Reihe hat 145 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "VMET": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -8876,13 +6741,6 @@
       "bars": 264,
       "minBars": 300,
       "reason": "Reihe hat 264 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "VNMEW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 262,
-      "minBars": 300,
-      "reason": "Reihe hat 262 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "VOGX": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -8912,20 +6770,6 @@
       "minBars": 300,
       "reason": "Reihe hat 63 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "VRXAW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 63,
-      "minBars": 300,
-      "reason": "Reihe hat 63 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "VSECU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 150,
-      "minBars": 300,
-      "reason": "Reihe hat 150 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "VSNT": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -8948,13 +6792,6 @@
       "reason": "Reihe hat 296 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "VWAV": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 292,
-      "minBars": 300,
-      "reason": "Reihe hat 292 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "VWAVW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 292,
@@ -9045,13 +6882,6 @@
       "minBars": 300,
       "reason": "Reihe hat 298 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "WENNW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 298,
-      "minBars": 300,
-      "reason": "Reihe hat 298 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "WHK": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -9073,20 +6903,6 @@
       "minBars": 300,
       "reason": "Reihe hat 23 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "WLCOU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 58,
-      "minBars": 300,
-      "reason": "Reihe hat 58 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "WLCOW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 21,
-      "minBars": 300,
-      "reason": "Reihe hat 21 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "WLDU": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -9095,20 +6911,6 @@
       "reason": "Reihe hat 128 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "WLII": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 110,
-      "minBars": 300,
-      "reason": "Reihe hat 110 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "WLIIU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 144,
-      "minBars": 300,
-      "reason": "Reihe hat 144 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "WLIIW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 110,
@@ -9156,20 +6958,6 @@
       "bars": 85,
       "minBars": 300,
       "reason": "Reihe hat 85 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "WSTNR": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 173,
-      "minBars": 300,
-      "reason": "Reihe hat 173 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "WSTNU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 213,
-      "minBars": 300,
-      "reason": "Reihe hat 213 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "WTG": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -9248,20 +7036,6 @@
       "minBars": 300,
       "reason": "Reihe hat 125 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "XCBEU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 161,
-      "minBars": 300,
-      "reason": "Reihe hat 161 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "XCBEW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 124,
-      "minBars": 300,
-      "reason": "Reihe hat 124 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "XE": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -9326,13 +7100,6 @@
       "reason": "Reihe hat 69 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "XLAB": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 9,
-      "minBars": 300,
-      "reason": "Reihe hat 9 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "XLABW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 9,
@@ -9458,20 +7225,6 @@
       "minBars": 300,
       "reason": "Reihe hat 119 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "XSLLU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 155,
-      "minBars": 300,
-      "reason": "Reihe hat 155 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "XSLLW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 119,
-      "minBars": 300,
-      "reason": "Reihe hat 119 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "XTAI": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -9480,20 +7233,6 @@
       "reason": "Reihe hat 69 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "XTER": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 10,
-      "minBars": 300,
-      "reason": "Reihe hat 10 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "XTERU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 17,
-      "minBars": 300,
-      "reason": "Reihe hat 17 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "XTERW": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
       "bars": 10,
@@ -9570,13 +7309,6 @@
       "minBars": 300,
       "reason": "Reihe hat 268 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
-    "YDESW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 259,
-      "minBars": 300,
-      "reason": "Reihe hat 259 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
     "YDKG": {
       "technical": "INSUFFICIENT_HISTORY",
       "elliott": "NOT_RUN",
@@ -9590,20 +7322,6 @@
       "bars": 43,
       "minBars": 300,
       "reason": "Reihe hat 43 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "YICCU": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 60,
-      "minBars": 300,
-      "reason": "Reihe hat 60 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
-    },
-    "YICCW": {
-      "technical": "INSUFFICIENT_HISTORY",
-      "elliott": "NOT_RUN",
-      "bars": 42,
-      "minBars": 300,
-      "reason": "Reihe hat 42 Bars, benoetigt sind 300. Es wurde nichts gerechnet - ein Ergebnis auf zu kurzer Reihe waere keines."
     },
     "YMT": {
       "technical": "INSUFFICIENT_HISTORY",
@@ -9688,11 +7406,11 @@
       "elliott": "AMBIGUOUS",
       "elliottConfidence": 79,
       "bars": 9240,
-      "runtimeMs": 246,
+      "runtimeMs": 303,
       "trend": "BULLISH",
       "momentumState": "STRONG_POSITIVE",
       "relativeStrengthStatus": null,
-      "opportunityScore": 59.2,
+      "opportunityScore": 60,
       "primaryScenario": "BULLISH",
       "hasTradeSetup": true
     },
@@ -9702,7 +7420,7 @@
       "elliott": "LOW_CONFIDENCE",
       "elliottConfidence": 68,
       "bars": 9240,
-      "runtimeMs": 171,
+      "runtimeMs": 233,
       "trend": "BULLISH",
       "momentumState": "POSITIVE",
       "relativeStrengthStatus": null,
@@ -9716,11 +7434,11 @@
       "elliott": "AMBIGUOUS",
       "elliottConfidence": 76,
       "bars": 6951,
-      "runtimeMs": 105,
+      "runtimeMs": 132,
       "trend": "BULLISH",
       "momentumState": "POSITIVE",
       "relativeStrengthStatus": null,
-      "opportunityScore": 48.4,
+      "opportunityScore": 48.2,
       "primaryScenario": "BULLISH",
       "hasTradeSetup": true
     },
@@ -9730,11 +7448,11 @@
       "elliott": "AMBIGUOUS",
       "elliottConfidence": 83,
       "bars": 9240,
-      "runtimeMs": 119,
+      "runtimeMs": 145,
       "trend": "BULLISH",
       "momentumState": "STRONG_POSITIVE",
       "relativeStrengthStatus": null,
-      "opportunityScore": 63.9,
+      "opportunityScore": 64.4,
       "primaryScenario": "BULLISH",
       "hasTradeSetup": true
     },
@@ -9744,20 +7462,20 @@
       "elliott": "HIGH_CONFIDENCE",
       "elliottConfidence": 76,
       "bars": 9240,
-      "runtimeMs": 115,
+      "runtimeMs": 178,
       "trend": "BULLISH",
       "momentumState": "STRONG_POSITIVE",
       "relativeStrengthStatus": null,
-      "opportunityScore": 74.3,
+      "opportunityScore": 75.1,
       "primaryScenario": "BULLISH",
       "hasTradeSetup": true
     }
   },
   "perSymbolDetail": {
     "location": "workingStore",
-    "file": ".market-cache/tiingo/technical/technical-coverage-FULL_UNIVERSE-perSymbol.json",
-    "symbolsTotal": 7803,
-    "symbolsInReport": 1372,
+    "file": ".market-cache/tiingo/technical/technical-coverage-ELIGIBLE_US_EQUITY-perSymbol.json",
+    "symbolsTotal": 7004,
+    "symbolsInReport": 1046,
     "canaryAlwaysIncluded": [
       "AAPL",
       "MSFT",

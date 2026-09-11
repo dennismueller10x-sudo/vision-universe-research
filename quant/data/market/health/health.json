@@ -1,30 +1,30 @@
 {
-  "generatedAt": "2026-09-10T15:07:25.939Z",
+  "generatedAt": "2026-09-11T09:03:28.317Z",
   "provider": "tiingo",
   "plan": "commercial",
   "schemaVersion": 1,
   "note": "Maschinenlesbarer Zustandsbericht. Jede Quelle traegt einen Status; MISSING heisst, dass der Lauf nicht stattgefunden hat, und ist ausdruecklich keine Null.",
   "run": {
     "source": "github-actions",
-    "runId": "34486165298",
-    "commit": "22410507fd29ec6a868699b70d991502104a4d48",
+    "runId": "34574226888",
+    "commit": "4f4aa791254403515c8d72cd23cc5ce94b141ebd",
     "staleAfterHours": 72
   },
-  "overall": "READY_FOR_FULL_MARKET_DATA_INGEST",
-  "overallReason": "FULL_UNIVERSE bestanden.",
-  "lastSuccessfulUpdate": "2026-09-10T14:57:23.768Z",
-  "latestPassedGate": "FULL_UNIVERSE",
+  "overall": "READY_FOR_NEXT_SCALE_GATE",
+  "overallReason": "GATE_2000 bestanden. Freigegeben ist FULL_UNIVERSE - und nur das.",
+  "lastSuccessfulUpdate": "2026-09-11T08:44:23.641Z",
+  "latestPassedGate": "GATE_2000",
   "universe": {
     "status": "OK",
-    "generatedAt": "2026-09-10T14:00:32.950Z",
-    "ageHours": 1.1,
-    "rows": 108589,
-    "screenerEligible": 31328,
+    "generatedAt": "2026-09-09T16:07:59.333Z",
+    "ageHours": 40.9,
+    "rows": 108573,
+    "screenerEligible": 31320,
     "byInstrumentType": {
-      "COMMON_STOCK": 47898,
+      "COMMON_STOCK": 47888,
       "ADR": 0,
       "PREFERRED": 29,
-      "ETF": 9593,
+      "ETF": 9587,
       "ETN": 0,
       "FUND": 49878,
       "WARRANT": 697,
@@ -93,16 +93,16 @@
     "FULL_UNIVERSE": {
       "gate": {
         "status": "OK",
-        "generatedAt": "2026-09-10T14:57:23.768Z",
-        "ageHours": 0.2,
-        "verdict": "PASS",
-        "verdictReason": "allChecksPassed",
+        "generatedAt": "2026-09-11T08:44:23.641Z",
+        "ageHours": 0.3,
+        "verdict": "FAIL",
+        "verdictReason": "historyCoverageRate",
         "note": null
       },
       "resumable": {
         "status": "COMPLETE",
         "pending": 0,
-        "completed": 5683
+        "completed": 7803
       },
       "universeQuality": {
         "status": "PASSED_WITH_WARNINGS",
@@ -122,34 +122,34 @@
           {
             "severity": "WARNING",
             "check": "dateAlignment",
-            "message": "37 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.7 % der aufgeloesten)."
+            "message": "63 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.8 % der aufgeloesten)."
           }
         ]
       },
       "marketData": {
-        "requested": 5683,
-        "resolved": 5683,
-        "PASS": 2239,
-        "WARNING": 3397,
-        "FAIL": 47,
-        "UNAVAILABLE": 0,
-        "historyCoverageRate": 0.9965,
-        "factorReadyRate": 0.9889,
-        "averageBars": 4087,
-        "storageMB": 7568.2,
-        "runtimeMs": 3369382
+        "requested": 7803,
+        "resolved": 7803,
+        "PASS": 2689,
+        "WARNING": 4927,
+        "FAIL": 186,
+        "UNAVAILABLE": 1,
+        "historyCoverageRate": 0.8481,
+        "factorReadyRate": 0.8397,
+        "averageBars": 3048,
+        "storageMB": 7742.4,
+        "runtimeMs": 4685219
       },
       "backtestReadiness": {
-        "symbols": 3444,
+        "symbols": 5114,
         "byInferredAdjustment": {
-          "TOTAL_RETURN": 1286,
-          "SPLIT_ADJUSTED": 827,
-          "UNKNOWN": 1331
+          "TOTAL_RETURN": 1469,
+          "SPLIT_ADJUSTED": 941,
+          "UNKNOWN": 2704
         },
         "adjustmentContradicted": 0,
-        "withCorporateActions": 2291,
+        "withCorporateActions": 2643,
         "rejectedForFutureBars": 0,
-        "notFactorReady": 63,
+        "notFactorReady": 1251,
         "rawAndAdjustedStoredSeparately": true,
         "note": "Roh- und bereinigte Spalte liegen in der Arbeitsablage nebeneinander; die Bereinigungsstufe wird gemessen und nicht uebernommen. Zukunftsbars werden verworfen, bevor sie den Bestand erreichen. Ein Leistungsversprechen ist damit nicht verbunden.",
         "readiness": "DATA_SUPPORTS_BACKTEST",
@@ -169,163 +169,164 @@
       },
       "factors": {
         "status": "OK",
-        "computed": 5636,
-        "skipped": 47,
+        "computed": 7616,
+        "skipped": 187,
         "skippedByReason": {
-          "FAIL": 47
+          "FAIL": 186,
+          "SOURCE_MISSING": 1
         },
         "smaCoverage": {
-          "sma20Calculated": 5636,
-          "sma50Calculated": 5635,
-          "sma100Calculated": 5631,
-          "sma200Calculated": 5623
+          "sma20Calculated": 7616,
+          "sma50Calculated": 7549,
+          "sma100Calculated": 7157,
+          "sma200Calculated": 6702
         },
         "momentumCoverage": {
-          "1M": 5636,
-          "3M": 5635,
-          "6M": 5629,
-          "12M": 5620
+          "1M": 7616,
+          "3M": 7471,
+          "6M": 7031,
+          "12M": 6547
         },
         "relativeStrengthCoverage": {
-          "calculated": 5620,
+          "calculated": 6547,
           "sourceMissing": 0,
-          "insufficientHistory": 16
+          "insufficientHistory": 1069
         },
         "riskCoverage": {
-          "volatility60d": 5635,
-          "maxDrawdown252d": 5620
+          "volatility60d": 7481,
+          "maxDrawdown252d": 6552
         }
       },
       "screener": {
         "status": "OK",
-        "evaluable": 5636,
-        "notEvaluable": 47,
+        "evaluable": 7616,
+        "notEvaluable": 187,
         "questions": [
           {
             "id": "aboveSMA20",
             "kind": "boolean",
-            "matched": 1772,
+            "matched": 2332,
             "notEvaluable": 0
           },
           {
             "id": "aboveSMA50",
             "kind": "boolean",
-            "matched": 2311,
-            "notEvaluable": 1
+            "matched": 2995,
+            "notEvaluable": 67
           },
           {
             "id": "aboveSMA100",
             "kind": "boolean",
-            "matched": 2558,
-            "notEvaluable": 5
+            "matched": 3179,
+            "notEvaluable": 459
           },
           {
             "id": "aboveSMA200",
             "kind": "boolean",
-            "matched": 2821,
-            "notEvaluable": 13
+            "matched": 3231,
+            "notEvaluable": 914
           },
           {
             "id": "aboveSMA20And50And200",
             "kind": "boolean",
-            "matched": 1046,
-            "notEvaluable": 13
+            "matched": 1207,
+            "notEvaluable": 914
           },
           {
             "id": "aboveAllSMA",
             "kind": "boolean",
-            "matched": 967,
-            "notEvaluable": 13
+            "matched": 1126,
+            "notEvaluable": 914
           },
           {
             "id": "newHigh52w",
             "kind": "boolean",
-            "matched": 190,
-            "notEvaluable": 16
+            "matched": 229,
+            "notEvaluable": 1064
           },
           {
             "id": "within5PctOf52wHigh",
             "kind": "boolean",
-            "matched": 835,
-            "notEvaluable": 16
+            "matched": 996,
+            "notEvaluable": 1064
           },
           {
             "id": "volumeBreakout",
             "kind": "boolean",
-            "matched": 313,
-            "notEvaluable": 431
+            "matched": 509,
+            "notEvaluable": 698
           },
           {
             "id": "strongestMomentum12M",
             "kind": "ranked",
-            "matched": 5620,
-            "notEvaluable": 16
+            "matched": 6547,
+            "notEvaluable": 1069
           },
           {
             "id": "strongestMomentum6M",
             "kind": "ranked",
-            "matched": 5629,
-            "notEvaluable": 7
+            "matched": 7031,
+            "notEvaluable": 585
           },
           {
             "id": "strongestMomentum12M1M",
             "kind": "ranked",
-            "matched": 5620,
-            "notEvaluable": 16
+            "matched": 6547,
+            "notEvaluable": 1069
           },
           {
             "id": "strongestRelativeStrength12M",
             "kind": "ranked",
-            "matched": 5620,
-            "notEvaluable": 16
+            "matched": 6547,
+            "notEvaluable": 1069
           },
           {
             "id": "trendAcceleration",
             "kind": "ranked",
-            "matched": 5635,
-            "notEvaluable": 1
+            "matched": 7471,
+            "notEvaluable": 145
           },
           {
             "id": "highVolatility",
             "kind": "ranked",
-            "matched": 5635,
-            "notEvaluable": 1
+            "matched": 7481,
+            "notEvaluable": 135
           },
           {
             "id": "lowVolatility",
             "kind": "ranked",
-            "matched": 5635,
-            "notEvaluable": 1
+            "matched": 7481,
+            "notEvaluable": 135
           },
           {
             "id": "nearest52wHigh",
             "kind": "ranked",
-            "matched": 5620,
-            "notEvaluable": 16
+            "matched": 6552,
+            "notEvaluable": 1064
           },
           {
             "id": "deepestDrawdown",
             "kind": "ranked",
-            "matched": 5620,
-            "notEvaluable": 16
+            "matched": 6552,
+            "notEvaluable": 1064
           }
         ]
       },
       "technical": {
         "status": "OK",
-        "READY": 5661,
+        "READY": 6436,
         "PARTIAL": 0,
         "FAILED": 0,
-        "INSUFFICIENT_HISTORY": 22,
-        "SOURCE_MISSING": 0,
-        "msPerSymbol": 68,
+        "INSUFFICIENT_HISTORY": 1366,
+        "SOURCE_MISSING": 1,
+        "msPerSymbol": 47,
         "elliott": {
-          "HIGH_CONFIDENCE": 1423,
-          "MEDIUM_CONFIDENCE": 349,
-          "LOW_CONFIDENCE": 381,
-          "AMBIGUOUS": 3468,
-          "UNAVAILABLE": 40,
-          "NOT_RUN": 22
+          "HIGH_CONFIDENCE": 1585,
+          "MEDIUM_CONFIDENCE": 395,
+          "LOW_CONFIDENCE": 473,
+          "AMBIGUOUS": 3848,
+          "UNAVAILABLE": 135,
+          "NOT_RUN": 1367
         }
       }
     },
@@ -333,7 +334,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T09:58:02.632Z",
-        "ageHours": 29.2,
+        "ageHours": 47.1,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -570,7 +571,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:44:06.302Z",
-        "ageHours": 28.4,
+        "ageHours": 46.3,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null
@@ -805,7 +806,7 @@
       "gate": {
         "status": "OK",
         "generatedAt": "2026-09-09T10:18:42.421Z",
-        "ageHours": 28.8,
+        "ageHours": 46.7,
         "verdict": "PASS",
         "verdictReason": "allChecksPassed",
         "note": null

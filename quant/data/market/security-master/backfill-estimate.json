@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-09-11T14:43:20.305Z",
+  "version": "us-security-master-1.1.0",
+  "provider": "tiingo",
+  "status": "ESTIMATE_FOR_MEASURED_ADDITIONS",
+  "approvalRequired": true,
+  "approvalNote": "Diese Schaetzung loest keinen Lauf aus. Ein Backfill startet erst nach ausdruecklicher Freigabe des Eigentuemers.",
+  "estimate": {
+    "status": "ESTIMATED_FROM_LAST_FULL_RUN",
+    "referenceRun": {
+      "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
+      "runId": "34574226888",
+      "symbols": 7803,
+      "requests": 7809,
+      "runtimeMs": 4685219,
+      "bytesReceived": 5621286838,
+      "storageBytes": 8118540788
+    },
+    "perSymbol": {
+      "requests": 1.0008,
+      "seconds": 0.6,
+      "bytesReceived": 720401,
+      "storageBytes": 1040438,
+      "factorRuntimeMs": 6.38
+    },
+    "incremental": {
+      "newSymbols": 1,
+      "staleSymbols": 58,
+      "staleBasis": "gate-FULL_UNIVERSE.json dataQuality.reasons.stale_last_bar - Titel, deren letzte Kerze im Referenzlauf veraltet war. Beendete Listings zaehlen ausdruecklich nicht mit: ihre Historie ist vollstaendig.",
+      "symbolsToFetch": 59,
+      "estimatedRequests": 60,
+      "estimatedRuntimeMinutes": 0.6,
+      "estimatedDownloadMB": 40.5,
+      "estimatedAdditionalStorageMB": 58.5,
+      "estimatedFactorRuntimeSeconds": 0.4,
+      "fitsInOneHourBudget": true,
+      "requestBudgetPerHour": 12000,
+      "providerObservedLowerBoundPerRun": 7809
+    },
+    "fullRerun": {
+      "symbols": 7862,
+      "estimatedRequests": 7869,
+      "estimatedRuntimeMinutes": 78.7,
+      "estimatedDownloadMB": 5401.4,
+      "necessary": false,
+      "reason": "Die vorhandenen Historien liegen in der Arbeitsablage und sind nach Titel getrennt. Ein Titel, der sich nicht geaendert hat, liefert dieselbe Reihe noch einmal - das ist kein Gewinn, sondern derselbe Verkehr."
+    },
+    "reuse": {
+      "existingHistoriesReusable": true,
+      "note": "gate-FULL_UNIVERSE.json meldet resumable.status COMPLETE fuer 5.684 Titel; die Reihen stehen je Titel in .market-cache. Neue Titel koennen einzeln dazukommen.",
+      "incrementalPossible": true,
+      "staleDefinition": "Ein Titel gilt als stale, wenn seine letzte Kerze aelter ist als die im Gate gemessene Schwelle (maxStaleTradingDays) - nicht, weil ein Lauf alt ist."
+    },
+    "aggregatesToRebuild": {
+      "mustRebuild": [
+        {
+          "path": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
+          "why": "Die Mitgliederliste selbst."
+        },
+        {
+          "path": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
+          "why": "Bilanz ueber genau diese Mitglieder (accounting, dataQuality, historyCoverage)."
+        },
+        {
+          "path": "quant/data/market/factors/factors-FULL_UNIVERSE-summary.json",
+          "why": "coverage/fieldCoverage zaehlen ueber die Mitglieder."
+        },
+        {
+          "path": "quant/data/market/factors/screener-FULL_UNIVERSE.json",
+          "why": "Jede Screenerfrage traegt Treffer/Nichttreffer/unentscheidbar ueber die Mitglieder."
+        },
+        {
+          "path": "quant/data/market/health/universe-quality-FULL_UNIVERSE.json",
+          "why": "Pruefungen, die erst ueber viele Titel sichtbar werden."
+        },
+        {
+          "path": "quant/data/market/health/health.json",
+          "why": "Liest die Bilanzen oben."
+        },
+        {
+          "path": "quant/data/market/universe/summary.json",
+          "why": "Bilanz ueber die Anbieterliste - aendert sich mit jedem Anbieterstand."
+        }
+      ],
+      "mustNotRebuild": [
+        {
+          "path": ".market-cache/tiingo/**/<ticker>.json",
+          "why": "Kursreihen je Titel. Unveraendert gueltig; neu zu holen waere derselbe Verkehr."
+        },
+        {
+          "path": "quant/data/market/scale/universe-GATE_100/500/2000.json",
+          "why": "Kleinere Gates sind geschachtelt und bleiben, wie sie gelaufen sind. Ein Gate nachtraeglich zu vergroessern zerstoert den Vergleich, fuer den es da ist."
+        },
+        {
+          "path": "quant/data/market/factors/factors-GATE_*.json",
+          "why": "Gehoeren zu ihrem Gate und zu seinem Lauf."
+        },
+        {
+          "path": "quant/data/market/commercial/**",
+          "why": "Faehigkeits- und Stromnachweise haengen am Zugang, nicht am Universum."
+        },
+        {
+          "path": "quant/data/technical/**",
+          "why": "Technical-Artefakte sind je Instrument; neue Instrumente kommen dazu."
+        },
+        {
+          "path": "quant/data/sec/**",
+          "why": "Anderer Anbieter, anderer Lauf."
+        }
+      ]
+    }
+  }
+}
