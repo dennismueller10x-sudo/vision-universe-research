@@ -47,7 +47,7 @@ function create(options){
   ['Full Chart','/quant/stock/?ticker='+q],['Technical','/vu2/?view=technical&ticker='+q],
   ['Elliott Wave','/vu2/?view=elliott&ticker='+q],
   ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/vu2/?view=quant&ticker='+q],
-  ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie testen','/quant/strategies/builder/']
+  ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
  async function getUniverse(){try{const c=await init();const stocks=(c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)).filter(Boolean);return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'APPROVED_DISPLAY_SET',totalMarketState:'UNAVAILABLE',reason:'NO_APPROVED_FULL_MARKET_VIEW'};}catch{return unavailable('SOURCE_MISSING');}}
  async function getMarketIntelligence(){

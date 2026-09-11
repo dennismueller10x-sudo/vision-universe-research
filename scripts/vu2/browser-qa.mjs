@@ -10,10 +10,12 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json
 const server=createServer(async(req,res)=>{try{let pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(pathname.split('/').some(s=>s.startsWith('.')))throw Error('private');if(pathname.endsWith('/'))pathname+='index.html';const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))throw Error('path');res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.statusCode=404;res.end('Not found');}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const origin='http://127.0.0.1:'+server.address().port;const checks=[];
+const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[];
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist','atlas']){
- await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
+ const started=performance.now();await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
+ const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
+ if(view==='home'&&resources.some(r=>r.path.includes('/daily/ref_')||r.path.includes('/fixtures/')))throw Error('Home loads raw history or fixtures');
  if(await page.locator('h1').count()!==1)throw Error('missing heading '+view);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
  if(overflow)throw Error('page overflow '+view+' '+width);
@@ -57,6 +59,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}checks.push({view,width,pass:true});
  }
  await page.goto(origin+'/quant/technical/?symbol=NVDA&layer=ELLIOTT');await page.locator('[role="tab"][data-layer="ELLIOTT"][aria-selected="true"]').waitFor();await page.locator('.q-tech-chart-wrap svg').waitFor();await page.getByRole('heading',{name:'Szenarien',exact:true}).waitFor();await page.getByRole('button',{name:'Alternative',exact:true}).click();await page.screenshot({path:out+'/elliott-preserved-'+width+'.png',fullPage:true});checks.push({view:'elliott-preserved',width,pass:true});
+ await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).click();await page.locator('main footer').waitFor();await page.locator('.quote').getByText('225,73 $',{exact:true}).waitFor();
+ await page.getByRole('link',{name:'Full Chart',exact:true}).click();await page.locator('.q-chart').first().waitFor();await page.goBack();await page.locator('main footer').waitFor();
+ for(const [name,heading] of [['Technical','Kursstruktur untersuchen'],['Elliott Wave','Elliott Wave · Szenarien verstehen'],['Historische Fundamentals','Wie entwickelt sich das Geschäft?'],['Quant','Das Unternehmen in Zahlen']]){await page.getByRole('link',{name,exact:true}).click();await page.getByRole('heading',{name:heading,exact:true}).waitFor();await page.goBack();await page.locator('main footer').waitFor();}
+ await page.getByRole('link',{name:'Strategie definieren',exact:true}).click();await page.getByRole('heading',{name:'Vor einem historischen Test',exact:true}).waitFor();if(await page.getByRole('link',{name:'Bestehende Backtest-Umgebung',exact:true}).getAttribute('href')!=='/quant/backtests/')throw Error('professional backtest access lost');
+ await page.goto(origin+'/vu2/?view=research');await page.locator('main footer').waitFor();const directory=await page.locator('.catalog a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));for(const path of ['/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/xpeng/','/academy/','/quant/ranking/','/quant/screener/'])if(!directory.includes(path))throw Error('preserved workspace missing '+path);
+ await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.keyboard.press('Escape');if(await page.getByRole('dialog').isVisible())throw Error('command dialog keyboard exit failed');checks.push({view:'guided-professional-journey',width,pass:true});
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
- await writeFile(out+'/results.json',JSON.stringify({checks},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));
+ await writeFile(out+'/results.json',JSON.stringify({checks},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));
 }finally{await browser.close();await new Promise(r=>server.close(r));}
