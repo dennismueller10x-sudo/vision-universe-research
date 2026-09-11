@@ -44,27 +44,47 @@ const REQUIRED_FIELDS = [
 const SM_DIR = join(root, "quant", "data", "market", "security-master");
 const RECON = join(SM_DIR, "reconciliation.json");
 const MASTER = join(SM_DIR, "us-security-master.json");
-/* Der Bestand, gegen den der Abgleich GEMACHT wurde - nicht der, der
-   heute im Universum steht.
+/* Der Bestand, gegen den der Abgleich GEMACHT wurde - und zwar nach
+   SEINER Auskunft, nicht nach unserer Vermutung.
 
-   Seit der anhaengenden Erweiterung sind das zwei verschiedene Dinge:
-   universe-FULL_UNIVERSE.json fuehrt 7.803 Titel, der Wertpapierstamm
-   beschreibt den Abgleich gegen die 5.684 davor. Beide zu vergleichen
-   hiesse, dem Abgleich vorzuwerfen, dass er die Zukunft nicht kannte.
+   Diese Konstante war schon einmal falsch, und beim zweiten Mal auf
+   dieselbe Weise: sie RIET, welche Datei der Lauf gelesen hat.
 
-   expand-us-universe.mjs legt den Stand vor der Erweiterung daneben ab -
-   genau dafuer. Liegt er nicht vor, hat noch keine Erweiterung
-   stattgefunden, und das Universum IST der Bestand. */
-const PRE_EXPANSION = join(root, "quant", "data", "market", "security-master",
-                           "universe-FULL_UNIVERSE.before-expansion.json");
-const BASELINE = existsSync(PRE_EXPANSION)
-  ? PRE_EXPANSION
-  : join(root, "quant", "data", "market", "scale", "universe-FULL_UNIVERSE.json");
+   Zuerst verglich sie den Abgleich gegen universe-FULL_UNIVERSE.json
+   mit seinen 7.803 Titeln, obwohl der Abgleich gegen die 5.684 davor
+   gemacht worden war - und warf dem Lauf vor, die Zukunft nicht
+   gekannt zu haben. Die Korrektur griff zur Vor-Erweiterungsdatei.
+
+   Damit war sie beim naechsten Lauf wieder falsch, nur andersherum:
+   ein Abgleich, der HEUTE laeuft, liest den heutigen Bestand mit 7.803
+   Titeln. Verglichen wurde er trotzdem mit 5.684 - jetzt warf sie ihm
+   vor, in der Vergangenheit stehengeblieben zu sein.
+
+   Beide Male war die Vermutung das Problem, nicht ihre Richtung. Der
+   Abgleich schreibt auf, welche Datei er gelesen hat; das ist die
+   einzige Angabe, die zu ihm gehoert. Eine Pruefung, die zwei
+   verschiedene Zeitpunkte vergleicht, prueft den Kalender. */
+const PRE_EXPANSION = join(SM_DIR, "universe-FULL_UNIVERSE.before-expansion.json");
+
+function baselineOf(recon) {
+  const named = recon && recon.nonDestructive && recon.nonDestructive.baselineFile;
+  if (named) {
+    const file = join(root, named);
+    /* Nennt der Abgleich eine Datei, die es nicht gibt, ist das ein
+       Befund und kein Grund, auf eine andere auszuweichen. */
+    assert.ok(existsSync(file), "Der Abgleich nennt " + named + ", die Datei fehlt.");
+    return JSON.parse(readFileSync(file, "utf8")).securities;
+  }
+  const fallback = existsSync(PRE_EXPANSION)
+    ? PRE_EXPANSION
+    : join(root, "quant", "data", "market", "scale", "universe-FULL_UNIVERSE.json");
+  return JSON.parse(readFileSync(fallback, "utf8")).securities;
+}
 
 test("SM60 die ausgelieferte Stammtabelle enthaelt jeden Bestandstitel", (t) => {
-  if (!existsSync(MASTER)) return t.skip("Keine Stammtabelle ausgeliefert.");
+  if (!existsSync(MASTER) || !existsSync(RECON)) return t.skip("Artefakte fehlen.");
   const master = JSON.parse(readFileSync(MASTER, "utf8"));
-  const baseline = JSON.parse(readFileSync(BASELINE, "utf8")).securities;
+  const baseline = baselineOf(JSON.parse(readFileSync(RECON, "utf8")));
 
   const delivered = new Set(master.rows.filter((r) => r.baseline_member).map((r) => r.ticker));
   const missing = baseline.map((b) => b.ticker.toUpperCase()).filter((t2) => !delivered.has(t2));
@@ -97,7 +117,7 @@ test("SM61 kein ausgeliefertes Artefakt traegt Kursniveaus", (t) => {
 test("SM62 der Abgleich sagt, dass er nichts angefasst hat - und nennt die Phase", (t) => {
   if (!existsSync(RECON)) return t.skip("Kein Abgleich ausgeliefert.");
   const recon = JSON.parse(readFileSync(RECON, "utf8"));
-  const baseline = JSON.parse(readFileSync(BASELINE, "utf8")).securities;
+  const baseline = baselineOf(recon);
   assert.equal(recon.phase, "DISCOVERY_ONLY_NO_BACKFILL");
   assert.equal(recon.version, Master.VERSION);
   assert.equal(recon.nonDestructive.baselineCount, baseline.length);
