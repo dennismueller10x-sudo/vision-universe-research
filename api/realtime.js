@@ -94,6 +94,7 @@ module.exports = async function handler(req, res) {
        einem Programmfehler sucht. */
     sende(res, "status", {
       state: "NOT_CONFIGURED",
+      runtime: process.version,
       reason: "TIINGO_API_KEY ist in dieser Umgebung nicht gesetzt.",
       remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview).",
       tickers, rejected: abgelehnt
@@ -173,6 +174,7 @@ module.exports = async function handler(req, res) {
     sende(res, "status", {
       state: "CONNECTED",
       at: new Date().toISOString(),
+      runtime: process.version,
       tickers, rejected: abgelehnt,
       url: WS_URL,
       priceTypeConfirmed: false,
