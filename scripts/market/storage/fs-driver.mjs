@@ -9,7 +9,7 @@
    ueber den Dienst annimmt - und ein Anbieterwechsel bleibt eine
    Adresse statt eines Umbaus.
    ========================================================================= */
-import { mkdirSync, readFileSync, writeFileSync, existsSync, statSync, readdirSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, existsSync, statSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 export function createFsDriver(rootDir) {
@@ -50,6 +50,17 @@ export function createFsDriver(rootDir) {
         metadata = JSON.parse(readFileSync(metaPathFor(key), "utf8"));
       }
       return { key, size: st.size, lastModified: st.mtime.toISOString(), metadata };
+    },
+
+    /* Dieselbe Flaeche wie der S3-Treiber, damit der Nachweis gegen
+       beide laeuft. Die Beschraenkung auf ein Nachweis-Praefix sitzt im
+       S3-Treiber, wo sie hingehoert - ein Verzeichnis kostet nichts und
+       liegt ohnehin in einem Wegwerfpfad. */
+    async del(key) {
+      const p = pathFor(key);
+      if (existsSync(p)) rmSync(p);
+      if (existsSync(metaPathFor(key))) rmSync(metaPathFor(key));
+      return { key, deleted: true };
     },
 
     async list(prefix) {

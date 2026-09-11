@@ -1,0 +1,199 @@
+name: R2 — Historienablage nachweisen (kein Backfill)
+
+# Der Nachweis gegen den ECHTEN Eimer.
+#
+# Er laeuft hier und nicht lokal, aus zwei Gruenden: die Zugangsdaten
+# liegen als GitHub-Secrets, und r2.cloudflarestorage.com ist aus der
+# Arbeitsumgebung gesperrt. Ein Nachweis gegen ein Verzeichnis ist ein
+# Nachweis der Bauart; dieser hier ist der Nachweis des Dienstes.
+#
+# WAS ER NICHT TUT
+#
+# Er holt keine Kurse. Er stellt NULL Anfragen an Tiingo. Er schreibt
+# ausschliesslich unter verify/v1/ und raeumt danach auf. Der
+# 7.800er-Backfill ist ausdruecklich nicht Teil dieses Laufs.
+#
+# AUSLOESER
+#
+#   [r2-verify]        auf einem Entwicklungsbranch
+#   workflow_dispatch  nach dem Merge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/verify-history-store.mjs'
+      - 'scripts/market/preflight-zero-cost.mjs'
+      - 'scripts/market/storage/**'
+      - 'quant/engines/history-store.js'
+      - 'quant/engines/bar-codec.js'
+      - 'quant/engines/zero-cost-guard.js'
+      - '.github/workflows/r2-history-verify.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: Nachweis gegen R2
+    runs-on: ubuntu-latest
+    concurrency:
+      group: r2-history-verify-${{ github.ref }}
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[r2-verify]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Sind die Zugangsdaten hinterlegt?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          missing=""
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET \
+                   VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            eval "val=\${$v}"
+            [ -z "$val" ] && missing="$missing $v"
+          done
+          if [ -n "$missing" ]; then
+            echo "Fehlende Secrets:$missing"
+            exit 1
+          fi
+          echo "Alle Zugangsdaten hinterlegt. (Werte werden nicht ausgegeben.)"
+
+      # Zuerst die Engines. Ein Nachweis auf einer kaputten Ablage sagt
+      # nichts ueber den Dienst.
+      - name: Engine-Tests
+        run: node --test quant/tests/history-store.test.mjs quant/tests/zero-cost-guard.test.mjs
+
+      - name: Nachweis gegen den echten Eimer
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/verify-history-store.mjs --s3
+
+      # Nach dem Aufraeumen: was liegt jetzt wirklich im Eimer? Das ist
+      # die Grundlage der Vorabrechnung und darf nicht geschaetzt sein.
+      - name: Vorabrechnung gegen den echten Bestand (7.800 Titel)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/market/preflight-zero-cost.mjs \
+            --operation BACKFILL --symbols 7800 \
+            --out quant/data/market/history/preflight-backfill-7800.json
+
+      - name: Der Eimer traegt keine Nachweisreste
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node -e '
+            import("./scripts/market/storage/s3-driver.mjs").then(async ({ createS3DriverFromEnv }) => {
+              const d = createS3DriverFromEnv();
+              const left = await d.list("verify/");
+              console.log("Objekte unter verify/: " + left.length);
+              if (left.length) {
+                left.slice(0, 10).forEach((o) => console.log("  " + o.key));
+                throw new Error("Der Nachweis hat nicht vollstaendig aufgeraeumt.");
+              }
+              const prod = await d.list("v1/");
+              console.log("Objekte unter v1/ (Produktion): " + prod.length);
+            }).catch((e) => { console.error(e.message); process.exit(1); });
+          '
+
+      - name: Kein Schluessel in den Berichten
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Berichte sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-history-verification
+          path: quant/data/market/history/
+          if-no-files-found: warn
+
+      - name: Berichte committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/history
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung an den Berichten."
+          else
+            git commit -m "R2-Historienablage: Nachweis aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### R2 — Nachweis der Historienablage'
+            echo ''
+            if [ -f quant/data/market/history/verification.json ]; then
+              node -e '
+                const v = require("./quant/data/market/history/verification.json");
+                console.log("Ablage: **" + v.storage.kind + "**, Praefix `" + v.storage.prefix + "`, " +
+                            "Kodierung " + v.storage.codec);
+                console.log("");
+                console.log("| Pruefung | Ergebnis | Detail |");
+                console.log("|---|---|---|");
+                for (const c of v.checks) {
+                  console.log("| " + c.id + " | " + (c.status === "PASS" ? "PASS" : "**FAIL**") +
+                              " | " + (c.detail || "") + " |");
+                }
+                console.log("");
+                console.log("Zugriffe: " + v.access.touchedKeys + ", ausserhalb des Nachweispfades: " +
+                            v.access.outsideAllowedPrefix + ", Produktionsschluessel: " +
+                            v.access.productionKeysTouched);
+                console.log("Aufgeraeumt: " + v.cleanup.deleted + " entfernt, " +
+                            v.cleanup.remaining + " verblieben");
+              '
+            else
+              echo 'Kein Nachweis entstanden.'
+            fi
+            echo ''
+            if [ -f quant/data/market/history/preflight-backfill-7800.json ]; then
+              node -e '
+                const p = require("./quant/data/market/history/preflight-backfill-7800.json");
+                const v = p.verdict;
+                console.log("#### Vorabrechnung 7.800 Titel");
+                console.log("");
+                console.log("**" + v.verdict + "**");
+                console.log("");
+                console.log("| Kennzahl | Wert |");
+                console.log("|---|---:|");
+                console.log("| CURRENT_STORAGE_BYTES | " + v.CURRENT_STORAGE_BYTES + " |");
+                console.log("| PROJECTED_STORAGE_BYTES | " + v.PROJECTED_STORAGE_BYTES + " |");
+                console.log("| ESTIMATED_CLASS_A | " + v.ESTIMATED_CLASS_A + " |");
+                console.log("| ESTIMATED_CLASS_B | " + v.ESTIMATED_CLASS_B + " |");
+                console.log("| PROJECTED_FREE_TIER_USAGE_PERCENT | " +
+                            v.PROJECTED_FREE_TIER_USAGE_PERCENT + " % |");
+              '
+            fi
+            echo ''
+            echo 'Kein Backfill gestartet. Null Anfragen an Tiingo.'
+          } >> "$GITHUB_STEP_SUMMARY"

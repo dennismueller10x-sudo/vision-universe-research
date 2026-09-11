@@ -35,6 +35,7 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Store = require(join(root, "quant", "engines", "history-store.js"));
 const Codec = require(join(root, "quant", "engines", "bar-codec.js"));
+const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 
 const argv = process.argv.slice(2);
 const USE_S3 = argv.includes("--s3");
@@ -43,8 +44,16 @@ function arg(n, d = null) { const i = argv.indexOf(n); return i >= 0 && argv[i +
 const OUT = arg("--out", join(root, "quant", "data", "market", "history", "verification.json"));
 /* Der Praefix des Nachweises ist NICHT der Produktionspraefix. Ein
    Nachweis, der in die echten Daten schreibt, ist kein Nachweis - er ist
-   ein Risiko. */
-const PREFIX = arg("--prefix", USE_S3 ? "verify/v1" : "v1");
+   ein Risiko.
+
+   Er lautet in BEIDEN Betriebsarten gleich. Der erste Entwurf nahm
+   lokal "v1" - derselbe Praefix, unter dem die Produktionsdaten liegen.
+   Gegen ein Wegwerfverzeichnis war das harmlos, aber es machte den
+   lokalen Lauf zu einer anderen Uebung als den echten, und die Pruefung
+   NO_PRODUCTION_KEYS_TOUCHED hat es zu Recht gemeldet. Eine
+   Nachweisumgebung, die anders aussieht als der Ernstfall, weist den
+   Ernstfall nicht nach. */
+const PREFIX = arg("--prefix", "verify/v1");
 
 const GOLDEN = join(root, "quant", "data", "market", "golden-preview", "daily");
 const SAMPLE = ["AAPL", "JPM", "MSFT", "NVDA", "XOM"];
@@ -61,15 +70,50 @@ function check(id, ok, detail) {
   return ok;
 }
 
-async function makeStore(tmp) {
+/**
+ * Der Zeuge.
+ *
+ * Er legt sich um den Treiber und schreibt jeden Zugriff mit - und er
+ * WIRFT, sobald ein Schluessel ausserhalb des Nachweis-Praefixes
+ * angefasst wuerde.
+ *
+ * Das ist der Unterschied zwischen "wir haben nur den Nachweispfad
+ * benutzt" und "es ist nachgewiesen, dass nur der Nachweispfad benutzt
+ * wurde". Die Zusage, die Produktionsdaten nicht anzufassen, soll nicht
+ * von der Sorgfalt des Skripts abhaengen.
+ */
+function witness(driver, allowedPrefix, log) {
+  const guard = (op, key) => {
+    if (key !== undefined && key !== null && key !== "") {
+      if (!String(key).startsWith(allowedPrefix)) {
+        throw new Error("VERIFY_TOUCHED_PRODUCTION_KEY: " + op + " " + key +
+                        " liegt ausserhalb von '" + allowedPrefix + "'.");
+      }
+    }
+    log.push({ op, key: key || "(bucket)", at: new Date().toISOString() });
+  };
+  return {
+    kind: driver.kind, endpoint: driver.endpoint, bucket: driver.bucket,
+    async put(key, buf, o) { guard("PUT", key); return driver.put(key, buf, o); },
+    async get(key) { guard("GET", key); return driver.get(key); },
+    async head(key) { guard("HEAD", key); return driver.head(key); },
+    async list(prefix) { guard("LIST", prefix); return driver.list(prefix); },
+    async del(key) { guard("DELETE", key); return driver.del(key); }
+  };
+}
+
+async function makeDriver(tmp) {
   if (USE_S3) {
     const { createS3DriverFromEnv } = await import(join(root, "scripts", "market", "storage", "s3-driver.mjs"));
-    return Store.createHistoryStore({ driver: createS3DriverFromEnv(), provider: "tiingo",
-                                      market: "VERIFY", prefix: PREFIX });
+    /* Loeschen ausdruecklich freigeschaltet - und ausschliesslich unter
+       dem Nachweis-Praefix. Der Treiber weist jeden anderen Schluessel
+       ab, und einen Praefix ohne "verify" nimmt er gar nicht erst an. */
+    return createS3DriverFromEnv(Object.assign({}, process.env, {
+      __allowDeleteUnderPrefix: PREFIX + "/"
+    }));
   }
   const { createFsDriver } = await import(join(root, "scripts", "market", "storage", "fs-driver.mjs"));
-  return Store.createHistoryStore({ driver: createFsDriver(tmp), provider: "tiingo",
-                                    market: "VERIFY", prefix: PREFIX });
+  return createFsDriver(tmp);
 }
 
 async function main() {
@@ -82,7 +126,16 @@ async function main() {
   }
 
   const tmp = mkdtempSync(join(tmpdir(), "vu-hist-verify-"));
-  const store = await makeStore(tmp);
+  const touched = [];
+  const rawDriver = await makeDriver(tmp);
+  const allowedPrefix = PREFIX + "/";
+  const driver = witness(rawDriver, allowedPrefix, touched);
+  const store = Store.createHistoryStore({
+    driver, provider: "tiingo", market: "VERIFY", prefix: PREFIX,
+    /* Ein Budget auch hier: der Nachweis laeuft gegen denselben Dienst
+       und unter derselben Schranke wie ein echter Lauf. */
+    budget: Guard.createBudget({ classAOperations: 200, classBOperations: 200 })
+  });
   console.log(`  Ablage:    ${store.driver.kind} ${store.driver.endpoint || ""}`);
   console.log(`  Praefix:   ${store.seriesPrefix}`);
   console.log(`  Kodierung: ${store.codec}`);
@@ -93,6 +146,23 @@ async function main() {
   const written = {};
 
   try {
+    /* ------------------------------------------------------- 0 Zugang
+
+       Zuerst der Zugang. Ein Fehlschlag hier ist ein anderer Befund als
+       ein Fehlschlag weiter unten: falsche Zugangsdaten sehen in jedem
+       spaeteren Schritt wie ein Datenfehler aus. */
+    let authOk = false, authDetail = "";
+    try {
+      await driver.list(allowedPrefix);
+      authOk = true;
+      authDetail = "LIST auf " + allowedPrefix + " beantwortet";
+    } catch (err) {
+      authDetail = String(err.message).slice(0, 200);
+    }
+    if (!check("AUTHENTICATION", authOk, authDetail)) {
+      throw new Error("Zugang nicht bestaetigt - die uebrigen Pruefungen waeren ohne Aussage.");
+    }
+
     /* ------------------------------------------------ 1+2 schreiben/lesen */
     let allExact = true;
     for (const ticker of available) {
@@ -126,6 +196,46 @@ async function main() {
       rebuilt.symbols[t].last === written[t].last);
     check("INDEX_REBUILD_FROM_STORAGE", rebuiltOk,
           `${Object.keys(rebuilt.symbols).length} Titel aus LIST+HEAD wiederhergestellt`);
+
+    /* ----------------------------------------------------- 4a Metadaten */
+    const metaProbe = await driver.head(store.seriesKey(available[0]));
+    const metaOk = !!(metaProbe && metaProbe.metadata &&
+                      metaProbe.metadata.ticker === available[0] &&
+                      Number(metaProbe.metadata.bars) === written[available[0]].barCount &&
+                      metaProbe.metadata.sha256 === written[available[0]].sha256);
+    check("OBJECT_METADATA", metaOk,
+          metaProbe && metaProbe.metadata
+            ? `ticker=${metaProbe.metadata.ticker} bars=${metaProbe.metadata.bars} sha256 vorhanden`
+            : "keine Metadaten am Objekt");
+
+    /* ------------------------------------------------------ 4b Ueberschreiben
+
+       Ein Objekt am selben Schluessel mit anderem Inhalt. Wichtig, weil
+       der taegliche Nachlauf genau das tut - und weil ein Speicher, der
+       still die alte Fassung behaelt, erst Monate spaeter auffiele. */
+    const owTicker = available[0];
+    const owBefore = await store.getSeries(owTicker);
+    const owBars = owBefore.bars.slice(0, owBefore.bars.length - 1)
+      .concat([Object.assign({}, owBefore.bars[owBefore.bars.length - 1], { adjustedClose: 77.77 })]);
+    const owMeta = await store.putSeries({
+      ticker: owTicker, securityId: "ref_" + owTicker, provider: "tiingo",
+      adjustmentStatus: owBefore.adjustmentStatus, bars: owBars
+    });
+    const owAfter = await store.getSeries(owTicker);
+    const owOk = !owMeta.skipped &&
+                 owAfter.bars[owAfter.bars.length - 1].adjustedClose === 77.77 &&
+                 owAfter.bars.length === owBefore.bars.length;
+    check("OVERWRITE_UPDATE", owOk,
+          owOk ? "geaenderte Fassung am selben Schluessel gelesen" : "die alte Fassung kam zurueck");
+    written[owTicker] = owMeta;
+
+    /* Und die Gegenprobe: unveraenderter Inhalt schreibt NICHT. */
+    const noopMeta = await store.putSeries({
+      ticker: owTicker, securityId: "ref_" + owTicker, provider: "tiingo",
+      adjustmentStatus: owBefore.adjustmentStatus, bars: owBars
+    });
+    check("NO_UNNECESSARY_REWRITE", noopMeta.skipped === true,
+          noopMeta.skipped ? "gleicher Inhalt, kein Schreibvorgang" : "wurde unnoetig neu geschrieben");
 
     /* ------------------------------------ 5+6 inkrementell und rueckwirkend */
     const probe = available[0];
@@ -162,9 +272,52 @@ async function main() {
     check("SIZE_WITHIN_FREE_TIER", projectedGB < 10,
           `${projectedGB.toFixed(2)} GB fuer ${TARGET_SYMBOLS} Titel (R2-Freigrenze 10 GB)`);
 
+    /* ------------------------------------------------------ 9 Aufraeumen
+
+       Der Nachweis raeumt hinter sich auf. Ohne das waechst der Eimer
+       bei jedem Lauf um Wegwerfobjekte - und ein Speicherstand, der
+       Nachweisdaten mitzaehlt, macht jede Vorabrechnung ungenauer. */
+    const toRemove = await driver.list(allowedPrefix);
+    let deleted = 0, deleteFailed = 0;
+    for (const o of toRemove) {
+      try { await driver.del(o.key); deleted++; }
+      catch (err) { deleteFailed++; }
+    }
+    const remaining = await driver.list(allowedPrefix);
+    check("CLEANUP_VERIFY_PREFIX", remaining.length === 0 && deleteFailed === 0,
+          `${deleted} Objekte entfernt, ${remaining.length} verblieben` +
+          (deleteFailed ? `, ${deleteFailed} Fehler` : ""));
+
+    /* --------------------------------- 10 Produktionsdaten unberuehrt
+
+       Nicht zugesagt, sondern mitgeschrieben: der Zeuge um den Treiber
+       haette bei jedem Schluessel ausserhalb des Nachweis-Praefixes
+       geworfen. Diese Pruefung liest sein Protokoll noch einmal. */
+    const outside = touched.filter((t) => t.key !== "(bucket)" && !t.key.startsWith(allowedPrefix));
+    const productionPrefixes = ["v1/tiingo/daily/US/", "v1/tiingo/daily/", "v1/_usage/"];
+    const productionHits = touched.filter((t) =>
+      productionPrefixes.some((p) => String(t.key).startsWith(p)));
+    check("NO_PRODUCTION_KEYS_TOUCHED", outside.length === 0 && productionHits.length === 0,
+          `${touched.length} Zugriffe, alle unter '${allowedPrefix}'`);
+
+    const byOp = {};
+    for (const t of touched) byOp[t.op] = (byOp[t.op] || 0) + 1;
+
     const report = {
       generatedAt: new Date().toISOString(),
       verification: "HISTORY_STORE_SAMPLE",
+      access: {
+        touchedKeys: touched.length,
+        byOperation: byOp,
+        allowedPrefix,
+        outsideAllowedPrefix: outside.length,
+        productionKeysTouched: productionHits.length,
+        deleteScope: USE_S3 ? allowedPrefix : "(Dateisystem, Wegwerfpfad)",
+        note: "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb des " +
+              "Nachweis-Praefixes. Diese Zahlen sind mitgeschrieben, nicht zugesagt."
+      },
+      cleanup: { objectsBefore: toRemove.length, deleted, remaining: remaining.length, failed: deleteFailed },
+      budget: store.budget.spent,
       storage: { kind: store.driver.kind, endpoint: USE_S3 ? store.driver.endpoint : "(Dateisystem)",
                  prefix: store.seriesPrefix, codec: store.codec, format: Codec.VERSION },
       sample: { symbols: available, bars: totalBars, source: "quant/data/market/golden-preview/daily" },

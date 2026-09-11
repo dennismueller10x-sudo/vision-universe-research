@@ -158,7 +158,7 @@ test("ZC40 der Treiber sperrt alles, was Geld kosten kann", () => {
     ["Loeschen", "DELETE", {}, {}]
   ];
   for (const [name, method, query, headers] of forbidden) {
-    assert.throws(() => d.assertZeroCostSafe(method, query, headers),
+    assert.throws(() => d.assertZeroCostSafe(method, query, headers, "v1/tiingo/daily/US/AAPL.json.zst"),
                   /ZERO_COST_GUARD_BLOCKED/, name + " muss gesperrt sein");
   }
   /* Und der normale Betrieb laeuft weiter. */
@@ -229,4 +229,46 @@ test("ZC52 taegliche Aktualisierung fuer ein VIELFACHES Universum loest aus", ()
   }
   assert.ok(blockedOnDay !== null, "bei 60.000 Titeln muss die Schranke im Monat ausloesen");
   assert.ok(blockedOnDay > 1, "und nicht schon am ersten Tag");
+});
+
+test("ZC41 Loeschen geht nur unter einem Nachweis-Praefix - nie in die Produktion", () => {
+  const base = { endpoint: "https://x.example", bucket: "b",
+                 accessKeyId: "k", secretAccessKey: "s" };
+
+  /* Ohne Freischaltung: gesperrt, auch unter verify/. */
+  const plain = createS3Driver(base);
+  assert.equal(plain.deletePrefix, null);
+  assert.throws(() => plain.assertZeroCostSafe("DELETE", {}, {}, "verify/v1/x"),
+                /ZERO_COST_GUARD_BLOCKED/);
+
+  /* Mit Freischaltung: nur unter dem genannten Praefix. */
+  const scoped = createS3Driver(Object.assign({}, base, { allowDeleteUnderPrefix: "verify/v1/" }));
+  scoped.assertZeroCostSafe("DELETE", {}, {}, "verify/v1/tiingo/daily/VERIFY/AAPL.json.zst");
+  for (const key of [
+    "v1/tiingo/daily/US/AAPL.json.zst",
+    "v1/_usage/tiingo-US-2026-09.json",
+    "v1/tiingo/daily/US/_index.json.zst",
+    "",
+    "verify2/v1/x"
+  ]) {
+    assert.throws(() => scoped.assertZeroCostSafe("DELETE", {}, {}, key),
+                  /ZERO_COST_GUARD_BLOCKED/, "DELETE auf '" + key + "' muss scheitern");
+  }
+
+  /* Und die Freischaltung laesst sich nicht auf die Produktion richten:
+     der Praefix MUSS das Wort "verify" enthalten. Kein Tippfehler macht
+     aus v1/tiingo/... einen Pfad mit "verify" darin. */
+  for (const bad of ["v1/", "/", "v1/tiingo/", "prod/"]) {
+    assert.throws(() => createS3Driver(Object.assign({}, base, { allowDeleteUnderPrefix: bad })),
+                  /ZERO_COST_GUARD_BLOCKED/, "Praefix '" + bad + "' darf nicht angenommen werden");
+  }
+
+  /* Ein leerer Praefix ist keine Freischaltung auf alles, sondern gar
+     keine: er faellt auf null zurueck, und damit bleibt DELETE gesperrt.
+     Die sichere Auslegung - und die einzige, die man nicht versehentlich
+     als "ueberall erlaubt" lesen kann. */
+  const empty = createS3Driver(Object.assign({}, base, { allowDeleteUnderPrefix: "" }));
+  assert.equal(empty.deletePrefix, null);
+  assert.throws(() => empty.assertZeroCostSafe("DELETE", {}, {}, "verify/v1/x"),
+                /ZERO_COST_GUARD_BLOCKED/);
 });

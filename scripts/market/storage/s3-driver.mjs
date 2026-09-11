@@ -135,6 +135,26 @@ export function createS3Driver(cfg) {
   const fetchImpl = cfg.fetchImpl || globalThis.fetch;
   const maxRetries = cfg.maxRetries === undefined ? 4 : cfg.maxRetries;
 
+  /* Loeschen ist gesperrt - ausser unter einem Nachweis-Praefix.
+
+     Der Nachweis muss hinter sich aufraeumen, sonst waechst der Eimer
+     bei jedem Lauf um Wegwerfobjekte. Aber "Loeschen freischalten" und
+     "Loeschen ueberall erlauben" sind zwei verschiedene Dinge, und nur
+     das erste ist gemeint.
+
+     Der Praefix MUSS das Wort "verify" enthalten. Damit ist es
+     technisch unmoeglich, ueber diesen Weg an die Produktionsdaten zu
+     kommen: die liegen unter v1/tiingo/..., und kein Tippfehler macht
+     daraus einen Pfad mit "verify" darin. Eine Freigabe, die man auf
+     die falschen Daten richten kann, waere keine. */
+  const deletePrefix = cfg.allowDeleteUnderPrefix || null;
+  if (deletePrefix !== null) {
+    if (typeof deletePrefix !== "string" || !deletePrefix.includes("verify")) {
+      throw new Error("ZERO_COST_GUARD_BLOCKED: Loeschen ist nur unter einem Praefix erlaubt, " +
+                      "der 'verify' enthaelt. Angefragt: '" + deletePrefix + "'.");
+    }
+  }
+
   if (!bucket) throw new Error("s3-driver: kein Bucket angegeben.");
   if (!accessKeyId || !secretAccessKey) {
     throw new Error("s3-driver: keine Zugangsdaten in der Umgebung. " +
@@ -166,8 +186,16 @@ export function createS3Driver(cfg) {
   ];
   const ALLOWED_METHODS = ["GET", "PUT", "HEAD"];
 
-  function assertZeroCostSafe(method, query, extraHeaders) {
-    if (!ALLOWED_METHODS.includes(method)) {
+  function assertZeroCostSafe(method, query, extraHeaders, key) {
+    if (method === "DELETE") {
+      if (!deletePrefix) {
+        throw new Error("ZERO_COST_GUARD_BLOCKED: Methode DELETE ist nicht freigegeben.");
+      }
+      if (!key || !String(key).startsWith(deletePrefix)) {
+        throw new Error("ZERO_COST_GUARD_BLOCKED: DELETE nur unter '" + deletePrefix +
+                        "' erlaubt, angefragt: '" + key + "'.");
+      }
+    } else if (!ALLOWED_METHODS.includes(method)) {
       throw new Error("ZERO_COST_GUARD_BLOCKED: Methode " + method + " ist nicht freigegeben.");
     }
     for (const k of Object.keys(extraHeaders || {})) {
@@ -186,7 +214,7 @@ export function createS3Driver(cfg) {
   }
 
   async function request(method, key, { body, query, extraHeaders } = {}) {
-    assertZeroCostSafe(method, query, extraHeaders);
+    assertZeroCostSafe(method, query, extraHeaders, key);
     const path = "/" + uriEncode(bucket, false) + (key ? "/" + uriEncode(key, false) : "");
     const payload = body || Buffer.alloc(0);
     const payloadHash = body ? sha256Hex(payload) : EMPTY_SHA256;
@@ -279,6 +307,13 @@ export function createS3Driver(cfg) {
     /* Fuer den Test: die Haertung ist Teil der oeffentlichen Flaeche,
        damit sie angegriffen werden kann. */
     assertZeroCostSafe,
+    deletePrefix,
+
+    /** Nur fuer den Nachweis. Ohne allowDeleteUnderPrefix wirft es. */
+    async del(key) {
+      await request("DELETE", key);
+      return { key, deleted: true };
+    },
 
     /* LIST ist die Wiederherstellung: geht der Index verloren, sagt der
        Speicher selbst, was er hat. 1.000 Schluessel je Seite - fuer
@@ -307,6 +342,9 @@ export function createS3DriverFromEnv(env) {
     bucket: e.VU_HISTORY_S3_BUCKET,
     region: e.VU_HISTORY_S3_REGION || "auto",
     accessKeyId: e.VU_HISTORY_S3_ACCESS_KEY_ID,
-    secretAccessKey: e.VU_HISTORY_S3_SECRET_ACCESS_KEY
+    secretAccessKey: e.VU_HISTORY_S3_SECRET_ACCESS_KEY,
+    /* Nur der Nachweis setzt das, und der Treiber nimmt ohnehin nur
+       einen Praefix an, der "verify" enthaelt. */
+    allowDeleteUnderPrefix: e.__allowDeleteUnderPrefix || null
   });
 }

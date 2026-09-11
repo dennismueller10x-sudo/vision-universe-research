@@ -1,10 +1,38 @@
 {
-  "generatedAt": "2026-09-11T05:35:53.986Z",
+  "generatedAt": "2026-09-11T05:59:25.156Z",
   "verification": "HISTORY_STORE_SAMPLE",
+  "access": {
+    "touchedKeys": 48,
+    "byOperation": {
+      "LIST": 5,
+      "HEAD": 18,
+      "PUT": 8,
+      "GET": 11,
+      "DELETE": 6
+    },
+    "allowedPrefix": "verify/v1/",
+    "outsideAllowedPrefix": 0,
+    "productionKeysTouched": 0,
+    "deleteScope": "(Dateisystem, Wegwerfpfad)",
+    "note": "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb des Nachweis-Praefixes. Diese Zahlen sind mitgeschrieben, nicht zugesagt."
+  },
+  "cleanup": {
+    "objectsBefore": 6,
+    "deleted": 6,
+    "remaining": 0,
+    "failed": 0
+  },
+  "budget": {
+    "classA": 10,
+    "classB": 28,
+    "bytesUploaded": 849293,
+    "bytesDownloaded": 1224296,
+    "writesSkipped": 1
+  },
   "storage": {
     "kind": "fs",
     "endpoint": "(Dateisystem)",
-    "prefix": "v1/tiingo/daily/VERIFY/",
+    "prefix": "verify/v1/tiingo/daily/VERIFY/",
     "codec": "zstd",
     "format": "bar-codec-1.0.0"
   },
@@ -83,6 +111,11 @@
   },
   "checks": [
     {
+      "id": "AUTHENTICATION",
+      "status": "PASS",
+      "detail": "LIST auf verify/v1/ beantwortet"
+    },
+    {
       "id": "WRITE_READ_BYTE_EXACT",
       "status": "PASS",
       "detail": "5 echte Reihen, 14.685 Kerzen"
@@ -96,6 +129,21 @@
       "id": "INDEX_REBUILD_FROM_STORAGE",
       "status": "PASS",
       "detail": "5 Titel aus LIST+HEAD wiederhergestellt"
+    },
+    {
+      "id": "OBJECT_METADATA",
+      "status": "PASS",
+      "detail": "ticker=AAPL bars=2937 sha256 vorhanden"
+    },
+    {
+      "id": "OVERWRITE_UPDATE",
+      "status": "PASS",
+      "detail": "geaenderte Fassung am selben Schluessel gelesen"
+    },
+    {
+      "id": "NO_UNNECESSARY_REWRITE",
+      "status": "PASS",
+      "detail": "gleicher Inhalt, kein Schreibvorgang"
     },
     {
       "id": "INCREMENTAL_APPEND",
@@ -121,6 +169,16 @@
       "id": "SIZE_WITHIN_FREE_TIER",
       "status": "PASS",
       "detail": "1.21 GB fuer 7800 Titel (R2-Freigrenze 10 GB)"
+    },
+    {
+      "id": "CLEANUP_VERIFY_PREFIX",
+      "status": "PASS",
+      "detail": "6 Objekte entfernt, 0 verblieben"
+    },
+    {
+      "id": "NO_PRODUCTION_KEYS_TOUCHED",
+      "status": "PASS",
+      "detail": "48 Zugriffe, alle unter 'verify/v1/'"
     }
   ],
   "redistribution": {
