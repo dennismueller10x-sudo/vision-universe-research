@@ -1,0 +1,227 @@
+/* =========================================================================
+   VISION UNIVERSE — api/realtime.js
+
+   DER SERVERSEITIGE WEITERLEITER FUER DEN ECHTZEITSTROM.
+
+   Bisher war der Strom im Backend belegt und im Produkt unsichtbar: eine
+   statische Seite kann keinen Tiingo-WebSocket oeffnen, ohne den
+   Zugangsschluessel in den Browser zu legen. Genau diese Luecke schliesst
+   diese Funktion - und nur sie.
+
+     Browser  --SSE-->  diese Funktion  --WSS-->  api.tiingo.com/iex
+
+   DER SCHLUESSEL BLEIBT HIER. Er wird aus der Umgebung gelesen, nie
+   ausgeliefert, nie in eine Antwort geschrieben und nie protokolliert.
+   Was den Browser erreicht, sind Kursereignisse - kein Zugangsmittel.
+
+   WAS DIESE FUNKTION NICHT TUT
+
+   Sie erfindet nichts. Kommt kein Ereignis, sendet sie keins; sie sagt
+   stattdessen, dass keins kam, und nennt den Zustand der Boerse dazu.
+   Ein simulierter Kursverlauf waere hier die schlimmste aller Varianten:
+   er saehe genau aus wie der Erfolg, auf den seit Tagen gewartet wird.
+
+   KURSART UNBESTAETIGT
+
+   Der Anbieter nennt die Art des Kurses nicht (priceType UNSPECIFIED,
+   quant/data/market/commercial/live-candle-verification.json). Diese
+   Funktion reicht sie deshalb als `priceTypeConfirmed: false` durch, und
+   die Oberflaeche schreibt "Kursaktualisierung", nicht "letzter
+   Handelskurs".
+
+   LIZENZGRENZE
+
+   Ausgeliefert werden ausschliesslich die Titel, fuer die eine datierte
+   Eigentuemerfreigabe vorliegt (quant/config/development-preview.json).
+   Jeder andere Titel wird abgelehnt - nicht stillschweigend, sondern mit
+   Begruendung.
+   ========================================================================= */
+"use strict";
+
+const { readFileSync } = require("node:fs");
+const { join } = require("node:path");
+
+const WS_URL = "wss://api.tiingo.com/iex";
+/* Die Funktion beendet sich selbst, bevor die Plattform sie beendet: ein
+   abgeschnittener Strom sieht im Browser aus wie ein Fehler, ein sauber
+   geschlossener nicht. Der Browser verbindet danach neu. */
+const STREAM_MS = 50000;
+const THRESHOLD_LEVEL = 5;   /* 5 = Trades und Quotes; 0 waere nur Trades. */
+
+function lies(pfad, fallback) {
+  try { return JSON.parse(readFileSync(join(process.cwd(), pfad), "utf8")); }
+  catch (e) { return fallback; }
+}
+
+/* Die Freigabeliste. Sie kommt aus der Datei, nicht aus dem Code - wer
+   sie aendert, aendert eine datierte Entscheidung und keinen Konstanten-
+   wert. */
+function erlaubteTitel() {
+  const freigabe = lies("quant/config/development-preview.json", null);
+  return Array.isArray(freigabe && freigabe.scope) ? freigabe.scope : [];
+}
+
+function sende(res, event, data) {
+  res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+}
+
+module.exports = async function handler(req, res) {
+  const url = new URL(req.url, "http://localhost");
+  const angefragt = String(url.searchParams.get("tickers") || "")
+    .toUpperCase().split(",").map((t) => t.trim()).filter(Boolean).slice(0, 5);
+
+  const erlaubt = erlaubteTitel();
+  const tickers = angefragt.filter((t) => erlaubt.includes(t));
+  const abgelehnt = angefragt.filter((t) => !erlaubt.includes(t));
+
+  res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store, private");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+
+  const key = process.env.TIINGO_API_KEY || "";
+  const start = Date.now();
+
+  if (!key) {
+    /* Kein Schluessel ist kein Fehler dieser Funktion, sondern eine
+       fehlende Einstellung - und sie wird benannt, damit niemand nach
+       einem Programmfehler sucht. */
+    sende(res, "status", {
+      state: "NOT_CONFIGURED",
+      reason: "TIINGO_API_KEY ist in dieser Umgebung nicht gesetzt.",
+      remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview).",
+      tickers, rejected: abgelehnt
+    });
+    return res.end();
+  }
+
+  if (!tickers.length) {
+    sende(res, "status", {
+      state: "NOT_PERMITTED",
+      reason: abgelehnt.length
+        ? "Fuer diese Titel liegt keine Anzeigefreigabe vor."
+        : "Kein Titel angefragt.",
+      scope: erlaubt, rejected: abgelehnt
+    });
+    return res.end();
+  }
+
+  if (typeof globalThis.WebSocket !== "function") {
+    sende(res, "status", {
+      state: "NO_WEBSOCKET_RUNTIME",
+      reason: "Diese Laufzeit stellt keinen WebSocket-Client bereit (Node 22+ noetig)."
+    });
+    return res.end();
+  }
+
+  let updates = 0, erstesUpdate = null, offen = false, beendet = false;
+  const socket = new globalThis.WebSocket(WS_URL);
+
+  function schliesse(grund) {
+    if (beendet) return;
+    beendet = true;
+    try { socket.close(); } catch (e) { /* egal */ }
+    sende(res, "summary", {
+      state: offen ? "CLOSED" : "NEVER_CONNECTED",
+      reason: grund,
+      connected: offen,
+      updates,
+      firstUpdateAt: erstesUpdate,
+      durationMs: Date.now() - start,
+      priceTypeConfirmed: false,
+      note: updates === 0
+        ? "Keine Kursereignisse im Messfenster. Ausserhalb der Handelszeiten ist das der Normalfall - " +
+          "es wird nichts erfunden, um den Chart bewegt aussehen zu lassen."
+        : null
+    });
+    res.end();
+  }
+
+  const uhr = setTimeout(() => schliesse("streamWindowElapsed"), STREAM_MS);
+  /* Ein Lebenszeichen alle zehn Sekunden: ohne es schliessen manche
+     Zwischenschichten eine stille Verbindung. */
+  const puls = setInterval(() => { if (!beendet) res.write(": puls\n\n"); }, 10000);
+  const aufraeumen = () => { clearTimeout(uhr); clearInterval(puls); };
+
+  req.on("close", () => { aufraeumen(); schliesse("clientClosed"); });
+
+  socket.addEventListener("open", () => {
+    offen = true;
+    socket.send(JSON.stringify({
+      eventName: "subscribe",
+      authorization: key,
+      eventData: { thresholdLevel: THRESHOLD_LEVEL, tickers }
+    }));
+    sende(res, "status", {
+      state: "CONNECTED",
+      at: new Date().toISOString(),
+      tickers, rejected: abgelehnt,
+      url: WS_URL,
+      priceTypeConfirmed: false,
+      priceLabel: "Kursaktualisierung",
+      note: "Der Anbieter nennt die Kursart nicht (UNSPECIFIED). Es wird deshalb kein " +
+            "'letzter Handelskurs' behauptet."
+    });
+  });
+
+  socket.addEventListener("message", (event) => {
+    if (beendet) return;
+    let nachricht = null;
+    try { nachricht = JSON.parse(String(event.data)); } catch (e) { return; }
+
+    if (nachricht.messageType === "I") {
+      sende(res, "subscribed", { at: new Date().toISOString(), response: nachricht.response || null });
+      return;
+    }
+    if (nachricht.messageType === "E") {
+      /* Ein Fehler des Anbieters gehoert weitergereicht - aber ohne
+         alles, was ein Zugangsmittel sein koennte. */
+      sende(res, "status", { state: "PROVIDER_ERROR", reason: String((nachricht.response && nachricht.response.message) || "unbekannt").slice(0, 200) });
+      return;
+    }
+    if (nachricht.messageType !== "A" || !Array.isArray(nachricht.data)) return;
+
+    const tick = deuteIexZeile(nachricht.data);
+    if (!tick) return;
+    updates++;
+    if (!erstesUpdate) erstesUpdate = new Date().toISOString();
+    sende(res, "tick", Object.assign(tick, { seq: updates, receivedAt: new Date().toISOString() }));
+  });
+
+  socket.addEventListener("error", () => {
+    if (!beendet) sende(res, "status", { state: "SOCKET_ERROR", reason: "Verbindung zum Anbieter gestoert." });
+    aufraeumen(); schliesse("socketError");
+  });
+  socket.addEventListener("close", () => { aufraeumen(); schliesse("socketClosed"); });
+};
+
+/* Die IEX-Zeile des Anbieters ist ein Array mit fester Reihenfolge:
+     [0] messageType  "Q" Quote | "T" Trade | "B" Break
+     [1] timestamp    ISO
+     [3] ticker
+   Danach unterscheiden sich die Felder je Art. Nur was tatsaechlich eine
+   Zahl ist, wird uebernommen; fehlt der Kurs, entsteht kein Tick. */
+function deuteIexZeile(zeile) {
+  const art = zeile[0], zeitstempel = zeile[1], ticker = String(zeile[3] || "").toUpperCase();
+  if (!ticker) return null;
+
+  if (art === "T") {
+    const preis = zahl(zeile[9]), menge = zahl(zeile[10]);
+    if (preis === null) return null;
+    return { ticker, kind: "TRADE", price: preis, size: menge, at: zeitstempel || null,
+             priceTypeConfirmed: false };
+  }
+  if (art === "Q") {
+    const bid = zahl(zeile[5]), mid = zahl(zeile[6]), ask = zahl(zeile[7]);
+    const preis = mid !== null ? mid : (bid !== null && ask !== null ? (bid + ask) / 2 : null);
+    if (preis === null) return null;
+    return { ticker, kind: "QUOTE", price: preis, bid, ask, at: zeitstempel || null,
+             priceTypeConfirmed: false };
+  }
+  return null;
+}
+
+function zahl(v) { return typeof v === "number" && Number.isFinite(v) ? v : null; }
+
+module.exports.config = { maxDuration: 60 };

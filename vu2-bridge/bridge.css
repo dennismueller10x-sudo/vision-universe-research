@@ -1,0 +1,61 @@
+/* =========================================================================
+   VISION UNIVERSE — vu2-bridge/bridge.css
+
+   NUR was die Bruecke hinzufuegt: Kopfband, Suchdialog, Live-Block.
+   Alles Uebrige kommt unveraendert aus vu2/experience.css. Farben und
+   Abstaende stammen aus dessen Variablen - ein eigenes Farbschema waere
+   genau das zweite Designsystem, das hier nicht entstehen soll.
+   ========================================================================= */
+
+.vu-scope {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap; padding: 10px 24px; background: var(--surface);
+  border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.5;
+}
+.vu-scope-text { min-width: 0; }
+.vu-scope-text b { font-weight: 650; }
+.vu-scope-note { display: block; color: var(--muted); font-size: 13px; }
+.vu-scope-button {
+  border: 1px solid var(--ink); background: var(--ink); color: #fff;
+  border-radius: 5px; padding: 9px 16px; min-height: 40px; cursor: pointer;
+  font-size: 14px; white-space: nowrap;
+}
+
+dialog.vu-search {
+  width: min(560px, calc(100vw - 32px)); border: 1px solid var(--line);
+  border-radius: 10px; padding: 24px; color: var(--ink);
+}
+dialog.vu-search::backdrop { background: rgba(20, 23, 25, .45); }
+dialog.vu-search h2 { margin: 0 0 14px; font-size: 20px; }
+dialog.vu-search .search {
+  width: 100%; min-height: 46px; padding: 12px 14px; border: 1px solid var(--line);
+  border-radius: 6px; font-size: 16px;
+}
+dialog.vu-search .vu-search-count { margin: 10px 0 6px; font-size: 13px; }
+dialog.vu-search .search-results { display: grid; gap: 2px; max-height: 46vh; overflow: auto; }
+dialog.vu-search .search-results a {
+  display: block; padding: 11px 10px; border-radius: 5px; font-weight: 600;
+  border: 1px solid transparent;
+}
+dialog.vu-search .search-results a:hover,
+dialog.vu-search .search-results a:focus { background: var(--surface); border-color: var(--line); }
+dialog.vu-search .button { margin-top: 16px; }
+
+.vu-live { border-top: 1px solid var(--line); }
+.vu-live-block { padding: 18px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.vu-live-block:last-child { border-bottom: 0; }
+.vu-live-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.vu-live-head h3 { margin: 0; font-size: 18px; }
+.vu-live .quote { font-size: 34px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.vu-live-spark { color: var(--ink); margin: 6px 0 4px; min-height: 60px; }
+.vu-live .pill.vu-live-on { background: var(--positive); color: #fff; border-color: var(--positive); }
+.vu-live svg { max-width: 100%; height: auto; }
+
+@media (max-width: 650px) {
+  .vu-scope { padding: 10px 16px; font-size: 13px; }
+  .vu-scope-button { width: 100%; }
+  .vu-live .quote { font-size: 28px; }
+}

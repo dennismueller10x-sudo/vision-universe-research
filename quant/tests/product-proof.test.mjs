@@ -31,6 +31,29 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const src = join(root, "_proof-src", "universe");
 
+/* Dieser Zweig ist eine INTEGRATIONSVORSCHAU: er fuehrt die VU2-Arbeit
+   von Astra/Codex zusammen, ohne sie zu veraendern. Ein Diff gegen main
+   enthaelt deshalb zwangslaeufig deren Dateien - sie stammen aus dem
+   Merge, nicht aus dieser Arbeit.
+
+   Die Zusage, die hier zaehlt, bleibt trotzdem pruefbar: eine Datei gilt
+   als UNVERAENDERT, wenn ihr Blob identisch mit dem des gemergten
+   Zweiges ist. Wer eine davon anfasst, faellt weiter auf. */
+function ausFremdemZweig(datei) {
+  const zweige = ["origin/workstream/vu2-strategy-workspace", "origin/workstream/vu2-eod-gates"];
+  let hier;
+  try {
+    hier = execFileSync("git", ["rev-parse", `HEAD:${datei}`], { cwd: root, encoding: "utf8" }).trim();
+  } catch (err) { return false; }
+  return zweige.some((zweig) => {
+    try {
+      return execFileSync("git", ["rev-parse", `${zweig}:${datei}`],
+        { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() === hier;
+    } catch (err) { return false; }
+  });
+}
+
+
 /* Einmal bauen, von allen Tests gelesen. Der Bau haengt am
    Vorschaudatensatz - der entsteht selbst zur Bauzeit und liegt in CI
    nicht vor, also wird er hier zuerst erzeugt. Beides in temporaere
@@ -212,7 +235,8 @@ test("PP5 — die Oberflaeche ist die bestehende und veraendert sie nicht", () =
   const angefasst = diff.split("\n").filter((f) =>
     /^quant\/(ui|engines|stock|screener|ranking|markt|radar|watchlist|technical|ai|api|methodology|strategies|backtests)\//.test(f) ||
     f === "quant/app.js" || f === "quant/index.html" ||
-    /^assets\//.test(f) || f === "index.html");
+    /^assets\//.test(f) || f === "index.html")
+    .filter((f) => !ausFremdemZweig(f));
   assert.deepEqual(angefasst, [],
     `der Nachweis hat bestehende Produktdateien veraendert: ${angefasst.join(", ")}`);
 });
