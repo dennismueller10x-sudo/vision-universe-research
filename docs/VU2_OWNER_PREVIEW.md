@@ -132,6 +132,13 @@ Handelskurs". **OP4** prueft die Beschriftung.
 
 ### Die beiden verbleibenden Sperren
 
+> **Nachtrag 2026-09-11:** Der Schluessel ist im Vercel-Projekt gesetzt
+> (Scope Preview). Eine bereits gebaute Auslieferung sieht ihn dadurch
+> **nicht**: Vercel friert die Umgebungsvariablen beim Bauen ein. Die
+> Messung gegen die Auslieferung vom 05:13 UTC meldete deshalb weiterhin
+> `NOT_CONFIGURED` — richtig gemessen, nur an einem Stand von vorher. Es
+> braucht einen neuen Bau; der liest die Variable beim Start.
+
 1. **`TIINGO_API_KEY` fehlt in der Vercel-Umgebung.** Beide
    Serverfunktionen laufen dort, antworten und melden
    `NOT_CONFIGURED` mit der Abhilfe. Eine Einstellung, kein
