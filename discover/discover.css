@@ -346,6 +346,18 @@
 /* ------------------------------------------------------------------ Mobil */
 @media (max-width:760px){
   :root{--d-card-w:var(--d-card-w-sm);--d-gap:11px;--d-rail-pad:16px}
+  /* Der Chart passt sich an, statt zu scrollen: er ist ein viewBox-SVG und
+     skaliert verlustfrei. quant.css setzt fuer die Quant-Seiten eine
+     Mindestbreite von 640px - hier, im Modul, wird sie aufgehoben, ohne
+     die fremde Datei anzufassen. */
+  .d-chart-box .q-tchart{min-width:0;width:100%}
+  .d-chart-box{padding:8px}
+  /* Ueberlagerungen: je Gruppe eine wischbare Zeile statt sieben
+     umgebrochener Bloecke. */
+  .d-ov-group{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .d-ov-group::-webkit-scrollbar{display:none}
+  .d-ov{flex:0 0 auto}
+  .d-ov-label{flex:0 0 auto}
   .d-hero{padding:20px 0 18px}
   /* Auf kleinen Displays traegt die Kopfzeile nur, was sie tragen muss:
      Universumsgroesse und Stand. Datenart, Benchmark und Methodikversion
