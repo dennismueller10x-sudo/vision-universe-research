@@ -118,6 +118,11 @@ for (const universe of meta.universes) {
       `${file}: abweichende Methodikversion`);
 
     for (const card of cards) {
+      /* Zwei Kartenformen sind zulaessig: die volle Karte der Reihen und
+         die schlanke Verweiskachel der Sektoren (Contract.toMiniCard), die
+         bewusst weder Signale noch Kursreihe traegt. Geprueft wird beides
+         nach denselben Regeln - nur eben das, was jeweils vorhanden ist. */
+      const mini = !card.signals;
       const stock = Contract.normalizeStock(Object.assign({}, card, {
         dataMode: card.dataMode, universeId: id
       }));
@@ -143,6 +148,7 @@ for (const universe of meta.universes) {
         const v = card.metrics[key];
         check(!isNum(v) || (v >= 0 && v <= 100), `${file}: ${card.symbol} hat ${key} ausserhalb 0..100`);
       }
+      if (mini) continue;
       /* Signale ohne ihre Kennzahl. */
       if (card.signals.breakout) {
         check(isNum(card.metrics.breakoutScore) || isNum(card.metrics.volumeSpikeRatio),

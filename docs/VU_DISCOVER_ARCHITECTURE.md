@@ -87,6 +87,40 @@ Die statische Entsprechung der im Auftrag genannten Endpunkte:
 | `GET /api/discover/momentum` | `discover/data/rows/US_REAL/momentum-leaders.json` |
 | `GET /api/discover/breakouts` | `discover/data/rows/US_REAL/breakout-watch.json` |
 
+## 4a. Experience-Schicht (Redesign)
+
+Discover trägt eine eigene, dunkle Oberfläche — die einzige im Repository.
+Sie liegt vollständig in `discover/` und ist an `body.dx` und `.dx-*`
+gebunden; keine bestehende Vision-Universe-Seite kann davon betroffen sein.
+
+| Baustein | Datei | Rolle |
+|---|---|---|
+| Experience-Tokens | `discover/discover.css` | `--discover-bg/-surface/-text/-radius/-card-width/-hero-height/-motion-*` |
+| Eingangsfläche | `discover/ui/hero.js` | Featured-Titel mit Signal, Kennzahlen, Datenbild, Wechsel |
+| Poster | `discover/ui/cards.js` | vier Formen: Rang, Landschaft, Standard, kompakt |
+| Sektorkachel | `discover/ui/cards.js` | kleine Rangliste je Sektor statt Kartenstapel |
+| Suche | `discover/ui/search.js` | Vollbild-Overlay, Tastatur (`/`, ↑↓, Enter, Esc) |
+| Begründung | `discover/engines/narrative.js` | „Warum steht dieser Titel hier?" — deterministisch |
+| Renditepfad | `scripts/discover/build-discover-data.mjs` | `performancePath`: fünf Stützstellen aus r12/r6/r3/r1 |
+
+**Der Renditepfad** ist die Antwort auf die Redistributionsgrenze: aus den
+freigegebenen Renditen lässt sich der Kursstand relativ zu heute
+zurückrechnen (`P(-12M)/P(heute) = 1/(1+r12)`). Damit bekommt **jeder**
+reale Titel einen sichtbaren Verlauf — ohne ein einziges absolutes
+Kursniveau. Die Stützstellen sind markiert; zwischen ihnen wird nichts
+interpoliert.
+
+**Keine Wiederholung:** die stärksten Titel stehen naturgemäß in mehreren
+Ranglisten. Die Startseite zeigt einen Titel deshalb nur einmal (Ausnahme:
+die Signature-Reihe TOP 10, die immer die echte Reihenfolge zeigt). Die
+vollständigen Ranglisten bleiben über „Alle anzeigen" erreichbar und werden
+nicht verändert; die Kopfzeile weist die Filterung mit „ohne bereits
+gezeigte" aus.
+
+**Bewegung** folgt drei Tokens (150 / 260 / 520 ms) und respektiert
+`prefers-reduced-motion` vollständig: keine Einblendungen, kein
+automatischer Wechsel der Eingangsfläche, keine Hover-Skalierung.
+
 ## 5. Engines
 
 | Engine | Datei | Aufgabe |
@@ -96,6 +130,7 @@ Die statische Entsprechung der im Auftrag genannten Endpunkte:
 | Scoring | `discover/engines/scoring.js` | Leadership/Momentum/RS/Breakout, Perzentile |
 | Indikatoren | `discover/engines/indicators.js` | EMA, SMA, RSI, MACD, Bollinger, ATR, rel. Volumen |
 | Technical Intelligence | `discover/engines/technical-intelligence.js` | Uebersetzt den Elliott-Befund, erzeugt keinen |
+| Begründung | `discover/engines/narrative.js` | Befunde und Gegenargumente aus festen Schwellen |
 | Realtime | `discover/engines/realtime-source.js` | Sitzung, Aktualitaet, Tick-Anwendung |
 
 ### Market Leadership Score

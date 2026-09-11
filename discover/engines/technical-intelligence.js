@@ -52,12 +52,12 @@
   };
 
   var REASON_TEXT = {
-    AMBIGUOUS: "Die Zaehlung ist nicht eindeutig: mehrere Varianten erfuellen die Regeln gleich gut.",
-    ABORTED: "Die Engine hat die Zaehlung abgebrochen.",
-    INSUFFICIENT_DATA: "Zu wenige bestaetigte Pivots fuer eine Zaehlung.",
-    NO_BUNDLE: "Fuer diesen Titel liegt keine vorberechnete Technical-Intelligence-Analyse vor.",
+    AMBIGUOUS: "Die Zählung ist nicht eindeutig: mehrere Varianten erfüllen die Regeln gleich gut.",
+    ABORTED: "Die Engine hat die Zählung abgebrochen.",
+    INSUFFICIENT_DATA: "Zu wenige bestätigte Pivots für eine Zählung.",
+    NO_BUNDLE: "Für diesen Titel liegt keine vorberechnete Technical-Intelligence-Analyse vor.",
     NO_SERIES: "Ohne ausgelieferte Kursreihe kann keine Struktur bestimmt werden.",
-    NOT_REQUESTED: "Fuer diesen Titel wurde keine Analyse angefordert."
+    NOT_REQUESTED: "Für diesen Titel wurde keine Analyse angefordert."
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -84,7 +84,7 @@
       if (opts.calculating === true) {
         base.status = STATUS.CALCULATING;
         base.reason = "PENDING";
-        base.message = "Die Analyse laeuft. Es wird kein Zwischenstand als Ergebnis gezeigt.";
+        base.message = "Die Analyse läuft. Es wird kein Zwischenstand als Ergebnis gezeigt.";
         return base;
       }
       base.reason = opts.seriesAvailable === false ? "NO_SERIES" : "NO_BUNDLE";
@@ -104,7 +104,7 @@
     if (base.status === STATUS.UNAVAILABLE) {
       base.reason = elliott.reason || elliott.status || "UNAVAILABLE";
       base.message = REASON_TEXT[base.reason] ||
-        "Die Elliott-Engine liefert fuer diesen Titel keinen verwertbaren Befund (" +
+        "Die Elliott-Engine liefert für diesen Titel keinen verwertbaren Befund (" +
         String(elliott.status) + ").";
       return base;
     }

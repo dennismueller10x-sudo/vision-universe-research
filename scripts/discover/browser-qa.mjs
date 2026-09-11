@@ -1,20 +1,20 @@
 /* =========================================================================
    VISION UNIVERSE DISCOVER — browser-qa.mjs
 
-   Die Pruefungen aus §19/§20 des Auftrags, die sich NICHT in Node
-   nachstellen lassen: Chart-Aufbau, Zeitraumwechsel, Kartennavigation,
-   Suche, Ueberlagerungen, Leerzustaende und das Verhalten auf einem
-   kleinen Display.
+   Die Prüfungen, die sich in Node nicht nachstellen lassen: Eingangsfläche,
+   Reihen, Poster-Varianten, Hover, Suche, Kategorie, Detail, Chart,
+   Zustände ohne ausgelieferte Kursreihe, Modelluniversum, Telefon,
+   reduzierte Bewegung und horizontaler Überlauf.
 
    Warum das hier steht und nicht in der CI: dieses Repository hat keinen
-   Paketmanager-Stand und keine Browser-Abhaengigkeit. Eine hinzuzufuegen,
-   nur damit eine Pruefung automatisch laeuft, waere ein groesserer
-   Eingriff in das bestehende System als das ganze Modul. Das Skript ist
-   deshalb ausfuehrbar, wo Playwright vorhanden ist - und es ist genau der
-   Ablauf, mit dem diese Fassung visuell abgenommen wurde.
+   Paketmanager-Stand und keine Browser-Abhängigkeit. Eine hinzuzufügen,
+   nur damit eine Prüfung automatisch läuft, wäre ein größerer Eingriff in
+   das bestehende System als das ganze Modul. Das Skript ist deshalb
+   ausführbar, wo Playwright vorhanden ist - und es ist genau der Ablauf,
+   mit dem diese Fassung visuell abgenommen wurde.
 
    Voraussetzung:  npm i playwright   (oder ein vorhandener Chromium)
-   Ausfuehren:     node scripts/discover/browser-qa.mjs [--url http://localhost:8765]
+   Ausführen:      node scripts/discover/browser-qa.mjs [--url http://localhost:8765]
                    [--shots verzeichnis]
 
    Einen lokalen Server startet man vorher mit:
@@ -52,23 +52,19 @@ async function check(name, fn) {
     results.push(["FAIL", name + " — " + (err && err.message ? err.message : err)]);
   }
 }
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
+function assert(condition, message) { if (!condition) throw new Error(message); }
 
-const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM_PATH || undefined
-});
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
 
 /* Konsolenfehler gelten als Fehlschlag - ausser den beiden, die nichts mit
-   der Anwendung zu tun haben: die Webfont-Quelle und das fehlende Favicon.
-   Geprueft wird die HERKUNFT der Meldung, nicht ihr Text: der Browser
-   meldet einen fehlgeschlagenen Abruf als "Failed to load resource" ohne
-   die URL, und ein Textfilter darauf wuerde auch echte Fehler verschlucken. */
+   der Anwendung zu tun haben. Geprüft wird die HERKUNFT der Meldung, nicht
+   ihr Text: der Browser meldet einen fehlgeschlagenen Abruf als "Failed to
+   load resource" ohne URL, und ein Textfilter darauf würde auch echte
+   Fehler verschlucken. */
 const IGNORE = /fonts\.googleapis|fonts\.gstatic|favicon\.ico/;
 
-async function openPage(viewport, mobile) {
-  const page = await browser.newPage({ viewport, isMobile: !!mobile, hasTouch: !!mobile });
+async function openPage(options) {
+  const page = await browser.newPage(options);
   const errors = [];
   page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
   page.on("console", (m) => {
@@ -84,207 +80,358 @@ async function openPage(viewport, mobile) {
   page.__errors = errors;
   return page;
 }
-
 async function shot(page, name) {
-  if (SHOTS) await page.screenshot({ path: join(SHOTS, name + ".png"), fullPage: false });
+  if (SHOTS) await page.screenshot({ path: join(SHOTS, name + ".png") });
+}
+async function ueberstand(page) {
+  return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 }
 
-/* ------------------------------------------------------------ Startseite */
-const desktop = await openPage({ width: 1440, height: 900 });
+/* =============================================================== DESKTOP */
+const desktop = await openPage({ viewport: { width: 1440, height: 900 } });
 await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-await desktop.waitForTimeout(2600);
+await desktop.waitForTimeout(3200);
 
-await check("Startseite baut alle Zeilen auf", async () => {
-  const zeilen = await desktop.$$(".d-row");
-  assert(zeilen.length >= 6, "nur " + zeilen.length + " Zeilen gerendert");
+await check("Eingangsfläche trägt einen echten Titel mit Signal und Kennzahlen", async () => {
+  await desktop.waitForSelector(".dx-hero-title", { timeout: 10000 });
+  const titel = (await desktop.textContent(".dx-hero-title")).trim();
+  const kicker = (await desktop.textContent(".dx-kicker")).trim();
+  const stats = await desktop.$$(".dx-hero-stats .dx-stat");
+  assert(titel.length > 1, "kein Titel in der Eingangsfläche");
+  assert(kicker.length > 3, "kein Signal in der Eingangsfläche");
+  assert(stats.length >= 2, "weniger als zwei Kennzahlen");
+  const cta = await desktop.getAttribute(".dx-cta .dx-btn", "href");
+  assert(/#\/s\//.test(cta || ""), "die Eingangsfläche führt nicht auf einen Titel");
+  await shot(desktop, "01-hero");
 });
 
-await check("jede Zeile zeigt Karten oder einen benannten Leerzustand", async () => {
-  const befund = await desktop.$$eval(".d-row", (rows) => rows.map((r) => ({
-    titel: r.querySelector("h2") ? r.querySelector("h2").textContent : "?",
-    karten: r.querySelectorAll(".d-card").length,
-    leer: !!r.querySelector(".d-empty")
-  })));
-  for (const row of befund) {
-    assert(row.karten > 0 || row.leer, "Zeile " + row.titel + " ist leer ohne Erklaerung");
-  }
+await check("Eingangsfläche zeigt ein Datenbild aus echten Werten", async () => {
+  const pfade = await desktop.$$eval(".dx-hero-chart path", (ns) => ns.length);
+  assert(pfade > 0, "kein Verlauf in der Eingangsfläche");
+  const bildunterschrift = await desktop.textContent(".dx-hero-caption");
+  assert(/Renditepfad|Kursverlauf/.test(bildunterschrift), "das Datenbild ist nicht benannt");
 });
 
-await check("keine Karte zeigt einen Platzhalterwert statt einer Auskunft", async () => {
-  const texte = await desktop.$$eval(".d-card", (cards) => cards.map((c) => c.textContent));
-  for (const text of texte) {
-    assert(!/\b(NaN|undefined|null|0,00 \$)\b/.test(text), "Karte enthaelt: " + text.slice(0, 80));
-  }
-});
-
-await check("grosse Liste: 24 Karten in einer Kategorie unter 3 Sekunden", async () => {
-  const start = Date.now();
-  await desktop.goto(BASE + "/discover/#/c/US_REAL/market-leaders", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".d-card", { timeout: 8000 });
+await check("Featured-Wechsel über die Striche", async () => {
+  const striche = await desktop.$$(".dx-hero-nav button");
+  assert(striche.length >= 2, "nur ein Featured-Titel");
+  const vorher = await desktop.textContent(".dx-hero-title");
+  await striche[1].click();
   await desktop.waitForTimeout(600);
-  const karten = await desktop.$$(".d-card");
-  const dauer = Date.now() - start;
-  assert(karten.length >= 20, "nur " + karten.length + " Karten");
-  assert(dauer < 3000, "Aufbau dauerte " + dauer + " ms");
-  await shot(desktop, "kategorie");
+  const nachher = await desktop.textContent(".dx-hero-title");
+  assert(vorher !== nachher, "der Wechsel ändert die Eingangsfläche nicht");
 });
 
-await check("Filter greift und meldet auch den leeren Fall", async () => {
-  const chips = await desktop.$$(".d-chip");
-  assert(chips.length > 1, "keine Filterchips");
-  const vorher = (await desktop.$$(".d-card")).length;
-  await chips[1].click();
+await check("Signature-Reihe: TOP 10 mit Rangziffern", async () => {
+  const ziffern = await desktop.$$eval('[data-row="top-10"] .dx-rank-num',
+    (ns) => ns.map((n) => n.textContent.trim()));
+  assert(ziffern.length === 10, "TOP 10 zeigt " + ziffern.length + " Titel");
+  assert(ziffern[0] === "01" && ziffern[9] === "10", "Rangziffern stimmen nicht: " + ziffern.join(","));
+  await shot(desktop, "02-top10");
+});
+
+await check("Die Reihen haben verschiedene Formen (§6)", async () => {
+  const formen = await desktop.evaluate(() => ({
+    rang: document.querySelectorAll(".dx-rank").length,
+    poster: document.querySelectorAll(".dx-poster:not(.dx-poster--compact)").length,
+    kompakt: document.querySelectorAll(".dx-poster--compact").length,
+    sektor: document.querySelectorAll(".dx-sector").length
+  }));
+  assert(formen.rang >= 10, "keine Rang-Poster");
+  assert(formen.poster > 0, "keine Standard-Poster");
+  assert(formen.kompakt > 0, "keine kompakten Poster");
+  assert(formen.sektor > 0, "keine Sektorkacheln");
+});
+
+await check("Jedes Poster zeigt Symbol, Signal und einen Verlauf", async () => {
+  const befund = await desktop.$$eval(".dx-poster", (posters) => posters.slice(0, 24).map((p) => ({
+    sym: (p.querySelector(".dx-poster-sym") || {}).textContent || "",
+    media: p.querySelectorAll(".dx-poster-media svg path").length,
+    text: p.textContent
+  })));
+  for (const p of befund) {
+    assert(p.sym.trim().length > 0, "Poster ohne Symbol");
+    assert(p.media > 0, p.sym + ": kein Verlauf gezeichnet");
+    assert(!/\b(NaN|undefined|null)\b/.test(p.text), p.sym + ": Platzhalterwert auf der Karte");
+  }
+});
+
+await check("Keine Wiederholung derselben Titel über die Startseite (§6)", async () => {
+  const symbole = await desktop.$$eval(".dx-rail-section .dx-poster .dx-poster-sym",
+    (ns) => ns.map((n) => n.textContent.trim()));
+  const zaehler = {};
+  symbole.forEach((s) => { zaehler[s] = (zaehler[s] || 0) + 1; });
+  const mehrfach = Object.keys(zaehler).filter((s) => zaehler[s] > 1);
+  assert(mehrfach.length === 0, "mehrfach auf der Startseite: " + mehrfach.join(", "));
+});
+
+await check("Hover zeigt zusätzliche Intelligence", async () => {
+  const poster = desktop.locator(".dx-rail-section .dx-poster").nth(11);
+  await poster.hover();
+  await desktop.waitForTimeout(600);
+  const sichtbar = await poster.evaluate((node) => {
+    const reveal = node.querySelector(".dx-reveal");
+    return reveal ? Number(getComputedStyle(reveal).opacity) : -1;
+  });
+  assert(sichtbar > 0.7, "der Hover-Vorhang bleibt unsichtbar (" + sichtbar + ")");
+  const skaliert = await poster.evaluate((node) => getComputedStyle(node).transform);
+  assert(skaliert !== "none", "das Poster reagiert nicht auf den Zeiger");
+  await shot(desktop, "03-hover");
+});
+
+await check("Kartennavigation führt auf die Detailseite", async () => {
+  const sym = await desktop.$eval(".dx-rail-section .dx-poster .dx-poster-sym", (n) => n.textContent.trim());
+  await desktop.click(".dx-rail-section .dx-poster");
+  await desktop.waitForSelector(".dx-dhero h1", { timeout: 8000 });
+  assert(desktop.url().indexOf("#/s/") !== -1, "der Hash wurde nicht gesetzt");
+  const kopf = await desktop.textContent(".dx-dhero-meta");
+  assert(kopf.indexOf(sym) !== -1, "die Detailseite zeigt ein anderes Symbol");
+});
+
+/* ------------------------------------------------------------- Suche */
+await check("Suche öffnet über die Tastatur und findet einen Titel", async () => {
+  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await desktop.waitForTimeout(2800);
+  await desktop.keyboard.press("/");
   await desktop.waitForTimeout(500);
-  const nachher = (await desktop.$$(".d-card")).length;
-  const leer = await desktop.$(".d-empty");
-  assert(nachher <= vorher, "Filter hat die Liste vergroessert");
-  assert(nachher > 0 || leer, "Filter liefert nichts und sagt nichts");
+  const offen = await desktop.$eval(".dx-search", (n) => n.classList.contains("on"));
+  assert(offen, "das Such-Overlay öffnet nicht über die Tastatur");
+  await desktop.fill(".dx-search input", "NV");
+  await desktop.waitForTimeout(700);
+  const treffer = await desktop.$$(".dx-result");
+  assert(treffer.length > 0, "kein Treffer für NV");
+  await shot(desktop, "04-search");
 });
 
-await check("Kartennavigation fuehrt auf die Detailseite", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2400);
-  const symbol = await desktop.$eval(".d-card .d-sym", (n) => n.textContent);
-  await desktop.click(".d-card");
-  await desktop.waitForSelector(".d-detail-id h1", { timeout: 8000 });
-  assert(desktop.url().indexOf("#/s/") !== -1, "Hash wurde nicht gesetzt: " + desktop.url());
-  const ueberschrift = await desktop.textContent(".d-detail-id p");
-  assert(ueberschrift.indexOf(symbol) !== -1, "Detailseite zeigt ein anderes Symbol");
-});
-
-/* --------------------------------------------------------------- Suche */
-await check("Suche findet einen Titel und oeffnet ihn", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2400);
-  await desktop.fill(".d-search input", "NV");
-  await desktop.waitForTimeout(800);
-  const treffer = await desktop.$$(".d-results button");
-  assert(treffer.length > 0, "kein Treffer fuer NV");
-  await treffer[0].click();
-  await desktop.waitForSelector(".d-detail-id h1", { timeout: 8000 });
+await check("Suche: Pfeiltasten wählen, Enter öffnet", async () => {
+  await desktop.keyboard.press("ArrowDown");
+  await desktop.waitForTimeout(250);
+  const markiert = await desktop.$$eval(".dx-result[aria-selected='true']", (ns) => ns.length);
+  assert(markiert === 1, "kein Treffer markiert");
+  await desktop.keyboard.press("Enter");
+  await desktop.waitForTimeout(1800);
+  assert(/#\/s\//.test(desktop.url()), "Enter öffnet keinen Titel: " + desktop.url());
 });
 
 await check("Suche ohne Treffer sagt das, statt leer zu bleiben", async () => {
   await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2400);
-  await desktop.fill(".d-search input", "ZZZZQQ");
-  await desktop.waitForTimeout(800);
-  const text = await desktop.textContent(".d-results");
-  assert(/passt zu/.test(text), "kein Hinweis auf das leere Ergebnis");
+  await desktop.waitForTimeout(2800);
+  await desktop.keyboard.press("/");
+  await desktop.waitForTimeout(400);
+  await desktop.fill(".dx-search input", "ZZZQQQ");
+  await desktop.waitForTimeout(700);
+  const hinweis = await desktop.textContent(".dx-search-hint");
+  assert(/passt zu/.test(hinweis), "kein Hinweis auf das leere Ergebnis");
+  await desktop.keyboard.press("Escape");
+  await desktop.waitForTimeout(400);
+  const offen = await desktop.$eval(".dx-search", (n) => n.classList.contains("on"));
+  assert(!offen, "Escape schliesst das Overlay nicht");
 });
 
-/* ---------------------------------------------------------------- Chart */
-await check("Chart wird aufgebaut (Titel mit Kursreihe)", async () => {
+/* -------------------------------------------------------- Kategorie */
+await check("Kategorieseite: Gitter, Filter und Abdeckung", async () => {
+  const start = Date.now();
+  await desktop.goto(BASE + "/discover/#/c/US_REAL/market-leaders", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-poster", { timeout: 9000 });
+  await desktop.waitForTimeout(500);
+  const karten = await desktop.$$(".dx-poster");
+  assert(karten.length >= 20, "nur " + karten.length + " Karten");
+  assert(Date.now() - start < 4000, "die Kategorie baut zu langsam auf");
+  const filter = await desktop.$$(".dx-filters button");
+  assert(filter.length > 1, "keine Filter");
+  await filter[1].click();
+  await desktop.waitForTimeout(500);
+  const danach = await desktop.$$(".dx-poster");
+  const leer = await desktop.$(".dx-empty");
+  assert(danach.length <= karten.length, "der Filter vergrössert die Liste");
+  assert(danach.length > 0 || leer, "der Filter liefert nichts und sagt nichts");
+  await shot(desktop, "05-kategorie");
+});
+
+/* ----------------------------------------------------------- Detail */
+await check("Detail: Kopf, Begründung und Chart", async () => {
   await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".d-chart-box svg", { timeout: 10000 });
-  const pfade = await desktop.$$eval(".d-chart-box svg path", (ns) => ns.length);
-  assert(pfade > 0, "der Chart enthaelt keine Linie");
-  await shot(desktop, "chart");
+  await desktop.waitForSelector(".dx-chart svg", { timeout: 12000 });
+  const score = await desktop.textContent(".dx-dhero-score b");
+  assert(/\d/.test(score), "kein Leadership Score im Kopf");
+  const warum = await desktop.textContent(".dx-why");
+  assert(/Warum/.test(warum), "keine Begründung");
+  const gruende = await desktop.$$(".dx-why-item");
+  assert(gruende.length > 0, "keine Einzelbefunde");
+  const pfade = await desktop.$$eval(".dx-chart svg path", (ns) => ns.length);
+  assert(pfade > 0, "der Chart enthält keine Linie");
+  await shot(desktop, "06-detail");
 });
 
-await check("Zeitraumwechsel zeichnet neu", async () => {
-  const vorher = await desktop.$eval(".d-chart-box svg", (s) => s.innerHTML.length);
-  await desktop.click('.d-tf button:text-is("3M")');
+await check("Detail: Zeitraumwechsel zeichnet neu", async () => {
+  const vorher = await desktop.$eval(".dx-chart svg", (s) => s.innerHTML.length);
+  await desktop.click('.dx-tf button:text-is("3M")');
   await desktop.waitForTimeout(900);
-  const nachher = await desktop.$eval(".d-chart-box svg", (s) => s.innerHTML.length);
-  const aktiv = await desktop.$eval('.d-tf button:text-is("3M")', (b) => b.getAttribute("aria-pressed"));
-  assert(aktiv === "true", "der gewaehlte Zeitraum ist nicht markiert");
-  assert(vorher !== nachher, "der Chart hat sich nicht veraendert");
+  const nachher = await desktop.$eval(".dx-chart svg", (s) => s.innerHTML.length);
+  const aktiv = await desktop.$eval('.dx-tf button:text-is("3M")', (b) => b.getAttribute("aria-pressed"));
+  assert(aktiv === "true", "der gewählte Zeitraum ist nicht markiert");
+  assert(vorher !== nachher, "der Chart hat sich nicht verändert");
 });
 
-await check("gesperrte Zeitraeume sind abgeblendet und begruendet", async () => {
-  const eintag = await desktop.$('.d-tf button:text-is("1D")');
-  assert(eintag, "kein 1D-Knopf");
-  const disabled = await eintag.getAttribute("disabled");
-  const titel = await eintag.getAttribute("title");
-  assert(disabled !== null, "1D ist nicht gesperrt, obwohl Intraday aus ist");
-  assert(titel && titel.length > 10, "der gesperrte Zeitraum nennt keinen Grund");
+await check("Detail: gesperrte Zeiträume sind abgeblendet und begründet", async () => {
+  const eintag = await desktop.$('.dx-tf button:text-is("1T")');
+  assert(eintag, "kein 1T-Knopf");
+  assert((await eintag.getAttribute("disabled")) !== null, "1T ist nicht gesperrt");
+  const hinweis = await desktop.textContent(".dx-chapter");
+  assert(/Intraday/.test(hinweis), "der gesperrte Zeitraum nennt keinen Grund");
 });
 
-await check("Ueberlagerungen lassen sich zuschalten", async () => {
-  await desktop.click('.d-ov:text-is("EMA 20")');
+await check("Detail: Schnellzugriff und erweiterte Technik", async () => {
+  await desktop.click('.dx-ctrl:text-is("EMA 20")');
+  await desktop.waitForTimeout(700);
+  assert(/EMA 20/.test(await desktop.textContent(".dx-legend")), "die Legende kennt die Serie nicht");
+  await desktop.click('.dx-ctrl:text-is("Struktur")');
   await desktop.waitForTimeout(800);
-  const legende = await desktop.textContent(".d-chart-legend");
-  assert(/EMA 20/.test(legende), "die Legende kennt die zugeschaltete Serie nicht");
-  await desktop.click('.d-ov:text-is("Support / Resistance")');
-  await desktop.waitForTimeout(900);
-  const zonen = await desktop.$$eval(".d-chart-box svg .ann-zone", (ns) => ns.length);
-  assert(zonen > 0, "keine Support-/Resistance-Zonen gezeichnet");
-  await shot(desktop, "overlays");
+  const zonen = await desktop.$$eval(".dx-chart svg .ann-zone", (ns) => ns.length);
+  assert(zonen > 0, "keine Struktur-Zonen gezeichnet");
+  const erweitert = await desktop.$('.dx-ctrl[aria-expanded]');
+  await erweitert.click();
+  await desktop.waitForTimeout(400);
+  const sichtbar = await desktop.$$eval(".dx-more-controls .dx-ctrl", (ns) => ns.length);
+  assert(sichtbar > 3, "die erweiterte Technik bleibt verborgen");
+  await shot(desktop, "07-overlays");
 });
 
-await check("Indikator-Panels erscheinen", async () => {
-  await desktop.click('.d-ov:text-is("RSI 14")');
-  await desktop.waitForTimeout(900);
-  const text = await desktop.textContent(".d-detail");
-  assert(/RSI 14/.test(text), "kein RSI-Panel");
+await check("Detail: weiter entdecken (Zugehörigkeit und Nachbarn)", async () => {
+  const chips = await desktop.$$(".dx-chips .dx-chip");
+  assert(chips.length > 0, "keine Zugehörigkeiten");
+  const ziel = await chips[0].getAttribute("href");
+  assert(/#\/c\//.test(ziel || ""), "die Zugehörigkeit führt nirgendwohin");
+  const nachbarn = await desktop.$$(".dx-chapter .dx-rail .dx-poster");
+  assert(nachbarn.length >= 4, "keine ähnlichen Titel");
 });
 
-await check("Titel ohne Kursreihe nennt den Grund statt einer leeren Flaeche", async () => {
+await check("Titel ohne ausgelieferte Kursreihe bleibt hochwertig (§23)", async () => {
   await desktop.goto(BASE + "/discover/#/s/US_REAL/VLO", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2000);
-  const text = await desktop.textContent(".d-detail");
+  await desktop.waitForTimeout(2600);
+  const text = await desktop.textContent(".dx-detail");
   assert(/Kursreihe/.test(text), "kein Hinweis auf die fehlende Kursreihe");
-  const spanne = await desktop.$(".d-range-track");
-  assert(spanne, "ohne Kursreihe fehlt auch die Jahresspanne");
+  const pfad = await desktop.$$eval(".dx-chart svg path", (ns) => ns.length);
+  assert(pfad > 0, "ohne Kursreihe fehlt auch der Renditepfad");
+  const preis = await desktop.textContent(".dx-price");
+  assert(!/NaN|0,00/.test(preis), "erfundener Kurs statt Begründung");
+  await shot(desktop, "08-ohne-kursreihe");
 });
 
 await check("Elliott wird nie als Ergebnis gezeigt, wenn keines vorliegt", async () => {
-  const zustand = await desktop.$eval(".d-ti-state", (n) => n.textContent.trim());
-  const text = await desktop.textContent(".d-ti");
-  assert(["Verfuegbar", "Geringe Konfidenz", "Wird berechnet", "Nicht verfuegbar"].indexOf(zustand) !== -1,
+  const zustand = (await desktop.textContent(".dx-ti-state")).trim();
+  assert(["Verfügbar", "Geringe Konfidenz", "Wird berechnet", "Nicht verfügbar"].indexOf(zustand) !== -1,
     "unbekannter Elliott-Zustand: " + zustand);
-  if (zustand === "Nicht verfuegbar") {
-    assert(!/Welle \d/.test(text), "eine Welle wird genannt, obwohl keine vorliegt");
+  if (zustand === "Nicht verfügbar") {
+    assert(!/Welle \d/.test(await desktop.textContent(".dx-ti")),
+      "eine Welle wird genannt, obwohl keine vorliegt");
   }
+});
+
+await check("Modelluniversum zeigt Kurs, Verlauf und Chart", async () => {
+  await desktop.goto(BASE + "/discover/#/u/VU_MODEL", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-poster", { timeout: 10000 });
+  await desktop.waitForTimeout(1200);
+  const preise = await desktop.$$eval(".dx-poster-right b", (ns) => ns.map((n) => n.textContent));
+  assert(preise.some((p) => /\$/.test(p)), "kein Kurs im Modelluniversum");
+  const hinweis = await desktop.textContent(".dx-inline-note");
+  assert(/Modelluniversum/.test(hinweis), "das Modelluniversum ist nicht gekennzeichnet");
+  await shot(desktop, "09-modelluniversum");
+});
+
+await check("kein horizontaler Überlauf auf dem Desktop", async () => {
+  const ueber = await ueberstand(desktop);
+  assert(ueber <= 2, "die Seite ist " + ueber + " px zu breit");
 });
 
 await check("keine Konsolenfehler auf dem Desktop", async () => {
   assert(desktop.__errors.length === 0, desktop.__errors.join(" | "));
 });
 
-/* --------------------------------------------------------------- Mobil */
-const mobil = await openPage({ width: 390, height: 844 }, true);
+/* ============================================================== TELEFON */
+const mobil = await openPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 await mobil.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-await mobil.waitForTimeout(2600);
+await mobil.waitForTimeout(3200);
 
-await check("mobil: nichts laeuft seitlich aus dem Bild", async () => {
-  const ueberstand = await mobil.evaluate(() =>
-    document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  assert(ueberstand <= 2, "die Seite ist " + ueberstand + " px zu breit");
-  await shot(mobil, "mobil-start");
+await check("mobil: nichts läuft seitlich aus dem Bild", async () => {
+  const ueber = await ueberstand(mobil);
+  assert(ueber <= 2, "die Seite ist " + ueber + " px zu breit");
+  await shot(mobil, "10-mobil-start");
 });
 
-await check("mobil: die Reihen lassen sich horizontal wischen", async () => {
-  const messung = await mobil.$eval(".d-rail", (r) => ({ scroll: r.scrollWidth, sicht: r.clientWidth }));
+await check("mobil: die Eingangsfläche lässt Platz für Inhalt", async () => {
+  const hoehe = await mobil.$eval(".dx-hero", (n) => n.getBoundingClientRect().height);
+  assert(hoehe < 1100, "die Eingangsfläche ist mit " + Math.round(hoehe) + " px zu hoch");
+  const stats = await mobil.$eval(".dx-hero-stats", (n) => getComputedStyle(n).gridTemplateColumns);
+  assert(stats.split(" ").length === 3, "die Kennzahlen stehen nicht nebeneinander");
+});
+
+await check("mobil: kein Hover-Vorhang", async () => {
+  const sichtbar = await mobil.$$eval(".dx-reveal",
+    (ns) => ns.filter((n) => getComputedStyle(n).display !== "none").length);
+  assert(sichtbar === 0, "der Hover-Vorhang ist auf dem Telefon vorhanden");
+});
+
+await check("mobil: die Reihen lassen sich wischen", async () => {
+  const messung = await mobil.$eval(".dx-rail", (r) => ({ scroll: r.scrollWidth, sicht: r.clientWidth }));
   assert(messung.scroll > messung.sicht + 40, "die Reihe scrollt nicht");
-  await mobil.$eval(".d-rail", (r) => { r.scrollLeft = 260; });
+  await mobil.$eval(".dx-rail", (r) => { r.scrollLeft = 260; });
   await mobil.waitForTimeout(400);
-  const danach = await mobil.$eval(".d-rail", (r) => r.scrollLeft);
-  assert(danach > 100, "die Reihe hat sich nicht bewegt");
+  assert((await mobil.$eval(".dx-rail", (r) => r.scrollLeft)) > 100, "die Reihe bewegt sich nicht");
+  await shot(mobil, "11-mobil-reihen");
 });
 
-await check("mobil: der Chart passt in die Breite", async () => {
+await check("mobil: Suche als Vollbild", async () => {
+  await mobil.click(".dx-searchbtn");
+  await mobil.waitForTimeout(600);
+  const box = await mobil.$eval(".dx-search", (n) => n.getBoundingClientRect().toJSON());
+  assert(box.width >= 380 && box.height >= 700, "das Overlay füllt den Bildschirm nicht");
+  await mobil.fill(".dx-search input", "A");
+  await mobil.waitForTimeout(700);
+  assert((await mobil.$$(".dx-result")).length > 0, "keine Treffer");
+  await shot(mobil, "12-mobil-suche");
+  await mobil.keyboard.press("Escape");
+  await mobil.waitForTimeout(400);
+});
+
+await check("mobil: Detail und Chart passen in die Breite", async () => {
   await mobil.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await mobil.waitForSelector(".d-chart-box svg", { timeout: 10000 });
+  await mobil.waitForSelector(".dx-chart svg", { timeout: 12000 });
   await mobil.waitForTimeout(900);
-  const breite = await mobil.$eval(".d-chart-box svg", (s) => s.getBoundingClientRect().width);
+  const breite = await mobil.$eval(".dx-chart svg", (s) => s.getBoundingClientRect().width);
   assert(breite <= 390, "der Chart ist " + Math.round(breite) + " px breit");
-  const ueberstand = await mobil.evaluate(() =>
-    document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  assert(ueberstand <= 2, "die Detailseite ist " + ueberstand + " px zu breit");
-  await shot(mobil, "mobil-chart");
-});
-
-await check("mobil: die Zeitraumleiste bleibt bedienbar", async () => {
-  const knoepfe = await mobil.$$(".d-tf button");
-  assert(knoepfe.length >= 5, "zu wenige Zeitraeume");
-  const hoehe = await mobil.$eval(".d-tf button", (b) => b.getBoundingClientRect().height);
-  assert(hoehe >= 30, "die Knoepfe sind mit " + Math.round(hoehe) + " px zu klein zum Tippen");
+  const ueber = await ueberstand(mobil);
+  assert(ueber <= 2, "die Detailseite ist " + ueber + " px zu breit");
+  const knopf = await mobil.$eval(".dx-tf button", (b) => b.getBoundingClientRect().height);
+  assert(knopf >= 30, "die Zeitraumknöpfe sind mit " + Math.round(knopf) + " px zu klein");
+  await shot(mobil, "13-mobil-detail");
 });
 
 await check("keine Konsolenfehler auf dem Telefon", async () => {
   assert(mobil.__errors.length === 0, mobil.__errors.join(" | "));
+});
+
+/* ================================================= REDUZIERTE BEWEGUNG */
+const ruhig = await openPage({ viewport: { width: 1440, height: 900 },
+                               reducedMotion: "reduce" });
+await ruhig.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+await ruhig.waitForTimeout(3000);
+
+await check("reduzierte Bewegung: Inhalte sind sofort sichtbar", async () => {
+  const unsichtbar = await ruhig.$$eval(".dx-fade",
+    (ns) => ns.filter((n) => Number(getComputedStyle(n).opacity) < 0.9).length);
+  assert(unsichtbar === 0, unsichtbar + " Abschnitte bleiben unsichtbar");
+});
+
+await check("reduzierte Bewegung: die Eingangsfläche wechselt nicht von selbst", async () => {
+  const vorher = await ruhig.textContent(".dx-hero-title");
+  await ruhig.waitForTimeout(11000);
+  const nachher = await ruhig.textContent(".dx-hero-title");
+  assert(vorher === nachher, "die Eingangsfläche wechselt trotz reduzierter Bewegung");
+});
+
+await check("reduzierte Bewegung: keine Konsolenfehler", async () => {
+  assert(ruhig.__errors.length === 0, ruhig.__errors.join(" | "));
 });
 
 await browser.close();

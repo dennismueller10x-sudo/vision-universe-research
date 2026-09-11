@@ -1,14 +1,14 @@
 {
   "methodologyVersion": "discover-v1.0.0",
-  "note": "Regelwerk fuer Vision Universe DISCOVER. Jede Zahl, die auf einer Discovery Card steht, entsteht aus dieser Datei und den ausgelieferten Kennzahlen - nicht aus einer Einschaetzung. Wer eine Gewichtung aendert, aendert sie hier, und der Build rechnet sie nach.",
-  "boundary": "Discover liest bestehende Vision-Universe-Daten und schreibt ausschliesslich nach discover/data/**. Es veraendert keine bestehende Engine, keine bestehende Datei und keinen bestehenden Contract.",
+  "note": "Regelwerk für Vision Universe DISCOVER. Jede Zahl, die auf einer Discovery Card steht, entsteht aus dieser Datei und den ausgelieferten Kennzahlen - nicht aus einer Einschätzung. Wer eine Gewichtung ändert, ändert sie hier, und der Build rechnet sie nach.",
+  "boundary": "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich nach discover/data/**. Es verändert keine bestehende Engine, keine bestehende Datei und keinen bestehenden Contract.",
   "universes": {
     "US_REAL": {
       "label": "US Equities",
       "kind": "real",
       "source": "quant/data/market/factors/factors-GATE_500.json",
       "provider": "tiingo",
-      "note": "Reale US-Titel. Absolute Kursniveaus bleiben nach der Redistributionsregel des Bestandssystems zurueck (fieldStatus WITHHELD_REDISTRIBUTION); ausgeliefert werden Zustaende, Abstaende und Renditen.",
+      "note": "Reale US-Titel. Absolute Kursniveaus bleiben nach der Redistributionsregel des Bestandssystems zurück (fieldStatus WITHHELD_REDISTRIBUTION); ausgeliefert werden Zustände, Abstände und Renditen.",
       "rankingScope": "Alle Ranglisten, Perzentile und Leadership-Scores werden AUSSCHLIESSLICH innerhalb dieses Universums gerechnet."
     },
     "VU_MODEL": {
@@ -16,7 +16,7 @@
       "kind": "mock",
       "source": "quant/data/securities.json + quant/engines/mock-generator.js",
       "provider": "VisionUniverseMock",
-      "note": "Synthetisches Universum. Kein realer Titel, keine reale Aussage - aber vollstaendige Kursreihen, damit die Darstellung (Preis, Sparkline, Chart) ohne erfundene Werte gezeigt werden kann.",
+      "note": "Synthetisches Universum. Kein realer Titel, keine reale Aussage - aber vollständige Kursreihen, damit die Darstellung (Preis, Sparkline, Chart) ohne erfundene Werte gezeigt werden kann.",
       "rankingScope": "Getrennt gerechnet. Ein Rang aus diesem Universum wird nie mit einem realen Titel verglichen."
     }
   },
@@ -27,7 +27,7 @@
       100
     ],
     "isProbability": false,
-    "interpretation": "Relative Marktfuehrerschaft aus Kursverhalten. Keine Bewertung des Unternehmens, keine Empfehlung.",
+    "interpretation": "Relative Marktführerschaft aus Kursverhalten. Keine Bewertung des Unternehmens, keine Empfehlung.",
     "minCoverage": 0.6,
     "components": [
       {
@@ -86,7 +86,7 @@
       },
       {
         "id": "trendQuality",
-        "label": "Trendqualitaet",
+        "label": "Trendqualität",
         "weight": 0.12,
         "field": "trendAlignment",
         "transform": "linear",
@@ -194,7 +194,7 @@
     "lookbackTradingDays": 252,
     "minBars": 200,
     "priceSeriesType": "SPLIT_ADJUSTED",
-    "note": "Das rollierende 52-Wochen-Hoch wird vorberechnet; zur Laufzeit wird nur der aktuelle Kurs dagegen gehalten. Das Hoch des Vergleichsfensters schliesst den aktuellen Tag aus - sonst waere jeder Titel per Definition auf seinem Hoch.",
+    "note": "Das rollierende 52-Wochen-Hoch wird vorberechnet; zur Laufzeit wird nur der aktuelle Kurs dagegen gehalten. Das Hoch des Vergleichsfensters schließt den aktuellen Tag aus - sonst wäre jeder Titel per Definition auf seinem Hoch.",
     "nearHighPct": 0.02,
     "watchPct": 0.05,
     "maxQuoteAgeMs": 900000
@@ -222,11 +222,11 @@
     },
     "breakout": {
       "label": "BREAKOUT",
-      "rule": "volumeBreakout (Volumen >= 1.5x 60-Tage-Schnitt) und Kurs ueber SMA20 und SMA50 und distanceTo52wHigh >= -0.10"
+      "rule": "volumeBreakout (Volumen >= 1.5x 60-Tage-Schnitt) und Kurs über SMA20 und SMA50 und distanceTo52wHigh >= -0.10"
     },
     "trendIntact": {
       "label": "TREND",
-      "rule": "Kurs ueber SMA20, SMA50, SMA100 und SMA200"
+      "rule": "Kurs über SMA20, SMA50, SMA100 und SMA200"
     },
     "sectorLeader": {
       "label": "SECTOR LEADER",
@@ -236,8 +236,8 @@
   "rows": [
     {
       "id": "new-52-week-highs",
-      "title": "NEW 52-WEEK HIGHS",
-      "subtitle": "Titel auf oder nahe ihrem Jahreshoch",
+      "title": "NEUE 52-WOCHEN-HOCHS",
+      "subtitle": "Aktien, die neues Kursterrain erreichen.",
       "sort": "distanceTo52wHigh",
       "direction": "desc",
       "limit": 24,
@@ -250,8 +250,8 @@
     },
     {
       "id": "market-leaders",
-      "title": "MARKET LEADERS",
-      "subtitle": "Hoechste Marktfuehrerschaft im Universum",
+      "title": "MARKTFÜHRER",
+      "subtitle": "Die aktuell stärksten Titel des Universums.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 24,
@@ -262,7 +262,7 @@
     {
       "id": "momentum-leaders",
       "title": "MOMENTUM LEADERS",
-      "subtitle": "Staerkste Kursdynamik ueber 3, 6 und 12 Monate",
+      "subtitle": "Stärkste Kursdynamik über 3, 6 und 12 Monate.",
       "sort": "momentumScore",
       "direction": "desc",
       "limit": 24,
@@ -272,8 +272,8 @@
     },
     {
       "id": "breakout-watch",
-      "title": "BREAKOUT WATCH",
-      "subtitle": "Volumenausbruch in intaktem Trend",
+      "title": "BREAKING OUT",
+      "subtitle": "Ausbruch mit Volumenbestätigung.",
       "sort": "breakoutScore",
       "direction": "desc",
       "limit": 24,
@@ -286,7 +286,7 @@
     {
       "id": "relative-strength",
       "title": "RELATIVE STRENGTH",
-      "subtitle": "Vorsprung gegenueber dem Vergleichsindex",
+      "subtitle": "Vorsprung gegenüber dem Vergleichsindex.",
       "sort": "relativeStrengthScore",
       "direction": "desc",
       "limit": 24,
@@ -297,8 +297,8 @@
     },
     {
       "id": "trend-quality",
-      "title": "TREND INTACT",
-      "subtitle": "Ueber allen gleitenden Durchschnitten",
+      "title": "TREND INTAKT",
+      "subtitle": "Über allen vier gleitenden Durchschnitten.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 24,
@@ -336,5 +336,12 @@
       "minMarketCapMillions": 0
     }
   ],
-  "disclaimer": "Discover zeigt Kursverhalten, keine Anlageempfehlung. Scores sind relative Kennzahlen innerhalb eines benannten Universums und keine Wahrscheinlichkeiten."
+  "disclaimer": "Discover zeigt Kursverhalten, keine Anlageempfehlung. Scores sind relative Kennzahlen innerhalb eines benannten Universums und keine Wahrscheinlichkeiten.",
+  "top10": {
+    "id": "top-10",
+    "title": "TOP 10 MARKET LEADERS",
+    "subtitle": "Die zehn stärksten Titel — nach Leadership Score des Universums.",
+    "source": "market-leaders",
+    "limit": 10
+  }
 }

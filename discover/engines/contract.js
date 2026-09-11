@@ -127,6 +127,16 @@
       sparkline: Array.isArray(raw.sparkline) ? raw.sparkline : null,
       sparklineStatus: Array.isArray(raw.sparkline) ? "CALCULATED"
         : (raw.sparklineStatus || "SOURCE_MISSING"),
+      /* Der rebasierte Renditepfad. Fuer Titel, deren Kursreihe nicht
+         ausgeliefert werden darf, ist er die einzige ehrliche Moeglichkeit,
+         einen Verlauf zu ZEIGEN statt ihn nur zu beziffern: fuenf Punkte,
+         ausschliesslich aus den freigegebenen Renditen ueber 12, 6, 3 und
+         1 Monat zurueckgerechnet und auf 100 normiert. Kein Kursniveau,
+         keine Interpolation zwischen den Stuetzstellen - und die Karte
+         sagt, dass es vier Stuetzstellen sind. */
+      performancePath: Array.isArray(raw.performancePath) ? raw.performancePath : null,
+      performancePathStatus: Array.isArray(raw.performancePath) ? "CALCULATED"
+        : (raw.performancePathStatus || "INSUFFICIENT_HISTORY"),
       hasPriceSeries: !!raw.hasPriceSeries,
       signals: {},
       metrics: {},
@@ -217,6 +227,8 @@
       changePercent: stock.changePercent,
       sparkline: stock.sparkline,
       sparklineStatus: stock.sparklineStatus,
+      performancePath: stock.performancePath,
+      performancePathStatus: stock.performancePathStatus,
       signals: stock.signals,
       metrics: stock.metrics,
       metricStatus: stock.metricStatus,
@@ -226,12 +238,35 @@
     };
   }
 
+  /**
+   * Die noch kleinere Form fuer Querverweise ("Aehnliche Marktfuehrer",
+   * "Weiter entdecken"). Ohne Sparkline: acht Verweise mit je vierzig
+   * Kurspunkten verdoppeln eine Detailseite, und gezeigt wird auf einer
+   * Verweiskachel ohnehin nur der Renditepfad.
+   */
+  function toMiniCard(stock) {
+    return {
+      symbol: stock.symbol, companyName: stock.companyName, sector: stock.sector,
+      dataMode: stock.dataMode,
+      price: stock.price, changePercent: stock.changePercent,
+      performancePath: stock.performancePath,
+      badges: (stock.badges || []).slice(0, 1),
+      metrics: {
+        leadershipScore: stock.metrics.leadershipScore,
+        leadershipPercentile: stock.metrics.leadershipPercentile,
+        return12M: stock.metrics.return12M,
+        distanceTo52wHigh: stock.metrics.distanceTo52wHigh
+      }
+    };
+  }
+
   var api = {
     CONTRACT_VERSION: CONTRACT_VERSION,
     FIELD_STATUS: FIELD_STATUS, DATA_MODES: DATA_MODES,
     SIGNALS: SIGNALS, METRICS: METRICS, TI_STATUS: TI_STATUS,
     field: field, valueOf: valueOf, statusOf: statusOf,
-    normalizeStock: normalizeStock, assertStock: assertStock, toCard: toCard
+    normalizeStock: normalizeStock, assertStock: assertStock, toCard: toCard,
+    toMiniCard: toMiniCard
   };
 
   if (isNode) module.exports = api;

@@ -139,6 +139,31 @@ function splitAdjustedCloses(bars) {
   }));
 }
 
+/**
+ * Rebasierter Renditepfad aus den ausgelieferten Renditen.
+ *
+ * Aus r12, r6, r3, r1 laesst sich der Kursstand relativ zum heutigen
+ * rekonstruieren: P(-12M)/P(heute) = 1/(1+r12). Fuenf Stuetzstellen,
+ * normiert auf 100, ohne ein einziges absolutes Kursniveau. Damit bekommt
+ * auch ein Titel ohne freigegebene Kursreihe einen sichtbaren Verlauf -
+ * und zwar einen echten, keinen geschaetzten.
+ */
+function performancePath(metrics) {
+  const punkte = [
+    { label: "12M", r: metrics.return12M },
+    { label: "6M", r: metrics.return6M },
+    { label: "3M", r: metrics.return3M },
+    { label: "1M", r: metrics.return1M }
+  ];
+  const werte = [];
+  for (const p of punkte) {
+    if (!isNum(p.r) || p.r <= -0.999) return null;
+    werte.push({ label: p.label, value: round(100 / (1 + p.r), 3) });
+  }
+  werte.push({ label: "heute", value: 100 });
+  return werte;
+}
+
 /** 40 Wochenpunkte fuer die Sparkline - eine Card braucht keine 1300 Bars.
     Zwei Nachkommastellen genuegen einer 200 Pixel breiten Linie; vier
     verdoppeln die Nutzlast einer Zeile ohne einen sichtbaren Unterschied. */
@@ -232,6 +257,7 @@ function buildRealUniverse(nameMap, goldenBars) {
         : Contract.field(null, "WITHHELD_REDISTRIBUTION"),
       sparkline: goldenCloses ? weeklySparkline(goldenCloses) : null,
       sparklineStatus: goldenCloses ? "CALCULATED" : "WITHHELD_REDISTRIBUTION",
+      performancePath: performancePath(metrics),
       hasPriceSeries: !!goldenCloses,
       marketCap: null,
       metrics,
@@ -328,6 +354,7 @@ function buildModelUniverse() {
       changePercent: isNum(prev) && prev > 0 ? Contract.field(round((last / prev - 1) * 100, 4))
                                              : Contract.field(null, "INSUFFICIENT_HISTORY"),
       sparkline: weeklySparkline(closes),
+      performancePath: performancePath(metrics),
       hasPriceSeries: true,
       metrics,
       metricStatus: withheldMetricStatus(metrics),
@@ -498,13 +525,13 @@ function discoveryEligibility(stock) {
   const known = horizons.filter((h) => isNum(m[h]));
   if (!known.length) {
     return { eligible: false, reason: "NO_RETURNS",
-             message: "Keine Rendite ueber irgendeinen Horizont berechenbar." };
+             message: "Keine Rendite über irgendeinen Horizont berechenbar." };
   }
   const allZero = known.every((h) => m[h] === 0);
   if (allZero && (m.volatility252d === 0 || m.volatility252d === null)) {
     return { eligible: false, reason: "STALE_SERIES",
-             message: "Die Kursreihe steht seit ueber einem Jahr still (keine Rendite, keine " +
-                      "Volatilitaet). Ein Abstand von 0 % zum Jahreshoch ist hier kein Signal." };
+             message: "Die Kursreihe steht seit über einem Jahr still (keine Rendite, keine " +
+                      "Volatilität). Ein Abstand von 0 % zum Jahreshoch ist hier kein Signal." };
   }
   return { eligible: true, reason: null, message: null };
 }
@@ -547,7 +574,8 @@ function buildRow(universe, config) {
     if (!isNum(bs)) return -1;
     return bs - as;
   });
-  const cards = pool.slice(0, config.limit).map((s) => Contract.toCard(s));
+  const cards = pool.slice(0, isNum(config.limit) ? config.limit : pool.length)
+                    .map((s) => Contract.toCard(s));
   const notEvaluable = universe.stocks.length - universe.stocks.filter((s) =>
     s.discoveryEligible !== false &&
     (config.require || []).every((f) => isNum(s.metrics[f]))).length;
@@ -564,7 +592,7 @@ function buildRow(universe, config) {
       returned: cards.length,
       notEvaluable,
       note: notEvaluable > 0
-        ? notEvaluable + " Titel sind fuer diese Zeile nicht entscheidbar (fehlende Kennzahl)."
+        ? notEvaluable + " Titel sind für diese Zeile nicht entscheidbar (fehlende Kennzahl)."
         : null
     },
     filters: filterOptions(pool),
@@ -587,6 +615,146 @@ function filterOptions(stocks) {
   };
 }
 
+/* ================================================ Weiter-Entdecken-Daten
+
+   Eine Detailseite ohne Ausgang ist eine Sackgasse (§14 des Redesigns).
+   Beides entsteht deterministisch aus den bereits gerechneten Zeilen:
+
+     memberships  in welchen Zeilen steht dieser Titel weit vorn?
+     similar      wer steht ihm im selben Universum am naechsten?
+
+   "Weit vorn" ist bewusst begrenzt: dass ein Titel Platz 312 von 497 einer
+   Rangliste belegt, ist keine Zugehoerigkeit, sondern eine Fussnote. */
+const MEMBERSHIP_RANK_LIMIT = 60;
+
+function buildMemberships(universe) {
+  const perSymbol = new Map();
+  for (const config of METHODOLOGY.rows) {
+    const row = buildRow(universe, Object.assign({}, config, { limit: Infinity }));
+    row.cards.forEach((card, index) => {
+      if (index >= MEMBERSHIP_RANK_LIMIT) return;
+      if (!perSymbol.has(card.symbol)) perSymbol.set(card.symbol, []);
+      perSymbol.get(card.symbol).push({
+        rowId: config.id, title: config.title, rank: index + 1, of: row.coverage.matched
+      });
+    });
+  }
+  for (const [sector, list] of universe.sectors) {
+    list.slice(0, MEMBERSHIP_RANK_LIMIT).forEach((stock, index) => {
+      if (!perSymbol.has(stock.symbol)) perSymbol.set(stock.symbol, []);
+      perSymbol.get(stock.symbol).push({
+        rowId: "sector-leaders", title: sector + " Leaders", rank: index + 1, of: list.length
+      });
+    });
+  }
+  return perSymbol;
+}
+
+/**
+ * Aehnliche Titel: naechste Nachbarn nach Leadership Score, bevorzugt aus
+ * demselben Sektor. Keine Empfehlung, keine Aehnlichkeit im
+ * Geschaeftsmodell - der Vergleich ist ausdruecklich einer des
+ * Kursverhaltens, und die Ueberschrift sagt das.
+ */
+function buildSimilar(universe, stock, anzahl) {
+  const score = stock.metrics.leadershipScore;
+  if (!isNum(score)) return [];
+  const kandidaten = universe.stocks.filter((other) =>
+    other.symbol !== stock.symbol && other.discoveryEligible !== false &&
+    isNum(other.metrics.leadershipScore));
+  const gleicherSektor = stock.sectorStatus === "CURATED" && stock.sector
+    ? kandidaten.filter((o) => o.sector === stock.sector) : [];
+  const rest = kandidaten.filter((o) => gleicherSektor.indexOf(o) === -1);
+  const nachNaehe = (a, b) =>
+    Math.abs(a.metrics.leadershipScore - score) - Math.abs(b.metrics.leadershipScore - score);
+  return gleicherSektor.sort(nachNaehe).concat(rest.sort(nachNaehe))
+    .slice(0, anzahl || 8).map((o) => Contract.toMiniCard(o));
+}
+
+/* ======================================================= Hero (Featured)
+
+   Welcher Titel traegt die Eingangsflaeche? Die Frage wird hier
+   beantwortet und nicht im Frontend, damit sie nachvollziehbar bleibt und
+   nicht bei jedem Laden anders ausfaellt.
+
+   Gewaehlt wird nach: ein tatsaechliches Signal (neues Jahreshoch,
+   Marktfuehrerschaft oder bestaetigter Ausbruch), dann Fuehrerschaft,
+   dann Darstellbarkeit - ein Titel mit ausgelieferter Kursreihe traegt
+   eine grosse Flaeche besser als einer ohne. Hoechstens zwei je Sektor,
+   damit die Eingangsflaeche nicht dreimal denselben Markt zeigt. */
+function buildFeatured(universe, anzahl) {
+  const kandidaten = universe.stocks.filter((s) =>
+    s.discoveryEligible !== false &&
+    (s.signals.new52WeekHigh || s.signals.marketLeader || s.signals.breakout) &&
+    isNum(s.metrics.leadershipPercentile));
+
+  const bewertet = kandidaten.map((s) => {
+    let rang = s.metrics.leadershipPercentile;
+    if (s.hasPriceSeries) rang += 12;          // traegt eine grosse Flaeche
+    if (s.companyName) rang += 6;              // ein Name wirkt anders als ein Kuerzel
+    if (s.signals.new52WeekHigh) rang += 4;
+    if (s.signals.breakout) rang += 3;
+    return { stock: s, rang };
+  }).sort((a, b) => b.rang - a.rang || (a.stock.symbol < b.stock.symbol ? -1 : 1));
+
+  const proSektor = new Map();
+  const auswahl = [];
+  for (const eintrag of bewertet) {
+    const sektor = eintrag.stock.sector || "?";
+    const bisher = proSektor.get(sektor) || 0;
+    if (bisher >= 2) continue;
+    proSektor.set(sektor, bisher + 1);
+    auswahl.push(eintrag.stock);
+    if (auswahl.length >= (anzahl || 5)) break;
+  }
+  return auswahl.map((s) => Object.assign(Contract.toCard(s), {
+    headline: heroHeadline(s),
+    reasons: heroReasons(s),
+    hasPriceSeries: s.hasPriceSeries,
+    seriesPath: s.hasPriceSeries ? "/quant/data/technical/instruments/" + s.symbol + ".json" : null,
+    leadershipPercentile: s.metrics.leadershipPercentile,
+    sectorRank: s.sectorRank || null
+  }));
+}
+
+/** Die eine Zeile ueber der Aktie. Aus dem staerksten belegten Signal. */
+function heroHeadline(stock) {
+  if (stock.signals.new52WeekHigh && stock.signals.marketLeader) {
+    return { kicker: "NEUER MARKTFÜHRER", line: "Jahreshoch und Spitzengruppe zugleich." };
+  }
+  if (stock.signals.new52WeekHigh) {
+    return { kicker: "NEUES 52-WOCHEN-HOCH", line: "Der Titel erreicht neues Kursterrain." };
+  }
+  if (stock.signals.breakout) {
+    return { kicker: "AUSBRUCH BESTAETIGT", line: "Ausbruch mit Volumenbestätigung." };
+  }
+  if (stock.signals.momentumLeader) {
+    return { kicker: "MOMENTUM BESCHLEUNIGT", line: "Die Dynamik nimmt über alle Horizonte zu." };
+  }
+  return { kicker: "MARKTFÜHRER", line: "Unter den stärksten Titeln des Universums." };
+}
+
+/** Drei Belege, alle aus gerechneten Kennzahlen. */
+function heroReasons(stock) {
+  const m = stock.metrics;
+  const out = [];
+  if (isNum(m.leadershipScore)) {
+    out.push({ label: "Leadership", value: String(Math.round(m.leadershipScore)),
+               hint: isNum(m.leadershipPercentile) ? "Perzentil " + Math.round(m.leadershipPercentile) : null });
+  }
+  if (isNum(m.relativeStrengthPercentile)) {
+    out.push({ label: "Relative Stärke", value: "RS " + Math.round(m.relativeStrengthPercentile),
+               hint: "gegen die Benchmark" });
+  }
+  if (isNum(m.return12M)) {
+    out.push({ label: "12 Monate", value: pct(m.return12M), hint: null });
+  }
+  if (isNum(m.distanceTo52wHigh)) {
+    out.push({ label: "Zum 52W-Hoch", value: pct(m.distanceTo52wHigh), hint: null });
+  }
+  return out.slice(0, 4);
+}
+
 /* ========================================================== Detailseiten */
 function technicalInstrumentIndex() {
   const file = join(root, "quant", "data", "technical", "index.json");
@@ -595,11 +763,11 @@ function technicalInstrumentIndex() {
   return new Map((index.instruments || []).map((i) => [i.instrumentId, i]));
 }
 
-function buildDetail(universe, stock, instruments, barsByTicker) {
+function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
   const entry = instruments.get(stock.symbol);
   let bundle = null;
   let series = { available: false, source: null, path: null, reason: "NO_SERIES",
-                 message: "Fuer diesen Titel wird keine Kursreihe ausgeliefert." };
+                 message: "Für diesen Titel wird keine Kursreihe ausgeliefert." };
 
   if (entry) {
     const file = join(root, "quant", "data", "technical", "instruments", stock.symbol + ".json");
@@ -632,7 +800,7 @@ function buildDetail(universe, stock, instruments, barsByTicker) {
     series.reason = "WITHHELD_REDISTRIBUTION";
     series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
                      "Redistributionsregel nicht ausgeliefert. Alle Kennzahlen auf dieser " +
-                     "Seite sind daraus abgeleitete Zustaende, Abstaende und Renditen.";
+                     "Seite sind daraus abgeleitete Zustände, Abstände und Renditen.";
   }
 
   const detail = {
@@ -646,6 +814,7 @@ function buildDetail(universe, stock, instruments, barsByTicker) {
     marketCap: stock.marketCap, capBucket: stock.capBucket,
     price: stock.price, changePercent: stock.changePercent,
     sparkline: stock.sparkline, sparklineStatus: stock.sparklineStatus,
+    performancePath: stock.performancePath, performancePathStatus: stock.performancePathStatus,
     signals: stock.signals, badges: stock.badges,
     metrics: stock.metrics, metricStatus: stock.metricStatus,
     high52w: stock.high52w,
@@ -663,6 +832,9 @@ function buildDetail(universe, stock, instruments, barsByTicker) {
       universeSize: universe.stocks.length
     },
     rawValues: stock.rawValues,
+    /* Weiter entdecken: wo steht dieser Titel noch, und wer steht ihm nahe? */
+    memberships: (memberships && memberships.get(stock.symbol)) || [],
+    similar: buildSimilar(universe, stock, 8),
     series,
     technicalIntelligence: TI.fromBundle(bundle, { seriesAvailable: series.available }),
     discoveryEligible: stock.discoveryEligible !== false,
@@ -703,7 +875,7 @@ function compactSeries(bars) {
 }
 
 /* =================================================================== Lauf */
-console.log("Vision Universe DISCOVER — Praekomputation\n");
+console.log("Vision Universe DISCOVER — Präkomputation\n");
 const started = Date.now();
 if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
@@ -740,13 +912,15 @@ for (const universe of universes) {
     sectorPayload.push({
       sector,
       count: list.length,
-      cards: list.slice(0, METHODOLOGY.sectorRows.limitPerSector).map((s) => Contract.toCard(s))
+      /* Die Sektorkachel zeigt eine kleine Rangliste, keinen Chart - eine
+         volle Karte je Titel waere hier reine Nutzlast. */
+      cards: list.slice(0, METHODOLOGY.sectorRows.limitPerSector).map((s) => Contract.toMiniCard(s))
     });
   }
   sectorPayload.sort((a, b) => b.count - a.count);
   write(`rows/${universe.universeId}/sector-leaders.json`, {
     rowId: "sector-leaders", title: METHODOLOGY.sectorRows.title,
-    subtitle: "Die staerksten Titel je Sektor - gerechnet nur dort, wo die Sektorzuordnung kuratiert ist.",
+    subtitle: "Die stärksten Titel je Sektor - gerechnet nur dort, wo die Sektorzuordnung kuratiert ist.",
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
     methodologyVersion: METHODOLOGY.methodologyVersion,
@@ -757,6 +931,18 @@ for (const universe of universes) {
     },
     sectors: sectorPayload
   });
+  /* Die Eingangsflaeche. Eine eigene, sehr kleine Datei: sie wird als
+     erste geladen und darf nicht auf eine 250-KB-Zeile warten. */
+  const featured = buildFeatured(universe, 5);
+  write(`featured/${universe.universeId}.json`, {
+    universeId: universe.universeId, universeLabel: universe.label,
+    universeKind: universe.kind, asOf: universe.asOf, generatedAt: universe.generatedAt,
+    methodologyVersion: METHODOLOGY.methodologyVersion,
+    selection: "Signal (Jahreshoch, Führerschaft oder bestätigter Ausbruch), dann " +
+               "Leadership-Perzentil, dann Darstellbarkeit. Höchstens zwei je Sektor.",
+    count: featured.length, stocks: featured
+  });
+
   rowIndex.push({ universeId: universe.universeId, rows });
 
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
@@ -799,10 +985,11 @@ for (const universe of universes) {
   }
   detailSets.set(universe.universeId, symbols);
 
+  const memberships = buildMemberships(universe);
   let written = 0;
   for (const stock of universe.stocks) {
     if (!symbols.has(stock.symbol)) continue;
-    const detail = buildDetail(universe, stock, instruments, universe.barsByTicker);
+    const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
     write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
     written++;
   }
@@ -829,7 +1016,7 @@ const meta = {
   realtime: {
     available: false,
     reason: "gateDisabled",
-    message: "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt und fuer Realtime liegt keine " +
+    message: "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt und für Realtime liegt keine " +
              "Anzeigeerlaubnis vor. Discover zeigt den letzten ausgelieferten Stand und " +
              "kennzeichnet ihn als solchen - es gibt keinen LIVE-Punkt ohne Live-Daten.",
     realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
@@ -862,8 +1049,8 @@ const meta = {
     "quant/config/development-preview.json",
     "quant/config/market-calendar.json"
   ],
-  boundary: "Discover liest bestehende Vision-Universe-Daten und schreibt ausschliesslich " +
-            "nach discover/data/**. Keine bestehende Datei wird veraendert.",
+  boundary: "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich " +
+            "nach discover/data/**. Keine bestehende Datei wird verändert.",
   disclaimer: METHODOLOGY.disclaimer
 };
 write("meta.json", meta);

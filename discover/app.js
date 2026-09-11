@@ -1,21 +1,25 @@
 /* =========================================================================
    VISION UNIVERSE® DISCOVER — app.js
 
-   Router und Seiten des Discovery-Moduls.
+   Router und Seiten.
 
-   Die Anwendung ist statisch ausgeliefert; die Navigation laeuft deshalb
-   ueber den Hash - kein Server, der /discover/NVDA aufloesen koennte, und
-   keine 404-Umleitung, die eine Seite vortaeuscht, die es nicht gibt:
+   Die Anwendung wird statisch ausgeliefert; navigiert wird ueber den Hash:
 
-     #/                         Discover-Startseite
-     #/u/US_REAL                Startseite eines Universums
-     #/c/US_REAL/market-leaders Kategorie
-     #/s/US_REAL/NVDA           Titel
+     #/                          Startseite
+     #/u/US_REAL                 Startseite eines Universums
+     #/c/US_REAL/market-leaders  Kategorie
+     #/s/US_REAL/NVDA            Titel
 
-   Geladen wird ausschliesslich aus discover/data/** - fertige Payloads,
-   die scripts/discover/build-discover-data.mjs erzeugt hat. Eine
-   Startseite kostet damit so viele Abrufe, wie sie Reihen zeigt, und
-   nicht so viele, wie das Universum Titel hat.
+   Geladen wird ausschliesslich aus discover/data/** - fertige Payloads aus
+   dem Build. Eine Startseite kostet damit einen Abruf je Reihe, nicht
+   einen je Titel.
+
+   RHYTHMUS DER STARTSEITE (§6)
+
+   Keine zwei Reihen sehen gleich aus. Die Reihenfolge ist bewusst gesetzt:
+   Eingangsflaeche, dann die nummerierte Signature-Reihe, dann eine
+   Poster-Reihe, dann eine kompakte, dann wieder Poster - und zum Schluss
+   die Sektoren als Kacheln statt als Karten.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -25,15 +29,28 @@
   var el = S.el;
   var BASE = "/discover/data/";
 
-  var ROW_ORDER = ["new-52-week-highs", "market-leaders", "momentum-leaders",
-                   "breakout-txt", "breakout-watch", "relative-strength", "trend-quality"];
+  /* Die Dramaturgie der Startseite. `variant` bestimmt die Kartenform. */
+  var HOME_SEQUENCE = [
+    { rowId: "market-leaders", variant: "rank", limit: 10, as: "top-10" },
+    { rowId: "new-52-week-highs", variant: "wide" },
+    { rowId: "breakout-watch", variant: "compact" },
+    { rowId: "momentum-leaders", variant: "poster" },
+    { rowId: "relative-strength", variant: "poster" },
+    { rowId: "trend-quality", variant: "compact" },
+    { rowId: "sector-leaders", variant: "sector" }
+  ];
 
-  var state = { meta: null, universeId: "US_REAL", calendar: null, search: null };
+  /* Wie viele Poster eine Reihe auf der Startseite zeigt. Mehr als etwa
+     zwanzig wischt ohnehin niemand durch; die vollständige Rangliste steht
+     hinter "Alle anzeigen". */
+  var RAIL_LIMIT = 18;
+
+  var state = { meta: null, universeId: "US_REAL", calendar: null, search: null, searchUi: null };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function C() { return D.Cards; }
 
-  /* ----------------------------------------------------------- Laden */
+  /* ------------------------------------------------------------ Laden */
   function loadMeta() {
     if (state.meta) return Promise.resolve(state.meta);
     return Promise.all([
@@ -43,414 +60,394 @@
       state.meta = parts[0];
       state.calendar = parts[1];
       global.VUDiscoverMeta = state.meta;
+      if (state.meta.universes && state.meta.universes.length) {
+        var bekannt = state.meta.universes.some(function (u) { return u.universeId === state.universeId; });
+        if (!bekannt) state.universeId = state.meta.universes[0].universeId;
+      }
       return state.meta;
     });
   }
 
   function universeMeta(universeId) {
-    return (state.meta.universes || []).filter(function (u) { return u.universeId === universeId; })[0] ||
-           state.meta.universes[0];
+    return (state.meta.universes || []).filter(function (u) {
+      return u.universeId === (universeId || state.universeId);
+    })[0] || state.meta.universes[0];
   }
 
-  function rowIdsFor(universeId) {
-    var entry = (state.meta.rows || []).filter(function (r) { return r.universeId === universeId; })[0];
-    var ids = entry ? entry.rows.map(function (r) { return r.rowId; }) : [];
-    ids.push("sector-leaders");
-    return ids;
-  }
-
-  /* -------------------------------------------------------- Marktstatus */
+  /* ------------------------------------------------------- Marktstatus */
   function marketState() {
     return D.RealtimeSource.assess({
       gates: state.meta.gates, audience: "public", calendar: state.calendar,
-      asOf: universeMeta(state.universeId).asOf, now: new Date()
+      asOf: universeMeta().asOf, now: new Date()
     });
   }
 
-  function statusPill(assessment) {
-    var cls = assessment.session === "REGULAR" ? "d-pill--open"
-            : (assessment.session === "PRE" || assessment.session === "AFTER") ? "d-pill--ext"
-            : "d-pill--closed";
-    return el("span", { class: "d-pill " + cls, title: assessment.calendarCoverage
-      ? "Sitzung nach dem hinterlegten Handelskalender (XNYS)."
-      : "Ausserhalb der Kalenderabdeckung - die Sitzungsaussage ist nicht gesichert." }, [
-      el("span", { class: "d-dot" }),
-      document.createTextNode(assessment.sessionLabel)
+  /**
+   * Die App-Leiste: Marktstatus, Universum, Suche.
+   *
+   * "LIVE" steht hier nur, wenn die Live-Schicht es tatsaechlich meldet
+   * (§16). Alles andere heisst, was es ist: letzte Sitzung mit Datum.
+   */
+  function appBar() {
+    var universe = universeMeta();
+    var lage = marketState();
+    var klasse = lage.mode === "live" ? "dx-status--live"
+               : lage.session === "REGULAR" ? "dx-status--open"
+               : (lage.session === "PRE" || lage.session === "AFTER") ? "dx-status--ext" : "";
+
+    var status = el("div", { class: "dx-status " + klasse,
+      title: lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS)." }, [
+      el("span", { class: "dx-dot" }),
+      el("b", { text: "US Market" }),
+      document.createTextNode(lage.mode === "live" ? "Live" : sessionWort(lage)),
+      document.createTextNode(universe.asOf ? " · " + S.formatDate(universe.asOf) : "")
     ]);
-  }
 
-  /* Der ehrliche Aktualitaets-Hinweis (§18): kein LIVE ohne Live-Daten. */
-  function dataPill(assessment, universe) {
-    var label = assessment.mode === "live" ? "LIVE"
-              : assessment.mode === "delayed" ? "VERZÖGERT"
-              : universe.kind === "mock" ? "MODELLDATEN"
-              : "SCHLUSSKURS";
-    return el("span", { class: "d-pill", title: assessment.message || "" }, [
-      el("span", { class: "d-dot" }),
-      document.createTextNode(label + (universe.asOf ? " · " + S.formatDate(universe.asOf) : ""))
-    ]);
-  }
-
-  /* ---------------------------------------------------------- Kopfband */
-  function hero(options) {
-    options = options || {};
-    var universe = universeMeta(state.universeId);
-    var assessment = marketState();
-
-    var switcher = el("div", { class: "d-switch", role: "group", "aria-label": "Universum" });
+    var switcher = el("div", { class: "dx-switch", role: "group", "aria-label": "Universum" });
     (state.meta.universes || []).forEach(function (u) {
-      var button = el("button", { type: "button", "aria-pressed": String(u.universeId === state.universeId),
-                                  text: u.label });
-      button.addEventListener("click", function () {
+      var knopf = el("button", { type: "button", text: u.label,
+                                 "aria-pressed": String(u.universeId === state.universeId) });
+      knopf.addEventListener("click", function () {
         if (u.universeId === state.universeId) return;
         state.universeId = u.universeId;
         location.hash = "#/u/" + u.universeId;
       });
-      switcher.appendChild(button);
+      switcher.appendChild(knopf);
     });
 
-    return el("header", { class: "d-hero" }, [
-      el("div", { class: "d-hero-inner" }, [
-        el("div", { class: "d-hero-top" }, [
-          el("div", {}, [
-            el("div", { class: "d-wordmark" }, [
-              el("h1", {}, [document.createTextNode("DISCOVER"),
-                            el("span", { class: "d-reg", text: "®" })])
-            ]),
-            el("p", { class: "d-tagline" }, [
-              el("b", { text: "Where market leadership begins. " }),
-              document.createTextNode(
-                "Vision Universe zeigt, wo gerade neue Jahreshochs, Marktfuehrer und " +
-                "Ausbrueche entstehen — als Reihen, nicht als Formular.")
-            ])
-          ]),
-          el("div", { class: "d-status" }, [statusPill(assessment), dataPill(assessment, universe)])
-        ]),
-        el("div", { class: "d-hero-top" }, [searchBox(), switcher]),
-        el("div", { class: "d-hero-meta" }, [
-          metaItem("Universum", universe.securities + " Titel"),
-          metaItem("Datenart", universe.kind === "real" ? "real (" + (universe.provider || "Anbieter") + ")"
-                                                        : "synthetisch (Modell)"),
-          metaItem("Benchmark", universe.benchmark || "–"),
-          metaItem("Stand", universe.asOf ? S.formatDate(universe.asOf) : "–"),
-          metaItem("Methodik", state.meta.methodologyVersion)
-        ])
-      ])
+    ensureSearch();
+    var suche = el("button", { class: "dx-searchbtn", type: "button" }, [
+      searchIcon(),
+      document.createTextNode("Aktien entdecken"),
+      el("kbd", { text: "/" })
+    ]);
+    suche.addEventListener("click", function () { openSearch(); });
+
+    return el("div", { class: "dx-bar" }, [
+      el("a", { class: "dx-brand", href: "#/" }, [
+        document.createTextNode("Discover"),
+        el("span", { text: "Vision Universe®" })
+      ]),
+      status, switcher, suche
     ]);
   }
 
-  function metaItem(label, value) {
-    return el("span", {}, [document.createTextNode(label + " "), el("b", { text: value })]);
-  }
-
-  /* ------------------------------------------------------------- Suche */
-  function searchBox() {
-    var input = el("input", { type: "search", placeholder: "Unternehmen oder Ticker suchen…",
-                              "aria-label": "Titel suchen", autocomplete: "off" });
-    var results = el("div", { class: "d-results", hidden: true });
-    var box = el("div", { class: "d-search" }, [searchIcon(), input, results]);
-
-    function ensureIndex() {
-      if (state.search && state.search.universeId === state.universeId) {
-        return Promise.resolve(state.search);
-      }
-      return S.loadJSON(BASE + "search/" + state.universeId + ".json").then(function (index) {
-        state.search = index;
-        return index;
-      });
+  function sessionWort(lage) {
+    switch (lage.session) {
+      case "REGULAR": return "Geöffnet";
+      case "PRE": return "Vorbörse";
+      case "AFTER": return "Nachbörse";
+      default: return "Geschlossen";
     }
-
-    function run() {
-      var q = input.value.trim().toUpperCase();
-      if (q.length < 1) { results.hidden = true; return; }
-      ensureIndex().then(function (index) {
-        var hits = index.entries.filter(function (e) {
-          return e.s.indexOf(q) === 0 || (e.n && e.n.toUpperCase().indexOf(q) !== -1) ||
-                 e.s.indexOf(q) !== -1;
-        }).slice(0, 12);
-        S.clear(results);
-        if (!hits.length) {
-          results.appendChild(el("div", { class: "d-results-empty",
-            text: "Kein Titel in »" + index.universeLabel + "« passt zu „" + input.value + "“." }));
-        }
-        hits.forEach(function (hit) {
-          var button = el("button", { type: "button" }, [
-            el("span", { class: "sym", text: hit.s }),
-            el("span", { class: "nm", text: hit.n || "Name nicht ausgeliefert" }),
-            el("span", { class: "tag", text: hit.h ? "52W-Hoch" : (hit.sec || (hit.m ? "real" : "Modell")) })
-          ]);
-          button.addEventListener("click", function () {
-            input.value = "";
-            results.hidden = true;
-            location.hash = "#/s/" + index.universeId + "/" + hit.s;
-          });
-          results.appendChild(button);
-        });
-        results.hidden = false;
-      }).catch(function () {
-        S.clear(results);
-        results.appendChild(el("div", { class: "d-results-empty",
-          text: "Der Suchindex konnte nicht geladen werden." }));
-        results.hidden = false;
-      });
-    }
-
-    input.addEventListener("input", run);
-    input.addEventListener("focus", function () { if (input.value) run(); });
-    document.addEventListener("click", function (event) {
-      if (!box.contains(event.target)) results.hidden = true;
-    });
-    input.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") { results.hidden = true; input.blur(); }
-    });
-    return box;
   }
 
   function searchIcon() {
-    var ns = "http://www.w3.org/2000/svg";
-    var svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("fill", "none");
-    svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "2.2");
-    var circle = document.createElementNS(ns, "circle");
-    circle.setAttribute("cx", "11"); circle.setAttribute("cy", "11"); circle.setAttribute("r", "7");
-    var line = document.createElementNS(ns, "line");
-    line.setAttribute("x1", "20"); line.setAttribute("y1", "20");
-    line.setAttribute("x2", "16.2"); line.setAttribute("y2", "16.2");
-    line.setAttribute("stroke-linecap", "round");
-    svg.appendChild(circle); svg.appendChild(line);
-    return svg;
+    var icon = C().svg("svg", { width: 15, height: 15, viewBox: "0 0 24 24", fill: "none",
+                                stroke: "currentColor", "stroke-width": 2.3 });
+    icon.appendChild(C().svg("circle", { cx: 11, cy: 11, r: 7 }));
+    icon.appendChild(C().svg("line", { x1: 20, y1: 20, x2: 16.2, y2: 16.2,
+                                       "stroke-linecap": "round" }));
+    return icon;
   }
+
+  /* Die Suche wird angelegt, sobald die Leiste steht - nicht erst beim
+     ersten Klick. Sonst gibt es die Tastaturabkürzung "/" so lange nicht,
+     wie niemand den Knopf benutzt hat, und genau die soll den Knopf ja
+     ersparen. */
+  function ensureSearch() {
+    if (!state.searchUi) {
+      state.searchUi = D.Search.create({ universeId: function () { return state.universeId; } });
+      document.body.appendChild(state.searchUi.node);
+    }
+    return state.searchUi;
+  }
+
+  function openSearch() { ensureSearch().open(); }
 
   /* -------------------------------------------------------- Startseite */
   function renderHome(root) {
     S.clear(root);
-    root.appendChild(hero());
+    var app = el("div", { class: "dx-app" });
+    root.appendChild(app);
+    app.appendChild(appBar());
 
-    var chips = el("nav", { class: "d-chips", "aria-label": "Kategorien" });
-    var body = el("div", { class: "d-page" });
-    root.appendChild(chips);
-    root.appendChild(body);
+    var heroHost = el("div", {});
+    var body = el("div", { class: "dx-page" });
+    app.appendChild(heroHost);
+    app.appendChild(body);
 
-    var universe = universeMeta(state.universeId);
+    heroHost.appendChild(el("div", { class: "dx-hero" }, [el("div", { class: "dx-hero-bg" })]));
+
+    S.loadJSON(BASE + "featured/" + state.universeId + ".json").then(function (payload) {
+      S.clear(heroHost);
+      heroHost.appendChild(D.Hero.render(payload, { universeId: state.universeId }));
+    }).catch(function () {
+      S.clear(heroHost);
+      heroHost.appendChild(C().note("Eingangsfläche nicht ladbar",
+        "Die Auswahl der Featured-Titel konnte nicht geladen werden. Die Reihen darunter " +
+        "sind davon nicht betroffen."));
+    });
+
+    var universe = universeMeta();
+    /* Der Hinweis zur Datenlage gehört unter die Eingangsfläche, aber nicht
+       in einen Kasten: er erklärt, warum die Poster zeigen, was sie zeigen —
+       er ist keine Warnung. */
     if (universe.kind === "mock") {
-      body.appendChild(el("div", { style: "padding:18px 0 0" }, [
-        C().notice("Modelluniversum",
-          "Alle Titel dieser Ansicht sind synthetisch (" + universe.securities + " Stueck, Seed " +
-          "des Vision-Universe-Mock-Generators). Sie tragen vollstaendige Kursreihen und zeigen " +
-          "deshalb Preis, Sparkline und Chart - aber keine reale Marktaussage. Ranglisten werden " +
-          "ausschliesslich innerhalb dieses Universums gerechnet.")
+      body.appendChild(el("p", { class: "dx-inline-note" }, [
+        el("b", { text: "Modelluniversum · " }),
+        document.createTextNode("Alle " + universe.securities + " Titel dieser Ansicht sind " +
+          "synthetisch erzeugt. Sie tragen vollständige Kursreihen und zeigen deshalb Kurs, " +
+          "Verlauf und Chart — aber keine reale Marktaussage. Ranglisten werden ausschließlich " +
+          "innerhalb dieses Universums gerechnet.")
       ]));
     } else if (universe.redistribution) {
-      body.appendChild(el("div", { style: "padding:18px 0 0" }, [
-        C().notice("Kursniveaus nicht ausgeliefert",
-          "Absolute Kurse realer Titel sind Anbieterdaten und bleiben zurueck. Die Karten zeigen " +
-          "deshalb Abstaende, Renditen und Scores — bei " + universe.withPriceSeries +
-          " freigegebenen Titeln zusaetzlich Kurs und Verlauf.", "info")
+      body.appendChild(el("p", { class: "dx-inline-note" }, [
+        el("b", { text: "Kursniveaus · " }),
+        document.createTextNode("Absolute Kurse realer Titel sind Anbieterdaten und bleiben " +
+          "zurück. Die Poster zeigen deshalb den rebasierten Renditepfad, Abstände und Scores — " +
+          "bei " + universe.withPriceSeries + " freigegebenen Titeln zusätzlich Kurs und " +
+          "Kursverlauf.")
       ]));
     }
 
-    var ids = rowIdsFor(state.universeId);
-    var placeholders = {};
-    var chipSlots = {};
-    ids.forEach(function (id) {
+    var plaetze = {};
+    HOME_SEQUENCE.forEach(function (schritt) {
       var host = el("div", {});
-      host.appendChild(C().skeletonRail(6));
-      placeholders[id] = host;
+      host.appendChild(C().skeletonRail(schritt.variant === "compact" ? 6 : 5));
+      plaetze[schritt.as || schritt.rowId] = host;
       body.appendChild(host);
-      /* Der Platz des Chips wird jetzt reserviert, gefuellt wird er, wenn
-         die Zeile geladen ist. Sonst haengt die Reihenfolge der Leiste
-         daran, welche Datei zuerst ankommt. */
-      if (id !== "sector-leaders") {
-        chipSlots[id] = el("span", {});
-        chips.appendChild(chipSlots[id]);
-      }
     });
 
-    ids.forEach(function (id) {
-      S.loadJSON(BASE + "rows/" + state.universeId + "/" + id + ".json").then(function (row) {
-        var host = placeholders[id];
-        S.clear(host);
-        if (id === "sector-leaders") {
-          host.appendChild(sectorSection(row));
-        } else {
-          host.appendChild(C().discoveryRow(row, { universeId: state.universeId }));
-          if (chipSlots[id]) {
-            chipSlots[id].appendChild(el("a", { class: "d-chip",
-              href: "#/c/" + state.universeId + "/" + row.rowId, text: row.title }));
+    /* Alle Zeilen gleichzeitig laden, aber der Reihe nach zeichnen.
+
+       Der Grund ist nicht die Optik, sondern die Wiederholung: die
+       stärksten Titel eines Marktes stehen naturgemäß in mehreren
+       Ranglisten zugleich, und eine Startseite, auf der fünfmal dieselben
+       vier Namen stehen, ist keine Entdeckung mehr. Ein Titel erscheint
+       deshalb auf der Startseite nur einmal — die vollständige Rangliste
+       jeder Kategorie bleibt über "Alle anzeigen" erreichbar und wird
+       nicht verändert. Die Ausnahme ist die Signature-Reihe: TOP 10 zeigt
+       immer die echte Reihenfolge, sonst wäre sie keine. */
+    var gezeigt = Object.create(null);
+    var kette = Promise.resolve();
+
+    HOME_SEQUENCE.forEach(function (schritt) {
+      var laden = S.loadJSON(BASE + "rows/" + state.universeId + "/" + schritt.rowId + ".json");
+      kette = kette.then(function () {
+        return laden.then(function (row) {
+          var host = plaetze[schritt.as || schritt.rowId];
+          S.clear(host);
+          if (schritt.variant === "sector") {
+            host.appendChild(sectorRail(row));
+          } else if (schritt.as === "top-10") {
+            host.appendChild(topTen(row));
+            (row.cards || []).slice(0, 10).forEach(function (c) { gezeigt[c.symbol] = true; });
+          } else {
+            var gefiltert = (row.cards || []).filter(function (c) { return !gezeigt[c.symbol]; });
+            var entfernt = (row.cards || []).length - gefiltert.length;
+            /* Gezeigt wird genau so viel, wie auch vorgemerkt wird - sonst
+               taucht ein Titel, der in dieser Reihe auf Platz 20 stand,
+               weiter unten ein zweites Mal auf. */
+            var sichtbar = Object.assign({}, row, { cards: gefiltert.slice(0, RAIL_LIMIT) });
+            host.appendChild(C().rail(sichtbar, {
+              variant: schritt.variant, universeId: state.universeId, limit: RAIL_LIMIT,
+              countSuffix: entfernt ? " · ohne bereits gezeigte" : null
+            }));
+            sichtbar.cards.forEach(function (c) { gezeigt[c.symbol] = true; });
           }
-        }
-        C().revealOnScroll(host);
-      }).catch(function (err) {
-        var host = placeholders[id];
-        S.clear(host);
-        host.appendChild(C().notice("Zeile nicht ladbar",
-          "»" + id + "« konnte nicht geladen werden (" + (err && err.message) + "). " +
-          "Die uebrigen Reihen sind davon nicht betroffen."));
+          C().revealOnScroll(host);
+        }).catch(function (err) {
+          var host = plaetze[schritt.as || schritt.rowId];
+          S.clear(host);
+          host.appendChild(C().note("Reihe nicht ladbar",
+            "»" + schritt.rowId + "« konnte nicht geladen werden (" +
+            (err && err.message) + "). Die übrigen Reihen sind davon nicht betroffen."));
+        });
       });
     });
 
     body.appendChild(footer());
+    C().revealOnScroll(body);
   }
 
-  function sectorSection(payload) {
-    var wrap = el("section", { class: "d-fade" }, [
-      el("div", { class: "d-row-head", style: "margin-top:34px" }, [
-        el("div", { class: "d-row-title" }, [
-          el("h2", { text: payload.title || "SECTOR LEADERS" }),
-          el("p", { text: payload.subtitle || "" })
-        ]),
-        el("span", { class: "d-row-count",
-          text: payload.coverage.curatedSectors + " Sektoren kuratiert" })
-      ])
-    ]);
+  /**
+   * Die Signature-Reihe: zehn Titel, grosse Ziffern.
+   * Sie entsteht aus derselben Rangliste wie MARKTFUEHRER - ein zweiter
+   * Datensatz dafuer waere eine zweite Wahrheit.
+   */
+  function topTen(row) {
+    var konfig = (state.meta.topTen || {});
+    var zehn = Object.assign({}, row, {
+      rowId: "top-10",
+      title: konfig.title || "TOP 10 MARKET LEADERS",
+      subtitle: konfig.subtitle || "Die zehn stärksten Titel — nach Leadership Score des Universums.",
+      cards: (row.cards || []).slice(0, 10)
+    });
+    var section = C().rail(zehn, { variant: "rank", universeId: state.universeId, limit: 10 });
+    /* Der Verweis fuehrt auf die vollstaendige Rangliste, nicht auf eine
+       Kategorie, die es nicht gibt. */
+    var mehr = section.querySelector(".dx-more");
+    if (mehr) mehr.setAttribute("href", "#/c/" + state.universeId + "/market-leaders");
+    return section;
+  }
+
+  /** Sektoren als Kacheln: je Sektor eine kleine Rangliste. */
+  function sectorRail(payload) {
+    var section = el("section", { class: "dx-rail-section dx-fade" });
+    section.appendChild(C().railHead(payload.title || "SECTOR LEADERS",
+      "Die stärksten Titel je Sektor.", {
+        count: payload.coverage.curatedSectors + " Sektoren",
+        href: "#/c/" + state.universeId + "/sector-leaders", moreLabel: "Alle Sektoren"
+      }));
 
     if (!payload.sectors || !payload.sectors.length) {
-      wrap.appendChild(C().emptyState("Keine kuratierten Sektoren",
-        "Fuer dieses Universum liegt keine kuratierte Sektorzuordnung vor. Ein Sektorrang aus " +
-        "einer unbelegten Zuordnung waere ein Rang ueber eine Vermutung."));
-      return wrap;
+      section.appendChild(C().emptyState("Keine kuratierte Sektorzuordnung",
+        "Für dieses Universum liegt keine kuratierte Sektorzuordnung vor. Ein Sektorrang aus " +
+        "einer unbelegten Zuordnung wäre ein Rang über eine Vermutung."));
+      return section;
     }
 
+    var track = el("div", { class: "dx-rail", role: "list", "aria-label": "Sektoren" });
     payload.sectors.forEach(function (sector) {
-      wrap.appendChild(C().discoveryRow({
-        rowId: "sector-leaders", title: sector.sector,
-        subtitle: sector.count + " Titel im Universum",
-        universeId: payload.universeId, universeLabel: payload.universeLabel,
-        asOf: payload.asOf, cards: sector.cards,
-        coverage: { matched: sector.count, universeSize: payload.coverage.universeSize }
-      }, { universeId: payload.universeId, showMore: false }));
+      var tile = C().sectorTile(sector, { universeId: state.universeId });
+      tile.setAttribute("role", "listitem");
+      track.appendChild(tile);
     });
-
+    section.appendChild(C().withRailNav(track));
     if (payload.coverage.withoutSector) {
-      wrap.appendChild(C().notice("Sektorabdeckung",
-        payload.coverage.withoutSector + " Titel dieses Universums tragen keine kuratierte " +
-        "Sektorzuordnung und erscheinen deshalb in keiner Sektorreihe.", "info"));
+      section.appendChild(el("p", { class: "dx-inline-note" }, [
+        el("b", { text: "Sektorabdeckung · " }),
+        document.createTextNode(payload.coverage.withoutSector + " Titel dieses Universums tragen " +
+          "keine kuratierte Sektorzuordnung und erscheinen deshalb in keiner Sektorreihe.")
+      ]));
     }
-    return wrap;
+    return section;
   }
 
-  /* ------------------------------------------------------ Kategorieseite */
+  /* ----------------------------------------------------- Kategorieseite */
   function renderCategory(root, universeId, rowId) {
     state.universeId = universeId;
     S.clear(root);
-    root.appendChild(hero());
-    var body = el("div", { class: "d-page" });
-    root.appendChild(body);
-    body.appendChild(C().skeletonRail(8));
+    var app = el("div", { class: "dx-app" });
+    root.appendChild(app);
+    app.appendChild(appBar());
+    var body = el("div", { class: "dx-page", style: "padding-top:26px" });
+    app.appendChild(body);
+    body.appendChild(C().skeletonRail(6));
 
     S.loadJSON(BASE + "rows/" + universeId + "/" + rowId + ".json").then(function (row) {
       S.clear(body);
       if (rowId === "sector-leaders") {
-        body.appendChild(sectorSection(row));
+        body.appendChild(sectorRail(row));
         body.appendChild(footer());
         C().revealOnScroll(body);
         return;
       }
 
-      var filters = { sector: null, capBucket: null };
-      var head = el("div", { class: "d-row-head", style: "margin-top:26px" }, [
-        el("div", { class: "d-row-title" }, [
-          el("h2", { text: row.title }), el("p", { text: row.subtitle || "" })
-        ]),
-        el("a", { class: "d-more", href: "#/u/" + universeId, text: "← Alle Kategorien" })
-      ]);
-      body.appendChild(head);
+      body.appendChild(C().railHead(row.title, row.subtitle, {
+        count: row.coverage.matched + " von " + row.coverage.universeSize,
+        href: "#/u/" + universeId, moreLabel: "Zurück zu Discover"
+      }));
 
-      var chips = el("div", { class: "d-chips", style: "position:static;border:0;background:transparent" });
-      var grid = el("div", {});
+      var filter = { sector: null, capBucket: null };
+      var leiste = el("div", { class: "dx-filters", role: "group", "aria-label": "Filter" });
+      var host = el("div", {});
 
-      function paint() {
-        S.clear(grid);
+      function zeichnen() {
+        S.clear(host);
         var cards = row.cards.filter(function (c) {
-          if (filters.sector && c.sector !== filters.sector) return false;
-          if (filters.capBucket && c.capBucket !== filters.capBucket) return false;
+          if (filter.sector && c.sector !== filter.sector) return false;
+          if (filter.capBucket && c.capBucket !== filter.capBucket) return false;
           return true;
         });
         if (!cards.length) {
-          grid.appendChild(C().emptyState("Keine Treffer",
-            "Mit diesem Filter bleibt in »" + row.title + "« kein Titel uebrig."));
+          host.appendChild(C().emptyState("Keine Treffer",
+            "Mit diesem Filter bleibt in »" + row.title + "« kein Titel übrig."));
           return;
         }
-        grid.appendChild(C().cardGrid(cards, { rowId: row.rowId, universeId: universeId, ranked: true }));
+        host.appendChild(C().grid(cards, { rowId: row.rowId, universeId: universeId }));
       }
 
-      function addChip(label, onClick, isActive) {
-        var chip = el("button", { class: "d-chip" + (isActive ? " on" : ""), type: "button", text: label });
-        chip.addEventListener("click", function () {
+      function chip(label, onClick, aktiv) {
+        var knopf = el("button", { type: "button", text: label, class: aktiv ? "on" : "" });
+        knopf.addEventListener("click", function () {
           onClick();
-          S.$$(".d-chip", chips).forEach(function (c) { c.classList.remove("on"); });
-          chip.classList.add("on");
-          paint();
+          Array.prototype.forEach.call(leiste.children, function (n) { n.classList.remove("on"); });
+          knopf.classList.add("on");
+          zeichnen();
         });
-        chips.appendChild(chip);
+        leiste.appendChild(knopf);
       }
 
-      addChip("Alle", function () { filters.sector = null; filters.capBucket = null; }, true);
+      chip("Alle", function () { filter.sector = null; filter.capBucket = null; }, true);
       (row.filters.sectors || []).forEach(function (s) {
-        addChip(s.id + " (" + s.count + ")", function () { filters.sector = s.id; filters.capBucket = null; });
+        chip(s.id + " · " + s.count, function () { filter.sector = s.id; filter.capBucket = null; });
       });
       (row.filters.capBuckets || []).forEach(function (b) {
-        addChip(b.label + " (" + b.count + ")", function () { filters.capBucket = b.id; filters.sector = null; });
+        chip(b.label + " · " + b.count, function () { filter.capBucket = b.id; filter.sector = null; });
       });
 
-      body.appendChild(chips);
+      body.appendChild(leiste);
       if (!(row.filters.sectors || []).length && !(row.filters.capBuckets || []).length) {
-        body.appendChild(C().notice("Keine Filter verfuegbar",
-          "Fuer dieses Universum liefert die Quelle weder eine kuratierte Sektorzuordnung noch " +
-          "eine Marktkapitalisierung. Ein Filter ueber unbelegte Felder waere ein Filter ueber " +
-          "Vermutungen.", "info"));
+        body.appendChild(C().note("Keine Filter verfügbar",
+          "Für dieses Universum liefert die Quelle weder eine kuratierte Sektorzuordnung noch " +
+          "eine Marktkapitalisierung. Ein Filter über unbelegte Felder wäre ein Filter über " +
+          "Vermutungen."));
       }
-      body.appendChild(grid);
-      paint();
+      body.appendChild(host);
+      zeichnen();
 
       if (row.coverage && row.coverage.note) {
-        body.appendChild(C().notice("Abdeckung", row.coverage.note, "info"));
+        body.appendChild(el("div", { style: "margin-top:26px" }, [
+          C().note("Abdeckung", row.coverage.note)
+        ]));
       }
       body.appendChild(footer());
       C().revealOnScroll(body);
     }).catch(function (err) {
       S.clear(body);
-      body.appendChild(C().notice("Kategorie nicht ladbar",
+      body.appendChild(C().note("Kategorie nicht ladbar",
         "»" + rowId + "« konnte nicht geladen werden (" + (err && err.message) + ")."));
     });
   }
 
-  /* --------------------------------------------------------- Detailseite */
+  /* ------------------------------------------------------- Detailseite */
   function renderDetail(root, universeId, symbol) {
     state.universeId = universeId;
     S.clear(root);
-    var host = el("main", { class: "d-detail" });
-    root.appendChild(host);
+    var app = el("div", { class: "dx-app" });
+    root.appendChild(app);
+    app.appendChild(appBar());
+    var host = el("main", { class: "dx-detail" });
+    app.appendChild(host);
     host.appendChild(C().skeletonRail(3));
 
     S.loadJSON(BASE + "stocks/" + universeId + "/" + symbol + ".json").then(function (detail) {
-      D.Detail.render(host, detail);
+      D.Detail.render(host, detail, { universeId: universeId, meta: state.meta });
       C().revealOnScroll(host);
-      document.title = symbol + " — Vision Universe® Discover";
+      document.title = (detail.companyName || symbol) + " — Vision Universe® Discover";
     }).catch(function () {
       S.clear(host);
-      host.appendChild(el("a", { class: "d-back", href: "#/", text: "← Discover" }));
-      host.appendChild(C().emptyState("Keine Detailseite fuer " + symbol,
-        "Fuer diesen Titel wird in »" + universeMeta(universeId).label + "« keine Detailseite " +
-        "ausgeliefert. Im Modelluniversum tragen nur die Titel der Discovery-Zeilen eine " +
-        "eigene Seite - eine Kursreihe je Titel waere ueber das ganze Universum unnoetig gross."));
+      host.appendChild(el("a", { class: "dx-back", href: "#/", text: "← Discover" }));
+      host.appendChild(el("div", { style: "padding:20px 0" }, [
+        C().emptyState("Keine Detailseite für " + symbol,
+          "Für diesen Titel wird in »" + universeMeta(universeId).label + "« keine Detailseite " +
+          "ausgeliefert. Im Modelluniversum tragen nur die Titel der Discovery-Reihen eine " +
+          "eigene Seite — eine Kursreihe je Titel wäre über das ganze Universum unnötig groß.")
+      ]));
     });
   }
 
   function footer() {
-    var universe = universeMeta(state.universeId);
-    return el("footer", { class: "d-foot" }, [
+    var universe = universeMeta();
+    return el("footer", { class: "dx-foot" }, [
       el("div", {}, [
         el("b", { text: "Discover " + state.meta.moduleVersion + " · " }),
         document.createTextNode("Methodik " + state.meta.methodologyVersion +
-          " · Contract " + state.meta.contractVersion +
-          " · Engines: " + Object.keys(state.meta.engines).map(function (k) {
-            return state.meta.engines[k]; }).join(", "))
+          " · Contract " + state.meta.contractVersion)
       ]),
       el("div", { style: "margin-top:6px" }, [
-        el("b", { text: "Realtime: " }),
+        el("b", { text: "Aktualität: " }),
         document.createTextNode(state.meta.realtime.message)
       ]),
       el("div", { style: "margin-top:6px" }, [
@@ -461,37 +458,39 @@
     ]);
   }
 
-  /* ------------------------------------------------------------- Router */
+  /* ------------------------------------------------------------ Router */
   function route() {
     var root = document.getElementById("d-root");
     var hash = location.hash.replace(/^#/, "");
-    var parts = hash.split("/").filter(Boolean);
+    var teile = hash.split("/").filter(Boolean);
 
     loadMeta().then(function () {
       document.title = "Discover — Vision Universe®";
-      if (parts[0] === "s" && parts.length >= 3) {
-        renderDetail(root, parts[1], decodeURIComponent(parts[2]).toUpperCase());
-      } else if (parts[0] === "c" && parts.length >= 3) {
-        renderCategory(root, parts[1], parts[2]);
-      } else if (parts[0] === "u" && parts[1]) {
-        state.universeId = parts[1];
+      if (teile[0] === "s" && teile.length >= 3) {
+        renderDetail(root, teile[1], decodeURIComponent(teile[2]).toUpperCase());
+      } else if (teile[0] === "c" && teile.length >= 3) {
+        renderCategory(root, teile[1], teile[2]);
+      } else if (teile[0] === "u" && teile[1]) {
+        state.universeId = teile[1];
         renderHome(root);
       } else {
         renderHome(root);
       }
-      window.scrollTo({ top: 0, behavior: "auto" });
+      global.scrollTo({ top: 0, behavior: "auto" });
     }).catch(function (err) {
       S.clear(root);
-      root.appendChild(el("div", { class: "d-detail" }, [
-        C().emptyState("Discover konnte nicht starten",
-          "Die Modul-Metadaten (discover/data/meta.json) sind nicht ladbar: " +
-          (err && err.message ? err.message : err) + ". Erzeugt werden sie mit " +
-          "node scripts/discover/build-discover-data.mjs.")
+      root.appendChild(el("div", { class: "dx-app" }, [
+        el("div", { style: "padding:80px 24px" }, [
+          C().emptyState("Discover konnte nicht starten",
+            "Die Modul-Metadaten (discover/data/meta.json) sind nicht ladbar: " +
+            (err && err.message ? err.message : err) + ". Erzeugt werden sie mit " +
+            "node scripts/discover/build-discover-data.mjs.")
+        ])
       ]));
     });
   }
 
-  window.addEventListener("hashchange", route);
+  global.addEventListener("hashchange", route);
   document.addEventListener("DOMContentLoaded", route);
   if (document.readyState !== "loading") route();
 })(window);

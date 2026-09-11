@@ -94,7 +94,7 @@
       out.mode = "eod";
       out.reason = input.policyCheck.reason || "notLicensed";
       out.message = input.policyCheck.message ||
-                    "Fuer Echtzeitkurse liegt keine Anzeigeerlaubnis vor.";
+                    "Für Echtzeitkurse liegt keine Anzeigeerlaubnis vor.";
       return out;
     }
     if (!input.quoteSource || input.quoteSource.connected !== true) {
@@ -108,8 +108,8 @@
       out.reason = session.phase === "PRE" || session.phase === "AFTER"
         ? "extendedSession" : "marketClosed";
       out.message = session.phase === "CLOSED"
-        ? "Die Boerse ist geschlossen. Angezeigt wird der letzte Schlusskurs."
-        : "Ausserhalb der regulaeren Sitzung. Angezeigt wird der letzte bestaetigte Stand.";
+        ? "Die Börse ist geschlossen. Angezeigt wird der letzte Schlusskurs."
+        : "Außerhalb der regulären Sitzung. Angezeigt wird der letzte bestätigte Stand.";
       return out;
     }
 
@@ -119,7 +119,7 @@
     if (age === null || age > maxAge) {
       out.mode = "delayed";
       out.reason = "staleTick";
-      out.message = "Der letzte Tick ist zu alt fuer eine Live-Kennzeichnung.";
+      out.message = "Der letzte Tick ist zu alt für eine Live-Kennzeichnung.";
       return out;
     }
     out.mode = "live";
