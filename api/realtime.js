@@ -46,7 +46,18 @@ const WS_URL = "wss://api.tiingo.com/iex";
    abgeschnittener Strom sieht im Browser aus wie ein Fehler, ein sauber
    geschlossener nicht. Der Browser verbindet danach neu. */
 const STREAM_MS = 50000;
-const THRESHOLD_LEVEL = 5;   /* 5 = Trades und Quotes; 0 waere nur Trades. */
+/* DIE ZAHL IST EINE TARIFFRAGE, KEINE GESCHMACKSFRAGE.
+
+   Hier stand 5 (Trades UND Quotes). Der Anbieter hat das Abonnement
+   abgelehnt:
+
+     "thresholdLevel not valid for your subscription tier"  (Code 400)
+
+   Der Schluessel war dabei in Ordnung - die Anmeldung kam durch, nur die
+   Stufe nicht. 0 liefert die tatsaechlichen Abschluesse, und genau die
+   braucht ein laufender Chart. Quotes waeren ohnehin das schwaechere
+   Signal: eine Mitte aus Geld und Brief ist kein gehandelter Kurs. */
+const THRESHOLD_LEVEL = 0;
 
 function lies(pfad, fallback) {
   try { return JSON.parse(readFileSync(join(process.cwd(), pfad), "utf8")); }
@@ -245,6 +256,9 @@ function deuteIexZeile(zeile) {
     return { ticker, kind: "TRADE", price: preis, size: menge, at: zeitstempel || null,
              priceTypeConfirmed: false };
   }
+  /* Bei thresholdLevel 0 kommen ausschliesslich "T"-Zeilen. Der
+     Quote-Zweig bleibt trotzdem stehen: er kostet nichts und faengt den
+     Fall ab, dass ein hoeherer Tarif spaeter mehr liefert. */
   if (art === "Q") {
     const bid = zahl(zeile[5]), mid = zahl(zeile[6]), ask = zahl(zeile[7]);
     const preis = mid !== null ? mid : (bid !== null && ask !== null ? (bid + ask) / 2 : null);
