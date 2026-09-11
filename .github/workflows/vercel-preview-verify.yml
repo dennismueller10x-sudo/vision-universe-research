@@ -129,6 +129,21 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: node scripts/proof/verify-owner-preview.mjs --base "$VERCEL_PREVIEW_URL"
 
+      # Der Live-Chart, gemessen im Browser gegen den echten Anbieter.
+      # Er laeuft LOKAL im Runner, weil der Schluessel hier liegt und in
+      # der Vercel-Umgebung (noch) nicht: gemessen wird damit der WEG
+      # Browser -> Serverfunktion -> Anbieter, nicht die fremde
+      # Einstellung. Ausserhalb der Handelszeiten zaehlt er null und sagt
+      # das auch - er erfindet keine Bewegung.
+      - name: Live-Chart im Produkt messen
+        if: hashFiles('scripts/proof/measure-live-chart.mjs') != ''
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/preview/build-preview-dataset.mjs
+          node scripts/proof/build-product-proof.mjs
+          node scripts/proof/measure-live-chart.mjs --window-ms 75000
+
       - name: Bericht sichern
         if: always()
         uses: actions/upload-artifact@v4
@@ -140,4 +155,6 @@ jobs:
             quant/data/site/proof-shots/**
             quant/data/site/owner-preview-verification.json
             quant/data/site/owner-preview-shots/**
+            quant/data/site/live-chart-measurement.json
+            quant/data/site/live-chart-shots/**
           if-no-files-found: warn

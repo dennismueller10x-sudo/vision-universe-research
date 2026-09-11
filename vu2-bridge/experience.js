@@ -34,8 +34,11 @@
   var view = params.get("view") || "home";
   var ticker = String(params.get("ticker") || "").toUpperCase();
 
-  var STREAM = "/api/realtime";
-  var INTRADAY = "/api/intraday";
+  /* Mit Schraegstrich: vercel.json setzt trailingSlash, ohne ihn kostet
+     jeder Aufruf eine Weiterleitung - beim Ereignisstrom waere das eine
+     zusaetzliche Runde vor dem ersten Kurs. */
+  var STREAM = "/api/realtime/";
+  var INTRADAY = "/api/intraday/";
 
   /* Die VU2-Ansichten bauen ihren Inhalt ASYNCHRON auf: erst wenn der
      Dienst geantwortet hat, steht die Seite. Wer direkt nach

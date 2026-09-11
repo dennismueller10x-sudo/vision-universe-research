@@ -72,14 +72,20 @@ const ANSICHTEN = [
 
 function entschaerfe(t) { return BYPASS ? String(t).split(BYPASS).join("[TOKEN ENTFERNT]") : String(t); }
 
-async function hole(pfad, { bypass = false, ms = 30000 } = {}) {
+/* `folgen` entscheidet ueber die Aussagekraft: bei der Abweisungspruefung
+   ist die Weiterleitung SELBST der Befund (302 auf die Anmeldung), beim
+   Abruf einer Serverfunktion ist sie nur Verwaltung - vercel.json setzt
+   trailingSlash, und /api/intraday antwortet deshalb erst mit 308 auf
+   /api/intraday/. Der erste Versuch hat diese 308 als Fehlschlag
+   gemeldet, obwohl die Funktion einwandfrei lief. */
+async function hole(pfad, { bypass = false, ms = 30000, folgen = false } = {}) {
   const kopf = { "user-agent": "vision-universe-owner-preview-verifier/1" };
   if (bypass && BYPASS) kopf["x-vercel-protection-bypass"] = BYPASS;
   const ctl = new AbortController();
   const uhr = setTimeout(() => ctl.abort(), ms);
   try {
     const res = await fetch((pfad.startsWith("http") ? pfad : BASE + pfad),
-      { headers: kopf, redirect: "manual", signal: ctl.signal });
+      { headers: kopf, redirect: folgen ? "follow" : "manual", signal: ctl.signal });
     const typ = String(res.headers.get("content-type") || "");
     const body = /text|json|javascript|html|event-stream/i.test(typ) || !typ ? await res.text() : "";
     return { ok: true, status: res.status, contentType: typ, body,
@@ -166,7 +172,8 @@ async function main() {
   /* ------------------------------------------------------------- O7 */
   const freigegeben = (bericht.universe && bericht.universe.historicalChartSecurities) || [];
   const intradayTicker = freigegeben[0] || "AAPL";
-  const intraday = await hole(`/api/intraday?ticker=${intradayTicker}&freq=5min&days=3`, { bypass: true });
+  const intraday = await hole(`/api/intraday?ticker=${intradayTicker}&freq=5min&days=3`,
+    { bypass: true, folgen: true });
   let intradayBody = null;
   try { intradayBody = JSON.parse(intraday.body); } catch (e) { /* bleibt null */ }
   bericht.chart.intraday = intradayBody
@@ -227,7 +234,7 @@ async function stromMessen(pfad) {
   const ctl = new AbortController();
   const uhr = setTimeout(() => ctl.abort(), STROM_MS);
   try {
-    const res = await fetch(BASE + pfad, { headers: kopf, signal: ctl.signal });
+    const res = await fetch(BASE + pfad, { headers: kopf, redirect: "follow", signal: ctl.signal });
     if (!res.ok || !res.body) { ergebnis.state = "HTTP_" + res.status; return ergebnis; }
     const leser = res.body.getReader();
     const dekoder = new TextDecoder();
