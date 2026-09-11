@@ -81,6 +81,23 @@ function loadBudget() {
     process.exit(3);
   }
   const pf = JSON.parse(readFileSync(PREFLIGHT, "utf8"));
+
+  /* Eine Freigabe altert.
+
+     Sie stuetzt sich auf den Nutzungsstand des Monats und den belegten
+     Speicher zum Zeitpunkt der Rechnung. Beides aendert sich mit jedem
+     Lauf. Eine Freigabe von gestern - oder gar eine, die jemand ins
+     Repository committet hat - wuerde einen Lauf decken, dessen
+     Grundlage es nicht mehr gibt. */
+  const ageMs = Date.now() - Date.parse(pf.generatedAt || 0);
+  const MAX_AGE_MS = (parseInt(arg("--preflight-max-age-minutes", "120"), 10) || 120) * 60000;
+  if (!(ageMs >= 0) || ageMs > MAX_AGE_MS) {
+    console.error(Guard.BLOCKED + `: die Vorabrechnung ist ${Math.round(ageMs / 60000)} Minuten alt ` +
+                  `(erlaubt: ${Math.round(MAX_AGE_MS / 60000)}).`);
+    console.error("  Sie stuetzt sich auf einen Nutzungsstand, den es so nicht mehr geben muss.");
+    console.error("  Neu rechnen: node scripts/market/preflight-zero-cost.mjs --operation " + OPERATION);
+    process.exit(3);
+  }
   if (!pf.verdict || pf.verdict.verdict !== Guard.ALLOWED) {
     console.error(Guard.BLOCKED + ": die Vorabrechnung hat nicht freigegeben " +
                   `(${pf.verdict && pf.verdict.verdict}).`);
