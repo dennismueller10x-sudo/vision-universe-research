@@ -151,6 +151,48 @@ jobs:
           node scripts/proof/build-product-proof.mjs
           node scripts/proof/measure-live-chart.mjs --window-ms 75000
 
+      # Ganz zum Schluss, in zwei Zeilen: was melden die beiden
+      # Serverfunktionen der AUSGELIEFERTEN Vorschau gerade? Die
+      # ausfuehrlichen Nachweise stehen weiter oben; diese Zeilen stehen
+      # hier, weil sie die Frage sind, die nach einer Aenderung an der
+      # Umgebung als erste gestellt wird.
+      - name: Serverfunktionen — Zustand in der Auslieferung
+        if: always()
+        env:
+          VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          node -e '
+            const base = process.env.VERCEL_PREVIEW_URL.replace(/\/$/, "");
+            const kopf = { "x-vercel-protection-bypass": process.env.VERCEL_AUTOMATION_BYPASS_SECRET || "" };
+            const zeige = (name, text) => console.log("  " + name.padEnd(10) + text);
+            (async () => {
+              const i = await fetch(base + "/api/intraday/?ticker=AAPL&freq=5min&days=3", { headers: kopf })
+                .then(r => r.json()).catch(e => ({ state: "FETCH_FAILED", reason: String(e.message) }));
+              zeige("intraday", i.state + (i.bars ? " · " + i.bars.length + " Bars · " + i.first + " bis " + i.last : "") +
+                (i.reason ? " · " + i.reason : ""));
+              const res = await fetch(base + "/api/realtime/?tickers=AAPL", { headers: kopf });
+              const leser = res.body.getReader(); const dek = new TextDecoder();
+              let puffer = "", zustand = "keine Antwort", ticks = 0, laufzeit = null;
+              const ende = Date.now() + 30000;
+              while (Date.now() < ende) {
+                const { done, value } = await leser.read(); if (done) break;
+                puffer += dek.decode(value, { stream: true });
+                for (const block of puffer.split("\n\n")) {
+                  const art = (block.match(/^event: (.+)$/m) || [])[1];
+                  const roh = (block.match(/^data: (.+)$/m) || [])[1];
+                  if (!art || !roh) continue;
+                  let d; try { d = JSON.parse(roh); } catch (e) { continue; }
+                  if (art === "status") { zustand = d.state; if (d.runtime) laufzeit = d.runtime; }
+                  if (art === "tick") ticks = d.seq;
+                }
+                if (zustand !== "keine Antwort" && zustand !== "CONNECTED") break;
+              }
+              try { await leser.cancel(); } catch (e) { /* egal */ }
+              zeige("realtime", zustand + " · Aktualisierungen " + ticks + (laufzeit ? " · Laufzeit " + laufzeit : ""));
+            })();
+          '
+
       - name: Bericht sichern
         if: always()
         uses: actions/upload-artifact@v4
