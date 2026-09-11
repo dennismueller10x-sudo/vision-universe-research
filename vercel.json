@@ -6,6 +6,12 @@
   "cleanUrls": true,
   "trailingSlash": true,
   "github": { "silent": true },
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 60,
+      "includeFiles": "quant/config/**"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

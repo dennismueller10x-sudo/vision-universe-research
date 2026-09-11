@@ -36,9 +36,14 @@ function lies(pfad, fallback) {
   catch (e) { return fallback; }
 }
 
+/* Kommt null zurueck, ist die FREIGABEDATEI nicht lesbar - das ist etwas
+   anderes als "dieser Titel ist nicht freigegeben". Beides zu vermischen
+   hiesse, einen Einrichtungsfehler als Lizenzentscheidung auszugeben.
+   Auf Vercel kommt die Datei ueber functions.includeFiles mit. */
 function erlaubteTitel() {
   const freigabe = lies("quant/config/development-preview.json", null);
-  return Array.isArray(freigabe && freigabe.scope) ? freigabe.scope : [];
+  if (!freigabe || !Array.isArray(freigabe.scope)) return null;
+  return freigabe.scope;
 }
 
 function antwort(res, status, koerper) {
@@ -58,6 +63,13 @@ module.exports = async function handler(req, res) {
   const erlaubt = erlaubteTitel();
   if (!/^[A-Z0-9.-]{1,12}$/.test(ticker)) {
     return antwort(res, 400, { state: "INVALID_IDENTITY", reason: "Kein gueltiger Ticker." });
+  }
+  if (!erlaubt) {
+    return antwort(res, 200, {
+      state: "SCOPE_UNREADABLE", ticker,
+      reason: "Die Freigabeliste (quant/config/development-preview.json) ist zur Laufzeit nicht lesbar.",
+      remedy: "vercel.json → functions.includeFiles muss quant/config/** enthalten."
+    });
   }
   if (!erlaubt.includes(ticker)) {
     return antwort(res, 200, {

@@ -56,9 +56,14 @@ function lies(pfad, fallback) {
 /* Die Freigabeliste. Sie kommt aus der Datei, nicht aus dem Code - wer
    sie aendert, aendert eine datierte Entscheidung und keinen Konstanten-
    wert. */
+/* Kommt null zurueck, ist die FREIGABEDATEI nicht lesbar - das ist etwas
+   anderes als "dieser Titel ist nicht freigegeben". Beides zu vermischen
+   hiesse, einen Einrichtungsfehler als Lizenzentscheidung auszugeben.
+   Auf Vercel kommt die Datei ueber functions.includeFiles mit. */
 function erlaubteTitel() {
   const freigabe = lies("quant/config/development-preview.json", null);
-  return Array.isArray(freigabe && freigabe.scope) ? freigabe.scope : [];
+  if (!freigabe || !Array.isArray(freigabe.scope)) return null;
+  return freigabe.scope;
 }
 
 function sende(res, event, data) {
@@ -71,8 +76,8 @@ module.exports = async function handler(req, res) {
     .toUpperCase().split(",").map((t) => t.trim()).filter(Boolean).slice(0, 5);
 
   const erlaubt = erlaubteTitel();
-  const tickers = angefragt.filter((t) => erlaubt.includes(t));
-  const abgelehnt = angefragt.filter((t) => !erlaubt.includes(t));
+  const tickers = erlaubt ? angefragt.filter((t) => erlaubt.includes(t)) : [];
+  const abgelehnt = erlaubt ? angefragt.filter((t) => !erlaubt.includes(t)) : angefragt;
 
   res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
   res.setHeader("Cache-Control", "no-store, private");
@@ -92,6 +97,16 @@ module.exports = async function handler(req, res) {
       reason: "TIINGO_API_KEY ist in dieser Umgebung nicht gesetzt.",
       remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview).",
       tickers, rejected: abgelehnt
+    });
+    return res.end();
+  }
+
+  if (!erlaubt) {
+    sende(res, "status", {
+      state: "SCOPE_UNREADABLE",
+      reason: "Die Freigabeliste (quant/config/development-preview.json) ist zur Laufzeit nicht lesbar.",
+      remedy: "vercel.json → functions.includeFiles muss quant/config/** enthalten.",
+      rejected: abgelehnt
     });
     return res.end();
   }
