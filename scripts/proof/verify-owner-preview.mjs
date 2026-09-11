@@ -67,6 +67,7 @@ const ANSICHTEN = [
   ["elliott", "/vu2/?view=elliott&ticker=NVDA", "Elliott"],
   ["strategies", "/vu2/?view=strategies", "Strategy Lab"],
   ["portfolio", "/vu2/?view=portfolio", "Portfolio"],
+  ["signals", "/vu2/?view=signals", "Signals"],
   ["compare", "/vu2/?view=compare", "Vergleich"]
 ];
 

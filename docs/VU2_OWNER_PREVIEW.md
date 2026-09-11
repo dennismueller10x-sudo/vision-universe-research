@@ -15,8 +15,10 @@ Wahrheit. Sie fuegt zusammen und aendert nicht.
 
 | Zweig | Stand |
 |---|---|
-| `workstream/vu2-strategy-workspace` | Spitze der VU2-Arbeit; enthaelt Phase 0 bis 07 |
-| `workstream/vu2-eod-gates` | ein Commit daneben (EOD-Gates) |
+| `workstream/vu2-signals-workspace` (PR #72) | **Spitze**; enthaelt Portfolio, Strategy und alles davor |
+| `workstream/vu2-portfolio-workspace` (PR #71) | in der Spitze enthalten |
+| `workstream/vu2-strategy-workspace` (PR #70) | in der Spitze enthalten; Phase 0 bis 07 |
+| `workstream/vu2-eod-gates` (PR #65) | ein Commit daneben (EOD-Gates) |
 | `workstream/vu2-quant-workspace`, `-technical-workspace`, `-screener-workspace`, `-research-workspaces`, `-experience`, `-intelligence-contracts`, `-lifecycle-foundation`, `-phase0-audit` | alle in der Spitze enthalten |
 | `codex/sec-master-universe-large`, `codex/development-preview-activation` | nicht beruehrt |
 
@@ -64,7 +66,8 @@ Bruecke kennt.
 | Fundamentals & Historie | Astra | fuenf SEC-Titel — dafuer gibt es keine weiteren Daten |
 | Technical, Elliott | Astra | wo ein Technical-Bundle vorliegt |
 | Strategy Lab | Astra | vollstaendig; Backtest-Gate bleibt ausdruecklich ungeloest |
-| Portfolio | Astra | vorhanden, ohne erfundene Positionen |
+| Portfolio | Astra (#71) | manuelle Positionen mit begrenzter Bewertung |
+| Signals | Astra (#72) | historische Regeluebergaenge aus geteilten Screener-Regeln |
 
 ### Was die Bruecke bewusst nicht tut
 
@@ -150,7 +153,7 @@ Handelskurs". **OP4** prueft die Beschriftung.
 | `verify-owner-preview.mjs` (O1–O10, am ausgelieferten System) | alle Produktpruefungen belegt; O7/O8 uebersprungen wegen des fehlenden Schluessels |
 | `measure-live-chart.mjs` (Browser + echter Anbieter) | `CONNECTED_NO_EVENTS` — Weg steht, Boerse zu |
 | `owner-preview.test.mjs` (OP1–OP5) | 5/5 |
-| Gesamtsuite | 755 Tests |
+| Gesamtsuite | 766 Tests |
 | Datenhygiene, Schluesselpruefung | gruen |
 
 Ein uebersprungener Nachweis ist ausdruecklich **kein** bestandener.
