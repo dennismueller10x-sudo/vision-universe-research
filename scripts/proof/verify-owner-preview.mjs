@@ -181,22 +181,35 @@ async function main() {
         first: intradayBody.first || null, last: intradayBody.last || null,
         reason: intradayBody.reason || null, remedy: intradayBody.remedy || null }
     : { state: "NO_RESPONSE", status: intraday.status };
-  pruefe("O7", "Intraday: die Serverfunktion antwortet",
-    intradayBody && ["AVAILABLE", "EMPTY", "NOT_CONFIGURED", "PROVIDER_REJECTED", "SCOPE_UNREADABLE"].includes(intradayBody.state)
-      ? (intradayBody.state === "AVAILABLE" ? "PASS" : "SKIP") : "FAIL",
-    intradayBody ? `${intradayBody.state}${intradayBody.bars ? " · " + intradayBody.bars.length + " Bars" : ""}` +
-      (intradayBody.reason ? " · " + intradayBody.reason : "") : `HTTP ${intraday.status}`);
+  /* WAS HIER ALS FEHLSCHLAG ZAEHLT, IST DIE GANZE FRAGE.
+
+     Eine fehlende Umgebungsvariable ist kein kaputtes Produkt. Der erste
+     Lauf hat NOT_CONFIGURED als FAIL gewertet und damit den eigentlichen
+     Befund verdeckt: die Funktion laeuft, sie hat nur keinen Schluessel.
+     Rot ist deshalb nur, was gar nicht antwortet; alles, was einen
+     benannten Zustand liefert, ist gemessen - und wenn dieser Zustand
+     eine offene Einstellung ist, dann UEBERSPRUNGEN mit Abhilfe. */
+  const EINSTELLUNG = ["NOT_CONFIGURED", "SCOPE_UNREADABLE"];
+  const intradayStatus = !intradayBody ? "FAIL"
+    : intradayBody.state === "AVAILABLE" ? "PASS"
+    : EINSTELLUNG.includes(intradayBody.state) || intradayBody.state === "EMPTY" ? "SKIP"
+    : "FAIL";
+  pruefe("O7", "Intraday: die Serverfunktion antwortet", intradayStatus,
+    intradayBody ? `${intradayBody.state}${(intradayBody.bars || []).length ? " · " + intradayBody.bars.length + " Bars" : ""}` +
+      (intradayBody.reason ? " · " + intradayBody.reason : "") +
+      (intradayBody.remedy ? " · Abhilfe: " + intradayBody.remedy : "") : `HTTP ${intraday.status}`);
 
   /* ------------------------------------------------------------- O8
      Der Strom, gemessen an der Quelle: verbunden, abonniert, wie viele
      Aktualisierungen im Fenster. Die sichtbare Seite misst O8b. */
   const strom = await stromMessen(`/api/realtime?tickers=${intradayTicker}`);
   bericht.chart.realtime = strom;
-  pruefe("O8", "Echtzeit: Verbindung, Abonnement und Aktualisierungen",
-    strom.connected ? (strom.updates > 0 ? "PASS" : "SKIP") : "FAIL",
+  const stromStatus = strom.connected ? (strom.updates > 0 ? "PASS" : "SKIP")
+    : EINSTELLUNG.includes(strom.state) ? "SKIP" : "FAIL";
+  pruefe("O8", "Echtzeit: Verbindung, Abonnement und Aktualisierungen", stromStatus,
     `Zustand ${strom.state} · verbunden ${strom.connected} · abonniert ${strom.subscribed} · ` +
     `Aktualisierungen ${strom.updates}` + (strom.firstUpdateAt ? " · erste " + strom.firstUpdateAt : "") +
-    (strom.reason ? " · " + strom.reason : ""));
+    (strom.reason ? " · " + strom.reason : "") + (strom.remedy ? " · Abhilfe: " + strom.remedy : ""));
 
   /* ------------------------------------------------------------- O9 */
   const funde = [];

@@ -135,8 +135,11 @@ jobs:
       # Browser -> Serverfunktion -> Anbieter, nicht die fremde
       # Einstellung. Ausserhalb der Handelszeiten zaehlt er null und sagt
       # das auch - er erfindet keine Bewegung.
+      # always(): diese Messung sagt gerade dann am meisten, wenn ein
+      # Schritt davor rot war - sie trennt "der Weg ist kaputt" von
+      # "eine Einstellung fehlt".
       - name: Live-Chart im Produkt messen
-        if: hashFiles('scripts/proof/measure-live-chart.mjs') != ''
+        if: always() && hashFiles('scripts/proof/measure-live-chart.mjs') != ''
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
