@@ -173,7 +173,7 @@ jobs:
                 (i.reason ? " · " + i.reason : ""));
               const res = await fetch(base + "/api/realtime/?tickers=AAPL", { headers: kopf });
               const leser = res.body.getReader(); const dek = new TextDecoder();
-              let puffer = "", zustand = "keine Antwort", ticks = 0, laufzeit = null;
+              let puffer = "", zustand = "keine Antwort", ticks = 0, laufzeit = null, grund = "";
               const ende = Date.now() + 30000;
               while (Date.now() < ende) {
                 const { done, value } = await leser.read(); if (done) break;
@@ -183,13 +183,15 @@ jobs:
                   const roh = (block.match(/^data: (.+)$/m) || [])[1];
                   if (!art || !roh) continue;
                   let d; try { d = JSON.parse(roh); } catch (e) { continue; }
-                  if (art === "status") { zustand = d.state; if (d.runtime) laufzeit = d.runtime; }
+                  if (art === "status") { zustand = d.state; if (d.runtime) laufzeit = d.runtime;
+                    if (d.reason) grund = d.reason; if (d.providerCode !== undefined && d.providerCode !== null) grund += " (Code " + d.providerCode + ")"; }
                   if (art === "tick") ticks = d.seq;
                 }
                 if (zustand !== "keine Antwort" && zustand !== "CONNECTED") break;
               }
               try { await leser.cancel(); } catch (e) { /* egal */ }
-              zeige("realtime", zustand + " · Aktualisierungen " + ticks + (laufzeit ? " · Laufzeit " + laufzeit : ""));
+              zeige("realtime", zustand + " · Aktualisierungen " + ticks + (laufzeit ? " · Laufzeit " + laufzeit : "") +
+                (grund ? " · " + grund : ""));
             })();
           '
 

@@ -118,7 +118,7 @@ test("OP3 — der Zugangsschluessel bleibt auf der Serverseite", () => {
       .map((zeile, i) => ({ zeile: zeile.trim(), nr: i + 1 }))
       .filter((z) => /\bkey\b/.test(z.zeile) && !z.zeile.startsWith("*") && !z.zeile.startsWith("/*"));
     const erlaubt = [
-      /^const key = process\.env\.TIINGO_API_KEY \|\| "";$/,
+      /^const key = \(process\.env\.TIINGO_API_KEY \|\| ""\)\.trim\(\);$/,
       /^if \(!key\) \{$/,
       /^authorization: key,$/,
       /^headers: \{ Authorization: `Token \$\{key\}`/

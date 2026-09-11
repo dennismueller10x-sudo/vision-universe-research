@@ -85,7 +85,11 @@ module.exports = async function handler(req, res) {
   res.setHeader("X-Accel-Buffering", "no");
   res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
 
-  const key = process.env.TIINGO_API_KEY || "";
+  /* .trim(): ein eingefuegter Schluessel bringt haeufig einen
+     Zeilenumbruch oder ein Leerzeichen mit. Der Anbieter lehnt ihn dann
+     ab, und die Meldung sieht aus wie ein Rechteproblem statt wie ein
+     Kopierfehler. */
+  const key = (process.env.TIINGO_API_KEY || "").trim();
   const start = Date.now();
 
   if (!key) {
@@ -196,7 +200,17 @@ module.exports = async function handler(req, res) {
     if (nachricht.messageType === "E") {
       /* Ein Fehler des Anbieters gehoert weitergereicht - aber ohne
          alles, was ein Zugangsmittel sein koennte. */
-      sende(res, "status", { state: "PROVIDER_ERROR", reason: String((nachricht.response && nachricht.response.message) || "unbekannt").slice(0, 200) });
+      /* Die Meldung des Anbieters WOERTLICH weitergeben (gekuerzt, nie
+         mit Zugangsmittel): ohne sie sieht ein abgelehnter Schluessel
+         genauso aus wie ein fehlendes Recht. Der Code kommt mit. */
+      const antwort = nachricht.response || {};
+      sende(res, "status", {
+        state: "PROVIDER_ERROR",
+        providerCode: antwort.code === undefined ? null : antwort.code,
+        reason: String(antwort.message || "unbekannt").slice(0, 200),
+        remedy: "Wert von TIINGO_API_KEY in Vercel pruefen: exakt der Token, ohne " +
+                "Anfuehrungszeichen, ohne Zeilenumbruch, Scope Preview."
+      });
       return;
     }
     if (nachricht.messageType !== "A" || !Array.isArray(nachricht.data)) return;

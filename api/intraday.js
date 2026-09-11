@@ -83,7 +83,11 @@ module.exports = async function handler(req, res) {
     return antwort(res, 400, { state: "INVALID_FREQUENCY", allowed: ERLAUBTE_FREQUENZEN });
   }
 
-  const key = process.env.TIINGO_API_KEY || "";
+  /* .trim(): ein eingefuegter Schluessel bringt haeufig einen
+     Zeilenumbruch oder ein Leerzeichen mit. Der Anbieter lehnt ihn dann
+     ab, und die Meldung sieht aus wie ein Rechteproblem statt wie ein
+     Kopierfehler. */
+  const key = (process.env.TIINGO_API_KEY || "").trim();
   if (!key) {
     return antwort(res, 200, {
       state: "NOT_CONFIGURED", ticker,
