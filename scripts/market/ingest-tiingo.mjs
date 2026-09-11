@@ -194,7 +194,7 @@ if (!permitted.allowed) {
   process.exit(1);
 }
 
-const runId = INITIAL ? "initial" : "incremental";
+const runId = MarketStore.ingestionRunId(INITIAL);
 const checkpoint = store.loadCheckpoint(runId);
 if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 
@@ -257,7 +257,8 @@ for (const security of CONFIG.securities) {
   const bars = res.data.bars;
   if (!bars.length) {
     ok++;
-    checkpoint.done.push(id);
+    // An empty response does not prove this session's EOD is available.
+    // Keep eligible for a same-day retry (provider lag / pre-close run).
     perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "keineNeuenTage" };
     console.log(`${label} keine neuen Handelstage`);
     store.saveCheckpoint(checkpoint);

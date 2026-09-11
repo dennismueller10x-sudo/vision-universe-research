@@ -124,7 +124,7 @@
    * @param {object} opts {dates, series:[{values,label,className}], height, yFormat, yDomain, title}
    */
   function lineChart(opts) {
-    var w = 900, h = opts.height || 240;
+    var w = Number.isFinite(opts.width) && opts.width >= 300 ? opts.width : 900, h = opts.height || 240;
     var svg = base(w, h, opts.title || "Zeitreihe", opts.description);
     var dates = opts.dates || [];
     var all = [];
@@ -139,7 +139,7 @@
     var ys = scale(ext, [h - PAD.bottom, PAD.top]);
     var yFormat = opts.yFormat || function (v) { return String(Math.round(v)); };
 
-    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }), yFormat, xLabelsFor(dates, xs, 5));
+    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }), yFormat, xLabelsFor(dates, xs, w < 500 ? 3 : 5));
 
     opts.series.forEach(function (s) {
       var pts = s.values.map(function (v, i) { return [xs(i), isNum(v) ? ys(v) : null]; });
@@ -175,7 +175,7 @@
 
   /** Balkenchart fuer Jahresrenditen / rollierende Renditen. */
   function barChart(opts) {
-    var w = 900, h = opts.height || 190;
+    var w = Number.isFinite(opts.width) && opts.width >= 300 ? opts.width : 900, h = opts.height || 190;
     var svg = base(w, h, opts.title || "Balkenchart", opts.description);
     var items = (opts.items || []).filter(function (it) { return isNum(it.value); });
     if (!items.length) return svg;
@@ -200,7 +200,9 @@
         x: x.toFixed(2), y: Math.min(y0, y1).toFixed(2),
         width: barW.toFixed(2), height: Math.max(1, Math.abs(y1 - y0)).toFixed(2), rx: 2
       }));
-      if (items.length <= 26) {
+      var labelCount = Math.max(2, opts.maxLabels || 26);
+      var selectedLabel = !opts.maxLabels ? items.length <= 26 : Array.from({length:Math.min(labelCount,items.length)}, function(_, j) { return Math.round(j * (items.length - 1) / (Math.min(labelCount,items.length) - 1 || 1)); }).indexOf(i) !== -1;
+      if (selectedLabel) {
         svg.appendChild(svgEl("text", { class: "axis", x: (x + barW / 2).toFixed(2), y: h - 8, "text-anchor": "middle", text: it.label }));
       }
     });
