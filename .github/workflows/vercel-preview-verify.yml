@@ -47,9 +47,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Node 22, nicht 20: der Echtzeit-Weiterleiter benutzt den globalen
+      # WebSocket-Client, den es erst ab 22 gibt. Unter 20 meldete die
+      # Messung NO_WEBSOCKET_RUNTIME - richtig gemeldet, aber die
+      # Laufzeit war das Problem, nicht der Code.
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # Ohne Browser laufen V1 bis V5 und V8/V9; V6/V7 werden dann
       # ausdruecklich als nicht geprueft ausgewiesen. Mit Browser laufen

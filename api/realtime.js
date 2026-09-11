@@ -125,7 +125,9 @@ module.exports = async function handler(req, res) {
   if (typeof globalThis.WebSocket !== "function") {
     sende(res, "status", {
       state: "NO_WEBSOCKET_RUNTIME",
-      reason: "Diese Laufzeit stellt keinen WebSocket-Client bereit (Node 22+ noetig)."
+      reason: "Diese Laufzeit stellt keinen WebSocket-Client bereit (Node 22+ noetig).",
+      remedy: "vercel.json → functions.runtime auf nodejs22.x setzen.",
+      runtime: process.version
     });
     return res.end();
   }
