@@ -30,8 +30,13 @@ Bereinigungssemantik.**
 | 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
 
 Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
-der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün. Weder nach
-`main` gemergt noch veröffentlicht.
+der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
+
+**Veröffentlicht am 12.09.2026** unter
+`https://research.visionuniverse.de/discover/`, nach `main` gemergt. Der
+Menüeintrag **Discover** steht in `assets/site-navigation.js` an zweiter
+Stelle und erscheint damit auf jeder Seite. Der Einzelmodus liegt unter
+`/discover/#/einzeln/US_REAL` und ist aus der Discover-Leiste erreichbar.
 
 Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
 (SEC-Einreichungen der Golden Five) und für das Modelluniversum;
