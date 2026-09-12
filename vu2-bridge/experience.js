@@ -12,12 +12,20 @@
         sich das wie "mehr gibt es nicht".
      2  Eine Suche ueber ALLE ausgelieferten Titel. Die eingebaute Suche
         durchsucht die Liste der Ansicht - das sind nicht alle.
-     3  Den Chartbereich, den der Eigentuemer bisher nie gesehen hat:
-        Intraday und Echtzeit, beide ueber die Serverseite, beide ohne
-        Zugangsschluessel im Browser.
+     3  Den Hauptchart der Einzeltitelseite. Er stand da, konnte aber
+        nur die fuenf veroeffentlichten Titel zeichnen; fuer alle
+        anderen wurde die Zeitraumleiste ausgeblendet. Jetzt speist ihn
+        der dauerhafte Speicher - und die kurzen Zeitraeume speist der
+        Anbieter ueber die Serverseite.
+
+        ES IST EIN CHART, KEIN ZWEITER. Frueher kam unter der Seite ein
+        eigener Block mit einem eigenen Intraday-Chart. Zwei Charts
+        uebereinander sind zwei Antworten auf dieselbe Frage; 1T und 5T
+        sind jetzt Zeitraeume DESSELBEN Charts.
 
    Sie laedt NACH vu2/experience.js und aendert dort keine Zeile. Was sie
-   tut, ist Hinzufuegen: ein Band, ein Dialog, ein Abschnitt.
+   tut, ist Hinzufuegen und Speisen: ein Band, ein Dialog, und der
+   bestehende Chart mit einer Quelle.
 
    NICHTS HIER ERFINDET EINEN KURS. Kommt kein Ereignis, steht das da -
    mit dem Grund und mit dem Zustand der Boerse.
@@ -81,7 +89,7 @@
   bereit(function () {
     kopfband();
     sucheErsetzen();
-    if (view === "stock" && ticker) { chartBereich(); einzeltitelSchaerfen(); }
+    if (view === "stock" && ticker) { hauptchart(); kopfzahlSchaerfen(); }
   });
 
   /* ------------------------------------------------------------ Kopfband */
@@ -260,247 +268,255 @@
   }
 
 
-  /* ------------------------------------------- Einzeltitel ohne Kursreihe
+  /* ============================================ DER HAUPTCHART
 
-     Zwei Stellen der fertigen Ansicht sagen fuer diese Titel etwas
-     Falsches, und beide sind Kursstellen:
+     BISHER GAB ES ZWEI CHARTS UND EINEN VORWAND.
 
-       1  Die grosse Zahl oben ist der letzte Schlusskurs. Kursniveaus
-          sind fuer dieses Universum zurueckgehalten - dort steht dann
-          "Nicht verfuegbar" in Schriftgroesse 34. Das ist wahr und
-          trotzdem die schlechteste Art, es zu sagen: die Seite HAT eine
-          gemessene Aussage, sie steht nur woanders.
-       2  Der leere Chart meldet "Tagesverlaeufe benoetigen freigegebene
-          Intraday-Daten". Der Grund ist aber ein anderer: fuer diesen
-          Titel ist ueberhaupt keine Kursreihe ausgeliefert.
+     Oben zeichnete die fertige VU2-Ansicht Schlusskurse - aber nur fuer
+     die fuenf veroeffentlichten Titel; fuer alle anderen blendete die
+     Bruecke die Zeitraumleiste aus und schrieb "keine Kursreihe
+     ausgeliefert". Unten kam ein ZWEITER Chart mit Intraday dazu, als
+     eigener Abschnitt.
 
-     Beides wird hier ersetzt - nicht ueberdeckt. Was danach dasteht, ist
-     eine gemessene Groesse mit ihrem Namen und der richtige Grund. */
-  function einzeltitelSchaerfen() {
-    api.bridge.freigabe().then(function (erlaubt) {
-      if (erlaubt.indexOf(ticker) !== -1) return;   /* freigegeben: echter Chart, nichts tun */
-      return api.getStockIntelligence(ticker).then(function (s) {
-        if (!s || s.state !== "AVAILABLE" || !s.vuFullUniverse) return;
-        return warteAuf("#content .focus", 20000).then(function (focus) {
-          if (!focus) return;
-          schaerfe(focus, s);
-        });
-      });
-    }).catch(function () { /* ohne Freigabeliste bleibt die Ansicht, wie sie ist */ });
-  }
+     Beides faellt weg. Es gibt einen Chart, und er kann alles:
 
-  function schaerfe(focus, s) {
-    var quote = focus.querySelector(".quote");
-    if (quote) {
-      var kopf = Number.isFinite(s.above200.value)
-        ? { wert: (s.above200.value > 0 ? "+" : "") + num(s.above200.value, 1) + " %",
-            label: "Abstand zum 200-Tage-Durchschnitt · Stand " + (s.asOf || "–") }
-        : { wert: "Keine Faktorzeile",
-            label: "Die Kursreihe dieses Titels hat den Qualitaetstest des Laufs nicht bestanden." };
-      quote.textContent = kopf.wert;
-      var unterzeile = quote.nextElementSibling;
-      if (unterzeile && unterzeile.classList.contains("muted")) {
-        unterzeile.textContent = kopf.label + " · Kursniveaus sind fuer dieses Universum " +
-          "zurueckgehalten; ausgeliefert sind Abstaende, Zustaende und Renditen.";
-      }
-    }
+       1T, 5T    Intraday, serverseitig beim Anbieter geholt
+       1M .. MAX Tagesschluss aus dem dauerhaften Speicher (R2)
 
-    var hinweis = focus.querySelector(".notice");
-    if (hinweis) {
-      S.mount(hinweis, [
-        el("h3", { text: "Fuer " + ticker + " ist keine Kursreihe ausgeliefert" }),
-        el("p", { class: "muted", text:
-          (s.chart && s.chart.reason) ||
-          "Die Faktoren stammen aus einer echten Kursreihe; der Bestand selbst liegt in keiner Auslieferung." })
-      ]);
-    }
+     Die Leiste bleibt die der Ansicht, die Zeichenfunktion bleibt
+     QuantCharts.lineChart, der Platz bleibt derselbe. Was sich aendert,
+     ist die Quelle - und dass ein nicht verfuegbarer Zeitraum jetzt
+     seinen GRUND traegt, statt zu verschwinden.
 
-    var leiste = focus.querySelector(".ranges");
-    /* Eine Zeitraumleiste ohne Daten ist eine Einladung ins Leere. */
-    if (leiste) leiste.hidden = true;
-  }
+     WARUM DIE BRUECKE DEN CHART UEBERNIMMT
 
-  /* -------------------------------------------------------- Chartbereich */
-  function chartBereich() {
-    var main = document.getElementById("content");
-    if (!main) return;
+     Die Ansicht ruft selectRange nur mit Tagesdaten auf; Intraday kennt
+     sie nicht, und ihre Datei gehoert Astra/Codex. Die Bruecke setzt
+     sich deshalb an dieselbe Stelle - gleicher Behaelter, gleiche
+     Leiste, gleiche Zeichenfunktion - und reicht beide Quellen hinein. */
 
-    var abschnitt = el("section", { class: "section vu-live" }, [
-      el("span", { class: "eyebrow", text: "Kursdaten in dieser Vorschau" }),
-      el("h2", { text: "Intraday und Echtzeit" }),
-      el("p", { class: "muted", text: "Beide laufen ueber die Serverseite. Der Zugangsschluessel " +
-        "erreicht den Browser nicht — er bleibt in der geschuetzten Umgebung." })
-    ]);
-    var intradayHost = el("div", { class: "vu-live-block" });
-    var liveHost = el("div", { class: "vu-live-block" });
-    abschnitt.append(intradayHost, liveHost);
+  var CR = g.VUChartRanges;
 
-    /* Der Abschnitt gehoert nach oben, direkt unter die Ueberschrift der
-       Seite: der Eigentuemer soll nicht danach suchen muessen. Die
-       Ueberschrift entsteht erst, wenn der Dienst geantwortet hat. */
-    warteAuf("#content .intro", 20000).then(function (anker) {
-      if (anker) anker.insertAdjacentElement("afterend", abschnitt);
-      else main.prepend(abschnitt);
+  function hauptchart() {
+    if (!CR || !g.QuantCharts) return;
+    warteAuf("#content .focus", 20000).then(function (focus) {
+      if (!focus) return;
+      var leiste = focus.querySelector(".ranges");
+      if (!leiste) return;
+      /* Der Chartbehaelter der Ansicht ist das Geschwister VOR der
+         Leiste. Ihn wiederzuverwenden ist der Unterschied zwischen
+         "denselben Chart speisen" und "einen zweiten danebenstellen". */
+      var behaelter = leiste.previousElementSibling;
+      if (!behaelter) return;
+      leiste.hidden = false;
+      baueChart(focus, behaelter, leiste);
     });
+  }
 
-    api.bridge.freigabe().then(function (erlaubt) {
-      var frei = erlaubt.indexOf(ticker) !== -1;
-      if (!frei) {
-        S.mount(intradayHost, el("div", { class: "notice" }, [
-          el("h3", { text: "Intraday und Echtzeit sind fuer " + ticker + " nicht freigegeben" }),
-          el("p", { class: "muted", text:
-            "Die Anzeige von Kursen ist auf die Titel mit datierter Eigentuemerfreigabe begrenzt (" +
-            erlaubt.join(", ") + "). Die gemessenen Faktoren dieses Titels stehen unabhaengig davon " +
-            "zur Verfuegung — sie enthalten keine Kursniveaus." })
+  function baueChart(focus, behaelter, leiste) {
+    var daten = { eod: [], intraday: [], adjustmentStatus: null };
+    var gates = { ENABLE_LIVE_MARKET_DATA: false };
+    var aktuell = CR.DEFAULT_RANGE;
+    var liveWerte = [];
+
+    var fussnote = el("p", { class: "muted vu-chart-note", text: "Kursreihe wird geladen …" });
+    behaelter.insertAdjacentElement("afterend", fussnote);
+
+    function zeichne(id) {
+      aktuell = id;
+      var res = CR.selectRange(id, daten, { gates: gates });
+      Array.prototype.forEach.call(leiste.querySelectorAll("button"), function (b) {
+        var an = b.dataset.range === id;
+        b.classList.toggle("selected", an);
+        b.setAttribute("aria-pressed", an ? "true" : "false");
+      });
+      S.clear(behaelter);
+      if (!res.ok) {
+        behaelter.append(el("div", { class: "notice" }, [
+          el("h3", { text: "Dieser Zeitraum ist nicht verfuegbar" }),
+          el("p", { class: "muted", text: res.message || "Kein Ergebnis." })
         ]));
-        S.clear(liveHost);
+        fussnote.textContent = res.message || "";
         return;
       }
-      intraday(intradayHost);
-      echtzeit(liveHost);
-    });
-  }
+      /* Absolute Kurse, keine Differenzen - auch Intraday. Eine
+         Prozentachse saehe bei 1T genauso aus und waere etwas
+         anderes. */
+      behaelter.append(g.QuantCharts.lineChart({
+        title: ticker + " · " + (res.source === "intraday" ? "Intraday" : "Schlusskurse"),
+        width: Math.min(900, Math.max(280, (behaelter.clientWidth || window.innerWidth) - 40)),
+        height: 290,
+        dates: res.bars.map(function (b) { return b.date; }),
+        series: [{ values: res.bars.map(function (b) { return b.close; }) }],
+        yFormat: function (v) { return num(v, 2) + " $"; }
+      }));
+      fussnote.textContent = res.source === "intraday"
+        ? res.bars.length + " Intraday-Bars · " + res.from + " bis " + res.to +
+          " · serverseitig geholt, nicht gespeichert · Kursart laut Anbieter unbestaetigt."
+        : res.bars.length + " Handelstage · " + res.from + " bis " + res.to +
+          " · aus dem dauerhaften Speicher, ohne Anbieteranfrage" +
+          (daten.adjustmentStatus ? " · Bereinigung: " + daten.adjustmentStatus : "");
+    }
 
-  /* ------------------------------------------------------------ Intraday */
-  function intraday(host) {
-    S.mount(host, el("p", { class: "muted", text: "Intraday-Bars werden serverseitig geholt …" }));
-    fetch(INTRADAY + "?ticker=" + encodeURIComponent(ticker) + "&freq=5min&days=3",
-          { cache: "no-store" })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (d.state === "AVAILABLE" && d.bars.length) {
-          var kopf = el("div", { class: "vu-live-head" }, [
-            el("h3", { text: "Intraday · 5 Minuten" }),
-            el("span", { class: "pill", text: d.bars.length + " Bars · " + d.first + " bis " + d.last })
-          ]);
-          var chart = g.QuantCharts.lineChart({
-            title: ticker + " · Intraday (5 Minuten)",
-            width: Math.min(900, Math.max(280, (host.clientWidth || window.innerWidth) - 40)),
-            height: 240,
-            dates: d.bars.map(function (b) { return b.date; }),
-            series: [{ values: d.bars.map(function (b) { return b.close; }) }],
-            yFormat: function (v) { return v.toFixed(2) + " $"; }
-          });
-          S.mount(host, [kopf, chart, el("p", { class: "muted", text:
-            "Serverseitig geholt (" + zeit(d.fetchedAt) + "), nicht gespeichert. Kursart laut " +
-            "Anbieter unbestaetigt." })]);
-          return;
+    function leisteNeu() {
+      var zustaende = CR.rangeBar(daten, { gates: gates });
+      S.clear(leiste);
+      zustaende.forEach(function (z) {
+        var b = el("button", { text: z.label, dataset: { range: z.id } });
+        if (!z.available) {
+          /* Ein verschwundener Knopf ist eine unbeantwortete Frage.
+             Er bleibt stehen, abgeblendet, mit seinem Grund. */
+          b.disabled = true;
+          b.classList.add("vu-range-off");
+          b.title = z.message || "Nicht verfuegbar";
+        } else {
+          b.addEventListener("click", function () { zeichne(z.id); });
         }
-        S.mount(host, zustand("Intraday", d));
-      })
-      .catch(function () {
-        S.mount(host, el("div", { class: "notice" }, [
-          el("h3", { text: "Intraday derzeit nicht erreichbar" }),
-          el("p", { class: "muted", text: "Die Serverfunktion hat nicht geantwortet." })
-        ]));
+        leiste.append(b);
       });
-  }
-
-  function zustand(was, d) {
-    var texte = {
-      NOT_CONFIGURED: "Der Zugangsschluessel ist in dieser Umgebung nicht hinterlegt.",
-      NOT_PERMITTED: "Fuer diesen Titel liegt keine Anzeigefreigabe vor.",
-      PROVIDER_REJECTED: "Der Anbieter hat den Abruf abgelehnt.",
-      EMPTY: "Der Anbieter hat fuer diesen Zeitraum keine Bars geliefert — ausserhalb der " +
-             "Handelszeiten ist das der Normalfall.",
-      FETCH_FAILED: "Der Abruf ist gescheitert.",
-      INVALID_FREQUENCY: "Ungueltiges Intervall."
-    };
-    return el("div", { class: "notice" }, [
-      el("h3", { text: was + " derzeit nicht verfuegbar" }),
-      el("p", { class: "muted", text: texte[d.state] || d.reason || "Kein Ergebnis." }),
-      d.remedy ? el("p", { class: "muted", text: "Naechster Schritt: " + d.remedy }) : null
-    ]);
-  }
-
-  /* ------------------------------------------------------------ Echtzeit */
-  function echtzeit(host) {
-    var werte = [];
-    var statusPille = el("span", { class: "pill", text: "verbinde …" });
-    var kurs = el("div", { class: "quote", text: "–" });
-    var zaehlerText = el("p", { class: "muted", text: "Aktualisierungen: 0" });
-    var hinweis = el("p", { class: "muted", text:
-      "Neutrale Beschriftung mit Absicht: der Anbieter nennt die Kursart nicht. " +
-      "Hier steht deshalb 'Kursaktualisierung' und nicht 'letzter Handelskurs'." });
-    var verlauf = el("div", { class: "vu-live-spark" });
-    var kopf = el("div", { class: "vu-live-head" }, [
-      el("h3", { text: "Echtzeit · Kursaktualisierung" }), statusPille
-    ]);
-    S.mount(host, [kopf, kurs, verlauf, zaehlerText, hinweis]);
-
-    var quelle;
-    try {
-      quelle = new EventSource(STREAM + "?tickers=" + encodeURIComponent(ticker));
-    } catch (e) {
-      statusPille.textContent = "nicht moeglich";
-      return;
     }
 
-    quelle.addEventListener("status", function (e) {
-      var d = JSON.parse(e.data);
-      if (d.state === "CONNECTED") {
-        statusPille.textContent = "verbunden";
-        statusPille.classList.add("vu-live-on");
-        zaehlerText.textContent = "Verbunden " + zeit(d.at) + " · Aktualisierungen: 0";
-        return;
+    /* Zuerst die Tagesreihe: sie traegt die meisten Zeitraeume. */
+    api.bridge.chartFuer(ticker).then(function (c) {
+      daten.eod = c.bars || [];
+      daten.adjustmentStatus = c.adjustmentStatus || null;
+      leisteNeu();
+      if (daten.eod.length) {
+        /* Der voreingestellte Zeitraum, sonst der erste, der traegt.
+           Ein junges Listing hat kein Jahr - es bekommt trotzdem
+           seinen vollen Verlauf und nicht die Meldung, es gaebe
+           keine Historie. */
+        var res = CR.selectRange(CR.DEFAULT_RANGE, daten, { gates: gates });
+        zeichne(res.ok ? CR.DEFAULT_RANGE : (res.suggestion || "MAX"));
+      } else {
+        S.clear(behaelter);
+        behaelter.append(el("div", { class: "notice" }, [
+          el("h3", { text: "Fuer " + ticker + " liegt keine Kursreihe im Speicher" }),
+          el("p", { class: "muted", text: c.reason ||
+            "Der Speicher fuehrt fuer diesen Titel keine Reihe." })
+        ]));
+        fussnote.textContent = "";
       }
-      statusPille.textContent = d.state === "NOT_CONFIGURED" ? "Schluessel fehlt"
-        : d.state === "NOT_PERMITTED" ? "nicht freigegeben" : "nicht verfuegbar";
-      S.mount(host, [kopf, zustand("Echtzeit", d)]);
-      quelle.close();
+      intradayLaden();
     });
 
-    quelle.addEventListener("subscribed", function () {
-      statusPille.textContent = "abonniert";
-      statusPille.classList.add("vu-live-on");
-    });
+    /* Und dann Intraday. Es kommt NACH der Tagesreihe, weil der Chart
+       ohne es schon steht - und weil das Gate erst wahr wird, wenn
+       wirklich Bars da sind. Eine Freischaltung per Behauptung waere
+       genau die Umkehrung, vor der chart-ranges.js warnt. */
+    function intradayLaden() {
+      fetch(INTRADAY + "?ticker=" + encodeURIComponent(ticker) + "&freq=5min&days=5",
+            { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.state === "AVAILABLE" && (d.bars || []).length) {
+            daten.intraday = d.bars;
+            daten.intradayAdjustmentStatus = null;
+            gates.ENABLE_LIVE_MARKET_DATA = true;
+            leisteNeu();
+            zeichne(aktuell);
+            echtzeitAnbinden();
+            return;
+          }
+          intradayGrund = d.reason || null;
+          leisteNeu();
+          zeichne(aktuell);
+        })
+        .catch(function () { leisteNeu(); zeichne(aktuell); });
+    }
+    var intradayGrund = null;
 
-    quelle.addEventListener("tick", function (e) {
-      var t = JSON.parse(e.data);
-      werte.push(t.price);
-      if (werte.length > 180) werte.shift();
-      kurs.textContent = num(t.price) + " $";
-      zaehlerText.textContent = "Aktualisierungen: " + t.seq + " · zuletzt " + zeit(t.receivedAt) +
-                                " · Art: " + (t.kind === "TRADE" ? "Abschluss gemeldet" : "Quote-Mitte");
-      zeichneVerlauf(verlauf, werte);
-    });
+    /* -------------------------------------------------------- Echtzeit
 
-    quelle.addEventListener("summary", function (e) {
-      var d = JSON.parse(e.data);
-      quelle.close();
-      var text = d.updates
-        ? d.updates + " Aktualisierungen im Messfenster · erste " + zeit(d.firstUpdateAt)
-        : "Keine Kursereignisse im Messfenster. " + (d.note || "");
-      zaehlerText.textContent = text;
-      statusPille.textContent = d.updates ? "Fenster beendet" : "keine Ereignisse";
-      /* Neu verbinden, solange die Seite offen ist: das Messfenster der
-         Serverfunktion ist kurz, der Chart soll trotzdem weiterlaufen. */
-      if (d.reason === "streamWindowElapsed") setTimeout(function () { echtzeitNeu(host, werte); }, 500);
-    });
+       Der Strom zeichnet keinen eigenen Chart mehr. Er haengt seine
+       Punkte an den LAUFENDEN Chart, wenn gerade ein Intraday-Zeitraum
+       zu sehen ist - und sagt sonst nur, dass er verbunden ist.
 
-    quelle.addEventListener("error", function () {
-      statusPille.textContent = "Verbindung unterbrochen";
-      quelle.close();
+       Die Beschriftung bleibt neutral: der Anbieter hat die Kursart
+       nicht bestaetigt. "Kursaktualisierung" ist das, was belegt ist. */
+    function echtzeitAnbinden() {
+      var pille = el("span", { class: "pill", text: "verbinde …" });
+      var zeileStatus = el("p", { class: "muted vu-live-status" }, [
+        el("span", { text: "Kursaktualisierung " }), pille
+      ]);
+      fussnote.insertAdjacentElement("afterend", zeileStatus);
+
+      var quelle;
+      try { quelle = new EventSource(STREAM + "?tickers=" + encodeURIComponent(ticker)); }
+      catch (e) { pille.textContent = "nicht moeglich"; return; }
+
+      quelle.addEventListener("status", function (e) {
+        var d = JSON.parse(e.data);
+        if (d.state === "CONNECTED") {
+          pille.textContent = "verbunden"; pille.classList.add("vu-live-on"); return;
+        }
+        pille.textContent = d.state === "NOT_CONFIGURED" ? "Schluessel fehlt"
+          : d.state === "NOT_PERMITTED" ? "nicht freigegeben" : "nicht verfuegbar";
+        quelle.close();
+      });
+      quelle.addEventListener("subscribed", function () {
+        pille.textContent = "abonniert"; pille.classList.add("vu-live-on");
+      });
+      quelle.addEventListener("tick", function (e) {
+        var t = JSON.parse(e.data);
+        liveWerte.push(t.price);
+        if (liveWerte.length > 240) liveWerte.shift();
+        pille.textContent = num(t.price, 2) + " $ · " + zeit(t.receivedAt);
+        /* An den laufenden Chart anhaengen - aber nur, wenn gerade ein
+           Intraday-Zeitraum zu sehen ist. In einen Zehnjahreschart
+           einzelne Ticks zu schreiben, ergaebe eine Linie, die etwas
+           anderes behauptet als sie zeigt. */
+        var r = CR.byId ? CR.byId(aktuell) : null;
+        var istIntraday = (r && r.source === "intraday") ||
+                          aktuell === "1D" || aktuell === "5D";
+        if (!istIntraday || !daten.intraday.length) return;
+        var letzte = daten.intraday[daten.intraday.length - 1];
+        daten.intraday = daten.intraday.concat([{
+          date: t.receivedAt || new Date().toISOString(),
+          open: letzte.close, high: t.price, low: t.price,
+          close: t.price, volume: null
+        }]);
+        if (daten.intraday.length > 4000) daten.intraday.shift();
+        zeichne(aktuell);
+      });
+      quelle.addEventListener("summary", function (e) {
+        var d = JSON.parse(e.data);
+        quelle.close();
+        pille.textContent = d.updates ? d.updates + " Aktualisierungen" : "keine Ereignisse";
+        if (d.reason === "streamWindowElapsed") setTimeout(echtzeitAnbinden, 500);
+      });
+      quelle.addEventListener("error", function () {
+        pille.textContent = "unterbrochen"; quelle.close();
+      });
+    }
+  }
+
+  /* ------------------------------- Die grosse Zahl ueber dem Chart
+
+     Sie ist der letzte Schlusskurs. Fuer Titel ohne ausgelieferte Reihe
+     stand dort "Nicht verfuegbar" in Schriftgroesse 34 - wahr, aber die
+     schlechteste Art es zu sagen. Jetzt gibt es fuer fast jeden Titel
+     eine Reihe; die Zahl wird deshalb aus IHR gesetzt, mit ihrem Stand
+     daneben. */
+  function kopfzahlSchaerfen() {
+    warteAuf("#content .focus", 20000).then(function (focus) {
+      if (!focus) return;
+      var quote = focus.querySelector(".quote");
+      if (!quote) return;
+      api.bridge.chartFuer(ticker).then(function (c) {
+        if (c.state !== "AVAILABLE" || !c.bars.length) return;
+        var letzte = c.bars[c.bars.length - 1];
+        if (!Number.isFinite(letzte.close)) return;
+        quote.textContent = num(letzte.close, 2) + " $";
+        var unterzeile = quote.nextElementSibling;
+        if (unterzeile && unterzeile.classList.contains("muted")) {
+          unterzeile.textContent = "Letzter gespeicherter Schlusskurs · " +
+            String(letzte.date).slice(0, 10) + " · aus dem dauerhaften Speicher, " +
+            "serverseitig geholt.";
+        }
+      });
     });
   }
 
-  /* Wiederverbinden ohne die bisher gesehenen Werte zu verlieren. */
-  function echtzeitNeu(host, bisher) {
-    echtzeit(host);
-  }
 
-  function zeichneVerlauf(host, werte) {
-    if (werte.length < 2) return;
-    var b = 320, h = 60, min = Math.min.apply(null, werte), max = Math.max.apply(null, werte);
-    var spanne = max - min || 1;
-    var punkte = werte.map(function (v, i) {
-      var x = (i / (werte.length - 1)) * (b - 4) + 2;
-      var y = h - 2 - ((v - min) / spanne) * (h - 6);
-      return x.toFixed(1) + "," + y.toFixed(1);
-    }).join(" ");
-    var svg = '<svg viewBox="0 0 ' + b + " " + h + '" width="100%" height="' + h +
-      '" role="img" aria-label="Verlauf der empfangenen Kursaktualisierungen">' +
-      '<polyline fill="none" stroke="currentColor" stroke-width="1.5" points="' + punkte + '"/></svg>';
-    host.innerHTML = svg;   /* nur selbst erzeugte Zahlen, kein fremder Text */
-  }
 })(typeof window !== "undefined" ? window : globalThis);

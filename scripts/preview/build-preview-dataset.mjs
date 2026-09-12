@@ -39,6 +39,9 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -93,6 +96,8 @@ const bestandSatz = deckung && deckung.STORAGE_COVERAGE
     `(${deckung.STORAGE_COVERAGE.stored} von ${deckung.STORAGE_COVERAGE.denominator} Titeln, ` +
     `${deckung.STORAGE_COVERAGE.STORAGE_COVERAGE_PERCENT} %). Diese Auslieferung serviert sie nicht.`
   : "Ueber den Kurshistorien-Bestand liegt keine Messung vor.";
+
+const Hygiene = require(join(root, "quant", "engines", "ranking-hygiene.js"));
 
 const eignungNachTicker = new Map();
 if (eignung && Array.isArray(eignung.decisions)) {
@@ -238,6 +243,33 @@ const zeilen = universum.securities.map((s) => {
   };
 });
 
+/* ------------------------------------------- Titel mit gebrochener Reihe
+
+   EIN DURCHGANG VORWEG, UND ZWAR AUS EINEM KONKRETEN GRUND.
+
+   Die Quarantaene je Frage reicht nicht. SPCL traegt eine
+   Zwoelfmonatsrendite von 1.806.567 % - weit jenseits jeder Grenze -
+   und zugleich eine relative Staerke von 9,6, die unter der Grenze
+   liegt. Frageweise geprueft flog es aus der einen Liste und fuehrte
+   die andere an: derselbe Titel, dieselbe kaputte Reihe, zwei
+   verschiedene Antworten.
+
+   Wer an EINER Kennzahl als unplausibel auffaellt, hat keine brauchbare
+   Reihe - und fuehrt deshalb keine Anlegerliste an, auch nicht die, in
+   der sein Wert zufaellig klein genug ist. */
+const gebrocheneReihen = new Set();
+if (screener) {
+  for (const q of screener.questions) {
+    if (q.kind !== "ranked") continue;
+    for (const t of (q.top || [])) {
+      const grund = Hygiene.quarantaeneGrund(
+        { value: t.value, dataQuality: (qualitaet[t.ticker] && qualitaet[t.ticker].status) || null },
+        q.id, { skala: 1 });
+      if (grund && grund.reason === "IMPLAUSIBLE_VALUE") gebrocheneReihen.add(t.ticker);
+    }
+  }
+}
+
 /* --------------------------------------------------------- Datensatz */
 
 const datensatz = {
@@ -338,6 +370,22 @@ const datensatz = {
           "die beantwortet drei Fragen zugleich."
   },
 
+  /* Die Titel mit gebrochener Reihe, als Liste statt als Regel.
+
+     Die Regel selbst steht in quant/engines/ranking-hygiene.js und wird
+     HIER angewandt - einmal, zur Bauzeit. Die Bruecke im Browser
+     bekommt das Ergebnis, keine zweite Fassung der Schwellen: zwei
+     Implementierungen derselben Grenze waeren eine Fehlerquelle, und
+     vu2/index.html darf ohnehin keine vierte Skriptzeile bekommen. */
+  brokenSeries: {
+    engine: Hygiene.VERSION,
+    tickers: Array.from(gebrocheneReihen).sort(),
+    count: gebrocheneReihen.size,
+    note: "An mindestens einer Kennzahl unplausibel. Sie bleiben im Universum, " +
+          "in der Suche und im Einzeltitel; sie fuehren keine Anlegerliste an. " +
+          "Die Werte selbst sind unveraendert."
+  },
+
   coverage: {
     securities: zeilen.length,
     withQualityRow: mitQualitaet,
@@ -375,13 +423,53 @@ const datensatz = {
        Deshalb steht auch die Datenqualitaet des Titels dabei: sie ist
        die Erklaerung fuer den Ausreisser, und ohne sie liest sich eine
        kaputte Reihe wie der staerkste Titel des Universums. */
-    const eintraege = rang
+    const roh = rang
       ? (q.top || []).map((t) => ({
           ticker: t.ticker,
           value: t.value,
           dataQuality: (qualitaet[t.ticker] && qualitaet[t.ticker].status) || "PASS_NOT_ITEMISED"
         }))
       : (q.tickers || []).map((t) => ({ ticker: t, value: null, dataQuality: null }));
+
+    /* Zuerst die Gattung. In der Trendbeschleunigung stand ZWZZT ganz
+       oben - ein Testpapier der NASDAQ, kein Unternehmen. Belegte
+       Nicht-Aktien gehoeren in keine Anlegerrangliste; sie bleiben im
+       Universum und in der Suche, aber nicht hier. */
+    const nichtProdukt = [];
+    const imProdukt = roh.filter((e) => {
+      const d = eignungNachTicker.get(e.ticker);
+      if (d && d.product_eligibility === "EXCLUDED") {
+        nichtProdukt.push({ ticker: e.ticker, value: e.value,
+                            securityClass: d.instrument_type,
+                            quarantineReason: "NOT_IN_PRODUCT_UNIVERSE",
+                            quarantineMessage: "Belegte Nicht-Aktie (" + d.instrument_type +
+                              "); sie nimmt an Anlegerranglisten nicht teil." });
+        return false;
+      }
+      return true;
+    });
+
+    /* Dann die Groesse. Auf Platz eins der Zwoelfmonatsrendite stand ein
+       Titel mit 314.999.900 %. Das ist keine Kursbewegung, sondern eine
+       Bereinigungsluecke - und als Anlageergebnis gelesen eine
+       Fehlinformation. Zurueckgehalten wird die ANZEIGE, nicht der
+       Wert: er steht unveraendert in der Zeile und hier daneben. */
+    const getrennt = rang
+      ? Hygiene.trenne(imProdukt, q.id, { skala: 1 })
+      : { shown: imProdukt, quarantined: [], quarantinedCount: 0 };
+
+    /* Und die Titel, die an einer ANDEREN Kennzahl aufgefallen sind. */
+    const uebergreifend = [];
+    const eintraege = getrennt.shown.filter((e) => {
+      if (!rang || !gebrocheneReihen.has(e.ticker)) return true;
+      uebergreifend.push(Object.assign({}, e, {
+        quarantineReason: "BROKEN_SERIES_ELSEWHERE",
+        quarantineMessage: "Dieser Titel ist an einer anderen Kennzahl als unplausibel " +
+          "aufgefallen. Eine Reihe, die dort bricht, traegt auch hier nicht."
+      }));
+      return false;
+    });
+    const zurueckgehalten = nichtProdukt.concat(getrennt.quarantined, uebergreifend);
     const gekuerzt = rang
       ? (q.evaluated || 0) > eintraege.length
       : !!q.tickersTruncated;
@@ -398,6 +486,12 @@ const datensatz = {
          aeltere Leser stuetzen sich darauf. */
       tickers: eintraege.map((e) => e.ticker),
       tickersTruncated: gekuerzt,
+      quarantined: zurueckgehalten,
+      quarantinedCount: zurueckgehalten.length,
+      quarantineNote: getrennt.quarantinedCount
+        ? "Zurueckgehalten wegen unplausibler Werte oder nicht bestandener " +
+          "Datenqualitaet. Die Werte sind unveraendert; sie stehen hier mit Grund."
+        : null,
       tickersNote: gekuerzt
         ? "Die Namensliste ist im Artefakt auf 50 gekuerzt. Die Zahlen links sind vollstaendig."
         : null,

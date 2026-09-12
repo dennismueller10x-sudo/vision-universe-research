@@ -70,3 +70,25 @@ dialog.vu-search .button { margin-top: 16px; }
   text-transform: uppercase;
   opacity: .7;
 }
+
+/* ------------------------------------------------ Der Hauptchart
+
+   Ein nicht verfuegbarer Zeitraum verschwindet nicht - er wird
+   abgeblendet und traegt seinen Grund im title. Ein verschwundener
+   Knopf ist eine unbeantwortete Frage. */
+.ranges button.vu-range-off {
+  opacity: .38;
+  cursor: not-allowed;
+}
+.vu-chart-note {
+  margin-top: .5rem;
+  font-variant-numeric: tabular-nums;
+}
+/* Der Echtzeitstatus steht BEIM Chart, nicht als eigener Block: der
+   Strom hat keinen eigenen Chart mehr, er speist den laufenden. */
+.vu-live-status {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-top: .25rem;
+}

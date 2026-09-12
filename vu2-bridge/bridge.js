@@ -77,6 +77,26 @@
     return !zeile || zeile.productEligibility !== "EXCLUDED";
   }
 
+  /* ------------------------------------------- Gebrochene Kursreihen
+
+     Auf Platz eins der Zwoelfmonatsrendite stand MINE mit 314.999.900 %.
+     Das ist keine Kursbewegung, sondern eine Bereinigungsluecke.
+
+     Die Regel dafuer steht in quant/engines/ranking-hygiene.js und wird
+     zur BAUZEIT angewandt; hierher kommt nur ihr Ergebnis als Liste
+     (meta.brokenSeries). Die Schwellen ein zweites Mal im Browser zu
+     fuehren waere eine zweite Fassung derselben Grenze - und
+     vu2/index.html darf keine vierte Skriptzeile bekommen.
+
+     Die Titel bleiben erreichbar: Suche, Einzeltitel und Chart zeigen
+     sie unveraendert. Sie fuehren nur keine Anlegerliste an. */
+  function gebrochenPruefer(m) {
+    var liste = (m && m.brokenSeries && m.brokenSeries.tickers) || [];
+    var satz = {};
+    for (var i = 0; i < liste.length; i++) satz[liste[i]] = true;
+    return function (ticker) { return satz[ticker] === true; };
+  }
+
   // ------------------------------------------------------------ Laden
   var zwischenspeicher = {};
   function hole(load, pfad) {
@@ -265,8 +285,10 @@
           }
           /* Die meistgehandelten Titel zuerst - eine Messung, keine
              Bewertung. Wer mehr sehen will, nimmt Suche oder Screener. */
+          var istGebrochen = gebrochenPruefer(m);
           var weitere = zeilen.filter(function (r) {
-              return !bekannt[r.ticker] && r.hasFactors && imProdukt(r);
+              return !bekannt[r.ticker] && r.hasFactors && imProdukt(r) &&
+                     !istGebrochen(r.ticker);
             })
             .sort(function (a, b) { return (b.avgVolume20d || 0) - (a.avgVolume20d || 0); })
             .slice(0, LISTE)
@@ -343,32 +365,90 @@
     }
 
     // ---------------------------------------------------- Einzeltitel
+    /* ------------------------------------------------- Die Kursreihe
+
+       Sie kam bisher aus einer der fuenf veroeffentlichten Dateien, und
+       fuer alle anderen Titel gar nicht. Der Satz, der dann dastand -
+       "der Bestand von rund 7,4 GB liegt in keiner Auslieferung" - war
+       richtig, solange die Reihen in der Arbeitsablage eines Runners
+       lagen. Seit dem Backfill liegen 7.802 davon dauerhaft in R2.
+
+       Erst der Speicher, dann die veroeffentlichte Datei. Die
+       Reihenfolge ist keine Geschmacksfrage: R2 traegt die VOLLE
+       Historie (AAPL: 9.240 Kerzen ab 1990), die veroeffentlichte Datei
+       ein Fenster daraus. Wer die kuerzere zuerst naehme, zeigte dem
+       Eigentuemer bei den fuenf bekanntesten Titeln am wenigsten.
+
+       Der Browser bekommt dabei kein Zugangsmittel zu sehen: er ruft
+       /api/history auf, und die Serverfunktion spricht mit R2. */
+    var reihenCache = {};
+    function kursreihe(ticker) {
+      if (reihenCache[ticker]) return reihenCache[ticker];
+      reihenCache[ticker] = fetch("/api/history?ticker=" + encodeURIComponent(ticker),
+                                  { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.state === "AVAILABLE" && d.bars && d.bars.length) {
+            return { state: "AVAILABLE", bars: d.bars,
+                     adjustmentStatus: d.adjustmentStatus || null,
+                     source: "DURABLE_STORE_R2", storedBars: d.storedBars || d.bars.length,
+                     first: d.first, last: d.last };
+          }
+          return { state: "SOURCE_MISSING", bars: [], source: "DURABLE_STORE_R2",
+                   reason: (d && d.reason) || null, storeState: (d && d.state) || null };
+        })
+        .catch(function () {
+          return { state: "SOURCE_MISSING", bars: [], source: "DURABLE_STORE_R2",
+                   storeState: "UNREACHABLE",
+                   reason: "Der Historienspeicher hat nicht geantwortet." };
+        });
+      return reihenCache[ticker];
+    }
+
+    /* Der veroeffentlichte Rueckfall - nur fuer die freigegebenen Titel
+       und nur, wenn der Speicher nichts hatte. */
+    function veroeffentlichteReihe(ticker) {
+      return freigabe().then(function (erlaubt) {
+        if (erlaubt.indexOf(ticker) === -1) return null;
+        return load("/quant/data/market/golden-preview/daily/ref_" + ticker + ".json")
+          .then(function (p) {
+            if (!p || !(p.bars || []).length) return null;
+            return { state: "AVAILABLE", bars: p.bars,
+                     adjustmentStatus: p.adjustmentStatus || null,
+                     source: "PUBLISHED_PREVIEW_FILE" };
+          })
+          .catch(function () { return null; });
+      }).catch(function () { return null; });
+    }
+
+    async function chartFuer(ticker) {
+      var ausSpeicher = await kursreihe(ticker);
+      if (ausSpeicher.state === "AVAILABLE") return ausSpeicher;
+      var veroeffentlicht = await veroeffentlichteReihe(ticker);
+      if (veroeffentlicht) return veroeffentlicht;
+      return {
+        state: "SOURCE_MISSING", bars: [],
+        source: ausSpeicher.source, storeState: ausSpeicher.storeState || null,
+        reason: ausSpeicher.reason ||
+          "Fuer diesen Titel liegt im Historienspeicher keine Reihe."
+      };
+    }
+
     async function getStockIntelligence(ticker) {
       ticker = String(ticker || "").toUpperCase();
       var basis = await dienste.getStockIntelligence(ticker);
-      if (basis && basis.state === "AVAILABLE") return basis;
-      if (!(await istImUniversum(ticker))) return basis;
+      var stock = basis;
 
-      var zeile = await vollZeile(ticker);
-      if (!zeile) return basis;
-      var stock = alsProdukt(zeile, dienste);
-
-      /* Kursreihe nur, wo eine ausgeliefert ist. Sonst ein
-         ausgesprochener Zustand - nie ein leerer Chart. */
-      var erlaubt = await freigabe();
-      if (erlaubt.indexOf(ticker) !== -1) {
-        try {
-          var p = await load("/quant/data/market/golden-preview/daily/ref_" + ticker + ".json");
-          stock.chart = { state: (p.bars || []).length ? "AVAILABLE" : "SOURCE_MISSING",
-                          bars: p.bars || [], adjustmentStatus: p.adjustmentStatus };
-        } catch (e) { stock.chart = { state: "SOURCE_MISSING", bars: [] }; }
-      } else {
-        stock.chart = {
-          state: "SOURCE_MISSING", bars: [],
-          reason: "Fuer diesen Titel ist keine Kursreihe ausgeliefert. Die Faktoren stammen " +
-                  "aus einer echten Reihe; der Bestand selbst (rund 7,4 GB) liegt in keiner Auslieferung."
-        };
+      if (!(basis && basis.state === "AVAILABLE")) {
+        if (!(await istImUniversum(ticker))) return basis;
+        var zeile = await vollZeile(ticker);
+        if (!zeile) return basis;
+        stock = alsProdukt(zeile, dienste);
       }
+
+      /* Auch die freigegebenen Fuenf bekommen die Reihe aus dem
+         Speicher: sie ist laenger als die veroeffentlichte Datei. */
+      stock.chart = await chartFuer(ticker);
       return stock;
     }
 
@@ -510,9 +590,16 @@
            mit 400 % Zwoelfmonatsrendite ist kein Fund, sondern ein
            Derivat - und stand vor dem Aufraeumen an der Spitze der
            Momentumliste. */
+        var m = await meta();
+        var istGebrochen = gebrochenPruefer(m);
         var imProduktZeilen = zeilen.filter(imProdukt);
         var ausgeschlossen = zeilen.length - imProduktZeilen.length;
-        var kandidaten = imProduktZeilen.filter(function (r) { return r.hasFactors; })
+        /* Und Titel mit gebrochener Reihe fuehren keine Trefferliste an.
+           Zurueckgehalten wird die ANZEIGE - gezaehlt und benannt, nicht
+           stillschweigend entfernt. */
+        var brauchbar = imProduktZeilen.filter(function (r) { return !istGebrochen(r.ticker); });
+        var zurueckgehalten = imProduktZeilen.length - brauchbar.length;
+        var kandidaten = brauchbar.filter(function (r) { return r.hasFactors; })
           .map(screenerZeile);
         var ergebnis = query.execute(abfrage, kandidaten);
         var nachTicker = {};
@@ -525,9 +612,15 @@
           query: ergebnis.query, queryHash: ergebnis.queryHash,
           scope: "PRODUCT_UNIVERSE_PREVIEW",
           eligible: kandidaten.length,
-          universeSize: imProduktZeilen.length,
+          universeSize: brauchbar.length,
           membershipSize: zeilen.length,
           excludedNonEquities: ausgeschlossen,
+          quarantinedBrokenSeries: zurueckgehalten,
+          quarantineNote: zurueckgehalten
+            ? zurueckgehalten + " Titel mit unplausiblen Kennzahlen fuehren keine " +
+              "Trefferliste an. Sie bleiben ueber Suche und Einzeltitel erreichbar; " +
+              "ihre Werte sind unveraendert."
+            : null,
           stocks: ergebnis.rows.map(function (r) {
             return nachTicker[r.ticker] ||
                    (zeilenNachTicker[r.ticker] ? indexAlsProdukt(zeilenNachTicker[r.ticker]) : null);
@@ -546,7 +639,7 @@
         var rezept = rezepte[i];
         sammlungen.push(Object.assign({}, rezept, { result: await screen(rezept.query) }));
       }
-      return { collections: sammlungen, scope: "FULL_UNIVERSE_PREVIEW" };
+      return { collections: sammlungen, scope: "PRODUCT_UNIVERSE_PREVIEW" };
     }
 
     /* Alles, was die Bruecke nicht besser kann, bleibt unveraendert:
@@ -565,7 +658,8 @@
     /* Fuer die Oberflaechenteile der Bruecke (Suche, Live-Chart). */
     api.bridge = {
       alleZeilen: alleZeilen, index: index, meta: meta, freigabe: freigabe,
-      vollZeile: vollZeile, indexAlsProdukt: indexAlsProdukt
+      vollZeile: vollZeile, indexAlsProdukt: indexAlsProdukt,
+      kursreihe: kursreihe, chartFuer: chartFuer
     };
     g.VUBridgeServices = api;
     return api;

@@ -30,6 +30,8 @@ on:
       - 'quant/engines/history-store.js'
       - 'quant/engines/bar-codec.js'
       - 'quant/engines/zero-cost-guard.js'
+      - 'api/history.js'
+      - 'scripts/site/verify-history-endpoint.mjs'
       - '.github/workflows/r2-history-verify.yml'
 
 permissions:
@@ -86,6 +88,20 @@ jobs:
 
       # Nach dem Aufraeumen: was liegt jetzt wirklich im Eimer? Das ist
       # die Grundlage der Vorabrechnung und darf nicht geschaetzt sein.
+      # Der Weg, auf dem die Kurse in die Vorschau gelangen. Er wird hier
+      # geprueft und nicht erst am ausgelieferten System: faellt er aus,
+      # soll das auffallen, bevor jemand eine Adresse aufruft.
+      - name: Die Historienfunktion am echten Speicher
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/site/verify-history-endpoint.mjs \
+            --tickers AAPL,NVDA,SNOW,MTNE
+
       - name: Vorabrechnung gegen den echten Bestand (7.800 Titel)
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}

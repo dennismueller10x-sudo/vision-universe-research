@@ -143,7 +143,29 @@ test("OP4 — beide Serverfunktionen halten die Freigabeliste ein", async () => 
   const antwort = await fake(intraday, "/api/intraday?ticker=ZZZZ");
   assert.equal(antwort.body.state, "NOT_PERMITTED",
     "ein Titel ausserhalb der Freigabe darf keine Kurse bekommen");
-  assert.deepEqual(antwort.body.scope, erlaubt);
+
+  /* DER UMFANG IST GEWACHSEN, UND DAS IST EINE ENTSCHEIDUNG.
+
+     Hier stand deepEqual(scope, erlaubt): die Funktion bediente genau
+     die fuenf Titel der oeffentlichen Freigabe. Diese Freigabe wurde
+     fuer eine OEFFENTLICHE Seite getroffen - ihre eigene Begruendung
+     sagt das. Die Serverfunktion laeuft nur in der geschuetzten
+     Auslieferung und bedient dort das Produktuniversum.
+
+     Geprueft wird deshalb nicht mehr die Groesse der Liste, sondern die
+     Zusage: wer nicht dazugehoert, bekommt keine Kurse, und die Antwort
+     sagt, WELCHER Umfang gegolten hat. */
+  assert.ok(["PRODUCT_UNIVERSE", "DEVELOPMENT_PREVIEW_SCOPE"].includes(antwort.body.scope),
+    "die Absage muss nennen, welcher Umfang gegolten hat: " + antwort.body.scope);
+  assert.ok(Number.isFinite(antwort.body.scopeSize) && antwort.body.scopeSize > 0);
+
+  /* Und die Rueckfallrichtung ist eng: ohne lesbare Produktliste gilt
+     wieder die Fuenf-Titel-Freigabe, nie umgekehrt. */
+  const quelle = lies("api/intraday.js");
+  const rueckfall = quelle.replace(/\s+/g, " ");
+  assert.ok(rueckfall.includes(
+    "produkt ? produkt.includes(ticker) || erlaubt.includes(ticker) : erlaubt.includes(ticker)"),
+    "faellt die Produktliste aus, muss die engere Freigabe greifen");
 
   /* Mit freigegebenem Titel, aber ohne Schluessel: die Antwort muss den
      Grund nennen und darf nicht so aussehen, als sei der Code kaputt. */

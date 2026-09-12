@@ -396,8 +396,26 @@ test("PD10 — die Rangfragen tragen echte Ranglisten mit Wert und Qualitaet", (
     "die Ranglisten liegen im Artefakt vor und muessen ankommen");
 
   const momentum = fragen.find((f) => f.id === "strongestMomentum12M");
-  assert.equal(momentum.entries.length, 50);
+  /* HIER STAND 50, UND DAS WAR DIE ZAHL VOR DER QUARANTAENE.
+
+     Das Artefakt liefert 50 Namen. Seit die Rangliste belegte
+     Nicht-Aktien und unplausible Werte zurueckhaelt, stehen weniger
+     davon in entries - der Rest steht in quarantined, mit Grund.
+
+     Geprueft wird deshalb die Bilanz: es geht nichts verloren, es wird
+     nur getrennt. Eine Zahl festzuschreiben hiesse, die Quarantaene als
+     Fehler zu melden. */
+  assert.equal(momentum.entries.length + momentum.quarantinedCount, 50,
+    "gezeigt plus zurueckgehalten muss die Artefaktliste ergeben");
+  assert.ok(momentum.entries.length > 0, "eine leere Rangliste waere keine Rangliste");
   assert.ok(momentum.evaluated > 5000, "die Rangliste laeuft ueber das Universum");
+
+  /* Und die Zurueckgehaltenen tragen ihren Grund - sonst waere die
+     Trennung von stillem Loeschen nicht zu unterscheiden. */
+  for (const e of momentum.quarantined) {
+    assert.ok(e.quarantineReason, `${e.ticker} ohne Grund zurueckgehalten`);
+    assert.ok(e.quarantineMessage, `${e.ticker} ohne Begruendung`);
+  }
 
   /* Der WERT muss mit. An der Spitze stehen Titel mit Werten, die kein
      Kursverlauf hergibt, sondern eine Bereinigungsluecke - ohne Wert und

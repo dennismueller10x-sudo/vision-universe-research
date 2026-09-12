@@ -15,8 +15,9 @@
 
    GRENZEN, DIE BLEIBEN
 
-   1. Nur Titel mit datierter Anzeigefreigabe
-      (quant/config/development-preview.json). Alles andere wird
+   1. Nur Titel des Produktuniversums (quant/data/proof/product-tickers.json).
+      Ist diese Liste nicht lesbar, gilt die engere Freigabe aus
+      quant/config/development-preview.json. Alles andere wird
       abgelehnt, mit Begruendung.
    2. Nur die geschuetzte Vorschau. Diese Funktion existiert auf GitHub
       Pages nicht - dort gibt es keine Serverseite.
@@ -46,6 +47,34 @@ function erlaubteTitel() {
   return freigabe.scope;
 }
 
+/* ------------------------------------------- Der Umfang dieser Anzeige
+
+   DIE FREIGABE DER GOLDEN FIVE WURDE FUER EINE OEFFENTLICHE SEITE
+   GETROFFEN. Ihre eigene Begruendung sagt das woertlich:
+   research.visionuniverse.de ist ein oeffentliches GitHub-Pages-Repository,
+   "jede hier freigegebene Datenklasse ist damit fuer jeden im Internet
+   sichtbar".
+
+   Diese Datei ist eine Serverfunktion. Auf der oeffentlichen Auslieferung
+   EXISTIERT sie nicht - dort gibt es keine Serverseite. Sie laeuft
+   ausschliesslich in der Vercel-Auslieferung, und die steht hinter
+   Vercel Authentication. Das ist ein anderer Adressatenkreis als der,
+   fuer den die Fuenf-Titel-Grenze gezogen wurde.
+
+   Deshalb bedient sie hier das PRODUKTUNIVERSUM. Die oeffentlichen
+   Gates bleiben unberuehrt: ENABLE_PUBLIC_LIVE_MARKET_DATA steht
+   weiterhin auf false, und die oeffentliche Auslieferung bekommt von
+   hier nichts.
+
+   DIE RUECKFALLRICHTUNG IST ABSICHTLICH ENG. Ist die Produktliste nicht
+   lesbar, gilt wieder die Fuenf-Titel-Freigabe - nie umgekehrt. Ein
+   Einrichtungsfehler darf den Kreis nicht aufziehen. */
+function produktUniversum() {
+  const liste = lies("quant/data/proof/product-tickers.json", null);
+  if (!liste || !Array.isArray(liste.tickers) || !liste.tickers.length) return null;
+  return liste.tickers;
+}
+
 function antwort(res, status, koerper) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -71,12 +100,22 @@ module.exports = async function handler(req, res) {
       remedy: "vercel.json → functions.includeFiles muss quant/config/** enthalten."
     });
   }
-  if (!erlaubt.includes(ticker)) {
+  const produkt = produktUniversum();
+  const zulaessig = produkt ? produkt.includes(ticker) || erlaubt.includes(ticker)
+                            : erlaubt.includes(ticker);
+  if (!zulaessig) {
     return antwort(res, 200, {
-      state: "NOT_PERMITTED", ticker, scope: erlaubt,
-      reason: "Fuer diesen Titel liegt keine datierte Anzeigefreigabe vor.",
-      note: "Die Freigabe steht in quant/config/development-preview.json und ist eine " +
-            "Eigentuemerentscheidung, keine Programmgrenze."
+      state: "NOT_PERMITTED", ticker,
+      scope: produkt ? "PRODUCT_UNIVERSE" : "DEVELOPMENT_PREVIEW_SCOPE",
+      scopeSize: produkt ? produkt.length : erlaubt.length,
+      reason: produkt
+        ? "Dieser Titel gehoert nicht zum Produktuniversum."
+        : "Fuer diesen Titel liegt keine datierte Anzeigefreigabe vor.",
+      note: produkt
+        ? "Die Anzeige in dieser geschuetzten Auslieferung umfasst das Produktuniversum. " +
+          "Die oeffentlichen Gates bleiben davon unberuehrt."
+        : "Die Produktliste war nicht lesbar; es gilt die engere Freigabe aus " +
+          "quant/config/development-preview.json."
     });
   }
   if (!ERLAUBTE_FREQUENZEN.includes(freq)) {

@@ -210,6 +210,19 @@ const index = {
   columns: spalten
 };
 
+/* ------------------------------------- Die Tickerliste des Produkts
+
+   Eine winzige Datei fuer die Serverfunktionen. Sie koennten dieselbe
+   Auskunft aus index.json ziehen - das sind 1,9 MB, die eine
+   Serverfunktion bei jedem Kaltstart laese, um eine Zugehoerigkeit zu
+   pruefen. Diese hier sind rund 60 KB.
+
+   Sie fuehrt das PRODUKTUNIVERSUM, nicht die Mitgliedschaft: belegte
+   Warrants, Units, Rights und Testpapiere stehen nicht drin. */
+const produktTicker = zeilen
+  .filter((z) => z.productEligibility !== "EXCLUDED")
+  .map((z) => z.ticker);
+
 /* ------------------------------------------------------------- Buendel
 
    Der Einzeltitel laedt genau ein Buendel, nicht die ganze Tabelle. 64
@@ -236,6 +249,7 @@ const meta = {
   sourceGeneratedAt: quelle.generatedAt,
   datasetScope: quelle.datasetScope,
   productUniverse: quelle.productUniverse,
+  brokenSeries: quelle.brokenSeries,
   coverageMetrics: quelle.coverageMetrics,
   coverage: quelle.coverage,
   factorArtefact: quelle.factorArtefact,
@@ -324,6 +338,16 @@ function chartLage() {
 mkdirSync(OUT, { recursive: true });
 mkdirSync(join(OUT, "rows"), { recursive: true });
 writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta));
+writeFileSync(join(OUT, "product-tickers.json"), JSON.stringify({
+  generatedAt: index.generatedAt,
+  gate: quelle.gate,
+  kind: "PRODUCT_UNIVERSE_TICKERS",
+  count: produktTicker.length,
+  membership: zeilen.length,
+  note: "Das Produktuniversum ohne die belegten Nicht-Aktien. Fuer die " +
+        "Serverfunktionen, damit sie nicht die ganze Tabelle lesen muessen.",
+  tickers: produktTicker
+}));
 writeFileSync(join(OUT, "index.json"), JSON.stringify(index));
 buendel.forEach((b, i) => {
   writeFileSync(join(OUT, "rows", `${i}.json`), JSON.stringify({ shard: i, rows: b }));

@@ -53,3 +53,7 @@ quant/data/proof/
 # sie ist eine Planungsgrundlage und keine Freigabe.
 quant/data/market/history/preflight.json
 quant/data/market/history/sync.json
+# Der Befund der Historienfunktion gehoert zu EINEM Lauf und seiner
+# Umgebung: ohne R2-Zugangsdaten meldet er NOT_CONFIGURED, und das
+# committet zu fuehren saehe aus wie ein Befund ueber den Speicher.
+quant/data/market/history/endpoint-check.json

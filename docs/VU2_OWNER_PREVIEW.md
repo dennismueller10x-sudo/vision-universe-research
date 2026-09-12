@@ -116,6 +116,94 @@ anwenden: Ablage 99,99 %, zeichenbar 99,9 % (ab 2 Bars,
 
 ---
 
+## 2b. Der Kurshistorienspeicher am Hauptchart
+
+Die 7.802 Reihen aus Cloudflare R2 speisen jetzt den **bestehenden**
+Hauptchart der Einzeltitelseite. Kein zweiter Chart, kein eigener
+Abschnitt: `1T` und `5T` sind Zeitraeume desselben Charts.
+
+```
+Browser --HTTPS--> /api/history  --SigV4--> Cloudflare R2   (Tagesschluss)
+Browser --HTTPS--> /api/intraday --HTTPS--> api.tiingo.com  (1T, 5T)
+Browser --SSE----> /api/realtime --WSS----> Tiingo          (Kursaktualisierung)
+```
+
+Der Browser bekommt **kein** Zugangsmittel und spricht mit **keinem**
+der beiden Anbieter direkt. `CH1` und `CH2` pruefen das am Quelltext
+aller Dateien, die der Browser laedt.
+
+| Frage | Antwort |
+|---|---|
+| Nutzlast im Normalfall | `date` + `close`, sonst nichts (`CH3`) |
+| OHLCV | nur auf `columns=ohlcv` |
+| Anbieteranfragen je Chartaufruf | **0** — gelesen wird der Speicher |
+| Kosten je Aufruf | ein GET (Class B), kein Schreibvorgang |
+
+### Junge Listings
+
+`MTNE` hat 57 Handelstage, `IPVV` 33. Beide bekommen ihren
+**vollstaendigen** Verlauf. Zu wenig Historie fuer die Technik (300
+Bars) ist **nicht** dasselbe wie "keine Historie" — `CH8` und `CH9`
+halten die beiden Fragen auseinander. Ein Zeitraum, den die Reihe nicht
+hergibt, verschwindet nicht aus der Leiste: er wird abgeblendet und
+traegt seinen Grund.
+
+### Was der Strom tut
+
+Der Echtzeitweiterleiter zeichnet keinen eigenen Chart mehr. Er haengt
+seine Punkte an den **laufenden** Chart, und nur dann, wenn gerade ein
+Intraday-Zeitraum zu sehen ist: einzelne Ticks in einen Zehnjahreschart
+zu schreiben ergaebe eine Linie, die etwas anderes behauptet als sie
+zeigt. Die Beschriftung bleibt **"Kursaktualisierung"** — die Kursart
+ist vom Anbieter nicht bestaetigt.
+
+### Der Umfang von Intraday — eine Eigentuemerentscheidung
+
+`/api/intraday` bediente die fuenf Titel aus
+`quant/config/development-preview.json`. Diese Freigabe wurde fuer eine
+**oeffentliche** Seite getroffen; ihre eigene Begruendung sagt das
+woertlich. Die Serverfunktion existiert auf der oeffentlichen
+Auslieferung nicht — sie laeuft nur hinter Vercel Authentication. Sie
+bedient dort jetzt das **Produktuniversum** (7.004 Titel).
+
+Die oeffentlichen Gates sind unveraendert:
+`ENABLE_PUBLIC_LIVE_MARKET_DATA` steht weiter auf `false`,
+`quant/config/development-preview.json` ist nicht angefasst. Ist die
+Produktliste nicht lesbar, gilt wieder die engere Fuenf-Titel-Freigabe —
+die Rueckfallrichtung ist absichtlich eng.
+
+## 2c. Ranglistenhygiene
+
+Auf Platz eins der Zwoelfmonatsrendite stand `MINE` mit **314.999.900 %**.
+Das ist keine Kursbewegung, sondern eine Bereinigungsluecke.
+
+`dataQuality` allein loest das nicht: `MINE` und `AAPL` tragen dieselbe
+Stufe und denselben Grund (`WARNING · large_move_matching_split_ratio`),
+und `WARNING` traegt 4.927 der 7.803 Titel. Wer `WARNING` unterdrueckt,
+loescht das Produkt; wer nur `FAIL` unterdrueckt, laesst `MINE` oben
+stehen.
+
+Was trennt, ist die Groesse des Wertes. Gemessen ueber 5.620 Titel:
+Median 1,2 %, p99 341 %, p99,5 683 %, Maximum 314.999.900 %. Die
+Plausibilitaetsgrenzen stehen in `quant/engines/ranking-hygiene.js`,
+mit ihrer Herleitung.
+
+| Grund | Eintraege |
+|---|---:|
+| `NOT_IN_PRODUCT_UNIVERSE` (Warrants, Testpapiere wie `ZWZZT`) | 79 |
+| `IMPLAUSIBLE_VALUE` | 78 |
+| `BROKEN_SERIES_ELSEWHERE` | 41 |
+
+Der letzte Grund ist der wichtigste: `SPCL` traegt 1.806.567 % Rendite
+und zugleich eine relative Staerke von 9,6, die unter der Grenze liegt.
+Frageweise geprueft flog es aus der einen Liste und fuehrte die andere
+an. Wer an **einer** Kennzahl unplausibel ist, fuehrt **keine** Liste an.
+
+**Zurueckgehalten heisst nicht veraendert.** Die Werte stehen
+unveraendert in den Zeilen, im Artefakt und im Speicher; sie stehen
+zusaetzlich in `quarantined` mit ihrem Grund. Die Titel bleiben ueber
+Suche, Einzeltitel und Chart erreichbar.
+
 ## 3. Der Chart — drei getrennte Antworten
 
 ### 3.1 Historisch — LAEUFT
@@ -192,7 +280,9 @@ Handelskurs". **OP4** prueft die Beschriftung.
 | `measure-live-chart.mjs` (Browser + echter Anbieter) | `CONNECTED_NO_EVENTS` — Weg steht, Boerse zu |
 | `owner-preview.test.mjs` (OP1–OP5) | 5/5 |
 | `vu2-data-stack-integration.test.mjs` (IN1–IN10) | 10/10 |
-| Gesamtsuite | 914 Tests, 912 bestanden |
+| `r2-chart-integration.test.mjs` (CH1–CH13) | 13/13 |
+| `verify-history-endpoint.mjs` (H1–H8, gegen echtes R2) | im Workflow `r2-history-verify` |
+| Gesamtsuite | 927 Tests, 925 bestanden |
 | Datenhygiene, Schluesselpruefung | gruen |
 
 **PD8 und PP5 sind rot, und zwar schon vorher.** Beide pruefen, dass die
