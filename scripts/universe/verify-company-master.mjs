@@ -180,14 +180,34 @@ function main() {
     const legacyIndex = new Map();
     for (const i of instruments) for (const a of i.legacyIds || []) legacyIndex.set(a, i);
     const missingLegacy = [];
+    const missingId = [];
     for (const f of readdirSync(oldStockDir).filter((f) => f.endsWith(".json"))) {
       const payload = readJSON(join(oldStockDir, f));
       const id = payload.securityId || (payload.stock && payload.stock.securityId) || null;
-      if (!id) continue;
+      /* Eine Seite ohne securityId ueberspringen hiesse: der Test prueft
+         nichts und meldet trotzdem "ok". Sie zaehlt deshalb als Befund. */
+      if (!id) { missingId.push(f.replace(/\.json$/, "")); continue; }
       if (!legacyIndex.has(id)) missingLegacy.push(f.replace(/\.json$/, "") + " -> " + id);
     }
+    check("Jede bestehende Aktienseite traegt ihre securityId",
+          missingId.length === 0,
+          `${missingId.length} ohne securityId (z.B. ${missingId.slice(0, 5).join(", ")})`);
     check("Die bestehenden securityIds (ref_*) bleiben als Alias aufloesbar",
           missingLegacy.length === 0, `fehlen: ${missingLegacy.slice(0, 10).join(", ")}`);
+
+    /* Und die neue Kennung ebenso: eine Seite ohne instrumentId waere
+       eine Seite ausserhalb des Masters. */
+    const ohneInstrumentId = [];
+    for (const f of readdirSync(oldStockDir).filter((f) => f.endsWith(".json"))) {
+      const payload = readJSON(join(oldStockDir, f));
+      if (!payload.instrumentId) ohneInstrumentId.push(f.replace(/\.json$/, ""));
+      else if (!byId.has(payload.instrumentId)) {
+        ohneInstrumentId.push(f.replace(/\.json$/, "") + " (unbekannte ID)");
+      }
+    }
+    check("Jede bestehende Aktienseite traegt eine instrumentId aus dem Master",
+          ohneInstrumentId.length === 0,
+          `${ohneInstrumentId.length} ohne gueltige instrumentId (z.B. ${ohneInstrumentId.slice(0, 5).join(", ")})`);
   }
 
   /* -------------------------------------------- Faehigkeitsbilanz (§30) */

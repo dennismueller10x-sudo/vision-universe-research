@@ -1101,6 +1101,127 @@
     ]);
   }
 
+  /* ===================================================== Aktienseite aus
+     dem Company Master
+
+     Fuer einen Titel, fuer den KEINE Discover-Payload ausgeliefert wird -
+     also fuer die grosse Mehrheit des erweiterten Universums. Vorher
+     endete dieser Weg in einem Leerzustand mit der Ueberschrift "Keine
+     Detailseite". Das war korrekt und trotzdem falsch: die Seite wusste
+     sehr wohl etwas ueber den Titel, sie zeigte es nur nicht.
+
+     Was hier steht, ist ausschliesslich, was im Master steht: Identitaet,
+     Handelsplatz, Gattung, Listungsstand - und was der Datenweg fuer
+     diesen Titel kann und was nicht. Keine Kennzahl, kein Chart, keine
+     erfundene Null (§48). */
+  function renderInstrument(root, result, options) {
+    options = options || {};
+    var inst = result.instrument;
+    var caps = result.capabilities || {};
+    S.clear(root);
+    root.removeAttribute("data-world");
+
+    root.appendChild(el("a", { class: "dx-back", href: "#/u/" + (options.universeId || "US_REAL") }, [
+      document.createTextNode("← Discover")
+    ]));
+
+    var gattung = {
+      COMMON_STOCK: "Stammaktie", ADR: "American Depositary Receipt", PREFERRED: "Vorzugsaktie",
+      ETF: "ETF", ETN: "ETN", FUND: "Fonds", WARRANT: "Optionsschein",
+      OTHER: "sonstiges Instrument", UNKNOWN: "Gattung nicht bestimmbar"
+    }[inst.securityType] || inst.securityType;
+
+    var kopf = el("header", { class: "dx-hero dx-hero--schmal" }, [
+      el("p", { class: "dx-hero-kicker", text: [inst.exchange, gattung,
+                inst.active === false ? "nicht mehr gelistet" : null]
+                .filter(Boolean).join(" · ") }),
+      el("h1", { text: inst.companyName || inst.symbol }),
+      el("p", { class: "dx-hero-sub", text: inst.companyName
+        ? inst.symbol + " · " + (inst.country || "Land unbekannt")
+        : "Für diesen Titel liegt kein Firmenname vor. Die Tickerliste des Kursanbieters " +
+          "führt keine Namen; angezeigt wird deshalb das Kürzel." })
+    ]);
+    root.appendChild(kopf);
+
+    /* Stammdaten. Jede Zeile ist eine Angabe aus dem Master, keine
+       abgeleitete Aussage. */
+    var zeilen = [
+      ["Kürzel", inst.symbol],
+      ["Interne Kennung", inst.instrumentId],
+      ["Handelsplatz", inst.exchange + (inst.mic ? " (" + inst.mic + ")" : "")],
+      ["Gattung", gattung + (inst.shareClass ? " · Klasse " + inst.shareClass : "")],
+      ["Land", inst.country || "nicht bestimmbar"],
+      ["Währung", inst.currency || "nicht angegeben"],
+      ["Erster Handelstag", inst.firstTradeDate || "nicht angegeben"],
+      ["Status", inst.active === false
+        ? "beendet" + (inst.delistedAt ? " am " + inst.delistedAt : "")
+        : (inst.active === true ? "laufendes Listing" : "nicht belegbar")],
+      ["CIK (SEC)", inst.cik || "keine"]
+    ];
+    var tabelle = el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Stammdaten" }),
+      el("dl", { class: "dx-stammdaten" }, zeilen.reduce(function (acc, z) {
+        acc.push(el("dt", { text: z[0] }));
+        acc.push(el("dd", { text: String(z[1]) }));
+        return acc;
+      }, []))
+    ]);
+    root.appendChild(tabelle);
+
+    /* Was diese Seite zeigen KANN - und was nicht, mit Grund. Das ist die
+       eigentliche Nachricht der Seite. */
+    var kannListe = [
+      ["Kursverlauf", caps.HAS_PRICE_HISTORY,
+       "Für diesen Titel wird keine Kursreihe ausgeliefert. Der Datenweg kann sie liefern; " +
+       "die Reihen selbst bleiben bis zur Lizenzklärung in der Arbeitsablage."],
+      ["Kursstand", caps.HAS_PRICE_SNAPSHOT,
+       "Absolute Kursniveaus realer Titel werden nach der Redistributionsregel nicht ausgeliefert."],
+      ["Geschäftszahlen", caps.HAS_FUNDAMENTALS,
+       inst.cik
+         ? "Der Titel hat eine CIK; normalisierte Geschäftszahlen liegen noch nicht vor."
+         : "Ohne CIK gibt es keinen SEC-Einreicher, dem Geschäftszahlen zuzuordnen wären."],
+      ["Bewertung", caps.HAS_VALUATION, "Bewertungskennzahlen brauchen Geschäftszahlen."],
+      ["Analystenschätzungen", caps.HAS_ANALYSTS,
+       "Analystendaten sind lizenzpflichtig und nicht Teil dieses Systems."],
+      ["Themen", caps.HAS_THEMES, "Themen sind im Modell vorgesehen und noch nicht befüllt."]
+    ];
+    root.appendChild(el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Was für diesen Titel vorliegt" }),
+      el("ul", { class: "dx-kann" }, kannListe.map(function (k) {
+        return el("li", { class: k[1] ? "ja" : "nein" }, [
+          el("b", { text: k[0] }),
+          document.createTextNode(k[1] ? " liegt vor" : " liegt nicht vor — " + k[2])
+        ]);
+      }))
+    ]));
+
+    if (result.alternateListings && result.alternateListings.length) {
+      root.appendChild(el("section", { class: "dx-chapter dx-fade" }, [
+        el("h2", { text: "Weitere Listings unter diesem Kürzel" }),
+        el("p", { class: "dx-hint", text:
+          "Dasselbe Kürzel wird an mehr als einem Handelsplatz geführt. Genau dafür trägt " +
+          "jedes Instrument eine eigene Kennung und nicht nur einen Ticker." }),
+        el("ul", { class: "dx-kann" }, result.alternateListings.map(function (a) {
+          return el("li", {}, [el("b", { text: a.exchange || "unbekannter Platz" }),
+                               document.createTextNode(" · " + a.instrumentId)]);
+        }))
+      ]));
+    }
+
+    root.appendChild(el("footer", { class: "dx-foot" }, [
+      el("div", {}, [
+        el("b", { text: "Quelle: " }),
+        document.createTextNode("Vision Universe® Company Master · " +
+          (result.masterVersion || "company-master") + " · Stand " + (result.asOf || "unbekannt"))
+      ]),
+      el("div", { style: "margin-top:6px" }, [document.createTextNode(
+        "Diese Seite zeigt ausschließlich, was über den Titel bekannt ist. Für Kennzahlen, " +
+        "Verlaufsbild und Einordnung braucht es Daten, die für diesen Titel nicht ausgeliefert " +
+        "werden — sie werden hier nicht ersetzt.")])
+    ]));
+  }
+
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Detail = { render: render, OVERLAYS: OVERLAYS, PANES: PANES };
+  global.VUDiscover.Detail = { render: render, renderInstrument: renderInstrument,
+                               OVERLAYS: OVERLAYS, PANES: PANES };
 })(window);

@@ -597,20 +597,83 @@
     app.appendChild(host);
     host.appendChild(C().skeletonRail(3));
 
+    /* Erst das Verzeichnis der ausgelieferten Seiten, dann die Seite.
+
+       Die Reihenfolge ist der Unterschied zwischen einer sauberen Konsole
+       und einem absichtlichen 404 je Aufruf: im erweiterten Universum hat
+       die grosse Mehrheit der Titel KEINE ausgelieferte Detailseite, und
+       sie blind anzufragen hiesse, den Normalfall als Fehler zu
+       behandeln. */
+    S.loadJSON(BASE + "stocks/" + universeId + "/index.json")
+      .catch(function () { return null; })
+      .then(function (index) {
+        var ausgeliefert = !index || !index.symbols ||
+                           index.symbols.indexOf(symbol) >= 0;
+        if (!ausgeliefert) { ausMaster(host, universeId, symbol); return; }
+        ladeDetail(host, universeId, symbol);
+      });
+  }
+
+  function ladeDetail(host, universeId, symbol) {
     S.loadJSON(BASE + "stocks/" + universeId + "/" + symbol + ".json").then(function (detail) {
       D.Detail.render(host, detail, { universeId: universeId, meta: state.meta });
       C().revealOnScroll(host);
       document.title = (detail.companyName || symbol) + " — Vision Universe® Discover";
     }).catch(function () {
-      S.clear(host);
-      host.appendChild(el("a", { class: "dx-back", href: "#/", text: "← Discover" }));
-      host.appendChild(el("div", { style: "padding:20px 0" }, [
-        C().emptyState("Keine Detailseite für " + symbol,
-          "Für diesen Titel wird in »" + universeMeta(universeId).label + "« keine Detailseite " +
-          "ausgeliefert. Im Modelluniversum tragen nur die Titel der Discovery-Reihen eine " +
-          "eigene Seite — eine Kursreihe je Titel wäre über das ganze Universum unnötig groß.")
-      ]));
+      /* Keine ausgelieferte Detailseite. Das ist ab jetzt der REGELFALL
+         und kein Fehler: der Company Master fuehrt tausende Titel, fuer
+         die keine Discovery-Reihe gerechnet wird. Statt eines
+         Leerzustands wird die Seite aus dem Master gebaut - Identitaet,
+         Handelsplatz, Gattung, und was der Datenweg fuer diesen Titel
+         kann (§17, §48).
+
+         Erst wenn auch der Master den Titel nicht kennt, ist es wirklich
+         nichts - und dann sagt die Seite genau das. */
+      ausMaster(host, universeId, symbol);
     });
+  }
+
+  function ausMaster(host, universeId, symbol) {
+    var dir = (global.VUInstrumentDirectory && global.VUCompanyMaster)
+      ? global.VUInstrumentDirectory.create({}) : null;
+    if (!dir) { nichtGefunden(host, universeId, symbol, null); return; }
+
+    dir.getInstrument(symbol).then(function (res) {
+      if (res.status !== "OK") { nichtGefunden(host, universeId, symbol, res); return; }
+      return dir.manifest().catch(function () { return null; }).then(function (manifest) {
+        return dir.search(symbol, { limit: 1 }).catch(function () { return null; })
+          .then(function (treffer) {
+            var eintrag = treffer && treffer.entries && treffer.entries.length
+              ? treffer.entries[0] : null;
+            D.Detail.renderInstrument(host, {
+              instrument: res.instrument,
+              alternateListings: res.alternateListings,
+              capabilities: dir.capabilities(eintrag),
+              masterVersion: manifest ? manifest.version : null,
+              asOf: manifest ? manifest.asOf : null
+            }, { universeId: universeId });
+            C().revealOnScroll(host);
+            document.title = (res.instrument.companyName || symbol) +
+                             " — Vision Universe® Discover";
+          });
+      });
+    }).catch(function (err) {
+      nichtGefunden(host, universeId, symbol, { status: "ERROR", reason: err && err.message });
+    });
+  }
+
+  function nichtGefunden(host, universeId, symbol, res) {
+    S.clear(host);
+    host.appendChild(el("a", { class: "dx-back", href: "#/", text: "← Discover" }));
+    host.appendChild(el("div", { style: "padding:20px 0" }, [
+      C().emptyState("Kein Titel mit dem Kürzel " + symbol,
+        res && res.status === "NOT_IN_UNIVERSE"
+          ? "Der Company Master führt kein Instrument mit diesem Kürzel. Das Universum umfasst " +
+            "die US-Primärbörsen; außerbörsliche Titel und Fonds sind nicht enthalten."
+          : "Für diesen Titel wird in »" + universeMeta(universeId).label + "« keine Detailseite " +
+            "ausgeliefert, und das Instrumentenverzeichnis ist nicht erreichbar" +
+            (res && res.reason ? " (" + res.reason + ")" : "") + ".")
+    ]));
   }
 
   function footer() {

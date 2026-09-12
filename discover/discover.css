@@ -1332,3 +1332,62 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-legend-ma-sma50{background:#6f9dff}
 .dx-legend-ma-sma200{background:#e8b44c}
 .dx-legend-bb{background:rgba(255,255,255,.42)}
+
+/* =========================================================================
+   AKTIENSEITE AUS DEM COMPANY MASTER
+
+   Fuer Titel ohne ausgelieferte Discover-Payload. Bewusst nuechtern: hier
+   gibt es nichts zu entdecken, hier gibt es etwas zu wissen. Kein Poster,
+   keine Farbwelt, keine Kennzahlkachel, die eine Zahl verspricht, die es
+   nicht gibt.
+   ========================================================================= */
+.dx-hero--schmal{
+  min-height:0;display:block;padding:56px var(--discover-gutter) 8px;
+  border-bottom:1px solid var(--discover-line)
+}
+.dx-hero--schmal h1{
+  margin:6px 0 8px;font-size:clamp(28px,4vw,48px);line-height:1.05;
+  letter-spacing:-.02em;color:var(--discover-text)
+}
+.dx-hero-kicker{
+  margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--discover-dim)
+}
+.dx-hero-sub{margin:0;font-size:15px;line-height:1.5;color:var(--discover-muted);max-width:62ch}
+
+.dx-stammdaten{
+  display:grid;grid-template-columns:minmax(150px,auto) 1fr;gap:10px 24px;
+  margin:0;font-size:14px;max-width:72ch
+}
+.dx-stammdaten dt{color:var(--discover-dim)}
+.dx-stammdaten dd{
+  margin:0;color:var(--discover-text);font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere
+}
+
+/* Was vorliegt und was nicht - mit Begruendung in derselben Zeile. Die
+   Unterscheidung haengt nicht an der Farbe allein: "liegt vor" und "liegt
+   nicht vor" stehen im Text. */
+.dx-kann{list-style:none;margin:0;padding:0;display:grid;gap:12px;max-width:72ch}
+.dx-kann li{
+  font-size:14px;line-height:1.55;color:var(--discover-muted);
+  padding-left:20px;position:relative
+}
+.dx-kann li::before{
+  content:"";position:absolute;left:0;top:.55em;width:9px;height:9px;border-radius:50%;
+  background:var(--discover-line)
+}
+.dx-kann li.ja::before{background:var(--discover-up)}
+.dx-kann li.nein::before{background:transparent;border:1px solid var(--discover-line)}
+.dx-kann li b{color:var(--discover-text);font-weight:650}
+
+@media (max-width:560px){
+  .dx-stammdaten{grid-template-columns:1fr;gap:2px 0}
+  .dx-stammdaten dd{margin-bottom:10px}
+}
+
+/* Ein Suchtreffer aus dem uebrigen Universum. Er traegt keine Farbwelt
+   und keine Kennzahl - und soll auch nicht so aussehen, als fehlte sie
+   nur gerade. */
+.dx-result-weit .dx-result-mark{opacity:.22}
+.dx-result-weit .nm em{color:var(--discover-dim)}

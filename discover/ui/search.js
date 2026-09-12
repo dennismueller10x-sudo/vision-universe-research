@@ -8,9 +8,21 @@
    ist kein Zusatz: Pfeiltasten waehlen, Enter oeffnet - wer einen Ticker
    tippt, will ihn nicht anschliessend mit der Maus suchen.
 
-   Gesucht wird im Suchindex des gerade gewaehlten Universums
-   (discover/data/search/<UNIVERSE>.json) - eine Datei, ein Abruf, danach
-   im Speicher.
+   ZWEI RINGE, EIN SUCHFELD
+
+   Der innere Ring ist der Suchindex des gewaehlten Universums
+   (discover/data/search/<UNIVERSE>.json) - die Titel, fuer die Kennzahlen,
+   Verlaufsbild und eine fertige Seite ausgeliefert sind. Eine Datei, ein
+   Abruf, danach im Speicher.
+
+   Der aeussere Ring ist der KANONISCHE COMPANY MASTER. Er kennt das ganze
+   Universum und wird ab zwei Zeichen dazugeladen - scherbenweise, ueber
+   VUInstrumentDirectory. Damit findet die Suche auch Titel, die gerade in
+   keiner Discovery-Reihe stehen (§17): wer "PALANTIR" tippt, bekommt
+   PLTR, auch wenn PLTR heute in keiner Reihe auftaucht.
+
+   Was der aeussere Ring NICHT tut: das Universum laden. Je Anfrage
+   hoechstens zwei Scherben, zusammen wenige Kilobyte (§19, §49).
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -50,6 +62,27 @@
 
     function universum() { return options.universeId ? options.universeId() : "US_REAL"; }
 
+    /* Der Zugang zum Company Master. Fehlt das Modul (etwa auf einer
+       Seite, die es nicht einbindet), bleibt die Suche auf dem inneren
+       Ring - sie wird kleiner, nicht kaputt. */
+    var verzeichnis = null;
+    function masterVerzeichnis() {
+      if (verzeichnis !== null) return verzeichnis;
+      verzeichnis = (global.VUInstrumentDirectory && global.VUCompanyMaster)
+        ? global.VUInstrumentDirectory.create({})
+        : false;
+      return verzeichnis;
+    }
+
+    /* Ein Treffer aus dem Master traegt die Felder, die der innere Ring
+       traegt - aber leer. Sie werden NICHT mit Nullen gefuellt: ein
+       Verlaufsbild aus einer erfundenen Null waere eine Aussage. */
+    function ausMaster(e) {
+      return { s: e.s, n: e.n, sec: null, m: 1, l: null, d: null, h: 0, r: null,
+               w: null, _master: true, _inaktiv: e.a === 0,
+               _kann: (e.cap || []).indexOf("HAS_PRICE_HISTORY") >= 0 };
+    }
+
     function ladeIndex() {
       var id = universum();
       if (indexCache[id]) return Promise.resolve(indexCache[id]);
@@ -79,8 +112,31 @@
           else if (e.s.indexOf(q) === 0) beginnt.push(e);
           else if (name.indexOf(q) !== -1 || e.s.indexOf(q) !== -1) enthaelt.push(e);
         });
-        treffer = exakt.concat(beginnt, enthaelt).slice(0, 14);
-        zeichnen(index);
+        var nah = exakt.concat(beginnt, enthaelt);
+        var bekannt = {};
+        nah.forEach(function (e) { bekannt[e.s] = true; });
+
+        /* Der aeussere Ring wird immer befragt, nicht erst wenn der
+           innere leer bleibt: sonst faende "NVIDIA" die alten Titel und
+           "PALANTIR" nichts, und der Unterschied laege nicht an der
+           Frage, sondern daran, welcher Titel gerade in einer Reihe
+           steht. */
+        var dir = masterVerzeichnis();
+        if (!dir || q.length < 2) {
+          treffer = nah.slice(0, 14);
+          zeichnen(index, 0);
+          return null;
+        }
+        return dir.search(q, { limit: 20 }).then(function (res) {
+          var weit = (res.entries || [])
+            .filter(function (e) { return !bekannt[e.s]; })
+            .map(ausMaster);
+          treffer = nah.slice(0, 10).concat(weit.slice(0, 10));
+          zeichnen(index, weit.length);
+        }).catch(function () {
+          treffer = nah.slice(0, 14);
+          zeichnen(index, 0);
+        });
       }).catch(function () {
         S.clear(results);
         results.appendChild(el("div", { class: "dx-empty" }, [
@@ -90,19 +146,27 @@
       });
     }
 
-    function zeichnen(index) {
+    function zeichnen(index, ausUniversum) {
       S.clear(results);
       if (!treffer.length) {
-        hint.textContent = "Kein Titel in »" + index.universeLabel + "« passt zu „" + input.value + "“.";
+        hint.textContent = "Kein Titel passt zu „" + input.value + "“ — weder in »" +
+                           index.universeLabel + "« noch im übrigen Universum.";
         return;
       }
-      hint.textContent = treffer.length + " Treffer in »" + index.universeLabel + "«";
+      /* Die Zeile sagt, aus welchem Ring die Treffer kommen. Ohne sie
+         sieht ein Titel ohne Kennzahlen wie ein Fehler aus - dabei ist er
+         nur einer, fuer den heute keine Reihe gerechnet wird. */
+      var nah = treffer.length - (ausUniversum || 0);
+      hint.textContent = ausUniversum
+        ? nah + " in »" + index.universeLabel + "« · " + ausUniversum + " weitere im Universum"
+        : treffer.length + " Treffer in »" + index.universeLabel + "«";
       treffer.forEach(function (hit, i) {
         /* Ein Treffer traegt dieselbe Farbwelt wie die Reihe, in der er
            stuende - und dasselbe Gestaltungsmittel: das Kuerzel gross im
            Hintergrund. Die Suche ist damit kein Verzeichnis mehr, sondern
            derselbe Ort in schmal. */
-        var knopf = el("button", { class: "dx-result", type: "button", role: "option",
+        var knopf = el("button", { class: "dx-result" + (hit._master ? " dx-result-weit" : ""),
+                                   type: "button", role: "option",
                                    "aria-selected": "false", "data-world": hit.w || null }, [
           el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
           /* Zuerst die Firma, dann das Kuerzel - dieselbe Reihenfolge wie
@@ -111,6 +175,8 @@
           el("span", { class: "nm" }, [
             document.createTextNode(hit.n || hit.s),
             el("em", { text: [hit.s, hit.sec, hit.m ? null : "Modelltitel",
+                              hit._inaktiv ? "nicht mehr gelistet" : null,
+                              hit._master ? "im Universum" : null,
                               hit.h ? "am Jahreshoch" : null].filter(Boolean).join(" · ") })
           ]),
           miniPfad(hit),

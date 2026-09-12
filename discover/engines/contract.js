@@ -32,7 +32,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var CONTRACT_VERSION = "discover-contract-1.0.0";
+  var CONTRACT_VERSION = "discover-contract-1.1.0";
 
   var FIELD_STATUS = [
     "CALCULATED", "WITHHELD_REDISTRIBUTION", "SOURCE_MISSING",
@@ -105,6 +105,13 @@
       contractVersion: CONTRACT_VERSION,
       symbol: String(raw.symbol || raw.ticker || "").toUpperCase(),
       securityId: raw.securityId || null,
+      /* Die Kennung aus dem kanonischen Company Master. Sie steht neben
+         securityId und ersetzt sie nicht: securityId ist der Schluessel,
+         unter dem die Faktoren dieses Titels heute liegen, instrumentId
+         ist der, unter dem das Instrument haus­weit gefuehrt wird (§8).
+         Fehlt der Master, bleibt das Feld null - der Vertrag verlangt es
+         nicht, er fuehrt es. */
+      instrumentId: raw.instrumentId || null,
       companyName: raw.companyName || null,
       companyNameStatus: raw.companyName ? "CALCULATED" : (raw.companyNameStatus || "SOURCE_MISSING"),
       universeId: raw.universeId || null,

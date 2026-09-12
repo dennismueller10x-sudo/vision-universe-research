@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-09-12T09:47:54.799Z",
+  "base": "http://localhost:8765",
+  "note": "§48/§49. Im Browser geprueft, nicht im Node-Prozess.",
+  "passed": 19,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "Discover startet ohne Konsolenfehler",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Startseite rendert eine Handvoll Karten, nicht das Universum",
+      "ok": true,
+      "detail": "72 Karten"
+    },
+    {
+      "name": "Startseite laedt unter 3 MB JSON",
+      "ok": true,
+      "detail": "515 KB in 10 Abrufen"
+    },
+    {
+      "name": "Suche nach „PALANTIR“ findet einen Titel ausserhalb der alten 498",
+      "ok": true,
+      "detail": "PLTRPalantirPLTR · im Universum"
+    },
+    {
+      "name": "Eine Suchanfrage laedt Kilobyte, nicht das Universum",
+      "ok": true,
+      "detail": "110.6 KB in 4 Abrufen: data/search/US_REAL.json, universe/search/manifest.json, search/sym/PA.json, search/name/PA.json"
+    },
+    {
+      "name": "Die Suche sagt, aus welchem Ring die Treffer kommen",
+      "ok": true,
+      "detail": "0 in »US Equities« · 1 weitere im Universum"
+    },
+    {
+      "name": "Der Titel laesst sich oeffnen (URL)",
+      "ok": true,
+      "detail": "http://localhost:8765/discover/#/s/US_REAL/PLTR"
+    },
+    {
+      "name": "Die Aktienseite zeigt den Titel",
+      "ok": true,
+      "detail": "Palantir"
+    },
+    {
+      "name": "Die Aktienseite zeigt Stammdaten aus dem Company Master",
+      "ok": true,
+      "detail": "Kürzel · Interne Kennung · Handelsplatz · Gattung · Land · Währung · Erster Handelstag · Status · CIK (SEC)"
+    },
+    {
+      "name": "Die Seite sagt, was NICHT vorliegt - statt eine Null zu zeigen",
+      "ok": true,
+      "detail": "6 Zeilen"
+    },
+    {
+      "name": "Kein Chart ohne Kursreihe",
+      "ok": true,
+      "detail": "0 Chartflaechen"
+    },
+    {
+      "name": "Die Aktienseite erzeugt keine Konsolenfehler",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ein Titel aus den alten 498 zeigt weiterhin sein Chart",
+      "ok": true,
+      "detail": "1 Flaechen"
+    },
+    {
+      "name": "…und weiterhin seine volle Seite",
+      "ok": true,
+      "detail": "NVIDIA Corporation"
+    },
+    {
+      "name": "…ohne Konsolenfehler",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ein Titel ohne Firmennamen zeigt das Kuerzel und sagt warum",
+      "ok": true,
+      "detail": "← Discover NASDAQ · STAMMAKTIE AACG Für diesen Titel liegt kein Firmenname vo"
+    },
+    {
+      "name": "…ohne Konsolenfehler",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ein Kuerzel ohne Instrument sagt genau das",
+      "ok": true,
+      "detail": "← Discover KEIN TITEL MIT DEM KÜRZEL GIBTESNICHT Der Company Master führt kein Instrument "
+    },
+    {
+      "name": "Kein horizontaler Ueberlauf bei 390 px",
+      "ok": true,
+      "detail": "0 px"
+    }
+  ]
+}

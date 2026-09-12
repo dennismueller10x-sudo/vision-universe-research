@@ -62,6 +62,12 @@ const PREVIEW_CONFIG = readJSON(join(root, "quant", "config", "development-previ
 const GATES = DisplayPolicy.gatesFromConfig(GATES_CONFIG);
 DisplayPolicy.declareFromConfig(PREVIEW_CONFIG);
 
+const argv = process.argv.slice(2);
+function arg(name, fallback) {
+  const i = argv.indexOf(name);
+  return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
+}
+
 function readJSON(p) { return JSON.parse(readFileSync(p, "utf8")); }
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 function round(v, d) { return isNum(v) ? Math.round(v * Math.pow(10, d)) / Math.pow(10, d) : null; }
@@ -254,10 +260,66 @@ function scoreAll(metrics, values) {
 }
 
 /* ====================================================== Universum: REAL */
+/* Welche Faktordatei das reale Universum speist.
+
+   Frueher stand hier `factors-GATE_500.json`, hart verdrahtet - und genau
+   diese eine Zeile war der Grund, warum Discover 498 Titel kannte und
+   nicht 5.684. Die groesste Faktordatei, die es gibt, war die von
+   GATE_500, weil build-market-factors.mjs Einzelzeilen nur bis 500 Titel
+   ins Repository schreibt.
+
+   Ab jetzt wird gesucht statt genannt: die groesste verfuegbare
+   Faktordatei gewinnt, im Repository und in der Arbeitsablage. Kommt
+   eines Tages `factors-FULL_UNIVERSE.json` dazu, benutzt dieser Build sie
+   ohne eine weitere Codeaenderung. */
+function findFactorsFile() {
+  const explicit = arg("--factors", process.env.VU_DISCOVER_FACTORS || null);
+  if (explicit) {
+    const p = explicit.startsWith("/") ? explicit : join(root, explicit);
+    return { factors: p, gate: null, source: "explicit" };
+  }
+  const dirs = [
+    { dir: join(root, "quant", "data", "market", "factors"), source: "repository" },
+    { dir: join(root, ".market-cache", "tiingo", "factors"), source: "workingStore" }
+  ];
+  let best = null;
+  for (const { dir, source } of dirs) {
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      const m = /^factors-(.+)\.json$/.exec(f);
+      if (!m || m[1].endsWith("-summary")) continue;
+      let payload;
+      try { payload = readJSON(join(dir, f)); } catch { continue; }
+      const n = (payload.securities || []).length;
+      if (!n) continue;
+      if (!best || n > best.count) best = { factors: join(dir, f), gate: m[1], count: n, source };
+    }
+  }
+  if (!best) {
+    throw new Error("Keine Faktordatei gefunden. scripts/market/build-market-factors.mjs erzeugt sie.");
+  }
+  return best;
+}
+
 function buildRealUniverse(nameMap, goldenBars) {
-  const factors = readJSON(join(root, "quant", "data", "market", "factors", "factors-GATE_500.json"));
-  const universe = readJSON(join(root, "quant", "data", "market", "scale", "universe-GATE_500.json"));
+  const pick = findFactorsFile();
+  const factors = readJSON(pick.factors);
+  /* Das Gate-Universum liefert Sektor und Boerse. Es muss zur Faktordatei
+     passen; passt keines, bleibt die Zuordnung leer statt falsch. */
+  const universeFile = pick.gate
+    ? join(root, "quant", "data", "market", "scale", `universe-${pick.gate}.json`)
+    : null;
+  const universe = universeFile && existsSync(universeFile)
+    ? readJSON(universeFile) : { securities: [] };
   const byTicker = new Map(universe.securities.map((s) => [s.ticker, s]));
+
+  /* Die Identitaet kommt aus dem kanonischen Company Master, nicht aus
+     dem Gate-Artefakt: derselbe Titel traegt in Discover, Suche und
+     Aktienseite dieselbe instrumentId (§4, §8). */
+  const masterByTicker = loadMasterIndex();
+  console.log(`     Faktoren aus ${pick.factors.replace(root + "/", "")} ` +
+              `(${(factors.securities || []).length} Titel, Quelle ${pick.source})`);
+  console.log(`     Company Master: ${masterByTicker.size} Instrumente`);
 
   const stocks = [];
   for (const sec of factors.securities) {
@@ -281,6 +343,7 @@ function buildRealUniverse(nameMap, goldenBars) {
       companyName: named ? named.name : null,
       companyNameStatus: named ? "CALCULATED" : "SOURCE_MISSING",
       universeId: "US_REAL",
+      instrumentId: (masterByTicker.get(sec.ticker) || {}).instrumentId || null,
       dataMode: "real",
       provider: factors.provider || "tiingo",
       exchange: sec.exchange || ref.exchange || null,
@@ -322,9 +385,29 @@ function buildRealUniverse(nameMap, goldenBars) {
     generatedAt: factors.generatedAt,
     engine: factors.engine,
     redistribution: factors.redistribution,
-    sourceFile: "quant/data/market/factors/factors-GATE_500.json",
+    sourceFile: pick.factors.replace(root + "/", ""),
+    sourceGate: pick.gate,
+    sourceKind: pick.source,
+    masterInstruments: masterByTicker.size,
     stocks
   };
+}
+
+/* Der Company Master, nach Kuerzel. Fehlt er, laeuft der Build weiter -
+   die Payloads tragen dann keine instrumentId, und das steht im
+   Ergebnis. Ein Build, der an einer fehlenden Identitaet scheitert, waere
+   schlimmer als einer, der sie vermisst meldet. */
+function loadMasterIndex() {
+  const dir = join(root, "quant", "data", "universe", "instruments");
+  const map = new Map();
+  if (!existsSync(dir)) return map;
+  for (const f of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    for (const inst of readJSON(join(dir, f)).instruments || []) {
+      if (!map.has(inst.symbol)) map.set(inst.symbol, inst);
+      for (const alias of inst.legacyIds || []) if (!map.has(alias)) map.set(alias, inst);
+    }
+  }
+  return map;
 }
 
 function withheldMetricStatus(metrics, fieldStatus) {
@@ -939,6 +1022,12 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     methodologyVersion: METHODOLOGY.methodologyVersion,
     symbol: stock.symbol, companyName: stock.companyName,
     companyNameStatus: stock.companyNameStatus,
+    /* Beide Kennungen auf der Seite. securityId ist der Schluessel im
+       Bestand (Faktoren, Gate-Universen), instrumentId der haus­weite
+       (§8, §41). Eine Seite, die nur das Kuerzel traegt, laesst sich
+       spaeter nicht verlaesslich zuordnen. */
+    securityId: stock.securityId || null,
+    instrumentId: stock.instrumentId || null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     dataMode: stock.dataMode, provider: stock.provider, exchange: stock.exchange,
     sector: stock.sector, sectorStatus: stock.sectorStatus, industry: stock.industry,
@@ -1089,11 +1178,29 @@ for (const universe of universes) {
 
   rowIndex.push({ universeId: universe.universeId, rows });
 
+  /* Verzeichnis der ausgelieferten Aktienseiten.
+
+     Ohne diese Datei muesste die Anwendung fuer jeden Titel erst eine
+     Detailseite ANFRAGEN, um zu erfahren, dass es keine gibt - ein
+     absichtlicher 404 je Aufruf, und im erweiterten Universum ist das der
+     Regelfall und nicht die Ausnahme. Drei Kilobyte einmal sind billiger
+     als ein Fehlschlag pro Seitenaufruf, und die Konsole bleibt sauber. */
+  write(`stocks/${universe.universeId}/index.json`, {
+    universeId: universe.universeId,
+    count: universe.stocks.length,
+    note: "Kuerzel, fuer die eine Detailseite ausgeliefert wird. Alle uebrigen Titel des " +
+          "Company Master bekommen ihre Seite aus dem Master (quant/data/universe/).",
+    symbols: universe.stocks.map((s) => s.symbol).sort()
+  });
+
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
   write(`search/${universe.universeId}.json`, {
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     asOf: universe.asOf, count: universe.stocks.length,
+    /* Die Kennung steht im Index, damit ein Suchtreffer ohne zweiten
+       Abruf zum Instrument aufloest (§8). */
     entries: universe.stocks.map((s) => ({
+      i: s.instrumentId || null,
       s: s.symbol, n: s.companyName, sec: s.sector, m: s.dataMode === "real" ? 1 : 0,
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,
       d: isNum(s.metrics.distanceTo52wHigh) ? round(s.metrics.distanceTo52wHigh, 4) : null,
