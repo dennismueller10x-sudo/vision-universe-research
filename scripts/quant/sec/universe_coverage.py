@@ -19,9 +19,12 @@ DREI REGELN
      aufloesbar ist. "Die Zeitreihe existiert" ist keine Deckung.
 """
 import json
+import logging
 from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
+
+LOGGER = logging.getLogger("vu.sec.universe_coverage")
 
 from .coverage import CORE_METRICS
 from .model import PERIOD_ANNUAL, QUALITY_HIGH, QUALITY_LOW, QUALITY_MEDIUM
@@ -97,7 +100,7 @@ def product_members(instruments):
     return members
 
 
-def _resolve_history(resolver, factbook, metric, annual=True, as_of=None):
+def _resolve_history(resolver, years, metric, annual=True, as_of=None):
     """Aufloesbare Perioden einer Kennzahl, aelteste zuerst.
 
     Gezaehlt wird ueber den PeriodResolver und nicht ueber die rohen
@@ -110,7 +113,7 @@ def _resolve_history(resolver, factbook, metric, annual=True, as_of=None):
     """
     as_of = as_of or date.today()
     rows = []
-    for fiscal_year in factbook.fiscal_years(metric):
+    for fiscal_year in years:
         if fiscal_year is None:
             continue
         if annual:
@@ -148,13 +151,23 @@ def issuer_fundamentals(document, registry):
     factbook = _rehydrate(document)
     resolver = PeriodResolver(factbook, registry)
     profile = document.get("profile") or {}
+
+    # Die Geschaeftsjahre EINMAL je Emittent indizieren statt je Kennzahl
+    # ueber alle Zeitreihen zu scannen. Bei 3.000 Zeitreihen und
+    # elf Kennzahlen sind das 33.000 Schluesselvergleiche je Emittent,
+    # mal 5.437 Emittenten.
+    jahre_je_metrik = defaultdict(set)
+    for (name, fiscal_year, _fiscal_period) in factbook.timelines:
+        if fiscal_year is not None:
+            jahre_je_metrik[name].add(fiscal_year)
     per_metric = {}
     annual_ends, quarterly_ends = set(), set()
     quality = Counter()
 
     for metric in sorted(set(REPORT_METRICS) | set(CORE_METRICS)):
-        annual = _resolve_history(resolver, factbook, metric, annual=True)
-        quarterly = _resolve_history(resolver, factbook, metric, annual=False)
+        jahre = sorted(jahre_je_metrik.get(metric, ()))
+        annual = _resolve_history(resolver, jahre, metric, annual=True)
+        quarterly = _resolve_history(resolver, jahre, metric, annual=False)
         for row in annual:
             if row[2]:
                 annual_ends.add(row[2])
@@ -306,8 +319,16 @@ def _depth_buckets(values, depths=DEPTH_YEARS):
     return out
 
 
-def build_reports(root, documents, registry=None, universe=None):
-    """Die vier Berichte aus §11 bis §14, plus der Gap Report aus §20."""
+def build_reports(root, documents, registry=None, universe=None, progress_every=0):
+    """Die vier Berichte aus §11 bis §14, plus der Gap Report aus §20.
+
+    `documents` darf ein GENERATOR sein und sollte bei einem vollen
+    Universum auch einer sein: gehalten wird nur die Bilanz je Emittent,
+    nie zwei Factbooks gleichzeitig. Ein einzelnes erreicht 17 MB, alle
+    zusammen sprengen den Arbeitsspeicher - genau daran ist der zweite
+    Produktivlauf gestorben, nachdem der Ingest 76 Minuten lang
+    funktioniert hatte.
+    """
     registry = registry or MetricRegistry.load()
     universe = universe or load_universe(root)
 
@@ -315,9 +336,19 @@ def build_reports(root, documents, registry=None, universe=None):
     issuers_in_master = {row["issuerId"]: row for row in universe["issuers"]}
 
     per_issuer = {}
+    gelesen = 0
     for document in documents:
         cik = str(document.get("cik")).zfill(10)
         per_issuer["iss_cik_" + cik] = issuer_fundamentals(document, registry)
+        # Das Dokument wird hier nicht mehr gebraucht. Die Referenz
+        # loeschen, damit der naechste Durchlauf sie nicht neben seiner
+        # eigenen haelt.
+        document = None
+        gelesen += 1
+        if progress_every and gelesen % progress_every == 0:
+            LOGGER.info("coverage: %d Emittenten ausgewertet", gelesen)
+    if progress_every:
+        LOGGER.info("coverage: %d Emittenten ausgewertet (fertig)", gelesen)
 
     # Der Faktenspeicher ist gitignored. Was im Repository liegt, sind die
     # kanonischen Buendel - fuer sie gilt dieselbe Frage, und sie werden

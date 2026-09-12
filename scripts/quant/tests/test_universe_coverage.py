@@ -150,6 +150,53 @@ class HistoryTests(unittest.TestCase):
         self.assertGreater(zeile["quarterlyPeriods"], 0)
 
 
+class StreamingTests(unittest.TestCase):
+    """Der Bericht darf nie zwei Factbooks gleichzeitig halten.
+
+    Der zweite Produktivlauf ist genau daran gestorben: der Ingest lief
+    76 Minuten erfolgreich durch, dann lud die Coverage-Messung alle
+    5.437 Factbooks in eine Liste und der Runner bekam ein
+    Shutdown-Signal. Ein einzelnes Factbook erreicht 17 MB.
+    """
+
+    def test_a_generator_is_accepted_and_consumed_lazily(self):
+        instruments = [instrument(f"S{n}", f"ref_S{n}", 4300000000 + n) for n in range(4)]
+        gleichzeitig = []
+        lebend = {"n": 0}
+
+        def strom():
+            for n in range(4):
+                lebend["n"] += 1
+                gleichzeitig.append(lebend["n"])
+                yield dokument(4300000000 + n, jahre=3, first_end=date(2023, 12, 31))
+                lebend["n"] -= 1
+
+        reports = uc.build_reports(ROOT, strom(), universe=universum(instruments))
+        self.assertEqual(reports["coverage"]["fundamentals"]["COMPANY_FACTS_AVAILABLE"], 4)
+        self.assertEqual(max(gleichzeitig), 1,
+                         "es war mehr als ein Factbook gleichzeitig in Arbeit")
+
+    def test_only_the_summary_is_kept_not_the_factbook(self):
+        instruments = [instrument("A", "ref_A", 4300000100)]
+        reports = uc.build_reports(
+            ROOT, (dokument(4300000100) for _ in range(1)),
+            universe=universum(instruments))
+        zeile = list(reports["perIssuer"].values())[0]
+        self.assertNotIn("factbook", zeile)
+        self.assertNotIn("timelines", zeile)
+        self.assertIn("metrics", zeile)
+        self.assertIn("annualPeriods", zeile)
+
+    def test_progress_logging_does_not_change_the_result(self):
+        instruments = [instrument(f"S{n}", f"ref_S{n}", 4300000200 + n) for n in range(3)]
+        docs = [dokument(4300000200 + n, jahre=3, first_end=date(2023, 12, 31))
+                for n in range(3)]
+        ohne = uc.build_reports(ROOT, iter(list(docs)), universe=universum(instruments))
+        mit = uc.build_reports(ROOT, iter(list(docs)), universe=universum(instruments),
+                               progress_every=1)
+        self.assertEqual(ohne["coverage"]["metrics"], mit["coverage"]["metrics"])
+
+
 class HonestyTests(unittest.TestCase):
     def test_an_empty_store_reports_zero_coverage_and_says_so(self):
         instruments = [instrument(f"S{n}", f"ref_S{n}", None) for n in range(50)]

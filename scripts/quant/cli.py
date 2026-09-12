@@ -151,13 +151,33 @@ def _resolve_universe(provider, companies, verify=True, skip_unresolved=False):
     return resolved
 
 
-def _documents(store, ciks=None):
-    documents = []
+def _iter_documents(store, ciks=None):
+    """Gespeicherte Factbooks, EINES nach dem anderen.
+
+    `_documents` baut eine Liste. Bei fuenf Emittenten ist das
+    gleichgueltig; bei 5.437 ist es toedlich - der zweite Produktivlauf
+    hat den Runner damit umgebracht ("The runner has received a shutdown
+    signal" nach zwei Minuten), nachdem der Ingest 76 Minuten lang
+    erfolgreich war. Ein einzelnes Factbook erreicht 17 MB; alle
+    zusammen sprengen jeden Arbeitsspeicher.
+
+    Wer nur eine Bilanz je Emittent braucht, braucht nie zwei Factbooks
+    gleichzeitig.
+    """
     for cik in (ciks or store.list_companies()):
         document = store.read_company(cik)
         if document is not None:
-            documents.append(document)
-    return documents
+            yield document
+
+
+def _documents(store, ciks=None):
+    """Alle Factbooks als Liste.
+
+    Nur fuer Auswertungen ueber eine HANDVOLL Emittenten (export,
+    canonical, coverage mit --universe). Fuer das ganze Universum
+    `_iter_documents` benutzen.
+    """
+    return list(_iter_documents(store, ciks=ciks))
 
 
 def _declared_tickers(path=DEFAULT_UNIVERSE):
@@ -472,9 +492,9 @@ def cmd_coverage_universe(args):
             "Kein Company Master unter quant/data/universe/instruments. "
             "Erst node scripts/universe/build-company-master.mjs.")
 
-    documents = _documents(store)
-    reports = universe_coverage.build_reports(ROOT, documents, registry=registry,
-                                              universe=universe)
+    reports = universe_coverage.build_reports(
+        ROOT, _iter_documents(store), registry=registry, universe=universe,
+        progress_every=250)
 
     out = ROOT / "quant" / "data" / "fundamentals"
     now = _utcnow()
