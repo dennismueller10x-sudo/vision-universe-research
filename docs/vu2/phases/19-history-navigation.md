@@ -9,3 +9,5 @@ Fix: valid unsupported tickers stay selected and unavailable rather than silentl
 Acceptance: existing45 browser checks plus expanded history interactions at1440/390: saved net-income/TTM roundtrip, unsupported TSLA retained without chart, invalid metric rejected, return to valid revenue history. Syntax/diff checks targeted; remote visual gate required. No new formulas, period derivations, PIT claims or provider tests.
 
 Rollback: revert the additive history navigation behavior. No data/storage mutation.
+
+Initial Browser34684696201 PASS (45 checks). Desktop/390 screenshots inspected; added20px separation between reusable-link action and company evidence header. Refreshed visual gate pending.
