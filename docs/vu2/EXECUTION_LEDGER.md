@@ -147,3 +147,8 @@ Active workstream/vu2-recovery-navigation, context phases/18-recovery-navigation
 ## Recovery gate and exact history context
 PR81 headdd01dfb83c5ecc77768e6a4399123954093e71d5: Browser34669300252 SUCCESS,45 checks. Not-found1440 and render-recovery390 inspected. Unknown-route recovery and rejected-product retry pass on both widths.
 Active workstream/vu2-history-navigation, context phases/19-history-navigation.md. Removes silent NVDA fallback for unsupported history ticker; saved links preserve company/metric/period; prior evidence cleared during updates. Existing history/PIT/SEC contract unchanged. Syntax/diff PASS; remote visual gate pending.
+
+## Accepted EOD lane consolidation
+Active workstream/vu2-lifecycle-integration, phase20. PR65 five-file delta imported byte-identically into current preview lineage; no overlap with later work.28 focused tests and777/777 full Node tests PASS. No provider/full-universe run, scheduler activation or committed data mutation. Separate compatibility review and remote CI pending. Original PR65 and all worktrees preserved. Main remains533245e; parallel Discover/data-stack changes stay isolated.
+
+PR82 final head36264e4c4281be0a6a298e9f175fd90eaa120174: Browser34684840319 SUCCESS,45 checks. Refreshed Fundamentals390 inspected after action/header spacing fix. Phase20 separate compatibility review PASS, with production durability/reconciliation/finality/refresh caveats retained.
