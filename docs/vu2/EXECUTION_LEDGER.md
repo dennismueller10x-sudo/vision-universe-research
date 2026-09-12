@@ -129,3 +129,5 @@ Active workstream/vu2-compare-workspace, context phases/15-compare-workspace.md.
 ## Compare gate and shell accessibility
 PR78 head59aaa3e5648e7e3d52e1a95834adba669faea0de: Browser34668406286, Quant34668406287, SEC34668406381 SUCCESS.36 browser checks passed; Compare1440 and390 screenshots inspected. Original metric definitions, unavailable columns and public display boundary preserved. Main remains533245e after fetch.
 Active workstream/vu2-shell-accessibility, context phases/16-shell-accessibility.md: Research context, keyboard search/skip focus, tablet navigation and compact comparison definitions. Existing browser path expanded to41 checks; syntax checks PASS, remote/visual gate pending. All prior worktrees retained. PRODUCT_BUILD=IN_PROGRESS.
+
+PR79 initial Browser34668616160 identified focus leaving the native search dialog during Tab cycling. Added explicit first/last control wrapping while retaining native Escape and return focus. Test now covers Tab and Shift+Tab; no assertion removed. Refreshed gate pending.
