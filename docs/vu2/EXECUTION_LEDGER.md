@@ -131,3 +131,9 @@ PR78 head59aaa3e5648e7e3d52e1a95834adba669faea0de: Browser34668406286, Quant3466
 Active workstream/vu2-shell-accessibility, context phases/16-shell-accessibility.md: Research context, keyboard search/skip focus, tablet navigation and compact comparison definitions. Existing browser path expanded to41 checks; syntax checks PASS, remote/visual gate pending. All prior worktrees retained. PRODUCT_BUILD=IN_PROGRESS.
 
 PR79 initial Browser34668616160 identified focus leaving the native search dialog during Tab cycling. Added explicit first/last control wrapping while retaining native Escape and return focus. Test now covers Tab and Shift+Tab; no assertion removed. Refreshed gate pending.
+
+## Shell gate and Stock business evidence
+PR79 final headfbaa99ce1950fc1ea0ac3b7e40569acdd7f78b30: Browser34668711690 SUCCESS,41 checks. Tablet Home768 and Compare390 screenshots inspected. Six tablet routes visible; Research context marked. Quant/SEC workflows are path-filtered and were not triggered for this UI-only phase; prior PR78 data gates remain green.
+Active workstream/vu2-stock-evidence, context phases/17-stock-evidence.md. Additive stock.quant composes existing canonical Quant model; four question-led areas display8 existing values.27 targeted service tests PASS, contract reviewer and remote visual gate pending. No provider, SEC, licensing or deployment changes. Main unchanged533245e after fetch.
+
+Stock reviewer found combined chart/factor failure could leave an inaccurate chart-availability sentence. Copy now promises only reachable professional links; independent typed-failure regression added.28 targeted service tests pass; no policy/identity/unit bypass found in additive composition.
