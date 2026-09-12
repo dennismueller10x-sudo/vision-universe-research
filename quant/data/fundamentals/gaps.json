@@ -1,0 +1,54 @@
+{
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Vor jeder Providerentscheidung: was fehlt, warum, und ob die SEC es grundsaetzlich liefern kann (\u00a720).",
+  "byCause": [
+    {
+      "cause": "CIK_UNRESOLVED",
+      "count": 7804,
+      "byEligibility": {
+        "ELIGIBLE": 6472,
+        "EXCLUDED": 799,
+        "REVIEW": 225,
+        "SEPARATE_CLASS": 308
+      },
+      "secCanSupply": "TEILWEISE",
+      "detail": "Die SEC fuehrt jeden US-Einreicher. Was hier fehlt, ist der Abruf ihrer beiden Verzeichnisse - nicht die Daten."
+    },
+    {
+      "cause": "CIK_AMBIGUOUS",
+      "count": 0,
+      "secCanSupply": "JA",
+      "detail": "Aufloesbar ueber die Einreichungsuebersicht je Kandidat. Eine Vorrangregel waere Raten."
+    },
+    {
+      "cause": "NOT_INGESTED",
+      "count": 5,
+      "secCanSupply": "JA",
+      "detail": "Emittenten mit CIK, fuer die noch kein Abruf lief."
+    },
+    {
+      "cause": "FOREIGN_PRIVATE_ISSUER",
+      "count": null,
+      "secCanSupply": "EINGESCHRAENKT",
+      "detail": "20-F und 40-F sind gefuehrt, aber IFRS-Taxonomien sind nicht auf die Registry gemappt. Messbar erst nach dem Abruf."
+    },
+    {
+      "cause": "NO_SEC_FILER",
+      "count": null,
+      "secCanSupply": "NEIN",
+      "detail": "ADRs ohne eigene Einreichung und auslaendische Emittenten ohne US-Registrierung. Fuer sie braeuchte es eine zweite Quelle - die Entscheidung darueber faellt erst, wenn die Zahl gemessen ist."
+    }
+  ],
+  "providerDecision": "OFFEN. Keine Empfehlung, solange die Zahlen oben null sind: eine Providerentscheidung auf ungemessenen Luecken waere eine Ausgabe auf Verdacht (\u00a720, \u00a732).",
+  "generatedAtUtc": "2026-09-12T11:06:22+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "generated_at_utc": "2026-09-12T11:06:22+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Kompakte Bilanz je Emittent. Die vollstaendige Historie mit Herkunft je Wert liegt in der Arbeitsablage (quant/data/sec/facts, gitignored) und gehoert langfristig in die Objektablage - siehe docs/VU_FUNDAMENTAL_DATA_EXPANSION.md.",
+  "storage": {
+    "committed": "quant/data/fundamentals/**",
+    "workingStore": "quant/data/sec/facts/**",
+    "perIssuerBytesCommitted": "~1 KB",
+    "perIssuerBytesFull": "~400 KB (gemessen an AAPL)"
+  },
+  "totals": {
+    "productTitles": 7004,
+    "issuersWithFundamentals": 0,
+    "shards": 0
+  }
+}

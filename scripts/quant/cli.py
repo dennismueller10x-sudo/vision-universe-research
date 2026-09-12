@@ -241,8 +241,23 @@ def cmd_ingest(args):
 
 
 def cmd_update(args):
+    """Inkrementell: nur Emittenten mit neuen Einreichungen (§17).
+
+    Kein Voll-Backfill. `refresh_since` fragt je Emittent die
+    Einreichungsuebersicht ab - eine Anfrage, kein Datensatz - und holt
+    die Fakten nur fuer die, bei denen seit `--since` etwas eingereicht
+    wurde. Mit `--bulk` kommen auch diese Fakten aus dem Sammelarchiv.
+    """
     pipeline = IngestionPipeline(run_id=args.run_id)
-    outcome = pipeline.refresh_since(args.since)
+    entries = None
+    if args.universe:
+        provider = SECProvider()
+        companies, skipped = _resolve_universe(
+            provider, _load_universe(args.universe), skip_unresolved=True)
+        entries = companies
+        if skipped:
+            print(f"  {len(skipped)} Eintraege ohne CIK uebersprungen")
+    outcome = pipeline.refresh_since(args.since, entries=entries)
     for result in outcome["results"]:
         print(f"  {result['cik']}: {result['status']}")
     return 1 if outcome["state"]["failed"] else 0
@@ -385,6 +400,86 @@ def _submissions_summary(provider, cik):
         "earliest_report": reports[0] if reports else None,
         "latest_report": reports[-1] if reports else None,
     }
+
+
+def cmd_coverage_universe(args):
+    """Gemessene Fundamental-Coverage gegen das Produktuniversum (§11-§14, §20).
+
+    Der Nenner ist das Produktuniversum des Company Master, NICHT der
+    eigene Bestand. Ein Bericht, der nur die ingestierten Emittenten
+    zaehlt, meldet immer 100 Prozent.
+    """
+    from quant.sec import universe_coverage
+
+    registry = MetricRegistry.load()
+    store = JsonFactStore(compress=True)
+    universe = universe_coverage.load_universe(ROOT)
+    if not universe["present"]:
+        raise SystemExit(
+            "Kein Company Master unter quant/data/universe/instruments. "
+            "Erst node scripts/universe/build-company-master.mjs.")
+
+    documents = _documents(store)
+    reports = universe_coverage.build_reports(ROOT, documents, registry=registry,
+                                              universe=universe)
+
+    out = ROOT / "quant" / "data" / "fundamentals"
+    now = _utcnow()
+    for name, key in (("coverage-report", "coverage"), ("history-coverage", "history"),
+                      ("overlap", "overlap"), ("quality", "quality"), ("gaps", "gaps")):
+        payload = reports[key]
+        payload["generatedAtUtc"] = now
+        _write(out / f"{name}.json", payload)
+
+    # Die Emittentenbilanz in Scherben - eine Zeile je Emittent, nicht die
+    # volle Historie. Die gehoert in die Arbeitsablage: 400 KB je Emittent
+    # mal 7.000 waeren 2,8 GB, und ein Git-Repository ist kein Datenspeicher.
+    shards = {}
+    for issuer_id, row in reports["perIssuer"].items():
+        shard = str(row["cik"]).zfill(10)[-3:]
+        shards.setdefault(shard, []).append(dict(row, issuerId=issuer_id))
+    issuer_dir = out / "issuers"
+    if issuer_dir.exists():
+        for stale in issuer_dir.glob("*.json"):
+            stale.unlink()
+    for shard, rows in sorted(shards.items()):
+        rows.sort(key=lambda r: r["issuerId"])
+        _write(issuer_dir / f"{shard}.json",
+               {"shard": shard, "count": len(rows), "issuers": rows})
+
+    _write(out / "manifest.json", {
+        "generated_at_utc": now,
+        "versions": version_stamp(registry.version),
+        "note": "Kompakte Bilanz je Emittent. Die vollstaendige Historie mit Herkunft "
+                "je Wert liegt in der Arbeitsablage (quant/data/sec/facts, gitignored) "
+                "und gehoert langfristig in die Objektablage - siehe "
+                "docs/VU_FUNDAMENTAL_DATA_EXPANSION.md.",
+        "storage": {
+            "committed": "quant/data/fundamentals/**",
+            "workingStore": "quant/data/sec/facts/**",
+            "perIssuerBytesCommitted": "~1 KB",
+            "perIssuerBytesFull": "~400 KB (gemessen an AAPL)",
+        },
+        "totals": {
+            "productTitles": reports["members"],
+            "issuersWithFundamentals": len(reports["perIssuer"]),
+            "shards": len(shards),
+        },
+    })
+
+    c = reports["coverage"]
+    print(f"  Produkttitel:            {c['universe']['PRODUCT_TITLES']}")
+    print(f"  Emittenten im Produkt:   {c['universe']['PRODUCT_ISSUERS']}")
+    print(f"  CIK aufgeloest:          {c['identity']['CIK_RESOLVED']}")
+    print(f"  CIK unaufgeloest:        {c['identity']['CIK_UNRESOLVED']}")
+    print(f"  CIK ambig:               {c['identity']['CIK_AMBIGUOUS']}")
+    print(f"  Company Facts vorhanden: {c['fundamentals']['COMPANY_FACTS_AVAILABLE']}")
+    print(f"  Company Facts fehlend:   {c['fundamentals']['COMPANY_FACTS_UNAVAILABLE']}")
+    for metric, row in c["metrics"].items():
+        print(f"    {metric:<24} {row['COUNT']:>6}  "
+              f"{row['PERCENT_OF_PRODUCT_UNIVERSE']}%")
+    print(f"\n  {out.relative_to(ROOT)}")
+    return 0
 
 
 def cmd_resolve(args):
@@ -569,7 +664,15 @@ def build_parser():
     update = subparsers.add_parser("update", help="re-ingest companies with new filings")
     update.add_argument("--since", required=True)
     update.add_argument("--run-id", default="default")
+    update.add_argument("--universe",
+                        help="Emittentenliste statt des gespeicherten Bestands pruefen - "
+                             "so werden auch neu aufgenommene Titel erfasst")
     update.set_defaults(func=cmd_update)
+
+    coverage_universe = subparsers.add_parser(
+        "coverage-universe",
+        help="gemessene Fundamental-Coverage gegen das Produktuniversum (§11-§14)")
+    coverage_universe.set_defaults(func=cmd_coverage_universe)
 
     retry = subparsers.add_parser("retry", help="retry the failure queue")
     retry.add_argument("--run-id", default="default")

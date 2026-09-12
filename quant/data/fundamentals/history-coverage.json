@@ -1,0 +1,99 @@
+{
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Tiefe je Kennzahl, gemessen an aufloesbaren Perioden. Eine Zeitreihe ohne aufloesbaren Wert zaehlt nicht - sonst waere jede leere Huelle eine Deckung.",
+  "denominator": {
+    "PRODUCT_TITLES": 7004,
+    "ISSUERS_WITH_FUNDAMENTALS": 0
+  },
+  "annual": {
+    "revenue": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "net_income": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "eps_diluted": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "operating_cash_flow": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "capital_expenditures": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "free_cash_flow": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "total_assets": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "total_debt": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    },
+    "stockholders_equity": {
+      ">=1y": 0,
+      ">=3y": 0,
+      ">=5y": 0,
+      ">=10y": 0,
+      ">=15y": 0
+    }
+  },
+  "annualOverall": {
+    ">=1y": 0,
+    ">=3y": 0,
+    ">=5y": 0,
+    ">=10y": 0,
+    ">=15y": 0
+  },
+  "quarterlyOverall": {
+    ">=1y": 0,
+    ">=3y": 0,
+    ">=5y": 0,
+    ">=10y": 0,
+    ">=15y": 0
+  },
+  "perIssuerSample": [],
+  "generatedAtUtc": "2026-09-12T11:06:22+00:00"
+}

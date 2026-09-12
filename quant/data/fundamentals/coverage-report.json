@@ -1,0 +1,70 @@
+{
+  "generatedAtUtc": "2026-09-12T11:06:22+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Gezaehlt gegen das Produktuniversum, nicht gegen die ingestierten Emittenten. Ein Nenner aus dem eigenen Bestand wuerde jede Luecke wegdefinieren (\u00a719).",
+  "universe": {
+    "PRODUCT_TITLES": 7004,
+    "PRODUCT_ISSUERS": 5,
+    "PRODUCT_TITLES_WITHOUT_ISSUER": 6999,
+    "MASTER_ISSUERS": 5
+  },
+  "identity": {
+    "CIK_RESOLVED": 5,
+    "CIK_UNRESOLVED": 7804,
+    "CIK_AMBIGUOUS": 0
+  },
+  "fundamentals": {
+    "COMPANY_FACTS_AVAILABLE": 0,
+    "COMPANY_FACTS_UNAVAILABLE": 5,
+    "ISSUERS_INGESTED_TOTAL": 0,
+    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 0
+  },
+  "metrics": {
+    "revenue": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "net_income": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "eps_diluted": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "operating_cash_flow": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "capital_expenditures": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "free_cash_flow": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "total_assets": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "total_debt": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    },
+    "stockholders_equity": {
+      "COUNT": 0,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+    }
+  }
+}

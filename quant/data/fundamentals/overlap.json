@@ -1,0 +1,25 @@
+{
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Das langfristige Ziel ist TECHNICAL_WITHOUT_FUNDAMENTALS gegen null. Die Zahl steht hier, damit sie sinkt und nicht behauptet wird.",
+  "denominator": {
+    "PRODUCT_TITLES": 7004
+  },
+  "TECHNICAL_COVERED_INSTRUMENTS": 5690,
+  "TECHNICAL_DELIVERED_INSTRUMENTS": 5,
+  "FUNDAMENTAL_COVERED": 0,
+  "TECHNICAL_AND_FUNDAMENTAL": null,
+  "TECHNICAL_WITHOUT_FUNDAMENTALS": null,
+  "FUNDAMENTALS_WITHOUT_TECHNICAL": null,
+  "unmeasured": "Die Ueberschneidung je Titel braucht die technische Deckung auf Mitgliedsebene. Sie liegt heute nur als Instrumentenzahl vor; die Zuordnung entsteht mit dem naechsten Kurslauf.",
+  "generatedAtUtc": "2026-09-12T11:06:22+00:00"
+}

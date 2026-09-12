@@ -1,0 +1,233 @@
+name: SEC Fundamentals — Universum
+
+# Die Fundamentalschicht fuer das Produktuniversum.
+#
+# Zwei Jobs, und der Unterschied ist derselbe wie in universe-master.yml:
+#
+#   pruefen   Ohne Netz, bei jedem Push. Registry, EBITDA, Emittentenebene,
+#             Coverage-Rechnung - alles gegen synthetische Emittenten.
+#             Wird dieser Job rot, ist die Schicht kaputt, unabhaengig von
+#             jedem Abruf.
+#
+#   backfill  Nur auf Ansage. Holt die CIK-Zuordnung, baut Master und
+#             Emittentenstamm neu, ingestiert ueber den SEC-Sammelweg und
+#             misst danach die Coverage.
+#
+# WARUM DER BACKFILL NICHT AUTOMATISCH LAEUFT
+#
+# Er stellt je Emittent eine Anfrage an sec.gov. Bei 7.000 Emittenten sind
+# das rund 7.000 Anfragen fuer die Einreichungsuebersichten plus EINE fuer
+# das Sammelarchiv - bei fuenf Anfragen je Sekunde etwa 25 Minuten reine
+# Anfragezeit. Das gehoert an einen Knopf und nicht an einen Push.
+#
+# SEC FAIR ACCESS (§25, §4)
+#
+# Der Sammelweg ist Pflicht, nicht Kuer: --bulk macht aus einer
+# companyfacts-Anfrage je Emittent EINE fuer alle. Ohne ihn waeren es
+# doppelt so viele Anfragen fuer dieselben Daten.
+
+on:
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: 'CIK-Zuordnung holen und Fundamentaldaten ingestieren'
+        type: boolean
+        default: false
+      limit:
+        description: 'Hoechstens so viele Emittenten in diesem Lauf (leer = alle)'
+        type: string
+        default: '250'
+      since:
+        description: 'Nur Emittenten mit Einreichungen ab diesem Datum (leer = Voll-Backfill)'
+        type: string
+        default: ''
+  push:
+    branches:
+      - 'main'
+      - 'claude/**'
+    paths:
+      - 'scripts/quant/sec/**'
+      - 'scripts/quant/cli.py'
+      - 'scripts/quant/tests/**'
+      - 'quant/config/sec-metric-registry.json'
+      - 'quant/config/sec-universe.json'
+      - 'scripts/universe/build-issuer-master.mjs'
+      - 'scripts/universe/build-sec-universe.mjs'
+      - '.github/workflows/sec-fundamentals-universe.yml'
+  pull_request:
+    paths:
+      - 'scripts/quant/sec/**'
+      - 'quant/config/sec-metric-registry.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sec-fundamentals-universe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    name: Fundamentalschicht pruefen (ohne Netz)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Python kompiliert
+        run: python3 -m compileall -q scripts/quant
+
+      - name: SEC-Tests
+        run: python3 scripts/quant/cli.py test
+
+      - name: Emittentenstamm
+        run: |
+          node scripts/universe/build-issuer-master.mjs
+          node --test quant/tests/issuer-master.test.mjs
+
+      - name: Coverage gegen das Produktuniversum
+        # Laeuft mit leerem Faktenspeicher und muss trotzdem eine ehrliche
+        # Bilanz schreiben: 7.004 Produkttitel, 0 mit Fundamentaldaten.
+        # Ein Bericht, der ohne Daten nichts sagt, sagt auch mit Daten nichts.
+        run: python3 scripts/quant/cli.py coverage-universe
+
+      - name: Der Nenner ist das Produktuniversum
+        # §19. Der bequemste Fehler waere, gegen den eigenen Bestand zu
+        # zaehlen - dann meldet die Pipeline immer volle Deckung.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          c = json.load(open("quant/data/fundamentals/coverage-report.json"))
+          titel = c["universe"]["PRODUCT_TITLES"]
+          verfuegbar = c["fundamentals"]["COMPANY_FACTS_AVAILABLE"]
+          if titel < 7000:
+              sys.exit(f"Produktuniversum nur {titel} Titel - der Master ist nicht synchron")
+          for name, row in c["metrics"].items():
+              if row["COUNT"] > titel:
+                  sys.exit(f"{name}: {row['COUNT']} von {titel} - mehr gedeckt als vorhanden")
+              if row["COUNT"] and row["PERCENT_OF_PRODUCT_UNIVERSE"] > 100:
+                  sys.exit(f"{name}: Prozentsatz ueber 100")
+          print(f"Nenner {titel}, davon {verfuegbar} mit Company Facts.")
+          PY
+
+      - name: Keine erfundene Coverage im Repository
+        # §19 als Pruefung: eine Zahl, die keiner gemessen hat, darf nicht
+        # als gemessen dastehen.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          g = json.load(open("quant/data/fundamentals/gaps.json"))
+          if not g["providerDecision"].startswith("OFFEN"):
+              sys.exit("Der Gap Report faellt eine Providerentscheidung, ohne die "
+                       "Luecken gemessen zu haben (§20).")
+          o = json.load(open("quant/data/fundamentals/overlap.json"))
+          if o["TECHNICAL_AND_FUNDAMENTAL"] is not None and not o.get("unmeasured"):
+              print("Overlap gemessen.")
+          print("Gap Report haelt die Providerentscheidung offen.")
+          PY
+
+  backfill:
+    name: Fundamentaldaten holen (mit Zugang)
+    runs-on: ubuntu-latest
+    needs: pruefen
+    if: github.event_name == 'workflow_dispatch' && inputs.backfill
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Der Zwischenspeicher ist der Unterschied zwischen einem
+      # inkrementellen Lauf und einem Erstimport bei jedem Lauf. Er wird
+      # bewusst VOR dem Abruf geladen und danach gespeichert.
+      - name: SEC-Zwischenspeicher laden
+        uses: actions/cache@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-${{ github.run_id }}
+          restore-keys: |
+            sec-fundamentals-
+
+      - name: CIK-Zuordnung (zwei Anfragen fuer den ganzen US-Markt)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: node scripts/universe/build-cik-map.mjs
+
+      - name: Company Master und Emittentenstamm
+        run: |
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/build-issuer-master.mjs
+
+      - name: SEC-Universum aus dem Master
+        run: |
+          if [ -n "${{ inputs.limit }}" ]; then
+            node scripts/universe/build-sec-universe.mjs --max "${{ inputs.limit }}"
+          else
+            node scripts/universe/build-sec-universe.mjs
+          fi
+
+      - name: Ingest ueber den Sammelweg
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: |
+          if [ -n "${{ inputs.since }}" ]; then
+            python3 scripts/quant/cli.py update \
+              --since "${{ inputs.since }}" \
+              --universe quant/data/universe/sec-universe.json
+          else
+            python3 scripts/quant/cli.py ingest \
+              --universe quant/data/universe/sec-universe.json \
+              --skip-unresolved --bulk
+          fi
+
+      - name: Coverage messen
+        run: python3 scripts/quant/cli.py coverage-universe
+
+      - name: Bestehende SEC-Artefakte auffrischen
+        run: |
+          python3 scripts/quant/cli.py coverage || true
+          python3 scripts/quant/cli.py export || true
+
+      - name: Ergebnis committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/fundamentals quant/data/universe quant/data/sec
+          if git diff --cached --quiet; then
+            echo "Nichts geaendert."
+          else
+            N=$(python3 -c 'import json;print(json.load(open("quant/data/fundamentals/coverage-report.json"))["fundamentals"]["COMPANY_FACTS_AVAILABLE"])')
+            git commit -m "SEC Fundamentals: $N Emittenten mit Geschaeftszahlen aus Lauf ${{ github.run_id }}"
+            for i in 1 2 3 4; do
+              git push origin "HEAD:${GITHUB_REF_NAME}" && break
+              sleep $((2**i))
+            done
+          fi
+
+      - name: Bilanz
+        run: |
+          python3 - <<'PY'
+          import json
+          c = json.load(open("quant/data/fundamentals/coverage-report.json"))
+          h = json.load(open("quant/data/fundamentals/history-coverage.json"))
+          print("Produkttitel:            ", c["universe"]["PRODUCT_TITLES"])
+          print("CIK aufgeloest:          ", c["identity"]["CIK_RESOLVED"])
+          print("CIK ambig:               ", c["identity"]["CIK_AMBIGUOUS"])
+          print("Company Facts vorhanden: ", c["fundamentals"]["COMPANY_FACTS_AVAILABLE"])
+          for name, row in c["metrics"].items():
+              print(f"  {name:<24} {row['COUNT']:>6}  {row['PERCENT_OF_PRODUCT_UNIVERSE']}%")
+          print("Jahrestiefe (Revenue):   ", h["annual"]["revenue"])
+          PY
