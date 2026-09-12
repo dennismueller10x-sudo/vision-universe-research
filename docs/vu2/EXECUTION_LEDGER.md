@@ -143,3 +143,7 @@ PR80 initial headb27f728cd790dfa01a1989120d5aeac1c42dfe32: Browser34668963037, Q
 ## Stock final gate and explicit recovery
 PR80 final headd216ebb6e4f06707283c91bc8e5372e2b556f607: Browser34669100817, Quant34669100825, SEC34669100884 SUCCESS.32 targeted registry/service tests,41 browser checks. Updated Stock390 inspected: valuation/risk labels readable, values unchanged. Main remains533245e.
 Active workstream/vu2-recovery-navigation, context phases/18-recovery-navigation.md. Unknown routes no longer silently resemble Home; rejected renders clear partial content and expose retry/research/home.45 browser checks planned, syntax checks PASS; remote gate pending. No source, entitlement or SEC changes.
+
+## Recovery gate and exact history context
+PR81 headdd01dfb83c5ecc77768e6a4399123954093e71d5: Browser34669300252 SUCCESS,45 checks. Not-found1440 and render-recovery390 inspected. Unknown-route recovery and rejected-product retry pass on both widths.
+Active workstream/vu2-history-navigation, context phases/19-history-navigation.md. Removes silent NVDA fallback for unsupported history ticker; saved links preserve company/metric/period; prior evidence cleared during updates. Existing history/PIT/SEC contract unchanged. Syntax/diff PASS; remote visual gate pending.
