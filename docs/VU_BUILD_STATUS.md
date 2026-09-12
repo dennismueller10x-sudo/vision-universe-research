@@ -85,6 +85,44 @@ Noch offen und ausschließlich ein Workflow-Lauf: `sec.gov` und
 Anbieterverzeichnis (108.573 Zeilen) und die CIK-Zuordnung; erst danach
 stehen Firmennamen und CIK für das ganze US-Universum.
 
+## Fundamental Data Expansion (Zweig `claude/vision-universe-expansion-j633h8`)
+
+**Quelle der Wahrheit ist der akzeptierte US-Wertpapierstamm**, nicht mehr
+der 5.690er Stand: 7.803 Mitglieder, **7.004 Produkttitel**, 799
+bestätigte Nicht-Aktien. Der Company Master *konsumiert* diese
+Entscheidung — die Eignungsdatei nennt ihre Mitgliederliste mit sha256,
+und der Bau bricht ab, wenn sie abweicht.
+
+| | |
+|---|---:|
+| Instrumente (Listings) | 7.809 |
+| Mitglieder | 7.803 |
+| **Produkttitel** | **7.004** |
+| Emittenten mit CIK | 5 |
+| Emittenten mit Geschäftszahlen | 5 (18,25–18,75 Jahre, 73–76 Quartale) |
+| Metrikregistry | 27 → **40** Kennzahlen, EBITDA ableitbar |
+
+Drei Identitätsebenen: `instrumentId` (Listing), `masterMemberId`
+(Mitglied), `issuerId` (Gesellschaft = CIK). Produkttitel werden als
+**Mitglieder** gezählt — sechs Mitglieder liegen an zwei Börsen.
+
+**Drei echte Befunde aus dem Abgleich:** 308 Vorzugspapiere galten als
+Stammaktien (getrennte Tickerschreibweise `CTA-P-B`); 2.119 aus dem
+Wertpapierstamm angehängte Titel hätten einen Kursverlauf zugeschrieben
+bekommen, den es nie gab; die Screenerfähigkeit folgte der eigenen
+Klassifikation statt der Produktentscheidung und hätte 457 Optionsscheine
+in den Aktienscreener gelassen.
+
+Berichte: `docs/VU_FUNDAMENTAL_DATA_EXPANSION.md`,
+`docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md`. Maschinenlesbar unter
+`quant/data/fundamentals/` und `quant/data/universe/`.
+
+**279 Python-Tests, 683 Master-Prüfungen, 118 Discover-Tests** — grün.
+Offen und ausschließlich ein Workflow-Lauf: `sec.gov` ist aus der
+Bauumgebung mit HTTP 403 gesperrt. `sec-fundamentals-universe.yml` mit
+`backfill: true` füllt 7.291 fehlende Firmennamen, die CIKs und die
+Fundamentalhistorie.
+
 ## Completed
 
 Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
@@ -196,10 +234,12 @@ Integrationsstand fuers Preview: `docs/VU_REALTIME_PREVIEW_INTEGRATION.md`.
 
 ## In Progress
 
-Universe Expansion: gebaut und geprüft. Was fehlt, ist **ein Lauf mit
-Zugang** — `universe-master.yml` mit `sync: true`. Er füllt Firmennamen
-und CIK für das ganze US-Universum und ist die Voraussetzung dafür, dass
-die SEC-Fundamentalpipeline über die fünf Validierungstitel hinausläuft.
+Universe- und Fundamental-Expansion: gebaut, gemessen, geprüft. Was fehlt,
+sind **zwei Workflow-Läufe mit Zugang** — `universe-master.yml`
+(`sync: true`) und `sec-fundamentals-universe.yml` (`backfill: true`). Sie
+füllen Firmennamen, CIK und Fundamentalhistorie für das Produktuniversum.
+Ohne sie bleibt die gemessene Coverage bei 5 von 7.004, und genau so steht
+sie im Bericht.
 
 ## Known Limitations
 

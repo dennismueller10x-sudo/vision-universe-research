@@ -13,22 +13,22 @@
   "note": "Tiefe je Kennzahl, gemessen an aufloesbaren Perioden. Eine Zeitreihe ohne aufloesbaren Wert zaehlt nicht - sonst waere jede leere Huelle eine Deckung.",
   "denominator": {
     "PRODUCT_TITLES": 7004,
-    "ISSUERS_WITH_FUNDAMENTALS": 0
+    "ISSUERS_WITH_FUNDAMENTALS": 5
   },
   "annual": {
     "revenue": {
-      ">=1y": 0,
-      ">=3y": 0,
-      ">=5y": 0,
-      ">=10y": 0,
-      ">=15y": 0
+      ">=1y": 5,
+      ">=3y": 5,
+      ">=5y": 5,
+      ">=10y": 3,
+      ">=15y": 3
     },
     "net_income": {
-      ">=1y": 0,
-      ">=3y": 0,
-      ">=5y": 0,
-      ">=10y": 0,
-      ">=15y": 0
+      ">=1y": 5,
+      ">=3y": 5,
+      ">=5y": 5,
+      ">=10y": 5,
+      ">=15y": 5
     },
     "eps_diluted": {
       ">=1y": 0,
@@ -45,25 +45,25 @@
       ">=15y": 0
     },
     "capital_expenditures": {
-      ">=1y": 0,
-      ">=3y": 0,
-      ">=5y": 0,
-      ">=10y": 0,
-      ">=15y": 0
+      ">=1y": 4,
+      ">=3y": 4,
+      ">=5y": 4,
+      ">=10y": 4,
+      ">=15y": 4
     },
     "free_cash_flow": {
-      ">=1y": 0,
-      ">=3y": 0,
-      ">=5y": 0,
-      ">=10y": 0,
-      ">=15y": 0
+      ">=1y": 4,
+      ">=3y": 4,
+      ">=5y": 4,
+      ">=10y": 4,
+      ">=15y": 4
     },
     "total_assets": {
-      ">=1y": 0,
-      ">=3y": 0,
-      ">=5y": 0,
-      ">=10y": 0,
-      ">=15y": 0
+      ">=1y": 5,
+      ">=3y": 5,
+      ">=5y": 5,
+      ">=10y": 5,
+      ">=15y": 5
     },
     "total_debt": {
       ">=1y": 0,
@@ -73,27 +73,78 @@
       ">=15y": 0
     },
     "stockholders_equity": {
-      ">=1y": 0,
-      ">=3y": 0,
-      ">=5y": 0,
-      ">=10y": 0,
-      ">=15y": 0
+      ">=1y": 5,
+      ">=3y": 5,
+      ">=5y": 5,
+      ">=10y": 5,
+      ">=15y": 5
     }
   },
   "annualOverall": {
-    ">=1y": 0,
-    ">=3y": 0,
-    ">=5y": 0,
-    ">=10y": 0,
-    ">=15y": 0
+    ">=1y": 5,
+    ">=3y": 5,
+    ">=5y": 5,
+    ">=10y": 3,
+    ">=15y": 3
   },
   "quarterlyOverall": {
-    ">=1y": 0,
-    ">=3y": 0,
-    ">=5y": 0,
-    ">=10y": 0,
-    ">=15y": 0
+    ">=1y": 5,
+    ">=3y": 5,
+    ">=5y": 5,
+    ">=10y": 3,
+    ">=15y": 3
   },
-  "perIssuerSample": [],
-  "generatedAtUtc": "2026-09-12T11:06:22+00:00"
+  "perIssuerSample": [
+    {
+      "issuerId": "iss_cik_0000019617",
+      "cik": "0000019617",
+      "name": "JPMORGAN CHASE & CO",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2007-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 18.5
+    },
+    {
+      "issuerId": "iss_cik_0000034088",
+      "cik": "0000034088",
+      "name": "EXXON MOBIL CORP",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 73,
+      "firstPeriodEnd": "2007-12-31",
+      "lastPeriodEnd": "2026-03-31",
+      "historyYears": 18.25
+    },
+    {
+      "issuerId": "iss_cik_0000320193",
+      "cik": "0000320193",
+      "name": "Apple Inc.",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2007-09-29",
+      "lastPeriodEnd": "2026-06-27",
+      "historyYears": 18.75
+    },
+    {
+      "issuerId": "iss_cik_0000789019",
+      "cik": "0000789019",
+      "name": "MICROSOFT CORP",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 76,
+      "firstPeriodEnd": "2007-09-30",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 18.75
+    },
+    {
+      "issuerId": "iss_cik_0001045810",
+      "cik": "0001045810",
+      "name": "NVIDIA CORP",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2008-01-27",
+      "lastPeriodEnd": "2026-07-26",
+      "historyYears": 18.5
+    }
+  ],
+  "generatedAtUtc": "2026-09-12T11:14:04+00:00"
 }

@@ -194,6 +194,110 @@ def issuer_fundamentals(document, registry):
     }
 
 
+# Kanonische Kennzahl-Kennung -> Name in der SEC-Registry. Die
+# ausgelieferten Buendel unter quant/data/sec/canonical/ fuehren die
+# camelCase-Kennung des Produktschemas; der Coverage-Bericht rechnet in
+# Registry-Namen. Ohne diese Zuordnung zaehlte der Bericht die
+# ausgelieferten Zahlen schlicht nicht mit.
+CANONICAL_TO_REGISTRY = {
+    "revenue": "revenue", "grossProfit": "gross_profit", "ebitda": "ebitda",
+    "operatingIncome": "operating_income", "netIncome": "net_income",
+    "freeCashFlow": "free_cash_flow", "totalAssets": "total_assets",
+    "totalEquity": "stockholders_equity", "netDebt": "net_debt",
+    "investedCapital": "invested_capital", "capex": "capital_expenditures",
+    "interestExpense": "interest_expense", "sharesOutstanding": "shares_outstanding",
+    "accruals": "accruals",
+}
+
+
+def issuer_from_canonical_bundle(bundle, cik):
+    """Fundamentalbilanz aus einem AUSGELIEFERTEN kanonischen Buendel.
+
+    Der Faktenspeicher ist gitignored - auf einem frischen Checkout ist er
+    leer, und der Bericht wuerde null Emittenten melden, obwohl fuer fuenf
+    von ihnen die Geschaeftszahlen im Repository liegen. Diese Quelle
+    macht den Unterschied zwischen "nicht vorhanden" und "nicht in der
+    Arbeitsablage" sichtbar; sie traegt deshalb einen eigenen Status.
+    """
+    security = bundle.get("security") or {}
+    facts = bundle.get("facts") or []
+    per_metric = {}
+    annual_ends, quarterly_ends = set(), set()
+
+    nach_metrik = defaultdict(list)
+    for fact in facts:
+        name = CANONICAL_TO_REGISTRY.get(fact.get("metricId"))
+        if not name or fact.get("value") is None:
+            continue
+        nach_metrik[name].append(fact)
+
+    for metric in sorted(set(REPORT_METRICS) | set(CORE_METRICS)):
+        rows = nach_metrik.get(metric, [])
+        annual = sorted({f.get("periodEnd") for f in rows
+                         if f.get("fiscalPeriod") == "FY" and f.get("periodEnd")})
+        quarterly = sorted({f.get("periodEnd") for f in rows
+                            if f.get("fiscalPeriod") != "FY" and f.get("periodEnd")})
+        # Die ausgelieferten Buendel fuehren bewusst nur Quartale (eine
+        # Jahreszeile kollidiert im Produktschema mit Q4). Die
+        # Jahrestiefe wird deshalb aus den Quartalsenden gelesen - nicht
+        # geschaetzt und nicht mit vier multipliziert.
+        basis = annual or quarterly
+        per_metric[metric] = {
+            "annualPeriods": len(annual) or len({d[:4] for d in quarterly}),
+            "quarterlyPeriods": len(quarterly),
+            "firstAvailablePeriod": basis[0] if basis else None,
+            "lastAvailablePeriod": basis[-1] if basis else None,
+            "historyYears": _history_years([(None, None, d, None) for d in basis]),
+        }
+        annual_ends |= set(annual)
+        quarterly_ends |= set(quarterly)
+
+    alle = annual_ends | quarterly_ends
+    return {
+        "cik": cik,
+        "name": security.get("name"),
+        "sic": None,
+        "fiscalYearEnd": None,
+        "tickers": [security.get("ticker")] if security.get("ticker") else [],
+        "status": "DELIVERED_CANONICAL",
+        "statusNote": "Aus dem ausgelieferten kanonischen Buendel gelesen "
+                      "(quant/data/sec/canonical/), nicht aus dem Faktenspeicher.",
+        "annualPeriods": len({d[:4] for d in alle}),
+        "quarterlyPeriods": len(quarterly_ends),
+        "firstPeriodEnd": min(alle) if alle else None,
+        "lastPeriodEnd": max(alle) if alle else None,
+        "historyYears": _history_years([(None, None, d, None) for d in sorted(alle)]),
+        "metrics": per_metric,
+        "quality": {},
+        "qualitySummary": {},
+        "latestFiling": None,
+        "versions": bundle.get("versions"),
+        "sourceDigest": None,
+    }
+
+
+def load_canonical_bundles(root):
+    """Die ausgelieferten kanonischen Buendel, nach CIK."""
+    base = Path(root) / "quant" / "data" / "sec" / "canonical"
+    index_path = Path(root) / "quant" / "data" / "sec" / "canonical_index.json"
+    if not base.exists():
+        return {}
+    ticker_to_cik = {}
+    if index_path.exists():
+        for row in (_read_json(index_path).get("companies") or []):
+            if row.get("ticker") and row.get("cik"):
+                ticker_to_cik[row["ticker"]] = str(row["cik"]).zfill(10)
+    out = {}
+    for path in sorted(base.glob("*.json")):
+        bundle = _read_json(path)
+        ticker = (bundle.get("security") or {}).get("ticker") or path.stem
+        cik = ticker_to_cik.get(ticker)
+        if not cik:
+            continue
+        out[cik] = bundle
+    return out
+
+
 def _depth_buckets(values, depths=DEPTH_YEARS):
     """Wie viele Emittenten erreichen welche Tiefe? Kumulativ und gezaehlt."""
     out = {}
@@ -214,6 +318,15 @@ def build_reports(root, documents, registry=None, universe=None):
     for document in documents:
         cik = str(document.get("cik")).zfill(10)
         per_issuer["iss_cik_" + cik] = issuer_fundamentals(document, registry)
+
+    # Der Faktenspeicher ist gitignored. Was im Repository liegt, sind die
+    # kanonischen Buendel - fuer sie gilt dieselbe Frage, und sie werden
+    # nur dort gelesen, wo der Speicher nichts hat.
+    for cik, bundle in load_canonical_bundles(root).items():
+        key = "iss_cik_" + cik
+        if key in per_issuer:
+            continue
+        per_issuer[key] = issuer_from_canonical_bundle(bundle, cik)
 
     # --------------------------------------------------------- §11 Coverage
     product_issuers = {m["issuerId"] for m in members.values() if m["issuerId"]}
@@ -256,6 +369,7 @@ def build_reports(root, documents, registry=None, universe=None):
             "ISSUERS_INGESTED_TOTAL": len(per_issuer),
             "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE":
                 len([i for i in per_issuer if i not in product_issuers]),
+            "BY_SOURCE": dict(Counter(row["status"] for row in per_issuer.values())),
         },
         "metrics": metric_counts,
     }

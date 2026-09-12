@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-09-12T11:06:22+00:00",
+  "generatedAtUtc": "2026-09-12T11:14:04+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.6.0",
@@ -24,19 +24,22 @@
     "CIK_AMBIGUOUS": 0
   },
   "fundamentals": {
-    "COMPANY_FACTS_AVAILABLE": 0,
-    "COMPANY_FACTS_UNAVAILABLE": 5,
-    "ISSUERS_INGESTED_TOTAL": 0,
-    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 0
+    "COMPANY_FACTS_AVAILABLE": 5,
+    "COMPANY_FACTS_UNAVAILABLE": 0,
+    "ISSUERS_INGESTED_TOTAL": 5,
+    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 0,
+    "BY_SOURCE": {
+      "DELIVERED_CANONICAL": 5
+    }
   },
   "metrics": {
     "revenue": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 5,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0714
     },
     "net_income": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 5,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0714
     },
     "eps_diluted": {
       "COUNT": 0,
@@ -47,24 +50,24 @@
       "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
     },
     "capital_expenditures": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 4,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0571
     },
     "free_cash_flow": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 4,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0571
     },
     "total_assets": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 5,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0714
     },
     "total_debt": {
       "COUNT": 0,
       "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
     },
     "stockholders_equity": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 5,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0714
     }
   }
 }
