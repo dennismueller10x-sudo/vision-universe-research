@@ -48,6 +48,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(await page.evaluate(()=>localStorage.getItem('vu.quant.watchlist.v1'))!==null)throw Error('legacy demo was seeded');
   await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();await page.locator('.home-watch-row').getByRole('link',{name:'NVDA',exact:true}).waitFor();await page.screenshot({path:out+'/home-personal-'+width+'.png',fullPage:true});await page.goto(origin+'/vu2/?view=watchlist');await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
  }
+ if(view==='compare'){
+  if(await page.locator('.compare-table th[scope="row"]').count()!==18)throw Error('full comparison evidence missing');
+  await page.getByRole('button',{name:'Unternehmen hinzufügen',exact:true}).click();await page.getByRole('button',{name:'Unternehmen hinzufügen',exact:true}).click();await page.locator('.compare-controls select').nth(3).waitFor();await page.getByRole('combobox',{name:'Vergleich Bereich'}).selectOption('growth');
+  await page.getByRole('rowheader',{name:/Margenausweitung/}).waitFor();await page.waitForFunction(()=>document.querySelectorAll('.compare-table td').length===16);
+  const saved=await page.getByRole('link',{name:'Diese Auswahl erneut öffnen',exact:true}).getAttribute('href');await page.goto(origin+saved);await page.locator('main footer').waitFor();if(await page.locator('.compare-controls select').count()!==4)throw Error('comparison link lost selection');
+  await page.goto(origin+'/vu2/?view=compare&tickers=NVDA,TSLA');await page.locator('main footer').waitFor();await page.getByRole('heading',{name:'Nicht alle Unternehmen auswertbar',exact:true}).waitFor();if(await page.locator('.compare-table thead th').count()!==3)throw Error('unavailable comparison column dropped');
+  await page.goto(origin+'/vu2/?view=compare&tickers=NVDA,NVDA');await page.locator('main footer').waitFor();await page.getByRole('heading',{name:'Vergleichsauswahl prüfen',exact:true}).waitFor();
+  await page.goto(origin+saved);await page.locator('main footer').waitFor();await page.getByRole('combobox',{name:'Vergleich Bereich'}).selectOption('quality');await page.getByRole('button',{name:'AAPL aus Vergleich entfernen',exact:true}).click();await page.getByRole('button',{name:'JPM aus Vergleich entfernen',exact:true}).click();await page.waitForFunction(()=>document.querySelectorAll('.compare-table thead th').length===3);await page.getByText('Definition',{exact:true}).first().click();
+ }
  if(view==='atlas'){
   await page.getByText(/kein angeschlossenes Sprachmodell/).waitFor();await page.locator('.atlas-evidence').getByText('65,21 %',{exact:true}).waitFor();
   await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('growth');await page.locator('.atlas-evidence').getByText('83,38 %',{exact:true}).waitFor();
