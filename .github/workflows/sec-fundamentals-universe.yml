@@ -86,9 +86,18 @@ jobs:
         run: python3 scripts/quant/cli.py test
 
       - name: Emittentenstamm
+        # Alle drei Suiten, nicht nur die eine. Lauf 34714903340 ist an
+        # zwei Tests gescheitert, die einen Stand festhielten statt eine
+        # Regel ("ohne Zuordnung ist nichts aufgeloest") - richtig,
+        # solange der Master keine eigenen CIKs trug, falsch seit dem
+        # Backfill. Der dritte Fall derselben Art steckte in
+        # sec-universe-scale, die hier gar nicht lief.
         run: |
           node scripts/universe/build-issuer-master.mjs
-          node --test quant/tests/issuer-master.test.mjs
+          node --test \
+            quant/tests/company-master.test.mjs \
+            quant/tests/issuer-master.test.mjs \
+            quant/tests/sec-universe-scale.test.mjs
 
       - name: Coverage gegen das Produktuniversum
         # Laeuft mit leerem Faktenspeicher und muss trotzdem eine ehrliche

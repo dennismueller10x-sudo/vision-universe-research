@@ -36,6 +36,17 @@ function masterSymbols(n) {
   return out;
 }
 
+/** Wie viele Instrumente traegt der Master selbst schon mit CIK? */
+function mitCikImMaster() {
+  const ciks = new Set();
+  for (const f of readdirSync(MASTER_DIR).filter((f) => f.endsWith(".json")).sort()) {
+    for (const r of readJSON(join(MASTER_DIR, f)).instruments || []) {
+      if (r.cik) ciks.add(r.cik);
+    }
+  }
+  return ciks.size;
+}
+
 /** Eine CIK-Zuordnung im Format von scripts/universe/build-cik-map.mjs. */
 function cikMapFuer(symbols) {
   const byTicker = {};
@@ -64,11 +75,22 @@ test("ohne CIK-Zuordnung bleibt es beim Validierungssatz - und sagt das",
   const leer = join(dir, "cik-map.json");
   writeFileSync(leer, JSON.stringify({ status: "UNAVAILABLE", byTicker: {} }));
   const payload = baue(leer);
-  assert.equal(payload.companies.length, 5);
-  assert.ok(payload.companies.every((c) => c.role === "validation"));
+  /* Die erste Fassung verlangte hier genau fuenf: ohne Zuordnung bleibt
+     nur der Validierungssatz. Das stimmte, solange der Company Master
+     selbst keine CIKs trug. Seit dem Backfill traegt er 5.481, und die
+     behaelt er bewusst - sonst wuerde ein fehlgeschlagener SEC-Abruf
+     den ganzen Bestand entwerten. Geprueft wird deshalb die Regel: ohne
+     Zuordnung kommt NICHTS DAZU, was der Master nicht schon kennt, und
+     der Bericht sagt, dass die Quelle fehlte. */
+  const imMaster = mitCikImMaster();
   assert.equal(payload.sources.cikMap.status, "UNAVAILABLE");
-  assert.equal(payload.totals.excluded.noCik > 5000, true,
-               "die Zahl der Titel ohne CIK gehoert in den Bericht, nicht ins Log");
+  assert.ok(payload.companies.length <= imMaster + 5,
+            `${payload.companies.length} Emittenten aus einer leeren Zuordnung - `
+            + `der Master kennt nur ${imMaster}`);
+  assert.ok(payload.companies.some((c) => c.role === "validation"),
+            "der Validierungssatz muss auch ohne Zuordnung dabei sein");
+  assert.ok(payload.totals.excluded.noCik > 0,
+            "die Zahl der Titel ohne CIK gehoert in den Bericht, nicht ins Log");
 });
 
 test("mit CIK-Zuordnung waechst das SEC-Universum weit ueber die fuenf",

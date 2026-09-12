@@ -50,9 +50,12 @@ function schreibeMap(byTicker) {
 
 function baue(cikMapPfad) {
   const dir = mkdtempSync(join(tmpdir(), "vu-issuer-out-"));
-  /* Der Emittentenbau liest die Instrumente aus dem echten Master und
-     schreibt seine Artefakte woanders hin - sonst wuerde ein Test den
-     ausgelieferten Stand ueberschreiben. */
+  /* ACHTUNG: der Emittentenbau schreibt in die ECHTE Ablage unter
+     quant/data/universe/. Der Kommentar hier behauptete frueher das
+     Gegenteil. Harmlos ist das nur, weil die Tests im Pruefjob laufen,
+     der nichts committet - der Backfill baut den Stand in einem eigenen
+     Job frisch. Wer diese Suite lokal laufen laesst, hat danach
+     geaenderte Artefakte im Arbeitsbaum. */
   execFileSync(process.execPath, [
     join(root, "scripts", "universe", "build-issuer-master.mjs"),
     "--cik-map", cikMapPfad
@@ -81,25 +84,43 @@ test("die Emittenten-ID kommt aus der CIK, nicht aus dem Namen", () => {
   assert.equal(Master.issuerIdFromCik(null), null);
 });
 
+/* Eine CIK, die im echten Master nicht vorkommt.
+   Die erste Fassung nahm 0001652044 - Alphabets echte CIK - als
+   "synthetisch". Das ging gut, solange der Master fast keine CIKs
+   trug. Seit dem Backfill traegt er 5.481, darunter Alphabets, und der
+   Test bekam drei Kuerzel statt zwei: seine zwei plus das echte. Ein
+   Testwert, den die Produktionsdaten auch fuehren koennen, ist kein
+   Testwert. */
+const SYNTHETISCHE_CIK = "0009999901";
+
 test("zwei Aktienklassen desselben Emittenten sind EIN Emittent", { skip: !vorhanden }, () => {
   const alle = instrumente();
-  const zwei = alle.filter((i) => i.productEligibility === "ELIGIBLE").slice(0, 2);
-  assert.equal(zwei.length, 2);
+  /* Zwei Titel, fuer die der Master selbst KEINE CIK kennt. Die CIK am
+     Instrument gewinnt bewusst ueber die Zuordnungsdatei - sie traegt
+     ihre Herkunft, einschliesslich erklaerter Uebersteuerungen. Wer
+     hier Titel mit CIK nimmt, prueft nicht die Zusammenfuehrung,
+     sondern diese Vorrangregel. */
+  const zwei = alle.filter((i) => i.productEligibility === "ELIGIBLE" && !i.cik).slice(0, 2);
+  assert.equal(zwei.length, 2, "keine zwei Titel ohne CIK im Master");
   const byTicker = {};
   /* Dieselbe CIK fuer beide - so wie GOOGL und GOOG. */
   for (const i of zwei) {
-    byTicker[i.symbol] = { cik: "0001652044", name: "Synthetic Multi Class Inc",
+    byTicker[i.symbol] = { cik: SYNTHETISCHE_CIK, name: "Synthetic Multi Class Inc",
                            exchange: "Nasdaq", source: "company_tickers", status: "RESOLVED" };
   }
   const { p } = schreibeMap(byTicker);
   const r = baue(p);
-  const iss = r.issuers.find((x) => x.cik === "0001652044");
+  const iss = r.issuers.find((x) => x.cik === SYNTHETISCHE_CIK);
   assert.ok(iss, "kein Emittent fuer die geteilte CIK");
-  assert.equal(iss.tickers.length, 2, "beide Kuerzel gehoeren an denselben Emittenten");
-  assert.equal(r.issuers.filter((x) => x.cik === "0001652044").length, 1,
+  assert.deepEqual([...iss.tickers].sort(), zwei.map((i) => i.symbol).sort(),
+                   "genau die beiden Kuerzel gehoeren an diesen Emittenten");
+  assert.equal(r.issuers.filter((x) => x.cik === SYNTHETISCHE_CIK).length, 1,
                "und zwar an genau einen");
-  assert.equal(r.manifest.totals.CIK_RESOLVED, 2 + 5,
-               "die fuenf aus der Konfiguration kommen dazu");
+  /* Keine feste Zahl: der Master traegt seine eigenen CIKs bei, und wie
+     viele das sind, entscheidet der letzte Backfill. Geprueft wird die
+     Regel - die beiden hier sind aufgeloest und keiner geht verloren. */
+  assert.ok(r.manifest.totals.CIK_RESOLVED >= 2,
+            `nur ${r.manifest.totals.CIK_RESOLVED} aufgeloest`);
 });
 
 test("ein ambiger Eintrag bekommt keine Emittenten-ID", { skip: !vorhanden }, () => {
@@ -124,7 +145,16 @@ test("unaufgeloest und ambig sind zwei verschiedene Zustaende", { skip: !vorhand
   const r = baue(p);
   const t = r.resolution.totals;
   assert.equal(t.CIK_AMBIGUOUS, 0);
-  assert.ok(t.CIK_UNRESOLVED > 7000, `nur ${t.CIK_UNRESOLVED} unaufgeloest`);
+  /* Die erste Fassung verlangte hier >7000 unaufgeloest: eine leere
+     Zuordnung, also loest nichts auf. Das stimmte, solange der Master
+     keine eigenen CIKs trug. Er behaelt sie aber bewusst - sonst wuerde
+     ein fehlgeschlagener SEC-Abruf den ganzen Bestand entwerten.
+     Geprueft wird deshalb die Regel, nicht der Stand: ohne Zuordnung
+     ist genau das unaufgeloest, was im Master keine CIK hat. */
+  const ohneCik = instrumente().filter((i) => !i.cik).length;
+  assert.equal(t.CIK_UNRESOLVED, ohneCik,
+               "ohne Zuordnung ist unaufgeloest, was der Master selbst nicht kennt");
+  assert.ok(t.CIK_UNRESOLVED > 0, "ein Universum ganz ohne Luecke waere verdaechtig");
   assert.equal(t.CIK_RESOLVED + t.CIK_UNRESOLVED + t.CIK_AMBIGUOUS, t.instruments,
                "die drei Zustaende muessen alle Instrumente abdecken");
 });
