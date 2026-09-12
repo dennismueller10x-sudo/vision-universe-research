@@ -26,11 +26,18 @@ from .version import FORMULA_VERSION
 LOGGER = logging.getLogger("vu.sec.derived")
 
 # Canonical metrics this module reconstructs, in dependency order.
-RECONSTRUCTED = ("gross_profit", "free_cash_flow", "total_debt", "net_debt",
+RECONSTRUCTED = ("gross_profit", "ebitda", "free_cash_flow", "total_debt", "net_debt",
                  "invested_capital", "accruals")
 
 FORMULAS = {
     "gross_profit": "revenue - cost_of_revenue",
+    # EBITDA war bis hierher als UNSUPPORTED gefuehrt, und der Grund stand
+    # ehrlich dabei: die Abschreibungen fehlten in der Metrikregistry. Sie
+    # stehen fast nie in der GuV, sondern in der Kapitalflussrechnung, und
+    # ohne sie ist EBITDA nicht ableitbar. Mit der Registry-Version 1.1.0
+    # ist depreciation_and_amortization gemappt - erst deshalb steht die
+    # Formel hier und nicht als Annahme.
+    "ebitda": "operating_income + depreciation_and_amortization",
     "free_cash_flow": "operating_cash_flow - capital_expenditures",
     "total_debt": "long_term_debt + short_term_debt",
     "net_debt": "total_debt - cash_and_equivalents",
@@ -183,6 +190,14 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
         out["gross_profit"] = reported_gross
     else:
         emit("gross_profit", ("revenue", "cost_of_revenue"), lambda r, c: r - c)
+
+    # EBITDA. Die Abschreibungen stehen in der Kapitalflussrechnung, nicht in
+    # der GuV - genau deshalb war diese Kennzahl bis zur Registry-Version 1.1.0
+    # nicht ableitbar. Wo ein Emittent sie nicht meldet, bleibt EBITDA
+    # unavailable mit Grund; das operative Ergebnis als EBITDA auszugeben waere
+    # eine Behauptung ueber eine Groesse, die nie gemessen wurde.
+    emit("ebitda", ("operating_income", "depreciation_and_amortization"),
+         lambda op, da: op + da)
 
     emit("free_cash_flow", ("operating_cash_flow", "capital_expenditures"),
          lambda ocf, capex: ocf - capex)

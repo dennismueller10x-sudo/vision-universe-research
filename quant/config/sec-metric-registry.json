@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.0.0",
-  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist.",
+  "mapping_version": "1.1.0",
+  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall.",
   "sector_rules": [
     {
       "id": "FINANCIALS",
@@ -596,6 +596,289 @@
           "taxonomy": "us-gaap",
           "concept": "AllocatedShareBasedCompensationExpense",
           "priority": 20
+        }
+      ]
+    },
+    "depreciation_and_amortization": {
+      "label": "Depreciation & Amortization",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "note": "Die Abschreibungen stehen fast immer in der Kapitalflussrechnung, nicht in der GuV. Ohne sie ist EBITDA nicht ableitbar - genau das war bis hier als UNSUPPORTED vermerkt.",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DepreciationDepletionAndAmortization",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DepreciationAmortizationAndAccretionNet",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DepreciationAndAmortization",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Depreciation",
+          "priority": 40
+        }
+      ]
+    },
+    "current_assets": {
+      "label": "Current Assets",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "note": "Nicht jede Bilanz ist klassifiziert: Banken und Versicherer weisen keine kurzfristigen Aktiva aus. Fehlt hier heisst deshalb oefter 'nicht anwendbar' als 'nicht gemeldet'.",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AssetsCurrent",
+          "priority": 10
+        }
+      ]
+    },
+    "current_liabilities": {
+      "label": "Current Liabilities",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilitiesCurrent",
+          "priority": 10
+        }
+      ]
+    },
+    "inventory": {
+      "label": "Inventory",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InventoryNet",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InventoryGross",
+          "priority": 20
+        }
+      ]
+    },
+    "receivables": {
+      "label": "Receivables",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsReceivableNetCurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ReceivablesNetCurrent",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsNotesAndLoansReceivableNetCurrent",
+          "priority": 30
+        }
+      ]
+    },
+    "retained_earnings": {
+      "label": "Retained Earnings",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RetainedEarningsAccumulatedDeficit",
+          "priority": 10
+        }
+      ]
+    },
+    "goodwill": {
+      "label": "Goodwill",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "note": "Fehlender Goodwill ist der Normalfall, nicht eine Luecke: wer nie zugekauft hat, hat keinen.",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Goodwill",
+          "priority": 10
+        }
+      ]
+    },
+    "intangible_assets": {
+      "label": "Intangible Assets",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IntangibleAssetsNetExcludingGoodwill",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "FiniteLivedIntangibleAssetsNet",
+          "priority": 20
+        }
+      ]
+    },
+    "investing_cash_flow": {
+      "label": "Investing Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInInvestingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInInvestingActivitiesContinuingOperations",
+          "priority": 20
+        }
+      ]
+    },
+    "financing_cash_flow": {
+      "label": "Financing Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInFinancingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInFinancingActivitiesContinuingOperations",
+          "priority": 20
+        }
+      ]
+    },
+    "share_repurchases": {
+      "label": "Share Repurchases",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfCommonStock",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfEquity",
+          "priority": 20
+        }
+      ]
+    },
+    "debt_issued": {
+      "label": "Debt Issued",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProceedsFromIssuanceOfLongTermDebt",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProceedsFromIssuanceOfDebt",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProceedsFromNotesPayable",
+          "priority": 30
+        }
+      ]
+    },
+    "debt_repaid": {
+      "label": "Debt Repaid",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RepaymentsOfLongTermDebt",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RepaymentsOfDebt",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RepaymentsOfNotesPayable",
+          "priority": 30
         }
       ]
     }

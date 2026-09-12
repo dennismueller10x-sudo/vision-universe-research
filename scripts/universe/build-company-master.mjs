@@ -143,20 +143,65 @@ function buildNameMap() {
 /* Kuerzel -> CIK, aus demselben Artefakt. Getrennt vom Namen, weil eine
    CIK auch dann gilt, wenn der Name aus einer besseren Quelle kommt. */
 function buildCikMap() {
-  const file = join(root, "quant", "data", "universe", "cik-map.json");
-  const empty = { map: new Map(), status: "ABSENT", generatedAt: null, reason:
-    "quant/data/universe/cik-map.json fehlt. scripts/universe/build-cik-map.mjs baut sie." };
-  if (!existsSync(file)) return empty;
-  const cm = readJSON(file);
-  if (cm.status !== "OK" && cm.status !== "FROM_CACHE") {
-    return { map: new Map(), status: cm.status, generatedAt: cm.generatedAt || null,
-             reason: cm.reason || "SEC-Verzeichnis nicht abrufbar." };
-  }
   const map = new Map();
-  for (const [ticker, row] of Object.entries(cm.byTicker || {})) {
-    map.set(ticker, { cik: row.cik, exchange: row.exchange || null, source: "sec:" + row.source });
+  const ambiguous = new Map();
+  let secStatus = "ABSENT", secGeneratedAt = null, secReason =
+    "quant/data/universe/cik-map.json fehlt. scripts/universe/build-cik-map.mjs baut sie.";
+
+  const file = join(root, "quant", "data", "universe", "cik-map.json");
+  if (existsSync(file)) {
+    const cm = readJSON(file);
+    secStatus = cm.status;
+    secGeneratedAt = cm.generatedAt || null;
+    if (cm.status === "OK" || cm.status === "FROM_CACHE") {
+      secReason = null;
+      for (const [ticker, row] of Object.entries(cm.byTicker || {})) {
+        /* Ein ambiger Eintrag bekommt KEINE CIK. Er wird gefuehrt, damit
+           er in der Bilanz auftaucht - geraten wird nicht (§3). */
+        if (row.status === "AMBIGUOUS" || !row.cik) {
+          ambiguous.set(ticker, { candidates: row.candidates || [], source: "sec:" + row.source });
+          continue;
+        }
+        map.set(ticker, { cik: row.cik, exchange: row.exchange || null,
+                          source: "sec:" + row.source, confidence: "HIGH" });
+      }
+    } else {
+      secReason = cm.reason || "SEC-Verzeichnis nicht abrufbar.";
+    }
   }
-  return { map, status: cm.status, generatedAt: cm.generatedAt || null, reason: null };
+
+  /* Die handgepflegten CIKs aus quant/config/sec-universe.json.
+
+     Sie stehen NEBEN der SEC-Zuordnung, nicht darunter: der Eintrag fuer
+     XOM traegt `cik_authority: "config"` samt belegter Begruendung, weil
+     der Ticker inzwischen auf eine neue Holding zeigt, die Historie aber
+     beim alten CIK liegt. Genau diese Regel fuehrt auch scripts/quant/
+     cli.py, und zwei verschiedene Antworten auf dieselbe Frage waeren
+     schlimmer als keine.
+
+     Ohne erklaerte Uebersteuerung gewinnt die SEC. */
+  const cfgFile = join(root, "quant", "config", "sec-universe.json");
+  let declared = 0, overrides = 0;
+  if (existsSync(cfgFile)) {
+    for (const c of readJSON(cfgFile).companies || []) {
+      if (!c.ticker || !c.cik) continue;
+      const ticker = String(c.ticker).toUpperCase();
+      const cik = String(c.cik).replace(/\D/g, "").padStart(10, "0");
+      const erklaert = c.cik_authority === "config" &&
+                       String(c.cik_authority_reason || "").trim().length >= 40;
+      if (map.has(ticker) && !erklaert) continue;
+      if (map.has(ticker) && erklaert) overrides++;
+      map.set(ticker, { cik, exchange: null,
+                        source: erklaert ? "config:sec-universe(declaredOverride)"
+                                         : "config:sec-universe",
+                        confidence: erklaert ? "HIGH" : "MEDIUM" });
+      ambiguous.delete(ticker);
+      declared++;
+    }
+  }
+
+  return { map, ambiguous, status: secStatus, generatedAt: secGeneratedAt, reason: secReason,
+           declared, overrides };
 }
 
 /** "MERCK & CO INC" -> "Merck & Co Inc". Mehr wird nicht versucht. */
@@ -385,7 +430,8 @@ function main() {
   const names = buildNameMap();
   console.log(`  Namen:    ${names.size} bekannt`);
   const ciks = buildCikMap();
-  console.log(`  CIK:      ${ciks.map.size} Zuordnungen (${ciks.status})` +
+  console.log(`  CIK:      ${ciks.map.size} Zuordnungen (SEC ${ciks.status}` +
+              `, ${ciks.declared} aus der Konfiguration, ${ciks.ambiguous.size} ambig)` +
               (ciks.reason ? "  — " + ciks.reason : ""));
 
   const eligibility = loadEligibility();
@@ -574,7 +620,10 @@ function main() {
     },
     identifiers: {
       cikMap: { status: ciks.status, generatedAt: ciks.generatedAt, entries: ciks.map.size,
-                reason: ciks.reason },
+                fromConfig: ciks.declared, declaredOverrides: ciks.overrides,
+                ambiguous: ciks.ambiguous.size, reason: ciks.reason },
+      withIssuerId: published.filter((i) => i.issuerId).length,
+      distinctIssuers: new Set(published.filter((i) => i.issuerId).map((i) => i.issuerId)).size,
       withCik: published.filter((i) => i.cik).length,
       withName: published.filter((i) => i.companyName).length,
       withoutName: published.filter((i) => !i.companyName).length,

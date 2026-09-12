@@ -1,0 +1,1868 @@
+{
+  "version": "company-master-1.0.0",
+  "generatedAt": "2026-09-12T11:01:17.168Z",
+  "source": {
+    "cikMap": "UNAVAILABLE",
+    "config": "quant/config/sec-universe.json"
+  },
+  "note": "Drei Zustaende, nicht zwei. AMBIGUOUS heisst: es gaebe eine Wahl, und sie wird nicht getroffen (§3). Keine geratene CIK.",
+  "totals": {
+    "CIK_RESOLVED": 5,
+    "CIK_UNRESOLVED": 7804,
+    "CIK_AMBIGUOUS": 0,
+    "instruments": 7809
+  },
+  "unresolvedByEligibility": {
+    "ELIGIBLE": 6472,
+    "EXCLUDED": 799,
+    "REVIEW": 225,
+    "SEPARATE_CLASS": 308
+  },
+  "resolved": [
+    {
+      "member": "ref_AAPL",
+      "instrumentId": "vu_b8ae31d1562481",
+      "symbol": "AAPL",
+      "cik": "0000320193",
+      "issuerId": "iss_cik_0000320193",
+      "source": "config:sec-universe"
+    },
+    {
+      "member": "ref_JPM",
+      "instrumentId": "vu_93340aabc94fdd",
+      "symbol": "JPM",
+      "cik": "0000019617",
+      "issuerId": "iss_cik_0000019617",
+      "source": "config:sec-universe"
+    },
+    {
+      "member": "ref_MSFT",
+      "instrumentId": "vu_e3805dbd5d84aa",
+      "symbol": "MSFT",
+      "cik": "0000789019",
+      "issuerId": "iss_cik_0000789019",
+      "source": "config:sec-universe"
+    },
+    {
+      "member": "ref_NVDA",
+      "instrumentId": "vu_d57074b4128184",
+      "symbol": "NVDA",
+      "cik": "0001045810",
+      "issuerId": "iss_cik_0001045810",
+      "source": "config:sec-universe"
+    },
+    {
+      "member": "ref_XOM",
+      "instrumentId": "vu_8cd377ae5488c8",
+      "symbol": "XOM",
+      "cik": "0000034088",
+      "issuerId": "iss_cik_0000034088",
+      "source": "config:sec-universe(declaredOverride)"
+    }
+  ],
+  "resolvedTruncated": false,
+  "ambiguous": [],
+  "unresolvedSample": [
+    {
+      "member": "ref_AA",
+      "instrumentId": "vu_a1013a2635aa9c",
+      "symbol": "AA",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAAC",
+      "instrumentId": "vu_03d5e12a142812",
+      "symbol": "AAAC",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAAD",
+      "instrumentId": "vu_9b74f860d2c0be",
+      "symbol": "AAAD",
+      "exchange": "NYSE ARCA",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAAP",
+      "instrumentId": "vu_187bc8b05e4da7",
+      "symbol": "AAAP",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACB",
+      "instrumentId": "vu_c1b355c86aaf30",
+      "symbol": "AACB",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACBR",
+      "instrumentId": "vu_0e0575989b30cd",
+      "symbol": "AACBR",
+      "exchange": "NASDAQ",
+      "securityClass": "RIGHT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACBU",
+      "instrumentId": "vu_17b7bff10c17cf",
+      "symbol": "AACBU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACG",
+      "instrumentId": "vu_a089a023b15995",
+      "symbol": "AACG",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACI",
+      "instrumentId": "vu_e596e2dd8fce5e",
+      "symbol": "AACI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACIW",
+      "instrumentId": "vu_f77398645f2ee0",
+      "symbol": "AACIW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACO",
+      "instrumentId": "vu_07bfeacb188e4d",
+      "symbol": "AACO",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACOU",
+      "instrumentId": "vu_7f33383cb84f64",
+      "symbol": "AACOU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACOW",
+      "instrumentId": "vu_a9fa1d82e31649",
+      "symbol": "AACOW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACP",
+      "instrumentId": "vu_ba476c9ec70b12",
+      "symbol": "AACP",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACPR",
+      "instrumentId": "vu_8ccd46c6ab91c9",
+      "symbol": "AACPR",
+      "exchange": "NASDAQ",
+      "securityClass": "RIGHT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACPU",
+      "instrumentId": "vu_42184d5bc7754a",
+      "symbol": "AACPU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACPW",
+      "instrumentId": "vu_6cf44d59f24fb7",
+      "symbol": "AACPW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACT",
+      "instrumentId": "vu_17dc15998ec6c0",
+      "symbol": "AACT",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AACTWS",
+      "instrumentId": "vu_983e9bd0a30cbf",
+      "symbol": "AACTWS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AADX",
+      "instrumentId": "vu_7ff0169a8b211d",
+      "symbol": "AADX",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAL",
+      "instrumentId": "vu_5b1314890ae298",
+      "symbol": "AAL",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAME",
+      "instrumentId": "vu_a24a2c3f134ca9",
+      "symbol": "AAME",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAMI",
+      "instrumentId": "vu_cf1ffcf8db3f18",
+      "symbol": "AAMI",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAOG",
+      "instrumentId": "vu_e09d07eb12cd70",
+      "symbol": "AAOG",
+      "exchange": "BATS",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAOI",
+      "instrumentId": "vu_42405dd919d82e",
+      "symbol": "AAOI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAON",
+      "instrumentId": "vu_388e1380a99090",
+      "symbol": "AAON",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAP",
+      "instrumentId": "vu_9e8f73d8bcea19",
+      "symbol": "AAP",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAPG",
+      "instrumentId": "vu_61fa058c000e26",
+      "symbol": "AAPG",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAPGV",
+      "instrumentId": "vu_8658b1f83e144e",
+      "symbol": "AAPGV",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AARD",
+      "instrumentId": "vu_840ec6d7c67227",
+      "symbol": "AARD",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAT",
+      "instrumentId": "vu_eaf51804708475",
+      "symbol": "AAT",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AAUC",
+      "instrumentId": "vu_be869a1ecccf6b",
+      "symbol": "AAUC",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AB",
+      "instrumentId": "vu_09e82f8f9df3c1",
+      "symbol": "AB",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABAT",
+      "instrumentId": "vu_61e0a041b24aea",
+      "symbol": "ABAT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABBV",
+      "instrumentId": "vu_330a586fdc27d1",
+      "symbol": "ABBV",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABCB",
+      "instrumentId": "vu_bc33c872cbe828",
+      "symbol": "ABCB",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABCL",
+      "instrumentId": "vu_2d41354754ccf1",
+      "symbol": "ABCL",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABEO",
+      "instrumentId": "vu_16f4e528b433e9",
+      "symbol": "ABEO",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABEV",
+      "instrumentId": "vu_e3b38f6c5f2000",
+      "symbol": "ABEV",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABG",
+      "instrumentId": "vu_d4fa308628f623",
+      "symbol": "ABG",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABI",
+      "instrumentId": "vu_01e091255aab07",
+      "symbol": "ABI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABL",
+      "instrumentId": "vu_d6ac6e472aa6ce",
+      "symbol": "ABL",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABLLW",
+      "instrumentId": "vu_60d7c42be0d3ab",
+      "symbol": "ABLLW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABLV",
+      "instrumentId": "vu_18d4c2febc011d",
+      "symbol": "ABLV",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABLVW",
+      "instrumentId": "vu_aa88da79ab4edf",
+      "symbol": "ABLVW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABM",
+      "instrumentId": "vu_439c64589796c4",
+      "symbol": "ABM",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABNB",
+      "instrumentId": "vu_2ec3f6dcef4955",
+      "symbol": "ABNB",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABOS",
+      "instrumentId": "vu_ef76b12ec0c98a",
+      "symbol": "ABOS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABR",
+      "instrumentId": "vu_e6b634c93d7faf",
+      "symbol": "ABR",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABR_P_D",
+      "instrumentId": "vu_a91086b5487d16",
+      "symbol": "ABR-P-D",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABR_P_E",
+      "instrumentId": "vu_15ee880eb4bbb4",
+      "symbol": "ABR-P-E",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABR_P_F",
+      "instrumentId": "vu_7e3619b71da116",
+      "symbol": "ABR-P-F",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABSI",
+      "instrumentId": "vu_b7caebd48b75d5",
+      "symbol": "ABSI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABT",
+      "instrumentId": "vu_7013f45f60481a",
+      "symbol": "ABT",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABTC",
+      "instrumentId": "vu_592e50c92f32dd",
+      "symbol": "ABTC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABTS",
+      "instrumentId": "vu_27995319fe3d43",
+      "symbol": "ABTS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABUS",
+      "instrumentId": "vu_ccba8a3ca35ce8",
+      "symbol": "ABUS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABVC",
+      "instrumentId": "vu_7c78811353ba42",
+      "symbol": "ABVC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABVX",
+      "instrumentId": "vu_acfc37c2839e95",
+      "symbol": "ABVX",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ABX",
+      "instrumentId": "vu_54a57d23acac2c",
+      "symbol": "ABX",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACA",
+      "instrumentId": "vu_dc3518bd0a2004",
+      "symbol": "ACA",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACAA",
+      "instrumentId": "vu_53f5e791fcf02e",
+      "symbol": "ACAA",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACAAU",
+      "instrumentId": "vu_3151da8e56a917",
+      "symbol": "ACAAU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACAAW",
+      "instrumentId": "vu_0728c6082d1dd3",
+      "symbol": "ACAAW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACAD",
+      "instrumentId": "vu_73cee0feb63241",
+      "symbol": "ACAD",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACB",
+      "instrumentId": "vu_416396695908c8",
+      "symbol": "ACB",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACCO",
+      "instrumentId": "vu_0de1e2ae9b89e6",
+      "symbol": "ACCO",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACCS",
+      "instrumentId": "vu_a633eafcbb0c02",
+      "symbol": "ACCS",
+      "exchange": "AMEX",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACDC",
+      "instrumentId": "vu_f5ca1e82cd6382",
+      "symbol": "ACDC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACEI",
+      "instrumentId": "vu_d70b40aa423916",
+      "symbol": "ACEI",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACEL",
+      "instrumentId": "vu_1e66fee521c0b8",
+      "symbol": "ACEL",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACET",
+      "instrumentId": "vu_9ad70f02d9a52a",
+      "symbol": "ACET",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGC",
+      "instrumentId": "vu_613bfdc53a1296",
+      "symbol": "ACGC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGCU",
+      "instrumentId": "vu_b531040283b91e",
+      "symbol": "ACGCU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGCW",
+      "instrumentId": "vu_8a6a1ebc5a2f6d",
+      "symbol": "ACGCW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGL",
+      "instrumentId": "vu_5829172cc92b94",
+      "symbol": "ACGL",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGLN",
+      "instrumentId": "vu_5ed47670018821",
+      "symbol": "ACGLN",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGLO",
+      "instrumentId": "vu_f1e2ed5f93f8c7",
+      "symbol": "ACGLO",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACGO",
+      "instrumentId": "vu_d2d12c9d0eb8f2",
+      "symbol": "ACGO",
+      "exchange": "BATS",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACH",
+      "instrumentId": "vu_e13d6baedd935a",
+      "symbol": "ACH",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACHC",
+      "instrumentId": "vu_c85d90ce71f73b",
+      "symbol": "ACHC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACHL",
+      "instrumentId": "vu_e441114bf50f73",
+      "symbol": "ACHL",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACHR",
+      "instrumentId": "vu_6e93ed566009be",
+      "symbol": "ACHR",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACHV",
+      "instrumentId": "vu_75b26531ea4a26",
+      "symbol": "ACHV",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACI",
+      "instrumentId": "vu_7460fd5571564f",
+      "symbol": "ACI",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACIC",
+      "instrumentId": "vu_57b9041b01f07f",
+      "symbol": "ACIC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACII",
+      "instrumentId": "vu_61b2e16eb78fe2",
+      "symbol": "ACII",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACIU",
+      "instrumentId": "vu_6724f9dd46fdc2",
+      "symbol": "ACIU",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACIW",
+      "instrumentId": "vu_3d862e5f1c21c2",
+      "symbol": "ACIW",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACLO",
+      "instrumentId": "vu_8e49accd3466c0",
+      "symbol": "ACLO",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACLS",
+      "instrumentId": "vu_55fca5bacb0b71",
+      "symbol": "ACLS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACLZ",
+      "instrumentId": "vu_184af9a5fc8e4d",
+      "symbol": "ACLZ",
+      "exchange": "BATS",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACM",
+      "instrumentId": "vu_c0c50e81245147",
+      "symbol": "ACM",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACMM",
+      "instrumentId": "vu_919a1369029c90",
+      "symbol": "ACMM",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACMR",
+      "instrumentId": "vu_efbd77782b1ea7",
+      "symbol": "ACMR",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACN",
+      "instrumentId": "vu_0417cc1467a405",
+      "symbol": "ACN",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACNB",
+      "instrumentId": "vu_7ecb52bf57a1eb",
+      "symbol": "ACNB",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACNT",
+      "instrumentId": "vu_c3d8957903e3e5",
+      "symbol": "ACNT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACOG",
+      "instrumentId": "vu_68e585f9a8f0d5",
+      "symbol": "ACOG",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACON",
+      "instrumentId": "vu_6e8d3caa7d038e",
+      "symbol": "ACON",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACONW",
+      "instrumentId": "vu_ca6c4225b208cf",
+      "symbol": "ACONW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACP_P_A",
+      "instrumentId": "vu_14317d1542e4c2",
+      "symbol": "ACP-P-A",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACR",
+      "instrumentId": "vu_ecb5a4201aa090",
+      "symbol": "ACR",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACR_P_C",
+      "instrumentId": "vu_fd759bd508632f",
+      "symbol": "ACR-P-C",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACR_P_D",
+      "instrumentId": "vu_8d2c6a94feb278",
+      "symbol": "ACR-P-D",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACRE",
+      "instrumentId": "vu_de34c2696bdcc6",
+      "symbol": "ACRE",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACRS",
+      "instrumentId": "vu_459ba9cc525f50",
+      "symbol": "ACRS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACRV",
+      "instrumentId": "vu_8ce5734f3272cf",
+      "symbol": "ACRV",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACT",
+      "instrumentId": "vu_99cbbc0f499cd2",
+      "symbol": "ACT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACTG",
+      "instrumentId": "vu_d8305e064932da",
+      "symbol": "ACTG",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACTS",
+      "instrumentId": "vu_8c8d79e9addf9b",
+      "symbol": "ACTS",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACTU",
+      "instrumentId": "vu_e03baaf0ee142c",
+      "symbol": "ACTU",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACU",
+      "instrumentId": "vu_5f473f4f56d7b3",
+      "symbol": "ACU",
+      "exchange": "AMEX",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACV_A",
+      "instrumentId": "vu_8ec687eec2839a",
+      "symbol": "ACV-A",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACVA",
+      "instrumentId": "vu_35c507012d9936",
+      "symbol": "ACVA",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACXP",
+      "instrumentId": "vu_059cddd7bf6632",
+      "symbol": "ACXP",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACYN",
+      "instrumentId": "vu_47089333e99062",
+      "symbol": "ACYN",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ACYS",
+      "instrumentId": "vu_005e2d70d9251a",
+      "symbol": "ACYS",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AD",
+      "instrumentId": "vu_7feb0c397c6a1c",
+      "symbol": "AD",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAC",
+      "instrumentId": "vu_85885026809b31",
+      "symbol": "ADAC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADACU",
+      "instrumentId": "vu_3f4a94b373b756",
+      "symbol": "ADACU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADACW",
+      "instrumentId": "vu_68e7cd319df3f2",
+      "symbol": "ADACW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAG",
+      "instrumentId": "vu_d150239234371f",
+      "symbol": "ADAG",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAM",
+      "instrumentId": "vu_409028247142c3",
+      "symbol": "ADAM",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAMH",
+      "instrumentId": "vu_5bc99bba2a6d34",
+      "symbol": "ADAMH",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAMK",
+      "instrumentId": "vu_c412c06392b4c5",
+      "symbol": "ADAMK",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAML",
+      "instrumentId": "vu_0f658a8e76d145",
+      "symbol": "ADAML",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAMM",
+      "instrumentId": "vu_a287893509f4d6",
+      "symbol": "ADAMM",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAMN",
+      "instrumentId": "vu_e53c76084c0a5f",
+      "symbol": "ADAMN",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAMO",
+      "instrumentId": "vu_77ad1c37df1a69",
+      "symbol": "ADAMO",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADAMZ",
+      "instrumentId": "vu_ff6db8c4ce0fbe",
+      "symbol": "ADAMZ",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADBE",
+      "instrumentId": "vu_7a5981ff9b7bd6",
+      "symbol": "ADBE",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADBT",
+      "instrumentId": "vu_b5b47a60396166",
+      "symbol": "ADBT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADC",
+      "instrumentId": "vu_73fa79fc7347dc",
+      "symbol": "ADC",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADC_P_A",
+      "instrumentId": "vu_b69dc09398181b",
+      "symbol": "ADC-P-A",
+      "exchange": "NYSE",
+      "securityClass": "PREFERRED",
+      "productEligibility": "SEPARATE_CLASS",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADCT",
+      "instrumentId": "vu_fab15f6e6b310f",
+      "symbol": "ADCT",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADEA",
+      "instrumentId": "vu_4411405cfa6805",
+      "symbol": "ADEA",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADEX",
+      "instrumentId": "vu_3e5601f3c279f8",
+      "symbol": "ADEX",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADGM",
+      "instrumentId": "vu_13f0c9c2182f91",
+      "symbol": "ADGM",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADI",
+      "instrumentId": "vu_2cd449a3ca5adb",
+      "symbol": "ADI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADIG",
+      "instrumentId": "vu_c9fd0ae54ffa57",
+      "symbol": "ADIG",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADIL",
+      "instrumentId": "vu_d0a8bdeb074a41",
+      "symbol": "ADIL",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADM",
+      "instrumentId": "vu_ea8932ae51aab0",
+      "symbol": "ADM",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADMA",
+      "instrumentId": "vu_ff552464cbca7b",
+      "symbol": "ADMA",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADNT",
+      "instrumentId": "vu_e07a5bf7a683a3",
+      "symbol": "ADNT",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADP",
+      "instrumentId": "vu_d004f06c9f1eed",
+      "symbol": "ADP",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADPT",
+      "instrumentId": "vu_d1667cde551368",
+      "symbol": "ADPT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADSE",
+      "instrumentId": "vu_cd644e36d539ed",
+      "symbol": "ADSE",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADSEW",
+      "instrumentId": "vu_142110018dea47",
+      "symbol": "ADSEW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADSK",
+      "instrumentId": "vu_886c2634f6d719",
+      "symbol": "ADSK",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADT",
+      "instrumentId": "vu_b34c7e4daf2cf5",
+      "symbol": "ADT",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADTN",
+      "instrumentId": "vu_7f205f3483fe8a",
+      "symbol": "ADTN",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADUR",
+      "instrumentId": "vu_d516da698b6f32",
+      "symbol": "ADUR",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADUS",
+      "instrumentId": "vu_4292ac82f84ba0",
+      "symbol": "ADUS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADV",
+      "instrumentId": "vu_ad28fd06150e42",
+      "symbol": "ADV",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADVB",
+      "instrumentId": "vu_e94bfc6e9fa454",
+      "symbol": "ADVB",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADVM",
+      "instrumentId": "vu_066cb16b235a5d",
+      "symbol": "ADVM",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADVWW",
+      "instrumentId": "vu_bb7260c844c2a7",
+      "symbol": "ADVWW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "REVIEW",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_ADXN",
+      "instrumentId": "vu_2c422ea8638182",
+      "symbol": "ADXN",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEAQ",
+      "instrumentId": "vu_a594512b26bfdd",
+      "symbol": "AEAQ",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEAQU",
+      "instrumentId": "vu_5d5d92dc105514",
+      "symbol": "AEAQU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEAQW",
+      "instrumentId": "vu_86e743a23b1bf9",
+      "symbol": "AEAQW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEBI",
+      "instrumentId": "vu_14281908538d6a",
+      "symbol": "AEBI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEC",
+      "instrumentId": "vu_00dc3d0c5c9c94",
+      "symbol": "AEC",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEE",
+      "instrumentId": "vu_2ebc364fc6d34e",
+      "symbol": "AEE",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEFC",
+      "instrumentId": "vu_39f13035b39cc7",
+      "symbol": "AEFC",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEG",
+      "instrumentId": "vu_58596ecdf07219",
+      "symbol": "AEG",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEHL",
+      "instrumentId": "vu_7433bfed94b427",
+      "symbol": "AEHL",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEHR",
+      "instrumentId": "vu_601c1723e7d2c9",
+      "symbol": "AEHR",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEI",
+      "instrumentId": "vu_c3cf06eaedfbf3",
+      "symbol": "AEI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEIS",
+      "instrumentId": "vu_9b460e9122fcc0",
+      "symbol": "AEIS",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEM",
+      "instrumentId": "vu_c785eba72e0998",
+      "symbol": "AEM",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEMD",
+      "instrumentId": "vu_b76050bcd588a8",
+      "symbol": "AEMD",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AENT",
+      "instrumentId": "vu_33ca50c7f6e14b",
+      "symbol": "AENT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AENTW",
+      "instrumentId": "vu_056267be0f9c9e",
+      "symbol": "AENTW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEO",
+      "instrumentId": "vu_f1c287e557a6d1",
+      "symbol": "AEO",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEON",
+      "instrumentId": "vu_16e0e5992b19cc",
+      "symbol": "AEON",
+      "exchange": "AMEX",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEP",
+      "instrumentId": "vu_efbc4de94c1c09",
+      "symbol": "AEP",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AER",
+      "instrumentId": "vu_43cfe2c2df53e6",
+      "symbol": "AER",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AERT",
+      "instrumentId": "vu_75ab194b35cc32",
+      "symbol": "AERT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AES",
+      "instrumentId": "vu_d65410a97316db",
+      "symbol": "AES",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AESI",
+      "instrumentId": "vu_ccb41f2ad141e9",
+      "symbol": "AESI",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AESPU",
+      "instrumentId": "vu_306873d725249c",
+      "symbol": "AESPU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEVA",
+      "instrumentId": "vu_c0ac17bc60e354",
+      "symbol": "AEVA",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEXA",
+      "instrumentId": "vu_2b411e59eb4127",
+      "symbol": "AEXA",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AEYE",
+      "instrumentId": "vu_26cf176746b1ae",
+      "symbol": "AEYE",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFAR",
+      "instrumentId": "vu_42828e63519016",
+      "symbol": "AFAR",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFARU",
+      "instrumentId": "vu_918d9564a1bf33",
+      "symbol": "AFARU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFARW",
+      "instrumentId": "vu_bb18d92acc87ab",
+      "symbol": "AFARW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFBI",
+      "instrumentId": "vu_22d7c3a17a855d",
+      "symbol": "AFBI",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFCG",
+      "instrumentId": "vu_8ef680eadb2023",
+      "symbol": "AFCG",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFG",
+      "instrumentId": "vu_f86d19a2ec34f2",
+      "symbol": "AFG",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFGB",
+      "instrumentId": "vu_570696425d55fe",
+      "symbol": "AFGB",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFGC",
+      "instrumentId": "vu_e98ac429f07990",
+      "symbol": "AFGC",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFGD",
+      "instrumentId": "vu_dfda0cd07ef4bd",
+      "symbol": "AFGD",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFGE",
+      "instrumentId": "vu_72e883bf120334",
+      "symbol": "AFGE",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFJK",
+      "instrumentId": "vu_98670d2b4df0b1",
+      "symbol": "AFJK",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFJKR",
+      "instrumentId": "vu_0f63251d0c027a",
+      "symbol": "AFJKR",
+      "exchange": "NASDAQ",
+      "securityClass": "RIGHT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFJKU",
+      "instrumentId": "vu_9f1b86dc0251c2",
+      "symbol": "AFJKU",
+      "exchange": "NASDAQ",
+      "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    },
+    {
+      "member": "ref_AFL",
+      "instrumentId": "vu_fa1f5763ede72f",
+      "symbol": "AFL",
+      "exchange": "NYSE",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "CIK-Zuordnung nicht verfuegbar (UNAVAILABLE)."
+    }
+  ],
+  "unresolvedTruncated": true
+}

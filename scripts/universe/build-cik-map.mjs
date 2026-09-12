@@ -186,25 +186,48 @@ async function main() {
      sagen, gewinnt die Boersendatei - und wo nur eine etwas sagt, steht
      das im Feld `source`. */
   const byTicker = new Map();
-  const conflicts = [];
+  const ambiguous = [];
   for (const r of rowsA) {
-    if (!byTicker.has(r.ticker)) byTicker.set(r.ticker, Object.assign({}, r, { source: "company_tickers" }));
+    if (!byTicker.has(r.ticker)) {
+      byTicker.set(r.ticker, Object.assign({}, r, { source: "company_tickers", status: "RESOLVED" }));
+    }
   }
   for (const r of rowsB) {
     const prev = byTicker.get(r.ticker);
     if (!prev) {
-      byTicker.set(r.ticker, Object.assign({}, r, { source: "company_tickers_exchange" }));
+      byTicker.set(r.ticker, Object.assign({}, r,
+        { source: "company_tickers_exchange", status: "RESOLVED" }));
       continue;
     }
     if (prev.cik !== r.cik) {
-      conflicts.push({ ticker: r.ticker, company_tickers: prev.cik, company_tickers_exchange: r.cik });
+      /* Zwei SEC-Verzeichnisse, zwei CIKs fuer dasselbe Kuerzel.
+
+         Frueher gewann hier die Boersendatei. Das war eine Wahl und
+         keine Aufloesung: §3 verlangt ausdruecklich, dass ambige Faelle
+         markiert werden und keine CIK geraten wird. Der Eintrag traegt
+         deshalb AMBIGUOUS und BEIDE Kandidaten - und bekommt keine CIK.
+         Wer ihn aufloesen will, braucht die Einreichungsuebersicht, nicht
+         eine Vorrangregel. */
+      ambiguous.push({ ticker: r.ticker, candidates: [
+        { cik: prev.cik, name: prev.name, source: "company_tickers" },
+        { cik: r.cik, name: r.name, exchange: r.exchange, source: "company_tickers_exchange" }
+      ]});
+      byTicker.set(r.ticker, {
+        ticker: r.ticker, cik: null, name: r.name || prev.name,
+        exchange: r.exchange || prev.exchange,
+        source: "company_tickers+company_tickers_exchange",
+        status: "AMBIGUOUS",
+        candidates: [prev.cik, r.cik]
+      });
+      continue;
     }
     byTicker.set(r.ticker, {
       ticker: r.ticker,
       cik: r.cik,
       name: r.name || prev.name,
       exchange: r.exchange || prev.exchange,
-      source: "company_tickers_exchange"
+      source: "company_tickers_exchange",
+      status: "RESOLVED"
     });
   }
 
@@ -214,6 +237,7 @@ async function main() {
   const ciks = new Set();
   const tickersPerCik = new Map();
   for (const r of byTicker.values()) {
+    if (!r.cik) continue;
     ciks.add(r.cik);
     tickersPerCik.set(r.cik, (tickersPerCik.get(r.cik) || 0) + 1);
   }
@@ -232,26 +256,33 @@ async function main() {
     requests: SOURCES.length,
     totals: {
       tickers: byTicker.size,
+      resolved: Array.from(byTicker.values()).filter((r) => r.status === "RESOLVED").length,
+      ambiguous: ambiguous.length,
       distinctCiks: ciks.size,
       ciksWithMultipleTickers: multi,
+      ciksWithMultipleTickersNote:
+        "Kein Befund. Aktienklassen und Vorzuege desselben Emittenten teilen sich eine CIK - " +
+        "genau deshalb gehoeren Fundamentaldaten an den Emittenten und nicht an das Papier (§15).",
       withExchange: Array.from(byTicker.values()).filter((r) => r.exchange).length,
       withName: Array.from(byTicker.values()).filter((r) => r.name).length
     },
-    conflicts,
+    ambiguous,
     note: "Kuerzel -> CIK + Firmenname, wie die SEC sie fuehrt. Die SEC ist die Autoritaet fuer " +
           "die CIK; ein Kuerzel, das hier fehlt, hat keinen US-Einreicher - kein Fehler, sondern " +
           "ein Befund (auslaendische Emittenten ohne 20-F, ETFs, delistete Titel).",
     byTicker: Object.fromEntries(
       Array.from(byTicker.entries()).sort().map(([k, v]) => [k, {
-        cik: v.cik, name: v.name, exchange: v.exchange, source: v.source
+        cik: v.cik, name: v.name, exchange: v.exchange, source: v.source,
+        status: v.status, candidates: v.candidates || undefined
       }]))
   };
 
   mkdirSync(dirname(OUT_FILE), { recursive: true });
   writeFileSync(OUT_FILE, JSON.stringify(out, null, 2) + "\n");
 
-  console.log(`\n  ${out.totals.tickers} Kuerzel · ${out.totals.distinctCiks} CIKs · ` +
-              `${out.totals.withName} mit Namen · ${conflicts.length} Widersprueche`);
+  console.log(`\n  ${out.totals.tickers} Kuerzel · ${out.totals.resolved} aufgeloest · ` +
+              `${out.totals.ambiguous} ambig · ${out.totals.distinctCiks} CIKs · ` +
+              `${out.totals.withName} mit Namen`);
   console.log("  " + OUT_FILE.replace(root + "/", ""));
 }
 

@@ -35,14 +35,21 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         NVDA's 10-Ks for the years ending January 2011 to January 2014 tag it
 #         one year low, which produced two fiscal years labelled 2010, no 2014,
 #         and four years off by one.
-NORMALIZATION_LOGIC_VERSION = "1.5.0"
+#
+# 1.6.0 — EBITDA ist ableitbar. Die Metrikregistry 1.1.0 mappt
+#         depreciation_and_amortization; damit faellt der Eintrag aus
+#         UNSUPPORTED_METRICS weg und der Wert wird gerechnet statt
+#         weggelassen. Fuer jeden bereits gespeicherten Factbook heisst
+#         das: neu normalisieren, sonst fehlt EBITDA dort weiter und
+#         niemand merkt es.
+NORMALIZATION_LOGIC_VERSION = "1.6.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
 METRIC_REGISTRY_MIN_VERSION = 1
 
 # Derived-metric formulas. Bump on any change to derived.py's arithmetic.
-FORMULA_VERSION = "1.0.0"
+FORMULA_VERSION = "1.1.0"
 
 # The SEC access adapter (endpoints, fair-access behaviour).
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
@@ -64,7 +71,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "2afb58fcf5a4f9bdf9d463ec3abc58694452b757a47da85d0c700a5637cef3cd"
+    "1c9c3c7ffa3af534ed8dedce038d9db41ea405143d797b466956b8b146230b99"
 )
 
 

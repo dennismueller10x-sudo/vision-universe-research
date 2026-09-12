@@ -43,6 +43,7 @@ DATA_SOURCE = {
 METRIC_MAP = {
     "revenue":                 ("revenue", "usd_m", 1e-6),
     "gross_profit":            ("grossProfit", "usd_m", 1e-6),
+    "ebitda":                  ("ebitda", "usd_m", 1e-6),
     "operating_income":        ("operatingIncome", "usd_m", 1e-6),
     "net_income":              ("netIncome", "usd_m", 1e-6),
     "free_cash_flow":          ("freeCashFlow", "usd_m", 1e-6),
@@ -59,8 +60,6 @@ METRIC_MAP = {
 # Canonical metrics this pipeline cannot produce from SEC filings, and why.
 # Recorded so that a gap is visible instead of looking like missing coverage.
 UNSUPPORTED_METRICS = {
-    "ebitda": "requires depreciation and amortisation, which the metric registry "
-              "does not yet map from a reliably-tagged XBRL concept",
     "dividendPerShare": "SEC cash-flow statements report total dividends paid, not "
                         "a per-share amount",
 }
@@ -70,6 +69,7 @@ UNSUPPORTED_METRICS = {
 DEPENDENCIES = {
     "revenue": ("revenue",),
     "gross_profit": ("gross_profit", "revenue", "cost_of_revenue"),
+    "ebitda": ("operating_income", "depreciation_and_amortization"),
     "operating_income": ("operating_income",),
     "net_income": ("net_income",),
     "free_cash_flow": ("operating_cash_flow", "capital_expenditures"),
@@ -84,8 +84,8 @@ DEPENDENCIES = {
     "accruals": ("net_income", "operating_cash_flow", "total_assets"),
 }
 
-RECONSTRUCTED = ("gross_profit", "free_cash_flow", "net_debt", "invested_capital",
-                 "accruals")
+RECONSTRUCTED = ("gross_profit", "ebitda", "free_cash_flow", "net_debt",
+                 "invested_capital", "accruals")
 
 FISCAL_PERIODS = ("Q1", "Q2", "Q3", "Q4", "FY")
 

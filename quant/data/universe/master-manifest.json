@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-09-12T10:52:56.738Z",
+  "generatedAt": "2026-09-12T10:54:48.613Z",
   "asOf": "2026-09-12",
   "provider": "tiingo",
   "source": {
@@ -2689,20 +2689,25 @@
     "source": "local",
     "runId": null,
     "commit": null,
-    "normalizeMs": 32,
-    "syncMs": 85,
-    "shardsWritten": 0,
-    "shardsUnchanged": 646,
-    "publishedBytes": 8918259
+    "normalizeMs": 40,
+    "syncMs": 93,
+    "shardsWritten": 5,
+    "shardsUnchanged": 641,
+    "publishedBytes": 8918585
   },
   "identifiers": {
     "cikMap": {
       "status": "UNAVAILABLE",
-      "generatedAt": "2026-09-12T09:26:39.762Z",
-      "entries": 0,
+      "generatedAt": "2026-09-12T10:54:18.904Z",
+      "entries": 5,
+      "fromConfig": 5,
+      "declaredOverrides": 0,
+      "ambiguous": 0,
       "reason": "Keines der beiden SEC-Verzeichnisse war abrufbar."
     },
-    "withCik": 0,
+    "withIssuerId": 5,
+    "distinctIssuers": 5,
+    "withCik": 5,
     "withName": 518,
     "withoutName": 7291,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
