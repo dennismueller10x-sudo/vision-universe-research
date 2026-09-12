@@ -198,9 +198,35 @@ class HonestyTests(unittest.TestCase):
             capabilities={"counts": {"HAS_PRICE_HISTORY": {"PROVIDER_VERIFIED": 5690,
                                                            "DELIVERED": 5}}}))
         o = reports["overlap"]
-        self.assertEqual(o["TECHNICAL_COVERED_INSTRUMENTS"], 5690)
+        # Die Gate-Ableitung steht unter ihrem eigenen Namen und NICHT als
+        # Marktdatendeckung: die kanonische Zahl gehoert dem R2-Workstream.
+        self.assertEqual(o["fromGateRuns"]["instrumentsWithProviderPriceHistory"], 5690)
+        self.assertIsNone(o["TECHNICAL_COVERED"])
         self.assertIsNone(o["TECHNICAL_AND_FUNDAMENTAL"])
+        self.assertEqual(o["marketDataSource"]["status"], "NOT_CONNECTED")
+        self.assertEqual(o["marketDataSource"]["accepted"]["R2_SERIES_AVAILABLE"], 7802)
         self.assertTrue(o["unmeasured"], "eine nicht gemessene Zahl braucht einen Grund")
+
+    def test_the_gate_derivation_is_not_labelled_market_data_coverage(self):
+        """Der Grund fuer diesen Test steht in einer Korrektur des Auftraggebers.
+
+        Aus den Gate-Laeufen liess sich ableiten, dass 1.607 Produkttitel
+        keine Kursdaten haben. Diese Zahl ist NICHT die kanonische
+        Marktdatendeckung - die liegt im R2-Workstream und lautet 6.997
+        von 7.004. Eine Ableitung aus einem fremden, aelteren Bestand als
+        Deckung auszugeben ist genau die Art Fehler, die niemandem
+        auffaellt.
+        """
+        reports = uc.build_reports(ROOT, [], universe=universum(
+            [instrument("A", "ref_A", None)],
+            capabilities={"counts": {"HAS_PRICE_HISTORY": {"PROVIDER_VERIFIED": 5690,
+                                                           "DELIVERED": 5}}}))
+        o = reports["overlap"]
+        self.assertNotIn("TECHNICAL_COVERED_INSTRUMENTS", o,
+                         "die Gate-Zahl darf nicht wie eine Deckungszahl heissen")
+        self.assertIn("keine Marktdatendeckung", o["fromGateRuns"]["note"])
+        self.assertEqual(o["marketDataSource"]["canonicalOwner"],
+                         "R2-Workstream (quant/data/market/history)")
 
 
 if __name__ == "__main__":

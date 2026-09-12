@@ -426,15 +426,49 @@ def build_reports(root, documents, registry=None, universe=None):
         "note": "Das langfristige Ziel ist TECHNICAL_WITHOUT_FUNDAMENTALS gegen null. "
                 "Die Zahl steht hier, damit sie sinkt und nicht behauptet wird.",
         "denominator": {"PRODUCT_TITLES": len(members)},
-        "TECHNICAL_COVERED_INSTRUMENTS": technical_instruments.get("PROVIDER_VERIFIED"),
-        "TECHNICAL_DELIVERED_INSTRUMENTS": technical_instruments.get("DELIVERED"),
+
+        # DIE KANONISCHE MARKTDATENDECKUNG KOMMT NICHT AUS DIESEM WORKSTREAM.
+        #
+        # Sie liegt im R2-Workstream und ist dort abgenommen. Was dieser
+        # Bericht aus den Gate-Laeufen ableiten kann, ist etwas anderes und
+        # kleiner: die Gate-Laeufe endeten vor der Erweiterung des
+        # Wertpapierstamms. Diese Ableitung als Marktdatendeckung
+        # auszugeben waere eine Falschaussage ueber einen fremden
+        # Bestand - deshalb steht sie unter `fromGateRuns` und nicht unter
+        # `TECHNICAL_COVERED`.
+        "marketDataSource": {
+            "status": "NOT_CONNECTED",
+            "canonicalOwner": "R2-Workstream (quant/data/market/history)",
+            "accepted": {
+                "PRODUCT_TITLES": 7004,
+                "R2_SERIES_AVAILABLE": 7802,
+                "HISTORICAL_CHART_AVAILABLE": 6997,
+                "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.90,
+            },
+            "note": "Uebernommene Kennzahlen des abgenommenen R2-Stands. Dieser "
+                    "Workstream liest sie NICHT ein und rechnet nicht mit ihnen - "
+                    "sie stehen hier als benannte Fremdquelle, damit niemand die "
+                    "Gate-Ableitung unten fuer die Marktdatendeckung haelt.",
+        },
+        "fromGateRuns": {
+            "instrumentsWithProviderPriceHistory": technical_instruments.get("PROVIDER_VERIFIED"),
+            "instrumentsWithDeliveredPriceHistory": technical_instruments.get("DELIVERED"),
+            "note": "Aus den Tiingo-Gate-Laeufen abgeleitet, auf INSTRUMENTENEBENE. "
+                    "Die Gate-Laeufe endeten vor der Erweiterung des Wertpapierstamms; "
+                    "diese Zahl ist keine Marktdatendeckung und darf nicht als solche "
+                    "verwendet werden.",
+        },
+
+        "TECHNICAL_COVERED": None,
         "FUNDAMENTAL_COVERED": len(fundamental_members),
         "TECHNICAL_AND_FUNDAMENTAL": None,
         "TECHNICAL_WITHOUT_FUNDAMENTALS": None,
         "FUNDAMENTALS_WITHOUT_TECHNICAL": None,
-        "unmeasured": "Die Ueberschneidung je Titel braucht die technische Deckung "
-                      "auf Mitgliedsebene. Sie liegt heute nur als Instrumentenzahl "
-                      "vor; die Zuordnung entsteht mit dem naechsten Kurslauf.",
+        "unmeasured": "Der Overlap wird erst berechnet, wenn die kanonische "
+                      "Marktdaten-/R2-Quelle in diesen Workstream eingebunden ist. "
+                      "Bis dahin waere jede Zahl hier eine Verrechnung zweier "
+                      "verschiedener Bestaende auf zwei verschiedenen Ebenen "
+                      "(Instrument gegen Mitglied).",
     }
 
     # ----------------------------------------------------- §14 Datenqualitaet

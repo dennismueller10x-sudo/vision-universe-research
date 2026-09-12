@@ -170,6 +170,52 @@ class BulkIngestTests(unittest.TestCase):
         self.assertEqual(len(pairs), 7, "sechs Emittenten plus der ungewollte siebte")
         self.assertNotIn("README", "".join(names))
 
+    def test_the_archive_is_indexed_not_preloaded(self):
+        """Der Fehler, der einen 7.000-Emittenten-Lauf gekillt haette.
+
+        Die erste Fassung des Sammelwegs las alle gewuenschten Emittenten
+        in ein Woerterbuch. Bei fuenf faellt das nicht auf; Apples
+        companyfacts sind rund 2 MB, bei 7.000 Emittenten waeren es etwa
+        14 GB - und ein GitHub-Runner hat 7. Der Lauf waere nach vierzig
+        Minuten mit einem OOM gestorben, mit halbem Bestand.
+
+        Geprueft wird deshalb nicht der Speicher (das waere flockig),
+        sondern die Ursache: wie viele Nutzlasten das Archiv beim Oeffnen
+        liest. Die Antwort muss null sein.
+        """
+        archive = self.provider.open_bulk_company_facts(archive_path=str(self.archive))
+        self.addCleanup(archive.close)
+
+        gelesen = []
+        echtes_open = archive._zip.open
+
+        def zaehlend(name, *args, **kwargs):
+            gelesen.append(name if isinstance(name, str) else getattr(name, "filename", name))
+            return echtes_open(name, *args, **kwargs)
+
+        archive._zip.open = zaehlend
+
+        # Das Inhaltsverzeichnis steht schon - ohne eine einzige Nutzlast.
+        self.assertEqual(len(archive), 7, "sechs Emittenten plus der ungewollte siebte")
+        self.assertEqual(gelesen, [], "das Oeffnen darf keine Nutzlast lesen")
+
+        # Erst der Zugriff liest, und zwar genau einen.
+        cik = normalize_cik(self.companies[0][0])
+        payload = archive.get(cik)
+        self.assertIsNotNone(payload)
+        self.assertEqual(len(gelesen), 1)
+        self.assertIn(cik, gelesen[0])
+
+        # Ein Emittent, den das Archiv nicht fuehrt, liest gar nichts.
+        self.assertIsNone(archive.get("0000000001"))
+        self.assertEqual(len(gelesen), 1)
+
+    def test_membership_is_answerable_without_reading_payloads(self):
+        with self.provider.open_bulk_company_facts(archive_path=str(self.archive)) as archive:
+            self.assertIn(normalize_cik(self.companies[0][0]), archive)
+            self.assertNotIn("0000000001", archive)
+            self.assertEqual(len(archive.ciks), 7)
+
     def test_resume_still_works_on_the_bulk_path(self):
         self.pipe.ingest_universe(self.entries, bulk=True, bulk_archive=str(self.archive),
                                   limit=3)

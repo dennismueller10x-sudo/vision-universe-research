@@ -259,6 +259,62 @@ class SECHttpClient:
 
         raise SECHTTPError(url, last_status, last_message, self.max_retries + 1)
 
+    def download_to(self, url, path, chunk_size=1 << 20):
+        """Stream a URL to a file. Fuer Nutzlasten, die nicht in den Speicher gehoeren.
+
+        Das SEC-Sammelarchiv ist mehrere Gigabyte gross. `get_bytes` haelt
+        eine Antwort vollstaendig im Speicher und legt sie zusaetzlich
+        gzip-komprimiert in den Cache - bei einem ZIP bringt die
+        Komprimierung nichts und der Speicherbedarf waere das Doppelte der
+        Datei. Der Zwischenspeicher ist hier die Datei selbst.
+
+        Gibt (pfad, bytes, aus_cache) zurueck.
+        """
+        path = Path(path)
+        if path.exists() and path.stat().st_size > 0:
+            self.stats["cache_hits"] += 1
+            LOGGER.info("bulk_archive cached path=%s bytes=%d", path, path.stat().st_size)
+            return path, path.stat().st_size, True
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temp = path.with_suffix(path.suffix + ".part")
+        last_error = None
+        for attempt in range(self.max_retries + 1):
+            waited = self.rate_limiter.acquire()
+            self.stats["requests"] += 1
+            started = time.monotonic()
+            try:
+                request = urllib.request.Request(url, headers=self._headers())
+                written = 0
+                with urllib.request.urlopen(request, timeout=self.timeout) as response, \
+                        open(temp, "wb") as handle:
+                    while True:
+                        chunk = response.read(chunk_size)
+                        if not chunk:
+                            break
+                        handle.write(chunk)
+                        written += len(chunk)
+                temp.replace(path)
+                LOGGER.info("bulk_archive url=%s bytes=%d attempt=%d wait=%.2fs elapsed=%.1fs",
+                            url, written, attempt + 1, waited, time.monotonic() - started)
+                return path, written, False
+            except urllib.error.HTTPError as exc:
+                last_error = (exc.code, str(exc.reason))
+                retryable = exc.code in RETRYABLE_STATUS
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                last_error = (None, str(exc))
+                retryable = True
+            if temp.exists():
+                temp.unlink()
+            LOGGER.warning("bulk_archive url=%s attempt=%d error=%s", url, attempt + 1, last_error)
+            if not retryable or attempt == self.max_retries:
+                break
+            self.stats["retries"] += 1
+            self._sleep(self._backoff_seconds(attempt))
+        raise SECHTTPError(url, last_error[0] if last_error else None,
+                           last_error[1] if last_error else "download failed",
+                           self.max_retries + 1)
+
     def get_json(self, url, use_cache=True):
         payload = self.get_bytes(url, use_cache=use_cache)
         try:

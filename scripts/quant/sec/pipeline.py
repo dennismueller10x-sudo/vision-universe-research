@@ -166,21 +166,41 @@ class IngestionPipeline:
         results = []
         processed = 0
 
-        facts_by_cik = {}
+        archive = None
         bulk_source = None
         if bulk:
             wanted = [normalize_cik(e["cik"] if isinstance(e, dict) else e) for e in entries]
-            # One pass over the archive, only the wanted issuers kept. The
-            # archive is large; holding every issuer would be a memory leak
-            # with a schedule.
-            for cik, payload in self.provider.iter_bulk_company_facts(
-                    ciks=wanted, archive_path=bulk_archive):
-                facts_by_cik[cik] = payload
-            bulk_source = {"requested": len(wanted), "found_in_archive": len(facts_by_cik),
-                           "archive": bulk_archive or "sec.gov bulk companyfacts.zip"}
-            LOGGER.info("bulk companyfacts: %d of %d issuers present in the archive",
-                        len(facts_by_cik), len(wanted))
+            # WAHLFREIER ZUGRIFF, KEIN WOERTERBUCH.
+            #
+            # Die erste Fassung las alle gewuenschten Emittenten in ein
+            # dict. Bei fuenf Emittenten faellt das nicht auf; bei 7.000
+            # sind es rund 14 GB und der Lauf stirbt mitten im Bestand.
+            # Das Archiv wird deshalb auf Platte gestroemt und je Emittent
+            # eine Nutzlast gelesen.
+            archive = self.provider.open_bulk_company_facts(archive_path=bulk_archive)
+            vorhanden = len(archive.ciks & set(wanted))
+            bulk_source = {"requested": len(wanted), "found_in_archive": vorhanden,
+                           "issuers_in_archive": len(archive),
+                           "archive": bulk_archive or "sec.gov bulk companyfacts.zip",
+                           "archive_path": str(archive.archive_path),
+                           "downloaded_bytes": archive.downloaded_bytes,
+                           "from_cache": archive.from_cache,
+                           "access": "random_access_no_preload"}
+            LOGGER.info("bulk companyfacts: %d of %d requested issuers in the archive "
+                        "(archive holds %d)", vorhanden, len(wanted), len(archive))
 
+        try:
+            outcome = self._ingest_entries(entries, state, results, archive, bulk, bulk_source,
+                                           resume=resume, force=force, limit=limit,
+                                           max_attempts=max_attempts)
+        finally:
+            if archive is not None:
+                archive.close()
+        return outcome
+
+    def _ingest_entries(self, entries, state, results, archive, bulk, bulk_source,
+                        resume=True, force=False, limit=None, max_attempts=3):
+        processed = 0
         for entry in entries:
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
             if limit is not None and processed >= limit:
@@ -214,8 +234,9 @@ class IngestionPipeline:
                 continue
             processed += 1
             try:
-                outcome = self.ingest_company(cik, force=force,
-                                              company_facts=facts_by_cik.get(cik))
+                outcome = self.ingest_company(
+                    cik, force=force,
+                    company_facts=archive.get(cik) if archive is not None else None)
                 state = self.checkpoint.mark_completed(state, cik, {
                     "status": outcome["status"],
                     "latest_filing": (outcome.get("signature") or {}).get("accession"),

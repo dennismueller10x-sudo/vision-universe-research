@@ -14,12 +14,27 @@
   "denominator": {
     "PRODUCT_TITLES": 7004
   },
-  "TECHNICAL_COVERED_INSTRUMENTS": 5690,
-  "TECHNICAL_DELIVERED_INSTRUMENTS": 5,
+  "marketDataSource": {
+    "status": "NOT_CONNECTED",
+    "canonicalOwner": "R2-Workstream (quant/data/market/history)",
+    "accepted": {
+      "PRODUCT_TITLES": 7004,
+      "R2_SERIES_AVAILABLE": 7802,
+      "HISTORICAL_CHART_AVAILABLE": 6997,
+      "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.9
+    },
+    "note": "Uebernommene Kennzahlen des abgenommenen R2-Stands. Dieser Workstream liest sie NICHT ein und rechnet nicht mit ihnen - sie stehen hier als benannte Fremdquelle, damit niemand die Gate-Ableitung unten fuer die Marktdatendeckung haelt."
+  },
+  "fromGateRuns": {
+    "instrumentsWithProviderPriceHistory": 5690,
+    "instrumentsWithDeliveredPriceHistory": 5,
+    "note": "Aus den Tiingo-Gate-Laeufen abgeleitet, auf INSTRUMENTENEBENE. Die Gate-Laeufe endeten vor der Erweiterung des Wertpapierstamms; diese Zahl ist keine Marktdatendeckung und darf nicht als solche verwendet werden."
+  },
+  "TECHNICAL_COVERED": null,
   "FUNDAMENTAL_COVERED": 5,
   "TECHNICAL_AND_FUNDAMENTAL": null,
   "TECHNICAL_WITHOUT_FUNDAMENTALS": null,
   "FUNDAMENTALS_WITHOUT_TECHNICAL": null,
-  "unmeasured": "Die Ueberschneidung je Titel braucht die technische Deckung auf Mitgliedsebene. Sie liegt heute nur als Instrumentenzahl vor; die Zuordnung entsteht mit dem naechsten Kurslauf.",
-  "generatedAtUtc": "2026-09-12T11:14:04+00:00"
+  "unmeasured": "Der Overlap wird erst berechnet, wenn die kanonische Marktdaten-/R2-Quelle in diesen Workstream eingebunden ist. Bis dahin waere jede Zahl hier eine Verrechnung zweier verschiedener Bestaende auf zwei verschiedenen Ebenen (Instrument gegen Mitglied).",
+  "generatedAtUtc": "2026-09-12T15:44:44+00:00"
 }

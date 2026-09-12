@@ -320,6 +320,28 @@ class SECProvider:
 
     # ---------------------------------------------------------------------- bulk
 
+    def open_bulk_company_facts(self, archive_path=None, cache_dir=None):
+        """Wahlfreier Zugriff auf das SEC-Sammelarchiv, ohne es in den Speicher zu holen.
+
+        WARUM NICHT EINFACH ALLES LESEN
+
+        `iter_bulk_company_facts` liefert die Emittenten in Archivreihenfolge.
+        Wer daraus ein Woerterbuch baut - und genau das tat der erste
+        Sammelweg -, haelt die Geschaeftszahlen ALLER gewuenschten
+        Emittenten gleichzeitig im Speicher. Apples companyfacts sind rund
+        2 MB; bei 7.000 Emittenten waeren das etwa 14 GB. Ein
+        GitHub-Runner hat 7. Der Lauf waere nach vierzig Minuten mit
+        einem OOM gestorben, mit halbem Bestand und ohne Hinweis auf die
+        Ursache.
+
+        Diese Klasse liest stattdessen das Inhaltsverzeichnis des ZIP
+        (eine Zeile je Emittent) und holt eine Nutzlast erst, wenn sie
+        gebraucht wird. Im Speicher liegt immer nur EIN Emittent, und die
+        Reihenfolge der Verarbeitung bleibt unsere - was fuer einen
+        begrenzten oder abgebrochenen Lauf entscheidend ist.
+        """
+        return BulkCompanyFacts(self, archive_path=archive_path, cache_dir=cache_dir)
+
     def iter_bulk_company_facts(self, ciks=None, archive_path=None):
         """Yield (cik, companyfacts dict) from the SEC bulk companyfacts.zip.
 
@@ -354,3 +376,72 @@ class SECProvider:
                 payload["_retrieved_at"] = _utcnow_iso()
                 payload["_source"] = "bulk_companyfacts_zip"
                 yield cik, payload
+
+
+class BulkCompanyFacts:
+    """Ein geoeffnetes SEC-Sammelarchiv mit wahlfreiem Zugriff je CIK.
+
+    Als Kontextmanager zu benutzen; `close()` gibt das Dateihandle frei.
+    """
+
+    URL = BULK_COMPANY_FACTS_URL
+
+    def __init__(self, provider, archive_path=None, cache_dir=None):
+        import zipfile
+
+        self.provider = provider
+        self.downloaded_bytes = 0
+        self.from_cache = False
+        if archive_path is None:
+            cache_dir = Path(cache_dir or ".sec-cache") / "bulk"
+            archive_path, size, cached = provider.client.download_to(
+                self.URL, cache_dir / "companyfacts.zip")
+            self.downloaded_bytes = size
+            self.from_cache = cached
+        self.archive_path = Path(archive_path)
+        self._handle = self.archive_path.open("rb")
+        self._zip = zipfile.ZipFile(self._handle)
+        # Inhaltsverzeichnis statt Inhalt: rund 15.000 Namen, ein paar
+        # hundert Kilobyte - nicht die Gigabyte dahinter.
+        self._by_cik = {}
+        for info in self._zip.infolist():
+            name = info.filename
+            if not name.startswith("CIK") or not name.endswith(".json"):
+                continue
+            self._by_cik[normalize_cik(name[3:-5])] = name
+        LOGGER.info("bulk archive opened path=%s issuers=%d",
+                    self.archive_path, len(self._by_cik))
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+        return False
+
+    def __contains__(self, cik):
+        return normalize_cik(cik) in self._by_cik
+
+    def __len__(self):
+        return len(self._by_cik)
+
+    @property
+    def ciks(self):
+        return set(self._by_cik)
+
+    def get(self, cik):
+        """Die companyfacts eines Emittenten - oder None, wenn das Archiv ihn nicht fuehrt."""
+        name = self._by_cik.get(normalize_cik(cik))
+        if name is None:
+            return None
+        with self._zip.open(name) as handle:
+            payload = json.loads(handle.read())
+        payload["_retrieved_at"] = _utcnow_iso()
+        payload["_source"] = "bulk_companyfacts_zip"
+        return payload
+
+    def close(self):
+        try:
+            self._zip.close()
+        finally:
+            self._handle.close()

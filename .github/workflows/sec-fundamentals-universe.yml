@@ -135,7 +135,18 @@ jobs:
     name: Fundamentaldaten holen (mit Zugang)
     runs-on: ubuntu-latest
     needs: pruefen
-    if: github.event_name == 'workflow_dispatch' && inputs.backfill
+    # ZWEI WEGE, EINE BEDINGUNG.
+    #
+    # workflow_dispatch verlangt bei GitHub, dass die Workflow-Datei auf dem
+    # Default-Branch liegt. Vor einem Merge ist der Knopf also nicht da.
+    # Dieselbe Loesung wie in tiingo-scale.yml: die Marke [sec-backfill] in
+    # der Commit-Nachricht. OHNE MARKE LAEUFT DER BACKFILL NICHT - ein
+    # Workflow, der bei jedem Push 7.000 Anfragen an die SEC stellt, waere
+    # ein Fehler mit Ansage.
+    if: >
+      (github.event_name == 'workflow_dispatch' && inputs.backfill) ||
+      (github.event_name == 'push' &&
+       contains(github.event.head_commit.message, '[sec-backfill]'))
     timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
@@ -162,7 +173,10 @@ jobs:
 
       - name: CIK-Zuordnung (zwei Anfragen fuer den ganzen US-Markt)
         env:
-          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          # Ein nicht gesetztes Secret wuerde die Variable auf "" setzen und
+          # damit den sprechenden Standard-User-Agent ueberschreiben - die
+          # SEC weist Anfragen ohne Kontaktadresse ab.
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: node scripts/universe/build-cik-map.mjs
 
       - name: Company Master und Emittentenstamm
@@ -178,10 +192,19 @@ jobs:
           else
             node scripts/universe/build-sec-universe.mjs
           fi
+          python3 - <<'PY'
+          import json
+          u = json.load(open("quant/data/universe/sec-universe.json"))
+          print(f"Emittenten im SEC-Universum: {len(u['companies'])}")
+          print("Anfragebudget:", json.dumps(u["requestBudget"], indent=2))
+          PY
 
       - name: Ingest ueber den Sammelweg
         env:
-          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          # Ein nicht gesetztes Secret wuerde die Variable auf "" setzen und
+          # damit den sprechenden Standard-User-Agent ueberschreiben - die
+          # SEC weist Anfragen ohne Kontaktadresse ab.
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           if [ -n "${{ inputs.since }}" ]; then
             python3 scripts/quant/cli.py update \
@@ -196,10 +219,29 @@ jobs:
       - name: Coverage messen
         run: python3 scripts/quant/cli.py coverage-universe
 
-      - name: Bestehende SEC-Artefakte auffrischen
+      - name: Bestehende Produktartefakte auffrischen (nur der Validierungssatz)
+        # AUSDRUECKLICH BEGRENZT. `export`, `coverage` und `canonical`
+        # schreiben je Emittent rund 400 KB. Ueber 7.000 Emittenten waeren
+        # das mehrere Gigabyte im Repository - fuer Artefakte, die als
+        # Produktflaeche fuer eine Handvoll Titel gedacht sind. Die
+        # Gesamtbilanz liefert coverage-universe, und die ist kompakt.
         run: |
-          python3 scripts/quant/cli.py coverage || true
-          python3 scripts/quant/cli.py export || true
+          python3 scripts/quant/cli.py coverage --universe quant/config/sec-universe.json || true
+          python3 scripts/quant/cli.py export --universe quant/config/sec-universe.json || true
+          python3 scripts/quant/cli.py canonical --universe quant/config/sec-universe.json || true
+
+      - name: Groessenkontrolle vor dem Commit
+        # Ein Lauf, der versehentlich Gigabyte committet, ist schwerer
+        # rueckgaengig zu machen als einer, der hier abbricht.
+        run: |
+          for d in quant/data/fundamentals quant/data/universe quant/data/sec; do
+            size=$(du -sm "$d" | cut -f1)
+            echo "$d: ${size} MB"
+            if [ "$size" -gt 400 ]; then
+              echo "::error::$d ist ${size} MB - das gehoert nicht in ein Git-Repository."
+              exit 1
+            fi
+          done
 
       - name: Ergebnis committen
         run: |

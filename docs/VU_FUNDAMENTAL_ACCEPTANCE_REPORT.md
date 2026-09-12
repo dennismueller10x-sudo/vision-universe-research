@@ -115,25 +115,39 @@ gemessener Befund der Konzeptzuordnung — kein Rundungsfehler.
 
 ## OVERLAP
 
+**Der Overlap wird nicht berechnet.** Die kanonische Marktdatendeckung
+gehört dem R2-Workstream und ist dort abgenommen:
+
 | | |
 |---|---:|
-| `TECHNICAL_COVERED` (Instrumente, anbieterbelegt) | **5.690** |
-| `TECHNICAL_COVERED` (Instrumente, ausgeliefert) | 5 |
-| `FUNDAMENTAL_COVERED` (Produkttitel) | **5** |
+| `PRODUCT_TITLES` | 7.004 |
+| `R2_SERIES_AVAILABLE` | **7.802** |
+| `HISTORICAL_CHART_AVAILABLE` | **6.997 / 7.004 = 99,90 %** |
+
+Dieser Workstream hat **noch keinen Anschluss** an diese Quelle
+(`overlap.marketDataSource.status = NOT_CONNECTED`). Solange er fehlt,
+bleiben alle Overlap-Zahlen `null`:
+
+| | |
+|---|---:|
+| `TECHNICAL_COVERED` | **null** |
+| `FUNDAMENTAL_COVERED` (Produkttitel) | 5 |
 | `TECHNICAL_AND_FUNDAMENTAL` | **null** |
 | `TECHNICAL_WITHOUT_FUNDAMENTALS` | **null** |
 | `FUNDAMENTALS_WITHOUT_TECHNICAL` | **null** |
 
-Die drei `null` sind eine bewusste Verweigerung: die technische Deckung
-liegt heute als **Instrumentenzahl** vor, die Fundamentaldeckung als
-**Mitgliedszahl**. Beides zu verrechnen ergäbe eine Zahl, die niemand
-nachrechnen kann. Der Grund steht im Artefakt (`overlap.unmeasured`).
+### Korrektur: die 1.607 sind keine Marktdatendeckung
 
-Was sich daraus **schon jetzt** ablesen lässt: **1.607 Produkttitel haben
-nicht einmal Kursdaten**. Sie gehören zu den 2.119 Titeln, die aus dem
-Wertpapierstamm an die Mitgliedsdatei angehängt wurden und nie Teil eines
-Tiingo-Gate-Laufs waren; die übrigen 512 sind EXCLUDED und damit keine
-Produkttitel.
+Ein früherer Stand dieses Berichts leitete aus den Tiingo-Gate-Läufen ab,
+**1.607 Produkttitel hätten keine Kursdaten**. Diese Zahl ist **nicht
+kanonisch** und darf nicht als Marktdatendeckung verwendet werden: die
+Gate-Läufe endeten vor der Erweiterung des Wertpapierstamms, und der
+abgenommene R2-Stand sagt das Gegenteil — 99,90 % der Produkttitel haben
+eine historische Kursreihe.
+
+Die Gate-Ableitung steht deshalb im Artefakt unter `fromGateRuns` mit dem
+ausdrücklichen Vermerk, dass sie keine Marktdatendeckung ist, und ein Test
+prüft, dass sie nicht wieder so heißt.
 
 ---
 
@@ -274,7 +288,7 @@ Anfragezeit.
 | 8. Restatement Handling | war schon erledigt |
 | 9. PIT Layer | war schon erledigt |
 | 10. Coverage Audit | **erledigt** |
-| 11. Technical/Fundamental Overlap | teilweise — die Mitgliedszuordnung der technischen Deckung fehlt |
+| 11. Technical/Fundamental Overlap | **bewusst offen** — erst nach Anbindung der kanonischen R2-Quelle |
 | 12. Incremental Update Design | **erledigt** (`cli.py update --universe`) |
 | 13. Final Acceptance Report | dieses Dokument |
 

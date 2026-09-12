@@ -261,6 +261,16 @@ mit **403** am Egress-Proxy gesperrt — protokolliert im Proxy-Status):
 | Historientiefe je Emittent | 18,25 – 18,75 Jahre |
 | Quartalsperioden je Emittent | 73 – 76 |
 
+**Marktdatendeckung ist nicht Gegenstand dieses Workstreams.** Der
+abgenommene Stand kommt aus dem R2-Workstream — `R2_SERIES_AVAILABLE
+7.802`, `HISTORICAL_CHART_AVAILABLE 6.997 / 7.004 = 99,90 %` — und ist
+hier nur als benannte Fremdquelle vermerkt
+(`overlap.marketDataSource`, Status `NOT_CONNECTED`). Was sich aus den
+Tiingo-Gate-Läufen ableiten ließe, ist eine andere und ältere Größe; sie
+steht unter `fromGateRuns` und ist ausdrücklich **keine**
+Marktdatendeckung. Der Overlap wird erst berechnet, wenn die kanonische
+Quelle eingebunden ist.
+
 Die vollständigen Zahlen stehen in
 `docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md` und maschinenlesbar unter
 `quant/data/fundamentals/`.

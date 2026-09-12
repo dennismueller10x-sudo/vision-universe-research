@@ -274,7 +274,7 @@ def cmd_retry(args):
 def cmd_export(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store)
+    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
@@ -544,7 +544,7 @@ def cmd_canonical(args):
     """
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store)
+    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
@@ -683,9 +683,13 @@ def build_parser():
     export.add_argument("--annual-years", type=int, default=12)
     export.add_argument("--quarterly-years", type=int, default=5)
     export.add_argument("--policy", choices=POLICIES, default=POLICY_LATEST_KNOWN)
+    export.add_argument("--universe",
+                        help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     export.set_defaults(func=cmd_export)
 
     cov = subparsers.add_parser("coverage", help="build the coverage matrix")
+    cov.add_argument("--universe",
+                     help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     cov.set_defaults(func=cmd_coverage)
 
     gate = subparsers.add_parser("gates", help="run the qualification gates")
@@ -704,6 +708,8 @@ def build_parser():
     canonical.add_argument("--annual-years", type=int, default=12)
     canonical.add_argument("--quarterly-years", type=int, default=None,
                            help="limit the quarterly window; default is the full history")
+    canonical.add_argument("--universe",
+                           help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     canonical.set_defaults(func=cmd_canonical)
 
     inspect = subparsers.add_parser("inspect", help="print one metric's series")
