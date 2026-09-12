@@ -388,13 +388,33 @@ async function imBrowser(chromium, index, meta) {
         (box && box.width <= vp.w && punkte > 0 ? "" : " FEHLER"));
     } catch (err) { ergebnisse.O6.push(`${vp.n}: FEHLER ${String(err.message).slice(0, 90)}`); }
 
-    /* O8b — der Live-Block in der Seite: was steht wirklich da? */
+    /* O8b — der Tagesverlauf IM BESTEHENDEN CHART.
+
+       Diese Pruefung suchte einmal einen eigenen Live-Block. Den gibt es
+       nicht mehr, und sein Verschwinden ist der Fortschritt: 1T laeuft
+       jetzt durch dieselbe Zeitraumleiste und denselben Chart wie jeder
+       andere Zeitraum. Geprueft wird deshalb, was der Nutzer tut - auf
+       "1T" klicken - und was danach dort steht. */
     try {
       await page.goto(`${BASE}/vu2/?view=stock&ticker=${mitChart}`, { waitUntil: "domcontentloaded", timeout: 45000 });
-      await page.waitForSelector(".vu-live", { timeout: 35000 });
-      await page.waitForTimeout(12000);      /* dem Strom Zeit geben */
-      const live = (await page.locator(".vu-live").innerText()).replace(/\n+/g, " · ");
-      ergebnisse.O8b.push(`${vp.n}: ${live.slice(0, 220)}`);
+      const knopf = '#content .focus .ranges button[data-range="1D"]';
+      await page.waitForSelector(knopf, { timeout: 35000 });
+      await page.waitForSelector(".vu-live-status", { timeout: 20000 });
+      await page.click(knopf);
+      await page.waitForTimeout(12000);      /* Abruf und Strom Zeit geben */
+      const zeile = (await page.locator(".vu-live-status").innerText()).replace(/\n+/g, " · ");
+      const punkteImChart = await page.evaluate(() => {
+        const l = document.querySelector("#content .focus svg polyline, #content .focus svg path");
+        const roh = l ? (l.getAttribute("points") || l.getAttribute("d") || "") : "";
+        return Math.floor((roh.match(/-?\d+(?:\.\d+)?/g) || []).length / 2);
+      });
+      /* Gemessen, nicht behauptet: ohne gezeichnete Punkte ist die
+         Statuszeile allein kein Beleg. Ein benannter Zustand ohne
+         Punkte ist aber auch kein Fehler - INTRADAY_UNAVAILABLE ist
+         eine gueltige Auskunft. */
+      const benannt = /Bars|nicht|geschlossen|Kursaktualisierung|Abruf/i.test(zeile);
+      ergebnisse.O8b.push(`${vp.n}: ${punkteImChart} Punkte · ${zeile.slice(0, 190)}` +
+        (benannt || punkteImChart > 0 ? "" : " FEHLER"));
       await page.screenshot({ path: join(SHOTS, `${vp.n}-live.png`) });
     } catch (err) { ergebnisse.O8b.push(`${vp.n}: FEHLER ${String(err.message).slice(0, 90)}`); }
 
@@ -411,11 +431,11 @@ async function imBrowser(chromium, index, meta) {
     kaputt(ergebnisse.O5) ? "FAIL" : "PASS", ergebnisse.O5.join(" · "));
   pruefe("O6", "Historischer Chart zeichnet echte Kurse",
     kaputt(ergebnisse.O6) ? "FAIL" : "PASS", ergebnisse.O6.join(" · "));
-  pruefe("O8b", "Der Live-Block ist in der Seite sichtbar",
+  pruefe("O8b", "Der Tagesverlauf zeichnet im bestehenden Chart",
     kaputt(ergebnisse.O8b) ? "FAIL" : "PASS", ergebnisse.O8b.join(" · "));
   bericht.chart.historical = { securities: (meta && meta.chart && meta.chart.historical && meta.chart.historical.scope) || [],
                                measured: ergebnisse.O6 };
-  bericht.chart.liveBlock = ergebnisse.O8b;
+  bericht.chart.intradayInChart = ergebnisse.O8b;
 }
 
 function abschluss() {
