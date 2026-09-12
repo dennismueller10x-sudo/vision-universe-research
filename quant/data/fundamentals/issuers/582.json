@@ -32,11 +32,24 @@
           "historyYears": 17.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 18,
@@ -59,6 +72,13 @@
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "short_term_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
         "stockholders_equity": {
           "annualPeriods": 18,
           "quarterlyPeriods": 67,
@@ -74,21 +94,30 @@
           "historyYears": 16.0
         },
         "total_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
-        "HIGH": 502,
-        "MEDIUM": 99
+        "HIGH": 585,
+        "MEDIUM": 177
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 601,
-        "resolvedValues": 601
+        "datableValues": 762,
+        "resolvedValues": 762
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
@@ -158,6 +187,19 @@
           "historyYears": 14.0
         },
         "free_cash_flow": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2011-08-31",
+          "lastAvailablePeriod": "2025-08-31",
+          "historyYears": 14.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -185,6 +227,13 @@
           "lastAvailablePeriod": "2025-08-31",
           "historyYears": 14.0
         },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "stockholders_equity": {
           "annualPeriods": 15,
           "quarterlyPeriods": 60,
@@ -204,7 +253,16 @@
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
@@ -285,11 +343,24 @@
           "historyYears": 16.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 10.0
         },
         "net_income": {
           "annualPeriods": 17,
@@ -312,6 +383,13 @@
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "stockholders_equity": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
@@ -331,17 +409,26 @@
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
-        "HIGH": 464,
+        "HIGH": 501,
         "MEDIUM": 102
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 566,
-        "resolvedValues": 566
+        "datableValues": 603,
+        "resolvedValues": 603
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
@@ -414,11 +501,24 @@
           "historyYears": 14.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
@@ -441,6 +541,13 @@
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "stockholders_equity": {
           "annualPeriods": 17,
           "quarterlyPeriods": 63,
@@ -460,17 +567,26 @@
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
-        "HIGH": 472,
+        "HIGH": 550,
         "MEDIUM": 92
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 564,
-        "resolvedValues": 564
+        "datableValues": 642,
+        "resolvedValues": 642
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
@@ -541,11 +657,24 @@
           "historyYears": 12.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 11.0
         },
         "net_income": {
           "annualPeriods": 17,
@@ -568,6 +697,13 @@
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "short_term_debt": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
         "stockholders_equity": {
           "annualPeriods": 17,
           "quarterlyPeriods": 58,
@@ -583,21 +719,30 @@
           "historyYears": 15.0
         },
         "total_debt": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
-        "HIGH": 521,
-        "MEDIUM": 66
+        "HIGH": 611,
+        "MEDIUM": 97
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 587,
-        "resolvedValues": 587
+        "datableValues": 708,
+        "resolvedValues": 708
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
@@ -666,11 +811,24 @@
           "historyYears": 14.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
         },
         "net_income": {
           "annualPeriods": 15,
@@ -693,6 +851,13 @@
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
+        "short_term_debt": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
         "stockholders_equity": {
           "annualPeriods": 15,
           "quarterlyPeriods": 56,
@@ -708,21 +873,30 @@
           "historyYears": 14.0
         },
         "total_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 10,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
-        "HIGH": 425,
-        "MEDIUM": 31
+        "HIGH": 484,
+        "MEDIUM": 57
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 456,
-        "resolvedValues": 456
+        "datableValues": 541,
+        "resolvedValues": 541
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
@@ -794,6 +968,19 @@
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "net_income": {
@@ -811,6 +998,13 @@
           "historyYears": 0.0
         },
         "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -836,7 +1030,16 @@
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {},

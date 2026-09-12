@@ -32,11 +32,24 @@
           "historyYears": 17.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-28",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-01-03",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.92
         },
         "net_income": {
           "annualPeriods": 17,
@@ -59,6 +72,13 @@
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "short_term_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-01-03",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.92
+        },
         "stockholders_equity": {
           "annualPeriods": 16,
           "quarterlyPeriods": 63,
@@ -74,21 +94,30 @@
           "historyYears": 15.92
         },
         "total_debt": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 45,
-          "firstAvailablePeriod": "2014-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-01-03",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 11.0
+          "historyYears": 15.92,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
         }
       },
       "quality": {
-        "HIGH": 539,
-        "MEDIUM": 77
+        "HIGH": 691,
+        "MEDIUM": 79
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 616,
-        "resolvedValues": 616
+        "datableValues": 770,
+        "resolvedValues": 770
       },
       "qualitySummary": {
         "rules_version": "1.0.0",

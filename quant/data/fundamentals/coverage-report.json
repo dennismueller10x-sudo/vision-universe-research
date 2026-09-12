@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-09-12T20:10:55+00:00",
+  "generatedAtUtc": "2026-09-12T20:23:42+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.6.0",
@@ -54,16 +54,16 @@
       "PERCENT_OF_PRODUCT_UNIVERSE": 58.181
     },
     "free_cash_flow": {
-      "COUNT": 0,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 0.0
+      "COUNT": 4073,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 58.1525
     },
     "total_assets": {
       "COUNT": 4591,
       "PERCENT_OF_PRODUCT_UNIVERSE": 65.5483
     },
     "total_debt": {
-      "COUNT": 407,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 5.811
+      "COUNT": 2480,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 35.4083
     },
     "stockholders_equity": {
       "COUNT": 4555,
@@ -73,12 +73,12 @@
   "pointInTime": {
     "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
     "denominator": "PRODUCT_TITLES",
-    "PIT_READY_SECURITIES": 4924,
+    "PIT_READY_SECURITIES": 4928,
     "PIT_PARTIAL_SECURITIES": 0,
-    "PIT_UNAVAILABLE_SECURITIES": 2080,
+    "PIT_UNAVAILABLE_SECURITIES": 2076,
     "BY_ISSUER": {
-      "PIT_READY": 4623,
-      "PIT_UNAVAILABLE": 814
+      "PIT_READY": 4627,
+      "PIT_UNAVAILABLE": 810
     },
     "SURVIVORSHIP_FREE_UNIVERSE": false,
     "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein Delisting-Ereignisfeed. Ein ueberlebensfreies Universum laesst sich daraus nicht bauen; ein PASS waere eine Falschaussage ueber die Quelle."
