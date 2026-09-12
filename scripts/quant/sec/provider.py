@@ -320,18 +320,29 @@ class SECProvider:
 
     # ---------------------------------------------------------------------- bulk
 
-    def iter_bulk_company_facts(self, ciks=None):
+    def iter_bulk_company_facts(self, ciks=None, archive_path=None):
         """Yield (cik, companyfacts dict) from the SEC bulk companyfacts.zip.
 
         For an initial import beyond a few hundred issuers this is one request
         instead of one per company, which is what SEC fair access actually asks
         for. The archive is streamed from the cache, never committed.
+
+        `archive_path` reads a local copy instead of fetching. Two reasons, and
+        neither is convenience: a run that already downloaded the archive
+        should not download it again, and this iteration has to be testable
+        without touching sec.gov at all.
         """
         import zipfile
 
         wanted = {normalize_cik(c) for c in ciks} if ciks else None
-        buffer = self.client.get_zip(BULK_COMPANY_FACTS_URL)
-        with zipfile.ZipFile(buffer) as archive:
+        if archive_path is not None:
+            handle = Path(archive_path).open("rb")
+        else:
+            handle = self.client.get_zip(BULK_COMPANY_FACTS_URL)
+        # `with` auf dem Dateiobjekt, nicht nur auf dem Archiv: ein
+        # offenes Handle auf eine mehrere Gigabyte grosse Datei ist keine
+        # Warnung, die man wegdrueckt.
+        with handle, zipfile.ZipFile(handle) as archive:
             for info in archive.infolist():
                 if not info.filename.startswith("CIK") or not info.filename.endswith(".json"):
                     continue

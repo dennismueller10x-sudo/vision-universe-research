@@ -81,9 +81,20 @@ def _load_universe(path):
     return payload["companies"]
 
 
-def _resolve_universe(provider, companies, verify=True):
-    """Ticker -> CIK against the SEC's own map. The config file is only a hint."""
+def _resolve_universe(provider, companies, verify=True, skip_unresolved=False):
+    """Ticker -> CIK against the SEC's own map. The config file is only a hint.
+
+    `skip_unresolved` exists for a universe that is GENERATED rather than
+    hand-written. With five curated issuers, a ticker the SEC does not know is
+    a config error and has to stop the run. With five thousand issuers taken
+    from a market-data provider, it is the expected case — ETFs, foreign
+    issuers without a 20-F, freshly delisted shells — and aborting on the first
+    one would mean the pipeline can never run at scale. The skipped entries are
+    returned, not swallowed: a caller that does not report them is the bug this
+    flag would otherwise introduce.
+    """
     resolved = []
+    skipped = []
     for entry in companies:
         ticker = entry.get("ticker")
         hint = entry.get("cik")
@@ -94,6 +105,9 @@ def _resolve_universe(provider, companies, verify=True):
             cik = normalize_cik(hint)
             print(f"  {ticker}: not in the SEC ticker map, using configured CIK {cik}")
         if cik is None:
+            if skip_unresolved:
+                skipped.append({"ticker": ticker, "reason": "notInSecTickerMap"})
+                continue
             raise SystemExit(f"cannot resolve a CIK for {entry!r}")
         if verify and hint and normalize_cik(hint) != cik:
             # A divergence may be legitimate — a reorganisation can move the
@@ -115,6 +129,15 @@ def _resolve_universe(provider, companies, verify=True):
                 resolved.append({**entry, "cik": normalize_cik(hint),
                                  "sec_ticker_map_cik": cik})
                 continue
+            if skip_unresolved:
+                # A generated universe carries the SEC's own CIK as its hint, so
+                # a mismatch here means the ticker moved between the map build
+                # and this run. The SEC's answer wins, and the move is recorded.
+                skipped.append({"ticker": ticker, "reason": "cikMovedSinceMapBuild",
+                                "hint": normalize_cik(hint), "sec": cik,
+                                "action": "usedSecCik"})
+                resolved.append({**entry, "cik": cik, "config_cik": normalize_cik(hint)})
+                continue
             raise SystemExit(
                 f"CIK mismatch for {ticker}: config says {normalize_cik(hint)}, "
                 f"SEC says {cik}. Run `cli.py resolve` to see what each CIK "
@@ -123,6 +146,8 @@ def _resolve_universe(provider, companies, verify=True):
                 f"what was measured; otherwise fix quant/config/sec-universe.json."
             )
         resolved.append({**entry, "cik": cik})
+    if skip_unresolved:
+        return resolved, skipped
     return resolved
 
 
@@ -184,13 +209,34 @@ def cmd_ingest(args):
     registry = MetricRegistry.load()
     pipeline = IngestionPipeline(provider=provider, registry=registry,
                                  run_id=args.run_id)
-    companies = _resolve_universe(provider, _load_universe(args.universe))
+    universe = _load_universe(args.universe)
+    skipped = []
+    if args.skip_unresolved:
+        companies, skipped = _resolve_universe(provider, universe, skip_unresolved=True)
+    else:
+        companies = _resolve_universe(provider, universe)
+
+    if skipped:
+        print(f"  {len(skipped)} of {len(universe)} entries could not be resolved "
+              f"against the SEC ticker map and are not ingested:")
+        for row in skipped[:20]:
+            print(f"    {row['ticker']}: {row['reason']}")
+        if len(skipped) > 20:
+            print(f"    … and {len(skipped) - 20} more")
+
     outcome = pipeline.ingest_universe(companies, resume=not args.no_resume,
-                                       force=args.force, limit=args.limit)
-    for result in outcome["results"]:
+                                       force=args.force, limit=args.limit,
+                                       bulk=args.bulk, bulk_archive=args.bulk_file)
+    for result in outcome["results"][:50]:
         print(f"  {result['cik']}: {result['status']}"
               + (f" ({result['error']})" if result.get("error") else ""))
-    print(json.dumps(outcome["manifest"]["run"], indent=2))
+    if len(outcome["results"]) > 50:
+        print(f"  … and {len(outcome['results']) - 50} more")
+    run = dict(outcome["manifest"]["run"])
+    run["universe_entries"] = len(universe)
+    run["resolved"] = len(companies)
+    run["unresolved"] = len(skipped)
+    print(json.dumps(run, indent=2))
     return 1 if outcome["state"]["failed"] else 0
 
 
@@ -508,6 +554,16 @@ def build_parser():
     ingest.add_argument("--force", action="store_true")
     ingest.add_argument("--limit", type=int)
     ingest.add_argument("--no-resume", action="store_true")
+    ingest.add_argument("--skip-unresolved", action="store_true",
+                        help="do not abort on tickers the SEC ticker map does not know "
+                             "(the expected case for a generated universe; the skipped "
+                             "entries are reported)")
+    ingest.add_argument("--bulk", action="store_true",
+                        help="take XBRL facts from the SEC bulk companyfacts archive "
+                             "(one request) instead of one request per issuer")
+    ingest.add_argument("--bulk-file",
+                        help="read the bulk archive from this local path instead of "
+                             "fetching it")
     ingest.set_defaults(func=cmd_ingest)
 
     update = subparsers.add_parser("update", help="re-ingest companies with new filings")

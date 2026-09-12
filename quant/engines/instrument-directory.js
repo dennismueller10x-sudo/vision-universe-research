@@ -91,16 +91,42 @@
     function manifest() { return loadOnce("manifest", base + "master-manifest.json"); }
     function searchManifest() { return loadOnce("searchManifest", base + "search/manifest.json"); }
 
+    /* Welche Scherben es gibt. Das Manifest weiss es, und das ist der
+       Unterschied zwischen "nicht vorhanden" und einem 404 in der Konsole.
+
+       Eine Scherbe blind anzufragen und den Fehlschlag abzufangen
+       funktioniert - aber der Browser protokolliert trotzdem. Bei einer
+       Suche nach "ZZ" ist das kein Fehler der Anwendung und sieht
+       trotzdem aus wie einer. Gefunden hat das die bestehende
+       Browser-Pruefung des Discover-Moduls, nicht die neue. */
+    function shardSets() {
+      if (cache.shardSets) return cache.shardSets;
+      cache.shardSets = searchManifest().then(function (sm) {
+        var sets = { sym: {}, name: {} };
+        (sm.sym || []).forEach(function (r) { sets.sym[r.shard] = true; });
+        (sm.name || []).forEach(function (r) { sets.name[r.shard] = true; });
+        return sets;
+      }).catch(function () { return null; });
+      return cache.shardSets;
+    }
+
     /* Eine fehlende Scherbe ist kein Fehler, sondern die Antwort "dieses
        Kuerzel gibt es nicht". Sie wird gemerkt, damit nicht jede
-       Tastatureingabe dieselbe 404 erzeugt. */
+       Tastatureingabe dieselbe Anfrage erzeugt. */
     function loadShard(kind, key) {
       var path = kind === "instrument" ? base + "instruments/" + key + ".json"
                                        : base + "search/" + kind + "/" + key + ".json";
       var bucket = kind === "instrument" ? cache.shards : cache[kind];
       if (bucket[key]) return bucket[key];
       if (cache.missing[path]) return Promise.resolve(null);
-      bucket[key] = load(path).catch(function () { cache.missing[path] = true; return null; });
+
+      /* Instrumentenscherben und Kuerzelscherben entstehen aus derselben
+         Menge: gibt es die eine nicht, gibt es die andere auch nicht. */
+      var lookup = kind === "instrument" ? "sym" : kind;
+      bucket[key] = shardSets().then(function (sets) {
+        if (sets && !sets[lookup][key]) { cache.missing[path] = true; return null; }
+        return load(path).catch(function () { cache.missing[path] = true; return null; });
+      });
       return bucket[key];
     }
 
@@ -116,7 +142,15 @@
       if (!symbol) return Promise.resolve({ status: "BAD_REQUEST", instrument: null,
                                             reason: "Ohne Kuerzel ist kein Instrument adressierbar." });
 
-      return loadShard("instrument", Master.shardKey(symbol)).then(function (shard) {
+      /* Eine bestehende securityId ("ref_NVDA", "ref_BRK_A") liegt in der
+         Scherbe ihres KUERZELS, nicht in der von "RE". Der Praefix wird
+         deshalb abgeschnitten, bevor die Scherbe bestimmt wird - sonst
+         waere der Alias aus §41 im Browser nicht aufloesbar, obwohl er im
+         Datensatz steht. */
+      var scherbenschluessel = Master.shardKey(
+        symbol.indexOf("REF_") === 0 ? symbol.slice(4) : symbol);
+
+      return loadShard("instrument", scherbenschluessel).then(function (shard) {
         if (!shard) {
           return { status: "NOT_IN_UNIVERSE", instrument: null,
                    reason: "Kein Instrument mit diesem Kuerzel im Company Master." };
@@ -127,7 +161,10 @@
           var r = rows[i];
           if (wantedId && r.instrumentId === wantedId) { hit = r; break; }
           if (!hit && upper(r.symbol) === symbol) hit = r;
-          if (!hit && (r.legacyIds || []).indexOf(symbol) >= 0) hit = r;
+          /* Aliase werden ohne Ruecksicht auf Gross-/Kleinschreibung
+             verglichen: im Datensatz steht "ref_NVDA", in einer URL oder
+             einem Aufruf steht schnell "REF_NVDA". */
+          if (!hit && (r.legacyIds || []).some(function (a) { return upper(a) === symbol; })) hit = r;
         }
         if (!hit) {
           return { status: "NOT_IN_UNIVERSE", instrument: null,
@@ -165,6 +202,18 @@
       var limit = opts.limit || 20;
       return searchManifest().then(function (sm) {
         var min = opts.minLength || (sm && sm.minQueryLengthForMasterLookup) || 2;
+        /* Ein einzelnes Zeichen ist zu wenig fuer eine Namenssuche - aber
+           nicht fuer ein einbuchstabiges Kuerzel. F, T, C und A sind
+           Grossunternehmen, und "zu kurz" waere fuer sie schlicht falsch.
+           Geladen wird dann genau die Scherbe dieses einen Buchstabens,
+           und die ist winzig. */
+        if (q.length === 1 && /^[A-Z0-9]$/.test(q)) {
+          return loadShard("sym", Master.shardKey(q)).then(function (shard) {
+            var pool = (shard && shard.entries) || [];
+            return { status: "OK", shardsLoaded: shard ? 1 : 0,
+                     entries: Master.rankMatches(pool, q, limit) };
+          });
+        }
         if (q.length < min) {
           return { status: "QUERY_TOO_SHORT", minLength: min, entries: [],
                    reason: "Ab " + min + " Zeichen wird das ganze Universum durchsucht." };

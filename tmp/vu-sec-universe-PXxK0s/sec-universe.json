@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "generated": true,
+  "generated_at_utc": "2026-09-12T10:00:07.814Z",
+  "generator": "scripts/universe/build-sec-universe.mjs",
+  "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
+  "sources": {
+    "companyMaster": "quant/data/universe/instruments/**",
+    "cikMap": {
+      "file": "quant/data/universe/cik-map.json",
+      "status": "ABSENT",
+      "generatedAt": null
+    },
+    "validationSet": "quant/config/sec-universe.json",
+    "deliveredStockPages": "discover/data/stock-index/US_REAL.json"
+  },
+  "ordering": [
+    "validationSet",
+    "deliveredStockPage",
+    "remainingUniverseByTicker"
+  ],
+  "orderingNote": "Ein begrenzter oder abgebrochener Lauf soll das Nuetzlichste zuerst geholt haben.",
+  "limit": null,
+  "limitNote": "Keine Obergrenze. Die Groesse ergibt sich aus dem Master und der CIK-Zuordnung.",
+  "totals": {
+    "instrumentsInMaster": 5690,
+    "candidates": 0,
+    "companies": 5,
+    "validationSet": 5,
+    "withDeliveredStockPage": 0,
+    "excluded": {
+      "noCik": 5688,
+      "notUs": 0,
+      "wrongType": 2,
+      "inactive": 0,
+      "duplicateCik": 0
+    }
+  },
+  "requestBudget": {
+    "submissionsRequests": 5,
+    "companyFactsRequests": 5,
+    "companyFactsRequestsWithBulk": 1,
+    "note": "Zwei Anfragen je Emittent auf dem Einzelweg. Mit --bulk wird die zweite zu EINER Anfrage fuer alle zusammen; die Einreichungsuebersicht bleibt je Emittent, weil es sie als Sammelform nicht gibt. Bei fuenf Anfragen je Sekunde sind 5 Emittenten rund 0 Minuten reine Anfragezeit.",
+    "rateLimit": "5 Anfragen/s (scripts/quant/sec/http_client.py), die Haelfte der von der SEC genannten Obergrenze."
+  },
+  "companies": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corporation",
+      "cik": "0001045810",
+      "why": "Semiconductors; non-calendar fiscal year ending late January",
+      "instrumentId": null,
+      "role": "validation"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "cik": "0000320193",
+      "why": "Hardware; 52/53-week fiscal year ending late September",
+      "instrumentId": null,
+      "role": "validation"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corporation",
+      "cik": "0000789019",
+      "why": "Software; fiscal year ending 30 June",
+      "instrumentId": null,
+      "role": "validation"
+    },
+    {
+      "ticker": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "cik": "0000019617",
+      "why": "Banking; no cost of revenue, sector-dependent metric availability",
+      "instrumentId": null,
+      "role": "validation"
+    },
+    {
+      "ticker": "XOM",
+      "name": "Exxon Mobil Corporation",
+      "cik": "0000034088",
+      "why": "Energie; Kalenderjahr, kapitalintensiv. Zusaetzlich der reale Testfall fuer Entitaetswechsel durch Umstrukturierung.",
+      "cik_authority": "config",
+      "successor_cik": "0002115436",
+      "cik_authority_reason": "Gemessen am 2026-09-07 gegen data.sec.gov (Lauf 34153589913): der Ticker XOM loest auf CIK 0002115436 'ExxonMobil Holdings Corp' auf - eine neue Holding, die das NYSE-Listing traegt, aber genau EIN periodisches Filing hat (10-Q, Periode 2026-06-30). Die gesamte Fundamentalhistorie liegt bei CIK 0000034088 'EXXON MOBIL CORP': 132 periodische Filings, Berichtsperioden 1993-12-31 bis 2026-06-30, formerNames ['EXXON CORP'] - dieser CIK traegt inzwischen keinen Ticker mehr (tickers=[], exchanges=[]). Fuer Fundamentaldaten ist deshalb der historische CIK der richtige. Die beiden Reihen muessen spaeter verknuepft werden, sobald die Holding eigene Historie aufgebaut hat; siehe docs/SEC_COVERAGE_REPORT.md.",
+      "instrumentId": null,
+      "role": "validation"
+    }
+  ]
+}

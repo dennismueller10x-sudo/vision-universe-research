@@ -28,8 +28,14 @@ function arg(name, fallback) {
   const i = args.indexOf("--" + name);
   return i === -1 ? fallback : args[i + 1];
 }
+
+/* Ein absoluter Pfad bleibt absolut. join(root, "/tmp/x") ergibt
+   "<root>/tmp/x" - die Datei landet dann im Repository statt dort, wo sie
+   hin sollte. Gefunden hat das ein Test, der in ein Verzeichnis unter
+   /tmp schreiben wollte und dabei das Arbeitsverzeichnis verschmutzt hat. */
+function pfad(p) { return p.startsWith("/") ? p : join(root, p); }
 const BASE = arg("url", "http://localhost:8765");
-const OUT = join(root, arg("out", "quant/data/universe/browser-qa.json"));
+const OUT = pfad(arg("out", "quant/data/universe/browser-qa.json"));
 
 let chromium;
 try { ({ chromium } = await import("playwright")); }

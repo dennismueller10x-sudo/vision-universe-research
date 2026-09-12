@@ -303,7 +303,13 @@
         var diff = changedFields(match, merged);
         if (diff.length === 0) {
           changes.unchanged.push(merged.instrumentId);
-        } else if (match.active === false && merged.active === true) {
+        } else if (match.active === false && merged.active !== false) {
+          /* Nicht `=== true`. Ein Anbieter, der das Enddatum
+             zurueckzieht, laesst `active` auf null stehen ("kein
+             Enddatum") - und das ist genau der Fall, in dem ein Listing
+             wieder laeuft. Auf `true` zu bestehen hiesse, die haeufigste
+             Form der Wiederaufnahme als gewoehnliche Aenderung zu
+             fuehren. */
           changes.reactivated.push({ instrumentId: merged.instrumentId, symbol: merged.symbol, fields: diff });
         } else {
           changes.updated.push({ instrumentId: merged.instrumentId, symbol: merged.symbol, fields: diff });
@@ -386,8 +392,8 @@
     });
     merged.legacyIds = aliases;
     /* Wiederbelebt: das Enddatum aus dem Bestand faellt weg, sonst traegt
-       ein aktives Listing ein Delisting-Datum. */
-    if (merged.active === true) merged.delistedAt = null;
+       ein laufendes Listing ein Delisting-Datum. */
+    if (merged.active !== false) merged.delistedAt = null;
     return merged;
   }
 
@@ -455,8 +461,12 @@
   function shardKey(symbol) {
     var s = upper(symbol).replace(/[^A-Z0-9]/g, "");
     if (!s) return "_";
-    var k = (s + "__").slice(0, 2);
-    return /^[A-Z0-9]{2}$/.test(k) ? k : "_";
+    /* Einbuchstabige Kuerzel gibt es wirklich - F, T, C, A sind
+       Grossunternehmen. Sie mit dem Rest in eine Sammelscherbe "_" zu
+       werfen macht sie unauffindbar: wer "F" tippt, laedt die Scherbe
+       "F_", und dort steht dann nichts. Sie bekommen deshalb ihre eigene
+       Scherbe mit Fuellzeichen. */
+    return (s + "_").slice(0, 2);
   }
 
   /* Prefix-Suche ueber einen bereits geladenen Index. Dieselbe Rangfolge

@@ -1,0 +1,222 @@
+name: Company Master — Universum, Suchindex, CIK
+
+# Der kanonische Company Master. Zwei Jobs, und der Unterschied zwischen
+# ihnen ist der ganze Punkt dieser Datei.
+#
+#   pruefen   Laeuft bei jedem Push, ohne Secrets, ohne Netz. Er baut den
+#             Master aus dem, was im Repository liegt, prueft ihn gegen
+#             sich selbst und misst ihn bei 25.000 Instrumenten. Wenn
+#             dieser Job rot wird, ist der Master kaputt - unabhaengig
+#             von jedem Anbieter.
+#
+#   sync      Laeuft nur auf Ansage. Er holt das VOLLSTAENDIGE
+#             Anbieterverzeichnis (Tiingo) und die CIK-Zuordnung (SEC),
+#             baut den Master daraus neu und committet das Ergebnis.
+#
+# WARUM DER SYNC NICHT AUTOMATISCH LAEUFT
+#
+# Er fasst das Kontingent eines kostenpflichtigen Zugangs an und schreibt
+# in den Datenbestand. Beides gehoert nicht an einen Push-Ausloeser.
+#
+# WARUM EIN PUSH-AUSLOESER MIT MARKE
+#
+# Dieselbe Loesung wie in tiingo-scale.yml: workflow_dispatch verlangt,
+# dass die Datei auf dem Default-Branch liegt - vor einem Merge also
+# nicht nutzbar. Bis dahin gilt die Marke [universe-sync] in der
+# Commit-Nachricht. OHNE MARKE LAEUFT DER SYNC NICHT.
+#
+# Achtung: der Push muss eine Datei aus der paths-Liste AENDERN. Ein
+# leerer Commit traegt die Marke zwar, aendert aber keinen Pfad - GitHub
+# legt dann gar keinen Lauf an.
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync:
+        description: 'Anbieterverzeichnis und CIK-Zuordnung neu holen und committen'
+        type: boolean
+        default: false
+      secMax:
+        description: 'Obergrenze fuer das SEC-Universum (leer = keine)'
+        type: string
+        default: ''
+  push:
+    branches:
+      - 'main'
+      - 'claude/**'
+    paths:
+      - 'quant/engines/company-master.js'
+      - 'quant/engines/instrument-directory.js'
+      - 'quant/engines/instrument-classification.js'
+      - 'quant/config/company-master.json'
+      - 'scripts/universe/**'
+      - 'quant/tests/company-master.test.mjs'
+      - 'quant/tests/sec-universe-scale.test.mjs'
+      - '.github/workflows/universe-master.yml'
+  pull_request:
+    paths:
+      - 'quant/engines/company-master.js'
+      - 'quant/engines/instrument-directory.js'
+      - 'quant/config/company-master.json'
+      - 'scripts/universe/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: universe-master-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    name: Master pruefen (ohne Netz)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Der Master muss sich aus dem Repository allein reproduzieren
+      # lassen. Baut dieser Schritt etwas anderes als das, was committet
+      # ist, stimmt eine der beiden Seiten nicht.
+      - name: Master aus den ausgelieferten Quellen bauen
+        run: node scripts/universe/build-company-master.mjs
+
+      - name: Suchindex, Faehigkeiten, Deckungsbericht
+        run: node scripts/universe/build-universe-indexes.mjs
+
+      - name: Der Master ist reproduzierbar
+        run: |
+          if ! git diff --quiet -- quant/data/universe/instruments; then
+            echo "Der neu gebaute Master weicht vom committeten ab:"
+            git diff --stat -- quant/data/universe/instruments
+            echo ""
+            echo "Entweder ist der committete Stand veraltet, oder der Bau ist"
+            echo "nicht deterministisch. Beides ist ein Befund."
+            exit 1
+          fi
+          echo "Master identisch reproduziert."
+
+      - name: Pruefung des Masters
+        run: node scripts/universe/verify-company-master.mjs
+
+      - name: Scale Test (25.000 Instrumente)
+        run: node scripts/universe/scale-test.mjs
+
+      - name: Tests
+        run: |
+          node --test quant/tests/company-master.test.mjs
+          node --test quant/tests/sec-universe-scale.test.mjs
+
+      - name: Es gibt keine Zielgroesse im Code
+        # §6. Eine Obergrenze wieder einzufuehren ist die naheliegendste
+        # Art, diese Arbeit rueckgaengig zu machen - deshalb steht die
+        # Pruefung hier und nicht in einem Kommentar.
+        run: |
+          if grep -rnE "(MAX_STOCKS|MAX_INSTRUMENTS|MAX_UNIVERSE|maxStocks)[[:space:]]*[=:]" \
+               quant/engines/company-master.js \
+               quant/engines/instrument-directory.js \
+               scripts/universe/ ; then
+            echo "Eine Obergrenze im Code. §6 verbietet genau das."
+            exit 1
+          fi
+          node -e '
+            const cfg = require("./quant/config/company-master.json");
+            if (cfg.size.maxInstruments !== null) {
+              console.error("company-master.json fuehrt eine Zielgroesse:", cfg.size.maxInstruments);
+              process.exit(1);
+            }
+            console.log("Keine Zielgroesse. Die Groesse ergibt sich aus den Daten.");
+          '
+
+  sync:
+    name: Universum synchronisieren (mit Zugang)
+    runs-on: ubuntu-latest
+    needs: pruefen
+    if: >
+      (github.event_name == 'workflow_dispatch' && inputs.sync) ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[universe-sync]'))
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Erst das Anbieterverzeichnis. Ohne Schluessel bricht dieser
+      # Schritt ab, und das ist richtig: ein Sync gegen den committeten
+      # Auszug waere kein Sync.
+      - name: Anbieterverzeichnis holen (Tiingo)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/build-market-universe.mjs
+
+      # Dann die SEC. Zwei Anfragen fuer den ganzen US-Markt - Kuerzel,
+      # CIK und Firmenname. Kostenlos, ohne Vertrag (§32).
+      - name: CIK-Zuordnung holen (SEC)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: node scripts/universe/build-cik-map.mjs
+
+      - name: Company Master bauen
+        run: node scripts/universe/build-company-master.mjs
+
+      - name: Suchindex, Faehigkeiten, Deckungsbericht
+        run: node scripts/universe/build-universe-indexes.mjs
+
+      - name: SEC-Universum aus dem Master
+        run: |
+          if [ -n "${{ inputs.secMax }}" ]; then
+            node scripts/universe/build-sec-universe.mjs --max "${{ inputs.secMax }}"
+          else
+            node scripts/universe/build-sec-universe.mjs
+          fi
+
+      - name: Discover-Payloads neu bauen
+        run: node scripts/discover/build-discover-data.mjs
+
+      - name: Pruefung des Masters
+        run: node scripts/universe/verify-company-master.mjs
+
+      - name: Tests
+        run: |
+          node --test quant/tests/company-master.test.mjs
+          node --test quant/tests/sec-universe-scale.test.mjs
+          node --test "discover/tests/*.test.mjs"
+
+      # Dieselbe Gegenprobe wie in allen Anbieter-Workflows: kein
+      # Schluessel darf den Lauf verlassen.
+      - name: Kein Schluessel im Ergebnis
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Ergebnis committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/universe quant/data/market/universe discover/data
+          if git diff --cached --quiet; then
+            echo "Nichts geaendert - der Sync war idempotent."
+          else
+            SIZE=$(node -e 'console.log(require("./quant/data/universe/master-manifest.json").totals.published)')
+            git commit -m "Company Master: $SIZE Instrumente aus Lauf ${{ github.run_id }}"
+            for i in 1 2 3 4; do
+              git push origin "HEAD:${GITHUB_REF_NAME}" && break
+              echo "Push fehlgeschlagen, neuer Versuch in $((2**i))s"
+              sleep $((2**i))
+            done
+          fi
+
+      - name: Bilanz
+        run: |
+          node -e '
+            const m = require("./quant/data/universe/master-manifest.json");
+            const c = require("./quant/data/universe/coverage-report.json");
+            console.log("Quelle:      " + m.source.kind + (m.source.complete ? " (vollstaendig)" : " (Auszug)"));
+            console.log("Verzeichnis: " + m.totals.providerRows + " Zeilen");
+            console.log("Master:      " + m.totals.inMaster);
+            console.log("ausgeliefert:" + m.totals.published);
+            console.log("mit Namen:   " + c.totals.TOTAL_WITH_NAME);
+            console.log("mit CIK:     " + c.totals.TOTAL_WITH_CIK);
+          '

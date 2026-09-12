@@ -36,8 +36,14 @@ function arg(name, fallback) {
   const i = argv.indexOf(name);
   return i >= 0 && argv[i + 1] ? argv[i + 1] : fallback;
 }
+
+/* Ein absoluter Pfad bleibt absolut. join(root, "/tmp/x") ergibt
+   "<root>/tmp/x" - die Datei landet dann im Repository statt dort, wo sie
+   hin sollte. Gefunden hat das ein Test, der in ein Verzeichnis unter
+   /tmp schreiben wollte und dabei das Arbeitsverzeichnis verschmutzt hat. */
+function pfad(p) { return p.startsWith("/") ? p : join(root, p); }
 const N = parseInt(arg("--n", "25000"), 10);
-const OUT = join(root, arg("--out", "quant/data/universe/scale-test.json"));
+const OUT = pfad(arg("--out", "quant/data/universe/scale-test.json"));
 const TODAY = "2026-09-12";
 
 const EXCHANGES = ["NASDAQ", "NYSE", "AMEX", "BATS", "NYSE ARCA", "PINK", "OTCQB"];

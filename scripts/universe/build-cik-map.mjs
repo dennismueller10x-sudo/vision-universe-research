@@ -50,7 +50,13 @@ function arg(name, fallback) {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 }
 
-const OUT_FILE = join(root, arg("--out", "quant/data/universe/cik-map.json"));
+/* Ein absoluter Pfad bleibt absolut. join(root, "/tmp/x") ergibt
+   "<root>/tmp/x" - die Datei landet dann im Repository statt dort, wo sie
+   hin sollte. Gefunden hat das ein Test, der in ein Verzeichnis unter
+   /tmp schreiben wollte und dabei das Arbeitsverzeichnis verschmutzt hat. */
+function pfad(p) { return p.startsWith("/") ? p : join(root, p); }
+
+const OUT_FILE = pfad(arg("--out", "quant/data/universe/cik-map.json"));
 const CACHE_DIR = join(root, ".sec-cache", "universe");
 const USER_AGENT = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniverse.de";
 

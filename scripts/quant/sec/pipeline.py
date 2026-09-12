@@ -53,8 +53,14 @@ class IngestionPipeline:
         return {"accession": newest["accession"], "filing_date": newest["filing_date"],
                 "form": newest["form"], "periodic_filings": len(periodic)}
 
-    def ingest_company(self, cik, force=False):
-        """Fetch, archive, normalize, quality-check and store one company."""
+    def ingest_company(self, cik, force=False, company_facts=None):
+        """Fetch, archive, normalize, quality-check and store one company.
+
+        `company_facts` accepts a payload that was already retrieved — that is
+        what the bulk path hands in. It changes nothing about normalization,
+        archiving or provenance: the payload is stored and hashed exactly as a
+        per-company fetch would be, and it carries its own `_source`.
+        """
         cik = normalize_cik(cik)
         started = time.monotonic()
 
@@ -77,7 +83,8 @@ class IngestionPipeline:
             return {"cik": cik, "status": STATUS_UNCHANGED, "signature": signature,
                     "seconds": round(time.monotonic() - started, 2)}
 
-        company_facts = self.provider.get_company_facts(cik)
+        if company_facts is None:
+            company_facts = self.provider.get_company_facts(cik)
         facts_hash = self.raw_store.put(cik, "companyfacts", company_facts)
 
         # Provenance records when this payload was FIRST retrieved, not when
@@ -140,14 +147,39 @@ class IngestionPipeline:
     # ----------------------------------------------------------------- universe
 
     def ingest_universe(self, entries, resume=True, force=False, limit=None,
-                        max_attempts=3):
-        """Ingest many companies with checkpointing, a failure log and a retry queue."""
+                        max_attempts=3, bulk=False, bulk_archive=None):
+        """Ingest many companies with checkpointing, a failure log and a retry queue.
+
+        `bulk=True` takes the XBRL facts from the SEC's bulk archive instead of
+        asking for each issuer separately. For five companies that is a
+        detour; for five thousand it is the difference between ~10.000
+        requests and ~5.000 plus one, and SEC fair access is the reason this
+        option exists at all (§25). What it does NOT remove is the submissions
+        request per company: the filing index decides which facts are
+        comparable and when each became public, and there is no bulk form of
+        it. Anyone scaling this further has to start there.
+        """
         state = self.checkpoint.load() if resume else {
             "run_id": self.checkpoint.run_id, "started_at": _utcnow(),
             "completed": {}, "failed": {}, "retry_queue": [], "last_cik": None,
         }
         results = []
         processed = 0
+
+        facts_by_cik = {}
+        bulk_source = None
+        if bulk:
+            wanted = [normalize_cik(e["cik"] if isinstance(e, dict) else e) for e in entries]
+            # One pass over the archive, only the wanted issuers kept. The
+            # archive is large; holding every issuer would be a memory leak
+            # with a schedule.
+            for cik, payload in self.provider.iter_bulk_company_facts(
+                    ciks=wanted, archive_path=bulk_archive):
+                facts_by_cik[cik] = payload
+            bulk_source = {"requested": len(wanted), "found_in_archive": len(facts_by_cik),
+                           "archive": bulk_archive or "sec.gov bulk companyfacts.zip"}
+            LOGGER.info("bulk companyfacts: %d of %d issuers present in the archive",
+                        len(facts_by_cik), len(wanted))
 
         for entry in entries:
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
@@ -182,7 +214,8 @@ class IngestionPipeline:
                 continue
             processed += 1
             try:
-                outcome = self.ingest_company(cik, force=force)
+                outcome = self.ingest_company(cik, force=force,
+                                              company_facts=facts_by_cik.get(cik))
                 state = self.checkpoint.mark_completed(state, cik, {
                     "status": outcome["status"],
                     "latest_filing": (outcome.get("signature") or {}).get("accession"),
@@ -207,6 +240,8 @@ class IngestionPipeline:
                 "completed": len(state["completed"]),
                 "failed": len(state["failed"]),
                 "retry_queue": list(state["retry_queue"]),
+                "facts_source": "bulk_companyfacts_zip" if bulk else "per_company_api",
+                "bulk": bulk_source,
             },
         }
         self.fact_store.write_manifest(manifest)

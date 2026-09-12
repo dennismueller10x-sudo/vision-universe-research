@@ -54,13 +54,19 @@ function arg(name, fallback) {
   const i = argv.indexOf(name);
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 }
+
+/* Ein absoluter Pfad bleibt absolut. join(root, "/tmp/x") ergibt
+   "<root>/tmp/x" - die Datei landet dann im Repository statt dort, wo sie
+   hin sollte. Gefunden hat das ein Test, der in ein Verzeichnis unter
+   /tmp schreiben wollte und dabei das Arbeitsverzeichnis verschmutzt hat. */
+function pfad(p) { return p.startsWith("/") ? p : join(root, p); }
 const has = (name) => argv.indexOf(name) >= 0;
 
 const CONFIG = readJSON(join(root, "quant", "config", "company-master.json"));
 const TODAY = arg("--today", new Date().toISOString().slice(0, 10));
 const DRY_RUN = has("--dry-run");
-const OUT_ROOT = join(root, arg("--out", CONFIG.storage.root));
-const WORK_ROOT = join(root, arg("--work-dir", CONFIG.storage.workingDir));
+const OUT_ROOT = pfad(arg("--out", CONFIG.storage.root));
+const WORK_ROOT = pfad(arg("--work-dir", CONFIG.storage.workingDir));
 const INSTRUMENT_DIR = join(OUT_ROOT, "instruments");
 
 function readJSON(p) { return JSON.parse(readFileSync(p, "utf8")); }

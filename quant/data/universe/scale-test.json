@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-12T09:33:59.783Z",
+  "generatedAt": "2026-09-12T09:57:35.188Z",
   "note": "§47. Synthetische Instrumente durch dieselbe Klassifikation, denselben Sync und denselben Indexbau wie echte. Die Zahlen sagen etwas ueber die Pipeline, nichts ueber einen Markt.",
   "universe": {
     "requested": 25000,
@@ -14,19 +14,19 @@
     "searchShards": 676
   },
   "timingsMs": {
-    "generateRows": 34,
-    "normalize": 82,
-    "syncCold": 196,
-    "syncWarmIdempotent": 443,
-    "syncPartialDelisting": 407,
-    "qualityReport": 116,
-    "buildIndexes": 21,
-    "serialize": 107,
-    "search200Queries": 3
+    "generateRows": 31,
+    "normalize": 80,
+    "syncCold": 163,
+    "syncWarmIdempotent": 417,
+    "syncPartialDelisting": 337,
+    "qualityReport": 90,
+    "buildIndexes": 23,
+    "serialize": 122,
+    "search200Queries": 4
   },
   "perInstrumentMs": {
     "normalize": 0.003,
-    "syncCold": 0.008
+    "syncCold": 0.007
   },
   "idempotency": {
     "pass": true,
@@ -50,7 +50,7 @@
   "search": {
     "queries": 200,
     "exactFirstHit": 200,
-    "msPerQuery": 0.015,
+    "msPerQuery": 0.02,
     "note": "Jede Anfrage laedt genau eine Scherbe - nicht das Universum."
   },
   "size": {
@@ -61,9 +61,9 @@
     "note": "Die groesste Suchscherbe ist die Zahl, die der Browser wirklich laedt."
   },
   "memory": {
-    "heapUsedMB": 188,
-    "heapGrowthMB": 183.3,
-    "rssMB": 276.8
+    "heapUsedMB": 186.2,
+    "heapGrowthMB": 181.5,
+    "rssMB": 275
   },
   "quality": {
     "blocking": false,

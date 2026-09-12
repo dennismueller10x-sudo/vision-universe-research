@@ -604,7 +604,7 @@
        die grosse Mehrheit der Titel KEINE ausgelieferte Detailseite, und
        sie blind anzufragen hiesse, den Normalfall als Fehler zu
        behandeln. */
-    S.loadJSON(BASE + "stocks/" + universeId + "/index.json")
+    S.loadJSON(BASE + "stock-index/" + universeId + ".json")
       .catch(function () { return null; })
       .then(function (index) {
         var ausgeliefert = !index || !index.symbols ||

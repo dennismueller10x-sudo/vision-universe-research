@@ -1184,8 +1184,14 @@ for (const universe of universes) {
      Detailseite ANFRAGEN, um zu erfahren, dass es keine gibt - ein
      absichtlicher 404 je Aufruf, und im erweiterten Universum ist das der
      Regelfall und nicht die Ausnahme. Drei Kilobyte einmal sind billiger
-     als ein Fehlschlag pro Seitenaufruf, und die Konsole bleibt sauber. */
-  write(`stocks/${universe.universeId}/index.json`, {
+     als ein Fehlschlag pro Seitenaufruf, und die Konsole bleibt sauber.
+
+     Das Verzeichnis liegt NEBEN stocks/ und nicht darin: alles unter
+     stocks/<UNIVERSE>/ ist eine Aktienseite, und jeder Leser darf sich
+     darauf verlassen. Eine Datei dort, die keine ist, kostet jeden
+     Konsumenten eine Sonderregel - drei Tests haben das sofort
+     gemeldet. */
+  write(`stock-index/${universe.universeId}.json`, {
     universeId: universe.universeId,
     count: universe.stocks.length,
     note: "Kuerzel, fuer die eine Detailseite ausgeliefert wird. Alle uebrigen Titel des " +
