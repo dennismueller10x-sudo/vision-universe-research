@@ -139,3 +139,7 @@ Active workstream/vu2-stock-evidence, context phases/17-stock-evidence.md. Addit
 Stock reviewer found combined chart/factor failure could leave an inaccurate chart-availability sentence. Copy now promises only reachable professional links; independent typed-failure regression added.28 targeted service tests pass; no policy/identity/unit bypass found in additive composition.
 
 PR80 initial headb27f728cd790dfa01a1989120d5aeac1c42dfe32: Browser34668963037, Quant34668963033, SEC34668963077 SUCCESS. Stock1440/390 inspected. Refined four central evidence labels for understandable valuation/risk wording; catalogue-only version increment, no formula changes. Refreshed visual gate pending.
+
+## Stock final gate and explicit recovery
+PR80 final headd216ebb6e4f06707283c91bc8e5372e2b556f607: Browser34669100817, Quant34669100825, SEC34669100884 SUCCESS.32 targeted registry/service tests,41 browser checks. Updated Stock390 inspected: valuation/risk labels readable, values unchanged. Main remains533245e.
+Active workstream/vu2-recovery-navigation, context phases/18-recovery-navigation.md. Unknown routes no longer silently resemble Home; rejected renders clear partial content and expose retry/research/home.45 browser checks planned, syntax checks PASS; remote gate pending. No source, entitlement or SEC changes.
