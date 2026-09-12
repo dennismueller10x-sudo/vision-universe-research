@@ -320,3 +320,56 @@ class PointInTimeTests(unittest.TestCase):
         """Der bequemste Fehler: 0 von 0 als "alle" zu lesen."""
         self.assertEqual(uc._pit_zustand(0, 0), uc.PIT_UNAVAILABLE)
         self.assertEqual(uc._pit_zustand(0, 100), uc.PIT_UNAVAILABLE)
+
+
+class AbgeleiteteKennzahlenTests(unittest.TestCase):
+    """free_cash_flow stand auf 0,0 %, obwohl beide Eingangsgroessen da waren.
+
+    Der Bericht fragt den PeriodResolver, und der kennt nur Kennzahlen
+    der Registry. free_cash_flow und total_debt entstehen in derived.py
+    durch Rekonstruktion - sie kamen im Bericht nie vor und sahen aus
+    wie eine Luecke in den Daten.
+    """
+
+    @staticmethod
+    def zeilen(*enden):
+        # (fiscal_year, periode, periodenende, qualitaet, pit)
+        return [(int(e[:4]), "FY", e, "HIGH", True) for e in enden]
+
+    def test_beide_eingangsgroessen_noetig(self):
+        je_metrik = {
+            "operating_cash_flow": self.zeilen("2020-12-31", "2021-12-31", "2022-12-31"),
+            "capital_expenditures": self.zeilen("2020-12-31", "2022-12-31"),
+        }
+        perioden = uc._abgeleitete_perioden(
+            je_metrik, uc.DERIVED_INPUTS["free_cash_flow"])
+        self.assertEqual([r[2] for r in perioden], ["2020-12-31", "2022-12-31"],
+                         "2021 hat keine Investitionen - die Formel ist dort nicht rechenbar")
+
+    def test_eine_fehlende_eingangsgroesse_deckt_nichts(self):
+        je_metrik = {"operating_cash_flow": self.zeilen("2020-12-31")}
+        self.assertEqual(
+            uc._abgeleitete_perioden(je_metrik, uc.DERIVED_INPUTS["free_cash_flow"]), [])
+
+    def test_varianten_werden_vereinigt(self):
+        """Gemeldeter Posten ODER die Summe seiner Teile - wie in derived.py."""
+        je_metrik = {
+            "total_debt": self.zeilen("2020-12-31"),
+            "long_term_debt": self.zeilen("2021-12-31"),
+            "short_term_debt": self.zeilen("2021-12-31"),
+        }
+        perioden = uc._abgeleitete_perioden(je_metrik, uc.DERIVED_INPUTS["total_debt"])
+        self.assertEqual([r[2] for r in perioden], ["2020-12-31", "2021-12-31"])
+
+    def test_eine_teilsumme_allein_reicht_nicht(self):
+        je_metrik = {"long_term_debt": self.zeilen("2021-12-31")}
+        self.assertEqual(
+            uc._abgeleitete_perioden(je_metrik, uc.DERIVED_INPUTS["total_debt"]), [])
+
+    def test_die_formeln_stimmen_mit_derived_ueberein(self):
+        """Zwei Orte, eine Wahrheit - sonst driften Bericht und Rechnung auseinander."""
+        from quant.sec.derived import FORMULAS
+        self.assertIn("operating_cash_flow", FORMULAS["free_cash_flow"])
+        self.assertIn("capital_expenditures", FORMULAS["free_cash_flow"])
+        self.assertIn("long_term_debt", FORMULAS["total_debt"])
+        self.assertIn("short_term_debt", FORMULAS["total_debt"])

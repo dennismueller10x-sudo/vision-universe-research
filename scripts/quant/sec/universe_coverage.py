@@ -41,6 +41,33 @@ REPORT_METRICS = (
     "stockholders_equity",
 )
 
+# ABGELEITETE KENNZAHLEN WURDEN ALS NICHT VORHANDEN GEZAEHLT.
+#
+# free_cash_flow stand in jedem Bericht auf 0,0 % - bei 4.525 Emittenten
+# mit operativem Cashflow und 4.075 mit Investitionen. Die Zahl war
+# nicht falsch gemessen, sie war gar nicht gemessen: der Bericht fragt
+# den PeriodResolver, und der kennt nur Kennzahlen der Registry.
+# free_cash_flow und total_debt entstehen in derived.py durch
+# Rekonstruktion und kamen deshalb nie vor.
+#
+# Eine Null, die "nicht erhoben" heisst und wie "nicht vorhanden"
+# aussieht, ist die teuerste Sorte Zahl in einem Coverage-Bericht.
+#
+# Gerechnet wird nach denselben Formeln wie in derived.py, aber ueber
+# die bereits aufgeloesten Perioden: eine abgeleitete Kennzahl deckt
+# genau die Perioden, in denen ALLE ihre Eingangsgroessen aufloesen.
+# Kein zweiter Aufloesungslauf, keine Schaetzung.
+DERIVED_INPUTS = {
+    "free_cash_flow": (("operating_cash_flow", "capital_expenditures"),),
+    # Der gemeldete Posten zuerst, sonst die Summe - genau die
+    # Reihenfolge aus derived.reconstruct().
+    "total_debt": (("total_debt",), ("long_term_debt", "short_term_debt")),
+}
+
+DERIVED_INPUT_METRICS = tuple(sorted(
+    {name for varianten in DERIVED_INPUTS.values()
+     for gruppe in varianten for name in gruppe}))
+
 # Historische Tiefen aus §12.
 DEPTH_YEARS = (1, 3, 5, 10, 15)
 
@@ -183,6 +210,28 @@ def _history_years(rows):
         return None
 
 
+def _abgeleitete_perioden(je_metrik, varianten):
+    """Perioden, in denen eine abgeleitete Kennzahl berechenbar ist.
+
+    Eine Variante deckt eine Periode, wenn JEDE ihrer Eingangsgroessen
+    dort aufloest - fehlt eine, ist die Formel nicht rechenbar, und eine
+    Deckung zu zaehlen waere eine Behauptung ueber eine Zahl, die
+    niemand ausrechnen kann. Mehrere Varianten werden vereinigt: der
+    gemeldete Posten ODER die Summe seiner Teile.
+    """
+    gedeckt = {}
+    for gruppe in varianten:
+        je_gruppe = None
+        for name in gruppe:
+            perioden = {row[2]: row for row in je_metrik.get(name, ()) if row[2]}
+            je_gruppe = perioden if je_gruppe is None else {
+                ende: zeile for ende, zeile in je_gruppe.items() if ende in perioden}
+            if not je_gruppe:
+                break
+        gedeckt.update(je_gruppe or {})
+    return sorted(gedeckt.values(), key=lambda row: (row[0] or 0, row[1] or ""))
+
+
 def issuer_fundamentals(document, registry):
     """Fundamentalbilanz eines Emittenten aus seinem gespeicherten Factbook."""
     from .periods import PeriodResolver
@@ -204,8 +253,10 @@ def issuer_fundamentals(document, registry):
     annual_ends, quarterly_ends = set(), set()
     quality = Counter()
     pit_datierbar = pit_gesamt = 0
+    annual_je_metrik, quarterly_je_metrik = {}, {}
 
-    for metric in sorted(set(REPORT_METRICS) | set(CORE_METRICS)):
+    for metric in sorted(set(REPORT_METRICS) | set(CORE_METRICS)
+                         | set(DERIVED_INPUT_METRICS)):
         jahre = sorted(jahre_je_metrik.get(metric, ()))
         annual = _resolve_history(resolver, jahre, metric, annual=True)
         quarterly = _resolve_history(resolver, jahre, metric, annual=False)
@@ -221,12 +272,30 @@ def issuer_fundamentals(document, registry):
             pit_gesamt += 1
             if row[4]:
                 pit_datierbar += 1
+        annual_je_metrik[metric] = annual
+        quarterly_je_metrik[metric] = quarterly
         per_metric[metric] = {
             "annualPeriods": len(annual),
             "quarterlyPeriods": len(quarterly),
             "firstAvailablePeriod": annual[0][2] if annual else None,
             "lastAvailablePeriod": annual[-1][2] if annual else None,
             "historyYears": _history_years(annual),
+        }
+
+    # Die abgeleiteten Kennzahlen ueberschreiben ihre Platzhalter. Ohne
+    # das bleibt free_cash_flow auf null und total_debt auf dem, was
+    # einzelne Emittenten direkt melden - beides waere eine Aussage
+    # ueber die Datenlage, die die Daten nicht hergeben.
+    for name, varianten in DERIVED_INPUTS.items():
+        annual = _abgeleitete_perioden(annual_je_metrik, varianten)
+        quarterly = _abgeleitete_perioden(quarterly_je_metrik, varianten)
+        per_metric[name] = {
+            "annualPeriods": len(annual),
+            "quarterlyPeriods": len(quarterly),
+            "firstAvailablePeriod": annual[0][2] if annual else None,
+            "lastAvailablePeriod": annual[-1][2] if annual else None,
+            "historyYears": _history_years(annual),
+            "derivedFrom": [list(gruppe) for gruppe in varianten],
         }
 
     pit = document.get("quality", {}).get("summary", {}) or {}
