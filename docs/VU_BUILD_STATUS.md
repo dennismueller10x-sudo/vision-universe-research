@@ -27,10 +27,16 @@ Bereinigungssemantik.**
 | 2 | Dunkle Experience: Eingangsfläche, Poster, Reihenformen, Suche, Telefon | `VU_DISCOVER_EXPERIENCE_REDESIGN.md` |
 | 3 | Bildsprache: Farbwelten, datengetriebenes Artwork, dunkler Header | `VU_DISCOVER_VISUAL_IDENTITY.md` |
 | 4 | Consumer Layer: Klartext statt Scores, Sammlungen, drei Ebenen | `VU_DISCOVER_CONSUMER_LAYER.md` |
+| 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
 
-Stand Stufe 4: 103 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
-der ausgelieferten Daten, 52 Browser-Prüfungen — alles grün. Weder nach
+Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
+der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün. Weder nach
 `main` gemergt noch veröffentlicht.
+
+Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
+(SEC-Einreichungen der Golden Five) und für das Modelluniversum;
+Analystendaten und Segmentdaten gibt es nicht, entsprechende Abschnitte
+wurden deshalb nicht gebaut.
 
 ## Completed
 

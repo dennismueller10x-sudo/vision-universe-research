@@ -128,12 +128,24 @@
     ]);
     suche.addEventListener("click", function () { openSearch(); });
 
+    /* Der Einstieg in den Einzelmodus. Er steht hier als Angebot neben
+       der Suche - nicht als Startseite, nicht als Umleitung. Wer ihn
+       nicht anfasst, merkt nichts von ihm. */
+    var einzeln = el("a", { class: "dx-einzeln", href: "#/einzeln/" + state.universeId,
+                            title: "Eine Aktie pro Bildschirm — zum Durchwischen",
+                            "aria-label": "Einzeln entdecken" }, [
+      el("i", { "aria-hidden": "true" }),
+      /* Auf dem Telefon bleibt nur das Zeichen: die Leiste hat dort zwei
+         Zeilen, und eine dritte waere der Anfang eines Menues. */
+      el("span", { text: "Einzeln entdecken" })
+    ]);
+
     return el("div", { class: "dx-bar" }, [
       el("a", { class: "dx-brand", href: "#/" }, [
         document.createTextNode("Discover"),
         el("span", { text: "Vision Universe®" })
       ]),
-      status, switcher, suche
+      status, switcher, einzeln, suche
     ]);
   }
 
@@ -517,6 +529,63 @@
     });
   }
 
+  /* ------------------------------------------- Einzeln entdecken (Feed) */
+  /**
+   * Ein eigener Modus, kein Ersatz.
+   *
+   * Die Auswahl entsteht aus Reihen, die ohnehin ausgeliefert werden -
+   * es gibt keinen zweiten Datensatz fuer diesen Modus und keine zweite
+   * Rangliste. Jede Karte traegt, aus welcher Sammlung sie kommt; damit
+   * bleibt auch hier nachvollziehbar, warum ein Titel auftaucht.
+   */
+  function renderFeed(root, universeId) {
+    universeId = universeId || state.universeId;
+    state.universeId = universeId;
+    S.clear(root);
+    var app = el("div", { class: "dx-app dx-app--feed" });
+    root.appendChild(app);
+    document.body.classList.add("dx-feed-aktiv");
+
+    var quellen = [
+      { rowId: "market-leaders", herkunft: "Die stärksten Aktien", anzahl: 4 },
+      { rowId: "new-52-week-highs", herkunft: "Neue Jahreshochs", anzahl: 4 },
+      { rowId: "momentum-leaders", herkunft: "Seit Monaten im Aufwind", anzahl: 3 },
+      { rowId: "breakout-watch", herkunft: "Gerade in Bewegung", anzahl: 2 }
+    ];
+
+    Promise.all(quellen.map(function (q) {
+      return S.loadJSON(BASE + "rows/" + universeId + "/" + q.rowId + ".json")
+        .then(function (row) { return { q: q, row: row }; })
+        .catch(function () { return null; });
+    })).then(function (teile) {
+      /* Abwechselnd aus den Sammlungen nehmen: sonst stehen die ersten
+         vier Bildschirme alle in derselben Welt. Ein Titel erscheint
+         hoechstens einmal. */
+      var eimer = teile.filter(Boolean).map(function (t) {
+        return (t.row.cards || []).slice(0, t.q.anzahl).map(function (c) {
+          return Object.assign({}, c, { herkunft: t.q.herkunft });
+        });
+      });
+      var karten = [], gesehen = Object.create(null), runde = 0;
+      while (karten.length < 13 && runde < 8) {
+        for (var i = 0; i < eimer.length; i++) {
+          var k = eimer[i][runde];
+          if (!k || gesehen[k.symbol]) continue;
+          gesehen[k.symbol] = true;
+          karten.push(k);
+        }
+        runde++;
+      }
+      S.clear(app);
+      if (!karten.length) {
+        app.appendChild(C().note("Nichts zu entdecken",
+          "Für dieses Universum werden derzeit keine Reihen ausgeliefert."));
+        return;
+      }
+      D.Feed.render(app, karten, { universeId: universeId, zurueck: "#/u/" + universeId });
+    });
+  }
+
   /* ------------------------------------------------------- Detailseite */
   function renderDetail(root, universeId, symbol) {
     state.universeId = universeId;
@@ -572,7 +641,14 @@
 
     loadMeta().then(function () {
       document.title = "Discover — Vision Universe®";
-      if (teile[0] === "s" && teile.length >= 3) {
+      /* Der Feed-Modus faerbt den Koerper, damit die Seite selbst nicht
+         zweimal scrollt. Beim Verlassen wird das zurueckgenommen - sonst
+         bliebe die Uebersicht in einem Zustand haengen, den niemand
+         angefordert hat. */
+      if (teile[0] !== "einzeln") document.body.classList.remove("dx-feed-aktiv");
+      if (teile[0] === "einzeln") {
+        renderFeed(root, teile[1] || state.universeId);
+      } else if (teile[0] === "s" && teile.length >= 3) {
         renderDetail(root, teile[1], decodeURIComponent(teile[2]).toUpperCase());
       } else if (teile[0] === "c" && teile.length >= 3) {
         renderCategory(root, teile[1], teile[2]);

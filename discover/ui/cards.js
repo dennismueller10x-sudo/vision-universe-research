@@ -430,20 +430,37 @@
       track.appendChild(item);
     });
 
-    section.appendChild(withRailNav(track));
+    section.appendChild(withRailNav(track, { label: row.rowId }));
     return section;
   }
 
   /** Pfeile am Rand. Sie erscheinen nur mit Zeiger und nur, wo es weitergeht. */
-  function withRailNav(track) {
+  /**
+   * Die Spur bekommt ihre Bedienung.
+   *
+   * Die Gestenlogik steht in ui/swipe.js und ist fuer jede Sammlung
+   * dieselbe - hier haengen nur die beiden Pfeile daran, die auf dem
+   * Schreibtisch zeigen, dass es weitergeht. Auf dem Telefon sind sie
+   * nicht da: dort wischt man.
+   */
+  function withRailNav(track, options) {
+    options = options || {};
     var prev = el("button", { class: "dx-rail-nav dx-rail-nav--prev", type: "button",
                               "aria-label": "Zurück", hidden: true }, [chevron(true)]);
     var next = el("button", { class: "dx-rail-nav dx-rail-nav--next", type: "button",
                               "aria-label": "Weiter" }, [chevron(false)]);
     var wrap = el("div", { class: "dx-rail-wrap" }, [prev, track, next]);
 
+    var swipe = D() && D().Swipe ? D().Swipe.verbinden(track, {
+      label: options.label || null,
+      onKarte: options.onKarte || null,
+      prefetch: options.prefetch || null
+    }) : null;
+
     function schritt(richtung) {
-      track.scrollBy({ left: richtung * Math.max(280, track.clientWidth * 0.8), behavior: "smooth" });
+      if (swipe) return swipe.schritt(richtung);
+      track.scrollBy({ left: richtung * Math.max(280, track.clientWidth * 0.8),
+                       behavior: "smooth" });
     }
     prev.addEventListener("click", function () { schritt(-1); });
     next.addEventListener("click", function () { schritt(1); });

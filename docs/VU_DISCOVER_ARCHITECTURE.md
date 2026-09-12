@@ -114,6 +114,10 @@ gebunden; keine bestehende Vision-Universe-Seite kann davon betroffen sein.
 | Suche | `discover/ui/search.js` | Vollbild-Overlay, Tastatur (`/`, ↑↓, Enter, Esc) |
 | Begründung | `discover/engines/narrative.js` | „Warum steht dieser Titel hier?" — deterministisch |
 | Renditepfad | `scripts/discover/build-discover-data.mjs` | `performancePath`: fünf Stützstellen aus r12/r6/r3/r1 |
+| Einordnung | `discover/engines/einordnung.js` | Ebene 2: Wachstum, Bewertung, Trend, Risiko als Wort mit Schwelle — dazu die Waage aus Chancen und Risiken |
+| Geschäftszahlen | `discover/engines/unternehmen.js` | Zwölfmonatswerte aus SEC-Quartalen bzw. dem Modellsatz; ohne Quelle bleibt alles `null` mit Begründung |
+| Swipe | `discover/ui/swipe.js` | Gesten, Tastatur, Fortschritt, Prefetch und Analytics-Haken für alle Sammlungen |
+| Einzeln entdecken | `discover/ui/feed.js` | Ein Titel pro Bildschirm, `scroll-snap`, endliche Liste, `#/einzeln/<Universum>` |
 | Klartext | `discover/engines/klartext.js` | Die Übersetzungsschicht: aus Kennzahlen wird EINE Aussage, EINE Zahl, EIN Zusatz — deterministisch, ohne Sprachmodell |
 | Stock-Artwork | `discover/ui/artwork.js` | Das Datenbild je Titel — Verlauf, Volatilitätsband, Spannenlage, Hochmarke, Wasserzeichen |
 | Farbwelten | `discover/methodology/discover-v1.json`, `discover/discover.css` | `data-world` → `--w/-2/-glow/-soft`; Atmosphäre statt gefärbter Kacheln |
@@ -149,11 +153,17 @@ Discover zeigt auf der ersten Ebene keine Scores mehr. Die Trennung:
 |---|---|---|
 | 1 — Entdecken | Startseite, Karten, Suche | Firmenname, eine Aussage, eine Rendite, Verlauf, ein Zusatz |
 | 2 — Aktienseite | Kopf bis „Warum steht sie hier" | Kurs bzw. Klartext-Zahl, Zeitachse 1/3/6/12 Monate, Jahresspanne, Begründung in einem Satz |
-| 3 — Analyse | ab „Die Belege" | Scores, Perzentile, Vorsprung gegen die Benchmark, Kennzahlen, Technical Intelligence, Herkunft |
+| 3 — Analyse | ab „Ab hier: die Analyse" | Scores, Perzentile, Vorsprung gegen die Benchmark, Kennzahlen, Technical Intelligence, Chart-Werkzeuge, Herkunft |
 
 Die Übersetzung macht `discover/engines/klartext.js` im **Build**; jede
 ausgelieferte Karte trägt ihr `plain`-Objekt, und `verify-discover-data.mjs`
 rechnet jeden Satz nach. Details: `docs/VU_DISCOVER_CONSUMER_LAYER.md`.
+
+Ebene 2 ergänzt `einordnung.js` (vier Einordnungen mit Schwelle, Chancen
+und Risiken) und `unternehmen.js` (Umsatz, Gewinn, Marge, KGV — nur wo
+Daten vorliegen: fünf reale Titel aus SEC-Einreichungen, das
+Modelluniversum vollständig, sonst `null` mit Begründung). Details:
+`docs/VU_DISCOVER_STOCK_EXPERIENCE.md`.
 
 ## 5. Engines
 

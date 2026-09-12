@@ -88,6 +88,10 @@ body.dx{
    Rangziffer, Lichtschein. Deshalb gibt es keine "blaue Karte" und keine
    "orange Karte" - es gibt eine Atmosphäre, in der dunkle Karten liegen. */
 body.dx{
+  /* Hoehe der festen Site-Navigation. Der Koerper haelt oben genau so
+     viel Platz frei; Module, die einen ganzen Bildschirm fuellen, ziehen
+     sie ab. */
+  --dx-kopf:88px;
   --w:#6f9dff;                       /* Grundton, wenn keine Welt gesetzt ist */
   --w-2:#9ab6ff;
   --w-glow:rgba(111,157,255,.16);
@@ -166,6 +170,25 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-switch button[aria-pressed="true"]{background:var(--discover-text);color:#0a0a0c}
 .dx-switch button:hover:not([aria-pressed="true"]){color:var(--discover-text)}
+
+/* Der Einstieg in den Einzelmodus: ein Angebot in der Leiste, kein
+   Aufruf. Das kleine Symbol zeigt zwei gestapelte Flaechen - das ist die
+   Form des Modus. */
+.dx-einzeln{
+  display:inline-flex;align-items:center;gap:9px;padding:8px 13px;border-radius:999px;
+  border:1px solid var(--discover-line);color:var(--discover-muted);text-decoration:none;
+  font-size:12px;font-weight:600;white-space:nowrap;
+  transition:color var(--discover-motion-fast) var(--discover-ease),
+             border-color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-einzeln:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-einzeln i{
+  width:11px;height:14px;border:1.4px solid currentColor;border-radius:3px;position:relative;
+  flex:0 0 auto;
+}
+.dx-einzeln i::after{
+  content:"";position:absolute;left:1.4px;right:1.4px;top:4.4px;height:1.4px;background:currentColor;
+}
 
 .dx-searchbtn{
   display:inline-flex;align-items:center;gap:9px;border:1px solid var(--discover-line);
@@ -344,6 +367,25 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-rail::-webkit-scrollbar{display:none}
 .dx-rail > *{scroll-snap-align:start}
+/* Ziehen mit der Maus: solange der Zeiger unten ist, faengt kein Text
+   und kein Bild die Geste ab. */
+.dx-rail--zieht{cursor:grabbing;scroll-snap-type:none;user-select:none}
+.dx-rail--zieht *{pointer-events:none}
+.dx-rail:focus-visible{outline:2px solid var(--discover-accent);outline-offset:6px;border-radius:8px}
+
+/* Das Fortschrittsband.
+
+   Eine Scrollleiste sagt "hier ist eine Webseite". Ein schmales Band in
+   der Farbe der Welt sagt "hier geht es weiter" - und es sagt es nur,
+   solange es etwas zu sagen gibt. */
+.dx-swipe-band{
+  height:2px;margin:0 var(--discover-gutter) 4px;border-radius:2px;
+  background:color-mix(in srgb, var(--w) 14%, transparent);overflow:hidden;
+}
+.dx-swipe-band i{
+  display:block;height:100%;border-radius:2px;background:var(--w);opacity:.6;
+  transition:transform var(--discover-motion-fast) linear;
+}
 
 .dx-rail-nav{
   position:absolute;top:0;bottom:26px;width:calc(var(--discover-gutter) + 26px);
@@ -703,6 +745,203 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-result .val.down{color:var(--discover-down)}
 .dx-result .dx-spark .track{stroke:var(--discover-line-strong)}
 
+/* Die Chart-Werkzeuge. Zugeklappt eine Zeile, aufgeklappt die volle
+   Leiste des Quant-Moduls - dieselbe Technik, nur nicht im Weg. */
+.dx-werkzeuge{margin-top:16px;border-top:1px solid var(--discover-line);padding-top:14px}
+.dx-werkzeuge summary{
+  cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--discover-muted);
+  font-weight:700;
+}
+.dx-werkzeuge summary::-webkit-details-marker{display:none}
+.dx-werkzeuge summary::after{content:"+";font-size:14px;opacity:.8}
+.dx-werkzeuge[open] summary::after{content:"–"}
+.dx-werkzeuge summary:hover{color:var(--discover-text)}
+
+/* ============================================ Einzeln entdecken (Feed)
+
+   Ein Bildschirm, eine Aktie. Die ganze Mechanik ist scroll-snap - kein
+   abgefangenes Wischen, kein gerechnetes Transform. Deshalb funktioniert
+   der Modus mit Tastatur, Bildlaufleiste und Screenreader, ohne dass
+   dafuer etwas gebaut werden musste.
+
+   dvh statt vh: auf dem Telefon waechst und schrumpft die Browserleiste,
+   und ein Bildschirm in vh waere entweder zu hoch oder zu niedrig. */
+body.dx-feed-aktiv{overflow:hidden}
+/* Die Site-Navigation liegt fest ueber der Seite und der Koerper haelt
+   dafuer oben Platz frei. Ein Modus, der einen Bildschirm fuellen will,
+   muss diesen Streifen abziehen - sonst reicht jeder "Bildschirm" um die
+   Hoehe des Kopfes ueber die Sichtflaeche hinaus, und der Hinweis nach
+   unten steht genau dort, wo ihn niemand sieht. */
+/* min-height muss mit zurueckgenommen werden: .dx-app setzt 100vh, und
+   eine Mindesthoehe schlaegt jede gerechnete Hoehe. */
+.dx-app--feed{height:calc(100dvh - var(--dx-kopf, 88px));min-height:0;
+  display:flex;flex-direction:column}
+.dx-feed{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.dx-feed-bar{
+  position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:12px var(--discover-gutter);
+  background:linear-gradient(180deg, var(--discover-bg) 40%, transparent);
+}
+.dx-feed-zurueck{
+  font-size:13px;font-weight:600;color:var(--discover-muted);text-decoration:none;
+  padding:8px 0;min-height:44px;display:inline-flex;align-items:center;
+}
+.dx-feed-zurueck:hover{color:var(--discover-text)}
+.dx-feed-zaehler{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-dim);
+  font-variant-numeric:tabular-nums}
+
+.dx-feed-spur{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.dx-feed-spur::-webkit-scrollbar{display:none}
+.dx-feed-screen{
+  position:relative;scroll-snap-align:start;scroll-snap-stop:always;
+  min-height:100%;display:flex;align-items:center;overflow:hidden;
+}
+.dx-feed-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(72% 62% at 78% 12%, color-mix(in srgb, var(--w) 26%, transparent), transparent 66%),
+    radial-gradient(58% 54% at 8% 96%, color-mix(in srgb, var(--w) 12%, transparent), transparent 70%);
+}
+.dx-feed-inner{
+  position:relative;width:100%;max-width:760px;margin:0 auto;
+  padding:12px var(--discover-gutter) 40px;display:flex;flex-direction:column;gap:0;
+}
+.dx-feed-name{
+  margin:10px 0 6px;font-size:clamp(32px,6.4vw,60px);line-height:1;letter-spacing:-.035em;
+  font-weight:800;text-wrap:balance;
+}
+.dx-feed-meta{margin:0 0 18px;display:flex;gap:10px;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--discover-dim)}
+.dx-feed-meta span::after{content:"·";margin-left:10px}
+.dx-feed-meta span:last-child::after{content:""}
+.dx-feed-zahl{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.dx-feed-zahl b{font-size:clamp(38px,7vw,58px);font-weight:800;letter-spacing:-.04em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.dx-feed-zahl b.up{color:var(--discover-up)}
+.dx-feed-zahl b.down{color:var(--discover-down)}
+.dx-feed-zahl span{font-size:13px;color:var(--discover-muted)}
+.dx-feed-satz{margin:0 0 20px;font-size:clamp(17px,2.2vw,22px);line-height:1.35;font-weight:600;
+  letter-spacing:-.015em;max-width:26ch}
+.dx-feed-bild{height:clamp(150px,26dvh,260px);margin:0 0 16px;color:var(--w)}
+.dx-feed-bild .dx-art{width:100%;height:100%;display:block}
+.dx-feed-zusatz{margin:0 0 22px;font-size:13px;color:var(--discover-muted)}
+.dx-feed-screen .dx-cta{margin-top:2px}
+.dx-feed-screen--ende .dx-feed-inner h2{font-size:clamp(26px,4vw,40px);margin:8px 0 12px;
+  letter-spacing:-.03em}
+
+/* Am Schreibtisch ist der Bildschirm breit und hoch: dort steht der Text
+   links und das Datenbild rechts daneben, statt beides in eine schmale
+   Spalte in der Mitte zu pressen. Dieselbe Aufteilung wie die
+   Eingangsflaeche - ein Modus soll sich nicht anfuehlen wie eine fremde
+   Seite. */
+@media (min-width:1000px){
+  .dx-feed-inner{
+    max-width:1240px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+    column-gap:56px;row-gap:0;align-content:center;padding-bottom:52px;
+  }
+  /* Alle Textzeilen in die linke Spalte, das Bild rechts daneben ueber
+     die volle Hoehe. row-gap bleibt null: die Abstaende kommen aus den
+     Elementen selbst, sonst zerfaellt der Text in lauter Zeilen mit
+     gleichem Abstand. */
+  .dx-feed-inner > *{grid-column:1}
+  .dx-feed-bild{grid-column:2;grid-row:1 / span 9;align-self:center;
+    height:min(50dvh,400px);margin:0}
+}
+
+/* Der Hinweis nach unten - nur auf dem ersten Bildschirm. */
+.dx-feed-weiter{
+  position:absolute;left:0;right:0;bottom:18px;display:flex;flex-direction:column;
+  align-items:center;gap:7px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--discover-dim);
+}
+.dx-feed-weiter i{
+  width:10px;height:10px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg);animation:dx-feed-tipp 2.4s ease-in-out infinite;
+}
+@keyframes dx-feed-tipp{0%,100%{transform:rotate(45deg) translate(0,0);opacity:.55}
+                        50%{transform:rotate(45deg) translate(3px,3px);opacity:1}}
+@media (prefers-reduced-motion: reduce){
+  .dx-feed-weiter i{animation:none}
+  .dx-feed-spur{scroll-behavior:auto}
+}
+
+/* ================================================= Aktienseite: Ebene 2
+
+   Die Sektionen zwischen Kurs und Analyse. Sie sind bewusst ruhiger
+   gebaut als die Discover-Karten: hier wird gelesen, nicht entdeckt. */
+
+/* Die Aktie in 30 Sekunden: vier Spalten, keine Kaesten, eine Linie
+   dazwischen. Ein Raster aus Kacheln saehe aus wie ein Dashboard - und
+   genau das soll die Seite nicht sein. */
+.dx-30{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1px;background:var(--discover-line);border:1px solid var(--discover-line);
+  border-radius:var(--discover-radius);overflow:hidden;
+}
+.dx-30-zelle{background:var(--discover-bg);padding:20px 22px 18px;display:flex;flex-direction:column;gap:7px}
+.dx-30-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-30-wert{font-size:clamp(21px,2.3vw,27px);font-weight:700;letter-spacing:-.025em;line-height:1.1}
+.dx-30-wert.up{color:var(--discover-up)}
+.dx-30-wert.down{color:var(--discover-down)}
+.dx-30-wert.warm{color:var(--discover-warm)}
+.dx-30-wert--leer{font-size:15px;font-weight:600;color:var(--discover-dim)}
+.dx-30-beleg{font-size:12.5px;line-height:1.5;color:var(--discover-muted)}
+.dx-30-zelle--leer .dx-30-beleg{color:var(--discover-dim)}
+/* "Was bedeutet das?" - eine Erklaerung je Begriff, nicht an jedem Wort. */
+.dx-was{margin-top:auto;padding-top:10px}
+.dx-was summary{
+  cursor:pointer;font-size:11.5px;color:var(--discover-accent);list-style:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.dx-was summary::-webkit-details-marker{display:none}
+.dx-was summary::after{content:"+";font-size:13px;opacity:.8}
+.dx-was[open] summary::after{content:"–"}
+.dx-was p{margin:9px 0 0;font-size:12.5px;line-height:1.6;color:var(--discover-muted)}
+
+/* Die Waage. Zwei Spalten, gleich gewichtet - das ist die Aussage. */
+.dx-waage{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.dx-waage-spalte h3{
+  margin:0 0 14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--discover-muted);font-weight:700;
+}
+.dx-waage-spalte ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.dx-waage-spalte li{display:flex;gap:12px;align-items:baseline}
+.dx-waage-marke{
+  flex:0 0 auto;width:18px;height:18px;border-radius:50%;display:inline-flex;
+  align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:700;
+  transform:translateY(2px);
+}
+.dx-waage-spalte--pro .dx-waage-marke{background:color-mix(in srgb, var(--discover-up) 16%, transparent);color:var(--discover-up)}
+.dx-waage-spalte--contra .dx-waage-marke{background:color-mix(in srgb, var(--discover-warm) 16%, transparent);color:var(--discover-warm)}
+.dx-waage-spalte b{display:block;font-size:14.5px;font-weight:600;line-height:1.4;letter-spacing:-.01em}
+.dx-waage-spalte span{display:block;margin-top:3px;font-size:12.5px;color:var(--discover-muted)}
+
+/* Das Unternehmen: Zahlen in einer Zeile, gross genug zum Lesen. */
+.dx-firma{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:26px 34px}
+.dx-firma > div{display:flex;flex-direction:column;gap:6px}
+.dx-firma span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-firma b{font-size:clamp(20px,2.2vw,26px);font-weight:700;letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums}
+.dx-firma em{font-style:normal;font-size:12.5px;color:var(--discover-muted)}
+.dx-firma em.up{color:var(--discover-up)}
+.dx-firma em.down{color:var(--discover-down)}
+
+/* Die Grenze zur Analyse. */
+.dx-trenner{
+  margin:70px var(--discover-gutter) 0;padding-top:30px;
+  border-top:1px solid var(--discover-line);
+}
+.dx-trenner span{
+  display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--discover-muted);font-weight:700;
+}
+.dx-trenner p{margin:10px 0 0;font-size:13.5px;line-height:1.6;color:var(--discover-dim);max-width:64ch}
+
 /* ========================================================== Detailseite */
 .dx-detail{padding-bottom:120px}
 .dx-back{
@@ -951,6 +1190,8 @@ body.dx .num{font-variant-numeric:tabular-nums}
     --discover-gutter:18px;--discover-gap:12px;
     --discover-card-width:252px;--discover-card-width-compact:196px;
     --discover-card-width-rank:286px;--discover-hero-height:auto;
+    /* Der feste Kopf ist auf dem Telefon niedriger. */
+    --dx-kopf:70px;
   }
   /* Zwei Zeilen statt drei: Marke und Universum oben, Suche und Marktstatus
      darunter - die Leiste soll auf dem Telefon nicht ein Fünftel des
@@ -960,6 +1201,26 @@ body.dx .num{font-variant-numeric:tabular-nums}
   .dx-brand span{display:none}
   .dx-switch button{padding:6px 11px;font-size:11px}
   .dx-searchbtn{order:2;padding:7px 13px}
+  /* Auf dem Telefon steht der Einzelmodus neben der Suche - dort ist
+     er am naheliegendsten. */
+  .dx-einzeln{order:2;padding:8px 10px;font-size:11.5px}
+  .dx-einzeln span{display:none}
+  /* Das grosse Datenbild im Kopf entfaellt auf dem Telefon: der echte
+     Chart steht direkt darunter, und zwei Kurven uebereinander sind
+     einer zu viel. */
+  .dx-dhero-art{display:none}
+  /* Die Zeitachse als vier gleiche Spalten: umgebrochen sah sie aus wie
+     drei Werte und ein Nachzuegler. */
+  .dx-zeitachse{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 8px}
+  .dx-zeitachse span{font-size:9.5px;letter-spacing:.08em}
+  .dx-zeitachse b{font-size:17px}
+  /* Vier Antworten sollen auf einen Blick zu sehen sein - untereinander
+     waeren es vier Bildschirmdrittel und damit kein Ueberblick mehr. */
+  .dx-30{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dx-30-zelle{padding:16px 15px 14px;gap:6px}
+  .dx-30-wert{font-size:20px}
+  .dx-30-beleg{font-size:11.5px}
+  .dx-was summary{font-size:11px}
   .dx-searchbtn kbd{display:none}
   .dx-status{order:3;font-size:10px;margin-left:auto}
   .dx-rail-section{margin-top:30px;scroll-margin-top:150px}

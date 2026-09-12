@@ -75,7 +75,15 @@ async function openPage(options) {
   });
   page.on("requestfailed", (r) => {
     if (IGNORE.test(r.url())) return;
-    errors.push("REQUEST " + r.url() + " " + ((r.failure() && r.failure().errorText) || ""));
+    const grund = (r.failure() && r.failure().errorText) || "";
+    /* Ein abgebrochener Vorlade-Versuch ist kein Fehler, sondern sein
+       Lebenszyklus: die Karte wird sichtbar, der Browser holt schon mal
+       die naechste Detailseite, der Nutzer klickt vorher weiter - und der
+       Browser bricht ab. Ignoriert wird deshalb genau diese Kombination:
+       abgebrochen UND eine Discover-Datendatei. Jede andere
+       fehlgeschlagene Anfrage faellt weiterhin auf. */
+    if (grund === "net::ERR_ABORTED" && /\/discover\/data\//.test(r.url())) return;
+    errors.push("REQUEST " + r.url() + " " + grund);
   });
   page.__errors = errors;
   return page;
@@ -107,6 +115,12 @@ async function hinScrollen(page, sel, nummer, versatz) {
   const oben = await page.evaluate(() => window.scrollY);
   assert(nummer === 0 || oben > 40, "die Seite wurde fuer die Aufnahme nicht gescrollt");
 }
+
+/* Eine zweite Seite in Telefongroesse, die schon waehrend der
+   Desktop-Pruefungen zur Verfuegung steht: Swipe und Einzelmodus sind
+   Telefonthemen und gehoeren dort geprueft, wo sie gebaut wurden. */
+const mobilVorschau = await openPage({ viewport: { width: 390, height: 844 },
+                                       isMobile: true, hasTouch: true });
 
 /* =============================================================== DESKTOP */
 const desktop = await openPage({ viewport: { width: 1440, height: 900 } });
@@ -317,10 +331,10 @@ await check("Detail: Kopf, Begründung und Chart", async () => {
 
 await check("Detail: Zeitraumwechsel zeichnet neu", async () => {
   const vorher = await desktop.$eval(".dx-chart svg", (s) => s.innerHTML.length);
-  await desktop.click('.dx-tf button:text-is("3M")');
+  await desktop.click('.dx-tf button:text-is("6M")');
   await desktop.waitForTimeout(900);
   const nachher = await desktop.$eval(".dx-chart svg", (s) => s.innerHTML.length);
-  const aktiv = await desktop.$eval('.dx-tf button:text-is("3M")', (b) => b.getAttribute("aria-pressed"));
+  const aktiv = await desktop.$eval('.dx-tf button:text-is("6M")', (b) => b.getAttribute("aria-pressed"));
   assert(aktiv === "true", "der gewählte Zeitraum ist nicht markiert");
   assert(vorher !== nachher, "der Chart hat sich nicht verändert");
 });
@@ -333,7 +347,24 @@ await check("Detail: gesperrte Zeiträume sind abgeblendet und begründet", asyn
   assert(/Intraday/.test(hinweis), "der gesperrte Zeitraum nennt keinen Grund");
 });
 
-await check("Detail: Schnellzugriff und erweiterte Technik", async () => {
+await check("Detail: Chart-Werkzeuge sind verstaut und vollstaendig", async () => {
+  /* Frisch geladen, denn eine vorherige Pruefung koennte die Schublade
+     schon geoeffnet haben. Geprueft wird der Zustand, den ein Besucher
+     vorfindet. */
+  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-chart svg", { timeout: 12000 });
+  await desktop.waitForTimeout(600);
+  /* checkVisibility statt offsetParent: der Inhalt eines geschlossenen
+     <details> bleibt in diesem Chromium im Layout (content-visibility),
+     hat also weiterhin einen offsetParent und sogar eine Groesse - er
+     wird nur nicht gezeichnet. Wer hier offsetParent fragt, bekommt
+     "sichtbar" und prueft damit das Gegenteil dessen, was er meint. */
+  const offenVorher = await desktop.$$eval(".dx-ctrl",
+    (ns) => ns.filter((n) => n.checkVisibility({ checkVisibilityCSS: true,
+                                                 contentVisibilityAuto: true })).length);
+  assert(offenVorher === 0, offenVorher + " Chart-Werkzeuge liegen ungefragt offen");
+  await desktop.click(".dx-werkzeuge summary");
+  await desktop.waitForTimeout(400);
   await desktop.click('.dx-ctrl:text-is("EMA 20")');
   await desktop.waitForTimeout(700);
   assert(/EMA 20/.test(await desktop.textContent(".dx-legend")), "die Legende kennt die Serie nicht");
@@ -635,6 +666,168 @@ await check("der dunkle Header betrifft ausschliesslich Discover", async () => {
   }
 });
 
+/* ============================================ AKTIENSEITE ALS EBENE 2 */
+
+await check("die Aktienseite erklaert in vier Worten, worum es geht", async () => {
+  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-30", { timeout: 12000 });
+  const zellen = await desktop.$$eval(".dx-30-zelle", (ns) => ns.map((n) => ({
+    label: (n.querySelector(".dx-30-label") || {}).textContent || "",
+    wert: (n.querySelector(".dx-30-wert") || {}).textContent || "",
+    beleg: (n.querySelector(".dx-30-beleg") || {}).textContent || ""
+  })));
+  assert(zellen.length >= 4, "weniger als vier Einordnungen");
+  const labels = zellen.map((z) => z.label.trim()).join(",");
+  assert(/Wachstum/.test(labels) && /Bewertung/.test(labels) &&
+         /Trend/.test(labels) && /Risiko/.test(labels), "es fehlt eine Einordnung: " + labels);
+  for (const z of zellen) {
+    assert(z.wert.trim().length > 2, z.label + " ohne Antwort");
+    assert(z.beleg.trim().length > 4, z.label + " ohne Beleg");
+    assert(!/RSI|RVOL|Perzentil|Score\s?\d/.test(z.wert), z.label + " antwortet in Fachsprache");
+  }
+});
+
+await check("jede Einordnung laesst sich erklaeren, ohne die Seite zu verlassen", async () => {
+  const auf = await desktop.$$(".dx-was summary");
+  assert(auf.length >= 3, "zu wenige Erklaerungen");
+  await auf[1].click();
+  await desktop.waitForTimeout(300);
+  const text = await desktop.$eval(".dx-was[open] p", (n) => n.textContent);
+  assert(text.length > 40, "die Erklaerung ist leer");
+  assert(!/RSI|Perzentil/.test(text), "die Erklaerung erklaert mit Fachsprache: " + text);
+});
+
+await check("die Waage zeigt beide Seiten", async () => {
+  const pro = await desktop.$$(".dx-waage-spalte--pro li");
+  const contra = await desktop.$$(".dx-waage-spalte--contra li");
+  assert(pro.length > 0, "keine Gruende dafuer");
+  assert(contra.length > 0, "keine Gegenpunkte — eine Seite ohne Risiko ist Werbung");
+  const fuss = await desktop.textContent(".dx-waage + .dx-kapitel-fuss, .dx-chapter .dx-kapitel-fuss");
+  assert(/keine Anlageempfehlung/.test(fuss || ""),
+    "der Seite fehlt die Klarstellung, dass sie nicht empfiehlt");
+});
+
+await check("Geschaeftszahlen erscheinen nur, wo es welche gibt", async () => {
+  const mitZahlen = await desktop.$$eval(".dx-firma > div", (ns) => ns.length);
+  assert(mitZahlen >= 3, "fuer NVDA fehlen die Geschaeftszahlen");
+  const text = await desktop.textContent(".dx-firma");
+  assert(/Mrd|Mio/.test(text), "die Umsatzzahl ist nicht lesbar formatiert: " + text);
+
+  /* Und die Gegenprobe: ein Titel ohne Fundamentaldaten erfindet keine. */
+  await desktop.goto(BASE + "/discover/#/s/US_REAL/VLO", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-30", { timeout: 12000 });
+  const ohne = await desktop.$$(".dx-firma > div");
+  assert(ohne.length === 0, "fuer einen Titel ohne Geschaeftszahlen stehen trotzdem welche da");
+  const grund = await desktop.textContent(".dx-chapter .dx-why-empty");
+  assert(/keine Geschäftszahlen/.test(grund || ""), "der fehlende Grund wird nicht genannt");
+  const leer = await desktop.$$eval(".dx-30-wert--leer", (ns) => ns.length);
+  assert(leer >= 1, "eine fehlende Einordnung wird nicht als fehlend gezeigt");
+});
+
+await check("die Analyse steht unter einer sichtbaren Grenze", async () => {
+  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
+  await desktop.waitForSelector(".dx-trenner", { timeout: 12000 });
+  const y = (sel) => desktop.$eval(sel, (n) => Math.round(n.getBoundingClientRect().top + window.scrollY));
+  const trenner = await y(".dx-trenner");
+  const dreissig = await y(".dx-30");
+  const waage = await y(".dx-waage");
+  const belege = await y(".dx-chapter .dx-why-grid");
+  assert(dreissig < trenner && waage < trenner,
+    "die Einordnung steht unter der Analysegrenze");
+  assert(belege > trenner, "die Einzelbefunde stehen ueber der Analysegrenze");
+});
+
+/* ===================================================== SWIPE UND FEED */
+
+await check("die Reihen lassen sich mit der Tastatur bedienen", async () => {
+  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await desktop.waitForTimeout(3000);
+  const vorher = await desktop.$eval(".dx-rail", (t) => { t.focus(); return t.scrollLeft; });
+  await desktop.keyboard.press("ArrowRight");
+  await desktop.waitForTimeout(700);
+  const nachher = await desktop.$eval(".dx-rail", (t) => t.scrollLeft);
+  assert(nachher > vorher + 100, "die Pfeiltaste bewegt die Reihe nicht");
+  await desktop.keyboard.press("Home");
+  await desktop.waitForTimeout(600);
+  assert((await desktop.$eval(".dx-rail", (t) => t.scrollLeft)) < 20, "Pos1 fuehrt nicht zurueck");
+});
+
+await check("jede Reihe zeigt, dass es weitergeht", async () => {
+  const baender = await desktop.$$eval(".dx-swipe-band", (ns) => ns.map((n) => ({
+    versteckt: n.hidden, breite: n.firstChild ? n.firstChild.style.width : null
+  })));
+  assert(baender.length >= 4, "die Fortschrittsbaender fehlen");
+  const sichtbar = baender.filter((b) => !b.versteckt);
+  assert(sichtbar.length >= 3, "kein Band zeigt an, dass die Reihe weitergeht");
+  assert(sichtbar.every((b) => parseFloat(b.breite) < 99),
+    "ein Band ist voll, obwohl die Reihe scrollt");
+});
+
+await check("die naechste Karte ist immer angeschnitten sichtbar", async () => {
+  await mobilVorschau.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await mobilVorschau.waitForSelector(".dx-rail", { timeout: 12000 });
+  await mobilVorschau.waitForTimeout(1200);
+  for (const seite of [desktop, mobilVorschau]) {
+    const mass = await seite.$eval(".dx-rail", (t) => {
+      const erste = t.firstElementChild;
+      const breite = erste.getBoundingClientRect().width;
+      const luecke = parseFloat(getComputedStyle(t).gap) || 0;
+      const passen = (t.clientWidth + luecke) / (breite + luecke);
+      return { rest: passen - Math.floor(passen), breite: Math.round(breite),
+               sicht: Math.round(t.clientWidth) };
+    });
+    /* Geht eine Reihe exakt auf, sieht sie aus wie eine Tabelle: nichts
+       deutet an, dass rechts noch etwas kommt. */
+    assert(mass.rest > 0.08 && mass.rest < 0.92,
+      "die Karten gehen fast genau auf (" + JSON.stringify(mass) + ")");
+  }
+});
+
+await check("Einzeln entdecken: eine Aktie pro Bildschirm", async () => {
+  await mobilVorschau.goto(BASE + "/discover/#/einzeln/US_REAL", { waitUntil: "networkidle" });
+  await mobilVorschau.waitForSelector(".dx-feed-screen", { timeout: 12000 });
+  await mobilVorschau.waitForTimeout(900);
+  const mass = await mobilVorschau.evaluate(() => {
+    const spur = document.querySelector(".dx-feed-spur");
+    const screen = document.querySelector(".dx-feed-screen");
+    const r = screen.getBoundingClientRect();
+    return { spur: Math.round(spur.clientHeight), screen: Math.round(r.height),
+             unten: Math.round(r.bottom), fenster: window.innerHeight,
+             snap: getComputedStyle(spur).scrollSnapType,
+             anzahl: document.querySelectorAll(".dx-feed-screen[data-index]").length };
+  });
+  assert(/y/.test(mass.snap), "kein vertikales Einrasten");
+  assert(Math.abs(mass.screen - mass.spur) <= 2,
+    "ein Bildschirm ist nicht so hoch wie die Flaeche (" + JSON.stringify(mass) + ")");
+  assert(mass.unten <= mass.fenster + 2, "der Bildschirm reicht unter die Sichtflaeche");
+  assert(mass.anzahl >= 5, "zu wenige Titel im Einzelmodus");
+});
+
+await check("Einzeln entdecken: weiterwischen, zaehlen, zurueck", async () => {
+  await mobilVorschau.evaluate(() => {
+    const spur = document.querySelector(".dx-feed-spur");
+    spur.scrollTop = spur.clientHeight;
+  });
+  await mobilVorschau.waitForTimeout(900);
+  const zaehler = await mobilVorschau.textContent(".dx-feed-zaehler");
+  assert(/^2 von/.test(zaehler.trim()), "der Zaehler zaehlt nicht mit: " + zaehler);
+  const zurueck = await mobilVorschau.getAttribute(".dx-feed-zurueck", "href");
+  assert(/#\/u\//.test(zurueck || ""), "kein Weg zurueck aus dem Modus");
+  await shot(mobilVorschau, "19-mobil-einzeln");
+});
+
+await check("Einzeln entdecken bleibt ein Angebot, kein Zwang", async () => {
+  await mobilVorschau.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await mobilVorschau.waitForTimeout(2500);
+  const feed = await mobilVorschau.$$(".dx-feed");
+  assert(feed.length === 0, "der Einzelmodus draengt sich auf der Startseite auf");
+  const einstieg = await mobilVorschau.$(".dx-einzeln");
+  assert(einstieg, "es gibt keinen Einstieg in den Einzelmodus");
+  const text = await mobilVorschau.evaluate(() => document.body.innerText);
+  assert(!/jetzt kaufen|nicht verpassen|nur heute/i.test(text),
+    "der Modus wirbt mit Dringlichkeit");
+});
+
 await check("kein horizontaler Überlauf auf dem Desktop", async () => {
   await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
   await desktop.waitForTimeout(2600);
@@ -778,6 +971,7 @@ await check("mobil: Detail und Chart passen in die Breite", async () => {
 
 await check("keine Konsolenfehler auf dem Telefon", async () => {
   assert(mobil.__errors.length === 0, mobil.__errors.join(" | "));
+  assert(mobilVorschau.__errors.length === 0, mobilVorschau.__errors.join(" | "));
 });
 
 /* ================================================= REDUZIERTE BEWEGUNG */

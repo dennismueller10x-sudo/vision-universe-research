@@ -53,6 +53,7 @@ const Scoring = require(join(root, "discover", "engines", "scoring.js"));
 const Indicators = require(join(root, "discover", "engines", "indicators.js"));
 const TI = require(join(root, "discover", "engines", "technical-intelligence.js"));
 const Klartext = require(join(root, "discover", "engines", "klartext.js"));
+const Unternehmen = require(join(root, "discover", "engines", "unternehmen.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -840,6 +841,51 @@ function heroReasons(stock) {
   return out.slice(0, 3);
 }
 
+/* ====================================================== Geschaeftszahlen
+
+   Woher kommen Umsatz, Gewinn und Bewertung?
+
+   Fuer das Modelluniversum aus quant/data/securities.json - dort stehen
+   sie fertig gerechnet. Fuer reale Titel aus quant/data/sec/canonical/,
+   und das sind genau fuenf: AAPL, MSFT, NVDA, JPM, XOM. Fuer die
+   uebrigen 493 gibt es in diesem Repository keine Fundamentaldaten, und
+   es wird auch keine erfunden - die Aktienseite sagt dann, dass keine
+   vorliegen.
+
+   Das ist kein Mangel dieser Ausbaustufe, sondern der Stand der
+   Datenversorgung. Eine Wachstumsrate, die niemand belegen kann, waere
+   schlimmer als eine fehlende. */
+function secFaktenIndex() {
+  const dir = join(root, "quant", "data", "sec", "canonical");
+  const map = new Map();
+  if (!existsSync(dir)) return map;
+  for (const datei of readdirSync(dir)) {
+    if (!datei.endsWith(".json")) continue;
+    const ticker = datei.replace(/\.json$/, "");
+    try {
+      const payload = readJSON(join(dir, datei));
+      if (Array.isArray(payload.facts) && payload.facts.length) map.set(ticker, payload.facts);
+    } catch (err) { /* eine unlesbare Datei ist ein fehlender Titel, kein Abbruch */ }
+  }
+  return map;
+}
+
+function geschaeftszahlen(stock, secFakten, modellzeilen) {
+  if (stock.dataMode === "mock") {
+    return Unternehmen.ausModellzeile(modellzeilen.get(stock.symbol) || null);
+  }
+  const fakten = secFakten.get(stock.symbol);
+  if (!fakten) {
+    return Unternehmen.leer("SOURCE_MISSING",
+      "Für diesen Titel liefert der Anbieter keine Geschäftszahlen. Vision Universe " +
+      "zeigt deshalb nur, was aus der Kursreihe folgt.");
+  }
+  return Unternehmen.ausSecFakten(fakten, {
+    preis: Contract.valueOf(stock.price),
+    preisStatus: Contract.statusOf(stock.price)
+  });
+}
+
 /* ========================================================== Detailseiten */
 function technicalInstrumentIndex() {
   const file = join(root, "quant", "data", "technical", "index.json");
@@ -1093,10 +1139,14 @@ for (const universe of universes) {
   detailSets.set(universe.universeId, symbols);
 
   const memberships = buildMemberships(universe);
+  const secFakten = secFaktenIndex();
+  const modellzeilen = new Map(
+    readJSON(join(root, "quant", "data", "securities.json")).rows.map((r) => [r.ticker, r]));
   let written = 0;
   for (const stock of universe.stocks) {
     if (!symbols.has(stock.symbol)) continue;
     const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
+    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, modellzeilen);
     write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
     written++;
   }

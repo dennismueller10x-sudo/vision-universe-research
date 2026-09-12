@@ -38,9 +38,18 @@
   var OVERLAYS = [
     { id: "ema20", group: "quick", label: "EMA 20", source: "indicator", style: "ma-ema20",
       fn: function (I, c) { return I.ema(c, 20); } },
-    { id: "sma50", group: "quick", label: "SMA 50", source: "indicator", style: "ma-sma50", on: true,
+    /* Keine Linie ist von Haus aus an.
+
+       Vorher lagen SMA 50 und SMA 200 auf jedem Chart, bevor jemand
+       danach gefragt hatte, und darunter lief ein rot-gruenes
+       Volumenhistogramm. Das ist die Voreinstellung einer
+       Handelsoberflaeche: dort weiss man, was diese Linien bedeuten. Auf
+       einer Seite, die jemand oeffnet, um zu sehen wie sich eine Aktie
+       entwickelt hat, sind sie Laerm. Sie sind nicht verschwunden - sie
+       liegen einen Klick entfernt unter "Werkzeuge". */
+    { id: "sma50", group: "quick", label: "SMA 50", source: "indicator", style: "ma-sma50",
       fn: function (I, c) { return I.sma(c, 50); } },
-    { id: "sma200", group: "quick", label: "SMA 200", source: "indicator", style: "ma-sma200", on: true,
+    { id: "sma200", group: "quick", label: "SMA 200", source: "indicator", style: "ma-sma200",
       fn: function (I, c) { return I.sma(c, 200); } },
     { id: "bbUpper", group: "quick", label: "Bollinger", source: "indicator", multi: true, style: "bb" },
     { id: "high52w", group: "quick", label: "52W-Level", source: "level" },
@@ -58,7 +67,7 @@
   ];
 
   var PANES = [
-    { id: "volume", label: "Volumen", on: true },
+    { id: "volume", label: "Volumen" },
     { id: "rsi", label: "RSI 14" },
     { id: "macd", label: "MACD" },
     { id: "relativeVolume", label: "Rel. Volumen" },
@@ -117,17 +126,36 @@
       document.createTextNode("← Discover")
     ]));
     root.appendChild(hero(detail));
-    root.appendChild(why(detail));
 
-    var chartHost = el("section", { class: "dx-chapter dx-fade" });
+    /* Die Reihenfolge der Seite ist das Produkt.
+
+       Zuerst der Kurs und sein Verlauf - das ist die Frage, mit der
+       jemand eine Aktienseite oeffnet. Dann in einem Satz, warum dieser
+       Titel ueberhaupt auffaellt. Dann vier Worte zum Unternehmen und zur
+       Aktie. Dann beide Seiten der Waage. Dann die Geschaeftszahlen. Und
+       erst danach, fuer den, der so weit liest, die Analyse mit allem,
+       was gerechnet wurde.
+
+       Frueher stand die Beweisfuehrung an dritter Stelle und der Chart an
+       vierter. Das ist die Reihenfolge eines Berichts, nicht die einer
+       Seite, die jemand zum ersten Mal sieht. */
+    var chartHost = el("section", { class: "dx-chapter dx-chapter--chart dx-fade" });
     root.appendChild(chartHost);
     chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
     chartHost.appendChild(el("div", { class: "dx-chart", style: "height:320px" }));
 
+    root.appendChild(why(detail));
+    root.appendChild(ueberblick(detail));
+    root.appendChild(waage(detail));
+    root.appendChild(unternehmen(detail));
+    root.appendChild(continueDiscovery(detail, options));
+
+    /* Ab hier die Analyse. Der Anfaenger muss nicht hierher; der Profi
+       kommt mit einem Wisch. */
+    root.appendChild(kapitelTrenner());
     root.appendChild(belege(detail));
     root.appendChild(panels(detail));
     root.appendChild(technicalIntelligence(detail));
-    root.appendChild(continueDiscovery(detail, options));
     root.appendChild(provenance(detail));
 
     loadSeries(detail).then(function (loaded) {
@@ -305,6 +333,178 @@
     return section;
   }
 
+  /* ------------------------------------------------ Die Aktie in 30 Sekunden */
+  /**
+   * Vier Worte und vier Zahlen.
+   *
+   * Das ist die Sektion, die den Unterschied zwischen einem Datenblatt und
+   * einem Produkt ausmacht: Wachstum, Bewertung, Trend, Risiko - jeweils
+   * als Wort, das jeder versteht, mit der Zahl daneben, aus der es folgt.
+   * Wo die Grundlage fehlt, steht das Wort nicht da, sondern der Grund.
+   *
+   * "Was bedeutet das?" klappt die Erklaerung auf. Nicht als Tooltip an
+   * jedem Wort - sondern einmal je Begriff, dort wo er zum ersten Mal
+   * auftaucht.
+   */
+  function ueberblick(detail) {
+    if (!D.Einordnung) return null;
+    var daten = D.Einordnung.ueberblick(detail);
+    var name = detail.companyName || detail.symbol;
+    var section = el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: name + " in 30 Sekunden" })
+    ]);
+
+    var gitter = el("div", { class: "dx-30" });
+    daten.zeilen.forEach(function (z) {
+      var erklaerung = D.Einordnung.erklaerung(z.id);
+      var zelle = el("div", { class: "dx-30-zelle" + (z.wert ? "" : " dx-30-zelle--leer") }, [
+        el("span", { class: "dx-30-label", text: z.label }),
+        z.wert
+          ? el("b", { class: "dx-30-wert " + (z.ton || ""), text: z.wert })
+          : el("b", { class: "dx-30-wert dx-30-wert--leer", text: "Keine Angabe" }),
+        el("span", { class: "dx-30-beleg", text: z.beleg || z.fehlt || "" })
+      ]);
+      if (z.wert && erklaerung) {
+        var auf = el("details", { class: "dx-was" }, [
+          el("summary", { text: "Was bedeutet das?" }),
+          el("p", { text: erklaerung })
+        ]);
+        zelle.appendChild(auf);
+      }
+      gitter.appendChild(zelle);
+    });
+    section.appendChild(gitter);
+    return section;
+  }
+
+  /* ------------------------------------------------------------- Die Waage */
+  /**
+   * Dafuer und dagegen - aber ohne Meinung.
+   *
+   * Jede Zeile ist eine Beobachtung mit ihrer Zahl. Die Sektion sagt
+   * ausdruecklich, dass sie keine Empfehlung ist; das ist kein
+   * Kleingedrucktes, sondern der Unterschied zwischen Einordnung und Rat.
+   */
+  function waage(detail) {
+    if (!D.Einordnung) return null;
+    var w = D.Einordnung.waage(detail);
+    if (!w.dafuer.length && !w.beachten.length) return null;
+
+    function spalte(titel, eintraege, art) {
+      var host = el("div", { class: "dx-waage-spalte dx-waage-spalte--" + art }, [
+        el("h3", { text: titel })
+      ]);
+      var liste = el("ul", {});
+      eintraege.forEach(function (e) {
+        liste.appendChild(el("li", {}, [
+          el("i", { class: "dx-waage-marke", "aria-hidden": "true",
+                    text: art === "pro" ? "+" : "−" }),
+          el("div", {}, [
+            el("b", { text: e.text }),
+            e.beleg ? el("span", { text: e.beleg }) : null
+          ])
+        ]));
+      });
+      host.appendChild(liste);
+      return host;
+    }
+
+    return el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Dafür und dagegen" }),
+      el("div", { class: "dx-waage" }, [
+        spalte("Das spricht dafür", w.dafuer, "pro"),
+        spalte("Das sollte man beachten", w.beachten, "contra")
+      ]),
+      el("p", { class: "dx-kapitel-fuss", text: w.hinweis })
+    ]);
+  }
+
+  /* --------------------------------------------------------- Das Unternehmen */
+  /**
+   * Umsatz, Gewinn, Marge - in der Sprache, in der man darueber redet.
+   *
+   * Fuer 493 der 498 realen Titel liefert der Anbieter keine
+   * Geschaeftszahlen. Dann steht hier kein leeres Raster und kein
+   * Platzhalter, sondern ein Satz, der sagt, was fehlt und warum.
+   */
+  function unternehmen(detail) {
+    var g = detail.geschaeftszahlen;
+    if (!g) return null;
+    var name = detail.companyName || detail.symbol;
+    var section = el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Das Unternehmen" })
+    ]);
+
+    if (g.status !== "CALCULATED") {
+      section.appendChild(el("p", { class: "dx-why-empty",
+        text: g.message || "Für diesen Titel liegen keine Geschäftszahlen vor. Vision Universe " +
+              "zeigt nur, was aus der Kursreihe folgt — und nicht mehr." }));
+      return section;
+    }
+
+    var K = D.Klartext;
+    var zahlen = [
+      { label: "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
+        zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + " gegenüber dem Vorjahr" : null,
+        ton: tonVon(g.umsatzWachstum) },
+      { label: "Gewinn (12 Monate)", wert: geld(g.gewinnTTM),
+        zusatz: isNum(g.gewinnWachstum) ? K.prozent(g.gewinnWachstum) + " gegenüber dem Vorjahr" : null,
+        ton: tonVon(g.gewinnWachstum) },
+      { label: "Vom Umsatz bleibt als Gewinn", wert: isNum(g.marge) ? K.prozent(g.marge, false) : "–",
+        zusatz: null, ton: null },
+      g.kgvStatus === "CALCULATED"
+        ? { label: "Kurs-Gewinn-Verhältnis", wert: String(Math.round(g.kgv * 10) / 10).replace(".", ","),
+            zusatz: "Das Wievielfache des Jahresgewinns die Aktie kostet", ton: null }
+        : null,
+      isNum(g.dividendenRendite)
+        ? { label: "Dividendenrendite", wert: K.prozent(g.dividendenRendite, false),
+            zusatz: null, ton: null }
+        : null
+    ].filter(Boolean);
+
+    var gitter = el("div", { class: "dx-firma" });
+    zahlen.forEach(function (z) {
+      gitter.appendChild(el("div", {}, [
+        el("span", { text: z.label }),
+        el("b", { class: "num", text: z.wert }),
+        z.zusatz ? el("em", { class: z.ton || "", text: z.zusatz }) : null
+      ]));
+    });
+    section.appendChild(gitter);
+
+    var quelle = g.quelle === "SEC_CANONICAL"
+      ? "Aus den Quartalsberichten bei der SEC, Zeitraum " +
+        (g.zeitraum && g.zeitraum.von ? g.zeitraum.von + " bis " + g.zeitraum.bis : "unbekannt") +
+        ". Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen."
+      : "Synthetische Kennzahlen des Vision-Universe-Modelluniversums — erzeugt, nicht gemessen.";
+    section.appendChild(el("p", { class: "dx-kapitel-fuss", text: quelle }));
+    return section;
+  }
+
+  function tonVon(v) { return isNum(v) ? (v > 0 ? "up" : (v < 0 ? "down" : "")) : ""; }
+
+  /* Millionen, wie man sie ausspricht: 302.969 Mio. $ liest niemand,
+     303 Mrd. $ schon. */
+  function geld(millionen) {
+    if (!isNum(millionen)) return "–";
+    var v = millionen;
+    if (Math.abs(v) >= 1000) {
+      return (Math.round(v / 100) / 10).toFixed(1).replace(".", ",") + " Mrd. $";
+    }
+    return Math.round(v) + " Mio. $";
+  }
+
+  /* Die Grenze zwischen Verstehen und Analysieren. Sie ist sichtbar,
+     damit niemand aus Versehen in Ebene 3 landet und denkt, er habe
+     etwas nicht verstanden. */
+  function kapitelTrenner() {
+    return el("div", { class: "dx-trenner dx-fade" }, [
+      el("span", { text: "Ab hier: die Analyse" }),
+      el("p", { text: "Alle Kennzahlen, aus denen die Einordnungen oben entstehen — " +
+                      "Scores, Perzentile, technische Lage und Herkunft der Daten." })
+    ]);
+  }
+
   /**
    * Dieselben Befunde ausfuehrlich - Ebene 3.
    *
@@ -370,15 +570,24 @@
 
     var leiste = Ranges.rangeBar(weekly || daily, { gates: gates });
     leiste.forEach(function (r) {
-      if (r.id === "5D" || r.id === "6M" || r.id === "MAX") return;   // die Leiste bleibt kurz
-      var knopf = el("button", { type: "button", text: r.label,
+      /* Die Leiste zeigt die Zeitraeume, in denen ein Mensch denkt:
+         heute, eine Woche, ein Monat, ein halbes Jahr, ein Jahr, fuenf
+         Jahre, alles. Drei Jahre und zehn Jahre liegen dazwischen, ohne
+         eine eigene Frage zu beantworten - sie sind auf der Analyseebene
+         ueber dieselbe Engine erreichbar. */
+      if (["3M", "YTD", "3Y", "10Y"].indexOf(r.id) !== -1) return;
+      /* Die Engine nennt den Zeitraum "5T", weil sie in Handelstagen
+         denkt. Ein Mensch sagt "1 Woche". Umbenannt wird nur die
+         Beschriftung - die Auswahl bleibt dieselbe Engine-Entscheidung. */
+      var beschriftung = r.id === "5D" ? "1W" : r.label;
+      var knopf = el("button", { type: "button", text: beschriftung,
         "aria-pressed": String(r.id === state.range), disabled: !r.available,
         title: r.available ? "" : (r.message || "Nicht verfügbar") });
       knopf.addEventListener("click", function () {
         if (!r.available) return;
         state.range = r.id;
         Array.prototype.forEach.call(tf.children, function (b) {
-          b.setAttribute("aria-pressed", String(b.textContent === r.label));
+          b.setAttribute("aria-pressed", String(b.textContent === beschriftung));
         });
         zeichnen();
       });
@@ -387,8 +596,14 @@
 
     wrap.appendChild(el("div", { class: "dx-chart-head" }, [tf]));
     wrap.appendChild(chartBox);
-    wrap.appendChild(controls);
-    wrap.appendChild(paneHost);
+    /* Die Werkzeuge sind zugeklappt. Wer sie braucht, findet sie in einer
+       Zeile; wer sie nicht kennt, wird von ihnen nicht aufgehalten. */
+    var werkzeuge = el("details", { class: "dx-werkzeuge" }, [
+      el("summary", { text: "Chart-Werkzeuge" })
+    ]);
+    werkzeuge.appendChild(controls);
+    werkzeuge.appendChild(paneHost);
+    wrap.appendChild(werkzeuge);
 
     var gesperrt = leiste.filter(function (r) { return !r.available && r.reason === "gateDisabled"; });
     if (gesperrt.length) {
@@ -397,9 +612,9 @@
          Knopf (title) und bleibt damit nachlesbar. */
       wrap.appendChild(el("p", { class: "dx-inline-note", style: "margin-left:0;margin-right:0" }, [
         el("b", { text: "Intraday nicht freigeschaltet · " }),
-        document.createTextNode("1T und 1W brauchen Intraday-Daten; das Feature-Gate " +
-          "ENABLE_LIVE_MARKET_DATA ist nicht gesetzt. Aus Tagesschlusskursen lässt sich kein " +
-          "Tagesverlauf bauen — und einer, der so aussähe, wäre erfunden.")
+        document.createTextNode("Der Tagesverlauf braucht Kursdaten im Minutentakt. " +
+          "Die sind derzeit nicht freigeschaltet, und aus Tagesschlusskursen lässt sich " +
+          "kein Tagesverlauf bauen — einer, der so aussähe, wäre erfunden.")
       ]));
     }
 
@@ -462,7 +677,8 @@
       });
       chart.classList.add("q-tchart");
       chartBox.appendChild(chart);
-      chartBox.appendChild(legend(state, gewaehlt.grain));
+      var legendeNode = legend(state, gewaehlt.grain);
+      if (legendeNode) chartBox.appendChild(legendeNode);
       if (gewaehlt.grain === "weekly") {
         chartBox.appendChild(el("p", { style: "margin:4px 10px 10px;font-size:11.5px;color:var(--discover-dim)",
           text: "Dieser Zeitraum wird aus der Wochenreihe gezeichnet: Schlusskurse je Woche, " +
@@ -602,7 +818,10 @@
       items.push(el("span", {}, [el("i", { class: "dx-legend-bb" }),
                                  document.createTextNode("Bollinger 20/2")]));
     }
-    if (!items.length) items.push(el("span", { text: "Keine Überlagerung aktiv" }));
+    /* Ohne Ueberlagerung keine Legende: "Keine Ueberlagerung aktiv" ist
+       eine Auskunft ueber ein Werkzeug, das der Leser gar nicht geoeffnet
+       hat. */
+    if (!items.length) return null;
     return el("div", { class: "dx-legend" }, items);
   }
 
@@ -841,7 +1060,20 @@
         item.setAttribute("role", "listitem");
         track.appendChild(item);
       });
-      section.appendChild(C().withRailNav(track));
+      /* Vorladen, was als Naechstes kommt - und nur das.
+
+         Wer die dritte Karte sieht, oeffnet als Naechstes wahrscheinlich
+         die vierte; deren Seite liegt dann schon im Cache des Browsers.
+         Alle acht auf einmal zu laden waere fuer den Nutzer teurer als
+         der gesparte Moment wert ist. */
+      section.appendChild(C().withRailNav(track, {
+        label: "aehnliche-titel",
+        prefetch: function (index) {
+          var karte = detail.similar[index];
+          if (!karte || !D.Swipe) return;
+          D.Swipe.vorladen("/discover/data/stocks/" + universeId + "/" + karte.symbol + ".json");
+        }
+      }));
     }
     return section;
   }
