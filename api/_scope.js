@@ -94,7 +94,8 @@ function pruefe(rohTicker) {
   for (const klasse of erlaubt) {
     if (v.mengen[klasse] && v.mengen[klasse].has(ticker)) {
       return { state: "SUPPORTED", ticker, eligibility: klasse,
-               universeSize: v.roh.counts.productUniverse };
+               universeSize: v.roh.counts.productUniverse,
+               realtime: echtzeitfaehig() };
     }
   }
   if (v.ausgeschlossen.has(ticker)) {
@@ -114,6 +115,25 @@ function pruefe(rohTicker) {
 /** Der Zugangsschluessel - getrimmt, weil eingefuegte Werte oft einen
     Zeilenumbruch mitbringen. Er verlaesst diese Datei nur Richtung
     Anbieter. */
+/* ZWEI VERSCHIEDENE FRAGEN, DIE GERN VERWECHSELT WERDEN.
+
+   "Ist die Verbindung offen?" beantwortet der Strom mit CONNECTED. "Darf
+   dieser Titel ueberhaupt Kursaktualisierungen bekommen?" ist etwas
+   anderes - und die Antwort haengt nicht an der Verbindung, sondern am
+   Titel und an der Umfangsentscheidung.
+
+   Der Unterschied ist nicht akademisch: ein Titel kann
+   INTRADAY_UNAVAILABLE sein (der Anbieter hat keine Tagesreihe) und
+   trotzdem REALTIME_AVAILABLE - er wird gehandelt, es gibt nur keine
+   fertigen Bars. Wer beides in einen Zustand presst, kann dem Nutzer
+   diesen Fall nicht mehr erklaeren. */
+function echtzeitfaehig() {
+  const s = scope();
+  if (!s) return "SCOPE_UNREADABLE";
+  const regeln = s.realtime || {};
+  return regeln.enabled === false ? "REALTIME_DISABLED" : "REALTIME_AVAILABLE";
+}
+
 function schluessel() { return (process.env.TIINGO_API_KEY || "").trim(); }
 
 /** Handelt die Boerse gerade? Aus der bestehenden Engine, nicht aus einer
@@ -150,4 +170,5 @@ function verdictFor(x) {
   return "CONNECTED_NO_TICKS";
 }
 
-module.exports = { pruefe, normalisiere, schluessel, sitzung, scope, verzeichnis, verdictFor };
+module.exports = { pruefe, normalisiere, schluessel, sitzung, scope, verzeichnis,
+                   verdictFor, echtzeitfaehig };

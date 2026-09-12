@@ -260,6 +260,17 @@ test("RS7 — die Zustaende der Intraday-Funktion bleiben auseinander", async ()
     if (fall.erwartet === "NOT_ELIGIBLE") {
       assert.equal(antwort.body.instrumentClass, "WARRANT");
     }
+
+    /* KEIN TAGESVERLAUF IST KEINE ABGESCHALTETE ECHTZEIT.
+
+       Das sind zwei Auskuenfte, und sie fallen auseinander: ein Titel
+       kann beim Anbieter keine Intraday-Reihe haben und trotzdem
+       gehandelt werden. Wer daraus "Echtzeit nicht verfuegbar" macht,
+       sagt dem Nutzer etwas Falsches ueber seinen Titel. */
+    if (["INTRADAY_AVAILABLE", "INTRADAY_UNAVAILABLE"].includes(fall.erwartet)) {
+      assert.equal(antwort.body.realtime, "REALTIME_AVAILABLE",
+        `${fall.name}: ein Titel des Universums bleibt echtzeitfaehig, auch ohne Bars`);
+    }
   }
 });
 

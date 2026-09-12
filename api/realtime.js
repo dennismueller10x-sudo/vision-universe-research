@@ -216,6 +216,7 @@ module.exports = async function handler(req, res) {
     if (nachricht.messageType === "I") {
       abonniert = true;
       sende(res, "subscribed", { at: new Date().toISOString(), tickers: erlaubt,
+                                 capability: Scope.echtzeitfaehig(),
                                  response: nachricht.response || null });
       return;
     }

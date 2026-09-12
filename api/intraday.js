@@ -52,7 +52,20 @@ module.exports = async function handler(req, res) {
   const sitzung = Scope.sitzung();
 
   const pruefung = Scope.pruefe(url.searchParams.get("ticker"));
-  const gemeinsam = { ticker: pruefung.ticker, marketStatus: sitzung.marketStatus, session: sitzung };
+  /* Was in JEDE Antwort gehoert - egal welcher Zustand herauskommt.
+
+     Die Echtzeitfaehigkeit stand zuerst nur in der Erfolgsantwort, und
+     der Zweig fuer "der Anbieter kennt das Symbol nicht" hatte sie
+     nicht. Ausgerechnet dort ist sie am wichtigsten: kein Tagesverlauf
+     und trotzdem handelbar ist genau der Fall, den der Nutzer sonst als
+     "Echtzeit nicht verfuegbar" missversteht. */
+  const gemeinsam = {
+    ticker: pruefung.ticker,
+    marketStatus: sitzung.marketStatus,
+    session: sitzung,
+    eligibility: pruefung.eligibility,
+    realtime: pruefung.realtime
+  };
 
   if (pruefung.state !== "SUPPORTED") {
     /* Jeder dieser Zustaende ist eine Auskunft, keine Stoerung - ausser
@@ -124,7 +137,6 @@ module.exports = async function handler(req, res) {
 
     return antwort(res, 200, Object.assign({
       state: bars.length ? "INTRADAY_AVAILABLE" : "INTRADAY_UNAVAILABLE",
-      eligibility: pruefung.eligibility,
       freq, bars,
       barCount: bars.length,
       first: bars.length ? bars[0].date : null,
