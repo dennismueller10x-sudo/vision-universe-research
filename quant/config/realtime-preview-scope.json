@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0.0",
+  "decidedAt": "2026-09-12",
+  "decidedBy": "Eigentuemeranweisung im Workstream Intraday/Realtime: jede berechtigte US-Aktie des bereinigten Produktuniversums soll live-faehig sein, sobald der Nutzer sie oeffnet.",
+  "note": "Diese Datei regelt AUSSCHLIESSLICH die geschuetzte Vorschau und ausschliesslich zwei Serverfunktionen (api/intraday.js, api/realtime.js). Sie aendert keine oeffentliche Freigabe: quant/config/feature-gates.json bleibt unangetastet, ENABLE_PUBLIC_LIVE_MARKET_DATA bleibt false, und auf GitHub Pages existieren diese Funktionen gar nicht.",
+  "delivery": "PROTECTED_PREVIEW_ONLY",
+  "scopeSource": {
+    "index": "quant/data/market/realtime/product-symbols.json",
+    "origin": "quant/data/market/security-master/eligibility.json",
+    "rule": "Produktuniversum = alle Entscheidungen ausser EXCLUDED.",
+    "note": "Die Eignung wird in diesem Workstream weder berechnet noch veraendert. Sie wird gelesen."
+  },
+  "allowedEligibility": ["ELIGIBLE", "SEPARATE_CLASS", "REVIEW"],
+  "intraday": {
+    "enabled": true,
+    "resampleFreq": "5min",
+    "maxDays": 5,
+    "note": "Serverseitiger Abruf mit dem Schluessel der geschuetzten Umgebung. Der Browser sieht nur Bars."
+  },
+  "realtime": {
+    "enabled": true,
+    "onDemand": true,
+    "maxSymbolsPerConnection": 4,
+    "streamWindowMs": 50000,
+    "note": "Bedarfsgesteuert: abonniert wird, was gerade betrachtet wird. Es gibt keine stehende Verbindung fuer das ganze Universum - 7.004 Dauerabonnements waeren weder noetig noch bezahlbar."
+  },
+  "priceSemantics": {
+    "priceTypeConfirmed": false,
+    "label": "Kursaktualisierung",
+    "forbiddenLabels": ["Last Trade", "letzter Handelskurs", "Bid", "Ask", "Mid", "NBBO"],
+    "note": "Der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Bis zu seiner Bestaetigung wird neutral beschriftet."
+  }
+}

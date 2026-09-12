@@ -9,7 +9,7 @@
   "functions": {
     "api/*.js": {
       "maxDuration": 60,
-      "includeFiles": "quant/config/**"
+      "includeFiles": "{quant/config/**,quant/data/market/realtime/**,quant/engines/realtime/**}"
     }
   },
   "headers": [

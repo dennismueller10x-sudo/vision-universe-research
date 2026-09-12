@@ -102,9 +102,17 @@ test("OP2 — die Bruecke umhuellt die Dienste, sie ersetzt sie nicht", () => {
 });
 
 test("OP3 — der Zugangsschluessel bleibt auf der Serverseite", () => {
+  /* Gelesen wird der Schluessel an genau einer Stelle. Diese Pruefung
+     stand frueher auf jeder der beiden Funktionen; seit beide durch
+     dieselbe Grenze gehen, waere das eine Forderung nach doppeltem
+     Zugriff - also nach mehr Stellen, an denen er entweichen kann. */
+  assert.match(lies("api/_scope.js"), /process\.env\.TIINGO_API_KEY/,
+    "die gemeinsame Grenze liest den Schluessel nicht aus der Umgebung");
+
   for (const datei of ["api/realtime.js", "api/intraday.js"]) {
     const quelle = lies(datei);
-    assert.match(quelle, /process\.env\.TIINGO_API_KEY/, `${datei} liest den Schluessel nicht aus der Umgebung`);
+    assert.ok(!/process\.env/.test(quelle),
+      `${datei} greift an der Grenze vorbei auf die Umgebung zu`);
 
     /* WOHIN der Schluessel geht, ist die ganze Frage - nicht, ob er
        ueberhaupt benutzt wird. Der erste Versuch verbot jede Uebergabe
@@ -118,7 +126,7 @@ test("OP3 — der Zugangsschluessel bleibt auf der Serverseite", () => {
       .map((zeile, i) => ({ zeile: zeile.trim(), nr: i + 1 }))
       .filter((z) => /\bkey\b/.test(z.zeile) && !z.zeile.startsWith("*") && !z.zeile.startsWith("/*"));
     const erlaubt = [
-      /^const key = \(process\.env\.TIINGO_API_KEY \|\| ""\)\.trim\(\);$/,
+      /^const key = Scope\.schluessel\(\);$/,
       /^if \(!key\) \{$/,
       /^authorization: key,$/,
       /^headers: \{ Authorization: `Token \$\{key\}`/
@@ -134,25 +142,45 @@ test("OP3 — der Zugangsschluessel bleibt auf der Serverseite", () => {
   }
 });
 
-test("OP4 — beide Serverfunktionen halten die Freigabeliste ein", async () => {
-  const freigabe = JSON.parse(lies("quant/config/development-preview.json"));
-  const erlaubt = freigabe.scope;
-  assert.ok(Array.isArray(erlaubt) && erlaubt.length, "ohne Freigabeliste darf nichts laufen");
+test("OP4 — beide Serverfunktionen halten die Grenze des Produktuniversums ein", async () => {
+  /* DIESE PRUEFUNG HAT IHRE GRENZE GEWECHSELT.
+
+     Sie stand einmal auf development-preview.json - der Liste der fuenf
+     Titel, mit denen der Workstream angefangen hat. Die Liste ist keine
+     Produktgrenze mehr; sie war nur das, was zuerst fertig war. Die
+     Grenze kommt jetzt aus dem Eignungslauf, und der kennt rund
+     siebentausend Titel statt fuenf. Geprueft wird weiterhin dasselbe:
+     dass es ueberhaupt eine Grenze gibt und die Funktion sie einhaelt. */
+  const verzeichnis = JSON.parse(lies("quant/data/market/realtime/product-symbols.json"));
+  const imUniversum = verzeichnis.symbols.ELIGIBLE[0];
+  assert.ok(imUniversum, "ohne Produktuniversum darf nichts laufen");
 
   const { default: intraday } = await import(join(root, "api", "intraday.js"));
-  const antwort = await fake(intraday, "/api/intraday?ticker=ZZZZ");
-  assert.equal(antwort.body.state, "NOT_PERMITTED",
-    "ein Titel ausserhalb der Freigabe darf keine Kurse bekommen");
-  assert.deepEqual(antwort.body.scope, erlaubt);
 
-  /* Mit freigegebenem Titel, aber ohne Schluessel: die Antwort muss den
-     Grund nennen und darf nicht so aussehen, als sei der Code kaputt. */
-  const ohneSchluessel = { ...process.env };
-  delete ohneSchluessel.TIINGO_API_KEY;
+  /* Ein Name, den es nicht gibt. */
+  const unbekannt = await fake(intraday, "/api/intraday?ticker=ZZZZZZ");
+  assert.equal(unbekannt.body.state, "SYMBOL_NOT_SUPPORTED",
+    "ein Titel ausserhalb des Produktuniversums darf keine Kurse bekommen");
+
+  /* Und ein Papier, das es gibt und das trotzdem nicht dazugehoert.
+     Der Unterschied ist kein Wortspiel: "kenne ich nicht" und "gehoert
+     nicht ins Produkt" sind zwei verschiedene Auskuenfte, und wer sie
+     zusammenwirft, kann spaeter nicht sagen, welche von beiden gemeint
+     war. Welches Papier das ist, entscheidet der Eignungslauf - hier
+     steht kein Name. */
+  const ausgeschlossen = (verzeichnis.excluded.WARRANT || [])[0];
+  assert.ok(ausgeschlossen, "ohne ausgeschlossene Papiere ist diese Pruefung blind");
+  const nichtGeeignet = await fake(intraday, `/api/intraday?ticker=${ausgeschlossen}`);
+  assert.equal(nichtGeeignet.body.state, "NOT_ELIGIBLE",
+    "ein ausgeschlossenes Papier ist etwas anderes als ein unbekanntes");
+
+  /* Mit einem Titel des Universums, aber ohne Schluessel: die Antwort
+     muss den Grund nennen und darf nicht so aussehen, als sei der Code
+     kaputt. */
   const alt = process.env.TIINGO_API_KEY;
   delete process.env.TIINGO_API_KEY;
   try {
-    const zweite = await fake(intraday, `/api/intraday?ticker=${erlaubt[0]}`);
+    const zweite = await fake(intraday, `/api/intraday?ticker=${imUniversum}`);
     assert.equal(zweite.body.state, "NOT_CONFIGURED");
     assert.match(zweite.body.remedy, /TIINGO_API_KEY/);
   } finally { if (alt !== undefined) process.env.TIINGO_API_KEY = alt; }
@@ -160,7 +188,8 @@ test("OP4 — beide Serverfunktionen halten die Freigabeliste ein", async () => 
   /* Der Strom antwortet als Ereignisstrom, nicht als JSON-Fehler. */
   const strom = lies("api/realtime.js");
   assert.match(strom, /text\/event-stream/);
-  assert.match(strom, /erlaubteTitel\(\)/);
+  assert.match(strom, /Scope\.pruefe\(/,
+    "auch der Strom fragt die gemeinsame Grenze, nicht eine eigene Liste");
   assert.match(strom, /priceTypeConfirmed: false/,
     "solange die Kursart unbestaetigt ist, darf nichts anderes behauptet werden");
 
@@ -169,8 +198,15 @@ test("OP4 — beide Serverfunktionen halten die Freigabeliste ein", async () => 
      schlug an dem Satz an, der genau erklaert, dass sie NICHT behauptet
      wird. Ein Test, der die Begruendung verbietet, macht den Code
      schlechter. */
-  assert.match(strom, /priceLabel: "Kursaktualisierung"/,
-    "die neutrale Beschriftung muss im Strom mitgeschickt werden");
+  /* Die Beschriftung steht in der Umfangsentscheidung, nicht im Code -
+     damit sie an einer Stelle geaendert wird und nicht an dreien. Der
+     Code muss sie mitschicken, und sie muss neutral bleiben. */
+  const semantik = JSON.parse(lies("quant/config/realtime-preview-scope.json")).priceSemantics;
+  assert.equal(semantik.priceTypeConfirmed, false);
+  assert.equal(semantik.label, "Kursaktualisierung");
+  assert.match(strom, /priceLabel:/, "die Beschriftung muss im Strom mitgeschickt werden");
+  assert.match(strom, /"Kursaktualisierung"/,
+    "auch ohne lesbare Umfangsentscheidung muss die neutrale Beschriftung greifen");
   const beschriftungen = strom.match(/(?:priceLabel|label|kind):\s*"[^"]*"/g) || [];
   const behauptend = beschriftungen.filter((b) => /handelskurs|last trade/i.test(b));
   assert.deepEqual(behauptend, [], "eine unbestaetigte Kursart darf nicht als Handelskurs beschriftet werden");

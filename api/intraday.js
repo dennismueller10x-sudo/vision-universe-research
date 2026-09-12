@@ -1,50 +1,41 @@
 /* =========================================================================
    VISION UNIVERSE — api/intraday.js
 
-   INTRADAY-BARS, SERVERSEITIG GEHOLT.
-
-   Dieselbe Frage wie beim Echtzeitstrom, eine Stufe darunter: kann die
-   geschuetzte Umgebung Intraday-Kurse holen, ohne den Zugangsschluessel
-   in den Browser zu legen? Sie kann - hier steht der Weg.
+   INTRADAY-BARS, SERVERSEITIG GEHOLT - FUER JEDE BERECHTIGTE US-AKTIE.
 
      Browser --HTTPS--> diese Funktion --HTTPS--> api.tiingo.com/iex/...
 
-   Die Faehigkeit selbst ist laufzeitgeprueft (intraday: VERIFIED,
-   quant/data/market/commercial/capability-retest.json). Was fehlte, war
-   nie der Abruf, sondern der Weg in die Anzeige ohne Schluesselleck.
+   Der Zugangsschluessel bleibt hier. Was den Browser erreicht, sind Bars.
 
-   GRENZEN, DIE BLEIBEN
+   KEINE TICKERLISTE IM CODE
 
-   1. Nur Titel mit datierter Anzeigefreigabe
-      (quant/config/development-preview.json). Alles andere wird
-      abgelehnt, mit Begruendung.
-   2. Nur die geschuetzte Vorschau. Diese Funktion existiert auf GitHub
-      Pages nicht - dort gibt es keine Serverseite.
-   3. Nichts wird zwischengespeichert und nichts geschrieben: die Bars
-      gehen in die Antwort und sonst nirgendwohin.
+   Frueher stand hier eine Freigabeliste mit fuenf Namen. Das war richtig,
+   solange nur fuenf Titel ueberhaupt angezeigt werden durften - und es
+   waere jetzt falsch: das bereinigte Produktuniversum umfasst 7.004
+   Titel, und jeder davon soll sich oeffnen lassen. Die Grenze kommt
+   deshalb aus dem Eignungslauf (api/_scope.js), nicht aus einer Konstante
+   in dieser Datei.
+
+   ZUSTAENDE, DIE AUSEINANDERGEHALTEN GEHOEREN
+
+     INTRADAY_AVAILABLE     Bars sind da
+     INTRADAY_UNAVAILABLE   der Anbieter hat fuer dieses Symbol keine
+     PROVIDER_UNAVAILABLE   der Anbieter hat abgelehnt oder geschwiegen
+     NOT_ELIGIBLE           ausgeschlossenes Papier (Warrant, Unit, ...)
+     SYMBOL_NOT_SUPPORTED   nicht im Produktuniversum
+     NOT_CONFIGURED         kein Schluessel in dieser Umgebung
+
+   "Keine Bars" ist KEIN Fehler: ausserhalb der Handelszeiten, bei einem
+   jungen Boersengang oder einem duennen Titel ist es die Wahrheit. Der
+   Marktzustand steht deshalb in jeder Antwort daneben - wer beides
+   verwechselt, meldet Wochenende als Stoerung.
    ========================================================================= */
 "use strict";
 
-const { readFileSync } = require("node:fs");
-const { join } = require("node:path");
+const Scope = require("./_scope.js");
 
 const BASIS = "https://api.tiingo.com/iex";
 const ERLAUBTE_FREQUENZEN = ["1min", "5min", "15min", "30min", "1hour"];
-
-function lies(pfad, fallback) {
-  try { return JSON.parse(readFileSync(join(process.cwd(), pfad), "utf8")); }
-  catch (e) { return fallback; }
-}
-
-/* Kommt null zurueck, ist die FREIGABEDATEI nicht lesbar - das ist etwas
-   anderes als "dieser Titel ist nicht freigegeben". Beides zu vermischen
-   hiesse, einen Einrichtungsfehler als Lizenzentscheidung auszugeben.
-   Auf Vercel kommt die Datei ueber functions.includeFiles mit. */
-function erlaubteTitel() {
-  const freigabe = lies("quant/config/development-preview.json", null);
-  if (!freigabe || !Array.isArray(freigabe.scope)) return null;
-  return freigabe.scope;
-}
 
 function antwort(res, status, koerper) {
   res.statusCode = status;
@@ -56,64 +47,73 @@ function antwort(res, status, koerper) {
 
 module.exports = async function handler(req, res) {
   const url = new URL(req.url, "http://localhost");
-  const ticker = String(url.searchParams.get("ticker") || "").toUpperCase().trim();
-  const freq = String(url.searchParams.get("freq") || "5min");
-  const tage = Math.min(5, Math.max(1, parseInt(url.searchParams.get("days") || "2", 10) || 2));
+  const scope = Scope.scope() || {};
+  const regeln = scope.intraday || {};
+  const sitzung = Scope.sitzung();
 
-  const erlaubt = erlaubteTitel();
-  if (!/^[A-Z0-9.-]{1,12}$/.test(ticker)) {
-    return antwort(res, 400, { state: "INVALID_IDENTITY", reason: "Kein gueltiger Ticker." });
+  const pruefung = Scope.pruefe(url.searchParams.get("ticker"));
+  const gemeinsam = { ticker: pruefung.ticker, marketStatus: sitzung.marketStatus, session: sitzung };
+
+  if (pruefung.state !== "SUPPORTED") {
+    /* Jeder dieser Zustaende ist eine Auskunft, keine Stoerung - ausser
+       SCOPE_UNREADABLE, und genau deshalb steht dort eine Abhilfe. */
+    return antwort(res, pruefung.state === "INVALID_IDENTITY" ? 400 : 200,
+      Object.assign({ state: pruefung.state, reason: pruefung.reason }, gemeinsam, {
+        instrumentClass: pruefung.instrumentClass || null,
+        remedy: pruefung.remedy || null,
+        productUniverse: pruefung.universeSize || null
+      }));
   }
-  if (!erlaubt) {
-    return antwort(res, 200, {
-      state: "SCOPE_UNREADABLE", ticker,
-      reason: "Die Freigabeliste (quant/config/development-preview.json) ist zur Laufzeit nicht lesbar.",
-      remedy: "vercel.json → functions.includeFiles muss quant/config/** enthalten."
-    });
+
+  if (regeln.enabled === false) {
+    return antwort(res, 200, Object.assign({
+      state: "INTRADAY_UNAVAILABLE",
+      reason: "Intraday ist in dieser Vorschau ausgeschaltet (quant/config/realtime-preview-scope.json)."
+    }, gemeinsam));
   }
-  if (!erlaubt.includes(ticker)) {
-    return antwort(res, 200, {
-      state: "NOT_PERMITTED", ticker, scope: erlaubt,
-      reason: "Fuer diesen Titel liegt keine datierte Anzeigefreigabe vor.",
-      note: "Die Freigabe steht in quant/config/development-preview.json und ist eine " +
-            "Eigentuemerentscheidung, keine Programmgrenze."
-    });
-  }
+
+  const freq = String(url.searchParams.get("freq") || regeln.resampleFreq || "5min");
   if (!ERLAUBTE_FREQUENZEN.includes(freq)) {
-    return antwort(res, 400, { state: "INVALID_FREQUENCY", allowed: ERLAUBTE_FREQUENZEN });
+    return antwort(res, 400, Object.assign({ state: "INVALID_FREQUENCY", allowed: ERLAUBTE_FREQUENZEN }, gemeinsam));
   }
+  const grenze = Number(regeln.maxDays) || 5;
+  const tage = Math.min(grenze, Math.max(1, parseInt(url.searchParams.get("days") || "2", 10) || 2));
 
-  /* .trim(): ein eingefuegter Schluessel bringt haeufig einen
-     Zeilenumbruch oder ein Leerzeichen mit. Der Anbieter lehnt ihn dann
-     ab, und die Meldung sieht aus wie ein Rechteproblem statt wie ein
-     Kopierfehler. */
-  const key = (process.env.TIINGO_API_KEY || "").trim();
+  const key = Scope.schluessel();
   if (!key) {
-    return antwort(res, 200, {
-      state: "NOT_CONFIGURED", ticker,
+    return antwort(res, 200, Object.assign({
+      state: "NOT_CONFIGURED",
       reason: "TIINGO_API_KEY ist in dieser Umgebung nicht gesetzt.",
-      remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview)."
-    });
+      remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview), danach neu bauen."
+    }, gemeinsam));
   }
 
   const start = new Date(Date.now() - tage * 86400000).toISOString().slice(0, 10);
-  const ziel = `${BASIS}/${encodeURIComponent(ticker)}/prices` +
+  const ziel = `${BASIS}/${encodeURIComponent(pruefung.ticker)}/prices` +
                `?startDate=${start}&resampleFreq=${encodeURIComponent(freq)}&columns=open,high,low,close,volume`;
 
   const ctl = new AbortController();
   const uhr = setTimeout(() => ctl.abort(), 12000);
+  const begonnen = Date.now();
   try {
-    const antwortDesAnbieters = await fetch(ziel, {
+    const anbieter = await fetch(ziel, {
       signal: ctl.signal,
       headers: { Authorization: `Token ${key}`, "Content-Type": "application/json" }
     });
-    if (!antwortDesAnbieters.ok) {
-      return antwort(res, 200, {
-        state: "PROVIDER_REJECTED", ticker, status: antwortDesAnbieters.status,
-        reason: "Der Anbieter hat den Abruf abgelehnt."
-      });
+    if (!anbieter.ok) {
+      /* 404 heisst bei diesem Anbieter "fuer dieses Symbol nichts", nicht
+         "kaputt". Der Unterschied gehoert in die Antwort. */
+      const text = await anbieter.text().catch(() => "");
+      return antwort(res, 200, Object.assign({
+        state: anbieter.status === 404 ? "INTRADAY_UNAVAILABLE" : "PROVIDER_UNAVAILABLE",
+        providerStatus: anbieter.status,
+        reason: anbieter.status === 404
+          ? "Der Anbieter fuehrt fuer dieses Symbol keine Intraday-Serie."
+          : "Der Anbieter hat den Abruf abgelehnt.",
+        providerMessage: String(text || "").slice(0, 200) || null
+      }, gemeinsam));
     }
-    const roh = await antwortDesAnbieters.json();
+    const roh = await anbieter.json();
     const bars = (Array.isArray(roh) ? roh : [])
       .map((b) => ({
         date: typeof b.date === "string" ? b.date : null,
@@ -122,23 +122,27 @@ module.exports = async function handler(req, res) {
       }))
       .filter((b) => b.date && b.close !== null);
 
-    return antwort(res, 200, {
-      state: bars.length ? "AVAILABLE" : "EMPTY",
-      ticker, freq, bars,
+    return antwort(res, 200, Object.assign({
+      state: bars.length ? "INTRADAY_AVAILABLE" : "INTRADAY_UNAVAILABLE",
+      eligibility: pruefung.eligibility,
+      freq, bars,
+      barCount: bars.length,
       first: bars.length ? bars[0].date : null,
       last: bars.length ? bars[bars.length - 1].date : null,
       source: "tiingo/iex",
       fetchedAt: new Date().toISOString(),
+      fetchMs: Date.now() - begonnen,
       priceTypeConfirmed: false,
       reason: bars.length ? null
-        : "Der Anbieter hat fuer diesen Zeitraum keine Bars geliefert. Ausserhalb der " +
-          "Handelszeiten ist das der Normalfall."
-    });
+        : (sitzung.marketStatus === "CLOSED"
+            ? "Der Anbieter hat fuer dieses Fenster keine Bars geliefert. Die Boerse ist geschlossen."
+            : "Der Anbieter hat fuer dieses Fenster keine Bars geliefert.")
+    }, gemeinsam));
   } catch (err) {
-    return antwort(res, 200, {
-      state: "FETCH_FAILED", ticker,
-      reason: String((err && err.name) === "AbortError" ? "Zeitueberschreitung" : "Abruf gescheitert")
-    });
+    return antwort(res, 200, Object.assign({
+      state: "PROVIDER_UNAVAILABLE",
+      reason: (err && err.name) === "AbortError" ? "Zeitueberschreitung beim Anbieter." : "Abruf gescheitert."
+    }, gemeinsam));
   } finally { clearTimeout(uhr); }
 };
 

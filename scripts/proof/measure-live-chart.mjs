@@ -35,6 +35,7 @@ import { writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { join, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { baueMatrix } from "../realtime/symbol-matrix.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -48,10 +49,12 @@ const FENSTER_MS = parseInt(arg("--window-ms", "75000"), 10);
 const OUT = arg("--out", join(root, "quant", "data", "site"));
 const SHOTS = arg("--shots", join(OUT, "live-chart-shots"));
 
-/* Der Titel kommt aus der Freigabeliste, nicht aus dem Code: eine
-   Messung an einem nicht freigegebenen Titel waere zwecklos. */
-const freigabe = JSON.parse(readFileSync(join(root, "quant/config/development-preview.json"), "utf8"));
-const TICKER = String(arg("--ticker", (freigabe.scope || [])[0] || "AAPL")).toUpperCase();
+/* Der Titel kommt aus der Symbolmatrix, und die kommt aus dem
+   Eignungslauf. Frueher stand hier die Freigabeliste mit fuenf Titeln -
+   sie ist keine Produktgrenze mehr, und eine Messung, die nur ihre
+   Titel kennt, koennte den Unterschied gar nicht bemerken. */
+const matrix = baueMatrix();
+const TICKER = String(arg("--ticker", matrix.matrix[0].ticker)).toUpperCase();
 
 const TYP = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8",
@@ -100,7 +103,9 @@ const bericht = {
   keyConfigured: !!process.env.TIINGO_API_KEY,
   windowMs: FENSTER_MS,
   relay: { connected: null, subscribed: null, state: null, updates: 0, firstUpdateAt: null },
-  browser: { statusText: null, updatesText: null, priceSeen: [], priceChanged: null, sparklinePoints: 0 },
+  browser: { rangeClicked: null, statusText: null, chartTitle: null,
+             chartPoints: 0, chartPointsFirst: 0, lastPointSeen: [],
+             ACTIVE_BAR_UPDATED: false, VISIBLE_PRICE_UPDATED: false },
   verdict: null, verdictReason: null
 };
 
@@ -157,38 +162,80 @@ async function main() {
   });
 
   await page.goto(`${basis}/vu2/?view=stock&ticker=${TICKER}`, { waitUntil: "domcontentloaded", timeout: 60000 });
-  await page.waitForSelector(".vu-live", { timeout: 40000 });
+
+  /* GEMESSEN WIRD AM BESTEHENDEN CHART, NICHT AN EINER EIGENEN FLAECHE.
+
+     Die erste Fassung dieses Skripts las einen eigenen Live-Block aus.
+     Den gibt es nicht mehr, und das ist die eigentliche Aenderung:
+     Tagesverlauf und Kursaktualisierungen laufen jetzt in denselben
+     Chart und dieselbe Zeitraumleiste wie alle anderen Zeitraeume.
+     Gemessen wird deshalb genau das, was der Nutzer anklickt - der
+     Knopf "1T" - und das, was danach dort steht. */
+  await page.waitForSelector("#content .focus .ranges button[data-range=\"1D\"]", { timeout: 40000 });
+  await page.waitForSelector(".vu-live-status", { timeout: 20000 });
+  await page.click("#content .focus .ranges button[data-range=\"1D\"]");
+  bericht.browser.rangeClicked = "1D";
+
+  /* Wie viele Punkte zeichnet der Chart, und welcher ist der letzte?
+     Beides kommt aus dem gezeichneten SVG - nicht aus einer Variablen,
+     die das Skript selbst gesetzt hat. */
+  const ablesen = () => page.evaluate(() => {
+    const bereich = document.querySelector("#content .focus");
+    if (!bereich) return null;
+    const zeile = bereich.querySelector(".vu-live-status");
+    const svg = bereich.querySelector("svg");
+    const linie = svg ? svg.querySelector("polyline, path") : null;
+    const roh = linie
+      ? (linie.getAttribute("points") || linie.getAttribute("d") || "")
+      : "";
+    const zahlen = roh.match(/-?\d+(?:\.\d+)?/g) || [];
+    const titel = svg ? (svg.querySelector("text") || {}).textContent : null;
+    return {
+      status: zeile ? zeile.textContent.trim() : null,
+      titel: titel || null,
+      punkte: Math.floor(zahlen.length / 2),
+      letzterY: zahlen.length >= 2 ? zahlen[zahlen.length - 1] : null
+    };
+  });
 
   const bis = Date.now() + FENSTER_MS;
   const gesehen = new Set();
+  const letzteWerte = new Set();
+  let erste = null;
   while (Date.now() < bis) {
     await page.waitForTimeout(2500);
-    const zustand = await page.evaluate(() => {
-      const wurzel = document.querySelector(".vu-live");
-      if (!wurzel) return null;
-      const pille = wurzel.querySelector(".pill");
-      const kurs = wurzel.querySelector(".quote");
-      const zeilen = Array.prototype.slice.call(wurzel.querySelectorAll("p.muted"))
-        .map((p) => p.textContent).filter((t) => /Aktualisierungen|Verbunden|Kursereignisse/.test(t));
-      return {
-        status: pille ? pille.textContent : null,
-        kurs: kurs ? kurs.textContent : null,
-        zeile: zeilen[0] || null,
-        punkte: (wurzel.querySelector(".vu-live-spark polyline")?.getAttribute("points") || "").split(" ").filter(Boolean).length
-      };
-    });
+    const zustand = await ablesen();
     if (!zustand) break;
+    if (erste === null && zustand.punkte > 0) {
+      erste = zustand.punkte;
+      bericht.browser.chartPointsFirst = erste;
+    }
     bericht.browser.statusText = zustand.status;
-    bericht.browser.updatesText = zustand.zeile;
-    bericht.browser.sparklinePoints = Math.max(bericht.browser.sparklinePoints, zustand.punkte);
-    if (zustand.kurs && zustand.kurs !== "–") gesehen.add(zustand.kurs);
-    process.stdout.write(`  [${new Date().toISOString().slice(11, 19)}] ${String(zustand.status).padEnd(16)}` +
-      ` Kurs ${String(zustand.kurs).padEnd(12)} ${zustand.zeile || ""}\n`);
+    bericht.browser.chartTitle = zustand.titel;
+    bericht.browser.chartPoints = Math.max(bericht.browser.chartPoints, zustand.punkte);
+    if (zustand.letzterY !== null) letzteWerte.add(zustand.letzterY);
+
+    /* Der angezeigte Kurs steht in der Statuszeile - dieselbe Zeile, die
+       der Nutzer liest. Was hier nicht steht, hat er nicht gesehen. */
+    const kurs = (zustand.status || "").match(/zuletzt\s+([\d.,]+)\s*\$/);
+    if (kurs) gesehen.add(kurs[1]);
+
+    process.stdout.write(`  [${new Date().toISOString().slice(11, 19)}] ` +
+      `${String(zustand.punkte).padStart(4)} Punkte · ${zustand.status || ""}\n`);
   }
 
-  bericht.browser.priceSeen = Array.from(gesehen).slice(0, 12);
-  bericht.browser.priceChanged = gesehen.size > 1;
-  await page.screenshot({ path: join(SHOTS, "live-chart.png") });
+  bericht.browser.lastPointSeen = Array.from(gesehen).slice(0, 12);
+  /* ZWEI VERSCHIEDENE FRAGEN, ZWEI VERSCHIEDENE FELDER.
+
+     "Hat sich die aktive Kerze bewegt?" heisst: derselbe letzte Punkt
+     steht auf einem anderen Wert als vorher, oder es ist einer
+     dazugekommen. "Hat der Nutzer einen neuen Kurs gesehen?" heisst:
+     in der Statuszeile stand zweimal etwas Verschiedenes. Das eine ohne
+     das andere waere ein halber Beleg. */
+  bericht.browser.ACTIVE_BAR_UPDATED = letzteWerte.size > 1 ||
+    (erste !== null && bericht.browser.chartPoints > erste);
+  bericht.browser.VISIBLE_PRICE_UPDATED = gesehen.size > 1;
+  await page.screenshot({ path: join(SHOTS, "live-chart.png"), fullPage: false });
   await ctx.close(); await browser.close();
   return abschluss();
 }
@@ -199,14 +246,16 @@ function abschluss() {
     bericht.verdict = "BLOCKED_NO_KEY";
     bericht.verdictReason = "Ohne TIINGO_API_KEY kann der Weiterleiter nichts holen. Das ist eine " +
       "Einstellung, kein Programmfehler.";
-  } else if (r.updates > 0 && b.priceChanged) {
+  } else if (r.updates > 0 && b.VISIBLE_PRICE_UPDATED && b.ACTIVE_BAR_UPDATED) {
     bericht.verdict = "LIVE_CHART_VISIBLE";
-    bericht.verdictReason = `${r.updates} Aktualisierungen im Fenster, und der angezeigte Kurs hat sich ` +
-      `sichtbar geaendert (${b.priceSeen.length} verschiedene Werte).`;
+    bericht.verdictReason = `${r.updates} Aktualisierungen im Fenster; der angezeigte Kurs hat sich ` +
+      `sichtbar geaendert (${b.lastPointSeen.length} verschiedene Werte) und die aktive Kerze ist ` +
+      `mitgelaufen (${b.chartPointsFirst} → ${b.chartPoints} Punkte).`;
   } else if (r.updates > 0) {
     bericht.verdict = "UPDATES_WITHOUT_VISIBLE_CHANGE";
-    bericht.verdictReason = `${r.updates} Aktualisierungen empfangen, aber der angezeigte Wert hat sich ` +
-      `nicht geaendert - das waere ein Anzeigefehler und kein Datenproblem.`;
+    bericht.verdictReason = `${r.updates} Aktualisierungen empfangen, aber sichtbar geaendert hat sich ` +
+      `nichts (Kurs ${b.VISIBLE_PRICE_UPDATED}, aktive Kerze ${b.ACTIVE_BAR_UPDATED}) - das waere ein ` +
+      `Anzeigefehler und kein Datenproblem.`;
   } else if (r.connected) {
     bericht.verdict = "CONNECTED_NO_EVENTS";
     bericht.verdictReason = `Der Weg steht: verbunden${r.subscribed ? " und abonniert" : ""}, aber im ` +
@@ -225,8 +274,11 @@ function abschluss() {
   console.log(`\n  Verbunden:        ${r.connected}`);
   console.log(`  Abonniert:        ${r.subscribed}`);
   console.log(`  Aktualisierungen: ${r.updates}${r.firstUpdateAt ? " · erste " + r.firstUpdateAt : ""}`);
-  console.log(`  Angezeigt:        ${b.statusText || "–"} · ${b.updatesText || "–"}`);
-  console.log(`  Kurs sichtbar:    ${b.priceSeen.join(" → ") || "–"}`);
+  console.log(`  Zeitraum:         ${b.rangeClicked || "–"} · ${b.chartTitle || "–"}`);
+  console.log(`  Chartpunkte:      ${b.chartPointsFirst} → ${b.chartPoints}`);
+  console.log(`  Angezeigt:        ${b.statusText || "–"}`);
+  console.log(`  Kurs sichtbar:    ${b.lastPointSeen.join(" → ") || "–"}`);
+  console.log(`  Aktive Kerze:     ${b.ACTIVE_BAR_UPDATED} · sichtbarer Kurs: ${b.VISIBLE_PRICE_UPDATED}`);
   console.log(`\n  Urteil: ${bericht.verdict}\n  ${bericht.verdictReason}\n`);
 
   if (process.env.GITHUB_STEP_SUMMARY) {
@@ -240,8 +292,11 @@ function abschluss() {
       `| Abonnement | ${r.subscribed} |`,
       `| Aktualisierungen | ${r.updates} |`,
       `| Erste Aktualisierung | ${r.firstUpdateAt || "–"} |`,
+      `| Angeklickter Zeitraum | ${b.rangeClicked || "–"} |`,
+      `| Chartpunkte | ${b.chartPointsFirst} → ${b.chartPoints} |`,
       `| Angezeigter Zustand | ${b.statusText || "–"} |`,
-      `| Kurs sichtbar geaendert | ${b.priceChanged} |`
+      `| ACTIVE_BAR_UPDATED | ${b.ACTIVE_BAR_UPDATED} |`,
+      `| VISIBLE_PRICE_UPDATED | ${b.VISIBLE_PRICE_UPDATED} |`
     ].join("\n") + "\n", { flag: "a" });
   }
 

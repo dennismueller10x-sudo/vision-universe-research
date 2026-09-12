@@ -205,8 +205,8 @@
 
   /* ------------------------------------------- Einzeltitel ohne Kursreihe
 
-     Zwei Stellen der fertigen Ansicht sagen fuer diese Titel etwas
-     Falsches, und beide sind Kursstellen:
+     Zwei Stellen der fertigen Ansicht sagen fuer Titel ohne ausgelieferte
+     EOD-Reihe etwas Falsches, und beide sind Kursstellen:
 
        1  Die grosse Zahl oben ist der letzte Schlusskurs. Kursniveaus
           sind fuer dieses Universum zurueckgehalten - dort steht dann
@@ -215,21 +215,18 @@
           gemessene Aussage, sie steht nur woanders.
        2  Der leere Chart meldet "Tagesverlaeufe benoetigen freigegebene
           Intraday-Daten". Der Grund ist aber ein anderer: fuer diesen
-          Titel ist ueberhaupt keine Kursreihe ausgeliefert.
+          Titel ist ueberhaupt keine EOD-Reihe ausgeliefert.
 
-     Beides wird hier ersetzt - nicht ueberdeckt. Was danach dasteht, ist
-     eine gemessene Groesse mit ihrem Namen und der richtige Grund. */
+     Beides wird ersetzt - nicht ueberdeckt. Was danach dasteht, ist eine
+     gemessene Groesse mit ihrem Namen und der richtige Grund. */
   function einzeltitelSchaerfen() {
-    api.bridge.freigabe().then(function (erlaubt) {
-      if (erlaubt.indexOf(ticker) !== -1) return;   /* freigegeben: echter Chart, nichts tun */
-      return api.getStockIntelligence(ticker).then(function (s) {
-        if (!s || s.state !== "AVAILABLE" || !s.vuFullUniverse) return;
-        return warteAuf("#content .focus", 20000).then(function (focus) {
-          if (!focus) return;
-          schaerfe(focus, s);
-        });
+    api.getStockIntelligence(ticker).then(function (s) {
+      if (!s || s.state !== "AVAILABLE" || !s.vuFullUniverse) return;
+      if (s.chart && s.chart.state === "AVAILABLE" && (s.chart.bars || []).length) return;
+      return warteAuf("#content .focus", 20000).then(function (focus) {
+        if (focus) schaerfe(focus, s);
       });
-    }).catch(function () { /* ohne Freigabeliste bleibt die Ansicht, wie sie ist */ });
+    }).catch(function () { /* die Ansicht bleibt, wie sie ist */ });
   }
 
   function schaerfe(focus, s) {
@@ -247,203 +244,318 @@
           "zurueckgehalten; ausgeliefert sind Abstaende, Zustaende und Renditen.";
       }
     }
-
     var hinweis = focus.querySelector(".notice");
     if (hinweis) {
       S.mount(hinweis, [
-        el("h3", { text: "Fuer " + ticker + " ist keine Kursreihe ausgeliefert" }),
+        el("h3", { text: "Fuer " + ticker + " ist keine Tagesschluss-Reihe ausgeliefert" }),
         el("p", { class: "muted", text:
           (s.chart && s.chart.reason) ||
-          "Die Faktoren stammen aus einer echten Kursreihe; der Bestand selbst liegt in keiner Auslieferung." })
+          "Die Faktoren stammen aus einer echten Kursreihe; der Bestand selbst liegt in keiner Auslieferung." }),
+        el("p", { class: "muted", text:
+          "Der Tagesverlauf (1T/5T) kommt unabhaengig davon ueber die Serverseite - siehe Zeitraumleiste." })
       ]);
     }
-
-    var leiste = focus.querySelector(".ranges");
-    /* Eine Zeitraumleiste ohne Daten ist eine Einladung ins Leere. */
-    if (leiste) leiste.hidden = true;
   }
 
-  /* -------------------------------------------------------- Chartbereich */
+  /* ====================================================================
+     1T UND 5T IM BESTEHENDEN CHART
+
+     Die Zeitraumleiste der Aktienseite fuehrt 1T und 5T seit jeher
+     (quant/engines/chart-ranges.js, source: "intraday"). Was fehlte,
+     waren die Bars - und deshalb meldete die Seite dort "nicht
+     verfuegbar".
+
+     Diese Bruecke liefert sie nach: sie faengt den Klick auf einen
+     Intraday-Zeitraum ab, holt die Bars von der Serverfunktion und
+     zeichnet sie in DENSELBEN Chartbereich, mit derselben Chartfunktion
+     wie die Seite selbst. Kein zweiter Chart, keine zweite Seite.
+
+     Der Klick wird in der Erfassungsphase abgefangen; sonst liefe zuerst
+     der eingebaute Zeichner und meldete wieder "nicht verfuegbar".
+     ==================================================================== */
+
+  var live = {
+    quelle: null,        /* die eine offene Verbindung - nie zwei */
+    bars: [],            /* die gezeichneten Intraday-Bars */
+    rangeId: null,       /* welcher Intraday-Zeitraum gerade laeuft */
+    host: null,          /* der Chartbereich der Seite */
+    status: null,        /* die Statuszeile darunter */
+    preis: null,
+    updates: 0,
+    letzterFingerabdruck: null,
+    marktStatus: null
+  };
+
+  var INTRADAY_RANGES = ["1D", "5D"];
+
   function chartBereich() {
-    var main = document.getElementById("content");
-    if (!main) return;
+    warteAuf("#content .focus .ranges", 25000).then(function (leiste) {
+      if (!leiste) return;
+      var host = leiste.previousElementSibling;
+      if (!host) return;
+      live.host = host;
 
-    var abschnitt = el("section", { class: "section vu-live" }, [
-      el("span", { class: "eyebrow", text: "Kursdaten in dieser Vorschau" }),
-      el("h2", { text: "Intraday und Echtzeit" }),
-      el("p", { class: "muted", text: "Beide laufen ueber die Serverseite. Der Zugangsschluessel " +
-        "erreicht den Browser nicht — er bleibt in der geschuetzten Umgebung." })
-    ]);
-    var intradayHost = el("div", { class: "vu-live-block" });
-    var liveHost = el("div", { class: "vu-live-block" });
-    abschnitt.append(intradayHost, liveHost);
+      /* Die Statuszeile gehoert unter den Chart - eine Zeile, kein
+         zweites Fenster. */
+      live.status = el("p", { class: "muted vu-live-status", text: "" });
+      leiste.insertAdjacentElement("afterend", live.status);
 
-    /* Der Abschnitt gehoert nach oben, direkt unter die Ueberschrift der
-       Seite: der Eigentuemer soll nicht danach suchen muessen. Die
-       Ueberschrift entsteht erst, wenn der Dienst geantwortet hat. */
-    warteAuf("#content .intro", 20000).then(function (anker) {
-      if (anker) anker.insertAdjacentElement("afterend", abschnitt);
-      else main.prepend(abschnitt);
+      leiste.addEventListener("click", function (e) {
+        var knopf = e.target && e.target.closest ? e.target.closest("button[data-range]") : null;
+        if (!knopf) return;
+        var id = knopf.dataset.range;
+        if (INTRADAY_RANGES.indexOf(id) === -1) {
+          /* Zurueck zu einem Tagesschluss-Zeitraum: der eingebaute
+             Zeichner uebernimmt wieder, und der Strom endet. */
+          stromBeenden("rangeChanged");
+          live.rangeId = null;
+          S.clear(live.status);
+          return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        markiere(leiste, id);
+        live.rangeId = id;
+        intradayZeichnen(id);
+      }, true);
+
+      /* Ohne Klick passiert nichts: der Nutzer waehlt den Tagesverlauf.
+         Ein automatisch geoeffneter Strom auf jeder Aktienseite waere
+         genau die unnoetige Anbieterverbindung, die hier vermieden
+         werden soll. */
+      S.mount(live.status, hinweisZeile());
     });
 
-    api.bridge.freigabe().then(function (erlaubt) {
-      var frei = erlaubt.indexOf(ticker) !== -1;
-      if (!frei) {
-        S.mount(intradayHost, el("div", { class: "notice" }, [
-          el("h3", { text: "Intraday und Echtzeit sind fuer " + ticker + " nicht freigegeben" }),
-          el("p", { class: "muted", text:
-            "Die Anzeige von Kursen ist auf die Titel mit datierter Eigentuemerfreigabe begrenzt (" +
-            erlaubt.join(", ") + "). Die gemessenen Faktoren dieses Titels stehen unabhaengig davon " +
-            "zur Verfuegung — sie enthalten keine Kursniveaus." })
-        ]));
-        S.clear(liveHost);
-        return;
-      }
-      intraday(intradayHost);
-      echtzeit(liveHost);
+    /* Verlaesst der Nutzer die Seite, endet das Abonnement - sofort. */
+    window.addEventListener("pagehide", function () { stromBeenden("pagehide"); });
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") stromBeenden("hidden");
     });
   }
 
-  /* ------------------------------------------------------------ Intraday */
-  function intraday(host) {
-    S.mount(host, el("p", { class: "muted", text: "Intraday-Bars werden serverseitig geholt …" }));
-    fetch(INTRADAY + "?ticker=" + encodeURIComponent(ticker) + "&freq=5min&days=3",
+  function hinweisZeile() {
+    return [el("span", { text: "1T und 5T zeigen den Tagesverlauf. Er wird beim Auswaehlen " +
+      "serverseitig geholt; Kursaktualisierungen laufen nur, solange dieser Zeitraum offen ist." })];
+  }
+
+  function markiere(leiste, id) {
+    Array.prototype.forEach.call(leiste.querySelectorAll("button[data-range]"), function (b) {
+      var an = b.dataset.range === id;
+      b.classList.toggle("selected", an);
+      b.setAttribute("aria-pressed", an ? "true" : "false");
+    });
+  }
+
+  function intradayZeichnen(rangeId) {
+    stromBeenden("neueAuswahl");
+    live.bars = [];
+    live.updates = 0;
+    S.mount(live.host, el("div", { class: "notice" }, [
+      el("h3", { text: "Tagesverlauf wird geholt …" }),
+      el("p", { class: "muted", text: "Serverseitiger Abruf fuer " + ticker + "." })
+    ]));
+    S.mount(live.status, el("span", { text: "Abruf laeuft …" }));
+
+    var tage = rangeId === "5D" ? 5 : 2;
+    fetch(INTRADAY + "?ticker=" + encodeURIComponent(ticker) + "&freq=5min&days=" + tage,
           { cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
-        if (d.state === "AVAILABLE" && d.bars.length) {
-          var kopf = el("div", { class: "vu-live-head" }, [
-            el("h3", { text: "Intraday · 5 Minuten" }),
-            el("span", { class: "pill", text: d.bars.length + " Bars · " + d.first + " bis " + d.last })
-          ]);
-          var chart = g.QuantCharts.lineChart({
-            title: ticker + " · Intraday (5 Minuten)",
-            width: Math.min(900, Math.max(280, (host.clientWidth || window.innerWidth) - 40)),
-            height: 240,
-            dates: d.bars.map(function (b) { return b.date; }),
-            series: [{ values: d.bars.map(function (b) { return b.close; }) }],
-            yFormat: function (v) { return v.toFixed(2) + " $"; }
-          });
-          S.mount(host, [kopf, chart, el("p", { class: "muted", text:
-            "Serverseitig geholt (" + zeit(d.fetchedAt) + "), nicht gespeichert. Kursart laut " +
-            "Anbieter unbestaetigt." })]);
+        live.marktStatus = d.marketStatus || null;
+        if (d.state !== "INTRADAY_AVAILABLE" || !(d.bars || []).length) {
+          S.mount(live.host, zustandsKarte(d, rangeId));
+          S.mount(live.status, el("span", { text: zustandsText(d) }));
+          /* Kein Tagesverlauf heisst nicht "kein Strom": ein Titel kann
+             heute noch keine Bars haben und trotzdem handeln. */
+          if (d.state === "INTRADAY_UNAVAILABLE") stromStarten();
           return;
         }
-        S.mount(host, zustand("Intraday", d));
+        live.bars = d.bars.slice();
+        zeichne(rangeId, d);
+        stromStarten();
       })
       .catch(function () {
-        S.mount(host, el("div", { class: "notice" }, [
-          el("h3", { text: "Intraday derzeit nicht erreichbar" }),
+        S.mount(live.host, el("div", { class: "notice" }, [
+          el("h3", { text: "Tagesverlauf derzeit nicht erreichbar" }),
           el("p", { class: "muted", text: "Die Serverfunktion hat nicht geantwortet." })
         ]));
       });
   }
 
-  function zustand(was, d) {
-    var texte = {
-      NOT_CONFIGURED: "Der Zugangsschluessel ist in dieser Umgebung nicht hinterlegt.",
-      NOT_PERMITTED: "Fuer diesen Titel liegt keine Anzeigefreigabe vor.",
-      PROVIDER_REJECTED: "Der Anbieter hat den Abruf abgelehnt.",
-      EMPTY: "Der Anbieter hat fuer diesen Zeitraum keine Bars geliefert — ausserhalb der " +
-             "Handelszeiten ist das der Normalfall.",
-      FETCH_FAILED: "Der Abruf ist gescheitert.",
-      INVALID_FREQUENCY: "Ungueltiges Intervall."
-    };
+  /* Gezeichnet wird mit derselben Chartfunktion, die die Seite fuer alle
+     anderen Zeitraeume benutzt - und ueber dieselbe Zeitraumauswahl
+     (VUChartRanges), damit 1T und 5T genau das Fenster schneiden, das sie
+     versprechen. */
+  function zeichne(rangeId, daten) {
+    var auswahl = g.VUChartRanges.selectRange(rangeId,
+      { intraday: live.bars, intradayAdjustmentStatus: "RAW" },
+      { gates: { ENABLE_LIVE_MARKET_DATA: true } });
+    var bars = auswahl.ok ? auswahl.bars : live.bars;
+    var breite = Math.min(900, Math.max(280, (live.host.clientWidth || window.innerWidth) - 40));
+    S.mount(live.host, g.QuantCharts.lineChart({
+      title: ticker + " · Tagesverlauf (" + (rangeId === "5D" ? "5 Tage" : "1 Tag") + ")",
+      width: breite, height: 290,
+      dates: bars.map(function (b) { return b.date; }),
+      series: [{ values: bars.map(function (b) { return b.close; }) }],
+      yFormat: function (v) { return v.toFixed(2) + " $"; }
+    }));
+    var stand = bars.length ? bars[bars.length - 1] : null;
+    live.preis = stand ? stand.close : null;
+    S.mount(live.status, statusZeile({
+      bars: bars.length,
+      von: bars.length ? bars[0].date : null,
+      bis: stand ? stand.date : null,
+      marktStatus: (daten && daten.marketStatus) || live.marktStatus
+    }));
+  }
+
+  function statusZeile(x) {
+    var teile = [x.bars + " Bars · " + kurzzeit(x.von) + " bis " + kurzzeit(x.bis)];
+    if (x.marktStatus) teile.push(marktText(x.marktStatus));
+    if (live.updates) {
+      teile.push(live.updates + " Kursaktualisierungen" +
+        (Number.isFinite(live.preis) ? " · zuletzt " + num(live.preis) + " $" : ""));
+    }
+    return el("span", { text: teile.join(" · ") });
+  }
+
+  function marktText(status) {
+    return status === "OPEN" ? "Boerse geoeffnet"
+      : status === "EXTENDED_HOURS" ? "erweiterte Handelszeit"
+      : "Boerse geschlossen";
+  }
+
+  function kurzzeit(iso) {
+    if (!iso) return "–";
+    var d = new Date(iso);
+    return isNaN(d) ? String(iso).slice(0, 16).replace("T", " ")
+      : d.toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  }
+
+  /* Jeder Zustand der Serverfunktion bekommt eine Karte mit Klartext -
+     und die Zustaende bleiben auseinandergehalten. */
+  var ZUSTAND_TEXT = {
+    INTRADAY_UNAVAILABLE: "Der Anbieter fuehrt fuer diesen Titel in diesem Fenster keine Bars.",
+    PROVIDER_UNAVAILABLE: "Der Anbieter hat nicht geantwortet oder den Abruf abgelehnt.",
+    NOT_ELIGIBLE: "Dieses Papier ist im Eignungslauf ausgeschlossen und wird nicht wie eine Aktie behandelt.",
+    SYMBOL_NOT_SUPPORTED: "Dieses Symbol gehoert nicht zum Produktuniversum dieser Vorschau.",
+    NOT_CONFIGURED: "Der Zugangsschluessel ist in dieser Umgebung nicht hinterlegt.",
+    SCOPE_UNREADABLE: "Das Symbolverzeichnis ist in dieser Auslieferung nicht lesbar.",
+    INVALID_FREQUENCY: "Ungueltiges Intervall.",
+    INVALID_IDENTITY: "Kein gueltiger Ticker."
+  };
+
+  function zustandsText(d) {
+    var basis = ZUSTAND_TEXT[d.state] || d.reason || "Kein Ergebnis.";
+    if (d.marketStatus) basis += " · " + marktText(d.marketStatus);
+    return basis;
+  }
+
+  function zustandsKarte(d, rangeId) {
     return el("div", { class: "notice" }, [
-      el("h3", { text: was + " derzeit nicht verfuegbar" }),
-      el("p", { class: "muted", text: texte[d.state] || d.reason || "Kein Ergebnis." }),
+      el("h3", { text: "Tagesverlauf (" + (rangeId === "5D" ? "5 Tage" : "1 Tag") + ") derzeit nicht verfuegbar" }),
+      el("p", { class: "muted", text: zustandsText(d) }),
+      d.instrumentClass ? el("p", { class: "muted", text: "Instrumentenklasse: " + d.instrumentClass }) : null,
       d.remedy ? el("p", { class: "muted", text: "Naechster Schritt: " + d.remedy }) : null
     ]);
   }
 
-  /* ------------------------------------------------------------ Echtzeit */
-  function echtzeit(host) {
-    var werte = [];
-    var statusPille = el("span", { class: "pill", text: "verbinde …" });
-    var kurs = el("div", { class: "quote", text: "–" });
-    var zaehlerText = el("p", { class: "muted", text: "Aktualisierungen: 0" });
-    var hinweis = el("p", { class: "muted", text:
-      "Neutrale Beschriftung mit Absicht: der Anbieter nennt die Kursart nicht. " +
-      "Hier steht deshalb 'Kursaktualisierung' und nicht 'letzter Handelskurs'." });
-    var verlauf = el("div", { class: "vu-live-spark" });
-    var kopf = el("div", { class: "vu-live-head" }, [
-      el("h3", { text: "Echtzeit · Kursaktualisierung" }), statusPille
-    ]);
-    S.mount(host, [kopf, kurs, verlauf, zaehlerText, hinweis]);
+  /* ------------------------------------------------------------ Strom */
 
+  function stromBeenden(grund) {
+    if (!live.quelle) return;
+    try { live.quelle.close(); } catch (e) { /* egal */ }
+    live.quelle = null;
+    live.letzterFingerabdruck = null;
+  }
+
+  function stromStarten() {
+    stromBeenden("neustart");          /* nie zwei Verbindungen fuer denselben Titel */
     var quelle;
-    try {
-      quelle = new EventSource(STREAM + "?tickers=" + encodeURIComponent(ticker));
-    } catch (e) {
-      statusPille.textContent = "nicht moeglich";
-      return;
-    }
+    try { quelle = new EventSource(STREAM + "?tickers=" + encodeURIComponent(ticker)); }
+    catch (e) { return; }
+    live.quelle = quelle;
 
     quelle.addEventListener("status", function (e) {
       var d = JSON.parse(e.data);
-      if (d.state === "CONNECTED") {
-        statusPille.textContent = "verbunden";
-        statusPille.classList.add("vu-live-on");
-        zaehlerText.textContent = "Verbunden " + zeit(d.at) + " · Aktualisierungen: 0";
+      live.marktStatus = d.marketStatus || live.marktStatus;
+      if (d.state === "CONNECTED") { ergaenzeStatus("Kursaktualisierungen aktiv"); return; }
+      if (d.state === "PROVIDER_ERROR") {
+        ergaenzeStatus("Anbieter: " + d.reason);
+        stromBeenden("providerError");
         return;
       }
-      statusPille.textContent = d.state === "NOT_CONFIGURED" ? "Schluessel fehlt"
-        : d.state === "NOT_PERMITTED" ? "nicht freigegeben" : "nicht verfuegbar";
-      S.mount(host, [kopf, zustand("Echtzeit", d)]);
-      quelle.close();
-    });
-
-    quelle.addEventListener("subscribed", function () {
-      statusPille.textContent = "abonniert";
-      statusPille.classList.add("vu-live-on");
+      ergaenzeStatus(ZUSTAND_TEXT[d.state] || d.reason || d.state);
+      stromBeenden(d.state);
     });
 
     quelle.addEventListener("tick", function (e) {
       var t = JSON.parse(e.data);
-      werte.push(t.price);
-      if (werte.length > 180) werte.shift();
-      kurs.textContent = num(t.price) + " $";
-      zaehlerText.textContent = "Aktualisierungen: " + t.seq + " · zuletzt " + zeit(t.receivedAt) +
-                                " · Art: " + (t.kind === "TRADE" ? "Abschluss gemeldet" : "Quote-Mitte");
-      zeichneVerlauf(verlauf, werte);
+      if (t.ticker !== ticker) return;
+      var finger = t.at + "|" + t.price + "|" + (t.size === undefined ? "" : t.size);
+      if (finger === live.letzterFingerabdruck) return;   /* nichts doppelt zeichnen */
+      live.letzterFingerabdruck = finger;
+      live.updates++;
+      live.preis = t.price;
+      letztenPunktSetzen(t);
     });
 
     quelle.addEventListener("summary", function (e) {
       var d = JSON.parse(e.data);
-      quelle.close();
-      var text = d.updates
-        ? d.updates + " Aktualisierungen im Messfenster · erste " + zeit(d.firstUpdateAt)
-        : "Keine Kursereignisse im Messfenster. " + (d.note || "");
-      zaehlerText.textContent = text;
-      statusPille.textContent = d.updates ? "Fenster beendet" : "keine Ereignisse";
-      /* Neu verbinden, solange die Seite offen ist: das Messfenster der
-         Serverfunktion ist kurz, der Chart soll trotzdem weiterlaufen. */
-      if (d.reason === "streamWindowElapsed") setTimeout(function () { echtzeitNeu(host, werte); }, 500);
+      live.marktStatus = d.marketStatus || live.marktStatus;
+      stromBeenden("summary");
+      if (d.verdict === "MARKET_CLOSED_NO_TICKS_EXPECTED") {
+        ergaenzeStatus("keine Kursereignisse zu erwarten · " + marktText(d.marketStatus));
+        return;                                   /* nicht endlos neu verbinden */
+      }
+      /* Das Messfenster der Serverfunktion ist kurz; solange der Nutzer
+         den Tagesverlauf offen hat, wird neu verbunden. */
+      if (live.rangeId) setTimeout(function () { if (live.rangeId) stromStarten(); }, 750);
     });
 
     quelle.addEventListener("error", function () {
-      statusPille.textContent = "Verbindung unterbrochen";
-      quelle.close();
+      ergaenzeStatus("Verbindung unterbrochen");
+      stromBeenden("error");
     });
   }
 
-  /* Wiederverbinden ohne die bisher gesehenen Werte zu verlieren. */
-  function echtzeitNeu(host, bisher) {
-    echtzeit(host);
+  function ergaenzeStatus(text) {
+    if (!live.status) return;
+    var grund = live.status.querySelector("span");
+    var basis = grund ? grund.textContent.split(" · ").filter(function (t) {
+      return !/Kursaktualisierung|Anbieter:|Verbindung|zu erwarten/.test(t);
+    }).join(" · ") : "";
+    S.mount(live.status, el("span", { text: (basis ? basis + " · " : "") + text }));
   }
 
-  function zeichneVerlauf(host, werte) {
-    if (werte.length < 2) return;
-    var b = 320, h = 60, min = Math.min.apply(null, werte), max = Math.max.apply(null, werte);
-    var spanne = max - min || 1;
-    var punkte = werte.map(function (v, i) {
-      var x = (i / (werte.length - 1)) * (b - 4) + 2;
-      var y = h - 2 - ((v - min) / spanne) * (h - 6);
-      return x.toFixed(1) + "," + y.toFixed(1);
-    }).join(" ");
-    var svg = '<svg viewBox="0 0 ' + b + " " + h + '" width="100%" height="' + h +
-      '" role="img" aria-label="Verlauf der empfangenen Kursaktualisierungen">' +
-      '<polyline fill="none" stroke="currentColor" stroke-width="1.5" points="' + punkte + '"/></svg>';
-    host.innerHTML = svg;   /* nur selbst erzeugte Zahlen, kein fremder Text */
+  /* Der letzte Punkt wird auf den gemeldeten Kurs gesetzt - nicht
+     interpoliert, nicht fortgeschrieben. Faellt eine neue
+     Fuenf-Minuten-Marke an, kommt ein Punkt dazu. */
+  function letztenPunktSetzen(tick) {
+    if (!live.bars.length || !live.rangeId) {
+      if (live.status) ergaenzeStatus(live.updates + " Kursaktualisierungen · zuletzt " +
+        num(tick.price) + " $");
+      return;
+    }
+    var letzte = live.bars[live.bars.length - 1];
+    var marke = fuenfMinutenMarke(tick.at);
+    if (marke && letzte.date && marke > letzte.date) {
+      live.bars.push({ date: marke, open: tick.price, high: tick.price,
+                       low: tick.price, close: tick.price, volume: null });
+    } else {
+      letzte.close = tick.price;
+      if (letzte.high === null || tick.price > letzte.high) letzte.high = tick.price;
+      if (letzte.low === null || tick.price < letzte.low) letzte.low = tick.price;
+    }
+    zeichne(live.rangeId, { marketStatus: live.marktStatus });
+    ergaenzeStatus(live.updates + " Kursaktualisierungen · zuletzt " + num(tick.price) + " $");
+  }
+
+  function fuenfMinutenMarke(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return null;
+    d.setUTCSeconds(0, 0);
+    d.setUTCMinutes(Math.floor(d.getUTCMinutes() / 5) * 5);
+    return d.toISOString();
   }
 })(typeof window !== "undefined" ? window : globalThis);

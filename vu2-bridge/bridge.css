@@ -41,21 +41,15 @@ dialog.vu-search .search-results a:hover,
 dialog.vu-search .search-results a:focus { background: var(--surface); border-color: var(--line); }
 dialog.vu-search .button { margin-top: 16px; }
 
-.vu-live { border-top: 1px solid var(--line); }
-.vu-live-block { padding: 18px 0; border-bottom: 1px solid var(--line); min-width: 0; }
-.vu-live-block:last-child { border-bottom: 0; }
-.vu-live-head {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap; margin-bottom: 10px;
+/* Die Statuszeile unter dem Chart. Eine Zeile - kein zweites Fenster,
+   kein Debug-Panel: der Tagesverlauf gehoert in den Chart, der schon da
+   ist, und was er gerade tut, gehoert in eine Zeile darunter. */
+.vu-live-status {
+  margin: 8px 0 0; font-size: 13px; line-height: 1.5; min-height: 1.4em;
+  overflow-wrap: anywhere;
 }
-.vu-live-head h3 { margin: 0; font-size: 18px; }
-.vu-live .quote { font-size: 34px; font-weight: 650; font-variant-numeric: tabular-nums; }
-.vu-live-spark { color: var(--ink); margin: 6px 0 4px; min-height: 60px; }
-.vu-live .pill.vu-live-on { background: var(--positive); color: #fff; border-color: var(--positive); }
-.vu-live svg { max-width: 100%; height: auto; }
+.vu-live-status span { color: var(--muted); }
 
-@media (max-width: 650px) {
-  .vu-scope { padding: 10px 16px; font-size: 13px; }
-  .vu-scope-button { width: 100%; }
-  .vu-live .quote { font-size: 28px; }
-}
+/* Der aktive Zeitraum der bestehenden Leiste - dieselbe Marke, die die
+   Seite selbst setzt (.selected), damit 1T nicht anders aussieht als 1M. */
+.ranges button[aria-pressed="true"] { font-weight: 650; }

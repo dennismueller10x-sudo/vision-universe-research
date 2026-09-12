@@ -26,7 +26,7 @@
    Ausfuehren (braucht offenes Netz - laeuft deshalb in GitHub Actions):
      node scripts/proof/verify-owner-preview.mjs --base https://<projekt>.vercel.app
    ========================================================================= */
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -44,6 +44,19 @@ const STROM_MS = parseInt(arg("--stream-ms", "45000"), 10);
 const BYPASS = process.env.VERCEL_AUTOMATION_BYPASS_SECRET || "";
 
 if (!BASE) { console.error("\n  ABBRUCH: keine Adresse. --base setzen.\n"); process.exit(2); }
+
+/* Die Titel des Produktuniversums, aus derselben Projektion, aus der
+   auch die Serverfunktionen ihre Grenze beziehen. Gemessen wird an dem,
+   was ausgeliefert ist - nicht an einem Namen in diesem Skript. */
+let titelZwischenspeicher = null;
+function produktTitel() {
+  if (titelZwischenspeicher === null) {
+    const v = JSON.parse(readFileSync(
+      join(root, "quant/data/market/realtime/product-symbols.json"), "utf8"));
+    titelZwischenspeicher = v.symbols.ELIGIBLE;
+  }
+  return titelZwischenspeicher;
+}
 
 const SCHUTZ = [/_vercel_sso_nonce/i, /Authentication Required/i, /vercel\.com\/sso/i, /Vercel Authentication/i];
 const ROHCODES = /PASS_NOT_ITEMISED|SOURCE_MISSING|NOT_DEPLOYED|WITHHELD_REDISTRIBUTION|NOT_IN_DELIVERED_ARTEFACTS|OUTSIDE_PREVIEW_SCOPE|DISPLAY_NOT_PERMITTED|INVALID_IDENTITY|UNVALIDATED_FACTOR_SOURCE/;
@@ -171,8 +184,10 @@ async function main() {
   }
 
   /* ------------------------------------------------------------- O7 */
-  const freigegeben = (bericht.universe && bericht.universe.historicalChartSecurities) || [];
-  const intradayTicker = freigegeben[0] || "AAPL";
+  /* Welcher Titel gemessen wird, entscheidet das Produktuniversum -
+     nicht diese Datei. Ein hier eingetragener Name waere genau die
+     Sonderlogik, die dieser Workstream abgebaut hat. */
+  const intradayTicker = produktTitel()[0];
   const intraday = await hole(`/api/intraday?ticker=${intradayTicker}&freq=5min&days=3`,
     { bypass: true, folgen: true });
   let intradayBody = null;
@@ -191,9 +206,15 @@ async function main() {
      benannten Zustand liefert, ist gemessen - und wenn dieser Zustand
      eine offene Einstellung ist, dann UEBERSPRUNGEN mit Abhilfe. */
   const EINSTELLUNG = ["NOT_CONFIGURED", "SCOPE_UNREADABLE"];
+  /* INTRADAY_UNAVAILABLE ist kein Fehlschlag. Nicht jeder Titel des
+     Universums hat eine Intraday-Reihe beim Anbieter - ein frisch
+     notierter oder duenn gehandelter hat schlicht keine. Rot ist, wenn
+     die Funktion nicht antwortet oder der Anbieter ausfaellt; "fuer
+     diesen Titel gibt es nichts" ist eine Auskunft, keine Stoerung. */
   const intradayStatus = !intradayBody ? "FAIL"
-    : intradayBody.state === "AVAILABLE" ? "PASS"
-    : EINSTELLUNG.includes(intradayBody.state) || intradayBody.state === "EMPTY" ? "SKIP"
+    : intradayBody.state === "INTRADAY_AVAILABLE" ? "PASS"
+    : intradayBody.state === "INTRADAY_UNAVAILABLE" ? "SKIP"
+    : EINSTELLUNG.includes(intradayBody.state) ? "SKIP"
     : "FAIL";
   pruefe("O7", "Intraday: die Serverfunktion antwortet", intradayStatus,
     intradayBody ? `${intradayBody.state}${(intradayBody.bars || []).length ? " · " + intradayBody.bars.length + " Bars" : ""}` +

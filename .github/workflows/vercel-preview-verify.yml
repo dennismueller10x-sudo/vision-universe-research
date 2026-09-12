@@ -133,6 +133,17 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: node scripts/proof/verify-owner-preview.mjs --base "$VERCEL_PREVIEW_URL"
 
+      # Acht Titel aus dem Eignungslauf, einzeln gemessen. Das ist der
+      # Schritt, der die Frage "gilt das fuer das ganze Universum oder
+      # nur fuer die Titel, mit denen gebaut wurde?" beantwortet - und
+      # zwar an der ausgelieferten Vorschau, nicht lokal.
+      - name: Symbolmatrix an der Vorschau messen
+        if: always() && hashFiles('scripts/proof/measure-symbol-matrix.mjs') != ''
+        env:
+          VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: node scripts/proof/measure-symbol-matrix.mjs --base "$VERCEL_PREVIEW_URL" --stream-ms 40000
+
       # Der Live-Chart, gemessen im Browser gegen den echten Anbieter.
       # Er laeuft LOKAL im Runner, weil der Schluessel hier liegt und in
       # der Vercel-Umgebung (noch) nicht: gemessen wird damit der WEG
@@ -162,6 +173,7 @@ jobs:
             quant/data/site/proof-shots/**
             quant/data/site/owner-preview-verification.json
             quant/data/site/owner-preview-shots/**
+            quant/data/site/symbol-matrix.json
             quant/data/site/live-chart-measurement.json
             quant/data/site/live-chart-shots/**
           if-no-files-found: warn
@@ -181,18 +193,29 @@ jobs:
           VERCEL_PREVIEW_URL: ${{ inputs.preview_url || vars.VERCEL_PREVIEW_URL }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
-          node -e '
+          node --input-type=module -e '
+            const { baueMatrix } = await import("./scripts/realtime/symbol-matrix.mjs");
+            const m = baueMatrix();
+            /* Kein Titel im Code: welcher gemessen wird, entscheidet der
+               Eignungslauf. Hier stand einmal AAPL - genau die
+               Sonderlogik, die dieser Workstream abgebaut hat. */
+            const titel = m.matrix.find((z) => z.imProduktuniversum).ticker;
+            const fremd = m.matrix.find((z) => !z.imProduktuniversum).ticker;
             const base = process.env.VERCEL_PREVIEW_URL.replace(/\/$/, "");
             const kopf = { "x-vercel-protection-bypass": process.env.VERCEL_AUTOMATION_BYPASS_SECRET || "" };
             const zeige = (name, text) => console.log("  " + name.padEnd(10) + text);
             (async () => {
-              const i = await fetch(base + "/api/intraday/?ticker=AAPL&freq=5min&days=3", { headers: kopf })
+              console.log("  Universum " + m.produktuniversum + " Titel · gemessen an " + titel + " (fremd: " + fremd + ")");
+              const i = await fetch(base + "/api/intraday/?ticker=" + titel + "&freq=5min&days=3", { headers: kopf })
                 .then(r => r.json()).catch(e => ({ state: "FETCH_FAILED", reason: String(e.message) }));
-              zeige("intraday", i.state + (i.bars ? " · " + i.bars.length + " Bars · " + i.first + " bis " + i.last : "") +
+              zeige("intraday", i.state + (i.barCount ? " · " + i.barCount + " Bars · " + i.first + " bis " + i.last : "") +
                 (i.reason ? " · " + i.reason : ""));
-              const res = await fetch(base + "/api/realtime/?tickers=AAPL", { headers: kopf });
+              const f = await fetch(base + "/api/intraday/?ticker=" + fremd, { headers: kopf })
+                .then(r => r.json()).catch(e => ({ state: "FETCH_FAILED" }));
+              zeige("grenze", fremd + " → " + f.state);
+              const res = await fetch(base + "/api/realtime/?tickers=" + titel, { headers: kopf });
               const leser = res.body.getReader(); const dek = new TextDecoder();
-              let puffer = "", zustand = "keine Antwort", ticks = 0, laufzeit = null, grund = "";
+              let puffer = "", zustand = "keine Antwort", ticks = 0, laufzeit = null, grund = "", markt = "";
               const ende = Date.now() + 30000;
               while (Date.now() < ende) {
                 const { done, value } = await leser.read(); if (done) break;
@@ -203,13 +226,14 @@ jobs:
                   if (!art || !roh) continue;
                   let d; try { d = JSON.parse(roh); } catch (e) { continue; }
                   if (art === "status") { zustand = d.state; if (d.runtime) laufzeit = d.runtime;
+                    if (d.marketStatus) markt = d.marketStatus;
                     if (d.reason) grund = d.reason; if (d.providerCode !== undefined && d.providerCode !== null) grund += " (Code " + d.providerCode + ")"; }
                   if (art === "tick") ticks = d.seq;
                 }
                 if (zustand !== "keine Antwort" && zustand !== "CONNECTED") break;
               }
               try { await leser.cancel(); } catch (e) { /* egal */ }
-              zeige("realtime", zustand + " · Aktualisierungen " + ticks + (laufzeit ? " · Laufzeit " + laufzeit : "") +
-                (grund ? " · " + grund : ""));
+              zeige("realtime", zustand + " · Markt " + (markt || "?") + " · Aktualisierungen " + ticks +
+                (laufzeit ? " · Laufzeit " + laufzeit : "") + (grund ? " · " + grund : ""));
             })();
           '
