@@ -202,6 +202,34 @@ def _canonical_ticker(document, declared):
     )
 
 
+def ingest_verdict(attempted, completed, failed, max_failure_rate=0.05):
+    """Ist ein Lauf mit einzelnen Fehlschlaegen gescheitert?
+
+    EIN FEHLSCHLAG IST KEIN GESCHEITERTER LAUF.
+
+    Die erste Fassung gab 1 zurueck, sobald EIN Emittent fehlschlug. Bei
+    fuenf kuratierten Titeln ist das richtig. Beim ersten Produktivlauf
+    ueber 5.480 Emittenten kostete es alles: 5.436 erfolgreiche Ingests,
+    die Coverage-Messung, der Commit und der Zwischenspeicher wurden
+    verworfen, weil 43 Titel (0,78 %) nicht durchliefen. Die
+    Fehlerschlange ist genau fuer diesen Fall da.
+
+    Gescheitert ist ein Lauf, wenn die Fehlerquote die Schwelle reisst
+    oder gar nichts durchkam. Beides heisst "die Pipeline ist kaputt".
+    Einzelne Emittenten heissen das nicht.
+    """
+    rate = (failed / attempted) if attempted else 0.0
+    if attempted and completed == 0:
+        code, reason = 1, "Kein einziger Emittent ingestiert."
+    elif rate > max_failure_rate:
+        code, reason = 1, (f"Fehlerquote {rate * 100:.2f} % ueber der Schwelle "
+                           f"{max_failure_rate * 100:.2f} %.")
+    else:
+        code, reason = 0, None
+    return {"attempted": attempted, "completed": completed, "failed": failed,
+            "failure_rate": rate, "exit_code": code, "reason": reason}
+
+
 # ---------------------------------------------------------------- commands
 
 def cmd_ingest(args):
@@ -237,7 +265,32 @@ def cmd_ingest(args):
     run["resolved"] = len(companies)
     run["unresolved"] = len(skipped)
     print(json.dumps(run, indent=2))
-    return 1 if outcome["state"]["failed"] else 0
+
+    # EIN FEHLSCHLAG IST KEIN GESCHEITERTER LAUF.
+    #
+    # Die erste Fassung endete mit 1, sobald EIN Emittent fehlschlug.
+    # Bei fuenf kuratierten Titeln ist das richtig. Beim ersten
+    # Produktivlauf ueber 5.480 Emittenten kostete es alles: 5.436
+    # erfolgreiche Ingests, die Coverage-Messung, der Commit und der
+    # Zwischenspeicher wurden verworfen, weil 43 Titel (0,78 %) nicht
+    # durchliefen. Die Fehlerschlange ist genau fuer diesen Fall da.
+    #
+    # Der Lauf scheitert jetzt, wenn die Fehlerquote die Schwelle
+    # reisst - oder wenn gar nichts durchkam. Beides heisst "die
+    # Pipeline ist kaputt". Einzelne Emittenten heissen das nicht.
+    urteil = ingest_verdict(attempted=len(companies),
+                            completed=len(outcome["state"]["completed"]),
+                            failed=len(outcome["state"]["failed"]),
+                            max_failure_rate=args.max_failure_rate)
+    print(f"\n  {urteil['completed']} ingestiert, {urteil['failed']} fehlgeschlagen "
+          f"({urteil['failure_rate'] * 100:.2f} %, Schwelle "
+          f"{args.max_failure_rate * 100:.2f} %)")
+    if urteil["failed"]:
+        print(f"  Die {urteil['failed']} stehen in der Fehlerschlange; "
+              f"`cli.py retry` nimmt sie erneut.")
+    if urteil["exit_code"]:
+        print(f"  {urteil['reason']}")
+    return urteil["exit_code"]
 
 
 def cmd_update(args):
@@ -656,6 +709,11 @@ def build_parser():
     ingest.add_argument("--bulk", action="store_true",
                         help="take XBRL facts from the SEC bulk companyfacts archive "
                              "(one request) instead of one request per issuer")
+    ingest.add_argument("--max-failure-rate", type=float, default=0.05,
+                        help="Anteil fehlgeschlagener Emittenten, bis zu dem der Lauf als "
+                             "erfolgreich gilt (Standard 0.05). Darueber Rueckgabewert 1. "
+                             "Einzelne Fehlschlaege stehen in der Fehlerschlange und "
+                             "duerfen nicht den ganzen Lauf verwerfen.")
     ingest.add_argument("--bulk-file",
                         help="read the bulk archive from this local path instead of "
                              "fetching it")

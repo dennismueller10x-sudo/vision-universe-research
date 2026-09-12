@@ -210,6 +210,47 @@ class BulkIngestTests(unittest.TestCase):
         self.assertIsNone(archive.get("0000000001"))
         self.assertEqual(len(gelesen), 1)
 
+    def test_an_archive_entry_without_a_cik_field_still_ingests(self):
+        """Der Fehler, der den ersten Produktivlauf nach 61 Minuten beendete.
+
+        Der Einzelabruf liefert `cik` immer, das Sammelarchiv nicht: 43
+        von 5.480 Emittenten trugen kein cik-Feld, und iter_raw_facts
+        starb an "CIK must not be None". Der Dateiname im Archiv IST die
+        CIK - und er ist die verlaesslichere Angabe.
+        """
+        import zipfile
+
+        root = Path(self.tmp.name)
+        pfad = root / "ohne-cik.zip"
+        cik, ticker, name, sic, fye, builder = self.companies[0]
+        facts = builder.company_facts(name)
+        facts.pop("cik", None)          # genau der Fall aus dem Lauf
+        with zipfile.ZipFile(pfad, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr(f"CIK{normalize_cik(cik)}.json", json.dumps(facts))
+
+        with self.provider.open_bulk_company_facts(archive_path=str(pfad)) as archive:
+            payload = archive.get(cik)
+            self.assertIsNotNone(payload)
+            self.assertEqual(normalize_cik(payload["cik"]), normalize_cik(cik))
+
+        outcome = self.pipe.ingest_universe([{"cik": cik}], bulk=True, bulk_archive=str(pfad))
+        self.assertEqual(outcome["results"][0]["status"], STATUS_INGESTED)
+
+    def test_a_conflicting_cik_field_loses_against_the_file_name(self):
+        """Das Verzeichnis des Archivs schlaegt den Inhalt einer Einreichung."""
+        import zipfile
+
+        root = Path(self.tmp.name)
+        pfad = root / "falsche-cik.zip"
+        cik, ticker, name, sic, fye, builder = self.companies[0]
+        facts = builder.company_facts(name)
+        facts["cik"] = 999999999
+        with zipfile.ZipFile(pfad, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr(f"CIK{normalize_cik(cik)}.json", json.dumps(facts))
+
+        with self.provider.open_bulk_company_facts(archive_path=str(pfad)) as archive:
+            self.assertEqual(normalize_cik(archive.get(cik)["cik"]), normalize_cik(cik))
+
     def test_membership_is_answerable_without_reading_payloads(self):
         with self.provider.open_bulk_company_facts(archive_path=str(self.archive)) as archive:
             self.assertIn(normalize_cik(self.companies[0][0]), archive)

@@ -157,11 +157,17 @@ jobs:
         with:
           node-version: '22'
 
-      # Der Zwischenspeicher ist der Unterschied zwischen einem
-      # inkrementellen Lauf und einem Erstimport bei jedem Lauf. Er wird
-      # bewusst VOR dem Abruf geladen und danach gespeichert.
+      # LADEN UND SICHERN GETRENNT, UND DAS SICHERN LAEUFT IMMER.
+      #
+      # actions/cache sichert in seinem Post-Schritt nur, wenn der Job
+      # durchlief. Der erste Produktivlauf ist nach 61 Minuten am
+      # Rueckgabewert gestorben - der Post-Schritt wurde uebersprungen,
+      # und 5.436 fertige Factbooks und ein 1,4 GB grosses Archiv waren
+      # weg. Genau der Lauf, der abbricht, ist der, dessen
+      # Zwischenstand man braucht.
       - name: SEC-Zwischenspeicher laden
-        uses: actions/cache@v4
+        id: sec-cache
+        uses: actions/cache/restore@v4
         with:
           path: |
             .sec-cache
@@ -216,8 +222,20 @@ jobs:
           else
             python3 scripts/quant/cli.py ingest \
               --universe quant/data/universe/sec-universe.json \
-              --skip-unresolved --bulk
+              --skip-unresolved --bulk --max-failure-rate 0.05
           fi
+
+      # Vor der Messung und vor dem Commit - damit ein spaeterer
+      # Fehlschlag den teuer erkauften Bestand nicht mitnimmt.
+      - name: SEC-Zwischenspeicher sichern
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-${{ github.run_id }}
 
       - name: Coverage messen
         run: python3 scripts/quant/cli.py coverage-universe

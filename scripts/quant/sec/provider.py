@@ -431,11 +431,22 @@ class BulkCompanyFacts:
 
     def get(self, cik):
         """Die companyfacts eines Emittenten - oder None, wenn das Archiv ihn nicht fuehrt."""
-        name = self._by_cik.get(normalize_cik(cik))
+        key = normalize_cik(cik)
+        name = self._by_cik.get(key)
         if name is None:
             return None
         with self._zip.open(name) as handle:
             payload = json.loads(handle.read())
+        # DIE CIK AUS DEM DATEINAMEN STEMPELN.
+        #
+        # Der Einzelabruf liefert `cik` immer; das Sammelarchiv NICHT.
+        # 43 der 5.480 Emittenten eines echten Laufs trugen kein
+        # cik-Feld, und iter_raw_facts ist daran mit
+        # "CIK must not be None" gestorben - mitten im Bestand, nach 61
+        # Minuten. Der Dateiname IST die CIK und ist die verlaesslichere
+        # Angabe: er kommt aus dem Verzeichnis des Archivs, nicht aus
+        # dem Inhalt einer einzelnen Einreichung.
+        payload["cik"] = int(key)
         payload["_retrieved_at"] = _utcnow_iso()
         payload["_source"] = "bulk_companyfacts_zip"
         return payload
