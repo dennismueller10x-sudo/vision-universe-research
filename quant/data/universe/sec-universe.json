@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-09-12T19:25:11.612Z",
+  "generated_at_utc": "2026-09-12T19:59:47.726Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -9,7 +9,7 @@
     "cikMap": {
       "file": "quant/data/universe/cik-map.json",
       "status": "OK",
-      "generatedAt": "2026-09-12T19:25:09.333Z"
+      "generatedAt": "2026-09-12T19:59:46.171Z"
     },
     "validationSet": "quant/config/sec-universe.json",
     "deliveredStockPages": "discover/data/stock-index/US_REAL.json"

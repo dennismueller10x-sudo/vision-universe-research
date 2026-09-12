@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-09-12T19:34:20+00:00",
+  "generatedAtUtc": "2026-09-12T20:10:55+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.6.0",
@@ -69,5 +69,18 @@
       "COUNT": 4555,
       "PERCENT_OF_PRODUCT_UNIVERSE": 65.0343
     }
+  },
+  "pointInTime": {
+    "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
+    "denominator": "PRODUCT_TITLES",
+    "PIT_READY_SECURITIES": 4924,
+    "PIT_PARTIAL_SECURITIES": 0,
+    "PIT_UNAVAILABLE_SECURITIES": 2080,
+    "BY_ISSUER": {
+      "PIT_READY": 4623,
+      "PIT_UNAVAILABLE": 814
+    },
+    "SURVIVORSHIP_FREE_UNIVERSE": false,
+    "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein Delisting-Ereignisfeed. Ein ueberlebensfreies Universum laesst sich daraus nicht bauen; ein PASS waere eine Falschaussage ueber die Quelle."
   }
 }

@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-12T20:03:10+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Bilanz EINES Ingest-Laufs. Ein wiederaufgenommener Lauf zaehlt nur, was er selbst geholt hat - uebersprungene Emittenten aus dem Zwischenspeicher erzeugen keine Anfrage.",
+  "run": {
+    "run_id": "default",
+    "processed": 0,
+    "completed": 5437,
+    "failed": 42,
+    "retry_queue": [
+      "0000313364",
+      "0000319654",
+      "0000710752",
+      "0000319655",
+      "0001778114",
+      "0001732379",
+      "0002076975",
+      "0001768666",
+      "0001821866",
+      "0001836057",
+      "0000881787",
+      "0000071508",
+      "0002092967",
+      "0000825202",
+      "0001782265",
+      "0001286405",
+      "0001340909",
+      "0001343491",
+      "0001353226",
+      "0001356284",
+      "0001357660",
+      "0001103838",
+      "0001267332",
+      "0001284143",
+      "0001283464",
+      "0001283337",
+      "0000062362",
+      "0001526475",
+      "0001861115",
+      "0001835068",
+      "0001569650",
+      "0001492165",
+      "0001724009",
+      "0001793882",
+      "0001520048",
+      "0001294808",
+      "0001548536",
+      "0001812923",
+      "0002044241",
+      "0002041208",
+      "0001505413",
+      "0001819559"
+    ],
+    "facts_source": "bulk_companyfacts_zip",
+    "bulk": {
+      "requested": 5480,
+      "found_in_archive": 5437,
+      "issuers_in_archive": 20359,
+      "archive": "sec.gov bulk companyfacts.zip",
+      "archive_path": ".sec-cache/bulk/companyfacts.zip",
+      "downloaded_bytes": 1408785961,
+      "from_cache": true,
+      "access": "random_access_no_preload"
+    },
+    "universe_entries": 5480,
+    "resolved": 5480,
+    "unresolved": 0
+  },
+  "requests": {
+    "SEC_BULK_REQUESTS": 1,
+    "SEC_INDIVIDUAL_REQUESTS": 0,
+    "CACHE_HITS": 2,
+    "RETRIES": 0
+  },
+  "failures": {
+    "FAILED_SECURITIES": 42,
+    "UNRESOLVED_NOT_INGESTED": 0,
+    "ciks": []
+  }
+}
