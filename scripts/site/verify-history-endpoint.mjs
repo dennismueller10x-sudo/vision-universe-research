@@ -149,7 +149,9 @@ const bericht = {
   verdict: fehler.length ? "FAIL" : (gelesen ? "PASS" : "NOT_VERIFIED"),
   note: "Geprueft wird der Endpunkt, nicht die Bauart des Speichers " +
         "(das tut verify-history-store.mjs). Kursniveaus stehen NICHT in " +
-        "diesem Bericht - nur Anzahlen, Datumsgrenzen und Zustaende."
+        "diesem Bericht - nur Anzahlen, Datumsgrenzen und Zustaende. " +
+        "OHNE R2-Zugangsdaten meldet dieser Bericht NOT_VERIFIED und ist " +
+        "dann eine Aussage ueber die UMGEBUNG, nicht ueber den Speicher."
 };
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(bericht, null, 1) + "\n");
