@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-12T11:08:20.445Z",
+  "generatedAt": "2026-09-12T19:25:11.196Z",
   "shardBy": [
     "symbolPrefix2",
     "namePrefix2"
@@ -9,10 +9,10 @@
   "totals": {
     "instruments": 7809,
     "symbolShards": 646,
-    "nameShards": 212,
-    "nameIndexEntries": 876,
-    "withSearchableName": 518,
-    "withoutSearchableName": 7291
+    "nameShards": 503,
+    "nameIndexEntries": 12960,
+    "withSearchableName": 6467,
+    "withoutSearchableName": 1342
   },
   "note": "Die Suche laedt hoechstens zwei Scherben je Anfrage: eine nach Kuerzelanfang, eine nach Namensanfang. Titel ohne Firmennamen sind ueber ihr Kuerzel auffindbar und ueber ihren Namen nicht - die Zahl dazu steht oben und nicht im Kleingedruckten.",
   "sym": [
@@ -2603,120 +2603,260 @@
   ],
   "name": [
     {
+      "shard": "10",
+      "count": 2
+    },
+    {
+      "shard": "11",
+      "count": 1
+    },
+    {
+      "shard": "17",
+      "count": 1
+    },
+    {
+      "shard": "19",
+      "count": 1
+    },
+    {
+      "shard": "1R",
+      "count": 3
+    },
+    {
+      "shard": "1S",
+      "count": 2
+    },
+    {
+      "shard": "20",
+      "count": 13
+    },
+    {
+      "shard": "21",
+      "count": 2
+    },
+    {
+      "shard": "22",
+      "count": 1
+    },
+    {
+      "shard": "36",
+      "count": 1
+    },
+    {
+      "shard": "37",
+      "count": 1
+    },
+    {
+      "shard": "3D",
+      "count": 2
+    },
+    {
       "shard": "3M",
       "count": 1
+    },
+    {
+      "shard": "40",
+      "count": 1
+    },
+    {
+      "shard": "4D",
+      "count": 1
+    },
+    {
+      "shard": "51",
+      "count": 1
+    },
+    {
+      "shard": "5E",
+      "count": 1
+    },
+    {
+      "shard": "60",
+      "count": 2
+    },
+    {
+      "shard": "63",
+      "count": 3
     },
     {
       "shard": "66",
       "count": 1
     },
     {
-      "shard": "AA",
+      "shard": "80",
+      "count": 2
+    },
+    {
+      "shard": "8X",
       "count": 1
+    },
+    {
+      "shard": "90",
+      "count": 1
+    },
+    {
+      "shard": "9F",
+      "count": 1
+    },
+    {
+      "shard": "A1",
+      "count": 1
+    },
+    {
+      "shard": "A2",
+      "count": 1
+    },
+    {
+      "shard": "AA",
+      "count": 4
     },
     {
       "shard": "AB",
-      "count": 4
+      "count": 25
     },
     {
       "shard": "AC",
-      "count": 2
+      "count": 635
     },
     {
       "shard": "AD",
-      "count": 1
+      "count": 43
     },
     {
       "shard": "AE",
-      "count": 3
+      "count": 30
     },
     {
       "shard": "AF",
-      "count": 1
+      "count": 8
     },
     {
       "shard": "AG",
-      "count": 2
+      "count": 28
     },
     {
-      "shard": "AI",
-      "count": 4
-    },
-    {
-      "shard": "AL",
-      "count": 11
-    },
-    {
-      "shard": "AM",
-      "count": 8
-    },
-    {
-      "shard": "AN",
-      "count": 3
-    },
-    {
-      "shard": "AO",
+      "shard": "AH",
       "count": 1
     },
     {
+      "shard": "AI",
+      "count": 87
+    },
+    {
+      "shard": "AK",
+      "count": 7
+    },
+    {
+      "shard": "AL",
+      "count": 115
+    },
+    {
+      "shard": "AM",
+      "count": 86
+    },
+    {
+      "shard": "AN",
+      "count": 49
+    },
+    {
+      "shard": "AO",
+      "count": 2
+    },
+    {
       "shard": "AP",
-      "count": 6
+      "count": 41
     },
     {
-      "shard": "AR",
-      "count": 8
-    },
-    {
-      "shard": "AS",
-      "count": 6
-    },
-    {
-      "shard": "AT",
+      "shard": "AQ",
       "count": 3
     },
     {
+      "shard": "AR",
+      "count": 98
+    },
+    {
+      "shard": "AS",
+      "count": 58
+    },
+    {
+      "shard": "AT",
+      "count": 40
+    },
+    {
       "shard": "AU",
-      "count": 4
+      "count": 45
     },
     {
       "shard": "AV",
-      "count": 5
+      "count": 34
+    },
+    {
+      "shard": "AW",
+      "count": 1
     },
     {
       "shard": "AX",
+      "count": 12
+    },
+    {
+      "shard": "AY",
       "count": 1
     },
     {
       "shard": "AZ",
+      "count": 4
+    },
+    {
+      "shard": "B2",
       "count": 1
     },
     {
       "shard": "BA",
-      "count": 25
+      "count": 312
+    },
+    {
+      "shard": "BB",
+      "count": 2
     },
     {
       "shard": "BC",
-      "count": 1
+      "count": 3
+    },
+    {
+      "shard": "BD",
+      "count": 9
     },
     {
       "shard": "BE",
-      "count": 7
+      "count": 57
+    },
+    {
+      "shard": "BG",
+      "count": 5
     },
     {
       "shard": "BH",
-      "count": 1
+      "count": 4
     },
     {
       "shard": "BI",
+      "count": 226
+    },
+    {
+      "shard": "BJ",
+      "count": 2
+    },
+    {
+      "shard": "BK",
       "count": 2
     },
     {
       "shard": "BL",
-      "count": 5
+      "count": 64
     },
     {
       "shard": "BO",
-      "count": 6
+      "count": 50
     },
     {
       "shard": "BP",
@@ -2724,211 +2864,423 @@
     },
     {
       "shard": "BR",
-      "count": 17
+      "count": 148
+    },
+    {
+      "shard": "BS",
+      "count": 1
+    },
+    {
+      "shard": "BT",
+      "count": 8
     },
     {
       "shard": "BU",
-      "count": 4
+      "count": 39
+    },
+    {
+      "shard": "BV",
+      "count": 2
+    },
+    {
+      "shard": "BW",
+      "count": 2
+    },
+    {
+      "shard": "BX",
+      "count": 1
+    },
+    {
+      "shard": "BY",
+      "count": 3
+    },
+    {
+      "shard": "C1",
+      "count": 1
+    },
+    {
+      "shard": "C3",
+      "count": 2
+    },
+    {
+      "shard": "C4",
+      "count": 1
     },
     {
       "shard": "CA",
-      "count": 15
+      "count": 356
+    },
+    {
+      "shard": "CB",
+      "count": 8
+    },
+    {
+      "shard": "CC",
+      "count": 2
+    },
+    {
+      "shard": "CD",
+      "count": 4
     },
     {
       "shard": "CE",
+      "count": 63
+    },
+    {
+      "shard": "CF",
+      "count": 2
+    },
+    {
+      "shard": "CG",
       "count": 2
     },
     {
       "shard": "CH",
-      "count": 10
+      "count": 103
     },
     {
       "shard": "CI",
-      "count": 8
+      "count": 52
+    },
+    {
+      "shard": "CK",
+      "count": 1
     },
     {
       "shard": "CL",
-      "count": 5
+      "count": 50
     },
     {
       "shard": "CM",
-      "count": 1
+      "count": 6
     },
     {
       "shard": "CN",
-      "count": 1
+      "count": 12
     },
     {
       "shard": "CO",
-      "count": 34
+      "count": 279
     },
     {
-      "shard": "CR",
-      "count": 5
-    },
-    {
-      "shard": "CS",
-      "count": 1
-    },
-    {
-      "shard": "CT",
-      "count": 1
-    },
-    {
-      "shard": "CU",
+      "shard": "CP",
       "count": 3
     },
     {
-      "shard": "CV",
-      "count": 1
+      "shard": "CR",
+      "count": 76
     },
     {
-      "shard": "DA",
+      "shard": "CS",
+      "count": 8
+    },
+    {
+      "shard": "CT",
       "count": 4
     },
     {
-      "shard": "DE",
+      "shard": "CU",
+      "count": 23
+    },
+    {
+      "shard": "CV",
       "count": 9
     },
     {
+      "shard": "CX",
+      "count": 2
+    },
+    {
+      "shard": "CY",
+      "count": 16
+    },
+    {
+      "shard": "DA",
+      "count": 36
+    },
+    {
+      "shard": "DB",
+      "count": 4
+    },
+    {
+      "shard": "DC",
+      "count": 1
+    },
+    {
+      "shard": "DD",
+      "count": 1
+    },
+    {
+      "shard": "DE",
+      "count": 134
+    },
+    {
+      "shard": "DH",
+      "count": 2
+    },
+    {
       "shard": "DI",
-      "count": 6
+      "count": 112
+    },
+    {
+      "shard": "DL",
+      "count": 2
     },
     {
       "shard": "DM",
       "count": 1
     },
     {
-      "shard": "DO",
-      "count": 3
+      "shard": "DN",
+      "count": 2
     },
     {
-      "shard": "DT",
+      "shard": "DO",
+      "count": 44
+    },
+    {
+      "shard": "DR",
+      "count": 29
+    },
+    {
+      "shard": "DS",
       "count": 1
     },
     {
+      "shard": "DT",
+      "count": 8
+    },
+    {
       "shard": "DU",
-      "count": 3
+      "count": 14
     },
     {
       "shard": "DW",
       "count": 1
     },
     {
+      "shard": "DX",
+      "count": 2
+    },
+    {
       "shard": "DY",
-      "count": 1
+      "count": 20
     },
     {
       "shard": "EA",
+      "count": 37
+    },
+    {
+      "shard": "EB",
       "count": 2
     },
     {
       "shard": "EC",
-      "count": 1
+      "count": 10
     },
     {
       "shard": "ED",
+      "count": 35
+    },
+    {
+      "shard": "EG",
+      "count": 4
+    },
+    {
+      "shard": "EH",
       "count": 2
+    },
+    {
+      "shard": "EI",
+      "count": 4
     },
     {
       "shard": "EL",
-      "count": 8
+      "count": 56
     },
     {
       "shard": "EM",
-      "count": 1
+      "count": 18
     },
     {
       "shard": "EN",
-      "count": 24
+      "count": 270
     },
     {
       "shard": "EO",
-      "count": 1
+      "count": 3
+    },
+    {
+      "shard": "EP",
+      "count": 6
     },
     {
       "shard": "EQ",
-      "count": 4
+      "count": 26
     },
     {
       "shard": "ER",
-      "count": 1
-    },
-    {
-      "shard": "ES",
-      "count": 1
-    },
-    {
-      "shard": "EU",
-      "count": 2
-    },
-    {
-      "shard": "EV",
-      "count": 1
-    },
-    {
-      "shard": "EX",
-      "count": 3
-    },
-    {
-      "shard": "FA",
-      "count": 1
-    },
-    {
-      "shard": "FE",
-      "count": 3
-    },
-    {
-      "shard": "FI",
       "count": 13
     },
     {
+      "shard": "ES",
+      "count": 33
+    },
+    {
+      "shard": "ET",
+      "count": 16
+    },
+    {
+      "shard": "EU",
+      "count": 14
+    },
+    {
+      "shard": "EV",
+      "count": 31
+    },
+    {
+      "shard": "EX",
+      "count": 35
+    },
+    {
+      "shard": "EY",
+      "count": 3
+    },
+    {
+      "shard": "EZ",
+      "count": 2
+    },
+    {
+      "shard": "F5",
+      "count": 1
+    },
+    {
+      "shard": "FA",
+      "count": 34
+    },
+    {
+      "shard": "FB",
+      "count": 3
+    },
+    {
+      "shard": "FE",
+      "count": 23
+    },
+    {
+      "shard": "FG",
+      "count": 7
+    },
+    {
+      "shard": "FI",
+      "count": 263
+    },
+    {
       "shard": "FL",
-      "count": 4
+      "count": 32
     },
     {
       "shard": "FM",
       "count": 1
     },
     {
-      "shard": "FO",
-      "count": 8
-    },
-    {
-      "shard": "FR",
-      "count": 4
-    },
-    {
-      "shard": "FU",
-      "count": 3
-    },
-    {
-      "shard": "GA",
-      "count": 6
-    },
-    {
-      "shard": "GE",
-      "count": 8
-    },
-    {
-      "shard": "GI",
+      "shard": "FN",
       "count": 1
     },
     {
+      "shard": "FO",
+      "count": 89
+    },
+    {
+      "shard": "FR",
+      "count": 42
+    },
+    {
+      "shard": "FS",
+      "count": 5
+    },
+    {
+      "shard": "FT",
+      "count": 5
+    },
+    {
+      "shard": "FU",
+      "count": 92
+    },
+    {
+      "shard": "FV",
+      "count": 1
+    },
+    {
+      "shard": "GA",
+      "count": 51
+    },
+    {
+      "shard": "GB",
+      "count": 1
+    },
+    {
+      "shard": "GC",
+      "count": 4
+    },
+    {
+      "shard": "GD",
+      "count": 3
+    },
+    {
+      "shard": "GE",
+      "count": 74
+    },
+    {
+      "shard": "GF",
+      "count": 1
+    },
+    {
+      "shard": "GH",
+      "count": 1
+    },
+    {
+      "shard": "GI",
+      "count": 17
+    },
+    {
       "shard": "GL",
+      "count": 126
+    },
+    {
+      "shard": "GM",
       "count": 2
     },
     {
       "shard": "GO",
-      "count": 2
+      "count": 68
+    },
+    {
+      "shard": "GP",
+      "count": 5
     },
     {
       "shard": "GR",
-      "count": 6
+      "count": 105
     },
     {
       "shard": "GS",
+      "count": 10
+    },
+    {
+      "shard": "GT",
       "count": 1
+    },
+    {
+      "shard": "GU",
+      "count": 13
+    },
+    {
+      "shard": "GX",
+      "count": 1
+    },
+    {
+      "shard": "GY",
+      "count": 2
     },
     {
       "shard": "H2",
@@ -2936,95 +3288,263 @@
     },
     {
       "shard": "HA",
-      "count": 9
+      "count": 64
+    },
+    {
+      "shard": "HB",
+      "count": 1
+    },
+    {
+      "shard": "HC",
+      "count": 8
+    },
+    {
+      "shard": "HD",
+      "count": 1
     },
     {
       "shard": "HE",
-      "count": 11
+      "count": 135
+    },
+    {
+      "shard": "HF",
+      "count": 2
     },
     {
       "shard": "HI",
+      "count": 35
+    },
+    {
+      "shard": "HK",
+      "count": 1
+    },
+    {
+      "shard": "HM",
+      "count": 1
+    },
+    {
+      "shard": "HN",
       "count": 1
     },
     {
       "shard": "HO",
-      "count": 13
+      "count": 85
     },
     {
       "shard": "HP",
       "count": 1
     },
     {
+      "shard": "HS",
+      "count": 1
+    },
+    {
       "shard": "HU",
-      "count": 2
+      "count": 30
+    },
+    {
+      "shard": "HW",
+      "count": 1
+    },
+    {
+      "shard": "HY",
+      "count": 9
+    },
+    {
+      "shard": "I3",
+      "count": 1
+    },
+    {
+      "shard": "IA",
+      "count": 1
+    },
+    {
+      "shard": "IB",
+      "count": 4
     },
     {
       "shard": "IC",
-      "count": 1
+      "count": 10
     },
     {
       "shard": "ID",
-      "count": 2
+      "count": 12
+    },
+    {
+      "shard": "IE",
+      "count": 1
+    },
+    {
+      "shard": "IG",
+      "count": 1
+    },
+    {
+      "shard": "IH",
+      "count": 3
+    },
+    {
+      "shard": "II",
+      "count": 157
     },
     {
       "shard": "IL",
-      "count": 1
+      "count": 6
     },
     {
       "shard": "IM",
-      "count": 2
-    },
-    {
-      "shard": "IN",
       "count": 44
     },
     {
+      "shard": "IN",
+      "count": 532
+    },
+    {
+      "shard": "IO",
+      "count": 7
+    },
+    {
+      "shard": "IP",
+      "count": 4
+    },
+    {
+      "shard": "IQ",
+      "count": 5
+    },
+    {
+      "shard": "IR",
+      "count": 18
+    },
+    {
+      "shard": "IS",
+      "count": 19
+    },
+    {
+      "shard": "IT",
+      "count": 9
+    },
+    {
+      "shard": "IV",
+      "count": 28
+    },
+    {
+      "shard": "IZ",
+      "count": 1
+    },
+    {
       "shard": "JA",
-      "count": 2
+      "count": 28
+    },
+    {
+      "shard": "JB",
+      "count": 4
+    },
+    {
+      "shard": "JD",
+      "count": 1
     },
     {
       "shard": "JE",
+      "count": 11
+    },
+    {
+      "shard": "JF",
       "count": 2
+    },
+    {
+      "shard": "JI",
+      "count": 8
+    },
+    {
+      "shard": "JM",
+      "count": 1
     },
     {
       "shard": "JO",
-      "count": 2
+      "count": 20
     },
     {
       "shard": "JP",
-      "count": 1
+      "count": 3
     },
     {
       "shard": "JU",
+      "count": 5
+    },
+    {
+      "shard": "JX",
       "count": 1
+    },
+    {
+      "shard": "JY",
+      "count": 1
+    },
+    {
+      "shard": "K2",
+      "count": 2
     },
     {
       "shard": "KA",
-      "count": 1
+      "count": 28
     },
     {
       "shard": "KB",
-      "count": 1
+      "count": 3
     },
     {
       "shard": "KE",
-      "count": 2
+      "count": 22
     },
     {
-      "shard": "KI",
-      "count": 2
-    },
-    {
-      "shard": "KL",
+      "shard": "KF",
       "count": 1
     },
     {
+      "shard": "KI",
+      "count": 21
+    },
+    {
+      "shard": "KK",
+      "count": 5
+    },
+    {
+      "shard": "KL",
+      "count": 5
+    },
+    {
+      "shard": "KN",
+      "count": 6
+    },
+    {
       "shard": "KO",
+      "count": 22
+    },
+    {
+      "shard": "KP",
       "count": 1
     },
     {
       "shard": "KR",
-      "count": 2
+      "count": 9
+    },
+    {
+      "shard": "KT",
+      "count": 1
+    },
+    {
+      "shard": "KU",
+      "count": 5
+    },
+    {
+      "shard": "KV",
+      "count": 1
+    },
+    {
+      "shard": "KY",
+      "count": 8
+    },
+    {
+      "shard": "KZ",
+      "count": 1
     },
     {
       "shard": "L3",
@@ -3032,147 +3552,355 @@
     },
     {
       "shard": "LA",
-      "count": 5
+      "count": 113
     },
     {
-      "shard": "LC",
+      "shard": "LB",
       "count": 1
     },
     {
-      "shard": "LE",
+      "shard": "LC",
       "count": 2
     },
     {
-      "shard": "LI",
+      "shard": "LE",
+      "count": 46
+    },
+    {
+      "shard": "LG",
       "count": 3
+    },
+    {
+      "shard": "LI",
+      "count": 121
+    },
+    {
+      "shard": "LK",
+      "count": 1
+    },
+    {
+      "shard": "LL",
+      "count": 1
     },
     {
       "shard": "LM",
       "count": 1
     },
     {
+      "shard": "LN",
+      "count": 3
+    },
+    {
       "shard": "LO",
-      "count": 6
+      "count": 50
+    },
+    {
+      "shard": "LP",
+      "count": 3
+    },
+    {
+      "shard": "LQ",
+      "count": 1
     },
     {
       "shard": "LS",
+      "count": 2
+    },
+    {
+      "shard": "LT",
       "count": 1
     },
     {
       "shard": "LU",
+      "count": 18
+    },
+    {
+      "shard": "LX",
       "count": 1
+    },
+    {
+      "shard": "LY",
+      "count": 5
+    },
+    {
+      "shard": "LZ",
+      "count": 1
+    },
+    {
+      "shard": "M3",
+      "count": 3
     },
     {
       "shard": "MA",
-      "count": 15
+      "count": 186
     },
     {
       "shard": "MB",
-      "count": 1
-    },
-    {
-      "shard": "MC",
       "count": 2
     },
     {
+      "shard": "MC",
+      "count": 13
+    },
+    {
       "shard": "MD",
-      "count": 1
+      "count": 17
     },
     {
       "shard": "ME",
-      "count": 11
+      "count": 199
+    },
+    {
+      "shard": "MF",
+      "count": 5
     },
     {
       "shard": "MG",
-      "count": 1
+      "count": 4
     },
     {
       "shard": "MI",
-      "count": 6
+      "count": 118
+    },
+    {
+      "shard": "MK",
+      "count": 3
+    },
+    {
+      "shard": "ML",
+      "count": 2
+    },
+    {
+      "shard": "MM",
+      "count": 1
+    },
+    {
+      "shard": "MN",
+      "count": 1
     },
     {
       "shard": "MO",
-      "count": 15
+      "count": 147
+    },
+    {
+      "shard": "MP",
+      "count": 2
+    },
+    {
+      "shard": "MS",
+      "count": 4
     },
     {
       "shard": "MU",
+      "count": 27
+    },
+    {
+      "shard": "MV",
       "count": 1
     },
     {
       "shard": "MY",
-      "count": 2
+      "count": 8
     },
     {
       "shard": "NA",
-      "count": 6
+      "count": 84
+    },
+    {
+      "shard": "NB",
+      "count": 2
+    },
+    {
+      "shard": "NC",
+      "count": 4
     },
     {
       "shard": "NE",
-      "count": 6
+      "count": 129
+    },
+    {
+      "shard": "NF",
+      "count": 1
+    },
+    {
+      "shard": "NG",
+      "count": 1
     },
     {
       "shard": "NI",
+      "count": 16
+    },
+    {
+      "shard": "NJ",
       "count": 2
+    },
+    {
+      "shard": "NK",
+      "count": 1
     },
     {
       "shard": "NL",
-      "count": 1
-    },
-    {
-      "shard": "NO",
-      "count": 5
-    },
-    {
-      "shard": "NU",
-      "count": 1
-    },
-    {
-      "shard": "NV",
       "count": 2
     },
     {
-      "shard": "NX",
+      "shard": "NM",
+      "count": 4
+    },
+    {
+      "shard": "NN",
+      "count": 2
+    },
+    {
+      "shard": "NO",
+      "count": 54
+    },
+    {
+      "shard": "NP",
       "count": 1
+    },
+    {
+      "shard": "NR",
+      "count": 2
+    },
+    {
+      "shard": "NS",
+      "count": 1
+    },
+    {
+      "shard": "NU",
+      "count": 25
+    },
+    {
+      "shard": "NV",
+      "count": 5
+    },
+    {
+      "shard": "NW",
+      "count": 1
+    },
+    {
+      "shard": "NX",
+      "count": 2
+    },
+    {
+      "shard": "NY",
+      "count": 6
+    },
+    {
+      "shard": "OA",
+      "count": 11
+    },
+    {
+      "shard": "OB",
+      "count": 3
     },
     {
       "shard": "OC",
-      "count": 1
+      "count": 18
+    },
+    {
+      "shard": "OD",
+      "count": 4
     },
     {
       "shard": "OF",
-      "count": 4
+      "count": 75
     },
     {
       "shard": "OG",
       "count": 1
     },
     {
+      "shard": "OH",
+      "count": 7
+    },
+    {
       "shard": "OI",
-      "count": 3
+      "count": 11
+    },
+    {
+      "shard": "OK",
+      "count": 5
     },
     {
       "shard": "OL",
-      "count": 1
+      "count": 11
+    },
+    {
+      "shard": "OM",
+      "count": 11
     },
     {
       "shard": "ON",
-      "count": 2
+      "count": 60
+    },
+    {
+      "shard": "OO",
+      "count": 1
+    },
+    {
+      "shard": "OP",
+      "count": 44
     },
     {
       "shard": "OR",
-      "count": 1
+      "count": 34
     },
     {
-      "shard": "OX",
-      "count": 1
+      "shard": "OS",
+      "count": 7
     },
     {
-      "shard": "PA",
+      "shard": "OT",
+      "count": 5
+    },
+    {
+      "shard": "OU",
       "count": 16
     },
     {
+      "shard": "OV",
+      "count": 2
+    },
+    {
+      "shard": "OW",
+      "count": 5
+    },
+    {
+      "shard": "OX",
+      "count": 16
+    },
+    {
+      "shard": "OY",
+      "count": 5
+    },
+    {
+      "shard": "OZ",
+      "count": 2
+    },
+    {
+      "shard": "P3",
+      "count": 2
+    },
+    {
+      "shard": "PA",
+      "count": 183
+    },
+    {
+      "shard": "PB",
+      "count": 4
+    },
+    {
+      "shard": "PC",
+      "count": 2
+    },
+    {
+      "shard": "PD",
+      "count": 3
+    },
+    {
       "shard": "PE",
-      "count": 6
+      "count": 90
     },
     {
       "shard": "PF",
@@ -3180,19 +3908,27 @@
     },
     {
       "shard": "PG",
-      "count": 1
+      "count": 2
     },
     {
       "shard": "PH",
-      "count": 5
+      "count": 139
     },
     {
       "shard": "PI",
-      "count": 4
+      "count": 26
+    },
+    {
+      "shard": "PJ",
+      "count": 1
     },
     {
       "shard": "PL",
-      "count": 1
+      "count": 33
+    },
+    {
+      "shard": "PM",
+      "count": 3
     },
     {
       "shard": "PN",
@@ -3200,170 +3936,350 @@
     },
     {
       "shard": "PO",
-      "count": 4
+      "count": 95
     },
     {
       "shard": "PP",
-      "count": 2
+      "count": 3
     },
     {
       "shard": "PR",
-      "count": 15
+      "count": 162
+    },
+    {
+      "shard": "PS",
+      "count": 4
+    },
+    {
+      "shard": "PT",
+      "count": 4
     },
     {
       "shard": "PU",
-      "count": 3
+      "count": 29
     },
     {
       "shard": "PV",
       "count": 1
     },
     {
-      "shard": "QU",
+      "shard": "PY",
+      "count": 3
+    },
+    {
+      "shard": "Q2",
+      "count": 1
+    },
+    {
+      "shard": "Q3",
+      "count": 1
+    },
+    {
+      "shard": "QC",
+      "count": 1
+    },
+    {
+      "shard": "QD",
+      "count": 3
+    },
+    {
+      "shard": "QF",
+      "count": 1
+    },
+    {
+      "shard": "QI",
+      "count": 1
+    },
+    {
+      "shard": "QO",
+      "count": 1
+    },
+    {
+      "shard": "QT",
       "count": 2
     },
     {
+      "shard": "QU",
+      "count": 46
+    },
+    {
+      "shard": "QV",
+      "count": 1
+    },
+    {
+      "shard": "QW",
+      "count": 2
+    },
+    {
+      "shard": "QX",
+      "count": 1
+    },
+    {
       "shard": "RA",
+      "count": 51
+    },
+    {
+      "shard": "RB",
+      "count": 3
+    },
+    {
+      "shard": "RC",
       "count": 2
     },
     {
       "shard": "RE",
-      "count": 24
+      "count": 273
     },
     {
-      "shard": "RL",
-      "count": 1
-    },
-    {
-      "shard": "RO",
-      "count": 11
-    },
-    {
-      "shard": "RP",
-      "count": 1
-    },
-    {
-      "shard": "RT",
-      "count": 1
-    },
-    {
-      "shard": "RU",
-      "count": 1
-    },
-    {
-      "shard": "RY",
-      "count": 1
-    },
-    {
-      "shard": "SA",
+      "shard": "RF",
       "count": 6
     },
     {
-      "shard": "SB",
+      "shard": "RG",
       "count": 1
     },
     {
-      "shard": "SC",
-      "count": 5
+      "shard": "RH",
+      "count": 2
     },
     {
-      "shard": "SE",
-      "count": 11
+      "shard": "RI",
+      "count": 43
     },
     {
-      "shard": "SH",
+      "shard": "RL",
       "count": 3
     },
     {
+      "shard": "RM",
+      "count": 3
+    },
+    {
+      "shard": "RO",
+      "count": 82
+    },
+    {
+      "shard": "RP",
+      "count": 2
+    },
+    {
+      "shard": "RR",
+      "count": 3
+    },
+    {
+      "shard": "RT",
+      "count": 2
+    },
+    {
+      "shard": "RU",
+      "count": 16
+    },
+    {
+      "shard": "RX",
+      "count": 2
+    },
+    {
+      "shard": "RY",
+      "count": 8
+    },
+    {
+      "shard": "SA",
+      "count": 78
+    },
+    {
+      "shard": "SB",
+      "count": 4
+    },
+    {
+      "shard": "SC",
+      "count": 67
+    },
+    {
+      "shard": "SD",
+      "count": 1
+    },
+    {
+      "shard": "SE",
+      "count": 165
+    },
+    {
+      "shard": "SF",
+      "count": 1
+    },
+    {
+      "shard": "SG",
+      "count": 1
+    },
+    {
+      "shard": "SH",
+      "count": 35
+    },
+    {
       "shard": "SI",
-      "count": 5
+      "count": 74
     },
     {
       "shard": "SK",
-      "count": 1
+      "count": 18
     },
     {
       "shard": "SL",
-      "count": 2
+      "count": 7
     },
     {
       "shard": "SM",
-      "count": 1
+      "count": 25
     },
     {
       "shard": "SN",
-      "count": 1
-    },
-    {
-      "shard": "SO",
       "count": 9
     },
     {
+      "shard": "SO",
+      "count": 169
+    },
+    {
       "shard": "SP",
-      "count": 2
+      "count": 88
     },
     {
       "shard": "SQ",
-      "count": 1
+      "count": 10
+    },
+    {
+      "shard": "SR",
+      "count": 3
+    },
+    {
+      "shard": "SS",
+      "count": 3
     },
     {
       "shard": "ST",
-      "count": 12
+      "count": 154
     },
     {
       "shard": "SU",
+      "count": 63
+    },
+    {
+      "shard": "SW",
+      "count": 6
+    },
+    {
+      "shard": "SX",
       "count": 1
     },
     {
       "shard": "SY",
-      "count": 7
+      "count": 61
     },
     {
-      "shard": "TA",
-      "count": 2
-    },
-    {
-      "shard": "TC",
+      "shard": "T1",
       "count": 1
     },
     {
+      "shard": "T3",
+      "count": 1
+    },
+    {
+      "shard": "TA",
+      "count": 53
+    },
+    {
+      "shard": "TB",
+      "count": 1
+    },
+    {
+      "shard": "TC",
+      "count": 3
+    },
+    {
+      "shard": "TD",
+      "count": 2
+    },
+    {
       "shard": "TE",
-      "count": 21
+      "count": 369
+    },
+    {
+      "shard": "TF",
+      "count": 2
+    },
+    {
+      "shard": "TG",
+      "count": 2
     },
     {
       "shard": "TH",
-      "count": 4
+      "count": 212
     },
     {
       "shard": "TI",
-      "count": 4
+      "count": 30
     },
     {
       "shard": "TJ",
       "count": 1
     },
     {
-      "shard": "TO",
-      "count": 7
+      "shard": "TK",
+      "count": 1
     },
     {
-      "shard": "TR",
+      "shard": "TM",
+      "count": 4
+    },
+    {
+      "shard": "TN",
+      "count": 2
+    },
+    {
+      "shard": "TO",
+      "count": 34
+    },
+    {
+      "shard": "TP",
       "count": 6
     },
     {
+      "shard": "TR",
+      "count": 103
+    },
+    {
+      "shard": "TS",
+      "count": 3
+    },
+    {
+      "shard": "TT",
+      "count": 2
+    },
+    {
       "shard": "TU",
+      "count": 12
+    },
+    {
+      "shard": "TV",
       "count": 1
     },
     {
       "shard": "TW",
-      "count": 1
+      "count": 12
     },
     {
       "shard": "TX",
-      "count": 1
+      "count": 11
     },
     {
       "shard": "TY",
+      "count": 3
+    },
+    {
+      "shard": "UB",
+      "count": 8
+    },
+    {
+      "shard": "UC",
       "count": 2
     },
     {
@@ -3371,24 +4287,76 @@
       "count": 1
     },
     {
+      "shard": "UF",
+      "count": 3
+    },
+    {
       "shard": "UG",
       "count": 1
     },
     {
+      "shard": "UI",
+      "count": 1
+    },
+    {
+      "shard": "UK",
+      "count": 3
+    },
+    {
+      "shard": "UL",
+      "count": 7
+    },
+    {
+      "shard": "UM",
+      "count": 3
+    },
+    {
       "shard": "UN",
-      "count": 10
+      "count": 54
+    },
+    {
+      "shard": "UP",
+      "count": 9
+    },
+    {
+      "shard": "UR",
+      "count": 8
+    },
+    {
+      "shard": "US",
+      "count": 21
     },
     {
       "shard": "UT",
-      "count": 2
+      "count": 13
+    },
+    {
+      "shard": "UW",
+      "count": 1
+    },
+    {
+      "shard": "UX",
+      "count": 1
+    },
+    {
+      "shard": "UY",
+      "count": 3
+    },
+    {
+      "shard": "V2",
+      "count": 1
     },
     {
       "shard": "VA",
-      "count": 4
+      "count": 48
+    },
+    {
+      "shard": "VC",
+      "count": 1
     },
     {
       "shard": "VE",
-      "count": 2
+      "count": 73
     },
     {
       "shard": "VF",
@@ -3396,58 +4364,254 @@
     },
     {
       "shard": "VI",
-      "count": 2
+      "count": 92
+    },
+    {
+      "shard": "VN",
+      "count": 1
     },
     {
       "shard": "VO",
-      "count": 2
+      "count": 13
+    },
+    {
+      "shard": "VR",
+      "count": 1
+    },
+    {
+      "shard": "VS",
+      "count": 5
+    },
+    {
+      "shard": "VT",
+      "count": 3
     },
     {
       "shard": "VU",
+      "count": 5
+    },
+    {
+      "shard": "VY",
       "count": 1
     },
     {
       "shard": "WA",
-      "count": 6
+      "count": 59
     },
     {
-      "shard": "WE",
-      "count": 8
-    },
-    {
-      "shard": "WH",
-      "count": 3
-    },
-    {
-      "shard": "WI",
-      "count": 4
-    },
-    {
-      "shard": "WO",
-      "count": 3
-    },
-    {
-      "shard": "WR",
-      "count": 1
-    },
-    {
-      "shard": "XC",
-      "count": 1
-    },
-    {
-      "shard": "XE",
-      "count": 1
-    },
-    {
-      "shard": "YO",
+      "shard": "WD",
       "count": 2
     },
     {
-      "shard": "YU",
+      "shard": "WE",
+      "count": 66
+    },
+    {
+      "shard": "WF",
+      "count": 2
+    },
+    {
+      "shard": "WH",
+      "count": 19
+    },
+    {
+      "shard": "WI",
+      "count": 39
+    },
+    {
+      "shard": "WO",
+      "count": 29
+    },
+    {
+      "shard": "WP",
       "count": 1
     },
     {
+      "shard": "WR",
+      "count": 2
+    },
+    {
+      "shard": "WS",
+      "count": 1
+    },
+    {
+      "shard": "WV",
+      "count": 1
+    },
+    {
+      "shard": "WW",
+      "count": 1
+    },
+    {
+      "shard": "WY",
+      "count": 2
+    },
+    {
+      "shard": "X3",
+      "count": 3
+    },
+    {
+      "shard": "X4",
+      "count": 1
+    },
+    {
+      "shard": "XA",
+      "count": 1
+    },
+    {
+      "shard": "XB",
+      "count": 3
+    },
+    {
+      "shard": "XC",
+      "count": 6
+    },
+    {
+      "shard": "XE",
+      "count": 7
+    },
+    {
+      "shard": "XF",
+      "count": 1
+    },
+    {
+      "shard": "XI",
+      "count": 12
+    },
+    {
+      "shard": "XL",
+      "count": 1
+    },
+    {
+      "shard": "XM",
+      "count": 2
+    },
+    {
+      "shard": "XO",
+      "count": 3
+    },
+    {
+      "shard": "XP",
+      "count": 7
+    },
+    {
+      "shard": "XR",
+      "count": 3
+    },
+    {
+      "shard": "XS",
+      "count": 3
+    },
+    {
+      "shard": "XT",
+      "count": 4
+    },
+    {
+      "shard": "XU",
+      "count": 1
+    },
+    {
+      "shard": "XW",
+      "count": 1
+    },
+    {
+      "shard": "XY",
+      "count": 1
+    },
+    {
+      "shard": "YA",
+      "count": 6
+    },
+    {
+      "shard": "YD",
+      "count": 2
+    },
+    {
+      "shard": "YE",
+      "count": 4
+    },
+    {
+      "shard": "YH",
+      "count": 3
+    },
+    {
+      "shard": "YI",
+      "count": 6
+    },
+    {
+      "shard": "YO",
+      "count": 15
+    },
+    {
+      "shard": "YP",
+      "count": 1
+    },
+    {
+      "shard": "YS",
+      "count": 1
+    },
+    {
+      "shard": "YU",
+      "count": 7
+    },
+    {
+      "shard": "YX",
+      "count": 1
+    },
+    {
+      "shard": "YY",
+      "count": 1
+    },
+    {
+      "shard": "ZA",
+      "count": 1
+    },
+    {
+      "shard": "ZC",
+      "count": 1
+    },
+    {
+      "shard": "ZE",
+      "count": 15
+    },
+    {
+      "shard": "ZH",
+      "count": 4
+    },
+    {
+      "shard": "ZI",
+      "count": 8
+    },
+    {
+      "shard": "ZJ",
+      "count": 1
+    },
+    {
+      "shard": "ZK",
+      "count": 2
+    },
+    {
       "shard": "ZO",
+      "count": 5
+    },
+    {
+      "shard": "ZS",
+      "count": 1
+    },
+    {
+      "shard": "ZT",
+      "count": 1
+    },
+    {
+      "shard": "ZU",
+      "count": 3
+    },
+    {
+      "shard": "ZW",
+      "count": 1
+    },
+    {
+      "shard": "ZY",
       "count": 1
     }
   ]

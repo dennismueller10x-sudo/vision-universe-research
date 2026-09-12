@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-09-12T10:54:48.613Z",
+  "generatedAt": "2026-09-12T19:25:10.819Z",
   "asOf": "2026-09-12",
   "provider": "tiingo",
   "source": {
@@ -2682,34 +2682,34 @@
     ]
   },
   "previousState": {
-    "from": "workingStore",
-    "instruments": 7810
+    "from": "publishedShards",
+    "instruments": 7809
   },
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null,
-    "normalizeMs": 40,
-    "syncMs": 93,
-    "shardsWritten": 5,
-    "shardsUnchanged": 641,
-    "publishedBytes": 8918585
+    "source": "github-actions",
+    "runId": "34714060338",
+    "commit": "7a72702e5d81d0eb466b4f5a0f52d7e812448bd5",
+    "normalizeMs": 57,
+    "syncMs": 90,
+    "shardsWritten": 633,
+    "shardsUnchanged": 13,
+    "publishedBytes": 9611689
   },
   "identifiers": {
     "cikMap": {
-      "status": "UNAVAILABLE",
-      "generatedAt": "2026-09-12T10:54:18.904Z",
-      "entries": 5,
-      "fromConfig": 5,
-      "declaredOverrides": 0,
+      "status": "OK",
+      "generatedAt": "2026-09-12T19:25:09.333Z",
+      "entries": 10426,
+      "fromConfig": 1,
+      "declaredOverrides": 1,
       "ambiguous": 0,
-      "reason": "Keines der beiden SEC-Verzeichnisse war abrufbar."
+      "reason": null
     },
-    "withIssuerId": 5,
-    "distinctIssuers": 5,
-    "withCik": 5,
-    "withName": 518,
-    "withoutName": 7291,
+    "withIssuerId": 6461,
+    "distinctIssuers": 5481,
+    "withCik": 6461,
+    "withName": 6467,
+    "withoutName": 1342,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2718,8 +2718,44 @@
       "duplicateInstrumentIds": [],
       "duplicateSymbols": [],
       "duplicateProviderIds": [],
-      "duplicateCiks": [],
-      "missingName": 7291,
+      "duplicateCiks": [
+        {
+          "cik": "0001094831",
+          "ids": [
+            "vu_1847584b143fca",
+            "vu_49b1d0be8e8c8c"
+          ]
+        },
+        {
+          "cik": "0000820318",
+          "ids": [
+            "vu_a8bc3cc015ae00",
+            "vu_ad3428439eafd7"
+          ]
+        },
+        {
+          "cik": "0001206264",
+          "ids": [
+            "vu_73ffd992ac5d4a",
+            "vu_e3294d970368c3"
+          ]
+        },
+        {
+          "cik": "0000022701",
+          "ids": [
+            "vu_42c9b4a6449741",
+            "vu_b4e2a7e52f8f29"
+          ]
+        },
+        {
+          "cik": "0000050471",
+          "ids": [
+            "vu_2014e7463de064",
+            "vu_a57aca6545589b"
+          ]
+        }
+      ],
+      "missingName": 1342,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
@@ -2728,14 +2764,17 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 909,
+      "classificationDisagreement": 913,
       "classificationDisagreementByClass": {
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
-        "WARRANT->COMMON_STOCK": 457,
+        "WARRANT->COMMON_STOCK": 456,
+        "EQUITY_COMMON->ADR": 1,
+        "WARRANT->ADR": 1,
         "TEST_SECURITY->COMMON_STOCK": 30,
         "EQUITY_COMMON->ETF": 1,
-        "ETF->COMMON_STOCK": 2
+        "ETF->COMMON_STOCK": 2,
+        "EQUITY_COMMON->PREFERRED": 3
       },
       "withoutProductDecision": 0
     }

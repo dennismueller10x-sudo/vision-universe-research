@@ -5,8 +5,44 @@
     "duplicateInstrumentIds": [],
     "duplicateSymbols": [],
     "duplicateProviderIds": [],
-    "duplicateCiks": [],
-    "missingName": 7291,
+    "duplicateCiks": [
+      {
+        "cik": "0001094831",
+        "ids": [
+          "vu_1847584b143fca",
+          "vu_49b1d0be8e8c8c"
+        ]
+      },
+      {
+        "cik": "0000820318",
+        "ids": [
+          "vu_a8bc3cc015ae00",
+          "vu_ad3428439eafd7"
+        ]
+      },
+      {
+        "cik": "0001206264",
+        "ids": [
+          "vu_73ffd992ac5d4a",
+          "vu_e3294d970368c3"
+        ]
+      },
+      {
+        "cik": "0000022701",
+        "ids": [
+          "vu_42c9b4a6449741",
+          "vu_b4e2a7e52f8f29"
+        ]
+      },
+      {
+        "cik": "0000050471",
+        "ids": [
+          "vu_2014e7463de064",
+          "vu_a57aca6545589b"
+        ]
+      }
+    ],
+    "missingName": 1342,
     "missingExchange": 0,
     "missingCurrency": 0,
     "missingCountry": 0,
@@ -15,14 +51,17 @@
     "inactive": 15,
     "noFirstTradeDate": 0,
     "symbolWithWhitespace": [],
-    "classificationDisagreement": 909,
+    "classificationDisagreement": 913,
     "classificationDisagreementByClass": {
       "RIGHT->COMMON_STOCK": 129,
       "UNIT->COMMON_STOCK": 290,
-      "WARRANT->COMMON_STOCK": 457,
+      "WARRANT->COMMON_STOCK": 456,
+      "EQUITY_COMMON->ADR": 1,
+      "WARRANT->ADR": 1,
       "TEST_SECURITY->COMMON_STOCK": 30,
       "EQUITY_COMMON->ETF": 1,
-      "ETF->COMMON_STOCK": 2
+      "ETF->COMMON_STOCK": 2,
+      "EQUITY_COMMON->PREFERRED": 3
     },
     "withoutProductDecision": 0
   },
