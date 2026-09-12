@@ -1332,3 +1332,51 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-legend-ma-sma50{background:#6f9dff}
 .dx-legend-ma-sma200{background:#e8b44c}
 .dx-legend-bb{background:rgba(255,255,255,.42)}
+
+/* =========================================================================
+   AELTERE IPHONES
+
+   Die Farbwelten mischen ihren Ton mit color-mix(). Das kennt Safari erst
+   ab iOS 16.2 - und eine Deklaration, die der Browser nicht versteht, wirft
+   er ganz weg. Meistens ist das nur Atmosphaere, die fehlt. Zwei Stellen
+   verschwinden dabei aber vollstaendig: die Rangnummer, die aus einer
+   transparenten Schrift mit Kontur besteht, und der Balken der
+   Jahresspanne, der nur aus einem Verlauf besteht.
+
+   Deshalb dieser Block. Er greift ausschliesslich dort, wo color-mix()
+   fehlt, und benutzt die Welt-Variablen --w-glow und --w-soft: die sind
+   einfaches rgba() und tragen dieselbe Farbe. Auf einem alten Geraet
+   bleibt das Produkt damit vollstaendig lesbar - nur eine Spur flacher.
+   ========================================================================= */
+@supports not (color: color-mix(in srgb, #000 50%, #fff)) {
+  .dx-hero-bg{background:
+    radial-gradient(105% 78% at 76% 14%, var(--w-glow), transparent 64%),
+    radial-gradient(80% 66% at 10% 4%, var(--w-soft), transparent 66%),
+    linear-gradient(180deg, var(--w-soft) 0%, var(--discover-bg) 74%)}
+  .dx-hero-grid{background-image:linear-gradient(90deg, var(--w-soft) 1px, transparent 1px)}
+  .dx-btn--ghost{border-color:var(--discover-line-strong)}
+  .dx-btn--ghost:hover{background:var(--w-soft)}
+  .dx-hero-chart .dx-art-ticker,.dx-art-ticker{fill:var(--w-soft)}
+  .dx-rail-head h2::before{box-shadow:0 0 0 4px var(--w-soft)}
+  .dx-swipe-band{background:var(--w-glow)}
+  .dx-poster:hover,.dx-poster:focus-visible{border-color:var(--discover-line-strong);
+    box-shadow:0 24px 60px -26px rgba(0,0,0,.92)}
+  .dx-sig{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+  .dx-art-band{fill:var(--w-soft)}
+  /* Ohne Kontur waere die Zahl unsichtbar - die Schrift selbst ist transparent. */
+  .dx-rank-num{-webkit-text-stroke:2px rgba(255,255,255,.28)}
+  .dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:var(--w-2, #fff)}
+  .dx-result:hover,.dx-result:focus-visible,.dx-result[aria-selected="true"]{
+    background:var(--w-soft);border-color:var(--discover-line)}
+  .dx-feed-bg{background:
+    radial-gradient(72% 62% at 78% 12%, var(--w-glow), transparent 66%),
+    radial-gradient(58% 54% at 8% 96%, var(--w-soft), transparent 70%)}
+  .dx-waage-spalte--pro .dx-waage-marke{background:var(--discover-up-soft)}
+  .dx-waage-spalte--contra .dx-waage-marke{background:rgba(232,180,76,.15)}
+  .dx-dhero-bg{background:
+    radial-gradient(76% 132% at 76% -12%, var(--w-glow), transparent 64%),
+    radial-gradient(64% 96% at 6% 112%, var(--w-soft), transparent 68%)}
+  /* Der Balken besteht nur aus diesem Verlauf. */
+  .dx-spanne-bar{background:linear-gradient(90deg, var(--discover-line), var(--w-2, var(--w)))}
+  .dx-spanne-bar i{box-shadow:0 0 0 4px var(--w-glow)}
+}

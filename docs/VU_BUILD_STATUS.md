@@ -38,6 +38,36 @@ Menüeintrag **Discover** steht in `assets/site-navigation.js` an zweiter
 Stelle und erscheint damit auf jeder Seite. Der Einzelmodus liegt unter
 `/discover/#/einzeln/US_REAL` und ist aus der Discover-Leiste erreichbar.
 
+### Auslieferungskette, geprüft
+
+Ein grüner Pages-Build beweist, dass GitHub gebaut hat — nicht, dass die
+Seite funktioniert. Deshalb ist die Kette einzeln nachgewiesen:
+
+| Glied | Nachweis |
+|---|---|
+| `main` trägt Discover | 690 Dateien unter `discover/`, davon 658 Daten-JSONs |
+| Pages baut daraus | Artefakt `github-pages` des Builds, 36 592 955 Bytes |
+| Das Artefakt enthält Discover | +3,24 MB gegenüber dem Build davor; der Baum ohne `discover/` ist 3,17 MB kleiner |
+| Pages hat ausgeliefert | Deployment-Status `success`, `environment_url` = `research.visionuniverse.de` |
+| DNS zeigt auf Pages | `research.visionuniverse.de` → `dennismueller10x-sudo.github.io` → `2606:50c0:800x::153` |
+| Der Baum liefert alles aus | 126 Anfragen, 0 mit Fehlerstatus (`scripts/discover/delivery-check.mjs`) |
+| Die sieben Abnahmepunkte | Startseite, Aktie, Chart, Swipe, Einzeln, Navigation, Mobil — alle grün |
+
+Nachrechnen: `node scripts/discover/delivery-check.mjs --root <baum>`. Das
+Skript bedient einen Baum so streng wie Pages (Verzeichnis → `index.html`,
+sonst 404, Gross-/Kleinschreibung zählt) und protokolliert jede Anfrage.
+
+`.nojekyll` nimmt Jekyll aus der Kette: der Zweig wird wortwörtlich
+veröffentlicht. Geprüft, dass nichts davon abhängt — keine Datei trägt
+YAML-Front-Matter, keine HTML-Seite benutzt Liquid.
+
+**Offen und nur in den GitHub-Einstellungen behebbar:** *Enforce HTTPS*
+ist aus. Alle Pages-Deployments melden `http://research.visionuniverse.de/`
+statt `https://`. Damit fehlt die Umleitung von HTTP auf HTTPS — auf einem
+iPhone, das jede Adresse zuerst über HTTPS versucht, ist das die
+wahrscheinlichste Ursache für eine Seite, die nicht aufgeht.
+Settings → Pages → Enforce HTTPS.
+
 Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
 (SEC-Einreichungen der Golden Five) und für das Modelluniversum;
 Analystendaten und Segmentdaten gibt es nicht, entsprechende Abschnitte
