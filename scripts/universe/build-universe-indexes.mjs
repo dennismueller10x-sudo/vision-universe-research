@@ -188,24 +188,33 @@ function collectEvidence() {
   const retest = join(root, "quant", "data", "market", "commercial", "capability-retest.json");
   if (existsSync(retest)) {
     const payload = readJSON(retest);
-    const rows = payload.perSymbol || payload.symbols || payload.results || {};
+    const symbols = payload.symbols || [];
+    const cap = (payload.byCapability || {}).intraday || {};
+    /* Der Nachweis gilt fuer die Titel, an denen er gefuehrt wurde -
+       nicht fuer das Universum. Intraday ist eine Kontofaehigkeit, und
+       sie IST fuer dieses Konto belegt; dass sie an den uebrigen 5.685
+       Titeln nicht gemessen wurde, ist trotzdem die Wahrheit und kein
+       Formfehler. "Fuer diesen Titel gemessen" ist die einzige Aussage,
+       die dieses Artefakt traegt. */
     let n = 0;
-    for (const [sym, row] of Object.entries(rows)) {
-      const e = get(sym);
-      const caps = row.capabilities || row;
-      if (caps && (caps.intraday === "VERIFIED" || (caps.intraday && caps.intraday.status === "VERIFIED"))) {
-        e.intraday = true; n++;
-      }
+    if (cap.PASSED > 0) {
+      for (const sym of symbols.slice(0, cap.PASSED)) { get(sym).intraday = true; n++; }
     }
-    if (n) sources.push({ file: "quant/data/market/commercial/capability-retest.json", kind: "intraday", symbols: n });
+    if (n) sources.push({ file: "quant/data/market/commercial/capability-retest.json",
+                          kind: "intraday", symbols: n,
+                          note: "Kontofaehigkeit, an den Canary-Titeln gemessen." });
   }
   const live = join(root, "quant", "data", "market", "commercial", "live-candle-verification.json");
   if (existsSync(live)) {
     const payload = readJSON(live);
-    const rows = payload.perSymbol || payload.symbols || payload.candles || {};
     let n = 0;
-    for (const sym of Object.keys(rows)) { get(sym).live = true; n++; }
-    if (n) sources.push({ file: "quant/data/market/commercial/live-candle-verification.json", kind: "live", symbols: n });
+    for (const m of payload.measurements || []) {
+      if (m.result !== "PASSED") continue;
+      for (const sym of m.symbols || []) { if (!get(sym).live) { get(sym).live = true; n++; } }
+    }
+    if (n) sources.push({ file: "quant/data/market/commercial/live-candle-verification.json",
+                          kind: "live", symbols: n,
+                          note: "Kursstrom, an diesen Titeln bei offener Boerse gemessen." });
   }
 
   /* 5. SEC-Fundamentaldaten. Die kanonischen Factbooks liegen in der

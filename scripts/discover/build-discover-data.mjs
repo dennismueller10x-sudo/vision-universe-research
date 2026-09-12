@@ -15,8 +15,11 @@
 
    WAS GELESEN WIRD (nur lesend, nichts davon wird veraendert)
 
-     quant/data/market/factors/factors-GATE_500.json   reale Faktoren (Tiingo)
-     quant/data/market/scale/universe-GATE_500.json    Sektor/Boerse
+     quant/data/market/factors/factors-<GATE>.json     reale Faktoren (Tiingo)
+     quant/data/market/scale/universe-<GATE>.json      Sektor/Boerse
+                                                       <GATE> wird gesucht, nicht
+                                                       genannt - siehe findFactorsFile()
+     quant/data/universe/instruments/**                kanonischer Company Master
      quant/data/market/golden-preview/daily/*.json     reale Bars der Golden Five
      quant/data/technical/index.json + instruments/    bestehende TI-Bundles
      quant/data/securities.json                        Marktkapitalisierung (Modell)
@@ -1311,16 +1314,22 @@ const meta = {
     rankingScope: METHODOLOGY.universes[u.universeId].rankingScope
   })),
   rows: rowIndex,
+  /* Die Quellenliste wird nicht getippt, sondern gemeldet: welche
+     Faktordatei gegriffen hat, entscheidet der Build (findFactorsFile),
+     und eine feste Zeile hier waere nach der ersten groesseren Datei
+     eine Falschangabe. */
   sources: [
-    "quant/data/market/factors/factors-GATE_500.json",
-    "quant/data/market/scale/universe-GATE_500.json",
+    universes[0] && universes[0].sourceFile,
+    universes[0] && universes[0].sourceGate
+      ? "quant/data/market/scale/universe-" + universes[0].sourceGate + ".json" : null,
+    "quant/data/universe/instruments/**",
     "quant/data/market/golden-preview/daily/*.json",
     "quant/data/technical/index.json",
     "quant/data/securities.json",
     "quant/config/feature-gates.json",
     "quant/config/development-preview.json",
     "quant/config/market-calendar.json"
-  ],
+  ].filter(Boolean),
   boundary: "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich " +
             "nach discover/data/**. Keine bestehende Datei wird verändert.",
   disclaimer: METHODOLOGY.disclaimer

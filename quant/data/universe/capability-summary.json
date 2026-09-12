@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-12T10:03:49.774Z",
+  "generatedAt": "2026-09-12T10:10:37.495Z",
   "instruments": 5690,
   "levels": {
     "DELIVERED": "Liegt in diesem Repository und funktioniert ohne Anbieterzugang.",
@@ -21,11 +21,11 @@
     },
     "HAS_INTRADAY": {
       "DELIVERED": 0,
-      "PROVIDER_VERIFIED": 0
+      "PROVIDER_VERIFIED": 5
     },
     "HAS_LIVE": {
       "DELIVERED": 0,
-      "PROVIDER_VERIFIED": 0
+      "PROVIDER_VERIFIED": 3
     },
     "HAS_SEC": {
       "DELIVERED": 0,
@@ -82,6 +82,18 @@
       "file": "discover/data/stocks/US_REAL/",
       "kind": "deliveredStockPage",
       "symbols": 498
+    },
+    {
+      "file": "quant/data/market/commercial/capability-retest.json",
+      "kind": "intraday",
+      "symbols": 5,
+      "note": "Kontofaehigkeit, an den Canary-Titeln gemessen."
+    },
+    {
+      "file": "quant/data/market/commercial/live-candle-verification.json",
+      "kind": "live",
+      "symbols": 3,
+      "note": "Kursstrom, an diesen Titeln bei offener Boerse gemessen."
     },
     {
       "file": "quant/data/sec/canonical_index.json",

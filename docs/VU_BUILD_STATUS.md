@@ -43,6 +43,48 @@ Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
 Analystendaten und Segmentdaten gibt es nicht, entsprechende Abschnitte
 wurden deshalb nicht gebaut.
 
+## Universe Expansion — 498 → 5.690 (Zweig `claude/vision-universe-expansion-j633h8`)
+
+**Der Grund für die 498 stand in zwei Zeilen Code, nicht beim Anbieter.**
+`build-market-factors.mjs` schreibt Faktor-Einzelzeilen nur bis 500 Titel
+ins Repository (Dateigröße, nicht Lizenz), und `build-discover-data.mjs`
+las genau die dadurch größte Datei: `factors-GATE_500.json`. 500
+ausgewählt, 2 ohne ausreichende Historie, 498 im Frontend — während der
+FULL-UNIVERSE-Lauf längst 5.684 Titel geholt hatte.
+Vollständige Herleitung: `docs/VU_UNIVERSE_EXPANSION.md`.
+
+| Stufe | Inhalt | Bericht |
+|---|---|---|
+| 1 | Company Master: stabile `instrumentId`, idempotenter Sync, Fähigkeitsmatrix, Qualitäts- und Deckungsbericht | `VU_UNIVERSE_EXPANSION.md` |
+| 2 | Suche und Aktienseite gegen den Master — lazy, scherbenweise | `VU_UNIVERSE_EXPANSION.md` |
+| 3 | CIK-Zuordnung und SEC-Universum aus dem Master, Sammelweg für companyfacts | `VU_SEC_UNIVERSE_SCALE.md` |
+
+| | vorher | nachher |
+|---|---|---|
+| Instrumente im ausgelieferten Universum | 498 | **5.690** |
+| Primärschlüssel | Ticker | `instrumentId` (`vu_<14 hex>`) |
+| delistete Titel | nicht geführt | 15, mit Datum |
+| Suche kennt | 498 | das ganze Universum |
+| Aktienseite öffnet | 498 | jedes Instrument im Master |
+| Firmennamen | 498 | 517 (SEC-Lauf schließt den Rest) |
+
+**Keine Obergrenze im Code.** `quant/config/company-master.json` führt
+`size.maxInstruments: null`, und die CI prüft sowohl diese Zeile als auch,
+dass kein `MAX_STOCKS`-artiges Konstrukt auftaucht.
+
+Gemessen bei 25.000 / 50.000 Instrumenten: Sync 196 / 449 ms, Indexbau
+21 / 56 ms, Suche 0,015 / 0,025 ms je Anfrage, **größte Suchscherbe 5 / 9
+KB** — der Browser lädt Kilobyte, nicht das Universum.
+
+**731 Quant-Tests, 118 Discover-Tests, 257 Python-Tests, 650 Prüfungen des
+Masters, 19 + 63 Browser-Prüfungen** — alles grün.
+
+Noch offen und ausschließlich ein Workflow-Lauf: `sec.gov` und
+`api.tiingo.com` sind aus der Bauumgebung nicht erreichbar. Der Job
+`sync` in `.github/workflows/universe-master.yml` holt das vollständige
+Anbieterverzeichnis (108.573 Zeilen) und die CIK-Zuordnung; erst danach
+stehen Firmennamen und CIK für das ganze US-Universum.
+
 ## Completed
 
 Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
@@ -154,7 +196,10 @@ Integrationsstand fuers Preview: `docs/VU_REALTIME_PREVIEW_INTEGRATION.md`.
 
 ## In Progress
 
-Nichts. Alle drei Phasen sind abgeschlossen.
+Universe Expansion: gebaut und geprüft. Was fehlt, ist **ein Lauf mit
+Zugang** — `universe-master.yml` mit `sync: true`. Er füllt Firmennamen
+und CIK für das ganze US-Universum und ist die Voraussetzung dafür, dass
+die SEC-Fundamentalpipeline über die fünf Validierungstitel hinausläuft.
 
 ## Known Limitations
 
