@@ -24,6 +24,7 @@ const specs=[
  ['downsideVolatility','market',62,'Root mean square of negative adjusted simple returns ×sqrt(252) ×100; more than 60 total returns and more than 5 negative returns required.'],
  ['maxDrawdown','market',1,'Positive magnitude of worst adjusted-close drawdown from running peak in trailing at most253 bars, ×100; legacy partial-window behavior preserved.']
 ];
+const labels={earningsYield:'Gewinn / Börsenwert',priceToFcf:'Börsenwert / freier Cashflow',volatility:'Schwankung auf Jahresbasis',maxDrawdown:'Größter Rückgang im Zeitfenster'};
 const explanations={
  operatingMargin:'Anteil des operativen Gewinns am Umsatz der letzten vier vollständigen Berichtsperioden.',fcfMargin:'Anteil des freien Cashflows am Umsatz der letzten vier vollständigen Berichtsperioden.',
  roic:'Operativer Gewinn der letzten vier Perioden nach einem normierten Steuersatz von 21 % im Verhältnis zum zuletzt ausgewiesenen investierten Kapital.',
@@ -48,9 +49,9 @@ const legacy=specs.map(([field,family,minimum,methodology])=>{const f=Catalog.fi
  adjustmentSemantics:market?'Existing PanelBuilder basis and Float32 arrays. raw close and adjustedClose retain different roles; adjusted fallback is not silently reinterpreted.':family==='valuation'?'Current raw-price valuation with source-period accounting units; no FX conversion':'Canonical accounting periods from validated adapter; no SEC concept mapping is defined here',
  missingDataPolicy:'Preserve source null/unavailable. Ratios reject invalid denominators; growth rejects non-positive prior bases. Never zero-fill.',pitEligibility:'NOT_CERTIFIED',
  updateCadence:market?'EOD':family==='valuation'?'EOD_OR_FILING':'VALIDATED_FILING',
- provenance:['asOf','availableAt','panelVersion','sourceRevision'],uxMapping:{label:f.label,explanation:explanations[field],format:field==='marginExpansion'?'percentage_points':f.unit},methodology
+ provenance:['asOf','availableAt','panelVersion','sourceRevision'],uxMapping:{label:labels[field]||f.label,explanation:explanations[field],format:field==='marginExpansion'?'percentage_points':f.unit},methodology
 };});
 const entries=deepFreeze([...Market.entries,...legacy]);
-const api=Object.freeze({version:'1.1.0',entries,get:id=>entries.find(m=>m.metricId===id)||null,affectedBy:inputs=>entries.filter(m=>m.inputs.some(i=>inputs.includes(i))).map(m=>m.metricId)});
+const api=Object.freeze({version:'1.1.1',entries,get:id=>entries.find(m=>m.metricId===id)||null,affectedBy:inputs=>entries.filter(m=>m.inputs.some(i=>inputs.includes(i))).map(m=>m.metricId)});
 if(node)module.exports=api;else g.VUMetricRegistry=api;
 })(typeof window!=='undefined'?window:globalThis);
