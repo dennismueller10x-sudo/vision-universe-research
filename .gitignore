@@ -27,3 +27,9 @@ scripts/quant/**/__pycache__/
 # zu gross, und Rohdaten-, Display- sowie Derived-Data-Rechte sind
 # ungeklärt. Auch Ausschnitte bleiben bis zur Lizenzfreigabe intern.
 .market-cache/
+
+# Lokale Werkzeuge (z. B. Playwright fuer scripts/discover/browser-qa.mjs).
+# Das Repository hat keinen Paketmanager-Stand; was hier liegt, gehoert
+# der jeweiligen Arbeitsumgebung und nie der Auslieferung.
+node_modules/
+node_modules

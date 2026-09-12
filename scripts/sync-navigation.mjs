@@ -14,7 +14,11 @@ async function walk(dir='.') {
     if(!/<body\b/i.test(html))continue;
     const original=html;
     if(!html.includes('/assets/site-navigation.css'))html=html.replace(/<\/head>/i,css+'</head>');
-    if(!html.includes('<vu-navigation>'))html=html.replace(/<body\b[^>]*>/i,match=>match+component);
+    // Auf das TAG pruefen, nicht auf die attributlose Schreibweise: seit
+    // Discover gibt es <vu-navigation theme="dark">, und ein
+    // includes('<vu-navigation>') findet die Seite dann nicht - der Lauf
+    // haette ihr eine ZWEITE Navigation vorangestellt, hell ueber dunkel.
+    if(!/<vu-navigation[\s>]/i.test(html))html=html.replace(/<body\b[^>]*>/i,match=>match+component);
     if(html!==original)await writeFile(file,html);
   }
 }

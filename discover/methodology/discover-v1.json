@@ -1,0 +1,428 @@
+{
+  "methodologyVersion": "discover-v1.0.0",
+  "note": "Regelwerk für Vision Universe DISCOVER. Jede Zahl, die auf einer Discovery Card steht, entsteht aus dieser Datei und den ausgelieferten Kennzahlen - nicht aus einer Einschätzung. Wer eine Gewichtung ändert, ändert sie hier, und der Build rechnet sie nach.",
+  "boundary": "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich nach discover/data/**. Es verändert keine bestehende Engine, keine bestehende Datei und keinen bestehenden Contract.",
+  "universes": {
+    "US_REAL": {
+      "label": "US Equities",
+      "kind": "real",
+      "source": "quant/data/market/factors/factors-GATE_500.json",
+      "provider": "tiingo",
+      "note": "Reale US-Titel. Absolute Kursniveaus bleiben nach der Redistributionsregel des Bestandssystems zurück (fieldStatus WITHHELD_REDISTRIBUTION); ausgeliefert werden Zustände, Abstände und Renditen.",
+      "rankingScope": "Alle Ranglisten, Perzentile und Leadership-Scores werden AUSSCHLIESSLICH innerhalb dieses Universums gerechnet."
+    },
+    "VU_MODEL": {
+      "label": "VU Modelluniversum",
+      "kind": "mock",
+      "source": "quant/data/securities.json + quant/engines/mock-generator.js",
+      "provider": "VisionUniverseMock",
+      "note": "Synthetisches Universum. Kein realer Titel, keine reale Aussage - aber vollständige Kursreihen, damit die Darstellung (Preis, Sparkline, Chart) ohne erfundene Werte gezeigt werden kann.",
+      "rankingScope": "Getrennt gerechnet. Ein Rang aus diesem Universum wird nie mit einem realen Titel verglichen."
+    }
+  },
+  "leadershipScore": {
+    "scoreVersion": "leadership-1.0.0",
+    "range": [
+      0,
+      100
+    ],
+    "isProbability": false,
+    "interpretation": "Relative Marktführerschaft aus Kursverhalten. Keine Bewertung des Unternehmens, keine Empfehlung.",
+    "minCoverage": 0.6,
+    "components": [
+      {
+        "id": "distanceTo52wHigh",
+        "label": "Abstand 52W-Hoch",
+        "weight": 0.2,
+        "field": "distanceTo52wHigh",
+        "transform": "linear",
+        "from": -0.3,
+        "to": 0.0
+      },
+      {
+        "id": "momentum3M",
+        "label": "Momentum 3M",
+        "weight": 0.1,
+        "field": "return3M",
+        "transform": "linear",
+        "from": -0.2,
+        "to": 0.4
+      },
+      {
+        "id": "momentum6M",
+        "label": "Momentum 6M",
+        "weight": 0.12,
+        "field": "return6M",
+        "transform": "linear",
+        "from": -0.25,
+        "to": 0.6
+      },
+      {
+        "id": "momentum12M1M",
+        "label": "Momentum 12-1M",
+        "weight": 0.15,
+        "field": "return12M1M",
+        "transform": "linear",
+        "from": -0.3,
+        "to": 0.8
+      },
+      {
+        "id": "relativeStrength12M",
+        "label": "RS 12M",
+        "weight": 0.15,
+        "field": "relativeStrength12M",
+        "transform": "linear",
+        "from": -0.2,
+        "to": 0.4
+      },
+      {
+        "id": "relativeStrength3M",
+        "label": "RS 3M",
+        "weight": 0.08,
+        "field": "relativeStrength3M",
+        "transform": "linear",
+        "from": -0.1,
+        "to": 0.2
+      },
+      {
+        "id": "trendQuality",
+        "label": "Trendqualität",
+        "weight": 0.12,
+        "field": "trendAlignment",
+        "transform": "linear",
+        "from": 0,
+        "to": 1
+      },
+      {
+        "id": "volumeConfirmation",
+        "label": "Volumen",
+        "weight": 0.04,
+        "field": "volumeRatio20over60",
+        "transform": "linear",
+        "from": 0.7,
+        "to": 1.3
+      },
+      {
+        "id": "drawdownResilience",
+        "label": "Drawdown",
+        "weight": 0.04,
+        "field": "maxDrawdown252d",
+        "transform": "linear",
+        "from": -0.5,
+        "to": -0.05
+      }
+    ]
+  },
+  "momentumScore": {
+    "scoreVersion": "momentum-1.0.0",
+    "minCoverage": 0.5,
+    "components": [
+      {
+        "id": "return3M",
+        "label": "3 Monate",
+        "weight": 0.25,
+        "field": "return3M",
+        "transform": "linear",
+        "from": -0.2,
+        "to": 0.4
+      },
+      {
+        "id": "return6M",
+        "label": "6 Monate",
+        "weight": 0.3,
+        "field": "return6M",
+        "transform": "linear",
+        "from": -0.25,
+        "to": 0.6
+      },
+      {
+        "id": "return12M1M",
+        "label": "12-1 Monate",
+        "weight": 0.35,
+        "field": "return12M1M",
+        "transform": "linear",
+        "from": -0.3,
+        "to": 0.8
+      },
+      {
+        "id": "momentumAcceleration",
+        "label": "Beschleunigung",
+        "weight": 0.1,
+        "field": "momentumAcceleration",
+        "transform": "linear",
+        "from": -0.15,
+        "to": 0.15
+      }
+    ]
+  },
+  "relativeStrengthScore": {
+    "scoreVersion": "rs-1.0.0",
+    "minCoverage": 0.5,
+    "benchmark": "SPY",
+    "components": [
+      {
+        "id": "rs3M",
+        "label": "RS 3M",
+        "weight": 0.3,
+        "field": "relativeStrength3M",
+        "transform": "linear",
+        "from": -0.15,
+        "to": 0.25
+      },
+      {
+        "id": "rs6M",
+        "label": "RS 6M",
+        "weight": 0.3,
+        "field": "relativeStrength6M",
+        "transform": "linear",
+        "from": -0.2,
+        "to": 0.35
+      },
+      {
+        "id": "rs12M",
+        "label": "RS 12M",
+        "weight": 0.4,
+        "field": "relativeStrength12M",
+        "transform": "linear",
+        "from": -0.2,
+        "to": 0.4
+      }
+    ]
+  },
+  "high52w": {
+    "engineVersion": "high52w-1.0.0",
+    "lookbackTradingDays": 252,
+    "minBars": 200,
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "note": "Das rollierende 52-Wochen-Hoch wird vorberechnet; zur Laufzeit wird nur der aktuelle Kurs dagegen gehalten. Das Hoch des Vergleichsfensters schließt den aktuellen Tag aus - sonst wäre jeder Titel per Definition auf seinem Hoch.",
+    "nearHighPct": 0.02,
+    "watchPct": 0.05,
+    "maxQuoteAgeMs": 900000
+  },
+  "signals": {
+    "new52WeekHigh": {
+      "label": "NEW HIGH",
+      "rule": "currentPrice >= previous52WeekHigh (Kursreihe SPLIT_ADJUSTED, Vergleichsfenster ohne aktuellen Tag)"
+    },
+    "nearHigh": {
+      "label": "NEAR HIGH",
+      "rule": "distanceTo52wHigh >= -high52w.watchPct und kein neues Hoch"
+    },
+    "marketLeader": {
+      "label": "MARKET LEADER",
+      "rule": "leadershipPercentile >= 90 innerhalb des Universums"
+    },
+    "momentumLeader": {
+      "label": "MOMENTUM LEADER",
+      "rule": "momentumPercentile >= 90 innerhalb des Universums"
+    },
+    "relativeStrengthLeader": {
+      "label": "RS LEADER",
+      "rule": "relativeStrengthPercentile >= 90 innerhalb des Universums"
+    },
+    "breakout": {
+      "label": "BREAKOUT",
+      "rule": "volumeBreakout (Volumen >= 1.5x 60-Tage-Schnitt) und Kurs über SMA20 und SMA50 und distanceTo52wHigh >= -0.10"
+    },
+    "trendIntact": {
+      "label": "TREND",
+      "rule": "Kurs über SMA20, SMA50, SMA100 und SMA200"
+    },
+    "sectorLeader": {
+      "label": "SECTOR LEADER",
+      "rule": "leadershipScore unter den Top 3 des Sektors, Sektor mit sectorStatus=CURATED"
+    }
+  },
+  "rows": [
+    {
+      "id": "new-52-week-highs",
+      "title": "NEUE JAHRESHOCHS",
+      "subtitle": "Aktien auf dem höchsten Stand seit zwölf Monaten.",
+      "sort": "distanceTo52wHigh",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "distanceTo52wHigh"
+      ],
+      "filter": "nearOrAtHigh",
+      "secondarySort": "leadershipScore",
+      "signalFirst": "new52WeekHigh",
+      "world": "highs"
+    },
+    {
+      "id": "market-leaders",
+      "title": "DIE STÄRKSTEN AKTIEN",
+      "subtitle": "Aktien, die den Markt über Monate anführen.",
+      "sort": "leadershipScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "leadershipScore"
+      ],
+      "world": "leadership"
+    },
+    {
+      "id": "momentum-leaders",
+      "title": "SEIT MONATEN IM AUFWIND",
+      "subtitle": "Die stärkste Kursentwicklung der letzten Monate.",
+      "sort": "momentumScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "momentumScore"
+      ],
+      "world": "momentum"
+    },
+    {
+      "id": "breakout-watch",
+      "title": "GERADE IN BEWEGUNG",
+      "subtitle": "Deutlich mehr Handel als sonst — und der Kurs zieht an.",
+      "sort": "breakoutScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "breakoutScore"
+      ],
+      "filter": "breakout",
+      "signalFirst": "breakout",
+      "world": "breakout"
+    },
+    {
+      "id": "relative-strength",
+      "title": "DEM MARKT VORAUS",
+      "subtitle": "Aktien, die sich besser entwickeln als der Gesamtmarkt.",
+      "sort": "relativeStrengthScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "relativeStrengthScore"
+      ],
+      "secondarySort": "momentumScore",
+      "world": "strength"
+    },
+    {
+      "id": "trend-quality",
+      "title": "STABILE AUFWÄRTSTRENDS",
+      "subtitle": "Aktien, die seit Monaten über ihrem Durchschnittskurs liegen.",
+      "sort": "leadershipScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "leadershipScore"
+      ],
+      "filter": "trendIntact",
+      "world": "quality"
+    }
+  ],
+  "sectorRows": {
+    "id": "sector-leaders",
+    "title": "DIE STÄRKSTEN JE BRANCHE",
+    "limitPerSector": 10,
+    "minSecuritiesPerSector": 3,
+    "world": "sectors"
+  },
+  "capBuckets": [
+    {
+      "id": "mega",
+      "label": "Mega Cap",
+      "minMarketCapMillions": 200000
+    },
+    {
+      "id": "large",
+      "label": "Large Cap",
+      "minMarketCapMillions": 10000
+    },
+    {
+      "id": "mid",
+      "label": "Mid Cap",
+      "minMarketCapMillions": 2000
+    },
+    {
+      "id": "small",
+      "label": "Small Cap",
+      "minMarketCapMillions": 0
+    }
+  ],
+  "disclaimer": "Discover zeigt Kursverhalten, keine Anlageempfehlung. Scores sind relative Kennzahlen innerhalb eines benannten Universums und keine Wahrscheinlichkeiten.",
+  "top10": {
+    "id": "top-10",
+    "title": "DIE ZEHN STÄRKSTEN AKTIEN",
+    "subtitle": "Die Gesamtwertung von Vision Universe — Platz 1 bis 10.",
+    "source": "market-leaders",
+    "limit": 10,
+    "world": "leadership"
+  },
+  "visualLanguage": {
+    "note": "Category Color System: jede Discovery-Welt hat eine eigene Atmosphäre. Die Farbe ist eine Zuordnung, kein Schmuck - sie sagt, in welcher Welt man sich befindet, und sie steht nie allein: jedes Signal trägt zusätzlich seinen Namen im Text (§24).",
+    "worlds": {
+      "leadership": {
+        "label": "Market Leadership",
+        "hint": "Indigo / Electric Blue"
+      },
+      "highs": {
+        "label": "52-Wochen-Hochs",
+        "hint": "Ice Blue / Cyan"
+      },
+      "momentum": {
+        "label": "Momentum",
+        "hint": "Violet / Magenta"
+      },
+      "breakout": {
+        "label": "Breakouts",
+        "hint": "Amber / Orange"
+      },
+      "strength": {
+        "label": "Relative Stärke",
+        "hint": "Emerald / Teal"
+      },
+      "quality": {
+        "label": "Trendqualität",
+        "hint": "Gold"
+      },
+      "sectors": {
+        "label": "Sektoren",
+        "hint": "je Sektor eine eigene Tönung"
+      },
+      "risk": {
+        "label": "Schwäche / Risiko",
+        "hint": "Coral"
+      }
+    },
+    "sectorWorlds": {
+      "Technology": "tech",
+      "Health Care": "health",
+      "Financials": "finance",
+      "Industrials": "industry",
+      "Consumer Discretionary": "consumer",
+      "Consumer Staples": "staples",
+      "Energy": "energy",
+      "Utilities": "utility",
+      "Real Estate": "estate",
+      "Communication Services": "comms",
+      "Materials": "materials"
+    },
+    "signalWorlds": {
+      "new52WeekHigh": "highs",
+      "nearHigh": "highs",
+      "marketLeader": "leadership",
+      "momentumLeader": "momentum",
+      "relativeStrengthLeader": "strength",
+      "breakout": "breakout",
+      "trendIntact": "quality",
+      "sectorLeader": "sectors"
+    },
+    "artwork": {
+      "engine": "discover-artwork-1.0.0",
+      "inputs": {
+        "Verlaufslinie": "sparkline (wo ausgeliefert), sonst performancePath",
+        "Schwankungsband": "volatility252d",
+        "Lichtschein": "Position in der Jahresspanne (Ort), leadershipPercentile (Stärke)",
+        "Jahresspannen-Leiste": "distanceTo52wHigh / distanceTo52wLow",
+        "Hochmarke": "signals.new52WeekHigh",
+        "Tickertypografie": "symbol",
+        "Farbwelt": "Kategorie der Reihe bzw. stärkstes Signal"
+      },
+      "boundary": "Keine Form entsteht aus Zufall, Hash oder Namen. Zwischen den Stützstellen des Renditepfades wird nichts interpoliert; das Schwankungsband ist eine Hüllkurve aus einer Kennzahl, keine Kursspanne."
+    }
+  }
+}

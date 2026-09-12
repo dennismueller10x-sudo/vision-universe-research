@@ -1,0 +1,78 @@
+name: Discover CI
+
+# Prueft das Discover-Modul: Engine-Logik, den Discover-Contract und die
+# Uebereinstimmung zwischen den ausgelieferten Payloads und den Engines.
+# Bewusst ein eigener Workflow neben quant-ci.yml: Discover erweitert das
+# bestehende System, es veraendert es nicht - und das soll auch fuer die
+# Pruefung gelten.
+
+on:
+  push:
+    branches: [main]
+    paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
+  pull_request:
+    paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine- und Contract-Tests
+        run: node --test "discover/tests/*.test.mjs"
+
+      - name: Ausgelieferte Daten stimmen mit den Engines ueberein
+        run: node scripts/discover/verify-discover-data.mjs
+
+      - name: Der Build ist reproduzierbar
+        # Derselbe Eingabestand muss denselben Ausgabestand ergeben. Weicht
+        # er ab, ist irgendwo eine Uhrzeit oder eine Zufallszahl in die
+        # Rechnung geraten - und dann ist kein Vergleich zweier Staende mehr
+        # aussagekraeftig. generatedAt ist die eine erlaubte Ausnahme.
+        run: |
+          node scripts/discover/build-discover-data.mjs > /dev/null
+          git diff --stat -- discover/data > /tmp/discover-drift.txt || true
+          changed=$(git diff --name-only -- discover/data | grep -v 'discover/data/meta.json' | wc -l)
+          if [ "$changed" -gt 0 ]; then
+            echo "Der Neubau ergibt andere Daten als der eingecheckte Stand:"
+            cat /tmp/discover-drift.txt
+            exit 1
+          fi
+          echo "Build reproduzierbar (nur meta.json traegt einen Zeitstempel)."
+
+      - name: Discover-Seite bindet die gemeinsame Shell und die Navigation ein
+        run: |
+          page=discover/index.html
+          grep -q '/quant/ui/shell.js' "$page" || { echo "$page ohne quant/ui/shell.js"; exit 1; }
+          grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+          grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          echo "Seite geprueft"
+
+      - name: Discover veraendert keine bestehende Engine
+        # Der Kern des Auftrags: EXTEND, DO NOT MODIFY. Was ausserhalb von
+        # discover/ und scripts/discover/ liegt, darf dieser Bereich nicht
+        # anfassen - mit Ausnahme des einen Navigationseintrags.
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            -- quant providers scripts/quant scripts/technical scripts/market dashboard macro academy | wc -l)
+          if [ "$changed" -gt 0 ]; then
+            echo "Discover veraendert Dateien ausserhalb seines Moduls:"
+            git diff --name-only origin/${{ github.base_ref }}...HEAD -- quant providers scripts/quant scripts/technical scripts/market dashboard macro academy
+            exit 1
+          fi
+          echo "Keine bestehende Engine veraendert."
+
+      - name: JSON-Dateien sind gueltig
+        run: |
+          files=$(find discover -name '*.json')
+          for file in $files; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"

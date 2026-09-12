@@ -19,6 +19,60 @@ Bereinigungssemantik.**
 > `docs/VU_PHASE2_PRODUCTION_AUDIT.md`.
 > Das System laeuft weiterhin vollstaendig ohne Anbieterzugang.
 
+## Discover (Zweig `claude/vision-universe-discover-h93fmv`, nicht in `main`)
+
+| Stufe | Inhalt | Bericht |
+|---|---|---|
+| 1 | Modul, Datenvertrag, Reihen, Detailseite, 52-Wochen-Engine, Leadership Score | `VU_DISCOVER_DELIVERY_REPORT.md` |
+| 2 | Dunkle Experience: Eingangsfläche, Poster, Reihenformen, Suche, Telefon | `VU_DISCOVER_EXPERIENCE_REDESIGN.md` |
+| 3 | Bildsprache: Farbwelten, datengetriebenes Artwork, dunkler Header | `VU_DISCOVER_VISUAL_IDENTITY.md` |
+| 4 | Consumer Layer: Klartext statt Scores, Sammlungen, drei Ebenen | `VU_DISCOVER_CONSUMER_LAYER.md` |
+| 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
+
+Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
+der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
+
+**Veröffentlicht am 12.09.2026** unter
+`https://research.visionuniverse.de/discover/`, nach `main` gemergt. Der
+Menüeintrag **Discover** steht in `assets/site-navigation.js` an zweiter
+Stelle und erscheint damit auf jeder Seite. Der Einzelmodus liegt unter
+`/discover/#/einzeln/US_REAL` und ist aus der Discover-Leiste erreichbar.
+
+### Auslieferungskette, geprüft
+
+Ein grüner Pages-Build beweist, dass GitHub gebaut hat — nicht, dass die
+Seite funktioniert. Deshalb ist die Kette einzeln nachgewiesen:
+
+| Glied | Nachweis |
+|---|---|
+| `main` trägt Discover | 690 Dateien unter `discover/`, davon 658 Daten-JSONs |
+| Pages baut daraus | Artefakt `github-pages` des Builds, 36 592 955 Bytes |
+| Das Artefakt enthält Discover | +3,24 MB gegenüber dem Build davor; der Baum ohne `discover/` ist 3,17 MB kleiner |
+| Pages hat ausgeliefert | Deployment-Status `success`, `environment_url` = `research.visionuniverse.de` |
+| DNS zeigt auf Pages | `research.visionuniverse.de` → `dennismueller10x-sudo.github.io` → `2606:50c0:800x::153` |
+| Der Baum liefert alles aus | 126 Anfragen, 0 mit Fehlerstatus (`scripts/discover/delivery-check.mjs`) |
+| Die sieben Abnahmepunkte | Startseite, Aktie, Chart, Swipe, Einzeln, Navigation, Mobil — alle grün |
+
+Nachrechnen: `node scripts/discover/delivery-check.mjs --root <baum>`. Das
+Skript bedient einen Baum so streng wie Pages (Verzeichnis → `index.html`,
+sonst 404, Gross-/Kleinschreibung zählt) und protokolliert jede Anfrage.
+
+`.nojekyll` nimmt Jekyll aus der Kette: der Zweig wird wortwörtlich
+veröffentlicht. Geprüft, dass nichts davon abhängt — keine Datei trägt
+YAML-Front-Matter, keine HTML-Seite benutzt Liquid.
+
+**Offen und nur in den GitHub-Einstellungen behebbar:** *Enforce HTTPS*
+ist aus. Alle Pages-Deployments melden `http://research.visionuniverse.de/`
+statt `https://`. Damit fehlt die Umleitung von HTTP auf HTTPS — auf einem
+iPhone, das jede Adresse zuerst über HTTPS versucht, ist das die
+wahrscheinlichste Ursache für eine Seite, die nicht aufgeht.
+Settings → Pages → Enforce HTTPS.
+
+Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
+(SEC-Einreichungen der Golden Five) und für das Modelluniversum;
+Analystendaten und Segmentdaten gibt es nicht, entsprechende Abschnitte
+wurden deshalb nicht gebaut.
+
 ## Completed
 
 Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in

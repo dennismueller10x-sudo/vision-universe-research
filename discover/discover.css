@@ -1,0 +1,1382 @@
+/* =========================================================================
+   VISION UNIVERSE® DISCOVER — discover.css
+
+   Die Experience-Schicht des Discovery-Moduls.
+
+   Sie erweitert quant/ui/quant.css (Reset, Typografie, Basiswerte) und
+   ersetzt nichts davon. Alles hier ist auf `body.dx` oder auf .dx-Klassen
+   gebunden - keine bestehende Vision-Universe-Seite kann davon betroffen
+   sein, auch wenn sie dieselbe Basisdatei laedt.
+
+   LEITGEDANKE
+
+   Der Markt ist der Inhalt. Eine Streaming-Oberflaeche zeigt nicht
+   Datenbankeintraege in Kaesten, sondern Titel auf einer Flaeche: grosse
+   Eingangsfläche, dann Reihen mit eigenem Rhythmus, dann die Tiefe.
+   Uebersetzt heisst das hier:
+
+     RUHE       fast schwarzer Grund, wenig Linien, viel Abstand
+     RHYTHMUS   keine zwei Reihen sehen gleich aus
+     BEWEIS     jede Zahl auf der Flaeche ist gerechnet, keine ist Dekoration
+     ZURUECK-   kein Neon, kein Glow, kein Verlauf ohne Grund;
+     HALTUNG    Farbe ist Signal, nicht Schmuck
+
+   Was hier ausdruecklich NICHT passiert: jedes Element in einen Kasten
+   legen. Container gibt es nur dort, wo etwas tatsaechlich zusammengehoert
+   - eine Karte, ein Panel der Detailseite. Reihen liegen frei.
+   ========================================================================= */
+
+/* ------------------------------------------------------ Experience-Tokens */
+body.dx{
+  /* Grundflaechen */
+  --discover-bg:#08080a;
+  --discover-bg-2:#0d0d11;
+  --discover-surface:#141419;
+  --discover-surface-2:#1b1b22;
+  --discover-surface-hover:#22222b;
+  --discover-line:rgba(255,255,255,.09);
+  --discover-line-strong:rgba(255,255,255,.18);
+
+  /* Schrift */
+  --discover-text:#f4f4f1;
+  --discover-muted:#9d9da8;
+  --discover-dim:#6d6d78;
+
+  /* Signalfarben. Bewusst entsaettigt gegenueber der hellen Oberflaeche -
+     auf schwarzem Grund wirkt dasselbe Gruen sonst wie eine Warnleuchte. */
+  --discover-up:#3fd07f;
+  --discover-up-soft:rgba(63,208,127,.14);
+  --discover-down:#f0675c;
+  --discover-down-soft:rgba(240,103,92,.13);
+  --discover-accent:#6f9dff;
+  --discover-accent-soft:rgba(111,157,255,.15);
+  --discover-warm:#e8b44c;
+  --discover-warm-soft:rgba(232,180,76,.14);
+  --discover-violet:#a78bfa;
+  --discover-violet-soft:rgba(167,139,250,.15);
+
+  /* Geometrie */
+  --discover-radius:14px;
+  --discover-radius-lg:20px;
+  --discover-card-width:300px;
+  --discover-card-width-compact:224px;
+  --discover-card-width-rank:366px;
+  --discover-hero-height:min(68vh,580px);
+  --discover-gutter:max(24px,calc((100vw - 1440px) / 2));
+  --discover-gap:16px;
+
+  /* Bewegung (§19) */
+  --discover-motion-fast:150ms;
+  --discover-motion-normal:260ms;
+  --discover-motion-slow:520ms;
+  --discover-ease:cubic-bezier(.22,.7,.26,1);
+
+  background:var(--discover-bg);
+  color:var(--discover-text);
+  color-scheme:dark;
+  overflow-x:hidden;
+}
+
+/* ==================================================== CATEGORY COLOR SYSTEM
+
+   Jede Discovery-Welt hat eine Farbe. Sie ist eine Zuordnung, kein Schmuck:
+   sie sagt, in welcher Welt man gerade ist, und sie steht NIE allein - jedes
+   Signal trägt daneben immer seinen Namen im Text (§24, Zugänglichkeit).
+
+   Die Farbe wird an EINER Stelle gesetzt (data-world am Abschnitt) und von
+   allen Bausteinen darin geerbt: Artwork, Verlaufslinie, Signalplakette,
+   Rangziffer, Lichtschein. Deshalb gibt es keine "blaue Karte" und keine
+   "orange Karte" - es gibt eine Atmosphäre, in der dunkle Karten liegen. */
+body.dx{
+  /* Hoehe der festen Site-Navigation. Der Koerper haelt oben genau so
+     viel Platz frei; Module, die einen ganzen Bildschirm fuellen, ziehen
+     sie ab. */
+  --dx-kopf:88px;
+  --w:#6f9dff;                       /* Grundton, wenn keine Welt gesetzt ist */
+  --w-2:#9ab6ff;
+  --w-glow:rgba(111,157,255,.16);
+  --w-soft:rgba(111,157,255,.10);
+}
+[data-world="leadership"]{--w:#5b7cff;--w-2:#93a9ff;--w-glow:rgba(91,124,255,.22);--w-soft:rgba(91,124,255,.10)}
+[data-world="highs"]     {--w:#4fd2e6;--w-2:#9fe8f2;--w-glow:rgba(79,210,230,.20);--w-soft:rgba(79,210,230,.09)}
+[data-world="momentum"]  {--w:#b07bff;--w-2:#d0b0ff;--w-glow:rgba(176,123,255,.20);--w-soft:rgba(176,123,255,.09)}
+[data-world="breakout"]  {--w:#f0a93c;--w-2:#f7cd8a;--w-glow:rgba(240,169,60,.18);--w-soft:rgba(240,169,60,.08)}
+[data-world="strength"]  {--w:#3fd9a4;--w-2:#8fe9c8;--w-glow:rgba(63,217,164,.18);--w-soft:rgba(63,217,164,.08)}
+[data-world="quality"]   {--w:#d9bc6a;--w-2:#ecd9a6;--w-glow:rgba(217,188,106,.16);--w-soft:rgba(217,188,106,.07)}
+[data-world="sectors"]   {--w:#8fa8cf;--w-2:#bccbe4;--w-glow:rgba(143,168,207,.16);--w-soft:rgba(143,168,207,.07)}
+[data-world="risk"]      {--w:#f0675c;--w-2:#f7a49c;--w-glow:rgba(240,103,92,.18);--w-soft:rgba(240,103,92,.08)}
+
+/* Sektorwelten - dieselbe Familie, nur anders gestimmt. */
+[data-world="tech"]     {--w:#8e8bff;--w-glow:rgba(142,139,255,.20);--w-soft:rgba(142,139,255,.09)}
+[data-world="health"]   {--w:#46cfc4;--w-glow:rgba(70,207,196,.18);--w-soft:rgba(70,207,196,.08)}
+[data-world="finance"]  {--w:#6f9dff;--w-glow:rgba(111,157,255,.18);--w-soft:rgba(111,157,255,.08)}
+[data-world="industry"] {--w:#f09a55;--w-glow:rgba(240,154,85,.17);--w-soft:rgba(240,154,85,.08)}
+[data-world="consumer"] {--w:#e88fb8;--w-glow:rgba(232,143,184,.16);--w-soft:rgba(232,143,184,.07)}
+[data-world="staples"]  {--w:#9fc58a;--w-glow:rgba(159,197,138,.16);--w-soft:rgba(159,197,138,.07)}
+[data-world="energy"]   {--w:#e8b44c;--w-glow:rgba(232,180,76,.17);--w-soft:rgba(232,180,76,.08)}
+[data-world="utility"]  {--w:#7fb8d8;--w-glow:rgba(127,184,216,.16);--w-soft:rgba(127,184,216,.07)}
+[data-world="estate"]   {--w:#c4a78f;--w-glow:rgba(196,167,143,.16);--w-soft:rgba(196,167,143,.07)}
+[data-world="comms"]    {--w:#a08fff;--w-glow:rgba(160,143,255,.18);--w-soft:rgba(160,143,255,.08)}
+[data-world="materials"]{--w:#b9a56f;--w-glow:rgba(185,165,111,.16);--w-soft:rgba(185,165,111,.07)}
+
+body.dx ::selection{background:rgba(111,157,255,.32)}
+body.dx :focus-visible{outline:2px solid var(--discover-accent);outline-offset:3px;border-radius:6px}
+.dx-app{min-height:100vh;background:var(--discover-bg)}
+.dx-page{padding-bottom:120px}
+
+/* Zahlen in Tabellenbreite, Text nicht: sonst "tanzen" wechselnde Kurse. */
+body.dx .num{font-variant-numeric:tabular-nums}
+
+/* ================================================================ App-Bar
+
+   Der weisse Vision-Universe-Header bleibt die Klammer der Website. Direkt
+   darunter beginnt die dunkle Flaeche mit einer eigenen, schmalen Leiste:
+   Marktstatus, Universum, Suche. Der Uebergang ist damit gewollt und nicht
+   ein Rest, den man uebersehen hat. */
+.dx-bar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:12px var(--discover-gutter);
+  background:rgba(8,8,10,.86);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid var(--discover-line);
+}
+.dx-brand{
+  display:flex;align-items:baseline;gap:9px;margin-right:auto;
+  font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  text-decoration:none;color:var(--discover-text);white-space:nowrap;
+}
+.dx-brand span{color:var(--discover-dim);font-size:9px;letter-spacing:.16em}
+
+/* Marktstatus: ein Punkt, ein Wort, ein Datum. Der Punkt pulst nur, wenn
+   tatsaechlich gehandelt wird - und "LIVE" steht nur dort, wo das Gate es
+   erlaubt (§16). */
+.dx-status{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--discover-muted);white-space:nowrap}
+.dx-status b{color:var(--discover-text);font-weight:700}
+.dx-dot{width:7px;height:7px;border-radius:50%;background:var(--discover-dim);flex:0 0 auto}
+.dx-status--open .dx-dot{background:var(--discover-up);box-shadow:0 0 0 0 rgba(63,208,127,.55);animation:dx-pulse 2.8s infinite}
+.dx-status--ext .dx-dot{background:var(--discover-warm)}
+.dx-status--live .dx-dot{background:var(--discover-up)}
+@keyframes dx-pulse{70%{box-shadow:0 0 0 8px rgba(63,208,127,0)}100%{box-shadow:0 0 0 0 rgba(63,208,127,0)}}
+
+.dx-switch{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--discover-line)}
+.dx-switch button{
+  border:0;background:transparent;color:var(--discover-muted);cursor:pointer;
+  font:inherit;font-size:11.5px;font-weight:700;letter-spacing:.03em;
+  padding:6px 13px;border-radius:999px;white-space:nowrap;
+  transition:color var(--discover-motion-fast) var(--discover-ease),
+             background var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-switch button[aria-pressed="true"]{background:var(--discover-text);color:#0a0a0c}
+.dx-switch button:hover:not([aria-pressed="true"]){color:var(--discover-text)}
+
+/* Der Einstieg in den Einzelmodus: ein Angebot in der Leiste, kein
+   Aufruf. Das kleine Symbol zeigt zwei gestapelte Flaechen - das ist die
+   Form des Modus. */
+.dx-einzeln{
+  display:inline-flex;align-items:center;gap:9px;padding:8px 13px;border-radius:999px;
+  border:1px solid var(--discover-line);color:var(--discover-muted);text-decoration:none;
+  font-size:12px;font-weight:600;white-space:nowrap;
+  transition:color var(--discover-motion-fast) var(--discover-ease),
+             border-color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-einzeln:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-einzeln i{
+  width:11px;height:14px;border:1.4px solid currentColor;border-radius:3px;position:relative;
+  flex:0 0 auto;
+}
+.dx-einzeln i::after{
+  content:"";position:absolute;left:1.4px;right:1.4px;top:4.4px;height:1.4px;background:currentColor;
+}
+
+.dx-searchbtn{
+  display:inline-flex;align-items:center;gap:9px;border:1px solid var(--discover-line);
+  background:rgba(255,255,255,.05);color:var(--discover-muted);border-radius:999px;
+  padding:7px 15px 7px 12px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap;
+  transition:border-color var(--discover-motion-fast) var(--discover-ease),
+             color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-searchbtn:hover{border-color:var(--discover-line-strong);color:var(--discover-text)}
+.dx-searchbtn kbd{
+  font:inherit;font-size:10px;padding:2px 5px;border-radius:4px;
+  background:rgba(255,255,255,.08);color:var(--discover-dim);
+}
+
+/* ==================================================================== Hero
+
+   Eine Flaeche, kein Kasten: Text links, Datenbild rechts, beides auf dem
+   Grund der Seite. Der Verlauf unten laeuft in die erste Reihe hinein,
+   damit die Seite nicht in Abschnitte zerfaellt. */
+.dx-hero{position:relative;min-height:var(--discover-hero-height);display:flex;align-items:center;overflow:hidden}
+/* Die Eingangsfläche atmet in der Farbe ihres Signals. Zwei weiche Lichter
+   und ein sehr flacher Verlauf - kein Farbblock, keine sichtbare Kante. */
+.dx-hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(105% 78% at 76% 14%, var(--w-glow), transparent 64%),
+    radial-gradient(80% 66% at 10% 4%, var(--w-soft), transparent 66%),
+    linear-gradient(180deg, color-mix(in srgb, var(--w) 5%, #0a0a0e) 0%, var(--discover-bg) 74%);
+  transition:background var(--discover-motion-slow) var(--discover-ease);
+}
+/* Ein sehr feines Liniengitter in der Weltfarbe - es macht die Fläche
+   materiell, ohne ein Muster zu erfinden: die Linien stehen im Raster der
+   Typografie, nicht im Zufall. */
+.dx-hero-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(90deg, color-mix(in srgb, var(--w) 9%, transparent) 1px, transparent 1px);
+  background-size:96px 100%;
+  mask-image:radial-gradient(75% 70% at 70% 30%, #000 10%, transparent 72%);
+  -webkit-mask-image:radial-gradient(75% 70% at 70% 30%, #000 10%, transparent 72%);
+}
+.dx-hero-fade{position:absolute;left:0;right:0;bottom:0;height:200px;background:linear-gradient(180deg,transparent,var(--discover-bg));pointer-events:none}
+
+.dx-hero-inner{
+  position:relative;z-index:2;width:100%;
+  display:grid;grid-template-columns:minmax(0,46%) minmax(0,1fr);gap:48px;align-items:end;
+  padding:54px var(--discover-gutter) 64px;
+}
+.dx-kicker{
+  display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;
+  font-size:11px;font-weight:800;letter-spacing:.20em;text-transform:uppercase;
+  color:var(--w-2,var(--w));
+}
+.dx-kicker::before{content:"";width:22px;height:1px;background:currentColor;opacity:.7}
+/* Die Eingangsflaeche liest sich wie eine Titelgeschichte:
+   Einordnung - Name - Kuerzel - grosse Zahl - ein Satz - drei Belege.
+   Die grosse Zahl steht bewusst VOR dem Satz: sie ist das, was man aus
+   drei Metern Entfernung sieht, und sie braucht keine Erklaerung. */
+.dx-hero-title{
+  margin:0 0 8px;font-size:clamp(38px,5.4vw,76px);line-height:.96;letter-spacing:-.035em;
+  font-weight:800;text-wrap:balance;
+}
+.dx-hero-sym{
+  display:block;font-size:12px;font-weight:700;letter-spacing:.22em;
+  color:var(--discover-dim);margin-bottom:22px;text-transform:uppercase;
+}
+.dx-hero-zahl{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.dx-hero-zahl b{
+  font-size:clamp(40px,5vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.dx-hero-zahl b.up{color:var(--discover-up)}
+.dx-hero-zahl b.down{color:var(--discover-down)}
+.dx-hero-zahl span{font-size:clamp(13px,1.3vw,16px);color:var(--discover-muted)}
+.dx-hero-line{margin:0 0 24px;font-size:clamp(17px,1.7vw,23px);line-height:1.35;
+  color:var(--discover-text);font-weight:600;letter-spacing:-.015em;max-width:24ch}
+/* Die Belege. Klein, in einer Zeile, ohne Rahmen - sie begruenden, sie
+   konkurrieren nicht mit der grossen Zahl. */
+.dx-hero-belege{
+  list-style:none;margin:0 0 30px;padding:0;
+  display:flex;flex-wrap:wrap;gap:8px 26px;
+}
+.dx-hero-belege li{display:flex;align-items:baseline;gap:7px;font-size:13px}
+.dx-hero-belege b{font-weight:700;font-variant-numeric:tabular-nums;color:var(--discover-text)}
+.dx-hero-belege span{color:var(--discover-dim)}
+
+.dx-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.dx-btn{
+  display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;
+  background:var(--discover-text);color:#0a0a0c;text-decoration:none;
+  font:inherit;font-size:13.5px;font-weight:700;letter-spacing:.01em;
+  padding:13px 24px;border-radius:999px;
+  transition:transform var(--discover-motion-fast) var(--discover-ease),
+             background var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-btn:hover{transform:translateY(-1px);background:#fff}
+.dx-btn--ghost{background:transparent;color:var(--discover-text);
+  border:1px solid color-mix(in srgb, var(--w) 40%, var(--discover-line-strong))}
+.dx-btn--ghost:hover{background:color-mix(in srgb, var(--w) 12%, transparent)}
+
+/* Das Datenbild der Eingangsflaeche. */
+.dx-hero-media{position:relative;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;gap:14px}
+.dx-hero-chart{width:100%;height:clamp(220px,30vh,320px);display:block;overflow:visible}
+.dx-hero-chart{color:var(--w)}
+.dx-hero-chart .dx-art-line{stroke-width:2.4}
+.dx-hero-chart .dx-art-ticker{font-size:150px;fill:color-mix(in srgb, var(--w) 9%, transparent)}
+.dx-hero-chart .dx-art-tick{fill:rgba(255,255,255,.14)}
+.dx-hero-chart .dx-art-tick.on{fill:var(--w)}
+.dx-hero-caption{font-size:11px;color:var(--discover-dim);line-height:1.5;max-width:52ch}
+
+/* Umschalter zwischen den Featured-Titeln: Striche, keine Punkte - sie
+   lesen sich als Fortschritt und nicht als Dekoration. */
+.dx-hero-nav{position:absolute;z-index:3;left:var(--discover-gutter);bottom:22px;display:flex;gap:8px}
+.dx-hero-nav button{
+  width:34px;height:3px;border:0;padding:0;border-radius:2px;cursor:pointer;
+  background:rgba(255,255,255,.22);
+  transition:background var(--discover-motion-fast) var(--discover-ease),
+             width var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-hero-nav button[aria-current="true"]{background:var(--w-2,var(--discover-text));width:52px}
+.dx-hero-nav button:hover{background:rgba(255,255,255,.5)}
+
+/* =================================================================== Rails */
+/* Die Atmosphäre einer Reihe: ein weiches Licht in der Farbe ihrer Welt,
+   ohne Kante und ohne Rechteck. Es liegt HINTER den Karten und endet
+   weich - deshalb ein Radialverlauf und kein Hintergrundblock. */
+/* scroll-margin-top haelt die Ueberschrift frei, wenn eine Reihe
+   angesprungen wird: darueber steht die klebende App-Leiste, und ohne
+   diesen Abstand landet der Kopf der Reihe dahinter. */
+.dx-rail-section{margin:44px 0 0;position:relative;isolation:isolate;scroll-margin-top:96px}
+.dx-rail-section::before{
+  /* Links und rechts buendig, nicht darueber hinaus: eine Flaeche, die
+     6 % breiter ist als die Seite, erzeugt am Telefon echten
+     Seitwaerts-Scroll - dort ist der Rand nicht abgeschnitten, sondern
+     erreichbar. Die Breite braucht die Atmosphaere auch nicht; ihre
+     weichen Raender kommen aus den Gradienten selbst. */
+  content:"";position:absolute;z-index:-1;left:0;right:0;top:-60px;bottom:-60px;
+  background:
+    radial-gradient(52% 62% at 14% 34%, var(--w-glow), transparent 72%),
+    radial-gradient(44% 52% at 86% 72%, var(--w-soft), transparent 76%);
+  /* Die Maske nimmt der Fläche ihre Kanten: oben und unten läuft sie aus,
+     damit zwei Welten ineinander übergehen statt aneinanderzustoßen. */
+  mask-image:linear-gradient(180deg,transparent 0%,#000 22%,#000 74%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 22%,#000 74%,transparent 100%);
+  opacity:.9;pointer-events:none;
+}
+.dx-rail-section--tight{margin-top:30px}
+.dx-rail-head{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding:0 var(--discover-gutter) 14px;
+}
+.dx-rail-head h2{
+  margin:0;font-size:clamp(17px,1.7vw,21px);font-weight:700;letter-spacing:-.015em;
+  display:flex;align-items:center;gap:11px;
+}
+/* Der Punkt vor der Überschrift ist die Farbmarke der Welt - klein, aber
+   er verbindet Überschrift und Atmosphäre sichtbar miteinander. */
+.dx-rail-head h2::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:var(--w);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--w) 16%, transparent);flex:0 0 auto;
+}
+.dx-rail-head p{margin:0;font-size:13px;color:var(--discover-muted);letter-spacing:0}
+.dx-rail-head .dx-more{
+  margin-left:auto;font-size:12px;font-weight:600;color:var(--discover-muted);
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:color var(--discover-motion-fast) var(--discover-ease),gap var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-rail-head .dx-more:hover{color:var(--discover-text);gap:9px}
+.dx-rail-count{font-size:11px;color:var(--discover-dim);white-space:nowrap;letter-spacing:.04em}
+
+.dx-rail-wrap{position:relative}
+.dx-rail{
+  display:flex;gap:var(--discover-gap);overflow-x:auto;overflow-y:visible;
+  padding:12px var(--discover-gutter) 26px;
+  scroll-snap-type:x proximity;scroll-padding:0 var(--discover-gutter);
+  scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.dx-rail::-webkit-scrollbar{display:none}
+.dx-rail > *{scroll-snap-align:start}
+/* Ziehen mit der Maus: solange der Zeiger unten ist, faengt kein Text
+   und kein Bild die Geste ab. */
+.dx-rail--zieht{cursor:grabbing;scroll-snap-type:none;user-select:none}
+.dx-rail--zieht *{pointer-events:none}
+.dx-rail:focus-visible{outline:2px solid var(--discover-accent);outline-offset:6px;border-radius:8px}
+
+/* Das Fortschrittsband.
+
+   Eine Scrollleiste sagt "hier ist eine Webseite". Ein schmales Band in
+   der Farbe der Welt sagt "hier geht es weiter" - und es sagt es nur,
+   solange es etwas zu sagen gibt. */
+.dx-swipe-band{
+  height:2px;margin:0 var(--discover-gutter) 4px;border-radius:2px;
+  background:color-mix(in srgb, var(--w) 14%, transparent);overflow:hidden;
+}
+.dx-swipe-band i{
+  display:block;height:100%;border-radius:2px;background:var(--w);opacity:.6;
+  transition:transform var(--discover-motion-fast) linear;
+}
+
+.dx-rail-nav{
+  position:absolute;top:0;bottom:26px;width:calc(var(--discover-gutter) + 26px);
+  z-index:20;border:0;cursor:pointer;display:none;align-items:center;
+  color:var(--discover-text);
+  transition:opacity var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-rail-nav--prev{left:0;justify-content:flex-start;padding-left:8px;
+  background:linear-gradient(90deg,var(--discover-bg) 40%,transparent)}
+.dx-rail-nav--next{right:0;justify-content:flex-end;padding-right:8px;
+  background:linear-gradient(270deg,var(--discover-bg) 40%,transparent)}
+.dx-rail-nav i{
+  display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.10);border:1px solid var(--discover-line);
+  transition:background var(--discover-motion-fast) var(--discover-ease),transform var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-rail-nav:hover i{background:rgba(255,255,255,.2);transform:scale(1.07)}
+.dx-rail-nav[hidden]{display:none!important}
+@media (hover:hover) and (min-width:960px){.dx-rail-wrap:hover .dx-rail-nav{display:flex}}
+
+/* ================================================================= Poster
+
+   Kein Kasten mit Zahlen, sondern eine Flaeche mit einem Verlauf darin.
+   Der Chart traegt das untere Drittel und laeuft in die Karte aus. */
+.dx-poster{
+  position:relative;flex:0 0 var(--discover-card-width);width:var(--discover-card-width);
+  display:flex;flex-direction:column;
+  border-radius:var(--discover-radius);text-decoration:none;
+  /* `color` trägt die Weltfarbe: das Artwork zeichnet seinen Lichtschein
+     mit currentColor, die Linie und die Plakette greifen auf --w zu. */
+  color:var(--discover-text);
+  background:
+    radial-gradient(120% 90% at 50% 112%, var(--w-soft), transparent 62%),
+    linear-gradient(180deg,var(--discover-surface),var(--discover-bg-2));
+  border:1px solid var(--discover-line);
+  overflow:hidden;isolation:isolate;
+  transition:transform var(--discover-motion-normal) var(--discover-ease),
+             border-color var(--discover-motion-normal) var(--discover-ease),
+             box-shadow var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-poster:hover,.dx-poster:focus-visible{
+  transform:translateY(-6px) scale(1.025);
+  border-color:color-mix(in srgb, var(--w) 42%, var(--discover-line-strong));
+  box-shadow:0 24px 60px -26px rgba(0,0,0,.92),
+             0 0 0 1px color-mix(in srgb, var(--w) 22%, transparent) inset,
+             0 26px 70px -40px var(--w);
+  z-index:5;
+}
+.dx-poster:active{transform:translateY(-2px) scale(1.01)}
+
+.dx-poster-top{padding:16px 16px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.dx-poster-id{min-width:0;width:100%}
+/* Die Karte liest sich von oben nach unten wie ein Satz:
+   WER — WARUM — WIE VIEL — und dann das Bild.
+
+   Vorher stand das Kürzel groß und der Name klein darüber. Das war die
+   Sicht einer Handelsoberfläche: dort ist das Kürzel die Adresse. Wer
+   eine Aktie entdeckt, sucht aber zuerst die Firma - "Valero Energy"
+   sagt jemandem etwas, "VLO" niemandem, der es nicht ohnehin weiß. */
+.dx-poster-name{
+  display:block;font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.2;
+  color:var(--discover-text);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.dx-poster-sub{display:flex;align-items:baseline;gap:10px;margin-top:5px;flex-wrap:wrap}
+.dx-poster-sym{
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--discover-dim);
+}
+.dx-poster-preis{font-size:11.5px;color:var(--discover-muted);font-variant-numeric:tabular-nums}
+.dx-poster-preis i{font-style:normal;margin-left:6px}
+
+/* Die eine Aussage. Sie ist der Grund, warum diese Karte hier liegt -
+   also bekommt sie das Gewicht, das vorher die Kennzahl hatte. */
+.dx-story{
+  margin:13px 16px 0;font-size:14.5px;line-height:1.35;font-weight:600;
+  letter-spacing:-.01em;color:var(--discover-text);
+  display:flex;align-items:baseline;gap:9px;
+}
+.dx-story-dot{
+  flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:var(--w);
+  transform:translateY(-2px);
+}
+/* Die eine Zahl. Groß, mit Zeitraum daneben - "+150 %" allein wäre eine
+   Behauptung ohne Bezug. */
+.dx-zahl{margin:10px 16px 0;display:flex;align-items:baseline;gap:9px}
+.dx-zahl b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.dx-zahl b.up{color:var(--discover-up)}
+.dx-zahl b.down{color:var(--discover-down)}
+.dx-zahl span{font-size:11.5px;color:var(--discover-dim);letter-spacing:.02em}
+.dx-zusatz{font-size:11.5px;color:var(--discover-muted);letter-spacing:.01em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Signalstreifen: das eine Wort, warum der Titel hier liegt. */
+.dx-sig{
+  display:inline-flex;align-items:center;gap:7px;margin:13px 16px 0;align-self:flex-start;
+  font-size:10.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;
+  padding:5px 10px;border-radius:7px;white-space:nowrap;max-width:calc(100% - 32px);
+}
+.dx-sig small{font-weight:600;letter-spacing:.02em;text-transform:none;font-size:11px;opacity:.8;overflow:hidden;text-overflow:ellipsis}
+/* Die Plakette trägt die Farbe ihres eigenen Signals - nicht die der
+   Reihe. Ein Titel, der in der Momentum-Reihe steht, aber ein neues
+   Jahreshoch hat, zeigt das auch. */
+.dx-sig{background:color-mix(in srgb, var(--sig) 15%, transparent);color:var(--sig);
+  --sig:var(--w);border:1px solid color-mix(in srgb, var(--sig) 26%, transparent)}
+.dx-sig--highs{--sig:#4fd2e6}
+.dx-sig--leadership{--sig:#93a9ff}
+.dx-sig--momentum{--sig:#c6a3ff}
+.dx-sig--breakout{--sig:#f0a93c}
+.dx-sig--strength{--sig:#3fd9a4}
+.dx-sig--quality{--sig:#d9bc6a}
+.dx-sig--sectors{--sig:#a8bcd8}
+.dx-sig--muted{--sig:#9d9da8;background:rgba(255,255,255,.05)}
+
+/* Die Zweitnennung. Sie steht unter der Signalplakette, in der Schrift
+   der Nebensachen - sie erklaert eine Beobachtung, sie behauptet nichts.
+   Der Punkt davor traegt die Weltfarbe, der Text traegt sie nicht: Farbe
+   ist hier Schmuck, die Information steht im Wort. */
+.dx-echo{
+  display:inline-flex;align-items:center;gap:6px;margin:8px 16px 0;align-self:flex-start;
+  font-size:10.5px;letter-spacing:.04em;color:var(--discover-dim);white-space:nowrap;
+  max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis;
+}
+.dx-echo-dot{width:4px;height:4px;border-radius:50%;background:var(--w);opacity:.75;flex:0 0 auto}
+
+.dx-poster-media{position:relative;margin-top:auto;height:104px;color:var(--w);
+  -webkit-mask-image:linear-gradient(180deg,#000 84%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 84%,transparent 100%)}
+.dx-poster-media svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* ------------------------------------------------------- Stock Artwork
+   Jede Linie hier hat ihre Kennzahl (siehe discover/ui/artwork.js). */
+.dx-art{color:var(--w);overflow:visible}
+.dx-art-line{fill:none;stroke:var(--w);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;
+  vector-effect:non-scaling-stroke}
+.dx-art-fill{stroke:none}
+.dx-art-band{fill:color-mix(in srgb, var(--w) 7%, transparent);stroke:none}
+.dx-art-node{fill:var(--w)}
+.dx-art-base{stroke:rgba(255,255,255,.16);stroke-dasharray:2 4;stroke-width:1}
+.dx-art-high{stroke:var(--w);stroke-width:1;stroke-dasharray:3 3;opacity:.75}
+.dx-art-high-mark{fill:var(--w)}
+.dx-art-tick{fill:rgba(255,255,255,.18)}
+.dx-art-tick.on{fill:var(--w)}
+.dx-art-none{fill:var(--discover-dim);font-size:11px;font-family:var(--sans)}
+.dx-art-ticker{
+  fill:color-mix(in srgb, var(--w) 8%, rgba(255,255,255,.035));
+  font-family:var(--sans);font-weight:800;letter-spacing:-.05em;
+}
+/* Fällt der Verlauf über den gezeigten Zeitraum, wird die Linie korallrot -
+   die Weltfarbe bleibt in Fläche und Licht, die RICHTUNG bleibt eindeutig. */
+.dx-art[data-direction="down"] .dx-art-line{stroke:var(--discover-down)}
+.dx-art[data-direction="down"] .dx-art-node{fill:var(--discover-down)}
+.dx-art[data-direction="down"] .dx-art-fill{fill:rgba(240,103,92,.12)}
+.dx-spark .line{fill:none;stroke:var(--discover-up);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.dx-spark .line.down{stroke:var(--discover-down)}
+.dx-spark .area{fill:url(#dxUp);stroke:none}
+.dx-spark .area.down{fill:url(#dxDown)}
+.dx-spark .node{fill:var(--discover-up)}
+.dx-spark .node.down{fill:var(--discover-down)}
+.dx-spark .grid{stroke:var(--discover-line);stroke-dasharray:2 4}
+.dx-spark .tick{fill:var(--discover-dim);font-size:9px;letter-spacing:.06em}
+
+.dx-poster-foot{
+  display:flex;align-items:center;gap:10px;padding:0 16px 14px;
+  font-size:11px;color:var(--discover-dim);letter-spacing:.03em;
+}
+.dx-poster-foot .dx-meter{flex:1}
+.dx-meter{height:2px;border-radius:2px;background:rgba(255,255,255,.10);overflow:hidden}
+.dx-meter i{display:block;height:100%;background:var(--w);opacity:.9;border-radius:2px;
+  transition:width var(--discover-motion-slow) var(--discover-ease)}
+
+/* Der Hover-Vorhang: zusaetzliche Intelligence, nur auf Geraeten mit Zeiger. */
+.dx-reveal{
+  position:absolute;left:0;right:0;bottom:0;padding:14px 16px 13px;
+  background:linear-gradient(180deg,rgba(8,8,10,0),rgba(8,8,10,.93) 42%);
+  display:flex;align-items:flex-end;gap:14px;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity var(--discover-motion-normal) var(--discover-ease),
+             transform var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-reveal div{min-width:0}
+.dx-reveal span{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-reveal b{display:block;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.dx-reveal .dx-open{margin-left:auto;font-size:11px;font-weight:700;color:var(--discover-text);white-space:nowrap}
+@media (hover:hover){
+  .dx-poster:hover .dx-reveal,.dx-poster:focus-visible .dx-reveal{opacity:1;transform:none}
+}
+
+/* --------------------------------------------------------- Poster: Rang
+   Die Signature-Reihe. Die Ziffer ist Teil der Flaeche, nicht ein Abzeichen
+   auf der Karte - sie steht neben ihr und wird vom Poster ueberlappt. */
+.dx-rank{
+  position:relative;flex:0 0 var(--discover-card-width-rank);width:var(--discover-card-width-rank);
+  display:flex;align-items:stretch;
+}
+/* Die Ziffer ragt nach links in den Abstand hinein. Ohne eigene Ebene
+   verschwände sie unter dem Poster der VORHERIGEN Zahl - überlappen darf
+   sie nur ihr eigenes. */
+.dx-rank-num{position:relative;z-index:1}
+.dx-rank .dx-poster{position:relative;z-index:2}
+.dx-rank-num{
+  flex:0 0 102px;display:flex;align-items:center;justify-content:flex-start;
+  font-size:clamp(76px,7vw,112px);line-height:1;font-weight:800;letter-spacing:-.07em;
+  color:transparent;-webkit-text-stroke:2px color-mix(in srgb, var(--w) 55%, rgba(255,255,255,.22));
+  user-select:none;pointer-events:none;overflow:visible;
+  transition:-webkit-text-stroke-color var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:color-mix(in srgb, var(--w) 90%, #fff)}
+.dx-rank .dx-poster{flex:1 1 auto;width:auto;margin-left:-18px}
+
+/* --------------------------------------------------- Poster: Landschaft
+
+   Die dritte Form. Breiter, flacher, mit grösserem Verlauf: für die Reihe,
+   in der die Bewegung selbst die Nachricht ist (neue Jahreshochs). */
+.dx-poster--wide{flex-basis:392px;width:392px}
+
+.dx-poster--wide .dx-poster-media{height:132px}
+.dx-poster--wide .dx-poster-top{padding-top:18px}
+.dx-poster--wide .dx-poster-name{font-size:20px}
+
+/* ------------------------------------------------------ Poster: kompakt */
+.dx-poster--compact{flex-basis:var(--discover-card-width-compact);width:var(--discover-card-width-compact)}
+
+.dx-poster--compact .dx-poster-media{height:66px}
+.dx-poster--compact .dx-poster-name{font-size:13.5px;-webkit-line-clamp:1}
+
+/* ---------------------------------------------------------- Sektorkachel */
+.dx-sector{
+  flex:0 0 320px;width:320px;border-radius:var(--discover-radius);
+  border:1px solid var(--discover-line);background:var(--discover-bg-2);
+  padding:18px 18px 10px;text-decoration:none;color:inherit;display:flex;flex-direction:column;
+  transition:border-color var(--discover-motion-normal) var(--discover-ease),
+             background var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-sector:hover{border-color:var(--discover-line-strong);background:var(--discover-surface)}
+.dx-sector-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.dx-sector-head h3{margin:0;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.dx-sector-head span{font-size:11px;color:var(--discover-dim)}
+.dx-sector-row{
+  display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:11px;
+  padding:9px 0;border-top:1px solid var(--discover-line);font-size:13px;
+}
+.dx-sector-row:first-of-type{border-top:0}
+.dx-sector-row i{font-style:normal;font-size:10px;color:var(--discover-dim);font-variant-numeric:tabular-nums}
+.dx-sector-row > div{display:flex;align-items:baseline;gap:9px;min-width:0}
+.dx-sector-row b{font-weight:700;letter-spacing:-.01em;flex:0 0 auto}
+.dx-sector-row em{font-style:normal;font-size:11px;color:var(--discover-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.dx-sector-row .val{font-size:12px;font-variant-numeric:tabular-nums;color:var(--discover-muted)}
+.dx-sector-foot{margin-top:auto;padding:10px 0 4px;font-size:11.5px;font-weight:600;color:var(--discover-muted)}
+
+/* ================================================== Zustaende und Hinweise */
+.dx-skeleton{
+  flex:0 0 var(--discover-card-width);width:var(--discover-card-width);height:250px;
+  border-radius:var(--discover-radius);border:1px solid var(--discover-line);
+  background:linear-gradient(100deg,var(--discover-surface) 28%,var(--discover-surface-2) 48%,var(--discover-surface) 68%);
+  background-size:280% 100%;animation:dx-shimmer 1.6s infinite linear;
+}
+@keyframes dx-shimmer{from{background-position:150% 0}to{background-position:-50% 0}}
+
+/* Ein Hinweis, der keinen Kasten braucht: eine Zeile unter der
+   Eingangsfläche, in der Farbe des Grundes. */
+.dx-inline-note{
+  margin:26px var(--discover-gutter) 0;max-width:96ch;
+  font-size:12.5px;line-height:1.65;color:var(--discover-dim);
+  border-left:2px solid var(--discover-line-strong);padding-left:14px;
+}
+.dx-inline-note b{color:var(--discover-muted);font-weight:600}
+.dx-inline-note summary{cursor:default;list-style:none}
+.dx-inline-note summary::-webkit-details-marker{display:none}
+.dx-inline-note p{margin:0}
+.dx-inline-note[open] summary{margin-bottom:2px}
+
+.dx-empty,.dx-note{
+  margin:0 var(--discover-gutter);max-width:820px;
+  border:1px solid var(--discover-line);border-radius:var(--discover-radius);
+  padding:20px 22px;font-size:13.5px;line-height:1.6;color:var(--discover-muted);
+  background:var(--discover-bg-2);
+}
+.dx-empty b,.dx-note b{
+  display:block;color:var(--discover-text);font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;margin-bottom:7px;font-weight:700;
+}
+.dx-note--warm{border-color:rgba(232,180,76,.28);background:rgba(232,180,76,.06)}
+.dx-note--warm b{color:var(--discover-warm)}
+
+/* ====================================================== Such-Overlay (§17) */
+.dx-search{
+  position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;
+  background:rgba(6,6,8,.86);backdrop-filter:blur(26px) saturate(120%);
+  -webkit-backdrop-filter:blur(26px) saturate(120%);
+  opacity:0;pointer-events:none;
+  transition:opacity var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-search.on{opacity:1;pointer-events:auto}
+.dx-search-inner{width:min(860px,100%);margin:0 auto;padding:12vh 24px 40px;display:flex;flex-direction:column;min-height:0}
+.dx-search h2{margin:0 0 22px;font-size:clamp(24px,3.4vw,38px);font-weight:800;letter-spacing:-.03em}
+.dx-search-field{position:relative;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--discover-line-strong);padding-bottom:14px}
+.dx-search-field input{
+  flex:1;border:0;background:transparent;color:var(--discover-text);
+  font:inherit;font-size:clamp(20px,2.6vw,30px);font-weight:600;letter-spacing:-.02em;padding:0;
+}
+.dx-search-field input:focus{outline:0}
+/* Das native Loesch-Kreuz der Suchfelder passt nicht zur Flaeche und steht
+   direkt neben dem eigenen Schliessen-Knopf. */
+.dx-search-field input::-webkit-search-cancel-button,
+.dx-search-field input::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+.dx-search-field input::placeholder{color:var(--discover-dim)}
+.dx-search-close{
+  border:1px solid var(--discover-line);background:transparent;color:var(--discover-muted);
+  border-radius:999px;padding:7px 14px;font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap;
+}
+.dx-search-close:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-search-hint{margin:14px 0 0;font-size:12px;color:var(--discover-dim)}
+/* align-content:start ist hier kein Feinschliff: ohne die Zeile verteilt
+   das Raster seine Hoehe auf die Treffer, die Zeilen werden gestaucht und
+   die zweite Textzeile eines Treffers laeuft in den naechsten hinein.
+   Sichtbar wurde das erst, als die Zeile einen eigenen Hintergrund bekam -
+   vorher hat sich der Ueberlauf nur ueberlagert. */
+.dx-results{margin-top:22px;overflow-y:auto;display:grid;gap:6px;padding-bottom:20px;
+  align-content:start;grid-auto-rows:min-content}
+.dx-result{
+  position:relative;overflow:hidden;
+  display:grid;grid-template-columns:1fr 96px 92px;align-items:center;gap:16px;
+  padding:13px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;
+  transition:background var(--discover-motion-fast) var(--discover-ease),
+             border-color var(--discover-motion-fast) var(--discover-ease);
+}
+/* Das Kuerzel als Flaeche - dasselbe Mittel wie auf dem Poster, nur
+   liegend. Es ist im Ruhezustand fast nicht da und tritt erst hervor,
+   wenn die Zeile gemeint ist; eine Trefferliste, in der zwanzig
+   Wasserzeichen gleichzeitig leuchten, waere Tapete. */
+.dx-result-mark{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:44px;font-weight:800;letter-spacing:-.05em;line-height:1;
+  color:var(--w);opacity:0;pointer-events:none;
+  transition:opacity var(--discover-motion-normal) var(--discover-ease);
+}
+.dx-result::before{
+  content:"";position:absolute;left:0;top:8px;bottom:8px;width:2px;border-radius:2px;
+  background:var(--w);opacity:0;
+  transition:opacity var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-result:hover,.dx-result:focus-visible,.dx-result[aria-selected="true"]{
+  background:linear-gradient(90deg, color-mix(in srgb, var(--w) 11%, transparent), var(--discover-surface) 42%);
+  border-color:color-mix(in srgb, var(--w) 26%, var(--discover-line));
+}
+.dx-result:hover::before,.dx-result:focus-visible::before,.dx-result[aria-selected="true"]::before{opacity:.9}
+.dx-result:hover .dx-result-mark,.dx-result[aria-selected="true"] .dx-result-mark{opacity:.09}
+.dx-result .nm,.dx-result svg,.dx-result .val{position:relative}
+.dx-result[aria-selected="true"] .nm{color:var(--w)}
+.dx-result .nm{font-size:15px;font-weight:600;color:var(--discover-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-result .nm em{font-style:normal;color:var(--discover-dim);font-size:11.5px;display:block;margin-top:2px}
+.dx-result svg{width:96px;height:30px}
+.dx-result .val{text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--discover-muted)}
+.dx-result .val.up{color:var(--discover-up)}
+.dx-result .val.down{color:var(--discover-down)}
+.dx-result .dx-spark .track{stroke:var(--discover-line-strong)}
+
+/* Die Chart-Werkzeuge. Zugeklappt eine Zeile, aufgeklappt die volle
+   Leiste des Quant-Moduls - dieselbe Technik, nur nicht im Weg. */
+.dx-werkzeuge{margin-top:16px;border-top:1px solid var(--discover-line);padding-top:14px}
+.dx-werkzeuge summary{
+  cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--discover-muted);
+  font-weight:700;
+}
+.dx-werkzeuge summary::-webkit-details-marker{display:none}
+.dx-werkzeuge summary::after{content:"+";font-size:14px;opacity:.8}
+.dx-werkzeuge[open] summary::after{content:"–"}
+.dx-werkzeuge summary:hover{color:var(--discover-text)}
+
+/* ============================================ Einzeln entdecken (Feed)
+
+   Ein Bildschirm, eine Aktie. Die ganze Mechanik ist scroll-snap - kein
+   abgefangenes Wischen, kein gerechnetes Transform. Deshalb funktioniert
+   der Modus mit Tastatur, Bildlaufleiste und Screenreader, ohne dass
+   dafuer etwas gebaut werden musste.
+
+   dvh statt vh: auf dem Telefon waechst und schrumpft die Browserleiste,
+   und ein Bildschirm in vh waere entweder zu hoch oder zu niedrig. */
+body.dx-feed-aktiv{overflow:hidden}
+/* Die Site-Navigation liegt fest ueber der Seite und der Koerper haelt
+   dafuer oben Platz frei. Ein Modus, der einen Bildschirm fuellen will,
+   muss diesen Streifen abziehen - sonst reicht jeder "Bildschirm" um die
+   Hoehe des Kopfes ueber die Sichtflaeche hinaus, und der Hinweis nach
+   unten steht genau dort, wo ihn niemand sieht. */
+/* min-height muss mit zurueckgenommen werden: .dx-app setzt 100vh, und
+   eine Mindesthoehe schlaegt jede gerechnete Hoehe. */
+.dx-app--feed{height:calc(100dvh - var(--dx-kopf, 88px));min-height:0;
+  display:flex;flex-direction:column}
+.dx-feed{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.dx-feed-bar{
+  position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:12px var(--discover-gutter);
+  background:linear-gradient(180deg, var(--discover-bg) 40%, transparent);
+}
+.dx-feed-zurueck{
+  font-size:13px;font-weight:600;color:var(--discover-muted);text-decoration:none;
+  padding:8px 0;min-height:44px;display:inline-flex;align-items:center;
+}
+.dx-feed-zurueck:hover{color:var(--discover-text)}
+.dx-feed-zaehler{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-dim);
+  font-variant-numeric:tabular-nums}
+
+.dx-feed-spur{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.dx-feed-spur::-webkit-scrollbar{display:none}
+.dx-feed-screen{
+  position:relative;scroll-snap-align:start;scroll-snap-stop:always;
+  min-height:100%;display:flex;align-items:center;overflow:hidden;
+}
+.dx-feed-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(72% 62% at 78% 12%, color-mix(in srgb, var(--w) 26%, transparent), transparent 66%),
+    radial-gradient(58% 54% at 8% 96%, color-mix(in srgb, var(--w) 12%, transparent), transparent 70%);
+}
+.dx-feed-inner{
+  position:relative;width:100%;max-width:760px;margin:0 auto;
+  padding:12px var(--discover-gutter) 40px;display:flex;flex-direction:column;gap:0;
+}
+.dx-feed-name{
+  margin:10px 0 6px;font-size:clamp(32px,6.4vw,60px);line-height:1;letter-spacing:-.035em;
+  font-weight:800;text-wrap:balance;
+}
+.dx-feed-meta{margin:0 0 18px;display:flex;gap:10px;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--discover-dim)}
+.dx-feed-meta span::after{content:"·";margin-left:10px}
+.dx-feed-meta span:last-child::after{content:""}
+.dx-feed-zahl{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.dx-feed-zahl b{font-size:clamp(38px,7vw,58px);font-weight:800;letter-spacing:-.04em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.dx-feed-zahl b.up{color:var(--discover-up)}
+.dx-feed-zahl b.down{color:var(--discover-down)}
+.dx-feed-zahl span{font-size:13px;color:var(--discover-muted)}
+.dx-feed-satz{margin:0 0 20px;font-size:clamp(17px,2.2vw,22px);line-height:1.35;font-weight:600;
+  letter-spacing:-.015em;max-width:26ch}
+.dx-feed-bild{height:clamp(150px,26dvh,260px);margin:0 0 16px;color:var(--w)}
+.dx-feed-bild .dx-art{width:100%;height:100%;display:block}
+.dx-feed-zusatz{margin:0 0 22px;font-size:13px;color:var(--discover-muted)}
+.dx-feed-screen .dx-cta{margin-top:2px}
+.dx-feed-screen--ende .dx-feed-inner h2{font-size:clamp(26px,4vw,40px);margin:8px 0 12px;
+  letter-spacing:-.03em}
+
+/* Am Schreibtisch ist der Bildschirm breit und hoch: dort steht der Text
+   links und das Datenbild rechts daneben, statt beides in eine schmale
+   Spalte in der Mitte zu pressen. Dieselbe Aufteilung wie die
+   Eingangsflaeche - ein Modus soll sich nicht anfuehlen wie eine fremde
+   Seite. */
+@media (min-width:1000px){
+  .dx-feed-inner{
+    max-width:1240px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+    column-gap:56px;row-gap:0;align-content:center;padding-bottom:52px;
+  }
+  /* Alle Textzeilen in die linke Spalte, das Bild rechts daneben ueber
+     die volle Hoehe. row-gap bleibt null: die Abstaende kommen aus den
+     Elementen selbst, sonst zerfaellt der Text in lauter Zeilen mit
+     gleichem Abstand. */
+  .dx-feed-inner > *{grid-column:1}
+  .dx-feed-bild{grid-column:2;grid-row:1 / span 9;align-self:center;
+    height:min(50dvh,400px);margin:0}
+}
+
+/* Der Hinweis nach unten - nur auf dem ersten Bildschirm. */
+.dx-feed-weiter{
+  position:absolute;left:0;right:0;bottom:18px;display:flex;flex-direction:column;
+  align-items:center;gap:7px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--discover-dim);
+}
+.dx-feed-weiter i{
+  width:10px;height:10px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg);animation:dx-feed-tipp 2.4s ease-in-out infinite;
+}
+@keyframes dx-feed-tipp{0%,100%{transform:rotate(45deg) translate(0,0);opacity:.55}
+                        50%{transform:rotate(45deg) translate(3px,3px);opacity:1}}
+@media (prefers-reduced-motion: reduce){
+  .dx-feed-weiter i{animation:none}
+  .dx-feed-spur{scroll-behavior:auto}
+}
+
+/* ================================================= Aktienseite: Ebene 2
+
+   Die Sektionen zwischen Kurs und Analyse. Sie sind bewusst ruhiger
+   gebaut als die Discover-Karten: hier wird gelesen, nicht entdeckt. */
+
+/* Die Aktie in 30 Sekunden: vier Spalten, keine Kaesten, eine Linie
+   dazwischen. Ein Raster aus Kacheln saehe aus wie ein Dashboard - und
+   genau das soll die Seite nicht sein. */
+.dx-30{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1px;background:var(--discover-line);border:1px solid var(--discover-line);
+  border-radius:var(--discover-radius);overflow:hidden;
+}
+.dx-30-zelle{background:var(--discover-bg);padding:20px 22px 18px;display:flex;flex-direction:column;gap:7px}
+.dx-30-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-30-wert{font-size:clamp(21px,2.3vw,27px);font-weight:700;letter-spacing:-.025em;line-height:1.1}
+.dx-30-wert.up{color:var(--discover-up)}
+.dx-30-wert.down{color:var(--discover-down)}
+.dx-30-wert.warm{color:var(--discover-warm)}
+.dx-30-wert--leer{font-size:15px;font-weight:600;color:var(--discover-dim)}
+.dx-30-beleg{font-size:12.5px;line-height:1.5;color:var(--discover-muted)}
+.dx-30-zelle--leer .dx-30-beleg{color:var(--discover-dim)}
+/* "Was bedeutet das?" - eine Erklaerung je Begriff, nicht an jedem Wort. */
+.dx-was{margin-top:auto;padding-top:10px}
+.dx-was summary{
+  cursor:pointer;font-size:11.5px;color:var(--discover-accent);list-style:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.dx-was summary::-webkit-details-marker{display:none}
+.dx-was summary::after{content:"+";font-size:13px;opacity:.8}
+.dx-was[open] summary::after{content:"–"}
+.dx-was p{margin:9px 0 0;font-size:12.5px;line-height:1.6;color:var(--discover-muted)}
+
+/* Die Waage. Zwei Spalten, gleich gewichtet - das ist die Aussage. */
+.dx-waage{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.dx-waage-spalte h3{
+  margin:0 0 14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--discover-muted);font-weight:700;
+}
+.dx-waage-spalte ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.dx-waage-spalte li{display:flex;gap:12px;align-items:baseline}
+.dx-waage-marke{
+  flex:0 0 auto;width:18px;height:18px;border-radius:50%;display:inline-flex;
+  align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:700;
+  transform:translateY(2px);
+}
+.dx-waage-spalte--pro .dx-waage-marke{background:color-mix(in srgb, var(--discover-up) 16%, transparent);color:var(--discover-up)}
+.dx-waage-spalte--contra .dx-waage-marke{background:color-mix(in srgb, var(--discover-warm) 16%, transparent);color:var(--discover-warm)}
+.dx-waage-spalte b{display:block;font-size:14.5px;font-weight:600;line-height:1.4;letter-spacing:-.01em}
+.dx-waage-spalte span{display:block;margin-top:3px;font-size:12.5px;color:var(--discover-muted)}
+
+/* Das Unternehmen: Zahlen in einer Zeile, gross genug zum Lesen. */
+.dx-firma{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:26px 34px}
+.dx-firma > div{display:flex;flex-direction:column;gap:6px}
+.dx-firma span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-firma b{font-size:clamp(20px,2.2vw,26px);font-weight:700;letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums}
+.dx-firma em{font-style:normal;font-size:12.5px;color:var(--discover-muted)}
+.dx-firma em.up{color:var(--discover-up)}
+.dx-firma em.down{color:var(--discover-down)}
+
+/* Die Grenze zur Analyse. */
+.dx-trenner{
+  margin:70px var(--discover-gutter) 0;padding-top:30px;
+  border-top:1px solid var(--discover-line);
+}
+.dx-trenner span{
+  display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--discover-muted);font-weight:700;
+}
+.dx-trenner p{margin:10px 0 0;font-size:13.5px;line-height:1.6;color:var(--discover-dim);max-width:64ch}
+
+/* ========================================================== Detailseite */
+.dx-detail{padding-bottom:120px}
+.dx-back{
+  display:inline-flex;align-items:center;gap:8px;margin:22px var(--discover-gutter) 0;
+  font-size:12px;font-weight:600;color:var(--discover-muted);text-decoration:none;
+  transition:color var(--discover-motion-fast) var(--discover-ease),gap var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-back:hover{color:var(--discover-text);gap:11px}
+
+/* Die Detailseite in zwei Temperaturen.
+
+   Oben traegt sie die Farbwelt ihres Signals: man kommt aus einer Reihe
+   und soll sehen, dass man noch in derselben Geschichte ist. Ab dem
+   Kursverlauf hoert die Atmosphaere auf. Analyse braucht einen neutralen
+   Grund - eine Kategoriefarbe, die ueber einem RSI leuchtet, ist eine
+   Behauptung ueber ein Ergebnis, das man gerade erst liest. Der Uebergang
+   ist kein Schnitt, sondern ein Abklingen: Kopf voll, Befund halb, Chart
+   und alles darunter neutral. */
+.dx-dhero{position:relative;padding:34px var(--discover-gutter) 26px;overflow:hidden}
+.dx-dhero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(76% 132% at 76% -12%, color-mix(in srgb, var(--w) 30%, transparent), transparent 64%),
+    radial-gradient(64% 96% at 6% 112%, color-mix(in srgb, var(--w) 14%, transparent), transparent 68%);
+  pointer-events:none;
+}
+/* Das Datenbild liegt hinter der Schrift, nicht neben ihr - es ist
+   Hintergrund, kein zweites Diagramm. Es endet weich, damit darunter kein
+   sichtbarer Kasten steht. */
+.dx-dhero-art{
+  position:absolute;right:0;bottom:-18px;width:min(58%,720px);height:190px;
+  opacity:.42;pointer-events:none;color:var(--w);
+  /* Weich nach links UND nach oben: die Zahlen rechts oben muessen lesbar
+     bleiben, sonst laeuft eine Linie mitten durch den Score. */
+  -webkit-mask-image:linear-gradient(to right, transparent, #000 40%),
+                     linear-gradient(to top, #000 40%, transparent);
+  mask-image:linear-gradient(to right, transparent, #000 40%),
+             linear-gradient(to top, #000 40%, transparent);
+  -webkit-mask-composite:source-in;mask-composite:intersect;
+}
+.dx-dhero-art .dx-art{width:100%;height:100%;display:block}
+/* Der Befund traegt die Welt noch als Linie, nicht mehr als Flaeche. */
+.dx-detail[data-world] .dx-why h2::before{
+  content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--w);margin-right:10px;vertical-align:middle;opacity:.85;
+}
+/* Ab hier ist die Seite neutral. Die Weltfarbe wird nicht abgeschwaecht,
+   sondern ersetzt: alles, was unterhalb noch --w liest, bekommt den
+   ruhigen Akzent des Moduls. */
+.dx-detail .dx-chapter,
+.dx-detail .dx-foot{--w:var(--discover-accent);--w-2:var(--discover-accent)}
+/* Ausgenommen sind die Poster in "Weiter entdecken": sie tragen ihre
+   eigene Welt, weil sie wieder Entdeckung sind und nicht Analyse - und
+   sie setzen --w ohnehin selbst. */
+.dx-dhero-inner{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:36px;align-items:end}
+/* Der eine Satz auch hier, direkt unter dem Namen: die Aktienseite faengt
+   dort an, wo die Karte aufgehoert hat. */
+.dx-dhero-story{
+  position:relative;margin:16px 0 0;font-size:clamp(17px,1.9vw,22px);font-weight:600;
+  letter-spacing:-.015em;display:flex;align-items:baseline;gap:10px;
+}
+/* Die Zeitachse: vier Renditen nebeneinander, ohne Kaesten. Sie ist die
+   erste Antwort auf "laeuft die Aktie gut oder schlecht?". */
+.dx-zeitachse{
+  position:relative;display:flex;flex-wrap:wrap;gap:10px 42px;margin-top:26px;
+}
+.dx-zeitachse > div{display:flex;flex-direction:column;gap:5px}
+.dx-zeitachse span{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-zeitachse b{font-size:clamp(18px,2vw,24px);font-weight:700;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.dx-zeitachse b.up{color:var(--discover-up)}
+.dx-zeitachse b.down{color:var(--discover-down)}
+/* Die Jahresspanne. Ein Band, ein Punkt, ein Satz. */
+.dx-spanne{position:relative;margin-top:26px;max-width:520px}
+.dx-spanne-bar{position:relative;height:4px;border-radius:3px;
+  background:linear-gradient(90deg, color-mix(in srgb, var(--w) 18%, var(--discover-line)),
+                                    color-mix(in srgb, var(--w) 62%, transparent))}
+.dx-spanne-bar i{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;
+  background:var(--w);transform:translate(-50%,-50%);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--w) 20%, transparent)}
+.dx-spanne-enden{display:flex;justify-content:space-between;margin-top:8px;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-spanne p{margin:10px 0 0;font-size:13px;line-height:1.5;color:var(--discover-muted)}
+.dx-dhero h1{margin:0;font-size:clamp(34px,6vw,72px);line-height:.94;letter-spacing:-.04em;font-weight:800}
+.dx-dhero-meta{margin:12px 0 0;font-size:13px;color:var(--discover-muted);display:flex;gap:10px;flex-wrap:wrap}
+.dx-dhero-meta span::after{content:"·";margin-left:10px;color:var(--discover-dim)}
+.dx-dhero-meta span:last-child::after{content:""}
+.dx-dhero-sigs{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+/* Die Signalplakette stammt vom Poster und bringt dessen Ränder mit -
+   im Kopf der Detailseite steht sie frei. */
+.dx-dhero-sigs .dx-sig{margin:0}
+.dx-dhero-right{display:grid;gap:22px;justify-items:end}
+.dx-dhero-score{text-align:right}
+.dx-dhero-score b{display:block;font-size:clamp(44px,6vw,78px);line-height:1;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.dx-dhero-score span{display:block;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--discover-dim);margin-top:8px}
+.dx-dhero-score em{display:block;font-style:normal;font-size:12px;color:var(--discover-muted);margin-top:6px}
+.dx-price{text-align:right}
+.dx-price b{font-size:clamp(24px,3vw,34px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.dx-price span{display:block;font-size:14px;font-weight:700;margin-top:4px}
+.dx-price small{display:block;font-size:12px;color:var(--discover-dim);max-width:280px;margin-top:6px;line-height:1.5;font-weight:500}
+
+/* Warum ist dieser Titel hier? */
+.dx-why{padding:8px var(--discover-gutter) 0}
+.dx-why h2,.dx-chapter h2{
+  margin:0 0 4px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--discover-dim);
+}
+.dx-why-lead{margin:10px 0 0;font-size:clamp(17px,1.9vw,23px);line-height:1.42;letter-spacing:-.015em;max-width:58ch;font-weight:500;color:var(--discover-text)}
+.dx-kapitel-lead{margin:0 0 20px;font-size:15px;line-height:1.5;color:var(--discover-muted);max-width:62ch}
+.dx-kapitel-fuss{margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6;max-width:90ch}
+.dx-why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--discover-line);border:1px solid var(--discover-line);border-radius:var(--discover-radius)}
+.dx-why-item{background:var(--discover-bg);padding:18px 20px}
+.dx-why-item h3{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--discover-text)}
+.dx-why-item p{margin:0;font-size:13px;line-height:1.55;color:var(--discover-muted)}
+.dx-why-item--counter h3{color:var(--discover-warm)}
+.dx-why-empty{font-size:14px;color:var(--discover-muted);line-height:1.6;max-width:70ch}
+
+/* Chart */
+.dx-chapter{padding:46px var(--discover-gutter) 0}
+.dx-chart-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.dx-tf{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.dx-tf::-webkit-scrollbar{display:none}
+.dx-tf button{
+  flex:0 0 auto;border:1px solid transparent;background:transparent;color:var(--discover-muted);
+  border-radius:8px;padding:8px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+  transition:background var(--discover-motion-fast) var(--discover-ease),color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-tf button:hover:not([disabled]){background:rgba(255,255,255,.07);color:var(--discover-text)}
+.dx-tf button[aria-pressed="true"]{background:var(--discover-text);color:#0a0a0c}
+.dx-tf button[disabled]{opacity:.32;cursor:not-allowed}
+
+.dx-chart{position:relative;border-radius:var(--discover-radius-lg);background:var(--discover-bg-2);border:1px solid var(--discover-line);padding:10px 8px 4px}
+.dx-chart svg{width:100%;height:auto;display:block}
+/* Der bestehende Technical-Chart wurde fuer helle Flaechen entworfen. Seine
+   Farben kommen aus Variablen - hier bekommen sie dunkle Werte, ohne dass
+   quant.css angefasst wird. */
+.dx-chart .q-tchart{--ink:#f4f4f1;--muted:#9d9da8;--muted-2:#6d6d78;--line:rgba(255,255,255,.10);
+  --line-strong:rgba(255,255,255,.2);--surface-2:#1b1b22;--green:#3fd07f;--red:#f0675c;
+  --blue:#6f9dff;--purple:#a78bfa;--yellow:#e8b44c;min-width:0;width:100%}
+.dx-chart .q-tchart .line-price{stroke:var(--discover-text);stroke-width:1.8}
+.dx-chart .q-tchart .axis{fill:var(--discover-dim)}
+.dx-chart .q-tchart .grid{stroke:rgba(255,255,255,.07)}
+.dx-chart .q-tchart .last-price-label{fill:var(--discover-text)}
+.dx-chart .q-tchart .vol{opacity:.42}
+.dx-chart .q-tchart .ann-zone{opacity:.20}
+.dx-chart .q-tchart text{font-family:var(--sans)}
+
+.dx-legend{display:flex;flex-wrap:wrap;gap:16px;padding:12px 8px 6px;font-size:11.5px;color:var(--discover-muted)}
+.dx-legend i{display:inline-block;width:16px;height:2px;border-radius:2px;margin-right:7px;vertical-align:middle}
+
+.dx-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+.dx-ctrl{
+  border:1px solid var(--discover-line);background:transparent;color:var(--discover-muted);
+  border-radius:999px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;
+  transition:background var(--discover-motion-fast) var(--discover-ease),
+             color var(--discover-motion-fast) var(--discover-ease),
+             border-color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-ctrl:hover:not([disabled]){color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-ctrl[aria-pressed="true"]{background:var(--discover-text);border-color:var(--discover-text);color:#0a0a0c}
+.dx-ctrl[disabled]{opacity:.3;cursor:not-allowed}
+.dx-ctrl-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim);margin-right:4px}
+.dx-more-controls{margin-top:12px;padding-top:14px;border-top:1px solid var(--discover-line)}
+
+/* Panels */
+.dx-panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1px;background:var(--discover-line);
+  border:1px solid var(--discover-line);border-radius:var(--discover-radius);overflow:hidden;margin-top:26px}
+.dx-panel{background:var(--discover-bg);padding:20px 22px}
+.dx-panel h3{margin:0 0 12px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim);font-weight:700}
+.dx-panel .big{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.dx-panel .big small{font-size:13px;font-weight:600;color:var(--discover-dim);margin-left:8px;letter-spacing:0}
+.dx-panel p{margin:10px 0 0;font-size:12px;line-height:1.55;color:var(--discover-dim)}
+.dx-kv{display:grid;margin-top:6px}
+.dx-kv div{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--discover-line);font-size:13px}
+.dx-kv div:first-child{border-top:0}
+.dx-kv span{color:var(--discover-muted)}
+.dx-kv b{font-weight:700;font-variant-numeric:tabular-nums}
+.dx-bars{display:grid;gap:9px;margin-top:14px}
+.dx-contrib{display:grid;grid-template-columns:124px 1fr 44px;align-items:center;gap:12px;font-size:11.5px}
+.dx-contrib span{color:var(--discover-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-contrib .track{height:5px;border-radius:3px;background:rgba(255,255,255,.09);overflow:hidden}
+.dx-contrib .track i{display:block;height:100%;background:var(--discover-text);opacity:.85;border-radius:3px}
+.dx-contrib b{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.dx-contrib.missing .track i{background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 4px,transparent 4px 8px);opacity:1}
+.dx-contrib.missing b{color:var(--discover-dim)}
+
+.dx-ti{margin-top:26px;border:1px solid var(--discover-line);border-radius:var(--discover-radius);padding:22px;background:var(--discover-bg-2)}
+.dx-ti-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.dx-ti-state{font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;padding:5px 11px;border-radius:999px}
+.dx-ti-state--available{background:var(--discover-up-soft);color:var(--discover-up)}
+.dx-ti-state--lowConfidence{background:var(--discover-warm-soft);color:var(--discover-warm)}
+.dx-ti-state--calculating{background:var(--discover-accent-soft);color:var(--discover-accent)}
+.dx-ti-state--unavailable{background:rgba(255,255,255,.06);color:var(--discover-muted)}
+
+/* Zugehoerigkeiten */
+.dx-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.dx-chip{
+  display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+  border:1px solid var(--discover-line);border-radius:999px;padding:8px 15px;
+  font-size:12.5px;color:var(--discover-muted);background:var(--discover-bg-2);
+  transition:border-color var(--discover-motion-fast) var(--discover-ease),color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-chip:hover{border-color:var(--discover-line-strong);color:var(--discover-text)}
+.dx-chip b{color:var(--discover-text);font-weight:700}
+.dx-chip i{font-style:normal;font-size:11px;color:var(--discover-dim)}
+
+.dx-foot{
+  margin:70px var(--discover-gutter) 0;padding-top:26px;border-top:1px solid var(--discover-line);
+  font-size:11.5px;line-height:1.7;color:var(--discover-dim);max-width:110ch;
+}
+.dx-foot b{color:var(--discover-muted);font-weight:600}
+
+/* Filterleiste der Kategorieseiten */
+.dx-filters{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px var(--discover-gutter) 18px}
+.dx-filters::-webkit-scrollbar{display:none}
+.dx-filters button{
+  flex:0 0 auto;border:1px solid var(--discover-line);background:transparent;color:var(--discover-muted);
+  border-radius:999px;padding:8px 15px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;
+  transition:background var(--discover-motion-fast) var(--discover-ease),color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-filters button:hover{color:var(--discover-text)}
+.dx-filters button.on{background:var(--discover-text);border-color:var(--discover-text);color:#0a0a0c}
+.dx-grid{display:flex;flex-wrap:wrap;gap:var(--discover-gap);padding:0 var(--discover-gutter)}
+
+/* ============================================================== Bewegung */
+.dx-fade{opacity:0;transform:translateY(14px)}
+.dx-fade.in{opacity:1;transform:none;
+  transition:opacity var(--discover-motion-slow) var(--discover-ease),
+             transform var(--discover-motion-slow) var(--discover-ease)}
+
+@media (prefers-reduced-motion:reduce){
+  body.dx *,body.dx *::before,body.dx *::after{
+    animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important;
+  }
+  .dx-fade{opacity:1;transform:none}
+  .dx-poster:hover{transform:none}
+}
+
+/* ================================================================= Mobil
+
+   Eigener Designfall, keine verkleinerte Desktopseite: die Eingangsflaeche
+   wird zur Karte statt zum Panorama, die Reihen werden griffig, und alles,
+   was am Zeiger haengt, verschwindet. */
+@media (max-width:860px){
+  body.dx{
+    --discover-gutter:18px;--discover-gap:12px;
+    --discover-card-width:252px;--discover-card-width-compact:196px;
+    --discover-card-width-rank:286px;--discover-hero-height:auto;
+    /* Der feste Kopf ist auf dem Telefon niedriger. */
+    --dx-kopf:70px;
+  }
+  /* Zwei Zeilen statt drei: Marke und Universum oben, Suche und Marktstatus
+     darunter - die Leiste soll auf dem Telefon nicht ein Fünftel des
+     Bildschirms kosten. */
+  .dx-bar{gap:10px 12px;padding:10px var(--discover-gutter)}
+  .dx-brand{font-size:12px;letter-spacing:.14em}
+  .dx-brand span{display:none}
+  .dx-switch button{padding:6px 11px;font-size:11px}
+  .dx-searchbtn{order:2;padding:7px 13px}
+  /* Auf dem Telefon steht der Einzelmodus neben der Suche - dort ist
+     er am naheliegendsten. */
+  .dx-einzeln{order:2;padding:8px 10px;font-size:11.5px}
+  .dx-einzeln span{display:none}
+  /* Das grosse Datenbild im Kopf entfaellt auf dem Telefon: der echte
+     Chart steht direkt darunter, und zwei Kurven uebereinander sind
+     einer zu viel. */
+  .dx-dhero-art{display:none}
+  /* Die Zeitachse als vier gleiche Spalten: umgebrochen sah sie aus wie
+     drei Werte und ein Nachzuegler. */
+  .dx-zeitachse{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 8px}
+  .dx-zeitachse span{font-size:9.5px;letter-spacing:.08em}
+  .dx-zeitachse b{font-size:17px}
+  /* Vier Antworten sollen auf einen Blick zu sehen sein - untereinander
+     waeren es vier Bildschirmdrittel und damit kein Ueberblick mehr. */
+  .dx-30{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dx-30-zelle{padding:16px 15px 14px;gap:6px}
+  .dx-30-wert{font-size:20px}
+  .dx-30-beleg{font-size:11.5px}
+  .dx-was summary{font-size:11px}
+  .dx-searchbtn kbd{display:none}
+  .dx-status{order:3;font-size:10px;margin-left:auto}
+  .dx-rail-section{margin-top:30px;scroll-margin-top:150px}
+  .dx-rail{padding-bottom:18px}
+  /* Zugeklappt ist der Hinweis ein Satz. Das Pluszeichen sagt, dass es
+     weitergeht - sonst waere der Rest verschwunden statt verstaut. */
+  .dx-inline-note{margin-top:12px;font-size:11px;line-height:1.5;padding-left:11px}
+  .dx-inline-note summary{cursor:pointer;position:relative;padding-right:20px}
+  .dx-inline-note summary b{white-space:nowrap}
+  .dx-inline-note summary::after{content:"+";position:absolute;right:0;top:0;font-size:14px;color:var(--discover-muted)}
+  .dx-inline-note[open] summary::after{content:"–"}
+  /* Die Eingangsfläche auf dem Telefon: Wirkung ja, aber nach einem Daumen-
+     wisch muss die erste Reihe da sein. Deshalb kürzere Typo, Kennzahlen
+     nebeneinander statt untereinander, flacherer Chart. */
+  .dx-hero{display:block}
+  .dx-hero-inner{grid-template-columns:1fr;gap:12px;padding:20px var(--discover-gutter) 28px}
+  .dx-hero-media{min-height:0;order:2;gap:8px}
+  .dx-hero-chart{height:92px}
+  .dx-hero-copy{order:1}
+  .dx-hero-title{font-size:clamp(30px,8.4vw,40px);margin-bottom:6px}
+  .dx-hero-sym{margin-bottom:14px;font-size:11px}
+  .dx-hero-line{font-size:17px;margin-bottom:14px;max-width:22ch}
+  .dx-kicker{margin-bottom:12px;font-size:10px;letter-spacing:.16em}
+  .dx-hero-zahl{margin-bottom:8px}
+  .dx-hero-zahl b{font-size:38px}
+  .dx-hero-belege{gap:6px 18px;margin-bottom:20px;font-size:12px}
+  .dx-hero-belege li{font-size:12px}
+  /* Die Bildunterschrift bleibt - aber auf zwei Zeilen. Der vollstaendige
+     Wortlaut steht im title-Attribut und auf der Detailseite. */
+  /* Die Bildunterschrift traegt die Einordnung des Datenbildes; die
+     ersten Worte - "Rebasierter Renditepfad - keine Kurskurve" - muessen
+     ungekuerzt stehen, alles danach erklaert. Drei Zeilen reichen dafuer. */
+  .dx-hero-caption{font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;
+    -webkit-box-orient:vertical;overflow:hidden}
+  .dx-cta{gap:8px;flex-wrap:nowrap}
+  .dx-btn{flex:1 1 auto;justify-content:center;padding:12px 14px;font-size:12.5px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .dx-hero-nav{left:var(--discover-gutter);bottom:16px}
+  .dx-hero-fade{height:70px}
+  /* Reihenfolge auf dem Telefon: zuerst das Signal, dann der Titel, dann
+     das Bild. Am Schreibtisch liest man die Karte als Flaeche und der
+     Name darf oben stehen; am Daumen liest man von oben nach unten, und
+     die erste Zeile muss sagen, WARUM diese Karte hier ist. Geaendert
+     wird nur die Reihenfolge, nicht das Markup - die Vorlesereihenfolge
+     bleibt damit dieselbe wie am Schreibtisch. */
+  .dx-poster .dx-sig{order:-1;margin-top:14px}
+  .dx-rank{--discover-card-width:206px}
+  .dx-poster--wide{flex-basis:300px;width:300px}
+  .dx-poster--wide .dx-poster-media{height:118px}
+
+  .dx-rank-num{flex-basis:54px;font-size:66px;-webkit-text-stroke-width:1.5px}
+  .dx-rank .dx-poster{margin-left:-14px}
+  .dx-poster-media{height:88px}
+  .dx-reveal{display:none}
+  .dx-dhero-inner{grid-template-columns:1fr;gap:18px;align-items:start}
+  .dx-dhero-right{justify-items:start;gap:16px}
+  .dx-dhero-score,.dx-price{text-align:left}
+  .dx-dhero-score b{font-size:44px}
+  .dx-dhero h1{font-size:clamp(30px,9vw,44px)}
+  .dx-price small{max-width:none}
+  .dx-why-lead{font-size:19px}
+  .dx-contrib{grid-template-columns:104px 1fr 42px}
+  .dx-result{grid-template-columns:1fr 64px 72px;gap:10px}
+  .dx-result svg{width:74px;height:26px}
+  .dx-search-inner{padding:8vh 18px 30px}
+  .dx-chapter{padding-top:34px}
+  .dx-sector{flex-basis:270px;width:270px}
+}
+@media (max-width:480px){
+  .dx-hero-title{font-size:clamp(30px,9vw,44px)}
+  /* Auf dem Telefon ist der Kopf einer Reihe EINE Zeile: Ueberschrift
+     links, "Alle anzeigen" rechts. Vorher rutschte der Verweis in eine
+     zweite Zeile und kostete je Reihe vierzig Pixel - gerade die, die der
+     ersten Reihe fehlten, um noch im Bild zu beginnen. */
+  .dx-rail-head{flex-wrap:nowrap;align-items:baseline;gap:8px;padding-bottom:12px}
+  .dx-rail-head p{display:none}
+  .dx-rail-head h2{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* Der Name der Sammlung ist auf dem Telefon das Wichtigste in der
+     Zeile - die Trefferzahl weicht, bevor der Name abgeschnitten wird. */
+  .dx-rail-head .dx-rail-count{display:none}
+  .dx-rail-head h2{font-size:15.5px;letter-spacing:-.015em;gap:9px}
+  .dx-rail-head h2::before{width:6px;height:6px}
+  .dx-rail-head .dx-more{margin-left:auto;flex:0 0 auto}
+}
+
+/* ------------------------------------------- Chart-Ueberlagerungsfarben
+
+   Die zusaetzlichen Serien zeichnet der BESTEHENDE Technical-Chart; er
+   faerbt sie ueber ihre semanticStyle-Klasse. quant.css kennt sma20/50/200
+   fuer helle Flaechen - die dunklen Werte stehen hier, in der Datei des
+   Moduls, statt in der fremden. */
+.dx-chart .sem-ma-ema20{stroke:#a78bfa}
+.dx-chart .sem-ma-ema50{stroke:#6f9dff}
+.dx-chart .sem-ma-ema100{stroke:#e8b44c}
+.dx-chart .sem-ma-ema200{stroke:#f0675c}
+.dx-chart .sem-ma-sma50{stroke:#6f9dff}
+.dx-chart .sem-ma-sma200{stroke:#e8b44c}
+.dx-chart .sem-bb{stroke:rgba(255,255,255,.42);stroke-dasharray:3 3}
+.dx-chart .sem-bb-mid{stroke:rgba(255,255,255,.24)}
+.dx-chart .line-muted{stroke:rgba(255,255,255,.18);stroke-dasharray:3 3}
+.dx-chart .line-compare{stroke:#6f9dff}
+.dx-chart .line-primary{stroke:var(--discover-text)}
+.dx-chart .ann-series{opacity:.95}
+
+.dx-legend-ma-ema20{background:#a78bfa}
+.dx-legend-ma-ema50{background:#6f9dff}
+.dx-legend-ma-ema100{background:#e8b44c}
+.dx-legend-ma-ema200{background:#f0675c}
+.dx-legend-ma-sma50{background:#6f9dff}
+.dx-legend-ma-sma200{background:#e8b44c}
+.dx-legend-bb{background:rgba(255,255,255,.42)}
+
+/* =========================================================================
+   AELTERE IPHONES
+
+   Die Farbwelten mischen ihren Ton mit color-mix(). Das kennt Safari erst
+   ab iOS 16.2 - und eine Deklaration, die der Browser nicht versteht, wirft
+   er ganz weg. Meistens ist das nur Atmosphaere, die fehlt. Zwei Stellen
+   verschwinden dabei aber vollstaendig: die Rangnummer, die aus einer
+   transparenten Schrift mit Kontur besteht, und der Balken der
+   Jahresspanne, der nur aus einem Verlauf besteht.
+
+   Deshalb dieser Block. Er greift ausschliesslich dort, wo color-mix()
+   fehlt, und benutzt die Welt-Variablen --w-glow und --w-soft: die sind
+   einfaches rgba() und tragen dieselbe Farbe. Auf einem alten Geraet
+   bleibt das Produkt damit vollstaendig lesbar - nur eine Spur flacher.
+   ========================================================================= */
+@supports not (color: color-mix(in srgb, #000 50%, #fff)) {
+  .dx-hero-bg{background:
+    radial-gradient(105% 78% at 76% 14%, var(--w-glow), transparent 64%),
+    radial-gradient(80% 66% at 10% 4%, var(--w-soft), transparent 66%),
+    linear-gradient(180deg, var(--w-soft) 0%, var(--discover-bg) 74%)}
+  .dx-hero-grid{background-image:linear-gradient(90deg, var(--w-soft) 1px, transparent 1px)}
+  .dx-btn--ghost{border-color:var(--discover-line-strong)}
+  .dx-btn--ghost:hover{background:var(--w-soft)}
+  .dx-hero-chart .dx-art-ticker,.dx-art-ticker{fill:var(--w-soft)}
+  .dx-rail-head h2::before{box-shadow:0 0 0 4px var(--w-soft)}
+  .dx-swipe-band{background:var(--w-glow)}
+  .dx-poster:hover,.dx-poster:focus-visible{border-color:var(--discover-line-strong);
+    box-shadow:0 24px 60px -26px rgba(0,0,0,.92)}
+  .dx-sig{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+  .dx-art-band{fill:var(--w-soft)}
+  /* Ohne Kontur waere die Zahl unsichtbar - die Schrift selbst ist transparent. */
+  .dx-rank-num{-webkit-text-stroke:2px rgba(255,255,255,.28)}
+  .dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:var(--w-2, #fff)}
+  .dx-result:hover,.dx-result:focus-visible,.dx-result[aria-selected="true"]{
+    background:var(--w-soft);border-color:var(--discover-line)}
+  .dx-feed-bg{background:
+    radial-gradient(72% 62% at 78% 12%, var(--w-glow), transparent 66%),
+    radial-gradient(58% 54% at 8% 96%, var(--w-soft), transparent 70%)}
+  .dx-waage-spalte--pro .dx-waage-marke{background:var(--discover-up-soft)}
+  .dx-waage-spalte--contra .dx-waage-marke{background:rgba(232,180,76,.15)}
+  .dx-dhero-bg{background:
+    radial-gradient(76% 132% at 76% -12%, var(--w-glow), transparent 64%),
+    radial-gradient(64% 96% at 6% 112%, var(--w-soft), transparent 68%)}
+  /* Der Balken besteht nur aus diesem Verlauf. */
+  .dx-spanne-bar{background:linear-gradient(90deg, var(--discover-line), var(--w-2, var(--w)))}
+  .dx-spanne-bar i{box-shadow:0 0 0 4px var(--w-glow)}
+}
