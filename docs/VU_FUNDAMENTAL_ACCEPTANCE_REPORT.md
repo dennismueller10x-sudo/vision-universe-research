@@ -1,5 +1,12 @@
 # ACCEPTANCE REPORT — FUNDAMENTAL DATA EXPANSION (§22)
 
+> **Stand vor dem Backfill.** Die Zahlen in diesem Bericht sind am
+> Tag der Abnahme gemessen worden, als `sec.gov` aus der Bauumgebung
+> nicht erreichbar war und fünf Emittenten im Bestand lagen. Sie
+> bleiben als Beleg dieses Stands stehen. Das gemessene Ergebnis des
+> Produktivlaufs steht in **`VU_SEC_BACKFILL_ERGEBNIS.md`**:
+> 5.406 Emittenten mit Geschäftszahlen, 6.461 aufgelöste CIKs.
+
 Alle Zahlen sind **gemessen**, keine geschätzt (§19). Wo nichts gemessen
 wurde, steht `null` und nicht `0`.
 
