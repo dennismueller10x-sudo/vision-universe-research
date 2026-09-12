@@ -10,6 +10,8 @@ async function walk(dir='.') {
     const file=path.join(dir,entry.name);
     if(entry.isDirectory()){await walk(file);continue;}
     if(!file.endsWith('.html'))continue;
+    // VU2 preview owns its full responsive shell; do not prepend a second header.
+    if(file===path.join('vu2','index.html'))continue;
     let html=await readFile(file,'utf8');
     if(!/<body\b/i.test(html))continue;
     const original=html;

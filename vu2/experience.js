@@ -11,14 +11,14 @@ const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
  ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Technical Intelligence',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
  ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
- ['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
+ ['Discover · Marktwelten','/discover/'],['Vordefinierte Screens',href('discover')],['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
  ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
  ['News','/news/'],['Morning Briefing','/morning/'],['Weekly Magazine','/magazin/'],['Stock Reports','/reports/xpeng/'],['Academy','/academy/'],['Investment Guide','/guide/'],['Strategies',href('strategies')],['Signals',href('signals')],['Watchlist',href('watchlist')],['Ask Atlas',href('atlas')]]]
 ];
 const app=document.getElementById('app');
-const researchViews=new Set(['stocks','stock','fundamentals','technical','elliott','quant','compare','screener']);
+const researchViews=new Set(['discover','stocks','stock','fundamentals','technical','elliott','quant','compare','screener']);
 const activeSection=researchViews.has(view)?'research':view;
-function navLink(id,label){const a=link(label,href(id),id===activeSection?'active':'');if(id===activeSection)a.setAttribute('aria-current',id===view?'page':'location');return a;}
+function navLink(id,label){const a=link(label,id==='discover'?'/discover/':href(id),id===activeSection?'active':'');if(id===activeSection)a.setAttribute('aria-current',id===view?'page':'location');return a;}
 const header=el('header',{class:'top'},[link('',href('home'),'brand'),el('nav',{class:'nav','aria-label':'Hauptnavigation'},nav.map(([id,label])=>navLink(id,label))),el('div',{class:'utility'},[link('Watchlist',href('watchlist')),link('Signals',href('signals')),el('button',{text:'Suche',onclick:()=>openSearch()})])]);
 header.querySelector('.brand').append(el('img',{src:'/assets/vision-universe-logo.png',alt:'Vision Universe®'}));
 const main=el('main',{id:'content',tabindex:'-1'});app.append(header,main,el('nav',{class:'mobile-nav','aria-label':'Mobile Navigation'},nav.filter(([id])=>id!=='strategies').map(([id,label])=>navLink(id,label))));
