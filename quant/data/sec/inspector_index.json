@@ -1,59 +1,41 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-08T04:32:34+00:00",
+  "generated_at_utc": "2026-09-12T19:34:28+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.5.0",
-    "formula": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.0.0"
+      "mapping_version": "1.1.0"
     }
   },
   "companies": [
     {
-      "ticker": "JPM",
-      "cik": "0000019617",
-      "name": "JPMORGAN CHASE & CO",
-      "sic": "6021",
-      "sic_description": "National Commercial Banks",
-      "file": "inspector/JPM.json",
-      "rows": 1056,
+      "ticker": "NVDA",
+      "cik": "0001045810",
+      "name": "NVIDIA CORP",
+      "sic": "3674",
+      "sic_description": "Semiconductors & Related Devices",
+      "file": "inspector/NVDA.json",
+      "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 44597,
+        "total": 20113,
         "by_severity": {
-          "INFO": 44172,
-          "WARNING": 425
+          "INFO": 19807,
+          "ERROR": 5,
+          "WARNING": 301
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 372,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 44172
-        }
-      }
-    },
-    {
-      "ticker": "XOM",
-      "cik": "0000034088",
-      "name": "EXXON MOBIL CORP",
-      "sic": "2911",
-      "sic_description": "Petroleum Refining",
-      "file": "inspector/XOM.json",
-      "rows": 1056,
-      "quality": {
-        "rules_version": "1.0.0",
-        "total": 17057,
-        "by_severity": {
-          "INFO": 16088,
-          "WARNING": 969
-        },
-        "by_code": {
-          "CONCEPT_DISAGREEMENT": 918,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 16088,
+          "CONCEPT_DISAGREEMENT": 199,
+          "FISCAL_PERIOD_CONFLICT": 6,
+          "FUTURE_DATA_LEAK": 5,
+          "RESTATEMENT_CONFLICT": 93,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 19807,
           "UNPLACEABLE_PERIOD": 2
         }
       }
@@ -65,18 +47,18 @@
       "sic": "3571",
       "sic_description": "Electronic Computers",
       "file": "inspector/AAPL.json",
-      "rows": 1056,
+      "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 18300,
+        "total": 16709,
         "by_severity": {
-          "INFO": 17971,
-          "WARNING": 329
+          "INFO": 16268,
+          "WARNING": 441
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 210,
-          "RESTATEMENT_CONFLICT": 115,
-          "UNKNOWN_CONCEPT": 17971,
+          "CONCEPT_DISAGREEMENT": 311,
+          "RESTATEMENT_CONFLICT": 126,
+          "UNKNOWN_CONCEPT": 16268,
           "UNPLACEABLE_PERIOD": 4
         }
       }
@@ -88,44 +70,63 @@
       "sic": "7372",
       "sic_description": "Services-Prepackaged Software",
       "file": "inspector/MSFT.json",
-      "rows": 1056,
+      "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 25101,
+        "total": 23416,
         "by_severity": {
-          "INFO": 24761,
-          "WARNING": 340
+          "INFO": 23070,
+          "WARNING": 346
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 277,
-          "RESTATEMENT_CONFLICT": 61,
-          "UNKNOWN_CONCEPT": 24761,
+          "RESTATEMENT_CONFLICT": 67,
+          "UNKNOWN_CONCEPT": 23070,
           "UNPLACEABLE_PERIOD": 2
         }
       }
     },
     {
-      "ticker": "NVDA",
-      "cik": "0001045810",
-      "name": "NVIDIA CORP",
-      "sic": "3674",
-      "sic_description": "Semiconductors & Related Devices",
-      "file": "inspector/NVDA.json",
-      "rows": 1056,
+      "ticker": "JPM",
+      "cik": "0000019617",
+      "name": "JPMORGAN CHASE & CO",
+      "sic": "6021",
+      "sic_description": "National Commercial Banks",
+      "file": "inspector/JPM.json",
+      "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 21847,
+        "total": 43553,
         "by_severity": {
-          "INFO": 21590,
-          "ERROR": 5,
-          "WARNING": 252
+          "INFO": 43116,
+          "WARNING": 437
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 151,
-          "FISCAL_PERIOD_CONFLICT": 6,
-          "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 93,
-          "UNKNOWN_CONCEPT": 21590,
+          "CONCEPT_DISAGREEMENT": 372,
+          "RESTATEMENT_CONFLICT": 65,
+          "UNKNOWN_CONCEPT": 43116
+        }
+      }
+    },
+    {
+      "ticker": "XOM",
+      "cik": "0000034088",
+      "name": "EXXON MOBIL CORP",
+      "sic": "2911",
+      "sic_description": "Petroleum Refining",
+      "file": "inspector/XOM.json",
+      "rows": 1504,
+      "quality": {
+        "rules_version": "1.0.0",
+        "total": 15615,
+        "by_severity": {
+          "INFO": 14541,
+          "WARNING": 1074
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 989,
+          "RESTATEMENT_CONFLICT": 83,
+          "UNKNOWN_CONCEPT": 14541,
           "UNPLACEABLE_PERIOD": 2
         }
       }
