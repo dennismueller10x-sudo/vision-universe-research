@@ -20,7 +20,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKFLOWS = ROOT / ".github" / "workflows"
-SEC_WORKFLOWS = ("update-sec-fundamentals.yml", "sec-fundamentals-ci.yml")
+SEC_WORKFLOWS = ("update-sec-fundamentals.yml", "sec-fundamentals-ci.yml",
+                 "sec-fundamentals-universe.yml")
 
 
 def workflow_text(name):
@@ -307,3 +308,57 @@ class CompanyAgnosticTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BackfillOrderTests(unittest.TestCase):
+    """Was teuer erkauft ist, wird committet, bevor etwas Optionales laeuft.
+
+    Lauf 34712221410 hat 5.406 Emittenten ingestiert und die Coverage
+    sauber gemessen - und das Ergebnis verloren. Der Schritt danach
+    frischt nur den fuenfteiligen Validierungssatz auf; er hat den Runner
+    umgebracht, und Commit und Bilanz standen dahinter. Ein OOM-Kill ist
+    nicht abfangbar: `|| true` greift nicht, `continue-on-error` auch
+    nicht. Die einzige Verteidigung ist die Reihenfolge.
+    """
+
+    BACKFILL = "sec-fundamentals-universe.yml"
+
+    def setUp(self):
+        self.text = workflow_text(self.BACKFILL)
+
+    def test_die_messung_wird_vor_der_auffrischung_committet(self):
+        self.assertLess(
+            self.text.index("name: Messung committen"),
+            self.text.index("name: Bestehende Produktartefakte auffrischen"),
+            "Der Commit der Messung steht hinter einem optionalen Schritt - "
+            "genau die Reihenfolge, die Lauf 34712221410 das Ergebnis gekostet hat.")
+
+    def test_der_zwischenspeicher_wird_immer_gesichert(self):
+        block = self.text.split("name: SEC-Zwischenspeicher sichern")[1]
+        self.assertIn("if: always()", block.split("- name:")[0])
+
+    def test_die_bilanz_laeuft_auch_nach_einem_fehlschlag(self):
+        block = self.text.split("name: Bilanz")[1]
+        self.assertIn("if: always()", block.split("\n          run:")[0])
+
+    def test_die_auffrischung_verdeckt_keine_fehler_mehr(self):
+        """`|| true` hat einen NameError verdeckt: export und canonical
+        schrieben nichts, und der Schritt meldete Erfolg."""
+        block = self.text.split("name: Bestehende Produktartefakte auffrischen")[1]
+        # Nur der ausgefuehrte Teil zaehlt; im Kommentar darueber steht
+        # `|| true` als Beschreibung des Befunds.
+        rumpf = block.split("- name:")[0].split("run: |")[1]
+        self.assertNotIn("|| true", rumpf)
+        self.assertIn("::error::", rumpf)
+
+    def test_die_auffrischung_ist_auf_den_validierungssatz_begrenzt(self):
+        block = self.text.split("name: Bestehende Produktartefakte auffrischen")[1]
+        block = block.split("- name:")[0]
+        for befehl in ("coverage", "export", "canonical"):
+            self.assertIn(befehl, block)
+        self.assertIn("--universe quant/config/sec-universe.json", block)
+
+    def test_jedes_aufgerufene_shellskript_existiert(self):
+        for script in set(re.findall(r"bash\s+(scripts/[\w./-]+\.sh)", self.text)):
+            with self.subTest(script=script):
+                self.assertTrue((ROOT / script).exists(), f"{script} fehlt")

@@ -151,6 +151,29 @@ def _resolve_universe(provider, companies, verify=True, skip_unresolved=False):
     return resolved
 
 
+def _ciks_from_universe(path):
+    """Die CIKs einer Universumsdatei - oder None fuer "alle".
+
+    Ein aufgerufener, aber nie definierter Helfer. `export` und
+    `canonical` riefen ihn seit der Einfuehrung von --universe auf; im
+    Workflow standen beide hinter `|| true`, also meldete der Schritt
+    Erfolg und schrieb nichts. Der dritte Produktivlauf ist an einer
+    ANDEREN Stelle gestorben, bevor der NameError je sichtbar wurde.
+
+    Ohne Pfad gibt es keine Einschraenkung; eine Datei ohne aufloesbare
+    CIK ergibt eine leere Menge, und das ist etwas anderes als "alle" -
+    deshalb wird hier nie None zurueckgegeben, wenn ein Pfad kam.
+    """
+    if not path:
+        return None
+    ciks = []
+    for entry in _load_universe(path):
+        cik = entry.get("cik")
+        if cik:
+            ciks.append(normalize_cik(cik))
+    return ciks
+
+
 def _iter_documents(store, ciks=None):
     """Gespeicherte Factbooks, EINES nach dem anderen.
 
@@ -170,14 +193,38 @@ def _iter_documents(store, ciks=None):
             yield document
 
 
+# Ab hier ist eine Liste von Factbooks keine Liste mehr, sondern ein
+# Speicherproblem. Der Wert ist bewusst grosszuegig: der Validierungssatz
+# hat fuenf Eintraege, ein versehentlich ungefilterter Aufruf ueber 5.406.
+MAX_DOCUMENTS_IN_MEMORY = 250
+
+
 def _documents(store, ciks=None):
     """Alle Factbooks als Liste.
 
     Nur fuer Auswertungen ueber eine HANDVOLL Emittenten (export,
-    canonical, coverage mit --universe). Fuer das ganze Universum
+    canonical, coverage, gates mit --universe). Fuer das ganze Universum
     `_iter_documents` benutzen.
+
+    Der dritte Produktivlauf ist daran gestorben, dass cmd_coverage sein
+    eigenes --universe nicht las und den ganzen Bestand materialisierte.
+    Ein OOM-Kill ist nicht abfangbar - der Runner bekommt ein
+    Shutdown-Signal, `|| true` greift nicht, und im Log steht nichts
+    ueber die Ursache. Deshalb bricht diese Stelle vorher ab und sagt,
+    WELCHER Aufruf den Filter vergessen hat.
     """
-    return list(_iter_documents(store, ciks=ciks))
+    documents = []
+    for document in _iter_documents(store, ciks=ciks):
+        documents.append(document)
+        if len(documents) > MAX_DOCUMENTS_IN_MEMORY:
+            raise SystemExit(
+                f"Mehr als {MAX_DOCUMENTS_IN_MEMORY} Factbooks auf einmal "
+                f"angefordert (Filter: {'kein' if ciks is None else len(ciks)}). "
+                "Diese Auswertung ist fuer eine Handvoll Emittenten gebaut - "
+                "--universe setzen, oder fuer das ganze Universum "
+                "coverage-universe benutzen, das streamt."
+            )
+    return documents
 
 
 def _declared_tickers(path=DEFAULT_UNIVERSE):
@@ -383,7 +430,12 @@ def cmd_export(args):
 def cmd_coverage(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store)
+    # --universe war deklariert und wurde nie gelesen. Der Workflow gab
+    # den Validierungssatz mit, die Matrix las trotzdem den ganzen
+    # Bestand - 5.406 Factbooks in einer Liste, und der Runner bekam ein
+    # Shutdown-Signal. Ein Argument, das nichts tut, ist schlimmer als
+    # keines: es sieht nach einer Grenze aus.
+    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
@@ -400,7 +452,7 @@ def cmd_gates(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
     provider = SECProvider()
-    documents = _documents(store)
+    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
     declared = _declared_tickers()
 
     per_company = []
@@ -658,7 +710,7 @@ def cmd_inspect(args):
     store = JsonFactStore(compress=True)
     provider_cik = args.cik
     if provider_cik is None and args.ticker:
-        for document in _documents(store):
+        for document in _iter_documents(store):
             if args.ticker.upper() in [t.upper() for t in
                                        (document.get("profile") or {}).get("tickers", [])]:
                 provider_cik = document["cik"]
@@ -772,6 +824,8 @@ def build_parser():
 
     gate = subparsers.add_parser("gates", help="run the qualification gates")
     gate.add_argument("--as-of")
+    gate.add_argument("--universe",
+                      help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     gate.set_defaults(func=cmd_gates)
 
     resolve = subparsers.add_parser(

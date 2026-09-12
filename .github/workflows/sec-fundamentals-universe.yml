@@ -240,62 +240,62 @@ jobs:
       - name: Coverage messen
         run: python3 scripts/quant/cli.py coverage-universe
 
-      - name: Bestehende Produktartefakte auffrischen (nur der Validierungssatz)
-        # AUSDRUECKLICH BEGRENZT. `export`, `coverage` und `canonical`
-        # schreiben je Emittent rund 400 KB. Ueber 7.000 Emittenten waeren
-        # das mehrere Gigabyte im Repository - fuer Artefakte, die als
-        # Produktflaeche fuer eine Handvoll Titel gedacht sind. Die
-        # Gesamtbilanz liefert coverage-universe, und die ist kompakt.
-        run: |
-          python3 scripts/quant/cli.py coverage --universe quant/config/sec-universe.json || true
-          python3 scripts/quant/cli.py export --universe quant/config/sec-universe.json || true
-          python3 scripts/quant/cli.py canonical --universe quant/config/sec-universe.json || true
+      # ZUERST DIE GROESSE, DANN DER COMMIT - UND BEIDES VOR ALLEM
+      # OPTIONALEN.
+      #
+      # Lauf 34712221410 hat die Messung nach fuenf Minuten sauber
+      # beendet und das Ergebnis trotzdem verloren: der naechste
+      # Schritt, der nur den Validierungssatz auffrischt, hat den
+      # Runner umgebracht, und Commit und Bilanz standen dahinter.
+      # Ein OOM-Kill ist nicht abfangbar; `|| true` greift nicht, und
+      # `continue-on-error` auch nicht. Die einzige Verteidigung ist
+      # die Reihenfolge: was teuer erkauft und nicht wiederherstellbar
+      # ist, liegt im Zweig, bevor etwas Optionales laeuft.
+      - name: Groessenkontrolle nach der Messung
+        run: bash scripts/ci/pruefe-datengroesse.sh
 
-      - name: Groessenkontrolle vor dem Commit
-        # Ein Lauf, der versehentlich Gigabyte committet, ist schwerer
-        # rueckgaengig zu machen als einer, der hier abbricht.
+      - name: Messung committen
         run: |
-          for d in quant/data/fundamentals quant/data/universe quant/data/sec; do
-            size=$(du -sm "$d" | cut -f1)
-            echo "$d: ${size} MB"
-            if [ "$size" -gt 400 ]; then
-              echo "::error::$d ist ${size} MB - das gehoert nicht in ein Git-Repository."
-              exit 1
+          N=$(python3 -c 'import json;print(json.load(open("quant/data/fundamentals/coverage-report.json"))["fundamentals"]["COMPANY_FACTS_AVAILABLE"])')
+          bash scripts/ci/commit-and-push.sh \
+            "SEC Fundamentals: $N Emittenten mit Geschaeftszahlen aus Lauf ${{ github.run_id }}" \
+            quant/data/fundamentals quant/data/universe quant/data/sec
+
+      - name: Bestehende Produktartefakte auffrischen (nur der Validierungssatz)
+        # AUSDRUECKLICH BEGRENZT. `coverage`, `export` und `canonical`
+        # schreiben je Emittent rund 400 KB und halten die Factbooks im
+        # Speicher. Ueber 5.406 Emittenten bringt das den Runner um -
+        # genau das ist in Lauf 34712221410 passiert, weil cmd_coverage
+        # sein eigenes --universe nicht las. Der Filter greift jetzt,
+        # und _documents bricht ab, statt den Runner mitzunehmen.
+        #
+        # Rueckgabewert 2 heisst "nichts ingestiert" und ist hier kein
+        # Fehler; alles andere schon. `|| true` hat den NameError
+        # verdeckt, mit dem export und canonical monatelang gar nichts
+        # geschrieben haben.
+        run: |
+          for befehl in coverage export canonical; do
+            set +e
+            python3 scripts/quant/cli.py "$befehl" --universe quant/config/sec-universe.json
+            code=$?
+            set -e
+            if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then
+              echo "::error::cli.py $befehl endete mit $code"
+              exit "$code"
             fi
           done
 
-      - name: Ergebnis committen
+      - name: Groessenkontrolle vor dem zweiten Commit
+        run: bash scripts/ci/pruefe-datengroesse.sh
+
+      - name: Validierungsartefakte committen
         run: |
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add quant/data/fundamentals quant/data/universe quant/data/sec
-          if git diff --cached --quiet; then
-            echo "Nichts geaendert."
-          else
-            N=$(python3 -c 'import json;print(json.load(open("quant/data/fundamentals/coverage-report.json"))["fundamentals"]["COMPANY_FACTS_AVAILABLE"])')
-            git commit -m "SEC Fundamentals: $N Emittenten mit Geschaeftszahlen aus Lauf ${{ github.run_id }}"
-            # Vier Versuche, und DANACH ein Fehler.
-            #
-            # Die erste Fassung brach nach dem vierten Versuch einfach aus
-            # der Schleife - der Schritt meldete Erfolg, und das Ergebnis
-            # eines mehrstuendigen Laufs war weg, ohne dass irgendwo etwas
-            # rot wurde. Zwischen Checkout und Push koennen Stunden liegen;
-            # dass der Zweig sich bewegt hat, ist der Normalfall und kein
-            # Ausnahmezustand. Deshalb vor jedem Versuch rebasen.
-            gepusht=0
-            for i in 1 2 3 4; do
-              git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-              if git push origin "HEAD:${GITHUB_REF_NAME}"; then gepusht=1; break; fi
-              echo "Push fehlgeschlagen, neuer Versuch in $((2**i))s"
-              sleep $((2**i))
-            done
-            if [ "$gepusht" -ne 1 ]; then
-              echo "::error::Vier Push-Versuche fehlgeschlagen. Das Ergebnis dieses Laufs ist NICHT im Zweig."
-              exit 1
-            fi
-          fi
+          bash scripts/ci/commit-and-push.sh \
+            "SEC Fundamentals: Validierungssatz aufgefrischt (Lauf ${{ github.run_id }})" \
+            quant/data/fundamentals quant/data/universe quant/data/sec
 
       - name: Bilanz
+        if: always()
         run: |
           python3 - <<'PY'
           import json
