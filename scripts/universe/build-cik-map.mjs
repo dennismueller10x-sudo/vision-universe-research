@@ -57,6 +57,15 @@ function arg(name, fallback) {
 function pfad(p) { return p.startsWith("/") ? p : join(root, p); }
 
 const OUT_FILE = pfad(arg("--out", "quant/data/universe/cik-map.json"));
+/* Ohne diese Marke endet ein fehlgeschlagener Abruf mit Rueckgabewert 0.
+
+   Das ist fuer einen Diagnoselauf richtig - das Artefakt traegt dann
+   status UNAVAILABLE, und der Company Master behaelt seine bestehenden
+   CIKs. Fuer einen BACKFILL ist es falsch: der Lauf ginge weiter, das
+   SEC-Universum bliebe bei den fuenf Validierungstiteln, und am Ende
+   staende ein gruener Haken unter einem Ergebnis, das niemand wollte.
+   Der Backfill-Workflow setzt deshalb --require-source. */
+const REQUIRE_SOURCE = process.argv.slice(2).indexOf("--require-source") >= 0;
 const CACHE_DIR = join(root, ".sec-cache", "universe");
 const USER_AGENT = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniverse.de";
 
@@ -177,6 +186,12 @@ async function main() {
     }, null, 2) + "\n");
     console.log("\n  Nicht abrufbar. Artefakt mit status UNAVAILABLE geschrieben.");
     console.log("  " + OUT_FILE.replace(root + "/", ""));
+    if (REQUIRE_SOURCE) {
+      console.error("\n  --require-source: ohne SEC-Verzeichnis gibt es nichts zu " +
+                    "backfillen. Ein Lauf, der hier weitermacht, ingestiert fuenf " +
+                    "Emittenten und meldet Erfolg.");
+      process.exit(4);
+    }
     process.exitCode = 0;
     return;
   }

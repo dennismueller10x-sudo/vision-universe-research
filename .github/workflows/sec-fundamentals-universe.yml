@@ -177,7 +177,10 @@ jobs:
           # damit den sprechenden Standard-User-Agent ueberschreiben - die
           # SEC weist Anfragen ohne Kontaktadresse ab.
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
-        run: node scripts/universe/build-cik-map.mjs
+        # --require-source: ohne SEC-Verzeichnis gibt es nichts zu backfillen.
+        # Ohne die Marke endet der Abruf mit Rueckgabewert 0, der Lauf ginge
+        # weiter, ingestierte die fuenf Validierungstitel und meldete Erfolg.
+        run: node scripts/universe/build-cik-map.mjs --require-source
 
       - name: Company Master und Emittentenstamm
         run: |
@@ -253,10 +256,25 @@ jobs:
           else
             N=$(python3 -c 'import json;print(json.load(open("quant/data/fundamentals/coverage-report.json"))["fundamentals"]["COMPANY_FACTS_AVAILABLE"])')
             git commit -m "SEC Fundamentals: $N Emittenten mit Geschaeftszahlen aus Lauf ${{ github.run_id }}"
+            # Vier Versuche, und DANACH ein Fehler.
+            #
+            # Die erste Fassung brach nach dem vierten Versuch einfach aus
+            # der Schleife - der Schritt meldete Erfolg, und das Ergebnis
+            # eines mehrstuendigen Laufs war weg, ohne dass irgendwo etwas
+            # rot wurde. Zwischen Checkout und Push koennen Stunden liegen;
+            # dass der Zweig sich bewegt hat, ist der Normalfall und kein
+            # Ausnahmezustand. Deshalb vor jedem Versuch rebasen.
+            gepusht=0
             for i in 1 2 3 4; do
-              git push origin "HEAD:${GITHUB_REF_NAME}" && break
+              git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then gepusht=1; break; fi
+              echo "Push fehlgeschlagen, neuer Versuch in $((2**i))s"
               sleep $((2**i))
             done
+            if [ "$gepusht" -ne 1 ]; then
+              echo "::error::Vier Push-Versuche fehlgeschlagen. Das Ergebnis dieses Laufs ist NICHT im Zweig."
+              exit 1
+            fi
           fi
 
       - name: Bilanz
