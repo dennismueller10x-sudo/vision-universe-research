@@ -14,7 +14,7 @@
      O3  Laufen alle Produktansichten?          (jede einzeln, beide Breiten)
      O4  Ist ein beliebiger Titel erreichbar?   (zufaellig gezogen)
      O5  Rechnet der Screener ueber alles?
-     O6  Historischer Chart: zeichnet er echte Kerzen?
+     O6  Hauptchart: zeichnet er, an vier Lagen, mit elf Zeitraeumen?
      O7  Intraday: antwortet die Serverfunktion?
      O8  Echtzeit: verbindet sie, und wie viele Aktualisierungen kommen an?
      O9  Steht irgendwo ein Zugangsschluessel oder ein Rohcode?
@@ -296,6 +296,38 @@ async function imBrowser(chromium, index, meta) {
   const zufall = index && index.tickers.length
     ? index.tickers[Math.floor(Math.random() * index.tickers.length)] : "ORCL";
   const mitChart = ((meta && meta.chart && meta.chart.historical && meta.chart.historical.scope) || [])[0] || "AAPL";
+
+  /* DIE PRUEFTITEL DER ABNAHME.
+
+     Ein einziger Titel belegt den Chart nicht mehr, seit er aus dem
+     dauerhaften Speicher kommt: die interessanten Faelle liegen gerade
+     NICHT bei den bekannten fuenf. Geprueft werden deshalb vier
+     verschiedene Lagen, und der junge Titel wird nicht getippt, sondern
+     aus den Daten gezogen - die kuerzeste Reihe im Produktuniversum ist
+     genau der Fall "zu wenig Historie fuer die Technik, trotzdem ein
+     Chart". */
+  function kuerzesteReihe() {
+    if (!index || !index.columns || !index.columns.bars) return null;
+    const bars = index.columns.bars;
+    const eig = index.columns.productEligibility;
+    const namen = index.enums && index.enums.productEligibility;
+    let besterI = -1, besteZahl = Infinity;
+    for (let i = 0; i < index.count; i++) {
+      const n = bars[i];
+      if (!Number.isFinite(n) || n < 2) continue;
+      if (eig && namen && namen[eig[i]] === "EXCLUDED") continue;
+      if (n < besteZahl) { besteZahl = n; besterI = i; }
+    }
+    return besterI >= 0 ? { ticker: index.tickers[besterI], bars: besteZahl } : null;
+  }
+  const jung = kuerzesteReihe();
+  const PRUEFTITEL = [
+    { ticker: "AAPL", lage: "lange Historie, freigegeben" },
+    { ticker: "NVDA", lage: "lange Historie, freigegeben" },
+    { ticker: zufall, lage: "beliebiger Titel ausserhalb der Golden Five" }
+  ];
+  if (jung) PRUEFTITEL.push({ ticker: jung.ticker, lage: `junges Listing (${jung.bars} Bars)` });
+
   const ergebnisse = { O3: [], O4: [], O5: [], O6: [], O8b: [] };
 
   for (const vp of [{ n: "desktop", w: 1440, h: 960 }, { n: "mobile", w: 390, h: 844 }]) {
@@ -357,23 +389,71 @@ async function imBrowser(chromium, index, meta) {
       await page.screenshot({ path: join(SHOTS, `${vp.n}-screener.png`), fullPage: true });
     } catch (err) { ergebnisse.O5.push(`${vp.n}: FEHLER ${String(err.message).slice(0, 90)}`); }
 
-    /* O6 — historischer Chart mit echten Kerzen/Punkten. */
-    try {
-      await page.goto(`${BASE}/vu2/?view=stock&ticker=${mitChart}`, { waitUntil: "domcontentloaded", timeout: 45000 });
-      await page.waitForSelector("#content .focus svg", { timeout: 40000 });
-      const box = await page.locator("#content .focus svg").first().boundingBox();
-      const punkte = await page.locator("#content .focus svg path, #content .focus svg polyline, #content .focus svg rect").count();
-      ergebnisse.O6.push(`${vp.n}: ${mitChart} ${box ? Math.round(box.width) + "x" + Math.round(box.height) : "kein svg"}, ${punkte} Elemente` +
-        (box && box.width <= vp.w && punkte > 0 ? "" : " FEHLER"));
-    } catch (err) { ergebnisse.O6.push(`${vp.n}: FEHLER ${String(err.message).slice(0, 90)}`); }
+    /* O6 — DER HAUPTCHART, an vier verschiedenen Lagen.
 
-    /* O8b — der Live-Block in der Seite: was steht wirklich da? */
+       Geprueft wird nicht nur, DASS etwas gezeichnet ist, sondern auch
+       die Zeitraumleiste: sie traegt elf Knoepfe, und ein Zeitraum, den
+       die Reihe nicht hergibt, ist abgeblendet MIT Grund - nicht
+       verschwunden. Das war die alte Antwort und die falsche. */
+    for (const { ticker: t, lage } of PRUEFTITEL) {
+      try {
+        await page.goto(`${BASE}/vu2/?view=stock&ticker=${encodeURIComponent(t)}`,
+                        { waitUntil: "domcontentloaded", timeout: 45000 });
+        await page.waitForSelector("#content .focus svg", { timeout: 40000 });
+        const box = await page.locator("#content .focus svg").first().boundingBox();
+        const punkte = await page.locator("#content .focus svg path, #content .focus svg polyline, #content .focus svg rect").count();
+        const knoepfe = await page.locator("#content .focus .ranges button").count();
+        const aus = await page.locator("#content .focus .ranges button[disabled]").count();
+        const fussnote = await page.locator("#content .focus .vu-chart-note").count()
+          ? (await page.locator("#content .focus .vu-chart-note").first().innerText()).slice(0, 70)
+          : "";
+        const ok = !!box && box.width <= vp.w && punkte > 0 && knoepfe >= 11;
+        ergebnisse.O6.push(`${vp.n} ${t} (${lage}): ${ok ? "ok" : "FEHLER"} · ` +
+          `${box ? Math.round(box.width) + "x" + Math.round(box.height) : "kein svg"}, ` +
+          `${punkte} Elemente, ${knoepfe} Zeitraeume (${aus} abgeblendet)` +
+          (fussnote ? " · " + fussnote : ""));
+        await page.screenshot({ path: join(SHOTS, `${vp.n}-chart-${t}.png`) });
+
+        /* 1T im SELBEN Chart: entweder zeichnet es, oder der Knopf ist
+           abgeblendet und nennt den Grund. Ein dritter Ausgang - ein
+           zweiter Chart darunter - waere ein Fehler. */
+        const einTag = page.locator('#content .focus .ranges button[data-range="1D"]');
+        if (await einTag.count()) {
+          const gesperrt = await einTag.first().isDisabled();
+          if (!gesperrt) {
+            await einTag.first().click();
+            await page.waitForTimeout(1200);
+          }
+          const svgs = await page.locator("#content .focus svg").count();
+          const grund = gesperrt ? (await einTag.first().getAttribute("title")) || "" : "";
+          ergebnisse.O6.push(`${vp.n} ${t} 1T: ${gesperrt ? "abgeblendet" : "gezeichnet"}` +
+            ` · ${svgs} Chart(s) in der Seite` + (svgs > 1 ? " FEHLER: zwei Charts" : "") +
+            (grund ? " · " + grund.slice(0, 80) : ""));
+        }
+      } catch (err) {
+        ergebnisse.O6.push(`${vp.n} ${t}: FEHLER ${String(err.message).slice(0, 80)}`);
+      }
+    }
+
+    /* O8b — DIE KURSAKTUALISIERUNG, jetzt am Chart statt in einem
+       eigenen Block.
+
+       Hier stand .vu-live - der Abschnitt unter der Seite mit eigenem
+       Intraday-Chart. Den gibt es nicht mehr: der Strom speist den
+       laufenden Chart und meldet sich in einer Statuszeile daneben.
+       Ein Test, der auf den alten Block wartet, meldete ab jetzt einen
+       Fehler, wo eine Absicht steht. */
     try {
       await page.goto(`${BASE}/vu2/?view=stock&ticker=${mitChart}`, { waitUntil: "domcontentloaded", timeout: 45000 });
-      await page.waitForSelector(".vu-live", { timeout: 35000 });
+      await page.waitForSelector("#content .focus svg", { timeout: 35000 });
       await page.waitForTimeout(12000);      /* dem Strom Zeit geben */
-      const live = (await page.locator(".vu-live").innerText()).replace(/\n+/g, " · ");
-      ergebnisse.O8b.push(`${vp.n}: ${live.slice(0, 220)}`);
+      const zeile = await page.locator(".vu-live-status").count()
+        ? (await page.locator(".vu-live-status").first().innerText()).replace(/\n+/g, " · ")
+        : "keine Statuszeile (Intraday fuer diesen Titel nicht verfuegbar)";
+      /* Und die Beschriftung bleibt neutral, solange die Kursart
+         unbestaetigt ist. */
+      const behauptung = /letzter Handelskurs|Last Trade/i.test(zeile) ? " FEHLER: Kursart behauptet" : "";
+      ergebnisse.O8b.push(`${vp.n}: ${zeile.slice(0, 200)}${behauptung}`);
       await page.screenshot({ path: join(SHOTS, `${vp.n}-live.png`) });
     } catch (err) { ergebnisse.O8b.push(`${vp.n}: FEHLER ${String(err.message).slice(0, 90)}`); }
 
@@ -390,7 +470,7 @@ async function imBrowser(chromium, index, meta) {
     kaputt(ergebnisse.O5) ? "FAIL" : "PASS", ergebnisse.O5.join(" · "));
   pruefe("O6", "Historischer Chart zeichnet echte Kurse",
     kaputt(ergebnisse.O6) ? "FAIL" : "PASS", ergebnisse.O6.join(" · "));
-  pruefe("O8b", "Der Live-Block ist in der Seite sichtbar",
+  pruefe("O8b", "Die Kursaktualisierung steht am Chart",
     kaputt(ergebnisse.O8b) ? "FAIL" : "PASS", ergebnisse.O8b.join(" · "));
   bericht.chart.historical = { securities: (meta && meta.chart && meta.chart.historical && meta.chart.historical.scope) || [],
                                measured: ergebnisse.O6 };
