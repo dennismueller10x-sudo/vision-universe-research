@@ -41,6 +41,9 @@
 const { readFileSync } = require("node:fs");
 const { join } = require("node:path");
 
+const Contract = require("../quant/engines/market-data-contract.js");
+const MarketHours = require("../quant/engines/realtime/market-hours.js");
+
 const WS_URL = "wss://api.tiingo.com/iex";
 /* Die Funktion beendet sich selbst, bevor die Plattform sie beendet: ein
    abgeschnittener Strom sieht im Browser aus wie ein Fehler, ein sauber
@@ -81,14 +84,34 @@ function sende(res, event, data) {
   res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
 }
 
+/* Das Produktuniversum - dieselbe Datei, die auch /api/intraday liest.
+   Fehlt sie, bleibt es bei der engeren Freigabe. */
+function produktUniversum() {
+  const liste = lies("quant/data/proof/product-tickers.json", null);
+  if (!liste || !Array.isArray(liste.tickers) || !liste.tickers.length) return null;
+  return liste.tickers;
+}
+
 module.exports = async function handler(req, res) {
   const url = new URL(req.url, "http://localhost");
   const angefragt = String(url.searchParams.get("tickers") || "")
     .toUpperCase().split(",").map((t) => t.trim()).filter(Boolean).slice(0, 5);
 
+  /* DERSELBE UMFANG WIE BEI INTRADAY.
+
+     Historical, Intraday und Realtime sind EINE Infrastruktur. Zwei
+     verschiedene Titelmengen darin waeren zwei Infrastrukturen, und
+     jedes Frontend muesste beide kennen - genau das, was der
+     Integrationsvertrag ausschliesst.
+
+     Die Rueckfallrichtung bleibt eng: ohne lesbare Produktliste gilt
+     die schmalere Freigabe, nie umgekehrt. */
   const erlaubt = erlaubteTitel();
-  const tickers = erlaubt ? angefragt.filter((t) => erlaubt.includes(t)) : [];
-  const abgelehnt = erlaubt ? angefragt.filter((t) => !erlaubt.includes(t)) : angefragt;
+  const produkt = produktUniversum();
+  const zulaessig = (t) => produkt ? (produkt.includes(t) || (erlaubt || []).includes(t))
+                                   : (erlaubt || []).includes(t);
+  const tickers = (erlaubt || produkt) ? angefragt.filter(zulaessig) : [];
+  const abgelehnt = (erlaubt || produkt) ? angefragt.filter((t) => !zulaessig(t)) : angefragt;
 
   res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
   res.setHeader("Cache-Control", "no-store, private");
@@ -109,6 +132,8 @@ module.exports = async function handler(req, res) {
        einem Programmfehler sucht. */
     sende(res, "status", {
       state: "NOT_CONFIGURED",
+      contractState: Contract.resolveRealtime({ connection: "NOT_CONFIGURED",
+                                                tradingOpen: true }).state,
       runtime: process.version,
       reason: "TIINGO_API_KEY ist in dieser Umgebung nicht gesetzt.",
       remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview).",
@@ -117,9 +142,10 @@ module.exports = async function handler(req, res) {
     return res.end();
   }
 
-  if (!erlaubt) {
+  if (!erlaubt && !produkt) {
     sende(res, "status", {
       state: "SCOPE_UNREADABLE",
+      contractState: "PROVIDER_UNAVAILABLE",
       reason: "Die Freigabeliste (quant/config/development-preview.json) ist zur Laufzeit nicht lesbar.",
       remedy: "vercel.json → functions.includeFiles muss quant/config/** enthalten.",
       rejected: abgelehnt
@@ -130,10 +156,13 @@ module.exports = async function handler(req, res) {
   if (!tickers.length) {
     sende(res, "status", {
       state: "NOT_PERMITTED",
+      contractState: Contract.resolveRealtime({ eligible: false }).state,
       reason: abgelehnt.length
-        ? "Fuer diese Titel liegt keine Anzeigefreigabe vor."
+        ? "Diese Titel gehoeren nicht zum Produktuniversum."
         : "Kein Titel angefragt.",
-      scope: erlaubt, rejected: abgelehnt
+      scope: produkt ? "PRODUCT_UNIVERSE" : "DEVELOPMENT_PREVIEW_SCOPE",
+      scopeSize: produkt ? produkt.length : (erlaubt || []).length,
+      rejected: abgelehnt
     });
     return res.end();
   }
@@ -186,8 +215,18 @@ module.exports = async function handler(req, res) {
       authorization: key,
       eventData: { tickers }
     }));
+    /* Die Boersenlage gehoert in die Verbindungsmeldung: sie
+       entscheidet, ob ein schweigender Strom MARKET_CLOSED ist oder
+       REALTIME_UNAVAILABLE. Ohne sie muesste das Frontend raten - und
+       jedes Frontend anders. */
+    const kalender = lies("quant/config/market-calendar.json", null);
+    const sitzung = Contract.marketSession(MarketHours, new Date(),
+      kalender ? { calendar: kalender } : {});
     sende(res, "status", {
       state: "CONNECTED",
+      contractState: Contract.resolveRealtime({
+        connection: "CONNECTED", tradingOpen: sitzung.tradingOpen }).state,
+      marketSession: sitzung,
       at: new Date().toISOString(),
       runtime: process.version,
       tickers, rejected: abgelehnt,

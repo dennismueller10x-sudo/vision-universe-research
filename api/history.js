@@ -39,6 +39,7 @@
 
 const { createHistoryStore } = require("../quant/engines/history-store.js");
 const Guard = require("../quant/engines/zero-cost-guard.js");
+const Contract = require("../quant/engines/market-data-contract.js");
 
 /* Der S3-Treiber ist ein ES-Modul, diese Funktion ist CommonJS. Der
    dynamische Import ueberbrueckt das und wird EINMAL je warmer Instanz
@@ -113,7 +114,9 @@ module.exports = async function handler(req, res) {
   }
   if (!konfiguriert()) {
     return antwort(res, 200, {
-      state: "NOT_CONFIGURED", ticker,
+      state: "NOT_CONFIGURED",
+      contractState: Contract.resolveHistorical({ storeReachable: false }).state,
+      ticker,
       reason: "Die Zugangsdaten des Historienspeichers sind in dieser Umgebung nicht gesetzt.",
       remedy: "Vercel → Projekt → Settings → Environment Variables → " +
               "VU_HISTORY_S3_ENDPOINT, VU_HISTORY_S3_BUCKET, VU_HISTORY_S3_REGION, " +
@@ -133,9 +136,15 @@ module.exports = async function handler(req, res) {
 
     const reihe = await store.getSeries(ticker);
     if (!reihe || !Array.isArray(reihe.bars) || !reihe.bars.length) {
+      const zustand = Contract.resolveHistorical({ barCount: 0 });
       return antwort(res, 200, {
-        state: "NOT_STORED", ticker,
-        reason: "Fuer diesen Titel liegt im Historienspeicher keine Reihe.",
+        state: "NOT_STORED",
+        /* Der Vertragszustand daneben: jedes Frontend liest denselben
+           Wortschatz, statt sich aus state und reason einen eigenen zu
+           bauen. */
+        contractState: zustand.state,
+        ticker,
+        reason: zustand.reason,
         note: "Das ist eine Aussage ueber den Speicher, nicht ueber den Titel: " +
               "es kann sein, dass der Anbieter fuer ihn nie eine Reihe gefuehrt hat."
       });
@@ -143,8 +152,10 @@ module.exports = async function handler(req, res) {
 
     const schmal = schneideUndForme(reihe.bars, { spalten, von, bis });
 
+    const zustand = Contract.resolveHistorical({ barCount: schmal.length });
     return antwort(res, 200, {
       state: schmal.length ? "AVAILABLE" : "EMPTY",
+      contractState: zustand.state,
       ticker,
       columns: spalten,
       bars: schmal,
@@ -166,8 +177,11 @@ module.exports = async function handler(req, res) {
        durchgereicht; alles andere wird zusammengefasst, damit keine
        Innerei nach aussen geht. */
     const blockiert = String((err && err.message) || "").includes(Guard.BLOCKED);
+    /* Ein nicht erreichbarer Speicher ist PROVIDER_UNAVAILABLE und nicht
+       HISTORICAL_UNAVAILABLE: die Reihe ist da, der Weg nicht. */
     return antwort(res, 200, {
       state: blockiert ? "BUDGET_BLOCKED" : "STORE_UNREACHABLE",
+      contractState: Contract.resolveHistorical({ storeReachable: false }).state,
       ticker,
       reason: blockiert
         ? "Die Nullkostenschranke hat den Lesevorgang gestoppt."

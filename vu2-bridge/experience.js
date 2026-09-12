@@ -297,6 +297,46 @@
 
   var CR = g.VUChartRanges;
 
+  /* ------------------------------- Die Verschmelzungs-Engine nachladen
+
+     bar-merge.js faltet einen Tick in die LAUFENDE Kerze: high/low/close
+     und Volumen der offenen Periode, und niemals eine bereits
+     abgeschlossene Bar. Genau das verlangt der Chart-Vertrag mit
+     "aktive Kerze".
+
+     Sie steht nicht in vu2/index.html, und dort darf auch nichts
+     dazukommen - die Seite gehoert Astra/Codex und traegt genau die drei
+     Bruecken-Zeilen. Also laedt die Bruecke sie selbst nach.
+
+     FAELLT DAS NACHLADEN AUS, BEWEGT SICH DER CHART NICHT. Das ist
+     Absicht: eine eigene, schnell hingeschriebene Faltung waere eine
+     zweite Fassung derselben Regel - und die erste ist geprueft. Lieber
+     ein stehender Chart als zwei Wahrheiten ueber dieselbe Kerze. */
+  var MERGE_DATEIEN = [
+    "/quant/engines/realtime/staleness.js",
+    "/quant/engines/realtime/session-policy.js",
+    "/quant/engines/realtime/bar-merge.js"
+  ];
+  var mergeVersprechen = null;
+  function barMerge() {
+    if (mergeVersprechen) return mergeVersprechen;
+    mergeVersprechen = MERGE_DATEIEN.reduce(function (kette, pfad) {
+      return kette.then(function () {
+        if (g.VURealtime && g.VURealtime.BarMerge) return null;
+        return new Promise(function (fertig, daneben) {
+          var s = document.createElement("script");
+          s.src = pfad;
+          s.onload = fertig;
+          s.onerror = function () { daneben(new Error("nicht ladbar: " + pfad)); };
+          document.head.appendChild(s);
+        });
+      });
+    }, Promise.resolve()).then(function () {
+      return (g.VURealtime && g.VURealtime.BarMerge) || null;
+    }).catch(function () { return null; });
+    return mergeVersprechen;
+  }
+
   function hauptchart() {
     if (!CR || !g.QuantCharts) return;
     warteAuf("#content .focus", 20000).then(function (focus) {
@@ -426,6 +466,25 @@
     }
     var intradayGrund = null;
 
+    /* Die Verschmelzungsreihe. Einmal aus den geholten Intraday-Bars
+       gesaet; danach faltet jeder Abschluss in ihre laufende Kerze. */
+    var serieVersprechen = null;
+    function reihe() {
+      if (serieVersprechen) return serieVersprechen;
+      serieVersprechen = barMerge().then(function (BM) {
+        if (!BM || !daten.intraday.length) return null;
+        /* timeframe/interval muessen zur geholten Aufloesung passen -
+           die Intraday-Bars kommen mit freq=5min. Der Ursprung heisst
+           INTRADAY: so kann eine spaetere, bestaetigte Bar sie
+           ueberschreiben, ein laufender Tick aber nicht. */
+        var serie = BM.createSeries({ timeframe: "5min", interval: "5min",
+                                      exchange: "XNYS" });
+        serie.seed(daten.intraday, "INTRADAY");
+        return serie;
+      }).catch(function () { return null; });
+      return serieVersprechen;
+    }
+
     /* -------------------------------------------------------- Echtzeit
 
        Der Strom zeichnet keinen eigenen Chart mehr. Er haengt seine
@@ -459,25 +518,47 @@
       });
       quelle.addEventListener("tick", function (e) {
         var t = JSON.parse(e.data);
+
+        /* ------------------------------------------------------------
+           NUR ABSCHLUESSE BEWEGEN DEN PREIS-CHART.
+
+           HIER LAG EIN FEHLER, UND ZWAR MEINER. Diese Stelle nahm jeden
+           Tick: Abschluss wie Quote. Der Anbieter liefert beides - "T"
+           ist ein ausgefuehrter Handel, "Q" die Mitte aus Geld und
+           Brief. Eine Quote-Mitte ist ein ANGEBOT, kein Kurs; sie als
+           Kurspunkt zu zeichnen behauptet einen Handel, den es nicht
+           gegeben hat.
+
+           Die Quote verschwindet deshalb nicht - sie steht in der
+           Statuszeile, ausdruecklich als Quote-Mitte beschriftet. Sie
+           fasst nur den Preisverlauf nicht an. */
+        var istAbschluss = t.kind === "TRADE";
         liveWerte.push(t.price);
         if (liveWerte.length > 240) liveWerte.shift();
-        pille.textContent = num(t.price, 2) + " $ · " + zeit(t.receivedAt);
-        /* An den laufenden Chart anhaengen - aber nur, wenn gerade ein
-           Intraday-Zeitraum zu sehen ist. In einen Zehnjahreschart
-           einzelne Ticks zu schreiben, ergaebe eine Linie, die etwas
-           anderes behauptet als sie zeigt. */
+        pille.textContent = num(t.price, 2) + " $ · " +
+          (istAbschluss ? "Abschluss" : "Quote-Mitte") + " · " + zeit(t.receivedAt);
+        if (!istAbschluss) return;
+
+        /* Und nur, wenn gerade ein Intraday-Zeitraum zu sehen ist. In
+           einen Zehnjahreschart einzelne Ticks zu schreiben ergaebe eine
+           Linie, die etwas anderes behauptet als sie zeigt. */
         var r = CR.byId ? CR.byId(aktuell) : null;
         var istIntraday = (r && r.source === "intraday") ||
                           aktuell === "1D" || aktuell === "5D";
         if (!istIntraday || !daten.intraday.length) return;
-        var letzte = daten.intraday[daten.intraday.length - 1];
-        daten.intraday = daten.intraday.concat([{
-          date: t.receivedAt || new Date().toISOString(),
-          open: letzte.close, high: t.price, low: t.price,
-          close: t.price, volume: null
-        }]);
-        if (daten.intraday.length > 4000) daten.intraday.shift();
-        zeichne(aktuell);
+
+        /* Die AKTIVE KERZE, nicht eine neue je Tick. Das uebernimmt
+           bar-merge.js: es kennt die Periodengrenzen und ruehrt eine
+           abgeschlossene Bar nicht mehr an. */
+        reihe().then(function (serie) {
+          if (!serie) return;                      /* Engine fehlt: Chart steht */
+          var r2 = serie.applyTick({ price: t.price, size: t.size,
+                                     timestamp: t.at || t.receivedAt,
+                                     receivedAt: t.receivedAt });
+          if (!r2 || (r2.action !== "updated" && r2.action !== "appended")) return;
+          daten.intraday = serie.bars();
+          zeichne(aktuell);
+        });
       });
       quelle.addEventListener("summary", function (e) {
         var d = JSON.parse(e.data);

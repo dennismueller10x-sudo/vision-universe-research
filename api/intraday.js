@@ -29,6 +29,9 @@
 const { readFileSync } = require("node:fs");
 const { join } = require("node:path");
 
+const Contract = require("../quant/engines/market-data-contract.js");
+const MarketHours = require("../quant/engines/realtime/market-hours.js");
+
 const BASIS = "https://api.tiingo.com/iex";
 const ERLAUBTE_FREQUENZEN = ["1min", "5min", "15min", "30min", "1hour"];
 
@@ -105,7 +108,8 @@ module.exports = async function handler(req, res) {
                             : erlaubt.includes(ticker);
   if (!zulaessig) {
     return antwort(res, 200, {
-      state: "NOT_PERMITTED", ticker,
+      state: "NOT_PERMITTED",
+      contractState: Contract.resolveIntraday({ eligible: false }).state, ticker,
       scope: produkt ? "PRODUCT_UNIVERSE" : "DEVELOPMENT_PREVIEW_SCOPE",
       scopeSize: produkt ? produkt.length : erlaubt.length,
       reason: produkt
@@ -129,7 +133,9 @@ module.exports = async function handler(req, res) {
   const key = (process.env.TIINGO_API_KEY || "").trim();
   if (!key) {
     return antwort(res, 200, {
-      state: "NOT_CONFIGURED", ticker,
+      state: "NOT_CONFIGURED",
+      contractState: Contract.resolveIntraday({ providerReachable: false }).state,
+      ticker,
       reason: "TIINGO_API_KEY ist in dieser Umgebung nicht gesetzt.",
       remedy: "Vercel → Projekt → Settings → Environment Variables → TIINGO_API_KEY (Scope: Preview)."
     });
@@ -148,7 +154,9 @@ module.exports = async function handler(req, res) {
     });
     if (!antwortDesAnbieters.ok) {
       return antwort(res, 200, {
-        state: "PROVIDER_REJECTED", ticker, status: antwortDesAnbieters.status,
+        state: "PROVIDER_REJECTED",
+        contractState: Contract.resolveIntraday({ providerReachable: false }).state,
+        ticker, status: antwortDesAnbieters.status,
         reason: "Der Anbieter hat den Abruf abgelehnt."
       });
     }
@@ -161,26 +169,38 @@ module.exports = async function handler(req, res) {
       }))
       .filter((b) => b.date && b.close !== null);
 
+    const sitzung = lage();
+    const zustand = Contract.resolveIntraday({ barCount: bars.length, session: sitzung });
     return antwort(res, 200, {
       state: bars.length ? "AVAILABLE" : "EMPTY",
+      contractState: zustand.state,
+      marketSession: sitzung,
       ticker, freq, bars,
       first: bars.length ? bars[0].date : null,
       last: bars.length ? bars[bars.length - 1].date : null,
       source: "tiingo/iex",
       fetchedAt: new Date().toISOString(),
       priceTypeConfirmed: false,
-      reason: bars.length ? null
-        : "Der Anbieter hat fuer diesen Zeitraum keine Bars geliefert. Ausserhalb der " +
-          "Handelszeiten ist das der Normalfall."
+      reason: zustand.reason
     });
   } catch (err) {
     return antwort(res, 200, {
-      state: "FETCH_FAILED", ticker,
+      state: "FETCH_FAILED",
+      contractState: Contract.resolveIntraday({ providerReachable: false }).state,
+      ticker,
       reason: String((err && err.name) === "AbortError" ? "Zeitueberschreitung" : "Abruf gescheitert")
     });
   } finally { clearTimeout(uhr); }
 };
 
 function zahl(v) { return typeof v === "number" && Number.isFinite(v) ? v : null; }
+
+/* Die Boersenlage - fuer die BEGRUENDUNG, nicht fuer den Zustand.
+   Ohne sie liest sich "keine Bars" um 22 Uhr wie ein Ausfall. */
+function lage() {
+  const kalender = lies("quant/config/market-calendar.json", null);
+  return Contract.marketSession(MarketHours, new Date(),
+    kalender ? { calendar: kalender } : {});
+}
 
 module.exports.config = { maxDuration: 20 };

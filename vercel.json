@@ -9,7 +9,7 @@
   "functions": {
     "api/*.js": {
       "maxDuration": 60,
-      "includeFiles": "{quant/config/**,quant/data/proof/product-tickers.json,quant/engines/history-store.js,quant/engines/bar-codec.js,quant/engines/zero-cost-guard.js,scripts/market/storage/s3-driver.mjs}"
+      "includeFiles": "{quant/config/**,quant/data/proof/product-tickers.json,quant/engines/history-store.js,quant/engines/bar-codec.js,quant/engines/zero-cost-guard.js,quant/engines/market-data-contract.js,quant/engines/realtime/market-hours.js,scripts/market/storage/s3-driver.mjs}"
     }
   },
   "headers": [
