@@ -7,6 +7,7 @@ Emittenten vollstaendig abdeckt und gegen fuenf Emittenten zaehlt, meldet
 
 Geprueft wird deshalb vor allem, WOGEGEN gezaehlt wird.
 """
+import types
 import sys
 import unittest
 from datetime import date
@@ -278,3 +279,44 @@ class HonestyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PointInTimeTests(unittest.TestCase):
+    """§13. Zeitpunktgenauigkeit ist eine Eigenschaft jedes einzelnen Werts.
+
+    Der Acceptance Report fuehrte PIT bis hierher nur als Provider-Gate
+    und fuer die fuenf Validierungstitel. Ein Gate, das sagt "die SEC
+    liefert Einreichungsdaten", sagt nichts darueber, fuer wie viele der
+    7.004 Produkttitel diese Daten auch wirklich da sind.
+    """
+
+    def test_ein_wert_ohne_einreichung_ist_nicht_datierbar(self):
+        class OhneAkzession:
+            provenance = types.SimpleNamespace(filed="2020-02-01", accession=None,
+                                               available_from=None)
+
+        class OhneDatum:
+            provenance = types.SimpleNamespace(filed=None, accession="0001-20-00001",
+                                               available_from=None)
+
+        class Vollstaendig:
+            provenance = types.SimpleNamespace(filed="2020-02-01",
+                                               accession="0001-20-00001",
+                                               available_from=None)
+
+        self.assertFalse(uc._pit_datierbar(OhneAkzession()))
+        self.assertFalse(uc._pit_datierbar(OhneDatum()))
+        self.assertTrue(uc._pit_datierbar(Vollstaendig()))
+
+    def test_ohne_provenance_ist_nichts_datierbar(self):
+        self.assertFalse(uc._pit_datierbar(types.SimpleNamespace(provenance=None)))
+
+    def test_pit_ready_verlangt_alle_werte(self):
+        self.assertEqual(uc._pit_zustand(100, 100), uc.PIT_READY)
+        self.assertEqual(uc._pit_zustand(99, 100), uc.PIT_PARTIAL)
+        self.assertEqual(uc._pit_zustand(1, 100), uc.PIT_PARTIAL)
+
+    def test_gar_keine_werte_ist_unavailable_und_nicht_ready(self):
+        """Der bequemste Fehler: 0 von 0 als "alle" zu lesen."""
+        self.assertEqual(uc._pit_zustand(0, 0), uc.PIT_UNAVAILABLE)
+        self.assertEqual(uc._pit_zustand(0, 100), uc.PIT_UNAVAILABLE)

@@ -100,6 +100,46 @@ def product_members(instruments):
     return members
 
 
+# ------------------------------------------------------------ §13 PIT
+#
+# Point-in-Time-Faehigkeit ist keine Eigenschaft des Providers, sondern
+# eine Eigenschaft JEDES EINZELNEN WERTS: er ist es, wenn sich sagen
+# laesst, ab wann er oeffentlich war, und aus welcher Einreichung er
+# stammt. Ohne Einreichungsdatum kann eine Abfrage "Stand 30.06.2019"
+# nicht ausschliessen, dass sie eine spaetere Korrektur mitliest - das
+# ist genau der Blick in die Zukunft, den PIT verhindern soll.
+#
+# Die Akzessionsnummer gehoert dazu: das Datum allein sagt WANN, sie
+# sagt WORAUS. Ohne sie ist eine Restatement-Kette nicht
+# rekonstruierbar.
+PIT_READY = "PIT_READY"
+PIT_PARTIAL = "PIT_PARTIAL"
+PIT_UNAVAILABLE = "PIT_UNAVAILABLE"
+
+
+def _pit_datierbar(fact):
+    """Laesst sich dieser Wert einem Zeitpunkt und einer Einreichung zuordnen?"""
+    provenance = getattr(fact, "provenance", None)
+    if provenance is None:
+        return False
+    wann = getattr(provenance, "available_from", None) or getattr(provenance, "filed", None)
+    woraus = getattr(provenance, "accession", None)
+    return bool(wann) and bool(woraus)
+
+
+def _pit_zustand(datierbar, gesamt):
+    """Der Zustand eines Emittenten aus den Zustaenden seiner Werte.
+
+    PIT_READY verlangt ALLE Werte, nicht die meisten. Ein Bestand, in
+    dem ein Prozent der Werte undatierbar ist, taugt nicht fuer einen
+    Backtest - der eine Wert reicht, um das Ergebnis zu verfaelschen,
+    und man weiss nicht, welcher es war.
+    """
+    if not gesamt or not datierbar:
+        return PIT_UNAVAILABLE
+    return PIT_READY if datierbar == gesamt else PIT_PARTIAL
+
+
 def _resolve_history(resolver, years, metric, annual=True, as_of=None):
     """Aufloesbare Perioden einer Kennzahl, aelteste zuerst.
 
@@ -120,14 +160,14 @@ def _resolve_history(resolver, years, metric, annual=True, as_of=None):
             fact = resolver.annual(metric, fiscal_year, as_of, policy=POLICY_LATEST_KNOWN)
             if fact is not None and fact.available and fact.value is not None:
                 rows.append((fiscal_year, "FY", fact.period_end,
-                             getattr(fact, "quality", None)))
+                             getattr(fact, "quality", None), _pit_datierbar(fact)))
             continue
         for index in (1, 2, 3, 4):
             fact = resolver.quarter(metric, fiscal_year, index, as_of,
                                     policy=POLICY_LATEST_KNOWN)
             if fact is not None and fact.available and fact.value is not None:
                 rows.append((fiscal_year, f"Q{index}", fact.period_end,
-                             getattr(fact, "quality", None)))
+                             getattr(fact, "quality", None), _pit_datierbar(fact)))
     rows.sort(key=lambda row: (row[0] or 0, row[1] or ""))
     return rows
 
@@ -163,6 +203,7 @@ def issuer_fundamentals(document, registry):
     per_metric = {}
     annual_ends, quarterly_ends = set(), set()
     quality = Counter()
+    pit_datierbar = pit_gesamt = 0
 
     for metric in sorted(set(REPORT_METRICS) | set(CORE_METRICS)):
         jahre = sorted(jahre_je_metrik.get(metric, ()))
@@ -177,6 +218,9 @@ def issuer_fundamentals(document, registry):
         for row in annual + quarterly:
             if row[3]:
                 quality[row[3]] += 1
+            pit_gesamt += 1
+            if row[4]:
+                pit_datierbar += 1
         per_metric[metric] = {
             "annualPeriods": len(annual),
             "quarterlyPeriods": len(quarterly),
@@ -200,6 +244,11 @@ def issuer_fundamentals(document, registry):
         "historyYears": _history_years([(None, None, d, None) for d in sorted(annual_ends)]),
         "metrics": per_metric,
         "quality": dict(quality),
+        "pit": {
+            "state": _pit_zustand(pit_datierbar, pit_gesamt),
+            "datableValues": pit_datierbar,
+            "resolvedValues": pit_gesamt,
+        },
         "qualitySummary": pit,
         "latestFiling": document.get("latest_filing"),
         "versions": document.get("versions"),
@@ -238,11 +287,18 @@ def issuer_from_canonical_bundle(bundle, cik):
     annual_ends, quarterly_ends = set(), set()
 
     nach_metrik = defaultdict(list)
+    pit_datierbar = pit_gesamt = 0
     for fact in facts:
         name = CANONICAL_TO_REGISTRY.get(fact.get("metricId"))
         if not name or fact.get("value") is None:
             continue
         nach_metrik[name].append(fact)
+        # Dieselbe Frage wie im Faktenspeicher, nur heissen die Felder im
+        # Produktschema anders: WANN war der Wert oeffentlich, und aus
+        # WELCHER Einreichung stammt er.
+        pit_gesamt += 1
+        if (fact.get("availableAt") or fact.get("filedAt")) and fact.get("sourceFilingId"):
+            pit_datierbar += 1
 
     for metric in sorted(set(REPORT_METRICS) | set(CORE_METRICS)):
         rows = nach_metrik.get(metric, [])
@@ -282,6 +338,11 @@ def issuer_from_canonical_bundle(bundle, cik):
         "historyYears": _history_years([(None, None, d, None) for d in sorted(alle)]),
         "metrics": per_metric,
         "quality": {},
+        "pit": {
+            "state": _pit_zustand(pit_datierbar, pit_gesamt),
+            "datableValues": pit_datierbar,
+            "resolvedValues": pit_gesamt,
+        },
         "qualitySummary": {},
         "latestFiling": None,
         "versions": bundle.get("versions"),
@@ -374,6 +435,24 @@ def build_reports(root, documents, registry=None, universe=None, progress_every=
             if members else None,
         }
 
+    # ---------------------------------------------- §13 PIT je Papier
+    #
+    # Gezaehlt wird hier auf PAPIERebene und nicht auf Emittentenebene:
+    # die Frage ist, wie viele der 7.004 Produkttitel sich
+    # zeitpunktgenau abfragen lassen. Ein Emittent mit zwei
+    # Aktienklassen traegt seinen Zustand an beide weiter - dieselbe
+    # Fundamentalhistorie, dieselbe PIT-Faehigkeit (§15).
+    #
+    # Ein Papier ohne Emittenten oder ohne Geschaeftszahlen ist
+    # PIT_UNAVAILABLE und nicht etwa ungezaehlt: die drei Zustaende
+    # ergeben zusammen die Zahl der Produkttitel, sonst waere die
+    # Luecke wegdefiniert.
+    pit_per_security = Counter()
+    for member in members.values():
+        bilanz = per_issuer.get(member["issuerId"]) if member["issuerId"] else None
+        zustand = (bilanz or {}).get("pit", {}).get("state") or PIT_UNAVAILABLE
+        pit_per_security[zustand] += 1
+
     resolution = universe.get("resolution") or {}
     resolution_totals = resolution.get("totals") or {}
 
@@ -403,6 +482,26 @@ def build_reports(root, documents, registry=None, universe=None, progress_every=
             "BY_SOURCE": dict(Counter(row["status"] for row in per_issuer.values())),
         },
         "metrics": metric_counts,
+        "pointInTime": {
+            "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein "
+                    "Veroeffentlichungsdatum UND eine Einreichung traegt. "
+                    "PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines "
+                    "Emittenten - bei einem Prozent undatierbarer Werte ist ein "
+                    "Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, "
+                    "welcher Wert es war.",
+            "denominator": "PRODUCT_TITLES",
+            "PIT_READY_SECURITIES": pit_per_security[PIT_READY],
+            "PIT_PARTIAL_SECURITIES": pit_per_security[PIT_PARTIAL],
+            "PIT_UNAVAILABLE_SECURITIES": pit_per_security[PIT_UNAVAILABLE],
+            "BY_ISSUER": dict(Counter(
+                (row.get("pit") or {}).get("state") or PIT_UNAVAILABLE
+                for row in per_issuer.values())),
+            "SURVIVORSHIP_FREE_UNIVERSE": False,
+            "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein "
+                                "Delisting-Ereignisfeed. Ein ueberlebensfreies "
+                                "Universum laesst sich daraus nicht bauen; ein PASS "
+                                "waere eine Falschaussage ueber die Quelle.",
+        },
     }
 
     # ----------------------------------------------------- §12 Historie

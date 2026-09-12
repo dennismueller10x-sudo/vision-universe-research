@@ -333,6 +333,36 @@ def cmd_ingest(args):
     run["unresolved"] = len(skipped)
     print(json.dumps(run, indent=2))
 
+    # DIE BILANZ DES LAUFS GEHOERT INS REPOSITORY, NICHT NUR INS LOG.
+    #
+    # Anfragezahlen und Fehlschlaege standen bisher ausschliesslich im
+    # Actions-Log. Ein Log laeuft ab; die Frage "wie viele Anfragen hat
+    # das die SEC gekostet, und welche Titel sind nicht durchgekommen"
+    # ist genau die, die man spaeter stellt.
+    http = getattr(getattr(provider, "client", None), "stats", None) or {}
+    _write(DATA_DIR.parent / "fundamentals" / "ingest-run.json", {
+        "schema_version": 1,
+        "generated_at_utc": _utcnow(),
+        "versions": version_stamp(registry.version),
+        "note": "Bilanz EINES Ingest-Laufs. Ein wiederaufgenommener Lauf zaehlt "
+                "nur, was er selbst geholt hat - uebersprungene Emittenten aus "
+                "dem Zwischenspeicher erzeugen keine Anfrage.",
+        "run": run,
+        "requests": {
+            "SEC_BULK_REQUESTS": (run.get("bulk") or {}).get("requests",
+                                  1 if run.get("bulk") else 0),
+            "SEC_INDIVIDUAL_REQUESTS": http.get("requests", 0),
+            "CACHE_HITS": http.get("cache_hits", 0),
+            "RETRIES": http.get("retries", 0),
+        },
+        "failures": {
+            "FAILED_SECURITIES": run.get("failed", 0),
+            "UNRESOLVED_NOT_INGESTED": len(skipped),
+            "ciks": [r["cik"] for r in outcome["results"]
+                     if r.get("status") not in ("ok", "skipped", "unchanged")][:200],
+        },
+    })
+
     # EIN FEHLSCHLAG IST KEIN GESCHEITERTER LAUF.
     #
     # Die erste Fassung endete mit 1, sobald EIN Emittent fehlschlug.

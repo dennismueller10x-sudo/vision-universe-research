@@ -307,5 +307,18 @@ jobs:
           print("Company Facts vorhanden: ", c["fundamentals"]["COMPANY_FACTS_AVAILABLE"])
           for name, row in c["metrics"].items():
               print(f"  {name:<24} {row['COUNT']:>6}  {row['PERCENT_OF_PRODUCT_UNIVERSE']}%")
-          print("Jahrestiefe (Revenue):   ", h["annual"]["revenue"])
+          print("Jahrestiefe (Revenue):   ", h["annualOverall"])
+          print("Quartalstiefe:           ", h["quarterlyOverall"])
+          pit = c["pointInTime"]
+          print("PIT ready / partial / unavailable (Papiere): "
+                f"{pit['PIT_READY_SECURITIES']} / {pit['PIT_PARTIAL_SECURITIES']} / "
+                f"{pit['PIT_UNAVAILABLE_SECURITIES']}")
+          try:
+              r = json.load(open("quant/data/fundamentals/ingest-run.json"))
+              print("Anfragen:                ", json.dumps(r["requests"]))
+              print("Fehlgeschlagene Titel:   ", r["failures"]["FAILED_SECURITIES"])
+          except FileNotFoundError:
+              # Ein wiederaufgenommener Lauf, der nichts holen musste,
+              # schreibt keine Laufbilanz. Das ist kein Fehler.
+              print("Keine Laufbilanz - dieser Lauf hat nichts neu geholt.")
           PY
