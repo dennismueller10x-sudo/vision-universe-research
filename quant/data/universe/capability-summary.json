@@ -1,0 +1,97 @@
+{
+  "version": "company-master-1.0.0",
+  "generatedAt": "2026-09-12T09:34:11.860Z",
+  "instruments": 5690,
+  "levels": {
+    "DELIVERED": "Liegt in diesem Repository und funktioniert ohne Anbieterzugang.",
+    "PROVIDER_VERIFIED": "In einem echten Lauf mit Anbieterzugang gemessen; die Daten selbst bleiben aus Redistributionsgruenden in der Arbeitsablage."
+  },
+  "counts": {
+    "HAS_PROFILE": {
+      "DELIVERED": 5690,
+      "PROVIDER_VERIFIED": 5690
+    },
+    "HAS_PRICE_SNAPSHOT": {
+      "DELIVERED": 5,
+      "PROVIDER_VERIFIED": 5656
+    },
+    "HAS_PRICE_HISTORY": {
+      "DELIVERED": 5,
+      "PROVIDER_VERIFIED": 5690
+    },
+    "HAS_INTRADAY": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_LIVE": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_SEC": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_FUNDAMENTALS": {
+      "DELIVERED": 5,
+      "PROVIDER_VERIFIED": 5
+    },
+    "HAS_VALUATION": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_ANALYSTS": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_THEMES": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    }
+  },
+  "evidenceSources": [
+    {
+      "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
+      "kind": "providerPriceHistory",
+      "symbolsWithReportRow": 3446,
+      "symbolsImpliedPass": 2238
+    },
+    {
+      "file": "quant/data/market/scale/gate-GATE_100.json",
+      "kind": "providerPriceHistory",
+      "symbolsWithReportRow": 100,
+      "symbolsImpliedPass": 0
+    },
+    {
+      "file": "quant/data/market/scale/gate-GATE_2000.json",
+      "kind": "providerPriceHistory",
+      "symbolsWithReportRow": 1138,
+      "symbolsImpliedPass": 0
+    },
+    {
+      "file": "quant/data/market/scale/gate-GATE_500.json",
+      "kind": "providerPriceHistory",
+      "symbolsWithReportRow": 500,
+      "symbolsImpliedPass": 0
+    },
+    {
+      "file": "quant/data/market/golden-preview/daily/",
+      "kind": "deliveredPriceHistory",
+      "symbols": 5
+    },
+    {
+      "file": "discover/data/stocks/US_REAL/",
+      "kind": "deliveredStockPage",
+      "symbols": 498
+    },
+    {
+      "file": "quant/data/sec/canonical_index.json",
+      "kind": "fundamentals",
+      "symbols": 5
+    }
+  ],
+  "notMeasured": {
+    "HAS_VALUATION": "Keine Bewertungskennzahlen im Bestand. Sie brauchen Fundamentaldaten je Titel; die kommen mit der SEC-Stufe.",
+    "HAS_ANALYSTS": "Keine Analystendaten. Sie sind lizenzpflichtig und ausgeschlossen (§32).",
+    "HAS_THEMES": "Themen sind im Modell vorgesehen (§35) und noch nicht befuellt."
+  }
+}

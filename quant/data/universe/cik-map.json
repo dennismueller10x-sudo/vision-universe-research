@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T09:26:39.762Z",
+  "status": "UNAVAILABLE",
+  "source": "sec.gov",
+  "reason": "Keines der beiden SEC-Verzeichnisse war abrufbar.",
+  "errors": [
+    {
+      "id": "company_tickers",
+      "url": "https://www.sec.gov/files/company_tickers.json",
+      "error": "HTTP 403"
+    },
+    {
+      "id": "company_tickers_exchange",
+      "url": "https://www.sec.gov/files/company_tickers_exchange.json",
+      "error": "HTTP 403"
+    }
+  ],
+  "note": "Es wird ausdruecklich KEINE ersatzweise CIK-Zuordnung gebaut. Der Company Master behaelt die CIKs, die er bereits hat; alles andere bleibt null und damit HAS_SEC = false. Eine geratene CIK zieht eine falsche Fundamentalbilanz nach sich.",
+  "byTicker": {}
+}

@@ -1,0 +1,86 @@
+{
+  "version": "company-master-1.0.0",
+  "generatedAt": "2026-09-12T09:33:59.783Z",
+  "note": "§47. Synthetische Instrumente durch dieselbe Klassifikation, denselben Sync und denselben Indexbau wie echte. Die Zahlen sagen etwas ueber die Pipeline, nichts ueber einen Markt.",
+  "universe": {
+    "requested": 25000,
+    "built": 25000,
+    "byType": {
+      "COMMON_STOCK": 16622,
+      "ETF": 4151,
+      "FUND": 4227
+    },
+    "shards": 676,
+    "searchShards": 676
+  },
+  "timingsMs": {
+    "generateRows": 34,
+    "normalize": 82,
+    "syncCold": 196,
+    "syncWarmIdempotent": 443,
+    "syncPartialDelisting": 407,
+    "qualityReport": 116,
+    "buildIndexes": 21,
+    "serialize": 107,
+    "search200Queries": 3
+  },
+  "perInstrumentMs": {
+    "normalize": 0.003,
+    "syncCold": 0.008
+  },
+  "idempotency": {
+    "pass": true,
+    "secondRun": {
+      "total": 25000,
+      "new": 0,
+      "updated": 0,
+      "unchanged": 25000,
+      "delisted": 0,
+      "reactivated": 0
+    },
+    "note": "Ein zweiter Lauf auf demselben Eingang muss ausschliesslich UNCHANGED liefern (§14)."
+  },
+  "delisting": {
+    "pass": true,
+    "inputHalved": 12500,
+    "stillInMaster": 25000,
+    "markedDelisted": 11503,
+    "note": "Die Haelfte des Eingangs weggenommen: kein Instrument verschwindet, die fehlenden werden beendet (§11)."
+  },
+  "search": {
+    "queries": 200,
+    "exactFirstHit": 200,
+    "msPerQuery": 0.015,
+    "note": "Jede Anfrage laedt genau eine Scherbe - nicht das Universum."
+  },
+  "size": {
+    "masterMB": 18.4,
+    "searchIndexMB": 2.4,
+    "bytesPerInstrument": 773,
+    "largestSearchShardKB": 5,
+    "note": "Die groesste Suchscherbe ist die Zahl, die der Browser wirklich laedt."
+  },
+  "memory": {
+    "heapUsedMB": 188,
+    "heapGrowthMB": 183.3,
+    "rssMB": 276.8
+  },
+  "quality": {
+    "blocking": false,
+    "findings": {
+      "duplicateInstrumentIds": [],
+      "duplicateSymbols": [],
+      "duplicateProviderIds": [],
+      "duplicateCiks": [],
+      "missingName": 7477,
+      "missingExchange": 0,
+      "missingCurrency": 0,
+      "missingCountry": 3543,
+      "invalidCik": [],
+      "unknownSecurityType": 0,
+      "inactive": 2011,
+      "noFirstTradeDate": 0,
+      "symbolWithWhitespace": []
+    }
+  }
+}

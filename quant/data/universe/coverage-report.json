@@ -1,0 +1,118 @@
+{
+  "version": "company-master-1.0.0",
+  "generatedAt": "2026-09-12T09:34:11.870Z",
+  "asOf": "2026-09-12",
+  "source": {
+    "kind": "COMMITTED_GATE_UNIVERSES",
+    "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
+    "generatedAt": "2026-09-09T16:07:59.170Z",
+    "complete": false,
+    "incompleteReason": "Das vollstaendige Anbieterverzeichnis liegt in der Arbeitsablage (.market-cache) und wird nicht mit dem Repository ausgeliefert. Ohne Anbieterzugang laesst es sich nicht neu ziehen. Aufgenommen ist deshalb der bereits ausgelieferte Auszug - ein echter Auszug derselben Quelle, aber nicht das Ganze. Mit gesetztem TIINGO_API_KEY holt scripts/market/build-market-universe.mjs das Verzeichnis, und derselbe Lauf hier nimmt dann alles auf.",
+    "providerSource": {
+      "rows": 108573,
+      "note": "Zeilenzahl des Anbieterverzeichnisses, aus dem diese Auszuege stammen."
+    },
+    "providerRowsSeen": 5691,
+    "provenance": [
+      {
+        "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
+        "gate": "FULL_UNIVERSE",
+        "securities": 5684
+      },
+      {
+        "file": "quant/data/market/scale/universe-GATE_100.json",
+        "gate": "GATE_100",
+        "securities": 100
+      },
+      {
+        "file": "quant/data/market/scale/universe-GATE_2000.json",
+        "gate": "GATE_2000",
+        "securities": 2000
+      },
+      {
+        "file": "quant/data/market/scale/universe-GATE_500.json",
+        "gate": "GATE_500",
+        "securities": 500
+      }
+    ]
+  },
+  "note": "§43. Jede Zahl ist gezaehlt, keine geschaetzt. Wo eine Quelle fehlt, steht null und nicht 0 - der Unterschied zwischen 'nichts vorhanden' und 'nicht gemessen' ist der ganze Punkt dieses Berichts.",
+  "before": {
+    "TOTAL_IN_COMPANY_MASTER": 498,
+    "source": "discover/data/search/US_REAL.json, abgeleitet aus quant/data/market/factors/factors-GATE_500.json",
+    "why": "siehe docs/VU_UNIVERSE_EXPANSION.md"
+  },
+  "totals": {
+    "TOTAL_PROVIDER_INSTRUMENTS": 108573,
+    "TOTAL_IN_COMPANY_MASTER": 5690,
+    "TOTAL_EQUITIES": 5688,
+    "TOTAL_COMMON_STOCKS": 5688,
+    "TOTAL_ADRS": 0,
+    "TOTAL_ETFS": 2,
+    "TOTAL_ETNS": 0,
+    "TOTAL_FUNDS": 0,
+    "TOTAL_PREFERRED": 0,
+    "TOTAL_WARRANTS": 0,
+    "TOTAL_OTHER": 0,
+    "TOTAL_UNKNOWN_TYPE": 0,
+    "TOTAL_ACTIVE": 5675,
+    "TOTAL_INACTIVE": 15,
+    "TOTAL_ACTIVE_UNKNOWN": 0,
+    "TOTAL_US": 5690,
+    "TOTAL_NON_US": 0,
+    "TOTAL_COUNTRY_UNKNOWN": 0,
+    "TOTAL_OTC": 0,
+    "TOTAL_PRIMARY_LISTING": 5690,
+    "TOTAL_WITH_NAME": 517,
+    "TOTAL_WITH_CIK": 0,
+    "TOTAL_WITH_PRICE_SNAPSHOT": 5656,
+    "TOTAL_WITH_PRICE_HISTORY": 5690,
+    "TOTAL_WITH_FUNDAMENTALS": 5,
+    "TOTAL_SCREENER_ELIGIBLE": 5675,
+    "TOTAL_WITH_DELIVERED_PRICE_HISTORY": 5,
+    "TOTAL_WITH_PROVIDER_PRICE_HISTORY": 5690,
+    "TOTAL_WITH_DELIVERED_STOCK_PAGE": 499
+  },
+  "capabilities": {
+    "HAS_PROFILE": {
+      "DELIVERED": 5690,
+      "PROVIDER_VERIFIED": 5690
+    },
+    "HAS_PRICE_SNAPSHOT": {
+      "DELIVERED": 5,
+      "PROVIDER_VERIFIED": 5656
+    },
+    "HAS_PRICE_HISTORY": {
+      "DELIVERED": 5,
+      "PROVIDER_VERIFIED": 5690
+    },
+    "HAS_INTRADAY": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_LIVE": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_SEC": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_FUNDAMENTALS": {
+      "DELIVERED": 5,
+      "PROVIDER_VERIFIED": 5
+    },
+    "HAS_VALUATION": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_ANALYSTS": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    },
+    "HAS_THEMES": {
+      "DELIVERED": 0,
+      "PROVIDER_VERIFIED": 0
+    }
+  }
+}
