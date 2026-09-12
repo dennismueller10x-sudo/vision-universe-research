@@ -124,6 +124,7 @@
     chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
     chartHost.appendChild(el("div", { class: "dx-chart", style: "height:320px" }));
 
+    root.appendChild(belege(detail));
     root.appendChild(panels(detail));
     root.appendChild(technicalIntelligence(detail));
     root.appendChild(continueDiscovery(detail, options));
@@ -150,27 +151,45 @@
     var change = C().valueOf(detail.changePercent);
     var m = detail.metrics;
 
-    var rechts = el("div", { class: "dx-dhero-score" }, [
-      el("b", { class: "num", text: isNum(m.leadershipScore) ? String(Math.round(m.leadershipScore)) : "–" }),
-      el("span", { text: "Leadership Score" }),
-      isNum(m.leadershipPercentile)
-        ? el("em", { text: "Perzentil " + Math.round(m.leadershipPercentile) + " von " +
-                           detail.ranks.universeSize + " · " + detail.universeLabel })
-        : null
-    ]);
+    var text = detail.plain || (D.Klartext ? D.Klartext.karte(detail, {}) : {});
 
-    var kurs = isNum(preis)
+    /* Ebene 2 beginnt mit dem, was auf der Karte stand - und fuehrt es
+       weiter. Rechts steht deshalb nicht mehr der Leadership Score (eine
+       Zahl auf einer Skala, die niemand kennt), sondern der Kurs, wo er
+       ausgeliefert werden darf, sonst die grosse Klartext-Zahl. Der Score
+       steht weiter unten im Kapitel fuer die Analyse. */
+    var rechts = isNum(preis)
       ? el("div", { class: "dx-price" }, [
           el("b", { class: "num", text: C().money(preis) }),
           el("span", { class: C().toneClass(change),
                        text: isNum(change) ? C().pctPoints(change) + " heute" : "" })
         ])
-      : el("div", { class: "dx-price" }, [
-          el("b", { class: "num", text: isNum(m.distanceTo52wHigh) ? C().pct(m.distanceTo52wHigh) : "–" }),
-          el("span", { style: "color:var(--discover-muted);font-weight:600", text: "zum 52-Wochen-Hoch" }),
-          el("small", { text: C().STATUS_TEXT[C().statusOf(detail.price)] ||
-                              "Kein Kurs ausgeliefert" })
-        ]);
+      : (text.zahl
+          ? el("div", { class: "dx-price" }, [
+              el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
+              el("span", { style: "color:var(--discover-muted);font-weight:600",
+                           text: text.zahl.label }),
+              el("small", { text: C().STATUS_TEXT[C().statusOf(detail.price)] ||
+                                  "Kein Kurs ausgeliefert" })
+            ])
+          : el("div", { class: "dx-price" }, [
+              el("small", { text: C().STATUS_TEXT[C().statusOf(detail.price)] ||
+                                  "Kein Kurs ausgeliefert" })
+            ]));
+
+    /* Die Zeitachse: dieselben Renditen, als Zeile gelesen. Vier Zahlen,
+       die jeder einordnen kann - und der Einstieg in alles Weitere. */
+    var achse = (detail.zeitachse && detail.zeitachse.length)
+      ? detail.zeitachse
+      : (D.Klartext ? D.Klartext.zeitachse(detail) : []);
+    var zeitleiste = achse.length
+      ? el("div", { class: "dx-zeitachse" }, achse.map(function (e) {
+          return el("div", {}, [
+            el("span", { text: e.label }),
+            el("b", { class: "num " + (isNum(e.roh) ? C().toneClass(e.roh) : ""), text: e.wert })
+          ]);
+        }))
+      : null;
 
     return el("section", { class: "dx-dhero dx-fade in", "data-world": detail.world || null }, [
       el("div", { class: "dx-dhero-bg" }),
@@ -187,11 +206,17 @@
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
                                                detail.universeLabel]
             .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
+          text.story ? el("p", { class: "dx-dhero-story" }, [
+            el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
+            document.createTextNode(text.story)
+          ]) : null,
           el("div", { class: "dx-dhero-sigs" },
              (detail.badges || []).map(function (b) { return C().signalChip(b); }))
         ]),
-        el("div", { class: "dx-dhero-right" }, [rechts, kurs])
+        el("div", { class: "dx-dhero-right" }, [rechts])
       ]),
+      zeitleiste,
+      detail.jahresspanne ? spanne(detail) : null,
       detail.dataMode === "mock"
         ? el("div", { style: "position:relative;margin-top:22px" }, [
             C().note("Modelltitel",
@@ -204,6 +229,28 @@
             C().note("Nicht in den Discovery-Reihen", detail.ineligibleMessage || "")
           ])
         : null
+    ]);
+  }
+
+  /**
+   * Die Jahresspanne als Band.
+   *
+   * Zwei Zahlen - Abstand zum Hoch, Abstand zum Tief - ergeben eine Lage,
+   * und eine Lage sieht man schneller, als man sie liest. Der Satz
+   * darunter sagt dasselbe noch einmal in Worten: die Position ist damit
+   * nie nur grafisch codiert.
+   */
+  function spanne(detail) {
+    var j = detail.jahresspanne;
+    return el("div", { class: "dx-spanne" }, [
+      el("div", { class: "dx-spanne-bar" }, [
+        el("i", { style: "left:" + (Math.max(0, Math.min(1, j.position)) * 100).toFixed(1) + "%" })
+      ]),
+      el("div", { class: "dx-spanne-enden" }, [
+        el("span", { text: "Jahrestief" }),
+        el("span", { text: "Jahreshoch" })
+      ]),
+      el("p", { text: j.satz })
     ]);
   }
 
@@ -231,6 +278,17 @@
   }
 
   /* --------------------------------------------- Warum ist er hier? (§12) */
+  /**
+   * "Warum steht diese Aktie hier?" - auf Ebene 2 EIN Satz.
+   *
+   * Vorher stand hier ein Raster aus fuenf Befunden: Leadership Score,
+   * Perzentil, Vorsprung gegen die Benchmark, Momentum Score. Alles
+   * richtig gerechnet, alles belegt - und alles unverstaendlich fuer
+   * jemanden, der die Begriffe nicht kennt. Der Befund ist nicht
+   * verschwunden: er steht vollstaendig ein Kapitel tiefer, unter
+   * "Die Belege". Hier oben steht der Satz, den man lesen kann, ohne
+   * etwas nachzuschlagen.
+   */
   function why(detail) {
     var befund = D.Narrative.explain(detail);
     var section = el("section", { class: "dx-why dx-fade" }, [
@@ -242,7 +300,25 @@
       return section;
     }
 
-    section.appendChild(el("p", { class: "dx-why-lead", text: befund.headline.text }));
+    var satz = D.Klartext ? D.Klartext.begruendung(detail, detail.plain) : null;
+    section.appendChild(el("p", { class: "dx-why-lead", text: satz || befund.headline.text }));
+    return section;
+  }
+
+  /**
+   * Dieselben Befunde ausfuehrlich - Ebene 3.
+   *
+   * Hier darf stehen, was oben nicht stehen durfte: Score, Perzentil,
+   * Vorsprung gegen die Benchmark, und der Gegenpunkt dazu. Wer bis
+   * hierher gescrollt hat, will genau das.
+   */
+  function belege(detail) {
+    var befund = D.Narrative.explain(detail);
+    if (befund.empty) return null;
+    var section = el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Die Belege" }),
+      el("p", { class: "dx-kapitel-lead", text: befund.headline.text })
+    ]);
 
     var grid = el("div", { class: "dx-why-grid" });
     befund.reasons.forEach(function (reason) {
@@ -258,7 +334,7 @@
       ]));
     });
     section.appendChild(grid);
-    section.appendChild(el("p", { style: "margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6;max-width:90ch",
+    section.appendChild(el("p", { class: "dx-kapitel-fuss",
       text: "Jeder Satz folgt aus einer ausgelieferten Kennzahl und einer festen Schwelle " +
             "(discover/engines/narrative.js). Keine Formulierung entsteht aus einem Sprachmodell, " +
             "und kein Befund ohne seine Zahl." }));

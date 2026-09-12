@@ -219,19 +219,37 @@ body.dx .num{font-variant-numeric:tabular-nums}
   color:var(--w-2,var(--w));
 }
 .dx-kicker::before{content:"";width:22px;height:1px;background:currentColor;opacity:.7}
-.dx-hero-sym{
-  display:block;font-size:12px;font-weight:700;letter-spacing:.22em;
-  color:var(--discover-muted);margin-bottom:10px;text-transform:uppercase;
-}
+/* Die Eingangsflaeche liest sich wie eine Titelgeschichte:
+   Einordnung - Name - Kuerzel - grosse Zahl - ein Satz - drei Belege.
+   Die grosse Zahl steht bewusst VOR dem Satz: sie ist das, was man aus
+   drei Metern Entfernung sieht, und sie braucht keine Erklaerung. */
 .dx-hero-title{
-  margin:0 0 14px;font-size:clamp(38px,5.4vw,76px);line-height:.96;letter-spacing:-.035em;
+  margin:0 0 8px;font-size:clamp(38px,5.4vw,76px);line-height:.96;letter-spacing:-.035em;
   font-weight:800;text-wrap:balance;
 }
-.dx-hero-line{margin:0 0 26px;font-size:clamp(15px,1.5vw,19px);line-height:1.45;color:var(--discover-muted);max-width:46ch}
-.dx-hero-stats{display:flex;flex-wrap:wrap;gap:30px;margin-bottom:30px}
-.dx-stat span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim);margin-bottom:5px}
-.dx-stat b{display:block;font-size:clamp(20px,2.1vw,27px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.dx-stat small{display:block;font-size:11px;color:var(--discover-dim);margin-top:3px;font-weight:500}
+.dx-hero-sym{
+  display:block;font-size:12px;font-weight:700;letter-spacing:.22em;
+  color:var(--discover-dim);margin-bottom:22px;text-transform:uppercase;
+}
+.dx-hero-zahl{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.dx-hero-zahl b{
+  font-size:clamp(40px,5vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.dx-hero-zahl b.up{color:var(--discover-up)}
+.dx-hero-zahl b.down{color:var(--discover-down)}
+.dx-hero-zahl span{font-size:clamp(13px,1.3vw,16px);color:var(--discover-muted)}
+.dx-hero-line{margin:0 0 24px;font-size:clamp(17px,1.7vw,23px);line-height:1.35;
+  color:var(--discover-text);font-weight:600;letter-spacing:-.015em;max-width:24ch}
+/* Die Belege. Klein, in einer Zeile, ohne Rahmen - sie begruenden, sie
+   konkurrieren nicht mit der grossen Zahl. */
+.dx-hero-belege{
+  list-style:none;margin:0 0 30px;padding:0;
+  display:flex;flex-wrap:wrap;gap:8px 26px;
+}
+.dx-hero-belege li{display:flex;align-items:baseline;gap:7px;font-size:13px}
+.dx-hero-belege b{font-weight:700;font-variant-numeric:tabular-nums;color:var(--discover-text)}
+.dx-hero-belege span{color:var(--discover-dim)}
 
 .dx-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .dx-btn{
@@ -377,15 +395,47 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-poster:active{transform:translateY(-2px) scale(1.01)}
 
 .dx-poster-top{padding:16px 16px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.dx-poster-id{min-width:0}
+.dx-poster-id{min-width:0;width:100%}
+/* Die Karte liest sich von oben nach unten wie ein Satz:
+   WER — WARUM — WIE VIEL — und dann das Bild.
+
+   Vorher stand das Kürzel groß und der Name klein darüber. Das war die
+   Sicht einer Handelsoberfläche: dort ist das Kürzel die Adresse. Wer
+   eine Aktie entdeckt, sucht aber zuerst die Firma - "Valero Energy"
+   sagt jemandem etwas, "VLO" niemandem, der es nicht ohnehin weiß. */
 .dx-poster-name{
-  display:block;font-size:13px;font-weight:600;color:var(--discover-muted);
-  margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  display:block;font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.2;
+  color:var(--discover-text);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-.dx-poster-sym{display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1}
-.dx-poster-right{text-align:right;flex:0 0 auto}
-.dx-poster-right b{display:block;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.dx-poster-right span{display:block;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--discover-dim);margin-top:3px}
+.dx-poster-sub{display:flex;align-items:baseline;gap:10px;margin-top:5px;flex-wrap:wrap}
+.dx-poster-sym{
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--discover-dim);
+}
+.dx-poster-preis{font-size:11.5px;color:var(--discover-muted);font-variant-numeric:tabular-nums}
+.dx-poster-preis i{font-style:normal;margin-left:6px}
+
+/* Die eine Aussage. Sie ist der Grund, warum diese Karte hier liegt -
+   also bekommt sie das Gewicht, das vorher die Kennzahl hatte. */
+.dx-story{
+  margin:13px 16px 0;font-size:14.5px;line-height:1.35;font-weight:600;
+  letter-spacing:-.01em;color:var(--discover-text);
+  display:flex;align-items:baseline;gap:9px;
+}
+.dx-story-dot{
+  flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:var(--w);
+  transform:translateY(-2px);
+}
+/* Die eine Zahl. Groß, mit Zeitraum daneben - "+150 %" allein wäre eine
+   Behauptung ohne Bezug. */
+.dx-zahl{margin:10px 16px 0;display:flex;align-items:baseline;gap:9px}
+.dx-zahl b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.dx-zahl b.up{color:var(--discover-up)}
+.dx-zahl b.down{color:var(--discover-down)}
+.dx-zahl span{font-size:11.5px;color:var(--discover-dim);letter-spacing:.02em}
+.dx-zusatz{font-size:11.5px;color:var(--discover-muted);letter-spacing:.01em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Signalstreifen: das eine Wort, warum der Titel hier liegt. */
 .dx-sig{
@@ -509,16 +559,16 @@ body.dx .num{font-variant-numeric:tabular-nums}
    Die dritte Form. Breiter, flacher, mit grösserem Verlauf: für die Reihe,
    in der die Bewegung selbst die Nachricht ist (neue Jahreshochs). */
 .dx-poster--wide{flex-basis:392px;width:392px}
-.dx-poster--wide .dx-poster-sym{font-size:30px}
-.dx-poster--wide .dx-poster-media{height:148px}
+
+.dx-poster--wide .dx-poster-media{height:132px}
 .dx-poster--wide .dx-poster-top{padding-top:18px}
-.dx-poster--wide .dx-poster-name{font-size:13.5px}
+.dx-poster--wide .dx-poster-name{font-size:20px}
 
 /* ------------------------------------------------------ Poster: kompakt */
 .dx-poster--compact{flex-basis:var(--discover-card-width-compact);width:var(--discover-card-width-compact)}
-.dx-poster--compact .dx-poster-sym{font-size:21px}
-.dx-poster--compact .dx-poster-media{height:74px}
-.dx-poster--compact .dx-poster-name{font-size:12px}
+
+.dx-poster--compact .dx-poster-media{height:66px}
+.dx-poster--compact .dx-poster-name{font-size:13.5px;-webkit-line-clamp:1}
 
 /* ---------------------------------------------------------- Sektorkachel */
 .dx-sector{
@@ -533,7 +583,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-sector-head h3{margin:0;font-size:15px;font-weight:700;letter-spacing:-.01em}
 .dx-sector-head span{font-size:11px;color:var(--discover-dim)}
 .dx-sector-row{
-  display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:11px;
+  display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:11px;
   padding:9px 0;border-top:1px solid var(--discover-line);font-size:13px;
 }
 .dx-sector-row:first-of-type{border-top:0}
@@ -616,7 +666,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   align-content:start;grid-auto-rows:min-content}
 .dx-result{
   position:relative;overflow:hidden;
-  display:grid;grid-template-columns:78px 1fr 96px 84px;align-items:center;gap:16px;
+  display:grid;grid-template-columns:1fr 96px 92px;align-items:center;gap:16px;
   padding:13px 14px;border-radius:12px;border:1px solid transparent;
   background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;
   transition:background var(--discover-motion-fast) var(--discover-ease),
@@ -643,13 +693,14 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 .dx-result:hover::before,.dx-result:focus-visible::before,.dx-result[aria-selected="true"]::before{opacity:.9}
 .dx-result:hover .dx-result-mark,.dx-result[aria-selected="true"] .dx-result-mark{opacity:.09}
-.dx-result .sym,.dx-result .nm,.dx-result svg,.dx-result .val{position:relative}
-.dx-result[aria-selected="true"] .sym{color:var(--w)}
-.dx-result .sym{font-size:16px;font-weight:800;letter-spacing:-.02em}
-.dx-result .nm{font-size:13px;color:var(--discover-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-result .nm,.dx-result svg,.dx-result .val{position:relative}
+.dx-result[aria-selected="true"] .nm{color:var(--w)}
+.dx-result .nm{font-size:15px;font-weight:600;color:var(--discover-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dx-result .nm em{font-style:normal;color:var(--discover-dim);font-size:11.5px;display:block;margin-top:2px}
 .dx-result svg{width:96px;height:30px}
-.dx-result .val{text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--discover-muted);letter-spacing:.04em}
+.dx-result .val{text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--discover-muted)}
+.dx-result .val.up{color:var(--discover-up)}
+.dx-result .val.down{color:var(--discover-down)}
 .dx-result .dx-spark .track{stroke:var(--discover-line-strong)}
 
 /* ========================================================== Detailseite */
@@ -707,6 +758,34 @@ body.dx .num{font-variant-numeric:tabular-nums}
    eigene Welt, weil sie wieder Entdeckung sind und nicht Analyse - und
    sie setzen --w ohnehin selbst. */
 .dx-dhero-inner{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:36px;align-items:end}
+/* Der eine Satz auch hier, direkt unter dem Namen: die Aktienseite faengt
+   dort an, wo die Karte aufgehoert hat. */
+.dx-dhero-story{
+  position:relative;margin:16px 0 0;font-size:clamp(17px,1.9vw,22px);font-weight:600;
+  letter-spacing:-.015em;display:flex;align-items:baseline;gap:10px;
+}
+/* Die Zeitachse: vier Renditen nebeneinander, ohne Kaesten. Sie ist die
+   erste Antwort auf "laeuft die Aktie gut oder schlecht?". */
+.dx-zeitachse{
+  position:relative;display:flex;flex-wrap:wrap;gap:10px 42px;margin-top:26px;
+}
+.dx-zeitachse > div{display:flex;flex-direction:column;gap:5px}
+.dx-zeitachse span{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-zeitachse b{font-size:clamp(18px,2vw,24px);font-weight:700;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.dx-zeitachse b.up{color:var(--discover-up)}
+.dx-zeitachse b.down{color:var(--discover-down)}
+/* Die Jahresspanne. Ein Band, ein Punkt, ein Satz. */
+.dx-spanne{position:relative;margin-top:26px;max-width:520px}
+.dx-spanne-bar{position:relative;height:4px;border-radius:3px;
+  background:linear-gradient(90deg, color-mix(in srgb, var(--w) 18%, var(--discover-line)),
+                                    color-mix(in srgb, var(--w) 62%, transparent))}
+.dx-spanne-bar i{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;
+  background:var(--w);transform:translate(-50%,-50%);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--w) 20%, transparent)}
+.dx-spanne-enden{display:flex;justify-content:space-between;margin-top:8px;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-spanne p{margin:10px 0 0;font-size:13px;line-height:1.5;color:var(--discover-muted)}
 .dx-dhero h1{margin:0;font-size:clamp(34px,6vw,72px);line-height:.94;letter-spacing:-.04em;font-weight:800}
 .dx-dhero-meta{margin:12px 0 0;font-size:13px;color:var(--discover-muted);display:flex;gap:10px;flex-wrap:wrap}
 .dx-dhero-meta span::after{content:"·";margin-left:10px;color:var(--discover-dim)}
@@ -730,7 +809,9 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-why h2,.dx-chapter h2{
   margin:0 0 4px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--discover-dim);
 }
-.dx-why-lead{margin:10px 0 22px;font-size:clamp(18px,2.1vw,26px);line-height:1.35;letter-spacing:-.02em;max-width:34ch;font-weight:600}
+.dx-why-lead{margin:10px 0 0;font-size:clamp(17px,1.9vw,23px);line-height:1.42;letter-spacing:-.015em;max-width:58ch;font-weight:500;color:var(--discover-text)}
+.dx-kapitel-lead{margin:0 0 20px;font-size:15px;line-height:1.5;color:var(--discover-muted);max-width:62ch}
+.dx-kapitel-fuss{margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6;max-width:90ch}
 .dx-why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--discover-line);border:1px solid var(--discover-line);border-radius:var(--discover-radius)}
 .dx-why-item{background:var(--discover-bg);padding:18px 20px}
 .dx-why-item h3{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--discover-text)}
@@ -885,7 +966,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   .dx-rail{padding-bottom:18px}
   /* Zugeklappt ist der Hinweis ein Satz. Das Pluszeichen sagt, dass es
      weitergeht - sonst waere der Rest verschwunden statt verstaut. */
-  .dx-inline-note{margin-top:18px;font-size:11.5px;line-height:1.55}
+  .dx-inline-note{margin-top:12px;font-size:11px;line-height:1.5;padding-left:11px}
   .dx-inline-note summary{cursor:pointer;position:relative;padding-right:20px}
   .dx-inline-note summary b{white-space:nowrap}
   .dx-inline-note summary::after{content:"+";position:absolute;right:0;top:0;font-size:14px;color:var(--discover-muted)}
@@ -894,17 +975,18 @@ body.dx .num{font-variant-numeric:tabular-nums}
      wisch muss die erste Reihe da sein. Deshalb kürzere Typo, Kennzahlen
      nebeneinander statt untereinander, flacherer Chart. */
   .dx-hero{display:block}
-  .dx-hero-inner{grid-template-columns:1fr;gap:14px;padding:22px var(--discover-gutter) 34px}
+  .dx-hero-inner{grid-template-columns:1fr;gap:12px;padding:20px var(--discover-gutter) 28px}
   .dx-hero-media{min-height:0;order:2;gap:8px}
-  .dx-hero-chart{height:122px}
+  .dx-hero-chart{height:92px}
   .dx-hero-copy{order:1}
-  .dx-hero-title{font-size:clamp(30px,8.4vw,40px);margin-bottom:10px}
-  .dx-hero-line{font-size:14px;margin-bottom:18px}
+  .dx-hero-title{font-size:clamp(30px,8.4vw,40px);margin-bottom:6px}
+  .dx-hero-sym{margin-bottom:14px;font-size:11px}
+  .dx-hero-line{font-size:17px;margin-bottom:14px;max-width:22ch}
   .dx-kicker{margin-bottom:12px;font-size:10px;letter-spacing:.16em}
-  .dx-hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
-  .dx-stat b{font-size:19px}
-  .dx-stat span{font-size:9px;letter-spacing:.1em}
-  .dx-stat small{font-size:10px}
+  .dx-hero-zahl{margin-bottom:8px}
+  .dx-hero-zahl b{font-size:38px}
+  .dx-hero-belege{gap:6px 18px;margin-bottom:20px;font-size:12px}
+  .dx-hero-belege li{font-size:12px}
   /* Die Bildunterschrift bleibt - aber auf zwei Zeilen. Der vollstaendige
      Wortlaut steht im title-Attribut und auf der Detailseite. */
   /* Die Bildunterschrift traegt die Einordnung des Datenbildes; die
@@ -927,7 +1009,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   .dx-rank{--discover-card-width:206px}
   .dx-poster--wide{flex-basis:300px;width:300px}
   .dx-poster--wide .dx-poster-media{height:118px}
-  .dx-poster--wide .dx-poster-sym{font-size:24px}
+
   .dx-rank-num{flex-basis:54px;font-size:66px;-webkit-text-stroke-width:1.5px}
   .dx-rank .dx-poster{margin-left:-14px}
   .dx-poster-media{height:88px}
@@ -940,8 +1022,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   .dx-price small{max-width:none}
   .dx-why-lead{font-size:19px}
   .dx-contrib{grid-template-columns:104px 1fr 42px}
-  .dx-result{grid-template-columns:64px 1fr 74px;gap:12px}
-  .dx-result .val{display:none}
+  .dx-result{grid-template-columns:1fr 64px 72px;gap:10px}
   .dx-result svg{width:74px;height:26px}
   .dx-search-inner{padding:8vh 18px 30px}
   .dx-chapter{padding-top:34px}
@@ -949,7 +1030,19 @@ body.dx .num{font-variant-numeric:tabular-nums}
 }
 @media (max-width:480px){
   .dx-hero-title{font-size:clamp(30px,9vw,44px)}
+  /* Auf dem Telefon ist der Kopf einer Reihe EINE Zeile: Ueberschrift
+     links, "Alle anzeigen" rechts. Vorher rutschte der Verweis in eine
+     zweite Zeile und kostete je Reihe vierzig Pixel - gerade die, die der
+     ersten Reihe fehlten, um noch im Bild zu beginnen. */
+  .dx-rail-head{flex-wrap:nowrap;align-items:baseline;gap:8px;padding-bottom:12px}
   .dx-rail-head p{display:none}
+  .dx-rail-head h2{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* Der Name der Sammlung ist auf dem Telefon das Wichtigste in der
+     Zeile - die Trefferzahl weicht, bevor der Name abgeschnitten wird. */
+  .dx-rail-head .dx-rail-count{display:none}
+  .dx-rail-head h2{font-size:15.5px;letter-spacing:-.015em;gap:9px}
+  .dx-rail-head h2::before{width:6px;height:6px}
+  .dx-rail-head .dx-more{margin-left:auto;flex:0 0 auto}
 }
 
 /* ------------------------------------------- Chart-Ueberlagerungsfarben

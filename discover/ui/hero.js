@@ -118,35 +118,55 @@
     return host;
   }
 
+  /**
+   * Die Eingangsflaeche als Geschichte.
+   *
+   * Vorher standen hier drei Kennzahlenkacheln nebeneinander - Leadership,
+   * relative Staerke, Zwoelfmonatsrendite - und die Ueberschrift war ein
+   * Firmenname ohne Aussage. Wer die Begriffe kennt, las eine Zusammen-
+   * fassung; wer nicht, sah drei Zahlen ohne Zusammenhang.
+   *
+   * Jetzt fuehrt die Flaeche wie eine Titelgeschichte: eine Einordnung,
+   * der Name, EIN Satz, EINE grosse Zahl - und darunter, klein, die
+   * Belege. Die Kennzahlen sind nicht verschwunden; sie stehen dort, wo
+   * sie hingehoeren, wenn man schon weiss, worum es geht.
+   */
   function copy(stock, options) {
-    var m = stock.metrics || {};
     var kopf = stock.headline || { kicker: "MARKTFÜHRER", line: "" };
-    var stats = (stock.reasons || []).slice(0, 3).map(function (reason) {
-      return el("div", { class: "dx-stat" }, [
-        el("span", { text: reason.label }),
+    var text = (stock.plain && stock.plain.story) ? stock.plain
+             : (D.Klartext ? D.Klartext.karte(stock, {}) : {});
+
+    /* Die Belege: derselbe Satz wie bisher, nur ohne Fachbegriff im Label.
+       Sie stehen unter der grossen Zahl, nicht neben ihr. */
+    var belege = (stock.reasons || []).slice(0, 3).map(function (reason) {
+      return el("li", {}, [
         el("b", { class: "num", text: reason.value }),
-        reason.hint ? el("small", { text: reason.hint }) : null
+        reason.label ? el("span", { text: reason.label }) : null
       ]);
     });
 
     return el("div", { class: "dx-hero-copy" }, [
       el("div", { class: "dx-kicker", text: kopf.kicker }),
+      el("h1", { class: "dx-hero-title", text: stock.companyName || stock.symbol }),
       el("b", { class: "dx-hero-sym", text: stock.symbol +
         (stock.sector ? " · " + stock.sector : "") }),
-      el("h1", { class: "dx-hero-title", text: stock.companyName || stock.symbol }),
-      el("p", { class: "dx-hero-line", text: kopf.line }),
-      el("div", { class: "dx-hero-stats" }, stats),
+      /* Die eine grosse Zahl. Sie ist das, was ein Mensch als Erstes
+         wissen will, und sie braucht keine Erklaerung. */
+      text.zahl ? el("div", { class: "dx-hero-zahl" }, [
+        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
+        el("span", { text: text.zahl.label })
+      ]) : null,
+      el("p", { class: "dx-hero-line", text: text.story || kopf.line }),
+      belege.length ? el("ul", { class: "dx-hero-belege" }, belege) : null,
       el("div", { class: "dx-cta" }, [
         el("a", { class: "dx-btn",
                   href: "#/s/" + (options.universeId || "US_REAL") + "/" + stock.symbol }, [
           document.createTextNode((stock.companyName || stock.symbol) + " entdecken"),
           document.createTextNode(" →")
         ]),
-        isNum(m.leadershipPercentile)
-          ? el("a", { class: "dx-btn dx-btn--ghost",
-                      href: "#/c/" + (options.universeId || "US_REAL") + "/market-leaders",
-                      text: "Alle Marktführer" })
-          : null
+        el("a", { class: "dx-btn dx-btn--ghost",
+                  href: "#/c/" + (options.universeId || "US_REAL") + "/market-leaders",
+                  text: "Mehr starke Aktien" })
       ])
     ]);
   }
@@ -168,16 +188,19 @@
 
     if (Array.isArray(stock.sparkline) && stock.sparkline.length > 2) {
       host.appendChild(el("p", { class: "dx-hero-caption",
-        text: "Kursverlauf der letzten 52 Wochen, split-bereinigt, mit Schwankungsband aus der " +
-              "Jahresvolatilität. Freigegeben für diesen Titel in der Anzeigerichtlinie." }));
+        text: "Echter Kursverlauf der letzten zwölf Monate, split-bereinigt. Für diesen " +
+              "Titel ist die Kursreihe freigegeben." }));
       return host;
     }
     if (Array.isArray(stock.performancePath) && stock.performancePath.length > 2) {
+      /* Die Kennzeichnung bleibt vollstaendig - sie ist eine
+         Lizenzaussage, keine Bildunterschrift. Sichtbar stehen die zwei
+         Saetze, die man lesen muss; der Rest, der erklaert wie gerechnet
+         wurde, haengt am title-Attribut und steht auf der Aktienseite. */
       host.appendChild(el("p", { class: "dx-hero-caption", title: CAPTION_PATH,
-        text: "Rebasierter Renditepfad — keine Kurskurve: fünf Stützstellen aus den " +
-              "ausgelieferten Renditen über 12, 6, 3 und 1 Monat, auf 100 normiert. Das Band " +
-              "zeigt die Jahresvolatilität, die Marken unten die Position in der Jahresspanne. " +
-              "Absolute Kursniveaus dieses Titels sind Anbieterdaten und bleiben zurück." }));
+        text: "Wertentwicklung statt Kurs: Die Punkte zeigen die Renditen über 12, 6, 3 " +
+              "und 1 Monat (rebasierter Renditepfad — keine Kurskurve). Absolute Kurse " +
+              "dieses Titels sind Anbieterdaten und bleiben zurück." }));
       return host;
     }
     host.appendChild(el("p", { class: "dx-hero-caption",

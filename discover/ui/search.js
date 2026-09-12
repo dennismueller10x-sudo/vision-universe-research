@@ -21,6 +21,7 @@
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function C() { return D.Cards; }
+  function K() { return D.Klartext; }
 
   function create(options) {
     options = options || {};
@@ -104,15 +105,18 @@
         var knopf = el("button", { class: "dx-result", type: "button", role: "option",
                                    "aria-selected": "false", "data-world": hit.w || null }, [
           el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
-          el("span", { class: "sym", text: hit.s }),
+          /* Zuerst die Firma, dann das Kuerzel - dieselbe Reihenfolge wie
+             auf der Karte. Wer sucht, tippt "energ" und erwartet
+             Firmennamen, keine Kuerzelliste. */
           el("span", { class: "nm" }, [
-            document.createTextNode(hit.n || "Name nicht ausgeliefert"),
-            el("em", { text: [hit.sec, hit.m ? "real" : "Modell",
-                              hit.h ? "auf 52W-Hoch" : null].filter(Boolean).join(" · ") })
+            document.createTextNode(hit.n || hit.s),
+            el("em", { text: [hit.s, hit.sec, hit.m ? null : "Modelltitel",
+                              hit.h ? "am Jahreshoch" : null].filter(Boolean).join(" · ") })
           ]),
           miniPfad(hit),
-          el("span", { class: "val num",
-                       text: isNum(hit.l) ? "LEAD " + hit.l : "" })
+          /* Die Zwoelfmonatsrendite statt des Scores. */
+          el("span", { class: "val num " + (isNum(hit.r) ? (hit.r > 0 ? "up" : (hit.r < 0 ? "down" : "")) : ""),
+                       text: isNum(hit.r) ? K().prozent(hit.r) : "" })
         ]);
         knopf.addEventListener("click", function () { oeffnen(i); });
         knopf.addEventListener("mousemove", function () { markieren(i); });

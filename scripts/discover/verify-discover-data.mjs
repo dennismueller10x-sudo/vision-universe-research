@@ -32,6 +32,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DATA = join(root, "discover", "data");
 
 const Contract = require(join(root, "discover", "engines", "contract.js"));
+const Klartext = require(join(root, "discover", "engines", "klartext.js"));
 const Scoring = require(join(root, "discover", "engines", "scoring.js"));
 const High52w = require(join(root, "discover", "engines", "high52w.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
@@ -113,11 +114,19 @@ for (const universe of meta.universes) {
       ? row.sectors.reduce((acc, s) => acc.concat(s.cards), [])
       : row.cards;
 
+    /* Der Klartext der ganzen Reihe, aus der AUSGELIEFERTEN Reihenfolge
+       nachgerechnet. Die Begrenzung "derselbe Satz hoechstens zweimal"
+       haengt an der Reihe, nicht an der einzelnen Karte - eine Karte fuer
+       sich allein liesse sich gar nicht pruefen. */
+    const nachgerechnet = row.rowId === "sector-leaders"
+      ? [] : Klartext.reihe(cards, row.rowId);
+
     check(row.universeId === id, `${file}: falsche universeId`);
     check(row.methodologyVersion === METHODOLOGY.methodologyVersion,
       `${file}: abweichende Methodikversion`);
 
-    for (const card of cards) {
+    for (let cardIndex = 0; cardIndex < cards.length; cardIndex++) {
+      const card = cards[cardIndex];
       /* Zwei Kartenformen sind zulaessig: die volle Karte der Reihen und
          die schlanke Verweiskachel der Sektoren (Contract.toMiniCard), die
          bewusst weder Signale noch Kursreihe traegt. Geprueft wird beides
@@ -157,6 +166,30 @@ for (const universe of meta.universes) {
       if (card.signals.marketLeader) {
         check(isNum(card.metrics.leadershipPercentile) && card.metrics.leadershipPercentile >= 90,
           `${file}: ${card.symbol} traegt MARKET LEADER unterhalb des Perzentils 90`);
+      }
+
+      /* Der Klartext wird nachgerechnet wie jede andere Zahl.
+
+         Ein Satz auf einer Karte ist eine Aussage ueber ein Wertpapier -
+         er gehoert genauso geprueft wie der Wert, aus dem er entsteht.
+         Geprueft wird dreierlei: dass ueberhaupt einer da ist, dass er
+         sich aus denselben Kennzahlen erneut ergibt, und dass er seiner
+         eigenen Zahl nicht widerspricht. */
+      const erneut = nachgerechnet[cardIndex] || {};
+      check(!!card.plain, `${file}: ${card.symbol} hat keinen Klartext`);
+      if (card.plain) {
+        check(card.plain.story === erneut.story,
+          `${file}: ${card.symbol} Klartext "${card.plain.story}" != nachgerechnet "${erneut.story}"`);
+        check(JSON.stringify(card.plain.zahl) === JSON.stringify(erneut.zahl),
+          `${file}: ${card.symbol} Klartext-Zahl weicht ab`);
+        check(card.plain.zusatz === erneut.zusatz,
+          `${file}: ${card.symbol} Klartext-Zusatz weicht ab`);
+        check(!!card.plain.story,
+          `${file}: ${card.symbol} traegt eine Karte ohne Aussage`);
+        if (card.plain.zahl && isNum(card.plain.zahl.roh)) {
+          check(Math.abs(card.plain.zahl.roh - card.metrics[card.plain.zahl.quelle]) < 1e-9,
+            `${file}: ${card.symbol} Klartext-Zahl stammt nicht aus der genannten Kennzahl`);
+        }
       }
     }
 

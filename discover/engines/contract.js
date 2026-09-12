@@ -235,6 +235,13 @@
       metrics: stock.metrics,
       metricStatus: stock.metricStatus,
       badges: stock.badges,
+      /* Der Branchenrang gehoert in die Karte, weil die Uebersetzung ihn
+         liest ("Staerkste Aktie ihrer Branche"). Was auf dem Bildschirm
+         steht, muss sich aus der ausgelieferten Karte nachrechnen
+         lassen - sonst prueft die Nachrechnung etwas anderes als das,
+         was der Leser gesehen hat. */
+      sectorRank: stock.sectorRank || null,
+      plain: stock.plain || null,
       dataQuality: stock.dataQuality,
       asOf: stock.asOf
     };
@@ -253,6 +260,10 @@
       price: stock.price, changePercent: stock.changePercent,
       performancePath: stock.performancePath,
       badges: (stock.badges || []).slice(0, 1),
+      /* Die Kurzfassung des Klartexts. Eine Mini-Karte hat Platz fuer
+         einen Satz und eine Zahl - mehr traegt sie nicht, und mehr
+         braucht sie nicht. Gefuellt wird sie vom Build. */
+      plain: stock.plain || null,
       metrics: {
         leadershipScore: stock.metrics.leadershipScore,
         leadershipPercentile: stock.metrics.leadershipPercentile,

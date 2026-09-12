@@ -236,8 +236,8 @@
   "rows": [
     {
       "id": "new-52-week-highs",
-      "title": "NEUE 52-WOCHEN-HOCHS",
-      "subtitle": "Aktien, die neues Kursterrain erreichen.",
+      "title": "NEUE JAHRESHOCHS",
+      "subtitle": "Aktien auf dem höchsten Stand seit zwölf Monaten.",
       "sort": "distanceTo52wHigh",
       "direction": "desc",
       "limit": 30,
@@ -251,8 +251,8 @@
     },
     {
       "id": "market-leaders",
-      "title": "MARKTFÜHRER",
-      "subtitle": "Die aktuell stärksten Titel des Universums.",
+      "title": "DIE STÄRKSTEN AKTIEN",
+      "subtitle": "Aktien, die den Markt über Monate anführen.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 30,
@@ -263,8 +263,8 @@
     },
     {
       "id": "momentum-leaders",
-      "title": "MOMENTUM LEADERS",
-      "subtitle": "Stärkste Kursdynamik über 3, 6 und 12 Monate.",
+      "title": "SEIT MONATEN IM AUFWIND",
+      "subtitle": "Die stärkste Kursentwicklung der letzten Monate.",
       "sort": "momentumScore",
       "direction": "desc",
       "limit": 30,
@@ -275,8 +275,8 @@
     },
     {
       "id": "breakout-watch",
-      "title": "BREAKING OUT",
-      "subtitle": "Ausbruch mit Volumenbestätigung.",
+      "title": "GERADE IN BEWEGUNG",
+      "subtitle": "Deutlich mehr Handel als sonst — und der Kurs zieht an.",
       "sort": "breakoutScore",
       "direction": "desc",
       "limit": 30,
@@ -289,8 +289,8 @@
     },
     {
       "id": "relative-strength",
-      "title": "RELATIVE STRENGTH",
-      "subtitle": "Vorsprung gegenüber dem Vergleichsindex.",
+      "title": "DEM MARKT VORAUS",
+      "subtitle": "Aktien, die sich besser entwickeln als der Gesamtmarkt.",
       "sort": "relativeStrengthScore",
       "direction": "desc",
       "limit": 30,
@@ -302,8 +302,8 @@
     },
     {
       "id": "trend-quality",
-      "title": "TREND INTAKT",
-      "subtitle": "Über allen vier gleitenden Durchschnitten.",
+      "title": "STABILE AUFWÄRTSTRENDS",
+      "subtitle": "Aktien, die seit Monaten über ihrem Durchschnittskurs liegen.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 30,
@@ -316,7 +316,7 @@
   ],
   "sectorRows": {
     "id": "sector-leaders",
-    "title": "SECTOR LEADERS",
+    "title": "DIE STÄRKSTEN JE BRANCHE",
     "limitPerSector": 10,
     "minSecuritiesPerSector": 3,
     "world": "sectors"
@@ -346,8 +346,8 @@
   "disclaimer": "Discover zeigt Kursverhalten, keine Anlageempfehlung. Scores sind relative Kennzahlen innerhalb eines benannten Universums und keine Wahrscheinlichkeiten.",
   "top10": {
     "id": "top-10",
-    "title": "TOP 10 MARKET LEADERS",
-    "subtitle": "Die zehn stärksten Titel — nach Leadership Score des Universums.",
+    "title": "DIE ZEHN STÄRKSTEN AKTIEN",
+    "subtitle": "Die Gesamtwertung von Vision Universe — Platz 1 bis 10.",
     "source": "market-leaders",
     "limit": 10,
     "world": "leadership"

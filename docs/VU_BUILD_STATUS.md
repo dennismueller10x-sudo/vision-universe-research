@@ -19,6 +19,19 @@ Bereinigungssemantik.**
 > `docs/VU_PHASE2_PRODUCTION_AUDIT.md`.
 > Das System laeuft weiterhin vollstaendig ohne Anbieterzugang.
 
+## Discover (Zweig `claude/vision-universe-discover-h93fmv`, nicht in `main`)
+
+| Stufe | Inhalt | Bericht |
+|---|---|---|
+| 1 | Modul, Datenvertrag, Reihen, Detailseite, 52-Wochen-Engine, Leadership Score | `VU_DISCOVER_DELIVERY_REPORT.md` |
+| 2 | Dunkle Experience: Eingangsfläche, Poster, Reihenformen, Suche, Telefon | `VU_DISCOVER_EXPERIENCE_REDESIGN.md` |
+| 3 | Bildsprache: Farbwelten, datengetriebenes Artwork, dunkler Header | `VU_DISCOVER_VISUAL_IDENTITY.md` |
+| 4 | Consumer Layer: Klartext statt Scores, Sammlungen, drei Ebenen | `VU_DISCOVER_CONSUMER_LAYER.md` |
+
+Stand Stufe 4: 103 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
+der ausgelieferten Daten, 52 Browser-Prüfungen — alles grün. Weder nach
+`main` gemergt noch veröffentlicht.
+
 ## Completed
 
 Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in

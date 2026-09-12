@@ -113,14 +113,20 @@ const desktop = await openPage({ viewport: { width: 1440, height: 900 } });
 await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
 await desktop.waitForTimeout(3200);
 
-await check("Eingangsfläche trägt einen echten Titel mit Signal und Kennzahlen", async () => {
+await check("Eingangsfläche erzählt: Einordnung, Name, eine Zahl, ein Satz", async () => {
   await desktop.waitForSelector(".dx-hero-title", { timeout: 10000 });
   const titel = (await desktop.textContent(".dx-hero-title")).trim();
   const kicker = (await desktop.textContent(".dx-kicker")).trim();
-  const stats = await desktop.$$(".dx-hero-stats .dx-stat");
+  const zahl = (await desktop.textContent(".dx-hero-zahl b")).trim();
+  const satz = (await desktop.textContent(".dx-hero-line")).trim();
+  const belege = await desktop.$$(".dx-hero-belege li");
   assert(titel.length > 1, "kein Titel in der Eingangsfläche");
-  assert(kicker.length > 3, "kein Signal in der Eingangsfläche");
-  assert(stats.length >= 2, "weniger als zwei Kennzahlen");
+  assert(kicker.length > 3, "keine Einordnung in der Eingangsfläche");
+  assert(/[0-9]/.test(zahl) && /%|\$|€/.test(zahl),
+    "die grosse Zahl ist keine verstaendliche Zahl: " + zahl);
+  assert(satz.length > 8 && !/[A-Z]{3,}|Score|Perzentil/.test(satz),
+    "der Satz spricht Fachsprache: " + satz);
+  assert(belege.length >= 2, "weniger als zwei Belege");
   const cta = await desktop.getAttribute(".dx-cta .dx-btn", "href");
   assert(/#\/s\//.test(cta || ""), "die Eingangsfläche führt nicht auf einen Titel");
   await shot(desktop, "01-hero");
@@ -284,12 +290,26 @@ await check("Kategorieseite: Gitter, Filter und Abdeckung", async () => {
 await check("Detail: Kopf, Begründung und Chart", async () => {
   await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
   await desktop.waitForSelector(".dx-chart svg", { timeout: 12000 });
-  const score = await desktop.textContent(".dx-dhero-score b");
-  assert(/\d/.test(score), "kein Leadership Score im Kopf");
+  /* Ebene 2: oben steht, was man ohne Vorkenntnisse lesen kann. */
+  const gross = await desktop.textContent(".dx-dhero-right .num");
+  assert(/[0-9]/.test(gross), "keine grosse Zahl im Kopf");
+  const story = await desktop.textContent(".dx-dhero-story");
+  assert(story.trim().length > 8, "keine Aussage im Kopf");
+  const achse = await desktop.$$(".dx-zeitachse > div");
+  assert(achse.length >= 3, "die Zeitachse fehlt oder ist unvollstaendig");
+  const spanne = await desktop.textContent(".dx-spanne p");
+  assert(/Kurs/.test(spanne), "die Jahresspanne wird nicht in Worten erklaert");
   const warum = await desktop.textContent(".dx-why");
   assert(/Warum/.test(warum), "keine Begründung");
-  const gruende = await desktop.$$(".dx-why-item");
-  assert(gruende.length > 0, "keine Einzelbefunde");
+  const satz = (await desktop.textContent(".dx-why-lead")).trim();
+  assert(satz.length > 20 && /\.$/.test(satz), "die Begruendung ist kein Satz: " + satz);
+  /* Ebene 3: die Einzelbefunde stehen weiter unten, nicht im Kopf. */
+  const gruende = await desktop.$$(".dx-chapter .dx-why-item");
+  assert(gruende.length > 0, "keine Einzelbefunde im Kapitel \"Die Belege\"");
+  const obenText = await desktop.evaluate(() =>
+    document.querySelector(".dx-dhero").innerText + document.querySelector(".dx-why").innerText);
+  assert(!/Leadership Score|Perzentil|RS \d/.test(obenText),
+    "im Kopf steht noch eine Kennzahl aus der Analyseebene");
   const pfade = await desktop.$$eval(".dx-chart svg path", (ns) => ns.length);
   assert(pfade > 0, "der Chart enthält keine Linie");
   await shot(desktop, "08-detail-kopf");
@@ -364,7 +384,7 @@ await check("Modelluniversum zeigt Kurs, Verlauf und Chart", async () => {
   await desktop.goto(BASE + "/discover/#/u/VU_MODEL", { waitUntil: "networkidle" });
   await desktop.waitForSelector(".dx-poster", { timeout: 10000 });
   await desktop.waitForTimeout(1200);
-  const preise = await desktop.$$eval(".dx-poster-right b", (ns) => ns.map((n) => n.textContent));
+  const preise = await desktop.$$eval(".dx-poster-preis", (ns) => ns.map((n) => n.textContent));
   assert(preise.some((p) => /\$/.test(p)), "kein Kurs im Modelluniversum");
   const hinweis = await desktop.textContent(".dx-inline-note");
   assert(/Modelluniversum/.test(hinweis), "das Modelluniversum ist nicht gekennzeichnet");
@@ -427,6 +447,95 @@ await check("der rebasierte Renditepfad ist als solcher benannt", async () => {
     "die Bildunterschrift nennt den Pfad nicht beim Namen: " + text);
   const zahlen = await desktop.$$eval(".dx-poster .num", (ns) => ns.map((n) => n.textContent));
   assert(!zahlen.some((z) => /^\s*\$/.test(z) && false), "unerwartete Kursangabe");
+});
+
+/* ================================ VERSTÄNDLICHKEIT (25-EURO-SPARPLAN-TEST) */
+
+/* Die Frage, an der sich diese Ausbaustufe messen lassen muss: kann ein
+   Mensch, der noch nie einen Screener benutzt hat, die Startseite lesen?
+   Geprüft wird deshalb nicht, ob etwas schön aussieht, sondern ob auf der
+   ersten Ebene Fachsprache steht. */
+const FACHSPRACHE = /\bRS\s?\d|\bRVOL\b|Leadership\s?\d|Momentum Score|Relative Volume|\bPerzentil\b|Breakout|[0-9]+[.,]?[0-9]*x Volumen|\bScore\s?\d/;
+
+await check("auf der Startseite steht keine Fachsprache", async () => {
+  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
+  await desktop.waitForTimeout(3000);
+  const text = await desktop.evaluate(() => {
+    /* Nur das, was man wirklich sieht: der Fussnotenapparat mit der
+       Methodik darf und soll die Fachbegriffe nennen. */
+    const teile = [document.querySelector(".dx-hero"),
+                   ...document.querySelectorAll(".dx-rail-section")];
+    return teile.filter(Boolean).map((n) => n.innerText).join("\n");
+  });
+  const treffer = text.split("\n").filter((z) => FACHSPRACHE.test(z));
+  assert(treffer.length === 0, "Fachsprache auf der Startseite: " + treffer.slice(0, 4).join(" | "));
+});
+
+await check("jede Karte beantwortet: welche Firma, warum, wie viel", async () => {
+  const karten = await desktop.$$eval(".dx-rail-section .dx-poster", (ns) =>
+    ns.slice(0, 24).map((n) => ({
+      name: (n.querySelector(".dx-poster-name") || {}).textContent || "",
+      sym: (n.querySelector(".dx-poster-sym") || {}).textContent || "",
+      story: (n.querySelector(".dx-story") || {}).textContent || "",
+      zahl: (n.querySelector(".dx-zahl b") || {}).textContent || "",
+      bild: !!n.querySelector(".dx-art")
+    })));
+  assert(karten.length >= 12, "zu wenige Karten");
+  for (const k of karten) {
+    assert(k.name.trim().length > 0, "Karte ohne Namen: " + k.sym);
+    assert(k.story.trim().length > 6, "Karte ohne Aussage: " + (k.name || k.sym));
+    assert(/[0-9]/.test(k.zahl) && /%|\$|€/.test(k.zahl),
+      "Karte ohne verstaendliche Zahl: " + (k.name || k.sym) + " zeigt \"" + k.zahl + "\"");
+    assert(k.bild, "Karte ohne Verlauf: " + (k.name || k.sym));
+  }
+  /* Die meisten Karten sollen eine Firma nennen, nicht nur ein Kürzel. */
+  const mitNamen = karten.filter((k) => k.name.trim() !== k.sym.trim()).length;
+  assert(mitNamen / karten.length >= 0.8,
+    "nur " + mitNamen + " von " + karten.length + " Karten nennen eine Firma");
+});
+
+await check("die Sammlungen heissen, wie ein Mensch sie nennen wuerde", async () => {
+  const titel = await desktop.$$eval(".dx-rail-head h2", (ns) =>
+    ns.map((n) => n.textContent.trim()));
+  assert(titel.length >= 5, "zu wenige Sammlungen");
+  const englisch = /\b(LEADERS?|BREAKING|MOMENTUM|RELATIVE|STRENGTH|WATCH|SCREEN)\b/i;
+  for (const t of titel) {
+    assert(!englisch.test(t), "Screener-Begriff als Sammlung: " + t);
+    assert(t.length >= 8, "Sammlung ohne Aussage: " + t);
+  }
+});
+
+await check("keine Aussage widerspricht ihrer Zahl", async () => {
+  const paare = await desktop.$$eval(".dx-rail-section .dx-poster", (ns) =>
+    ns.map((n) => ({
+      story: (n.querySelector(".dx-story") || {}).textContent || "",
+      zahl: (n.querySelector(".dx-zahl b") || {}).textContent || ""
+    })));
+  const stark = /(stärksten|Marktführ|Aufwärtstrend|im Plus|davon|Aufwind|Bewegung)/;
+  const benennt = /^(Zuletzt schwächer|Etwas unter|Deutlich unter|Nach schwachen)/;
+  for (const p of paare) {
+    if (!/^−/.test(p.zahl.trim())) continue;
+    assert(!stark.test(p.story) || benennt.test(p.story),
+      "\"" + p.story + "\" ueber " + p.zahl);
+  }
+});
+
+await check("die Suche zeigt Firmen, keine Kuerzelliste", async () => {
+  await desktop.keyboard.press("/");
+  await desktop.waitForTimeout(500);
+  await desktop.fill(".dx-search input", "ener");
+  await desktop.waitForTimeout(800);
+  const treffer = await desktop.$$eval(".dx-result", (ns) => ns.slice(0, 8).map((n) => ({
+    name: (n.querySelector(".nm") || {}).childNodes ? n.querySelector(".nm").childNodes[0].textContent : "",
+    wert: (n.querySelector(".val") || {}).textContent || ""
+  })));
+  assert(treffer.length > 0, "keine Treffer");
+  for (const t of treffer) {
+    assert(t.name.trim().length > 2, "Treffer ohne Namen");
+    assert(!/LEAD/.test(t.wert), "die Trefferliste zeigt noch einen Score: " + t.wert);
+  }
+  await desktop.keyboard.press("Escape");
+  await desktop.waitForTimeout(400);
 });
 
 /* ========================================== MEHRFACHNENNUNGEN (§16) */
@@ -567,8 +676,10 @@ await check("mobil: nichts läuft seitlich aus dem Bild", async () => {
 await check("mobil: die Eingangsfläche lässt Platz für Inhalt", async () => {
   const hoehe = await mobil.$eval(".dx-hero", (n) => n.getBoundingClientRect().height);
   assert(hoehe < 1100, "die Eingangsfläche ist mit " + Math.round(hoehe) + " px zu hoch");
-  const stats = await mobil.$eval(".dx-hero-stats", (n) => getComputedStyle(n).gridTemplateColumns);
-  assert(stats.split(" ").length === 3, "die Kennzahlen stehen nicht nebeneinander");
+  const zahl = await mobil.$eval(".dx-hero-zahl b", (n) => n.getBoundingClientRect());
+  assert(zahl.height >= 30, "die grosse Zahl ist auf dem Telefon zu klein");
+  const belege = await mobil.$$(".dx-hero-belege li");
+  assert(belege.length >= 2, "die Belege fehlen auf dem Telefon");
 });
 
 await check("mobil: kein Hover-Vorhang", async () => {
@@ -610,15 +721,21 @@ await check("mobil: der Datenhinweis ist verstaut, nicht abgeschnitten", async (
   await mobil.click(".dx-inline-note summary");
 });
 
-await check("mobil: auf der Karte steht das Signal zuerst", async () => {
+await check("mobil: die Karte liest sich Name, Aussage, Zahl, Bild", async () => {
   const reihenfolge = await mobil.$eval(".dx-rail-section .dx-poster", (p) => {
-    const sig = p.querySelector(".dx-sig"), top = p.querySelector(".dx-poster-top");
-    if (!sig || !top) return null;
-    return { sig: sig.getBoundingClientRect().top, top: top.getBoundingClientRect().top };
+    const y = (sel) => {
+      const n = p.querySelector(sel);
+      return n ? Math.round(n.getBoundingClientRect().top) : null;
+    };
+    return { name: y(".dx-poster-name"), story: y(".dx-story"),
+             zahl: y(".dx-zahl"), bild: y(".dx-poster-media") };
   });
-  assert(reihenfolge, "auf der Karte fehlt Signal oder Kopf");
-  assert(reihenfolge.sig < reihenfolge.top,
-    "das Signal steht auf dem Telefon unter dem Namen");
+  assert(reihenfolge.name !== null && reihenfolge.story !== null &&
+         reihenfolge.zahl !== null && reihenfolge.bild !== null,
+    "auf der Karte fehlt ein Bestandteil: " + JSON.stringify(reihenfolge));
+  assert(reihenfolge.name < reihenfolge.story, "der Name steht nicht zuerst");
+  assert(reihenfolge.story < reihenfolge.zahl, "die Aussage steht unter der Zahl");
+  assert(reihenfolge.zahl < reihenfolge.bild, "die Zahl steht unter dem Bild");
   await hinScrollen(mobil, ".dx-rail-section", 2, 160);
   await shot(mobil, "15-mobil-poster");
 });

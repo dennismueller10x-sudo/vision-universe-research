@@ -210,51 +210,37 @@
     ]);
   }
 
-  /* Welche Kennzahl steht oben rechts? Die Zeile entscheidet - in
-     "MOMENTUM LEADERS" interessiert die Halbjahresrendite, in "BREAKOUT"
-     das Volumen. */
-  var PRIMARY_BY_ROW = {
-    "new-52-week-highs": { key: "distanceTo52wHigh", label: "zum Hoch", format: pct, neutral: true },
-    "market-leaders": { key: "leadershipScore", label: "Leadership", format: score, neutral: true },
-    "momentum-leaders": { key: "return6M", label: "6 Monate", format: pct },
-    "breakout-watch": { key: "volumeSpikeRatio", label: "Volumen", format: times, neutral: true },
-    "relative-strength": { key: "relativeStrength12M", label: "RS 12M", format: pct },
-    "trend-quality": { key: "return3M", label: "3 Monate", format: pct },
-    "sector-leaders": { key: "leadershipScore", label: "Leadership", format: score, neutral: true },
-    "top-10": { key: "leadershipScore", label: "Leadership", format: score, neutral: true }
-  };
+  /* ------------------------------------------------------------- Klartext */
+  /* Die Karte fragt die Übersetzungsschicht, was sie zeigen soll. Der
+     Build hat die Antwort schon gerechnet und mitgeliefert (`plain`); nur
+     wenn eine Karte aus einer älteren Auslieferung stammt, wird sie hier
+     nachgerechnet. Zwei Wege, ein Ergebnis - die Engine ist dieselbe. */
+  function klartext(card, rowId) {
+    if (card && card.plain && card.plain.story) return card.plain;
+    var K = D() && D().Klartext;
+    return K ? K.karte(card, { rowId: rowId }) : null;
+  }
 
   /**
    * Ein Stock Poster.
+   *
+   * Die Reihenfolge auf der Karte ist eine Produktentscheidung und keine
+   * Layoutfrage: zuerst WELCHE FIRMA, dann WARUM sie hier steht, dann EINE
+   * Zahl, die man ohne Vorkenntnisse einordnen kann, dann das Bild. Was
+   * darunter läge - Leadership Score, Perzentil, Momentum -, steht auf der
+   * Aktienseite. Eine Karte, die sechs Kennzahlen gleichzeitig zeigt,
+   * beantwortet keine einzige Frage.
+   *
    * @param {object} card    Contract.toCard-Form
-   * @param {object} options {rowId, universeId, variant: "poster"|"compact", rank}
+   * @param {object} options {rowId, universeId, variant: "poster"|"compact"|"wide", rank}
    */
   function poster(card, options) {
     options = options || {};
-    var m = card.metrics || {};
-    var config = PRIMARY_BY_ROW[options.rowId] || PRIMARY_BY_ROW["market-leaders"];
-    var preis = valueOf(card.price);
-    var change = valueOf(card.changePercent);
     var kompakt = options.variant === "compact";
     var breit = options.variant === "wide";
-
-    /* Oben rechts steht die Zahl, die diese Reihe begruendet - ausser bei
-       Titeln mit freigegebenem Kurs, dort steht der Kurs. */
-    var rechts;
-    if (isNum(preis)) {
-      rechts = el("div", { class: "dx-poster-right" }, [
-        el("b", { class: "num", text: money(preis) }),
-        el("span", { class: isNum(change) ? toneClass(change) : "",
-                     text: isNum(change) ? pctPoints(change) + " heute" : "Kurs" })
-      ]);
-    } else {
-      var wert = m[config.key];
-      rechts = el("div", { class: "dx-poster-right" }, [
-        el("b", { class: "num " + (config.neutral ? "" : toneClass(wert)),
-                  text: config.format(wert) }),
-        el("span", { text: config.label })
-      ]);
-    }
+    var text = klartext(card, options.rowId) || {};
+    var preis = valueOf(card.price);
+    var change = valueOf(card.changePercent);
 
     var node = el("a", {
       class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : ""),
@@ -263,56 +249,63 @@
          eigene. So bleibt die Reihe als Welt erkennbar, ohne dass ein
          abweichendes Signal verschwiegen wird. */
       "data-world": options.world || card.world || null,
-      "aria-label": (card.companyName || card.symbol) + " öffnen"
+      "aria-label": (card.companyName || card.symbol) +
+        (text.story ? " — " + text.story : "") + " öffnen"
     }, [
       el("div", { class: "dx-poster-top" }, [
         el("div", { class: "dx-poster-id" }, [
-          el("span", { class: "dx-poster-name",
-                       text: card.companyName || card.sector || card.exchange || "—" }),
-          el("b", { class: "dx-poster-sym", text: card.symbol })
-        ]),
-        rechts
+          /* Der Name ist die Überschrift. Wo keiner ausgeliefert wird,
+             übernimmt das Kürzel diese Rolle - erfunden wird keiner. */
+          el("b", { class: "dx-poster-name",
+                    text: card.companyName || card.symbol }),
+          el("span", { class: "dx-poster-sub" }, [
+            el("span", { class: "dx-poster-sym", text: card.symbol }),
+            isNum(preis) ? el("span", { class: "dx-poster-preis" }, [
+              document.createTextNode(money(preis)),
+              isNum(change) ? el("i", { class: toneClass(change),
+                                        text: pctPoints(change) }) : null
+            ]) : null
+          ])
+        ])
       ]),
-      signalChip((card.badges || [])[0]),
-      /* Eine Zweitnennung ist kein Duplikat, sondern ein Befund: dieser
-         Titel steht in mehreren Ranglisten weit vorn. Damit sie nicht wie
-         ein Fehler aussieht, sagt sie, woher man ihn kennt - als Text,
-         nicht als Farbe. */
-      options.hinweis ? el("span", { class: "dx-echo" }, [
-        el("span", { class: "dx-echo-dot", "aria-hidden": "true" }),
-        document.createTextNode("auch in " + options.hinweis)
+      /* Die eine Aussage. Der Punkt davor trägt die Farbwelt - die Farbe
+         wiederholt, was im Text steht, sie ersetzt ihn nie. */
+      text.story ? el("p", { class: "dx-story" }, [
+        el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
+        document.createTextNode(text.story)
+      ]) : null,
+      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
+      text.zahl ? el("div", { class: "dx-zahl" }, [
+        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
+        el("span", { text: text.zahl.label })
       ]) : null,
       posterMedia(card, {
-        height: kompakt ? 74 : (breit ? 148 : 104),
+        height: kompakt ? 66 : (breit ? 132 : 92),
         width: breit ? 392 : (kompakt ? 224 : 300),
         ticker: breit === true || options.variant === "rank",
         scale: kompakt ? "mini" : "poster"
       })
     ]);
 
-    /* Fusszeile: Leadership als feiner Balken. Eine Zahl, die man nicht
-       lesen muss, um sie zu verstehen. */
-    if (isNum(m.leadershipScore)) {
+    /* Die kurze Zusatzinfo. Sie wiederholt die Überschrift nicht - dafür
+       sorgt klartext.js - und sie ist immer Text, nie nur Farbe. */
+    if (text.zusatz && !kompakt) {
       node.appendChild(el("div", { class: "dx-poster-foot" }, [
-        el("span", { text: "LEAD" }),
-        el("div", { class: "dx-meter" }, [
-          el("i", { style: "width:" + Math.max(3, Math.min(100, m.leadershipScore)).toFixed(0) + "%" })
-        ]),
-        el("span", { class: "num", text: Math.round(m.leadershipScore) })
+        el("span", { class: "dx-zusatz", text: text.zusatz })
       ]));
     }
 
-    /* Der Hover-Vorhang. Er ergaenzt, er ersetzt nichts: alles hier steht
-       auch auf der Detailseite, und ohne Zeiger ist er gar nicht da. */
+    /* Der Hover-Vorhang zeigt, was als Nächstes interessiert: dieselbe
+       Aktie über drei Zeiträume. Keine Scores - drei Zahlen, die jeder
+       lesen kann. */
     if (!kompakt) {
-      node.appendChild(el("div", { class: "dx-reveal", "aria-hidden": "true" }, [
-        revealItem("Leadership", score(m.leadershipScore)),
-        revealItem("RS", isNum(m.relativeStrengthPercentile)
-          ? String(Math.round(m.relativeStrengthPercentile)) : "–"),
-        revealItem("Momentum", isNum(m.momentumPercentile)
-          ? String(Math.round(m.momentumPercentile)) : "–"),
-        el("span", { class: "dx-open", text: "Öffnen →" })
-      ]));
+      var K = D() && D().Klartext;
+      var achse = K ? K.zeitachse(card).filter(function (e) {
+        return e.key !== "return3M";
+      }) : [];
+      node.appendChild(el("div", { class: "dx-reveal", "aria-hidden": "true" },
+        achse.map(function (e) { return revealItem(e.label, e.wert); })
+             .concat([el("span", { class: "dx-open", text: "Öffnen →" })])));
     }
 
     if (card.dataMode === "mock") node.setAttribute("data-mock", "true");
@@ -337,16 +330,20 @@
   /** Sektorkachel: drei Titel, ein Sektor, kein Kartenstapel. */
   function sectorTile(sector, options) {
     options = options || {};
+    /* Die Kachel zeigt Name und Zwoelfmonatsrendite - der Leadership Score
+       stand hier als zweite Zahl und war die einzige auf der ganzen
+       Startseite, die man nicht einordnen kann. Er ist nicht weg: er
+       steht auf der Aktienseite. */
     var rows = sector.cards.slice(0, 4).map(function (card, index) {
       var m = card.metrics || {};
       return el("div", { class: "dx-sector-row" }, [
         el("i", { text: String(index + 1) }),
         el("div", { style: "min-width:0" }, [
-          el("b", { text: card.symbol }),
-          el("em", { text: card.companyName || card.exchange || "" })
+          el("b", { text: card.companyName || card.symbol }),
+          el("em", { text: card.companyName ? card.symbol : (card.exchange || "") })
         ]),
-        el("span", { class: "val num", text: isNum(m.return12M) ? pct(m.return12M) : "–" }),
-        el("span", { class: "val num", text: score(m.leadershipScore) })
+        el("span", { class: "val num " + (isNum(m.return12M) ? toneClass(m.return12M) : ""),
+                     text: isNum(m.return12M) ? pct(m.return12M, 0) : "–" })
       ]);
     });
     var node = el("a", {
@@ -508,7 +505,7 @@
     signalChip: signalChip, poster: poster, rankPoster: rankPoster, sectorTile: sectorTile,
     rail: rail, railHead: railHead, withRailNav: withRailNav, grid: grid,
     skeletonRail: skeletonRail, emptyState: emptyState, note: note,
-    revealOnScroll: revealOnScroll, PRIMARY_BY_ROW: PRIMARY_BY_ROW
+    revealOnScroll: revealOnScroll, klartext: klartext
   };
 
   global.VUDiscover = global.VUDiscover || {};

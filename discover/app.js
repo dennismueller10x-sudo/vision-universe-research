@@ -227,8 +227,9 @@
     } else if (universe.redistribution) {
       body.appendChild(datenhinweis("Kursniveaus",
         "Absolute Kurse realer Titel sind Anbieterdaten und bleiben zurück.",
-        "Die Poster zeigen deshalb den rebasierten Renditepfad, Abstände und Scores — bei " +
-        universe.withPriceSeries + " freigegebenen Titeln zusätzlich Kurs und Kursverlauf."));
+        "Die Karten zeigen deshalb, wie sich der Kurs entwickelt hat — nicht, wo er steht. " +
+        "Bei " + universe.withPriceSeries + " freigegebenen Titeln steht zusätzlich der " +
+        "Kurs selbst."));
     }
 
     var plaetze = {};
@@ -280,6 +281,13 @@
      */
     function auswahl(cards, limit) {
       var raus = [], wiederholt = 0, uebersprungen = 0;
+      /* Eine kurze Rangliste wird nicht noch kuerzer.
+
+         "Gerade in Bewegung" hat an manchen Tagen vier Treffer. Wenn davon
+         zwei schon oben standen, blieben zwei Karten uebrig - und eine
+         Reihe mit zwei Karten sieht aus wie ein Fehler, nicht wie ein
+         Befund. Unterhalb dieser Grenze zeigt die Reihe, was sie hat. */
+      if (cards.length <= 6) return { cards: cards.slice(0, limit), wiederholt: 0, uebersprungen: 0 };
       for (var i = 0; i < cards.length && raus.length < limit; i++) {
         var c = cards[i], n = auftritte[c.symbol] || 0;
         if (n > 0) {

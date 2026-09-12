@@ -114,9 +114,10 @@ gebunden; keine bestehende Vision-Universe-Seite kann davon betroffen sein.
 | Suche | `discover/ui/search.js` | Vollbild-Overlay, Tastatur (`/`, ↑↓, Enter, Esc) |
 | Begründung | `discover/engines/narrative.js` | „Warum steht dieser Titel hier?" — deterministisch |
 | Renditepfad | `scripts/discover/build-discover-data.mjs` | `performancePath`: fünf Stützstellen aus r12/r6/r3/r1 |
+| Klartext | `discover/engines/klartext.js` | Die Übersetzungsschicht: aus Kennzahlen wird EINE Aussage, EINE Zahl, EIN Zusatz — deterministisch, ohne Sprachmodell |
 | Stock-Artwork | `discover/ui/artwork.js` | Das Datenbild je Titel — Verlauf, Volatilitätsband, Spannenlage, Hochmarke, Wasserzeichen |
 | Farbwelten | `discover/methodology/discover-v1.json`, `discover/discover.css` | `data-world` → `--w/-2/-glow/-soft`; Atmosphäre statt gefärbter Kacheln |
-| Firmennamen | `discover/config/company-names.json` | 188 kuratierte Schreibweisen, `CURATED_EDITORIAL`, nachrangig zu den vier Repository-Quellen |
+| Firmennamen | `discover/config/company-names.json` | 512 kuratierte Schreibweisen, `CURATED_EDITORIAL`, nachrangig zu den vier Repository-Quellen |
 | Dunkler Header | `assets/site-navigation.js` | `theme="dark"`, ausschließlich von `discover/index.html` gesetzt |
 
 **Der Renditepfad** ist die Antwort auf die Redistributionsgrenze: aus den
@@ -139,6 +140,20 @@ Ranglisten bleiben über „Alle anzeigen" erreichbar.
 **Bewegung** folgt drei Tokens (150 / 260 / 520 ms) und respektiert
 `prefers-reduced-motion` vollständig: keine Einblendungen, kein
 automatischer Wechsel der Eingangsfläche, keine Hover-Skalierung.
+
+## 4b. Drei Ebenen (Consumer Layer)
+
+Discover zeigt auf der ersten Ebene keine Scores mehr. Die Trennung:
+
+| Ebene | Ort | Inhalt |
+|---|---|---|
+| 1 — Entdecken | Startseite, Karten, Suche | Firmenname, eine Aussage, eine Rendite, Verlauf, ein Zusatz |
+| 2 — Aktienseite | Kopf bis „Warum steht sie hier" | Kurs bzw. Klartext-Zahl, Zeitachse 1/3/6/12 Monate, Jahresspanne, Begründung in einem Satz |
+| 3 — Analyse | ab „Die Belege" | Scores, Perzentile, Vorsprung gegen die Benchmark, Kennzahlen, Technical Intelligence, Herkunft |
+
+Die Übersetzung macht `discover/engines/klartext.js` im **Build**; jede
+ausgelieferte Karte trägt ihr `plain`-Objekt, und `verify-discover-data.mjs`
+rechnet jeden Satz nach. Details: `docs/VU_DISCOVER_CONSUMER_LAYER.md`.
 
 ## 5. Engines
 

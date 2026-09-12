@@ -95,6 +95,15 @@
       role: "img", "aria-label": beschreibung(card, reihe)
     });
 
+    /* Dieselbe Beschreibung als <title>: sie erscheint als Tooltip, wenn
+       jemand auf dem Bild stehen bleibt. Auf Karte und Poster steht keine
+       Bildunterschrift - dort waere sie Laerm -, aber die Auskunft, ob man
+       eine Kursreihe oder einen rebasierten Renditepfad sieht, darf
+       nirgends fehlen. */
+    var titel = svg("title", {});
+    titel.textContent = beschreibung(card, reihe);
+    node.appendChild(titel);
+
     /* Jede Zeichnung braucht eigene Verlaufs-IDs: zwei Artworks im selben
        Dokument dürfen sich nicht gegenseitig die Füllung überschreiben. */
     var lauf = (stockArtwork.zaehler = (stockArtwork.zaehler || 0) + 1);

@@ -52,6 +52,7 @@ const High52w = require(join(root, "discover", "engines", "high52w.js"));
 const Scoring = require(join(root, "discover", "engines", "scoring.js"));
 const Indicators = require(join(root, "discover", "engines", "indicators.js"));
 const TI = require(join(root, "discover", "engines", "technical-intelligence.js"));
+const Klartext = require(join(root, "discover", "engines", "klartext.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -469,6 +470,7 @@ function applyPercentilesAndSignals(universe) {
                          v.priceAboveSMA50 === true && isNum(s.metrics.distanceTo52wHigh) &&
                          s.metrics.distanceTo52wHigh >= -0.10;
     s.badges = badgesFor(s);
+    s.plain = Klartext.karte(s, {});
     s.world = heroWorld(s);
     const eligibility = discoveryEligibility(s);
     s.discoveryEligible = eligibility.eligible;
@@ -477,7 +479,8 @@ function applyPercentilesAndSignals(universe) {
     if (!eligibility.eligible) {
       /* Ein stillstehender Kurs traegt kein Signal - auch kein negatives. */
       Object.keys(s.signals).forEach((k) => { s.signals[k] = false; });
-      s.badges = [{ id: "notTrading", label: "KEINE BEWEGUNG", tone: "muted",
+      s.badges = [{ id: "notTrading", label: (Klartext.plakette("notTrading") || {}).label,
+                    tone: "muted",
                     detail: eligibility.reason === "STALE_SERIES" ? "Reihe steht still" : "Keine Rendite" }];
     }
     Contract.assertStock(s);
@@ -499,6 +502,8 @@ function applyPercentilesAndSignals(universe) {
       s.signals.sectorLeader = i < 3 && isNum(s.metrics.leadershipScore) &&
                                list.length >= METHODOLOGY.sectorRows.minSecuritiesPerSector;
       s.badges = badgesFor(s);
+      /* Der Branchenrang veraendert den Zusatz - also noch einmal. */
+      s.plain = Klartext.karte(s, {});
     });
   }
   universe.sectors = bySector;
@@ -506,36 +511,43 @@ function applyPercentilesAndSignals(universe) {
 }
 
 /** Der eine Satz, der auf der Card steht. Aus Kennzahlen, nicht aus Prosa. */
+/* Die Plakette auf der Karte.
+
+   Sie hiess in der ersten Fassung NEW HIGH, MARKET LEADER, RS 98,
+   BREAKOUT - Kuerzel aus einem Screener, die voraussetzen, dass man sie
+   kennt. Die Regeln dahinter sind unveraendert; die Beschriftung kommt
+   jetzt aus klartext.js. Der Zusatz nennt weiterhin die Zahl, aber in
+   der Form, in der sie jemand liest: "Top 1 %" statt "Score 96". */
 function badgesFor(stock) {
   const m = stock.metrics;
   const out = [];
+  const wort = (id) => (Klartext.plakette(id) || {}).label || id;
+
   if (stock.signals.new52WeekHigh) {
     const closeAtHigh = stock.high52w && stock.high52w.closeAtHigh === true;
-    out.push({ id: "new52WeekHigh", label: "NEW HIGH", tone: "green",
-               detail: closeAtHigh ? "Schlusskurs" : "Tageshoch" });
+    out.push({ id: "new52WeekHigh", label: wort("new52WeekHigh"), tone: "green",
+               detail: closeAtHigh ? "Schlusskurs" : "im Tagesverlauf" });
   } else if (stock.signals.nearHigh && isNum(m.distanceTo52wHigh)) {
-    out.push({ id: "nearHigh", label: "NEAR HIGH", tone: "green",
-               detail: pct(m.distanceTo52wHigh) });
+    out.push({ id: "nearHigh", label: wort("nearHigh"), tone: "green",
+               detail: Klartext.prozent(Math.abs(m.distanceTo52wHigh), false) + " darunter" });
   }
   if (stock.signals.marketLeader && isNum(m.leadershipPercentile)) {
-    out.push({ id: "marketLeader", label: "MARKET LEADER", tone: "ink",
-               detail: "Top " + Math.max(1, Math.round(100 - m.leadershipPercentile)) + " %" });
+    out.push({ id: "marketLeader", label: wort("marketLeader"), tone: "ink",
+               detail: Klartext.topProzent(m.leadershipPercentile) });
   }
-  if (stock.signals.momentumLeader && isNum(m.momentumScore)) {
-    out.push({ id: "momentumLeader", label: "MOMENTUM", tone: "purple",
-               detail: "Score " + Math.round(m.momentumScore) });
+  if (stock.signals.momentumLeader && isNum(m.return6M)) {
+    out.push({ id: "momentumLeader", label: wort("momentumLeader"), tone: "purple",
+               detail: Klartext.prozent(m.return6M) + " in 6 Monaten" });
   }
   if (stock.signals.relativeStrengthLeader && isNum(m.relativeStrengthPercentile)) {
-    out.push({ id: "relativeStrengthLeader", label: "RS " + Math.round(m.relativeStrengthPercentile),
-               tone: "blue", detail: "vs. Benchmark" });
+    out.push({ id: "relativeStrengthLeader", label: wort("relativeStrengthLeader"),
+               tone: "blue", detail: Klartext.staerkerAls(m.relativeStrengthPercentile) });
   }
   if (stock.signals.breakout) {
-    const spike = stock.rawValues && stock.rawValues.volumeSpikeRatio;
-    out.push({ id: "breakout", label: "BREAKOUT", tone: "yellow",
-               detail: isNum(spike) ? spike.toFixed(1) + "x Volumen" : null });
+    out.push({ id: "breakout", label: wort("breakout"), tone: "yellow", detail: null });
   }
   if (stock.signals.sectorLeader && stock.sectorRank) {
-    out.push({ id: "sectorLeader", label: "SECTOR " + stock.sectorRank.rank, tone: "ink",
+    out.push({ id: "sectorLeader", label: wort("sectorLeader"), tone: "ink",
                detail: stock.sectorRank.sector });
   }
   return out.slice(0, 3);
@@ -579,7 +591,17 @@ function discoveryEligibility(stock) {
 const ROW_FILTERS = {
   nearOrAtHigh: (s) => s.signals.new52WeekHigh || s.signals.nearHigh ||
     (isNum(s.metrics.distanceTo52wHigh) && s.metrics.distanceTo52wHigh >= -METHODOLOGY.high52w.watchPct),
-  breakout: (s) => s.signals.breakout || (isNum(s.metrics.breakoutScore) && s.metrics.breakoutScore >= 40),
+  /* Nur das belegte Signal, nicht der Score.
+
+     Die erste Fassung liess zusaetzlich jeden Titel mit breakoutScore >= 40
+     zu. Solange die Zeile "BREAKING OUT" hiess und im Untertitel von einem
+     Score sprach, war das vertretbar. Seit sie "GERADE IN BEWEGUNG" heisst
+     und behauptet, der Kurs ziehe an, ist es falsch: unter den
+     Score-Treffern standen Titel mit -19,6 % in drei Monaten. Eine Zeile
+     darf nicht mehr versprechen, als ihre Regel prueft - lieber vier
+     Titel, die stimmen, als acht, von denen die Haelfte das Gegenteil
+     zeigt. */
+  breakout: (s) => s.signals.breakout === true,
   trendIntact: (s) => s.signals.trendIntact === true
 };
 
@@ -613,8 +635,18 @@ function buildRow(universe, config) {
     if (!isNum(bs)) return -1;
     return bs - as;
   });
-  const cards = pool.slice(0, isNum(config.limit) ? config.limit : pool.length)
-                    .map((s) => Contract.toCard(s));
+  /* Die Karte traegt ihre Uebersetzung mit. Sie liesse sich auch im
+     Browser rechnen - aber dann stuende auf dem Bildschirm ein Satz, den
+     keine Pruefung je gesehen hat. So rechnet ihn der Build, und
+     verify-discover-data.mjs rechnet ihn nach. */
+  const auswahl = pool.slice(0, isNum(config.limit) ? config.limit : pool.length);
+  /* Die Uebersetzung kennt die ganze Reihe, nicht nur die einzelne Karte -
+     sonst steht derselbe wahre Satz zwoelfmal untereinander. */
+  const texte = Klartext.reihe(auswahl, config.id);
+  const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), { plain: texte[i] }));
+  /* Die Karte muss sich selbst erklaeren koennen: der Klartext wird aus
+     der KARTE nachgerechnet, nicht aus dem Titel im Speicher. Was die
+     Uebersetzung liest, muss deshalb auch auf der Karte stehen. */
   const notEvaluable = universe.stocks.length - universe.stocks.filter((s) =>
     s.discoveryEligible !== false &&
     (config.require || []).every((f) => isNum(s.metrics[f]))).length;
@@ -748,6 +780,7 @@ function buildFeatured(universe, anzahl) {
     if (auswahl.length >= (anzahl || 5)) break;
   }
   return auswahl.map((s) => Object.assign(Contract.toCard(s), {
+    plain: Klartext.karte(s, {}),
     headline: heroHeadline(s),
     reasons: heroReasons(s),
     hasPriceSeries: s.hasPriceSeries,
@@ -772,39 +805,39 @@ function heroWorld(stock) {
 /** Die eine Zeile ueber der Aktie. Aus dem staerksten belegten Signal. */
 function heroHeadline(stock) {
   if (stock.signals.new52WeekHigh && stock.signals.marketLeader) {
-    return { kicker: "NEUER MARKTFÜHRER", line: "Jahreshoch und Spitzengruppe zugleich." };
+    return { kicker: "AM JAHRESHOCH UND UNTER DEN STÄRKSTEN", line: "" };
   }
-  if (stock.signals.new52WeekHigh) {
-    return { kicker: "NEUES 52-WOCHEN-HOCH", line: "Der Titel erreicht neues Kursterrain." };
-  }
-  if (stock.signals.breakout) {
-    return { kicker: "AUSBRUCH BESTAETIGT", line: "Ausbruch mit Volumenbestätigung." };
-  }
-  if (stock.signals.momentumLeader) {
-    return { kicker: "MOMENTUM BESCHLEUNIGT", line: "Die Dynamik nimmt über alle Horizonte zu." };
-  }
-  return { kicker: "MARKTFÜHRER", line: "Unter den stärksten Titeln des Universums." };
+  if (stock.signals.new52WeekHigh) return { kicker: "NEUES JAHRESHOCH", line: "" };
+  if (stock.signals.breakout) return { kicker: "GERADE IN BEWEGUNG", line: "" };
+  if (stock.signals.momentumLeader) return { kicker: "SEIT MONATEN IM AUFWIND", line: "" };
+  return { kicker: "UNTER DEN STÄRKSTEN AKTIEN", line: "" };
 }
 
 /** Drei Belege, alle aus gerechneten Kennzahlen. */
+/* Drei Belege unter der grossen Zahl.
+
+   Sie hiessen frueher "Leadership 96", "RS 100", "Perzentil 100" - drei
+   Werte, die man kennen muss, um sie zu lesen. Es sind dieselben Zahlen;
+   nur heissen sie jetzt so, wie man sie erklaeren wuerde. Wo eine Zahl
+   ohne Vorwissen nichts aussagt (ein Score von 96 auf einer Skala, die
+   niemand kennt), steht stattdessen ihre Bedeutung. */
 function heroReasons(stock) {
   const m = stock.metrics;
   const out = [];
-  if (isNum(m.leadershipScore)) {
-    out.push({ label: "Leadership", value: String(Math.round(m.leadershipScore)),
-               hint: isNum(m.leadershipPercentile) ? "Perzentil " + Math.round(m.leadershipPercentile) : null });
+  if (isNum(m.return6M)) {
+    out.push({ label: "in 6 Monaten", value: Klartext.prozent(m.return6M), hint: null });
   }
-  if (isNum(m.relativeStrengthPercentile)) {
-    out.push({ label: "Relative Stärke", value: "RS " + Math.round(m.relativeStrengthPercentile),
-               hint: "gegen die Benchmark" });
-  }
-  if (isNum(m.return12M)) {
-    out.push({ label: "12 Monate", value: pct(m.return12M), hint: null });
+  if (isNum(m.leadershipPercentile)) {
+    out.push({ label: "der Aktien im Universum", value: "stärker als " +
+               Math.min(99, Math.round(m.leadershipPercentile)) + " %", hint: null });
   }
   if (isNum(m.distanceTo52wHigh)) {
-    out.push({ label: "Zum 52W-Hoch", value: pct(m.distanceTo52wHigh), hint: null });
+    out.push(m.distanceTo52wHigh >= -0.005
+      ? { label: "", value: "am Jahreshoch", hint: null }
+      : { label: "unter dem Jahreshoch", hint: null,
+          value: Klartext.prozent(Math.abs(m.distanceTo52wHigh), false) });
   }
-  return out.slice(0, 4);
+  return out.slice(0, 3);
 }
 
 /* ========================================================== Detailseiten */
@@ -884,6 +917,14 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
       universeSize: universe.stocks.length
     },
     rawValues: stock.rawValues,
+    /* Klartext fuer den Kopf der Aktienseite: dieselbe Uebersetzung wie
+       auf der Karte, damit die Seite dort weitermacht, wo man geklickt
+       hat. Dazu die Zeitachse und die Jahresspanne in Worten - das ist
+       Ebene 2, sie darf mehr zeigen als die Reihe, aber immer noch ohne
+       Fachsprache. */
+    plain: Klartext.karte(stock, {}),
+    zeitachse: Klartext.zeitachse(stock),
+    jahresspanne: Klartext.jahresspanne(stock),
     /* Die Farbwelt des staerksten Signals. Sie steht hier, weil die
        Detailseite dieselbe Zuordnung braucht wie die Reihe, aus der man
        kommt - und eine zweite Zuordnung waere eine zweite Wahrheit. */
@@ -1011,6 +1052,10 @@ for (const universe of universes) {
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,
       d: isNum(s.metrics.distanceTo52wHigh) ? round(s.metrics.distanceTo52wHigh, 4) : null,
       h: s.signals.new52WeekHigh ? 1 : 0,
+      /* Die Zwoelfmonatsrendite. Sie ersetzt in der Trefferliste den
+         Leadership Score: "+150 %" sagt jedem etwas, "LEAD 96" nur dem,
+         der die Skala kennt. */
+      r: isNum(s.metrics.return12M) ? round(s.metrics.return12M, 4) : null,
       /* Ein Buchstabenkuerzel je Farbwelt. Der Suchindex traegt alle
          Titel eines Universums; jedes zusaetzliche Feld kostet hier
          hundertfach, deshalb die Welt und sonst nichts - sie genuegt,
