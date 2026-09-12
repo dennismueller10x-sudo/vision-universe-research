@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-12T09:57:35.188Z",
+  "generatedAt": "2026-09-12T10:53:03.196Z",
   "note": "§47. Synthetische Instrumente durch dieselbe Klassifikation, denselben Sync und denselben Indexbau wie echte. Die Zahlen sagen etwas ueber die Pipeline, nichts ueber einen Markt.",
   "universe": {
     "requested": 25000,
@@ -14,19 +14,19 @@
     "searchShards": 676
   },
   "timingsMs": {
-    "generateRows": 31,
-    "normalize": 80,
-    "syncCold": 163,
-    "syncWarmIdempotent": 417,
-    "syncPartialDelisting": 337,
-    "qualityReport": 90,
-    "buildIndexes": 23,
-    "serialize": 122,
-    "search200Queries": 4
+    "generateRows": 25,
+    "normalize": 65,
+    "syncCold": 192,
+    "syncWarmIdempotent": 474,
+    "syncPartialDelisting": 450,
+    "qualityReport": 125,
+    "buildIndexes": 20,
+    "serialize": 158,
+    "search200Queries": 3
   },
   "perInstrumentMs": {
     "normalize": 0.003,
-    "syncCold": 0.007
+    "syncCold": 0.008
   },
   "idempotency": {
     "pass": true,
@@ -50,20 +50,20 @@
   "search": {
     "queries": 200,
     "exactFirstHit": 200,
-    "msPerQuery": 0.02,
+    "msPerQuery": 0.015,
     "note": "Jede Anfrage laedt genau eine Scherbe - nicht das Universum."
   },
   "size": {
-    "masterMB": 18.4,
+    "masterMB": 24.6,
     "searchIndexMB": 2.4,
-    "bytesPerInstrument": 773,
+    "bytesPerInstrument": 1033,
     "largestSearchShardKB": 5,
     "note": "Die groesste Suchscherbe ist die Zahl, die der Browser wirklich laedt."
   },
   "memory": {
-    "heapUsedMB": 186.2,
-    "heapGrowthMB": 181.5,
-    "rssMB": 275
+    "heapUsedMB": 204.6,
+    "heapGrowthMB": 199.9,
+    "rssMB": 280.2
   },
   "quality": {
     "blocking": false,
@@ -80,7 +80,10 @@
       "unknownSecurityType": 0,
       "inactive": 2011,
       "noFirstTradeDate": 0,
-      "symbolWithWhitespace": []
+      "symbolWithWhitespace": [],
+      "classificationDisagreement": 0,
+      "classificationDisagreementByClass": {},
+      "withoutProductDecision": 25000
     }
   }
 }

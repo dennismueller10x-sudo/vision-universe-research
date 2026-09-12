@@ -1,12 +1,12 @@
 {
   "version": "company-master-1.0.0",
-  "total": 5690,
+  "total": 7809,
   "findings": {
     "duplicateInstrumentIds": [],
     "duplicateSymbols": [],
     "duplicateProviderIds": [],
     "duplicateCiks": [],
-    "missingName": 5173,
+    "missingName": 7291,
     "missingExchange": 0,
     "missingCurrency": 0,
     "missingCountry": 0,
@@ -14,7 +14,17 @@
     "unknownSecurityType": 0,
     "inactive": 15,
     "noFirstTradeDate": 0,
-    "symbolWithWhitespace": []
+    "symbolWithWhitespace": [],
+    "classificationDisagreement": 909,
+    "classificationDisagreementByClass": {
+      "RIGHT->COMMON_STOCK": 129,
+      "UNIT->COMMON_STOCK": 290,
+      "WARRANT->COMMON_STOCK": 457,
+      "TEST_SECURITY->COMMON_STOCK": 30,
+      "EQUITY_COMMON->ETF": 1,
+      "ETF->COMMON_STOCK": 2
+    },
+    "withoutProductDecision": 0
   },
   "blocking": false
 }

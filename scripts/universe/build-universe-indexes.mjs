@@ -121,17 +121,30 @@ function collectEvidence() {
          (Ohne diese Zeile fehlten 2.238 einwandfreie Titel in der
          Faehigkeitsbilanz - und zwar die besten.) */
       const universeFile = join(scaleDir, f.replace(/^gate-/, "universe-"));
-      let implied = 0;
+      let implied = 0, ignoriert = 0;
       if (existsSync(universeFile)) {
         const detail = gate.perSymbolDetail || {};
         const reportIsPartial = detail.symbolsTotal && detail.symbolsInReport &&
                                 detail.symbolsInReport < detail.symbolsTotal;
+        /* Wie viele Titel duerfen hoechstens als stilles PASS gelten? Genau
+           so viele, wie der Lauf geprueft und nicht berichtet hat. Die Zahl
+           steht im Bericht selbst - sie zu ueberschreiten hiesse, einem
+           Titel einen Lauf zuzuschreiben, den es fuer ihn nie gab. */
+        const obergrenze = reportIsPartial ? detail.symbolsTotal - detail.symbolsInReport : 0;
         if (reportIsPartial) {
           for (const sec of readJSON(universeFile).securities || []) {
+            /* Die Mitgliedsdatei ist seit dem Lauf GEWACHSEN: 2.119 Titel
+               kamen aus dem US-Wertpapierstamm dazu und tragen dafuer die
+               Marke `appendedFrom:US_SECURITY_MASTER`. Sie waren nie Teil
+               dieses Gate-Laufs, und ihnen einen Kursverlauf zuzuschreiben,
+               weil sie in derselben Datei stehen, waere die Art Fehler, die
+               eine Bilanz still um 2.000 Titel schoenrechnet. */
+            if (String(sec.selection || "").startsWith("appendedFrom:")) { ignoriert++; continue; }
             const sym = String(sec.ticker).toUpperCase();
             if (per[sym]) continue;
             const e = get(sym);
             if (e.priceHistoryBars || e.priceHistoryVerified) continue;
+            if (implied >= obergrenze) { ignoriert++; continue; }
             e.priceHistoryVerified = true;
             e.priceHistoryBars = 0;
             e.priceSnapshot = true;
@@ -142,9 +155,11 @@ function collectEvidence() {
           }
         }
       }
-      if (n || implied) {
+      if (n || implied || ignoriert) {
         sources.push({ file: "quant/data/market/scale/" + f, kind: "providerPriceHistory",
-                       symbolsWithReportRow: n, symbolsImpliedPass: implied });
+                       symbolsWithReportRow: n, symbolsImpliedPass: implied,
+                       symbolsNotInThisRun: ignoriert,
+                       runSize: (gate.perSymbolDetail || {}).symbolsTotal || null });
       }
     }
   }

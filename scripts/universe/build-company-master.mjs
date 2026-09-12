@@ -39,6 +39,7 @@
      node scripts/universe/build-company-master.mjs --dry-run
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -260,6 +261,71 @@ function loadCommittedGateUniverses() {
   };
 }
 
+/* ------------------------------------------- Produktlogik des Wertpapierstamms
+
+   Der Company Master entscheidet NICHT, was ein Produkttitel ist. Das
+   entscheidet der US-Wertpapierstamm, und seine Entscheidung liegt als
+   Artefakt vor: quant/data/market/security-master/eligibility.json, 7.803
+   Mitglieder, davon 7.004 Produkttitel.
+
+   Hier wird sie gelesen und aufgelegt - nicht nachgerechnet. Eine zweite
+   Eignungslogik neben der bestehenden waere genau die Parallelstruktur,
+   die der Auftrag ausschliesst.
+
+   Die Zuordnung laeuft ueber die securityId, nicht ueber den Ticker: die
+   Entscheidungen fuehren `ref_CTA_P_B`, und derselbe Ticker kann an zwei
+   Boersen liegen. */
+function loadEligibility() {
+  const file = join(root, "quant", "data", "market", "security-master", "eligibility.json");
+  const summaryFile = join(root, "quant", "data", "market", "security-master", "summary.json");
+  if (!existsSync(file)) {
+    return { bySecurityId: new Map(), byTicker: new Map(), status: "ABSENT", counts: null,
+             reason: "quant/data/market/security-master/eligibility.json fehlt. Ohne sie bleibt " +
+                     "jede Produktentscheidung UNKNOWN - und UNKNOWN ist nicht ELIGIBLE." };
+  }
+  const payload = readJSON(file);
+  const summary = existsSync(summaryFile) ? readJSON(summaryFile) : null;
+
+  /* Die Eignungsdatei nennt die Mitgliedsdatei MIT Pruefsumme. Stimmen
+     sie nicht ueberein, gehoeren Entscheidung und Bestand nicht
+     zusammen - und eine Entscheidung auf einer anderen Mitgliederliste
+     ist keine Entscheidung. */
+  let membership = { checked: false, matches: null, expected: null, actual: null };
+  const nd = payload.nonDestructive || {};
+  if (nd.universeFile && nd.universeSha256) {
+    const universeFile = join(root, nd.universeFile);
+    if (existsSync(universeFile)) {
+      const actual = createHash("sha256").update(readFileSync(universeFile)).digest("hex");
+      membership = { checked: true, file: nd.universeFile, expected: nd.universeSha256,
+                     actual, matches: actual === nd.universeSha256 };
+    }
+  }
+
+  const bySecurityId = new Map();
+  const byTicker = new Map();
+  for (const d of payload.decisions || []) {
+    if (d.securityId) bySecurityId.set(d.securityId, d);
+    const key = String(d.ticker || "").toUpperCase() + "@" + String(d.exchange || "").toUpperCase();
+    if (!byTicker.has(key)) byTicker.set(key, d);
+  }
+  return {
+    bySecurityId, byTicker,
+    status: membership.checked && !membership.matches ? "MEMBERSHIP_MISMATCH" : "OK",
+    version: payload.version || null,
+    generatedAt: payload.generatedAt || null,
+    scope: payload.scope || null,
+    counts: payload.counts || null,
+    excludedByClass: payload.excludedByClass || null,
+    separateByClass: payload.separateByClass || null,
+    reviewByReason: payload.reviewByReason || null,
+    membership,
+    securityMasterSummary: summary
+      ? { version: summary.version, generatedAt: summary.generatedAt,
+          headline: summary.headline } : null,
+    reason: null
+  };
+}
+
 /* ------------------------------------------------------------- Bestand */
 
 /* Der Bestand ist der VOLLE Master, nicht der ausgelieferte Auszug.
@@ -322,6 +388,27 @@ function main() {
   console.log(`  CIK:      ${ciks.map.size} Zuordnungen (${ciks.status})` +
               (ciks.reason ? "  — " + ciks.reason : ""));
 
+  const eligibility = loadEligibility();
+  if (eligibility.status === "ABSENT") {
+    console.log(`  Eignung:  ABSENT — ${eligibility.reason}`);
+  } else {
+    const c = eligibility.counts || {};
+    console.log(`  Eignung:  ${eligibility.status} · ${eligibility.version} · ` +
+                `${c.universeMembers} Mitglieder, ${c.productUniverse} Produkttitel ` +
+                `(${c.ELIGIBLE} ELIGIBLE, ${c.SEPARATE_CLASS} SEPARATE_CLASS, ` +
+                `${c.REVIEW} REVIEW, ${c.EXCLUDED} EXCLUDED)`);
+    if (eligibility.membership.checked) {
+      console.log(`  Mitglieder-Pruefsumme: ${eligibility.membership.matches ? "stimmt" : "WEICHT AB"}`);
+    }
+    if (eligibility.status === "MEMBERSHIP_MISMATCH") {
+      console.error("\n  Die Eignungsdatei wurde gegen eine andere Mitgliederliste gerechnet.");
+      console.error(`  erwartet: ${eligibility.membership.expected}`);
+      console.error(`  gefunden: ${eligibility.membership.actual}`);
+      console.error("  Eine Produktentscheidung auf fremdem Bestand ist keine Entscheidung.");
+      process.exit(3);
+    }
+  }
+
   /* Aufnehmen: alles, was die ingest-Regeln erlauben. */
   const ingest = CONFIG.ingest;
   const t0 = Date.now();
@@ -340,6 +427,19 @@ function main() {
        untergeschoben. */
     const cikRow = inst.country === "US" ? ciks.map.get(inst.symbol) : null;
     if (cikRow) { inst.cik = cikRow.cik; inst.cikSource = cikRow.source; }
+    if (inst.cik) {
+      inst.issuerId = Master.issuerIdFromCik(inst.cik);
+      inst.issuerIdSource = inst.cikSource;
+    }
+
+    /* Die Produktentscheidung. Erst ueber die securityId - das ist der
+       Schluessel, den der Wertpapierstamm fuehrt -, sonst ueber
+       Ticker+Boerse. */
+    const decision = eligibility.bySecurityId.get(row.securityId) ||
+                     eligibility.bySecurityId.get((inst.legacyIds || [])[0]) ||
+                     eligibility.byTicker.get(inst.symbol + "@" +
+                       String(inst.exchange || "").toUpperCase()) || null;
+    Master.applyEligibility(inst, decision);
 
     /* Der Anbieterauszug fuehrt `active` mancherorts als Bilanz statt
        ueber ein Enddatum. Wo die Klassifikation nichts ableiten kann, die

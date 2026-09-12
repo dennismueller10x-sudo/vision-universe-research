@@ -1,15 +1,15 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-12T10:10:37.495Z",
-  "instruments": 5690,
+  "generatedAt": "2026-09-12T10:53:01.284Z",
+  "instruments": 7809,
   "levels": {
     "DELIVERED": "Liegt in diesem Repository und funktioniert ohne Anbieterzugang.",
     "PROVIDER_VERIFIED": "In einem echten Lauf mit Anbieterzugang gemessen; die Daten selbst bleiben aus Redistributionsgruenden in der Arbeitsablage."
   },
   "counts": {
     "HAS_PROFILE": {
-      "DELIVERED": 5690,
-      "PROVIDER_VERIFIED": 5690
+      "DELIVERED": 7809,
+      "PROVIDER_VERIFIED": 7809
     },
     "HAS_PRICE_SNAPSHOT": {
       "DELIVERED": 5,
@@ -53,25 +53,33 @@
       "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
       "kind": "providerPriceHistory",
       "symbolsWithReportRow": 3446,
-      "symbolsImpliedPass": 2238
+      "symbolsImpliedPass": 2238,
+      "symbolsNotInThisRun": 2119,
+      "runSize": 5684
     },
     {
       "file": "quant/data/market/scale/gate-GATE_100.json",
       "kind": "providerPriceHistory",
       "symbolsWithReportRow": 100,
-      "symbolsImpliedPass": 0
+      "symbolsImpliedPass": 0,
+      "symbolsNotInThisRun": 0,
+      "runSize": 100
     },
     {
       "file": "quant/data/market/scale/gate-GATE_2000.json",
       "kind": "providerPriceHistory",
       "symbolsWithReportRow": 1138,
-      "symbolsImpliedPass": 0
+      "symbolsImpliedPass": 0,
+      "symbolsNotInThisRun": 0,
+      "runSize": 2000
     },
     {
       "file": "quant/data/market/scale/gate-GATE_500.json",
       "kind": "providerPriceHistory",
       "symbolsWithReportRow": 500,
-      "symbolsImpliedPass": 0
+      "symbolsImpliedPass": 0,
+      "symbolsNotInThisRun": 0,
+      "runSize": 500
     },
     {
       "file": "quant/data/market/golden-preview/daily/",

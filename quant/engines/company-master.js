@@ -58,8 +58,36 @@
     "currency", "securityType", "securityTypeConfidence", "shareClass", "subtype",
     "otc", "primaryListing", "primaryListingBasis", "active", "activeBasis",
     "delistedAt", "firstTradeDate", "lastTradeDate", "screenerEligible",
-    "assetTypeRaw", "adrEvidence", "isin", "cusip", "figi", "cik", "cikSource", "lei"
+    "assetTypeRaw", "adrEvidence", "isin", "cusip", "figi", "cik", "cikSource", "lei",
+    /* Die Produktentscheidung des US-Wertpapierstamms. Sie wird hier NICHT
+       gefaellt, sondern uebernommen: quant/data/market/security-master/
+       eligibility.json ist die Quelle, dieser Master ist ihr Konsument
+       (§1). Eine zweite Eignungslogik daneben waere genau das, was der
+       Auftrag ausschliesst. */
+    "productEligibility", "productEligibilityReason", "securityClass",
+    "masterMemberId", "issuerId", "issuerIdSource", "classificationAgrees",
+    "screenerReason"
   ];
+
+  /* Die vier Entscheidungen des Wertpapierstamms plus der Fall, dass keine
+     vorliegt. UNKNOWN heisst "nicht entschieden" und ist ausdruecklich
+     nicht dasselbe wie EXCLUDED. */
+  var PRODUCT_ELIGIBILITY = ["ELIGIBLE", "SEPARATE_CLASS", "REVIEW", "EXCLUDED", "UNKNOWN"];
+
+  /* Was zum Produktuniversum zaehlt. EXCLUDED nicht - das sind die 799
+     bestaetigten Nicht-Aktien. REVIEW schon: ungeprueft ist nicht
+     ausgeschlossen. */
+  var IN_PRODUCT_UNIVERSE = { ELIGIBLE: true, SEPARATE_CLASS: true, REVIEW: true };
+
+  /* Wie die Gattungen des Wertpapierstamms auf die eigenen abbilden.
+     Nur zum VERGLEICHEN, nicht zum Ueberschreiben: aus einem Widerspruch
+     soll ein Befund werden, keine stille Korrektur. */
+  var SECURITY_CLASS_TO_TYPE = {
+    EQUITY_COMMON: "COMMON_STOCK", PREFERRED: "PREFERRED", ETF: "ETF", ETN: "ETN",
+    MUTUAL_FUND: "FUND", CEF: "FUND", WARRANT: "WARRANT", RIGHT: "OTHER",
+    UNIT: "OTHER", ADR: "ADR", REIT: "COMMON_STOCK", SPAC: "COMMON_STOCK",
+    TRUST: "OTHER", INDEX: "OTHER", TEST_SECURITY: "OTHER"
+  };
 
   /* Die Faehigkeiten aus §30. Der Sinn ist nicht Vollstaendigkeit, sondern
      Ehrlichkeit: die Oberflaeche soll wissen, was sie zeigen darf, bevor
@@ -180,6 +208,11 @@
       firstTradeDate: c.startDate,
       lastTradeDate: c.endDate,
       screenerEligible: c.screenerEligible,
+      /* Warum screenerfaehig oder nicht - aus der Klassifikation, spaeter
+         ueberschrieben von der Produktentscheidung. Das Feld muss von
+         Anfang an existieren: ein Feld, das erst beim zweiten Lauf
+         entsteht, macht jeden ersten Vergleich ungleich. */
+      screenerReason: c.screenerReason || null,
       assetTypeRaw: c.assetType,
       adrEvidence: c.adrEvidence,
 
@@ -193,6 +226,31 @@
       cik: nullable(row.cik),
       cikSource: row.cik ? nullable(row.cikSource) || "input" : null,
       lei: nullable(row.lei),
+
+      /* Produktentscheidung. Ohne Wertpapierstamm bleibt sie UNKNOWN -
+         nicht ELIGIBLE. Ein Instrument, ueber das niemand entschieden
+         hat, als geeignet zu fuehren waere eine Entscheidung. */
+      productEligibility: "UNKNOWN",
+      productEligibilityReason: null,
+      securityClass: null,
+
+      /* Das Mitglied des Wertpapierstamms, zu dem dieses Listing gehoert.
+         Nicht dasselbe wie die instrumentId: BGC, COHR, DCOM, SGI, SUNE
+         und TRAK liegen je an ZWEI Boersen und sind damit zwei
+         Instrumente - aber EIN Produkttitel. Wer Produkttitel zaehlt und
+         dabei Instrumente zaehlt, kommt auf 7.010 statt 7.004. */
+      masterMemberId: null,
+
+      /* Stimmt die eigene Klassifikation mit der des Wertpapierstamms
+         ueberein? null heisst "kein Vergleich moeglich", nicht "ja". */
+      classificationAgrees: null,
+
+      /* Der Emittent (§15). Fundamentaldaten gehoeren zur Gesellschaft,
+         nicht zum Papier: mehrere Aktienklassen desselben Unternehmens
+         zeigen auf DIESELBE Fundamentalhistorie. Gesetzt wird die
+         issuerId, sobald eine CIK vorliegt; bis dahin null. */
+      issuerId: null,
+      issuerIdSource: null,
 
       providerIds: {},
       legacyIds: [],
@@ -511,7 +569,12 @@
       duplicateInstrumentIds: [], duplicateSymbols: [], duplicateProviderIds: [],
       duplicateCiks: [], missingName: 0, missingExchange: 0, missingCurrency: 0,
       missingCountry: 0, invalidCik: [], unknownSecurityType: 0, inactive: 0,
-      noFirstTradeDate: 0, symbolWithWhitespace: []
+      noFirstTradeDate: 0, symbolWithWhitespace: [],
+      /* Kein blockierender Befund: zwei Messungen duerfen sich
+         unterscheiden. Aber eine Zahl, die still waechst, ist eine Regel,
+         die etwas nicht mehr sieht. */
+      classificationDisagreement: 0, classificationDisagreementByClass: {},
+      withoutProductDecision: 0
     };
 
     instruments.forEach(function (r) {
@@ -545,6 +608,13 @@
       if (r.securityType === "UNKNOWN") findings.unknownSecurityType++;
       if (r.active === false) findings.inactive++;
       if (!r.firstTradeDate) findings.noFirstTradeDate++;
+      if (!r.productEligibility || r.productEligibility === "UNKNOWN") findings.withoutProductDecision++;
+      if (r.classificationAgrees === false) {
+        findings.classificationDisagreement++;
+        var k = (r.securityClass || "?") + "->" + (r.securityType || "?");
+        findings.classificationDisagreementByClass[k] =
+          (findings.classificationDisagreementByClass[k] || 0) + 1;
+      }
       if (upper(r.symbol) !== norm(r.symbol)) findings.symbolWithWhitespace.push(r.instrumentId);
 
       if (r.cik) {
@@ -581,9 +651,29 @@
     var evidence = opts.evidence || {};
     var providerTotal = opts.providerInstruments;
 
+    /* Produkttitel sind MITGLIEDER, nicht Listings. Ein Instrument ohne
+       Mitgliedszuordnung zaehlt als eigenes Mitglied - sonst
+       verschwaende es aus der Bilanz. */
+    var memberIds = {}, productMembers = {}, byEligibility = {};
+    PRODUCT_ELIGIBILITY.forEach(function (e) { byEligibility[e] = {}; });
+    instruments.forEach(function (r) {
+      var member = r.masterMemberId || r.instrumentId;
+      memberIds[member] = true;
+      var e = r.productEligibility || "UNKNOWN";
+      if (byEligibility[e]) byEligibility[e][member] = true;
+      if (IN_PRODUCT_UNIVERSE[e]) productMembers[member] = true;
+    });
+
     var t = {
       TOTAL_PROVIDER_INSTRUMENTS: providerTotal === undefined ? null : providerTotal,
       TOTAL_IN_COMPANY_MASTER: instruments.length,
+      MASTER_MEMBERS: Object.keys(memberIds).length,
+      PRODUCT_TITLES: Object.keys(productMembers).length,
+      ELIGIBLE: Object.keys(byEligibility.ELIGIBLE).length,
+      SEPARATE_CLASS: Object.keys(byEligibility.SEPARATE_CLASS).length,
+      REVIEW: Object.keys(byEligibility.REVIEW).length,
+      EXCLUDED: Object.keys(byEligibility.EXCLUDED).length,
+      ELIGIBILITY_UNKNOWN: Object.keys(byEligibility.UNKNOWN).length,
       TOTAL_EQUITIES: 0, TOTAL_COMMON_STOCKS: 0, TOTAL_ADRS: 0, TOTAL_ETFS: 0,
       TOTAL_ETNS: 0, TOTAL_FUNDS: 0, TOTAL_PREFERRED: 0, TOTAL_WARRANTS: 0,
       TOTAL_OTHER: 0, TOTAL_UNKNOWN_TYPE: 0,
@@ -625,14 +715,86 @@
     return t;
   }
 
+  /**
+   * Legt die Produktentscheidung des Wertpapierstamms auf ein Instrument.
+   *
+   * Bewusst eine eigene Funktion und kein Feld in toInstrument(): die
+   * Entscheidung kommt aus einer anderen Quelle als die Stammdaten, und
+   * sie ueberschreibt nichts. Liegt keine Entscheidung vor, bleibt
+   * UNKNOWN stehen.
+   */
+  function applyEligibility(instrument, decision) {
+    if (!decision) return instrument;
+    var eligibility = upper(decision.product_eligibility || decision.productEligibility);
+    if (PRODUCT_ELIGIBILITY.indexOf(eligibility) === -1) eligibility = "UNKNOWN";
+    instrument.productEligibility = eligibility;
+    instrument.productEligibilityReason =
+      nullable(decision.product_eligibility_reason || decision.reason);
+    instrument.securityClass = nullable(decision.instrument_type || decision.securityClass);
+    instrument.masterMemberId = nullable(decision.securityId || decision.masterMemberId);
+
+    /* Screenerfaehigkeit folgt der Produktentscheidung, nicht der eigenen
+       Klassifikation.
+
+       Die eigene Klassifikation liest eine Anbieterzeile; der
+       Wertpapierstamm hat entschieden. Wo beide etwas sagen, gilt die
+       Entscheidung - sonst stuenden 457 Optionsscheine und 290 Units im
+       Aktienscreener, weil das Tickermuster sie nicht verraten hat.
+
+       Nur ELIGIBLE: SEPARATE_CLASS ist ein Vorzugspapier (gefuehrt, aber
+       keine Screener-Aktie), REVIEW ist ungeprueft, und ungeprueft im
+       Screener zu zeigen hiesse, die Pruefung zu ueberspringen. */
+    instrument.screenerEligible = eligibility === "ELIGIBLE";
+    instrument.screenerReason = "Produktentscheidung des Wertpapierstamms: " + eligibility +
+      (instrument.productEligibilityReason ? " (" + instrument.productEligibilityReason + ")" : "");
+
+    /* Wo die eigene Klassifikation der Entscheidung widerspricht, wird das
+       FESTGEHALTEN und nicht stillschweigend ueberschrieben. Ein
+       Widerspruch ist ein Hinweis auf eine Regel, die etwas nicht sieht -
+       genau so sind die 308 getrennt geschriebenen Vorzugspapiere
+       aufgefallen. */
+    var erwartet = SECURITY_CLASS_TO_TYPE[instrument.securityClass];
+    instrument.classificationAgrees = erwartet ? erwartet === instrument.securityType : null;
+    return instrument;
+  }
+
+  /** Gehoert dieses Instrument zum Produktuniversum (§1)? */
+  function inProductUniverse(instrument) {
+    return IN_PRODUCT_UNIVERSE[instrument && instrument.productEligibility] === true;
+  }
+
+  /**
+   * Die Emittenten-ID (§15).
+   *
+   * Die CIK IST die Identitaet der Gesellschaft - sie ist stabil ueber
+   * Namenswechsel, Tickerwechsel und Aktienklassen hinweg, und die SEC
+   * fuehrt sie genau dafuer. Eine eigene ID daneben zu erfinden hiesse,
+   * zwei Wahrheiten zu pflegen.
+   *
+   * Ohne CIK gibt es KEINE Emittenten-ID. Aktienklassen ueber den
+   * Firmennamen zusammenzufassen waere geraten: "Alphabet Inc Class A"
+   * und "Alphabet Inc Class C" sind derselbe Emittent, "Berkshire
+   * Hathaway Inc" und "Berkshire Hills Bancorp" sind es nicht.
+   */
+  function issuerIdFromCik(cik) {
+    if (!cik) return null;
+    var digits = String(cik).replace(/\D/g, "");
+    if (!digits) return null;
+    return "iss_cik_" + digits.padStart(10, "0");
+  }
+
   var api = {
     VERSION: VERSION,
     CAPABILITIES: CAPABILITIES,
+    PRODUCT_ELIGIBILITY: PRODUCT_ELIGIBILITY,
     TRACKED_FIELDS: TRACKED_FIELDS,
     PRIMARY_EXCHANGES: PRIMARY_EXCHANGES,
     legacySecurityId: legacySecurityId,
     providerKey: providerKey,
     mintInstrumentId: mintInstrumentId,
+    applyEligibility: applyEligibility,
+    inProductUniverse: inProductUniverse,
+    issuerIdFromCik: issuerIdFromCik,
     toInstrument: toInstrument,
     syncUniverse: syncUniverse,
     changedFields: changedFields,

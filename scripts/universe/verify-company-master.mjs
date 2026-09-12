@@ -15,6 +15,7 @@
    Ausfuehren: node scripts/universe/verify-company-master.mjs
    ========================================================================= */
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -108,6 +109,78 @@ function main() {
   });
   check("Ausgeliefert wird nur, was die Auslieferungsregel erlaubt", outOfScope.length === 0,
         `${outOfScope.length} ausserhalb (z.B. ${outOfScope.slice(0, 3).map((r) => r.symbol + "@" + r.exchange).join(", ")})`);
+
+  /* ------------------------------ Produktlogik des Wertpapierstamms (§1)
+
+     Der Company Master konsumiert die bestehende Eignungsentscheidung.
+     Geprueft wird deshalb nicht, ob sie richtig ist - das entscheidet
+     der Wertpapierstamm -, sondern ob sie VOLLSTAENDIG und UNVERAENDERT
+     ankommt. Eine zurueckgedrehte Ausschlussentscheidung waere der
+     schlimmste denkbare Befund: sie faellt niemandem auf. */
+  const eligFile = join(root, "quant", "data", "market", "security-master", "eligibility.json");
+  if (existsSync(eligFile)) {
+    const elig = readJSON(eligFile);
+    const erwartet = elig.counts;
+
+    check("Die Mitgliederliste, gegen die entschieden wurde, ist die hier vorliegende",
+          (() => {
+            const nd = elig.nonDestructive || {};
+            if (!nd.universeFile || !nd.universeSha256) return false;
+            const f = join(root, nd.universeFile);
+            if (!existsSync(f)) return false;
+            return createHash("sha256").update(readFileSync(f)).digest("hex") === nd.universeSha256;
+          })(),
+          "Pruefsumme der Mitgliedsdatei weicht ab");
+
+    const byMember = new Map();
+    for (const i of instruments) {
+      const m = i.masterMemberId || i.instrumentId;
+      if (!byMember.has(m)) byMember.set(m, i);
+    }
+    const zaehle = (e) => Array.from(byMember.values())
+      .filter((i) => i.productEligibility === e).length;
+
+    check("Jedes ausgelieferte Instrument traegt eine Produktentscheidung",
+          instruments.every((i) => i.productEligibility && i.productEligibility !== "UNKNOWN"),
+          `${instruments.filter((i) => !i.productEligibility || i.productEligibility === "UNKNOWN").length} ohne Entscheidung`);
+
+    check(`Mitgliederzahl stimmt mit dem Wertpapierstamm ueberein (${erwartet.universeMembers})`,
+          byMember.size === erwartet.universeMembers,
+          `${byMember.size} statt ${erwartet.universeMembers}`);
+
+    for (const [feld, name] of [["ELIGIBLE", "ELIGIBLE"], ["SEPARATE_CLASS", "SEPARATE_CLASS"],
+                                ["REVIEW", "REVIEW"], ["EXCLUDED", "EXCLUDED"]]) {
+      check(`${name} unveraendert uebernommen (${erwartet[feld]})`,
+            zaehle(feld) === erwartet[feld], `${zaehle(feld)} statt ${erwartet[feld]}`);
+    }
+
+    check(`Produktuniversum unveraendert (${erwartet.productUniverse})`,
+          zaehle("ELIGIBLE") + zaehle("SEPARATE_CLASS") + zaehle("REVIEW") === erwartet.productUniverse,
+          "die Summe der drei Produktklassen weicht ab");
+
+    /* Die Ausgeschlossenen bleiben IM Master. Sie zu entfernen waere
+       bequem und wuerde die Bilanz schoener machen - und genau deshalb
+       steht die Pruefung hier. */
+    check("Die 799 bestaetigten Nicht-Aktien stehen weiterhin im Master",
+          zaehle("EXCLUDED") === erwartet.EXCLUDED && zaehle("EXCLUDED") > 0,
+          `${zaehle("EXCLUDED")} EXCLUDED im Master`);
+
+    /* Mehrere Listings eines Mitglieds sind erlaubt - aber sie muessen
+       dieselbe Entscheidung tragen. */
+    const uneins = [];
+    const proMitglied = new Map();
+    for (const i of instruments) {
+      const m = i.masterMemberId;
+      if (!m) continue;
+      if (!proMitglied.has(m)) proMitglied.set(m, i.productEligibility);
+      else if (proMitglied.get(m) !== i.productEligibility) uneins.push(m);
+    }
+    check("Zwei Listings desselben Mitglieds tragen dieselbe Entscheidung",
+          uneins.length === 0, `uneins: ${uneins.slice(0, 5).join(", ")}`);
+  } else {
+    check("Eignungsdatei des Wertpapierstamms vorhanden", false,
+          "quant/data/market/security-master/eligibility.json fehlt");
+  }
 
   /* ------------------------------------------------ Datenqualitaet (§45) */
   const quality = Master.qualityReport(instruments);

@@ -97,9 +97,25 @@
   function tickerPattern(ticker) {
     var t = upper(ticker);
     if (!t) return null;
-    /* Vorzugsaktien: -P, -PA .. -PZ, -PRA. Nicht -P allein verwechseln
-       mit einer Klasse "P": Tiingo nutzt P als Vorzugsmarker, und ein
-       einzelner Klassenbuchstabe P kommt praktisch nicht vor. */
+    /* Vorzugsaktien in ZWEI Schreibweisen. Die zweite hat gefehlt.
+
+       Zusammengezogen: -P, -PA .. -PZ, -PRA.
+       Getrennt:        -P-A, -P-B, -PR-A  (CTA-P-B, WFC-P-Y, SLG-P-I)
+
+       Die getrennte Form endet auf "-<Buchstabe>" und lief deshalb in die
+       Aktienklassen-Regel weiter unten: 308 Vorzugspapiere galten als
+       Stammaktien. Gefunden hat das nicht der Code, sondern der
+       Abgleich mit dem US-Wertpapierstamm - dessen Entscheidungen
+       tragen dafuer eigens die Marke BASE_CLASSIFIER_MISSED_SUFFIX.
+
+       Die Regel steht VOR der Klassenregel, weil "-B" fuer sich
+       genommen eine Klasse ist und nur das vorangehende "-P" den
+       Unterschied macht. */
+    if (/-PR?-[A-Z]$/.test(t)) {
+      return { type: "PREFERRED", basis: "tickerSuffixSplit",
+               marker: t.slice(t.indexOf("-", t.length - 4)),
+               shareClass: t.slice(-1) };
+    }
     if (/-P[A-Z]?$/.test(t) || /-PR[A-Z]?$/.test(t)) {
       return { type: "PREFERRED", basis: "tickerSuffix", marker: t.slice(t.lastIndexOf("-")) };
     }

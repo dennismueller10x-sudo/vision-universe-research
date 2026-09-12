@@ -165,6 +165,7 @@ test("Gattungen werden getrennt gefuehrt, nicht als Aktien durchgereicht", () =>
     row("AAPL"),
     row("SPY", { exchange: "NYSE ARCA", assetType: "ETF" }),
     row("BAC-PB", { exchange: "NYSE" }),
+    row("CTA-P-B", { exchange: "NYSE" }),
     row("ABC-WT"),
     row("VFINX", { assetType: "Mutual Fund" }),
     row("BRK-B", { exchange: "NYSE" })
@@ -174,6 +175,8 @@ test("Gattungen werden getrennt gefuehrt, nicht als Aktien durchgereicht", () =>
   assert.equal(byType.AAPL, "COMMON_STOCK");
   assert.equal(byType.SPY, "ETF");
   assert.equal(byType["BAC-PB"], "PREFERRED");
+  /* Beide Schreibweisen des Anbieters, nicht nur die zusammengezogene. */
+  assert.equal(byType["CTA-P-B"], "PREFERRED");
   assert.equal(byType["ABC-WT"], "WARRANT");
   assert.equal(byType.VFINX, "FUND");
   assert.equal(byType["BRK-B"], "COMMON_STOCK", "ein Klassenbuchstabe ist keine eigene Gattung");
@@ -384,6 +387,126 @@ test("der Suchindex kennt jedes Instrument genau einmal", { skip: !vorhanden }, 
   }
   assert.equal(doppelt, 0);
   assert.equal(ids.size, ladeMaster().length);
+});
+
+/* ============================ Produktlogik des Wertpapierstamms (§1, §15)
+
+   Der Company Master faellt die Eignungsentscheidung nicht - er
+   konsumiert sie. Geprueft wird deshalb, dass sie unveraendert ankommt
+   und dass beim Zaehlen nicht Listings mit Produkttiteln verwechselt
+   werden. */
+
+test("ohne Entscheidung bleibt ein Instrument UNKNOWN - nicht ELIGIBLE", () => {
+  const i = Master.toInstrument(row("AAPL"), { today: TODAY });
+  assert.equal(i.productEligibility, "UNKNOWN");
+  assert.equal(Master.inProductUniverse(i), false);
+  Master.applyEligibility(i, null);
+  assert.equal(i.productEligibility, "UNKNOWN");
+});
+
+test("die Entscheidung wird uebernommen, nicht nachgerechnet", () => {
+  const i = Master.toInstrument(row("CTA-P-B", { exchange: "NYSE" }), { today: TODAY });
+  /* Die eigene Klassifikation sagt PREFERRED - aber erst seit dem
+     Abgleich mit dem Wertpapierstamm. Vorher las sie "-B" als
+     Aktienklasse und machte aus 308 Vorzugspapieren Stammaktien. */
+  assert.equal(i.securityType, "PREFERRED");
+  assert.equal(i.shareClass, "B");
+  Master.applyEligibility(i, {
+    securityId: "ref_CTA_P_B", product_eligibility: "SEPARATE_CLASS",
+    product_eligibility_reason: "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+    instrument_type: "PREFERRED"
+  });
+  assert.equal(i.productEligibility, "SEPARATE_CLASS");
+  assert.equal(i.securityClass, "PREFERRED");
+  assert.equal(i.masterMemberId, "ref_CTA_P_B");
+  assert.equal(Master.inProductUniverse(i), true, "SEPARATE_CLASS gehoert zum Produktuniversum");
+});
+
+test("EXCLUDED gehoert nicht zum Produktuniversum, REVIEW schon", () => {
+  const mk = (e) => {
+    const i = Master.toInstrument(row("X" + e.slice(0, 2)), { today: TODAY });
+    Master.applyEligibility(i, { product_eligibility: e, securityId: "ref_X" });
+    return i;
+  };
+  assert.equal(Master.inProductUniverse(mk("EXCLUDED")), false);
+  assert.equal(Master.inProductUniverse(mk("REVIEW")), true,
+               "ungeprueft ist nicht ausgeschlossen");
+  assert.equal(Master.inProductUniverse(mk("ELIGIBLE")), true);
+});
+
+test("eine unbekannte Entscheidung faellt auf UNKNOWN zurueck, nicht auf ELIGIBLE", () => {
+  const i = Master.toInstrument(row("AAPL"), { today: TODAY });
+  Master.applyEligibility(i, { product_eligibility: "VIELLEICHT" });
+  assert.equal(i.productEligibility, "UNKNOWN");
+});
+
+test("die Emittenten-ID kommt aus der CIK und sonst nirgendwoher", () => {
+  assert.equal(Master.issuerIdFromCik("320193"), "iss_cik_0000320193");
+  assert.equal(Master.issuerIdFromCik("0000320193"), "iss_cik_0000320193");
+  assert.equal(Master.issuerIdFromCik(null), null);
+  assert.equal(Master.issuerIdFromCik(""), null);
+  /* Zwei Aktienklassen desselben Emittenten teilen die Emittenten-ID. */
+  assert.equal(Master.issuerIdFromCik("1652044"), Master.issuerIdFromCik("0001652044"));
+});
+
+test("der Deckungsbericht zaehlt Produkttitel als MITGLIEDER, nicht als Listings", () => {
+  /* COHR liegt an NYSE und an NASDAQ: zwei Instrumente, ein Produkttitel. */
+  const s = sync([], [row("COHR", { exchange: "NYSE" }), row("COHR", { exchange: "NASDAQ" }),
+                      row("AAPL")]);
+  s.instruments.forEach((i) => {
+    Master.applyEligibility(i, {
+      securityId: "ref_" + i.symbol, product_eligibility: "ELIGIBLE",
+      instrument_type: "EQUITY_COMMON"
+    });
+  });
+  const t = Master.coverageReport(s.instruments, {});
+  assert.equal(t.TOTAL_IN_COMPANY_MASTER, 3, "drei Listings");
+  assert.equal(t.MASTER_MEMBERS, 2, "zwei Mitglieder");
+  assert.equal(t.PRODUCT_TITLES, 2, "zwei Produkttitel - nicht drei");
+  assert.equal(t.ELIGIBLE, 2);
+});
+
+test("ein Instrument ohne Mitgliedszuordnung verschwindet nicht aus der Bilanz", () => {
+  const s = sync([], [row("AAPL"), row("WEDER")]);
+  Master.applyEligibility(s.instruments[0], {
+    securityId: "ref_AAPL", product_eligibility: "ELIGIBLE" });
+  const t = Master.coverageReport(s.instruments, {});
+  assert.equal(t.MASTER_MEMBERS, 2, "das zuordnungslose Instrument zaehlt als eigenes Mitglied");
+  assert.equal(t.ELIGIBILITY_UNKNOWN, 1);
+  assert.equal(t.PRODUCT_TITLES, 1);
+});
+
+test("kein Titel bekommt einen Gate-Lauf zugeschrieben, an dem er nicht teilnahm",
+     { skip: !vorhanden }, () => {
+  /* Die Mitgliedsdatei ist nach dem Gate-Lauf gewachsen. Wer die
+     stillen PASS-Faelle aus ihr ableitet, ohne auf die Laufgroesse zu
+     achten, schreibt 2.119 Titeln einen Kursverlauf zu, den sie nicht
+     haben - und die Bilanz sieht besser aus als die Wirklichkeit. */
+  const cap = readJSON(join(root, "quant", "data", "universe", "capability-summary.json"));
+  const quellen = cap.evidenceSources.filter((s) => s.kind === "providerPriceHistory");
+  assert.ok(quellen.length > 0);
+  for (const q of quellen) {
+    if (!q.runSize) continue;
+    assert.ok(q.symbolsWithReportRow + q.symbolsImpliedPass <= q.runSize,
+              `${q.file}: ${q.symbolsWithReportRow} + ${q.symbolsImpliedPass} > ${q.runSize}`);
+  }
+  const t = readJSON(join(root, "quant", "data", "universe", "coverage-report.json")).totals;
+  assert.ok(t.TOTAL_WITH_PRICE_HISTORY < t.TOTAL_IN_COMPANY_MASTER,
+            "alle Titel mit Kursverlauf zu fuehren waere genau der Fehler");
+});
+
+test("der ausgelieferte Master traegt die akzeptierten Produktzahlen", { skip: !vorhanden }, () => {
+  const eligFile = join(root, "quant", "data", "market", "security-master", "eligibility.json");
+  if (!existsSync(eligFile)) return;
+  const erwartet = readJSON(eligFile).counts;
+  const t = readJSON(join(root, "quant", "data", "universe", "coverage-report.json")).totals;
+  assert.equal(t.MASTER_MEMBERS, erwartet.universeMembers);
+  assert.equal(t.PRODUCT_TITLES, erwartet.productUniverse);
+  assert.equal(t.ELIGIBLE, erwartet.ELIGIBLE);
+  assert.equal(t.SEPARATE_CLASS, erwartet.SEPARATE_CLASS);
+  assert.equal(t.REVIEW, erwartet.REVIEW);
+  assert.equal(t.EXCLUDED, erwartet.EXCLUDED);
+  assert.equal(t.ELIGIBILITY_UNKNOWN, 0, "jedes Instrument braucht eine Entscheidung");
 });
 
 /* ------------------------------------------------- Der Frontend-Vertrag */

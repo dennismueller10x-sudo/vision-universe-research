@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-12T10:10:37.510Z",
+  "generatedAt": "2026-09-12T10:53:01.308Z",
   "asOf": "2026-09-12",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
@@ -12,12 +12,12 @@
       "rows": 108573,
       "note": "Zeilenzahl des Anbieterverzeichnisses, aus dem diese Auszuege stammen."
     },
-    "providerRowsSeen": 5691,
+    "providerRowsSeen": 7810,
     "provenance": [
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
         "gate": "FULL_UNIVERSE",
-        "securities": 5684
+        "securities": 7803
       },
       {
         "file": "quant/data/market/scale/universe-GATE_100.json",
@@ -44,39 +44,46 @@
   },
   "totals": {
     "TOTAL_PROVIDER_INSTRUMENTS": 108573,
-    "TOTAL_IN_COMPANY_MASTER": 5690,
-    "TOTAL_EQUITIES": 5688,
-    "TOTAL_COMMON_STOCKS": 5688,
+    "TOTAL_IN_COMPANY_MASTER": 7809,
+    "MASTER_MEMBERS": 7803,
+    "PRODUCT_TITLES": 7004,
+    "ELIGIBLE": 6477,
+    "SEPARATE_CLASS": 308,
+    "REVIEW": 219,
+    "EXCLUDED": 799,
+    "ELIGIBILITY_UNKNOWN": 0,
+    "TOTAL_EQUITIES": 7807,
+    "TOTAL_COMMON_STOCKS": 7499,
     "TOTAL_ADRS": 0,
     "TOTAL_ETFS": 2,
     "TOTAL_ETNS": 0,
     "TOTAL_FUNDS": 0,
-    "TOTAL_PREFERRED": 0,
+    "TOTAL_PREFERRED": 308,
     "TOTAL_WARRANTS": 0,
     "TOTAL_OTHER": 0,
     "TOTAL_UNKNOWN_TYPE": 0,
-    "TOTAL_ACTIVE": 5675,
+    "TOTAL_ACTIVE": 7794,
     "TOTAL_INACTIVE": 15,
     "TOTAL_ACTIVE_UNKNOWN": 0,
-    "TOTAL_US": 5690,
+    "TOTAL_US": 7809,
     "TOTAL_NON_US": 0,
     "TOTAL_COUNTRY_UNKNOWN": 0,
     "TOTAL_OTC": 0,
-    "TOTAL_PRIMARY_LISTING": 5690,
-    "TOTAL_WITH_NAME": 517,
+    "TOTAL_PRIMARY_LISTING": 7809,
+    "TOTAL_WITH_NAME": 518,
     "TOTAL_WITH_CIK": 0,
     "TOTAL_WITH_PRICE_SNAPSHOT": 5656,
     "TOTAL_WITH_PRICE_HISTORY": 5690,
     "TOTAL_WITH_FUNDAMENTALS": 5,
-    "TOTAL_SCREENER_ELIGIBLE": 5675,
+    "TOTAL_SCREENER_ELIGIBLE": 6473,
     "TOTAL_WITH_DELIVERED_PRICE_HISTORY": 5,
     "TOTAL_WITH_PROVIDER_PRICE_HISTORY": 5690,
     "TOTAL_WITH_DELIVERED_STOCK_PAGE": 499
   },
   "capabilities": {
     "HAS_PROFILE": {
-      "DELIVERED": 5690,
-      "PROVIDER_VERIFIED": 5690
+      "DELIVERED": 7809,
+      "PROVIDER_VERIFIED": 7809
     },
     "HAS_PRICE_SNAPSHOT": {
       "DELIVERED": 5,
