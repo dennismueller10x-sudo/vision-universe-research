@@ -176,3 +176,66 @@ Ein uebersprungener Nachweis ist ausdruecklich **kein** bestandener.
 | **Firmennamen fehlen** | Der Anbieterzugang liefert fuer dieses Universum keinen Namen. Die Suche vergleicht Ticker. |
 | **Backtests** | Das Vertrauens-Gate von Astra bleibt ungeloest; daran wurde nichts geaendert. |
 | **Kursniveaus** | zurueckgehalten. Ausgeliefert werden Zustaende, Abstaende und Renditen. |
+
+---
+
+## Bekannte Anbieter- und Tarifgrenzen (Stand 2026-09-12)
+
+Diese Grenzen liegen beim Anbieter, nicht im Code. Sie sind hier
+festgehalten, damit der naechste Lauf sie nicht noch einmal sucht.
+
+### `thresholdLevel` wird vom Tarif abgelehnt
+
+Der IEX-Strom kennt einen Parameter `thresholdLevel`, der steuert,
+welche Nachrichtenarten kommen. Beide sinnvollen Werte wurden probiert:
+
+| Wert | Antwort des Anbieters |
+| --- | --- |
+| `5` | `thresholdLevel not valid for your subscription tier` (Code 400) |
+| `0` | dieselbe Meldung, derselbe Code |
+
+Die Zahl ist also nicht die Frage - der Tarif kennt den Parameter gar
+nicht. Das Abonnement nennt ihn deshalb **nicht mehr**; dann setzt der
+Anbieter selbst die Stufe, die zum Konto gehoert. Seitdem verbindet der
+Strom. Wer den Parameter wieder einbaut, bekommt dieselbe Ablehnung
+zurueck.
+
+### Die Kursart bleibt unbestaetigt
+
+Der Anbieter nennt zu den Kursen keine Art (`priceType` bleibt
+`UNSPECIFIED`). Solange das so ist, wird nirgends *Last Trade*,
+*offizieller letzter Handel*, *Bid*, *Ask*, *Mid* oder *NBBO*
+behauptet. Die Oberflaeche schreibt neutral **Kursaktualisierung**, und
+jede Nachricht traegt `priceTypeConfirmed: false`.
+
+Daraus folgt eine zweite Einschraenkung, und die ist wichtiger als sie
+aussieht: **nur Abschluesse bewegen den Chart.** Quotes werden gezaehlt
+und gemeldet - sie belegen, dass der Strom laeuft - aber sie bekommen
+keinen Kurs. Eine Mitte zwischen Geld und Brief ist errechnet, nicht
+beobachtet; zu ihr hat niemand gehandelt. Sie in dieselbe Kerze zu
+schreiben wie echte Abschluesse hiesse, hinterher nicht mehr sagen zu
+koennen, was der Chart eigentlich zeigt.
+
+### Intraday gibt es nicht fuer jeden Titel
+
+Der Anbieter liefert fuer einen Teil des Produktuniversums keine
+Intraday-Reihe - besonders fuer junge Boersengaenge und sehr duenn
+gehandelte Titel. Die Funktion antwortet dann `INTRADAY_UNAVAILABLE`.
+Das ist eine Auskunft, kein Fehlschlag, und ausdruecklich kein Anlass,
+aus Tagesschlusskursen einen Tagesverlauf zu bauen.
+
+### Vercel friert Umgebungsvariablen beim Bauen ein
+
+Eine nachtraeglich gesetzte Variable erreicht eine fertig gebaute
+Auslieferung nicht. Wer `TIINGO_API_KEY` setzt, braucht danach einen
+neuen Bau - sonst meldet die Funktion weiter `NOT_CONFIGURED`, und das
+ist dann keine falsche Messung, sondern ein Stand von vorher.
+
+### Der Strom laeuft in einem Fenster, nicht endlos
+
+Serverfunktionen haben eine Laufzeitgrenze. Der Weiterleiter schliesst
+sich deshalb selbst (`streamWindowMs`, siehe
+`quant/config/realtime-preview-scope.json`) und der Browser verbindet
+neu, solange der Tagesverlauf offen ist. Verlaesst der Nutzer die Seite
+oder wechselt er den Zeitraum, endet das Abonnement sofort - nicht erst
+mit dem Fenster.

@@ -28,7 +28,7 @@
    Ausfuehren (braucht offenes Netz - laeuft deshalb in GitHub Actions):
      node scripts/proof/measure-symbol-matrix.mjs --base https://<projekt>.vercel.app
    ========================================================================= */
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { baueMatrix } from "../realtime/symbol-matrix.mjs";
@@ -250,16 +250,73 @@ async function lauf() {
      ausgeschlossenen Titel mitzuschicken waere die Messung des
      Gegenteils. */
   const messbar = m.matrix.filter((z) => z.imProduktuniversum).map((z) => z.ticker);
-  console.log(`\n  Strom: ${messbar.length} Titel in EINER Verbindung, Fenster ${STROM_MS} ms ...`);
-  bericht.realtime = await stromMessen(messbar);
-  bericht.realtime.requestedSymbols = messbar;
 
-  console.log(`  Relay ${bericht.realtime.REALTIME_RELAY_STATUS} · ` +
-              `Abonnement ${bericht.realtime.REALTIME_SUBSCRIBE_STATUS} · ` +
-              `Markt ${bericht.realtime.MARKET_STATUS} · ` +
-              `Ticks ${bericht.realtime.OBSERVED_TICK_COUNT} · ` +
-              `Quotes ${bericht.realtime.quotes} · ` +
-              `Doppelte ${bericht.realtime.DUPLICATE_TICKS}`);
+  /* IN BUENDELN, NICHT IN EINEM RUTSCH.
+
+     Eine Verbindung fuehrt hoechstens so viele Titel, wie die
+     Umfangsentscheidung erlaubt - im Produkt genauso wie hier. Alle
+     sechs auf einmal anzufragen haette zwei davon ueber die Grenze
+     geschoben; gemessen worden waeren dann vier, berichtet sechs.
+     Stattdessen laufen mehrere Verbindungen nacheinander, und dass sie
+     das sauber tun, ist selbst ein Befund. */
+  const proVerbindung = (JSON.parse(
+    readFileSync(join(root, "quant/config/realtime-preview-scope.json"), "utf8")
+  ).realtime || {}).maxSymbolsPerConnection || 4;
+  const buendel = [];
+  for (let i = 0; i < messbar.length; i += proVerbindung) {
+    buendel.push(messbar.slice(i, i + proVerbindung));
+  }
+
+  console.log(`\n  Strom: ${messbar.length} Titel in ${buendel.length} Verbindung(en) ` +
+              `zu je hoechstens ${proVerbindung}, Fenster ${STROM_MS} ms ...`);
+
+  const laeufe = [];
+  for (const gruppe of buendel) {
+    console.log(`    → ${gruppe.join(", ")}`);
+    const r = await stromMessen(gruppe);
+    r.requestedSymbols = gruppe;
+    laeufe.push(r);
+    console.log(`      Relay ${r.REALTIME_RELAY_STATUS} · Abonnement ${r.REALTIME_SUBSCRIBE_STATUS} · ` +
+                `Markt ${r.MARKET_STATUS} · Ticks ${r.OBSERVED_TICK_COUNT} · ` +
+                `Quotes ${r.quotes} · Doppelte ${r.DUPLICATE_TICKS}`);
+  }
+  bericht.realtimeRuns = laeufe;
+
+  /* Die Zusammenfassung ueber alle Verbindungen. Verbunden heisst hier:
+     JEDE hat verbunden - eine von zwei waere kein Beleg. */
+  const zusammen = {
+    REALTIME_RELAY_STATUS: laeufe.every((r) => r.REALTIME_RELAY_STATUS === "CONNECTED")
+      ? "CONNECTED" : (laeufe.find((r) => r.REALTIME_RELAY_STATUS !== "CONNECTED") || {}).REALTIME_RELAY_STATUS || "NOT_CONNECTED",
+    REALTIME_SUBSCRIBE_STATUS: laeufe.every((r) => r.REALTIME_SUBSCRIBE_STATUS === "SUBSCRIBED")
+      ? "SUBSCRIBED" : "NOT_SUBSCRIBED",
+    MARKET_STATUS: (laeufe[0] || {}).MARKET_STATUS || null,
+    expectsUpdates: (laeufe[0] || {}).expectsUpdates,
+    connections: laeufe.length,
+    requestedSymbols: messbar,
+    OBSERVED_TICK_COUNT: laeufe.reduce((n, r) => n + (r.OBSERVED_TICK_COUNT || 0), 0),
+    DUPLICATE_TICKS: laeufe.reduce((n, r) => n + (r.DUPLICATE_TICKS || 0), 0),
+    quotes: laeufe.reduce((n, r) => n + (r.quotes || 0), 0),
+    FIRST_TICK_TIMESTAMP: laeufe.map((r) => r.FIRST_TICK_TIMESTAMP).filter(Boolean).sort()[0] || null,
+    LAST_TICK_TIMESTAMP: laeufe.map((r) => r.LAST_TICK_TIMESTAMP).filter(Boolean).sort().pop() || null,
+    OBSERVED_UPDATE_LATENCY_MS: (() => {
+      const w = laeufe.map((r) => r.OBSERVED_UPDATE_LATENCY_MS).filter((v) => Number.isFinite(v));
+      return w.length ? Math.round(w.sort((a, b) => a - b)[Math.floor(w.length / 2)]) : null;
+    })(),
+    PROVIDER_ERRORS: laeufe.flatMap((r) => r.PROVIDER_ERRORS || []),
+    rejected: laeufe.flatMap((r) => r.rejected || []),
+    perSymbol: Object.assign({}, ...laeufe.map((r) => r.perSymbol || {})),
+    durationMs: laeufe.reduce((n, r) => n + (r.durationMs || 0), 0),
+    note: (laeufe.find((r) => r.note) || {}).note || null,
+    verdict: (laeufe[0] || {}).verdict || null
+  };
+  bericht.realtime = zusammen;
+
+  console.log(`\n  Gesamt: Relay ${zusammen.REALTIME_RELAY_STATUS} · ` +
+              `Abonnement ${zusammen.REALTIME_SUBSCRIBE_STATUS} · ` +
+              `Markt ${zusammen.MARKET_STATUS} · ` +
+              `Ticks ${zusammen.OBSERVED_TICK_COUNT} · ` +
+              `Quotes ${zusammen.quotes} · ` +
+              `Doppelte ${zusammen.DUPLICATE_TICKS}`);
 
   console.log("\n  Abbruch durch den Aufrufer ...");
   bericht.teardown = await abbruchMessen(messbar[0]);
@@ -305,8 +362,8 @@ async function lauf() {
         `${s.intraday.INTRADAY_BAR_COUNT} | ${s.intraday.FIRST_INTRADAY_TIMESTAMP || "–"} | ${s.intraday.LAST_INTRADAY_TIMESTAMP || "–"} |`),
       "", "### Strom", "",
       `Relay **${r.REALTIME_RELAY_STATUS}** · Abonnement **${r.REALTIME_SUBSCRIBE_STATUS}** · ` +
-      `Markt **${r.MARKET_STATUS}** · Ticks **${r.OBSERVED_TICK_COUNT}** · Doppelte **${r.DUPLICATE_TICKS}** · ` +
-      `Quotes **${r.quotes}** · Fenster ${r.durationMs} ms`, "",
+      `Markt **${r.MARKET_STATUS}** · ${r.connections} Verbindung(en) · Ticks **${r.OBSERVED_TICK_COUNT}** · ` +
+      `Doppelte **${r.DUPLICATE_TICKS}** · Quotes **${r.quotes}** · Fenster ${r.durationMs} ms`, "",
       r.note ? `> ${r.note}` : "", "",
       `**URTEIL: ${bericht.verdict}**`, ""
     ];

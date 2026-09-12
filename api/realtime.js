@@ -63,12 +63,28 @@ module.exports = async function handler(req, res) {
   res.setHeader("X-Accel-Buffering", "no");
   res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
 
-  const angefragt = String(url.searchParams.get("tickers") || "")
-    .split(",").map((t) => t.trim()).filter(Boolean).slice(0, grenze);
+  const alleAngefragten = String(url.searchParams.get("tickers") || "")
+    .split(",").map((t) => t.trim()).filter(Boolean);
+  const angefragt = alleAngefragten.slice(0, grenze);
 
   /* Jedes Symbol einzeln beurteilen - und die Ablehnungen einzeln
      benennen. Eine Sammelabsage waere fuer den Nutzer nicht zu deuten. */
   const erlaubt = [], abgelehnt = [];
+
+  /* Was ueber die Grenze hinausgeht, wird GENANNT und nicht
+     weggeschnitten. Vorher stand hier ein stilles .slice(): wer fuenf
+     Titel anfragte, bekam vier und erfuhr nichts davon. Ein Aufrufer,
+     der nicht merkt, dass ihm etwas fehlt, misst hinterher das
+     Falsche. */
+  for (const ueberzaehlig of alleAngefragten.slice(grenze)) {
+    abgelehnt.push({
+      ticker: String(ueberzaehlig).toUpperCase(),
+      state: "CONNECTION_LIMIT",
+      reason: `Diese Verbindung fuehrt hoechstens ${grenze} Titel; dieser liegt darueber.`,
+      instrumentClass: null
+    });
+  }
+
   for (const roh of angefragt) {
     const p = Scope.pruefe(roh);
     if (p.state === "SUPPORTED") erlaubt.push(p.ticker);
