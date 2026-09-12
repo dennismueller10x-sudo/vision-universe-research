@@ -1,0 +1,181 @@
+{
+ "generatedAt": "2026-09-12T08:08:54.115Z",
+ "check": "HISTORY_ENDPOINT",
+ "tickers": [
+  "AAPL",
+  "NVDA",
+  "SNOW",
+  "MTNE"
+ ],
+ "seriesRead": 4,
+ "barsTotal": 17751,
+ "R2_READ_STATUS": "OK",
+ "checks": [
+  {
+   "id": "H1_AAPL_ANTWORTET",
+   "status": "PASS",
+   "detail": "9240 Kerzen · 1990-01-02 bis 2026-09-10"
+  },
+  {
+   "id": "H2_AAPL_MINIMALE_NUTZLAST",
+   "status": "PASS",
+   "detail": "close, date"
+  },
+  {
+   "id": "H3_AAPL_OHLCV_AUF_ANFRAGE",
+   "status": "PASS",
+   "detail": "close, date, high, low, open, volume"
+  },
+  {
+   "id": "H4_AAPL_FENSTER_SCHNEIDET",
+   "status": "PASS",
+   "detail": "9240 -> 20 ab 2026-08-13"
+  },
+  {
+   "id": "H5_AAPL_KEIN_ZUGANGSMITTEL",
+   "status": "PASS",
+   "detail": "keine Zugangsdaten in der Antwort"
+  },
+  {
+   "id": "H6_AAPL_KEINE_ANBIETERANFRAGE",
+   "status": "PASS",
+   "detail": "providerRequests=0 · source=durable-store/r2"
+  },
+  {
+   "id": "H1_NVDA_ANTWORTET",
+   "status": "PASS",
+   "detail": "6951 Kerzen · 1999-01-22 bis 2026-09-10"
+  },
+  {
+   "id": "H2_NVDA_MINIMALE_NUTZLAST",
+   "status": "PASS",
+   "detail": "close, date"
+  },
+  {
+   "id": "H3_NVDA_OHLCV_AUF_ANFRAGE",
+   "status": "PASS",
+   "detail": "close, date, high, low, open, volume"
+  },
+  {
+   "id": "H4_NVDA_FENSTER_SCHNEIDET",
+   "status": "PASS",
+   "detail": "6951 -> 20 ab 2026-08-13"
+  },
+  {
+   "id": "H5_NVDA_KEIN_ZUGANGSMITTEL",
+   "status": "PASS",
+   "detail": "keine Zugangsdaten in der Antwort"
+  },
+  {
+   "id": "H6_NVDA_KEINE_ANBIETERANFRAGE",
+   "status": "PASS",
+   "detail": "providerRequests=0 · source=durable-store/r2"
+  },
+  {
+   "id": "H1_SNOW_ANTWORTET",
+   "status": "PASS",
+   "detail": "1503 Kerzen · 2020-09-16 bis 2026-09-10"
+  },
+  {
+   "id": "H2_SNOW_MINIMALE_NUTZLAST",
+   "status": "PASS",
+   "detail": "close, date"
+  },
+  {
+   "id": "H3_SNOW_OHLCV_AUF_ANFRAGE",
+   "status": "PASS",
+   "detail": "close, date, high, low, open, volume"
+  },
+  {
+   "id": "H4_SNOW_FENSTER_SCHNEIDET",
+   "status": "PASS",
+   "detail": "1503 -> 20 ab 2026-08-13"
+  },
+  {
+   "id": "H5_SNOW_KEIN_ZUGANGSMITTEL",
+   "status": "PASS",
+   "detail": "keine Zugangsdaten in der Antwort"
+  },
+  {
+   "id": "H6_SNOW_KEINE_ANBIETERANFRAGE",
+   "status": "PASS",
+   "detail": "providerRequests=0 · source=durable-store/r2"
+  },
+  {
+   "id": "H1_MTNE_ANTWORTET",
+   "status": "PASS",
+   "detail": "57 Kerzen · 2026-06-22 bis 2026-09-10"
+  },
+  {
+   "id": "H2_MTNE_MINIMALE_NUTZLAST",
+   "status": "PASS",
+   "detail": "close, date"
+  },
+  {
+   "id": "H3_MTNE_OHLCV_AUF_ANFRAGE",
+   "status": "PASS",
+   "detail": "close, date, high, low, open, volume"
+  },
+  {
+   "id": "H4_MTNE_FENSTER_SCHNEIDET",
+   "status": "PASS",
+   "detail": "57 -> 20 ab 2026-08-13"
+  },
+  {
+   "id": "H5_MTNE_KEIN_ZUGANGSMITTEL",
+   "status": "PASS",
+   "detail": "keine Zugangsdaten in der Antwort"
+  },
+  {
+   "id": "H6_MTNE_KEINE_ANBIETERANFRAGE",
+   "status": "PASS",
+   "detail": "providerRequests=0 · source=durable-store/r2"
+  },
+  {
+   "id": "H7_UNBEKANNTER_TITEL",
+   "status": "PASS",
+   "detail": "state=NOT_STORED"
+  },
+  {
+   "id": "H8_UNGUELTIGE_FORM_ABGEWIESEN",
+   "status": "PASS",
+   "detail": "status=400 state=INVALID_IDENTITY"
+  }
+ ],
+ "findings": [
+  {
+   "ticker": "AAPL",
+   "state": "AVAILABLE",
+   "bars": 9240,
+   "first": "1990-01-02",
+   "last": "2026-09-10",
+   "adjustmentStatus": null
+  },
+  {
+   "ticker": "NVDA",
+   "state": "AVAILABLE",
+   "bars": 6951,
+   "first": "1999-01-22",
+   "last": "2026-09-10",
+   "adjustmentStatus": null
+  },
+  {
+   "ticker": "SNOW",
+   "state": "AVAILABLE",
+   "bars": 1503,
+   "first": "2020-09-16",
+   "last": "2026-09-10",
+   "adjustmentStatus": null
+  },
+  {
+   "ticker": "MTNE",
+   "state": "AVAILABLE",
+   "bars": 57,
+   "first": "2026-06-22",
+   "last": "2026-09-10",
+   "adjustmentStatus": null
+  }
+ ],
+ "verdict": "PASS",
+ "note": "Geprueft wird der Endpunkt, nicht die Bauart des Speichers (das tut verify-history-store.mjs). Kursniveaus stehen NICHT in diesem Bericht - nur Anzahlen, Datumsgrenzen und Zustaende. OHNE R2-Zugangsdaten meldet dieser Bericht NOT_VERIFIED und ist dann eine Aussage ueber die UMGEBUNG, nicht ueber den Speicher."
+}
