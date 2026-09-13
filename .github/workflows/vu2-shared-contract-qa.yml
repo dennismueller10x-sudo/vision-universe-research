@@ -9,6 +9,8 @@ on:
       - 'quant/tests/helpers/existing-file-changes.mjs'
       - 'quant/tests/preview-dataset.test.mjs'
       - 'quant/tests/product-proof.test.mjs'
+      - 'quant/tests/vu2-data-stack-integration.test.mjs'
+      - 'quant/tests/fixtures/owner-preview-views.json'
       - '.github/workflows/vu2-shared-contract-qa.yml'
 permissions:
   contents: read
@@ -31,3 +33,4 @@ jobs:
           quant/tests/existing-file-changes.test.mjs
           quant/tests/market-data-contract.test.mjs
           quant/tests/market-data-contract-boundary.test.mjs
+          quant/tests/vu2-data-stack-integration.test.mjs
