@@ -6,16 +6,30 @@
       "cik": "0001070680",
       "name": "CF BANKSHARES INC.",
       "sic": "6021",
+      "rawFacts": 30912,
+      "mappedFacts": 4222,
+      "unmappedFacts": 26878,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CFBK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +125,25 @@
         }
       },
       "quality": {
-        "HIGH": 450,
+        "HIGH": 452,
         "MEDIUM": 60
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 510,
-        "resolvedValues": 510
+        "datableValues": 512,
+        "resolvedValues": 512
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27326,
+        "total": 27132,
         "by_severity": {
-          "INFO": 27071,
-          "WARNING": 255
+          "INFO": 26878,
+          "WARNING": 254
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 184,
-          "RESTATEMENT_CONFLICT": 69,
-          "UNKNOWN_CONCEPT": 27071,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 70,
+          "UNKNOWN_CONCEPT": 26878
         }
       },
       "latestFiling": {
@@ -141,13 +154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c5a35ce468807528dd65dbdf46753f68eaf3ba78464d1075bdd1542ab1e72616",
@@ -157,16 +170,22 @@
       "cik": "0001690680",
       "name": "NEWMARK GROUP, INC.",
       "sic": "6531",
+      "rawFacts": 15967,
+      "mappedFacts": 3205,
+      "unmappedFacts": 12667,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NMRK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -231,11 +250,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 36,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -262,27 +281,26 @@
         }
       },
       "quality": {
-        "HIGH": 289,
+        "HIGH": 291,
         "MEDIUM": 89
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 378,
-        "resolvedValues": 378
+        "datableValues": 380,
+        "resolvedValues": 380
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13382,
+        "total": 13301,
         "by_severity": {
-          "INFO": 12747,
-          "WARNING": 635
+          "INFO": 12667,
+          "WARNING": 634
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 538,
           "RESTATEMENT_CONFLICT": 95,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12747,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 12667
         }
       },
       "latestFiling": {
@@ -293,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "540d9e95a157af0e53df20b12831d88382a409032daeb57750eaac7167edf8df",
@@ -309,16 +327,22 @@
       "cik": "0001785680",
       "name": "BitVentures Ltd",
       "sic": "6282",
+      "rawFacts": 1770,
+      "mappedFacts": 454,
+      "unmappedFacts": 1264,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "BVC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-06-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-06-30",
       "lastPeriodEnd": "2025-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -383,11 +407,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-06-30",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -414,26 +438,25 @@
         }
       },
       "quality": {
-        "HIGH": 53,
+        "HIGH": 55,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 60,
-        "resolvedValues": 60
+        "datableValues": 62,
+        "resolvedValues": 62
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1472,
+        "total": 1470,
         "by_severity": {
           "INFO": 1264,
-          "WARNING": 208
+          "WARNING": 206
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 143,
           "RESTATEMENT_CONFLICT": 63,
-          "UNKNOWN_CONCEPT": 1264,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1264
         }
       },
       "latestFiling": {
@@ -444,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6d1a930b0cd0c4d456e1d73b8618b2978f0057745b950cdabf94b06fe22714d4",

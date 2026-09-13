@@ -6,16 +6,22 @@
       "cik": "0001026662",
       "name": "EURO TECH HOLDINGS CO LTD",
       "sic": "5040",
+      "rawFacts": 5986,
+      "mappedFacts": 2009,
+      "unmappedFacts": 4147,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLWT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 17,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 18,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 139,
+        "HIGH": 141,
         "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 159,
-        "resolvedValues": 159
+        "datableValues": 161,
+        "resolvedValues": 161
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4468,
+        "total": 4466,
         "by_severity": {
           "INFO": 4147,
-          "WARNING": 321
+          "WARNING": 319
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 242,
           "NEGATIVE_WHERE_IMPOSSIBLE": 18,
           "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 4147,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 4147
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "73fbe37a00adad738a9db745e90ffb93e365296a7222eaa4419d98f7765161a3",
@@ -158,17 +163,23 @@
       "cik": "0001981662",
       "name": "NewGenIvf Group Ltd",
       "sic": "8090",
+      "rawFacts": 1383,
+      "mappedFacts": 405,
+      "unmappedFacts": 1004,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "NIVF",
         "NIVFW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -264,27 +275,26 @@
         }
       },
       "quality": {
-        "HIGH": 31,
+        "HIGH": 33,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 43,
-        "resolvedValues": 43
+        "datableValues": 45,
+        "resolvedValues": 45
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1076,
+        "total": 1074,
         "by_severity": {
           "INFO": 1004,
-          "WARNING": 72
+          "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 41,
           "EXTREME_VALUE": 2,
           "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 1004,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1004
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6a156079c705da0fcf42e6f3ec0a5cbadb3076071a3598cd8d1c7eeb8c4acb4a",
@@ -311,17 +321,23 @@
       "cik": "0002049662",
       "name": "Factorial Energy Inc.",
       "sic": "3690",
+      "rawFacts": 586,
+      "mappedFacts": 246,
+      "unmappedFacts": 335,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FAC",
         "FACWW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2024-10-28",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -386,18 +402,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -417,26 +433,25 @@
         }
       },
       "quality": {
-        "HIGH": 28
+        "HIGH": 33
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 28,
-        "resolvedValues": 28
+        "datableValues": 33,
+        "resolvedValues": 33
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 426,
+        "total": 392,
         "by_severity": {
           "INFO": 335,
-          "WARNING": 91
+          "WARNING": 57
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 12,
-          "RESTATEMENT_CONFLICT": 29,
+          "RESTATEMENT_CONFLICT": 33,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 335,
-          "UNPLACEABLE_PERIOD": 38
+          "UNKNOWN_CONCEPT": 335
         }
       },
       "latestFiling": {
@@ -447,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ee06bcbd1ae46d9bbd6679c7e62264a0b16ae13562c565c523edb28e5aa5fcc3",

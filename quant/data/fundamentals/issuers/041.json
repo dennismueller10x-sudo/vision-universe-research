@@ -6,16 +6,22 @@
       "cik": "0001156041",
       "name": "ABUNDIA GLOBAL IMPACT GROUP, INC.",
       "sic": "1311",
+      "rawFacts": 13757,
+      "mappedFacts": 4631,
+      "unmappedFacts": 9379,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AGIG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,21 +117,21 @@
         }
       },
       "quality": {
-        "HIGH": 454,
+        "HIGH": 456,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 467,
-        "resolvedValues": 467
+        "datableValues": 469,
+        "resolvedValues": 469
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9652,
+        "total": 9650,
         "by_severity": {
           "ERROR": 1,
           "INFO": 9379,
-          "WARNING": 272
+          "WARNING": 270
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 109,
@@ -134,8 +140,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 155,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 9379,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9379
         }
       },
       "latestFiling": {
@@ -146,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "09971e47f16fa3f135681366ee8ba745735054c47b1b2adccc82906cb50a07e3",
@@ -162,16 +167,22 @@
       "cik": "0001379041",
       "name": "Employers Holdings, Inc.",
       "sic": "6331",
+      "rawFacts": 29134,
+      "mappedFacts": 5505,
+      "unmappedFacts": 23830,
+      "calendarYears": 25,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EIG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -236,11 +247,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 53,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -267,21 +278,21 @@
         }
       },
       "quality": {
-        "HIGH": 531,
+        "HIGH": 533,
         "MEDIUM": 54
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 585,
-        "resolvedValues": 585
+        "datableValues": 587,
+        "resolvedValues": 587
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24459,
+        "total": 24457,
         "by_severity": {
           "INFO": 23830,
           "ERROR": 11,
-          "WARNING": 618
+          "WARNING": 616
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 461,
@@ -290,8 +301,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 99,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 23830,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 23830
         }
       },
       "latestFiling": {
@@ -302,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a4293b6ba4a9603656c2bcd09fb9474cfd98344fbda02ab9e7676682bc7b36d1",
@@ -318,16 +328,22 @@
       "cik": "0001735041",
       "name": "Greenland Technologies Holding Corp.",
       "sic": "3560",
+      "rawFacts": 9300,
+      "mappedFacts": 2866,
+      "unmappedFacts": 6379,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GTEC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 36,
-      "firstPeriodEnd": "2018-05-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 37,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -392,11 +408,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 33,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -423,21 +439,21 @@
         }
       },
       "quality": {
-        "HIGH": 220,
+        "HIGH": 222,
         "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 279,
-        "resolvedValues": 279
+        "datableValues": 281,
+        "resolvedValues": 281
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7012,
+        "total": 7010,
         "by_severity": {
           "ERROR": 18,
           "INFO": 6379,
-          "WARNING": 615
+          "WARNING": 613
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 473,
@@ -445,8 +461,7 @@
           "FUTURE_DATA_LEAK": 18,
           "RESTATEMENT_CONFLICT": 108,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 6379,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6379
         }
       },
       "latestFiling": {
@@ -457,13 +472,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "882772ccb5c72a1a67913707eb1d1c4c2a2a171220438b20fa0a3609401ca6e5",
@@ -473,6 +488,12 @@
       "cik": "0002102041",
       "name": "Inflection Point Acquisition Corp. VI",
       "sic": "6770",
+      "rawFacts": 157,
+      "mappedFacts": 64,
+      "unmappedFacts": 101,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IPFX",
@@ -605,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f4406226a1fa4c42542546ff39212047744797ac0a631577b24decd842825d05",

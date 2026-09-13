@@ -6,6 +6,20 @@
       "cik": "0000763907",
       "name": "FIRST UNITED CORP/MD/",
       "sic": "6021",
+      "rawFacts": 30582,
+      "mappedFacts": 4391,
+      "unmappedFacts": 26500,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FUNC"
@@ -121,9 +135,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26834,
+        "total": 26648,
         "by_severity": {
-          "INFO": 26686,
+          "INFO": 26500,
           "ERROR": 1,
           "WARNING": 147
         },
@@ -131,7 +145,7 @@
           "CONCEPT_DISAGREEMENT": 114,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 26686
+          "UNKNOWN_CONCEPT": 26500
         }
       },
       "latestFiling": {
@@ -142,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3c276b23df8899258bfac9373345a8248ce29590e48c3e6832597b9d94eb322c",
@@ -158,6 +172,20 @@
       "cik": "0000916907",
       "name": "SOUTHERN MISSOURI BANCORP, INC.",
       "sic": "6036",
+      "rawFacts": 27335,
+      "mappedFacts": 4206,
+      "unmappedFacts": 23203,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "0630",
       "tickers": [
         "SMBC"
@@ -273,19 +301,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23943,
+        "total": 23677,
         "by_severity": {
           "ERROR": 106,
-          "INFO": 23473,
-          "WARNING": 364
+          "INFO": 23203,
+          "WARNING": 368
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 195,
           "FUTURE_DATA_LEAK": 106,
           "NEGATIVE_WHERE_IMPOSSIBLE": 61,
-          "RESTATEMENT_CONFLICT": 107,
-          "UNKNOWN_CONCEPT": 23473,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 112,
+          "UNKNOWN_CONCEPT": 23203
         }
       },
       "latestFiling": {
@@ -296,13 +323,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "caa990fb21407f4338662cff9099412fb8d88e4e3967a41503c564a13dc55b18",
@@ -312,16 +339,22 @@
       "cik": "0001001907",
       "name": "ASTROTECH Corp",
       "sic": "3826",
+      "rawFacts": 14955,
+      "mappedFacts": 5120,
+      "unmappedFacts": 9958,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "ASTC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2010-09-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -386,11 +419,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 60,
-          "firstAvailablePeriod": "2011-06-30",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -417,28 +450,27 @@
         }
       },
       "quality": {
-        "HIGH": 472,
+        "HIGH": 474,
         "MEDIUM": 53
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 525,
-        "resolvedValues": 525
+        "datableValues": 527,
+        "resolvedValues": 527
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10392,
+        "total": 10387,
         "by_severity": {
           "INFO": 9958,
-          "WARNING": 434
+          "WARNING": 429
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
           "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 99,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 9958,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 9958
         }
       },
       "latestFiling": {
@@ -449,13 +481,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1e6ae22f3d91a72e9aa799425c4010f05b2822455ea9cc40a90160e12663b5f5",
@@ -465,6 +497,20 @@
       "cik": "0001089907",
       "name": "SWK Holdings Corp",
       "sic": "6159",
+      "rawFacts": 13703,
+      "mappedFacts": 4411,
+      "unmappedFacts": 9396,
+      "calendarYears": 16,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "SWKH",
@@ -581,19 +627,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9705,
+        "total": 9702,
         "by_severity": {
           "INFO": 9396,
           "ERROR": 1,
-          "WARNING": 308
+          "WARNING": 305
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 215,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 88,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 9396,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 9396
         }
       },
       "latestFiling": {
@@ -604,13 +649,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5f1185385cac37112be33c67ee8d41204877884dd6ef9fcb6cf077c813588700",
@@ -620,16 +665,22 @@
       "cik": "0001831907",
       "name": "LuxExperience B.V.",
       "sic": "5961",
+      "rawFacts": 1887,
+      "mappedFacts": 398,
+      "unmappedFacts": 1562,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "LUXE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-06-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-06-30",
       "lastPeriodEnd": "2025-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -694,11 +745,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-06-30",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -725,25 +776,24 @@
         }
       },
       "quality": {
-        "HIGH": 58
+        "HIGH": 60
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 58,
-        "resolvedValues": 58
+        "datableValues": 60,
+        "resolvedValues": 60
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1586,
+        "total": 1584,
         "by_severity": {
           "INFO": 1562,
-          "WARNING": 24
+          "WARNING": 22
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 1562,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1562
         }
       },
       "latestFiling": {
@@ -754,13 +804,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a169eb48947270259371b1291a12ce68ec46a64f66b1167a5fdd59577ad4e61a",

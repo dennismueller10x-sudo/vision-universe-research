@@ -6,34 +6,40 @@
       "cik": "0000088941",
       "name": "SEMTECH CORP",
       "sic": "3674",
+      "rawFacts": 25791,
+      "mappedFacts": 7482,
+      "unmappedFacts": 18459,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "SMTC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-01-25",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-01-27",
       "lastPeriodEnd": "2026-04-26",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-01-25",
-          "lastAvailablePeriod": "2026-01-25",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2009-01-25",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-01-25",
+          "lastAvailablePeriod": "2026-01-25",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2009-01-25",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 17.0,
@@ -46,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2012-01-29",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 14.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-01-25",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2009-01-25",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-01-25",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 17.0
@@ -80,22 +86,22 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-01-25",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-01-27",
           "lastAvailablePeriod": "2026-01-25",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-01-31",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 16.0
         },
         "total_debt": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2012-01-29",
           "lastAvailablePeriod": "2026-01-25",
           "historyYears": 14.0,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 659,
-        "MEDIUM": 13
+        "HIGH": 677,
+        "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 672,
-        "resolvedValues": 672
+        "datableValues": 682,
+        "resolvedValues": 682
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19184,
+        "total": 19142,
         "by_severity": {
-          "INFO": 18474,
+          "INFO": 18459,
           "ERROR": 2,
-          "WARNING": 708
+          "WARNING": 681
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 576,
+          "CONCEPT_DISAGREEMENT": 555,
           "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 18474,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 112,
+          "UNKNOWN_CONCEPT": 18459
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "58cf961d1a0ddda4e6b93cb3cc2f361889d30abfba695f906ea764dfa5038f78",
@@ -160,6 +165,20 @@
       "cik": "0000798941",
       "name": "FIRST CITIZENS BANCSHARES INC /DE/",
       "sic": "6022",
+      "rawFacts": 35768,
+      "mappedFacts": 5095,
+      "unmappedFacts": 31314,
+      "calendarYears": 23,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FCNCA",
@@ -279,9 +298,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 31713,
+        "total": 31497,
         "by_severity": {
-          "INFO": 31530,
+          "INFO": 31314,
           "ERROR": 3,
           "WARNING": 180
         },
@@ -290,7 +309,7 @@
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 50,
-          "UNKNOWN_CONCEPT": 31530
+          "UNKNOWN_CONCEPT": 31314
         }
       },
       "latestFiling": {
@@ -301,13 +320,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f1710fdcb96738e573869c2f69f69154ba37749005ab53055ff2bd7ce2a0cfb7",
@@ -317,6 +336,12 @@
       "cik": "0001868941",
       "name": "Fluence Energy, Inc.",
       "sic": "3690",
+      "rawFacts": 7003,
+      "mappedFacts": 1993,
+      "unmappedFacts": 4979,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "FLNC"
@@ -432,17 +457,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5304,
+        "total": 5281,
         "by_severity": {
-          "INFO": 5001,
-          "WARNING": 303
+          "INFO": 4979,
+          "WARNING": 302
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 244,
           "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 19,
-          "UNKNOWN_CONCEPT": 5001,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4979
         }
       },
       "latestFiling": {
@@ -453,13 +477,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "55022a1293e53233674ab31e50a83d2332ee8e9f32e5dc5a9075d0a74ace1c9a",

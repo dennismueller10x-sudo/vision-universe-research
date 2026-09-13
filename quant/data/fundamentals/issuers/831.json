@@ -6,6 +6,20 @@
       "cik": "0000862831",
       "name": "FINANCIAL INSTITUTIONS INC",
       "sic": "6021",
+      "rawFacts": 34005,
+      "mappedFacts": 5381,
+      "unmappedFacts": 28993,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FISI",
@@ -13,11 +27,11 @@
         "FIISP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2001-02-28",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -48,7 +62,7 @@
         },
         "long_term_debt": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -82,11 +96,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -113,26 +127,25 @@
         }
       },
       "quality": {
-        "HIGH": 556,
+        "HIGH": 559,
         "MEDIUM": 68
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 624,
-        "resolvedValues": 624
+        "datableValues": 627,
+        "resolvedValues": 627
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29492,
+        "total": 29288,
         "by_severity": {
-          "INFO": 29194,
-          "WARNING": 298
+          "INFO": 28993,
+          "WARNING": 295
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 279,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 29194,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 28993
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e341b5c08100c0311aef1b2b7469ba6c31dca6dc41936dfac33be737ba7b1a7b",
@@ -159,16 +172,22 @@
       "cik": "0001094831",
       "name": "BGC Group, Inc.",
       "sic": "6200",
+      "rawFacts": 31275,
+      "mappedFacts": 5079,
+      "unmappedFacts": 25989,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BGC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -233,11 +252,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,29 +283,28 @@
         }
       },
       "quality": {
-        "HIGH": 485,
+        "HIGH": 487,
         "MEDIUM": 184
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 669,
-        "resolvedValues": 669
+        "datableValues": 671,
+        "resolvedValues": 671
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27062,
+        "total": 27060,
         "by_severity": {
           "INFO": 25989,
           "ERROR": 1,
-          "WARNING": 1072
+          "WARNING": 1070
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 854,
           "FISCAL_PERIOD_CONFLICT": 16,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 200,
-          "UNKNOWN_CONCEPT": 25989,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 25989
         }
       },
       "latestFiling": {
@@ -297,13 +315,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "205aa3c4eca0caef18fb4c96a4eb9d4c7a1e6b633908daf16b82b9e3b9af6d6b",
@@ -313,16 +331,22 @@
       "cik": "0001237831",
       "name": "GLOBUS MEDICAL INC",
       "sic": "3841",
+      "rawFacts": 21774,
+      "mappedFacts": 6847,
+      "unmappedFacts": 15384,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GMED"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 64,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -387,11 +411,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 59,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -418,25 +442,24 @@
         }
       },
       "quality": {
-        "HIGH": 534
+        "HIGH": 536
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 534,
-        "resolvedValues": 534
+        "datableValues": 536,
+        "resolvedValues": 536
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15698,
+        "total": 15549,
         "by_severity": {
-          "INFO": 15530,
-          "WARNING": 168
+          "INFO": 15384,
+          "WARNING": 165
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 126,
-          "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 15530,
-          "UNPLACEABLE_PERIOD": 4
+          "RESTATEMENT_CONFLICT": 39,
+          "UNKNOWN_CONCEPT": 15384
         }
       },
       "latestFiling": {
@@ -447,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "10e1b7b131cef0030c57ea64a931f2bb859a4f4a158dae736b0a4746c84c0911",
@@ -463,6 +486,12 @@
       "cik": "0001584831",
       "name": "OXBRIDGE RE HOLDINGS Ltd",
       "sic": "6331",
+      "rawFacts": 12571,
+      "mappedFacts": 2971,
+      "unmappedFacts": 9524,
+      "calendarYears": 13,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OXBR",
@@ -579,11 +608,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9955,
+        "total": 9953,
         "by_severity": {
           "ERROR": 3,
           "INFO": 9524,
-          "WARNING": 428
+          "WARNING": 426
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 262,
@@ -592,8 +621,7 @@
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 14,
           "RESTATEMENT_CONFLICT": 129,
-          "UNKNOWN_CONCEPT": 9524,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9524
         }
       },
       "latestFiling": {
@@ -604,13 +632,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a126108f5b34ef1caa72d0c977f861b6ab8da4ecf09092741a0b9c16498c7114",

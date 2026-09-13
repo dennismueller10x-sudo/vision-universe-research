@@ -6,6 +6,12 @@
       "cik": "0000040211",
       "name": "GATX CORP",
       "sic": "4700",
+      "rawFacts": 23891,
+      "mappedFacts": 6353,
+      "unmappedFacts": 17831,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GATX"
@@ -121,18 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18310,
+        "total": 18254,
         "by_severity": {
-          "INFO": 17890,
+          "INFO": 17831,
           "ERROR": 3,
-          "WARNING": 417
+          "WARNING": 420
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 370,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 17890,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 50,
+          "UNKNOWN_CONCEPT": 17831
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8a4b7efc6e23b1fa948113bbf6c757bc17f83195e95bb0dc19c0ae5d4e4d2e95",

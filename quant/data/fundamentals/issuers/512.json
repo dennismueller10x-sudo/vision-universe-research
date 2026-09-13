@@ -6,17 +6,23 @@
       "cik": "0001023512",
       "name": "DRDGOLD LTD",
       "sic": "1040",
+      "rawFacts": 3123,
+      "mappedFacts": 569,
+      "unmappedFacts": 2652,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "DRD",
         "DRDGF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-06-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-06-30",
       "lastPeriodEnd": "2025-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -81,11 +87,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-06-30",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -112,25 +118,24 @@
         }
       },
       "quality": {
-        "HIGH": 88
+        "HIGH": 90
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 88,
-        "resolvedValues": 88
+        "datableValues": 90,
+        "resolvedValues": 90
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2679,
+        "total": 2677,
         "by_severity": {
           "INFO": 2652,
-          "WARNING": 27
+          "WARNING": 25
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 21,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2652,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2652
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a2e629a3cb129cf7d616d23a5e5b0d7e24362ac3ec62fc2eff252663e7410cf1",
@@ -157,6 +162,12 @@
       "cik": "0001051512",
       "name": "TELEPHONE & DATA SYSTEMS INC /DE/",
       "sic": "4813",
+      "rawFacts": 27122,
+      "mappedFacts": 6723,
+      "unmappedFacts": 20193,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TDS",
@@ -164,11 +175,11 @@
         "TDS-PV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -264,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 429,
+        "HIGH": 431,
         "MEDIUM": 179
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 608,
-        "resolvedValues": 608
+        "datableValues": 610,
+        "resolvedValues": 610
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21412,
+        "total": 21410,
         "by_severity": {
           "INFO": 20193,
-          "WARNING": 1219
+          "WARNING": 1217
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1043,
           "RESTATEMENT_CONFLICT": 174,
-          "UNKNOWN_CONCEPT": 20193,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20193
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "24cc3852ba6ba1bfeb90a815266acc398156a31181ee01ec8ea5256a9e775d03",
@@ -310,17 +320,23 @@
       "cik": "0001482512",
       "name": "Hudson Pacific Properties, Inc.",
       "sic": "6500",
+      "rawFacts": 21363,
+      "mappedFacts": 5121,
+      "unmappedFacts": 16021,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HPP",
         "HPP-PC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -385,11 +401,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -416,28 +432,27 @@
         }
       },
       "quality": {
-        "HIGH": 415,
+        "HIGH": 417,
         "MEDIUM": 100
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 515,
-        "resolvedValues": 515
+        "datableValues": 517,
+        "resolvedValues": 517
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16823,
+        "total": 16821,
         "by_severity": {
           "INFO": 16021,
-          "WARNING": 802
+          "WARNING": 800
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 710,
           "FISCAL_PERIOD_CONFLICT": 11,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 16021,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16021
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f481c43e7100d841480ae16115c30d42480bb71ca62bdaa1a5400246c168f4c4",

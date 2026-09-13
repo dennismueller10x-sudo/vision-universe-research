@@ -6,6 +6,12 @@
       "cik": "0000904851",
       "name": "YPF SOCIEDAD ANONIMA",
       "sic": "2911",
+      "rawFacts": 5390,
+      "mappedFacts": 891,
+      "unmappedFacts": 4672,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "YPF"
@@ -141,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "19920bdb59b70fe99c49bc04e4cda63de4303408122ef731e88eaf8c0997420b",
@@ -157,6 +163,12 @@
       "cik": "0000917851",
       "name": "Vale S.A.",
       "sic": "1000",
+      "rawFacts": 6825,
+      "mappedFacts": 1101,
+      "unmappedFacts": 5891,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VALE"
@@ -272,19 +284,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6064,
+        "total": 6062,
         "by_severity": {
           "INFO": 5891,
           "ERROR": 2,
-          "WARNING": 171
+          "WARNING": 169
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 148,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 20,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 5891,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5891
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eeff34e8bd7abf8a92c4373b465a6ff787a00c09f48342a9cfedda9bf52fd8a7",
@@ -311,16 +322,30 @@
       "cik": "0001068851",
       "name": "PROSPERITY BANCSHARES INC",
       "sic": "6022",
+      "rawFacts": 30292,
+      "mappedFacts": 5197,
+      "unmappedFacts": 25353,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "PB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -385,11 +410,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -416,26 +441,25 @@
         }
       },
       "quality": {
-        "HIGH": 514
+        "HIGH": 516
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 514,
-        "resolvedValues": 514
+        "datableValues": 516,
+        "resolvedValues": 516
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25728,
+        "total": 25515,
         "by_severity": {
-          "INFO": 25565,
-          "WARNING": 163
+          "INFO": 25353,
+          "WARNING": 162
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 127,
-          "FISCAL_PERIOD_CONFLICT": 9,
+          "FISCAL_PERIOD_CONFLICT": 10,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 25565,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 25353
         }
       },
       "latestFiling": {
@@ -446,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1ab324466dd8f2a872bc687bc253c603341981c40656ee952211879bb4707946",
@@ -462,6 +486,12 @@
       "cik": "0001321851",
       "name": "Origin Agritech LTD",
       "sic": "0100",
+      "rawFacts": 10167,
+      "mappedFacts": 2462,
+      "unmappedFacts": 7280,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "SEED"
@@ -577,16 +607,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8421,
+        "total": 8418,
         "by_severity": {
-          "INFO": 7284,
-          "WARNING": 1137
+          "INFO": 7280,
+          "WARNING": 1138
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1046,
+          "CONCEPT_DISAGREEMENT": 1047,
           "NEGATIVE_WHERE_IMPOSSIBLE": 9,
           "RESTATEMENT_CONFLICT": 82,
-          "UNKNOWN_CONCEPT": 7284
+          "UNKNOWN_CONCEPT": 7280
         }
       },
       "latestFiling": {
@@ -597,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4d25eb0638857a74aa7c71ecf0d3f4eaa3ba7e1e5fe1e69c5296bd00d2772fe8",
@@ -613,16 +643,22 @@
       "cik": "0001697851",
       "name": "Rekor Systems, Inc.",
       "sic": "3669",
+      "rawFacts": 13178,
+      "mappedFacts": 3471,
+      "unmappedFacts": 9674,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "REKR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 41,
-      "firstPeriodEnd": "2016-09-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 42,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -687,11 +723,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -718,29 +754,28 @@
         }
       },
       "quality": {
-        "HIGH": 300,
+        "HIGH": 302,
         "MEDIUM": 50
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 350,
-        "resolvedValues": 350
+        "datableValues": 352,
+        "resolvedValues": 352
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10128,
+        "total": 10124,
         "by_severity": {
           "ERROR": 1,
           "INFO": 9674,
-          "WARNING": 453
+          "WARNING": 449
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 292,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 141,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 9674,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 9674
         }
       },
       "latestFiling": {
@@ -751,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "951467dc1bd56f9dba32c0afbd3f889650abac07dd62e11c2fa00dc54cd492d2",

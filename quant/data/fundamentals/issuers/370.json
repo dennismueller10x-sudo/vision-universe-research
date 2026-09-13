@@ -6,16 +6,22 @@
       "cik": "0001120370",
       "name": "BROADWIND, INC.",
       "sic": "3360",
+      "rawFacts": 21442,
+      "mappedFacts": 6652,
+      "unmappedFacts": 14988,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BWEN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 661,
+        "HIGH": 663,
         "MEDIUM": 66
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 727,
-        "resolvedValues": 727
+        "datableValues": 729,
+        "resolvedValues": 729
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15690,
+        "total": 15688,
         "by_severity": {
           "INFO": 14988,
-          "WARNING": 702
+          "WARNING": 700
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 542,
           "FISCAL_PERIOD_CONFLICT": 17,
           "RESTATEMENT_CONFLICT": 141,
-          "UNKNOWN_CONCEPT": 14988,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14988
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1e0e11da26a3da9e37dcf0216a6e412794933eea58031139f05f432df4b067d3",
@@ -158,16 +163,30 @@
       "cik": "0001163370",
       "name": "NORTHRIM BANCORP INC",
       "sic": "6035",
+      "rawFacts": 33987,
+      "mappedFacts": 5626,
+      "unmappedFacts": 28550,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NRIM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -232,11 +251,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,26 +282,25 @@
         }
       },
       "quality": {
-        "HIGH": 507,
+        "HIGH": 509,
         "MEDIUM": 38
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 545,
-        "resolvedValues": 545
+        "datableValues": 547,
+        "resolvedValues": 547
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29056,
+        "total": 28775,
         "by_severity": {
-          "INFO": 28829,
-          "WARNING": 227
+          "INFO": 28550,
+          "WARNING": 225
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 176,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 28829,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 28550
         }
       },
       "latestFiling": {
@@ -293,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "88f1b49e0199a645a3168de9543999eb1dc87c881068cae1ab8485231d201ce3",
@@ -309,16 +327,22 @@
       "cik": "0001311370",
       "name": "Lazard, Inc.",
       "sic": "6282",
+      "rawFacts": 24810,
+      "mappedFacts": 5403,
+      "unmappedFacts": 19418,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LAZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -383,11 +407,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 69,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -414,29 +438,28 @@
         }
       },
       "quality": {
-        "HIGH": 566,
+        "HIGH": 568,
         "MEDIUM": 84
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 650,
-        "resolvedValues": 650
+        "datableValues": 652,
+        "resolvedValues": 652
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19966,
+        "total": 19964,
         "by_severity": {
           "INFO": 19418,
           "ERROR": 1,
-          "WARNING": 547
+          "WARNING": 545
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 481,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 63,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 19418,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19418
         }
       },
       "latestFiling": {
@@ -447,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ae6ee4a70e1c38c31484c28e10f3b2608d309de6c1a021e2c38fea015ecd22d6",

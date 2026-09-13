@@ -6,6 +6,12 @@
       "cik": "0000074260",
       "name": "OLD REPUBLIC INTERNATIONAL CORP",
       "sic": "6351",
+      "rawFacts": 24415,
+      "mappedFacts": 4779,
+      "unmappedFacts": 19870,
+      "calendarYears": 18,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ORI"
@@ -121,16 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19890,
+        "total": 19889,
         "by_severity": {
           "INFO": 19870,
-          "WARNING": 20
+          "WARNING": 19
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 17,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 19870,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 19870
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b1ec2d4bb6946e3a80c464a2e6578079136d32d1715b389790a92f539c20f481",
@@ -157,6 +162,12 @@
       "cik": "0000740260",
       "name": "Ventas, Inc.",
       "sic": "6798",
+      "rawFacts": 29795,
+      "mappedFacts": 6412,
+      "unmappedFacts": 22817,
+      "calendarYears": 20,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VTR"
@@ -294,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7553c3715ec57f972159bf74481c8eadbcaa939fc7ebf64df5a8f60cb9239ad8",
@@ -310,17 +321,23 @@
       "cik": "0001429260",
       "name": "Fortress Biotech, Inc.",
       "sic": "2834",
+      "rawFacts": 19740,
+      "mappedFacts": 5372,
+      "unmappedFacts": 14256,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FBIO",
         "FBIOP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2007-12-31",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2006-06-27",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -385,11 +402,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2007-12-31",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -416,21 +433,21 @@
         }
       },
       "quality": {
-        "HIGH": 433,
+        "HIGH": 436,
         "MEDIUM": 102
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 535,
-        "resolvedValues": 535
+        "datableValues": 538,
+        "resolvedValues": 538
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15205,
+        "total": 15174,
         "by_severity": {
-          "INFO": 14280,
+          "INFO": 14256,
           "ERROR": 1,
-          "WARNING": 924
+          "WARNING": 917
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 625,
@@ -439,8 +456,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 162,
           "UNEXPECTED_DURATION": 124,
-          "UNKNOWN_CONCEPT": 14280,
-          "UNPLACEABLE_PERIOD": 7
+          "UNKNOWN_CONCEPT": 14256
         }
       },
       "latestFiling": {
@@ -451,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eb4e5805818c0f21d6d9ba827a143c693a2f1cc8b5995f2dcc4053d922bd0c6d",
@@ -467,16 +483,22 @@
       "cik": "0001475260",
       "name": "CENOVUS ENERGY INC.",
       "sic": "1311",
+      "rawFacts": 3679,
+      "mappedFacts": 657,
+      "unmappedFacts": 3184,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CVE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -541,11 +563,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -572,25 +594,24 @@
         }
       },
       "quality": {
-        "HIGH": 128
+        "HIGH": 130
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 128,
-        "resolvedValues": 128
+        "datableValues": 130,
+        "resolvedValues": 130
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3205,
+        "total": 3203,
         "by_severity": {
           "INFO": 3184,
-          "WARNING": 21
+          "WARNING": 19
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 12,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 3184,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3184
         }
       },
       "latestFiling": {
@@ -601,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9fa26c2e8b4c7234350ff93cb725de4749cfcaa7ce79ecbbff0f673b1cdf692b",
@@ -617,6 +638,12 @@
       "cik": "0002104260",
       "name": "West Enclave Merger Corp.",
       "sic": "6770",
+      "rawFacts": 143,
+      "mappedFacts": 71,
+      "unmappedFacts": 77,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WENC",
@@ -749,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4d34c6daa8fb7ef7a4b74f95c91b564551b4ac9d58ac656486a5a97db799828b",

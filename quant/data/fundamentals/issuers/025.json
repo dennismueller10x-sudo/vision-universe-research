@@ -6,16 +6,30 @@
       "cik": "0001046025",
       "name": "HERITAGE FINANCIAL CORP /WA/",
       "sic": "6036",
+      "rawFacts": 32336,
+      "mappedFacts": 5355,
+      "unmappedFacts": 27290,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HFWA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +125,25 @@
         }
       },
       "quality": {
-        "HIGH": 497,
+        "HIGH": 499,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 502,
-        "resolvedValues": 502
+        "datableValues": 504,
+        "resolvedValues": 504
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27655,
+        "total": 27382,
         "by_severity": {
-          "INFO": 27561,
-          "WARNING": 94
+          "INFO": 27290,
+          "WARNING": 92
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 66,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 27561,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 27290
         }
       },
       "latestFiling": {
@@ -141,13 +154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fe72a336b46fcd89ce5111dd0b126e4f7d89cc15d19126e45db377b75f62c349",
@@ -157,16 +170,22 @@
       "cik": "0001524025",
       "name": "TILLY'S, INC.",
       "sic": "5600",
+      "rawFacts": 17609,
+      "mappedFacts": 5694,
+      "unmappedFacts": 12410,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0128",
       "tickers": [
         "TLYS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2011-01-29",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 64,
+      "firstPeriodEnd": "2010-01-28",
       "lastPeriodEnd": "2026-08-01",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -231,11 +250,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 59,
-          "firstAvailablePeriod": "2011-01-29",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-01-28",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -262,27 +281,26 @@
         }
       },
       "quality": {
-        "HIGH": 510
+        "HIGH": 512
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 510,
-        "resolvedValues": 510
+        "datableValues": 512,
+        "resolvedValues": 512
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12496,
+        "total": 12494,
         "by_severity": {
           "INFO": 12410,
-          "WARNING": 86
+          "WARNING": 84
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 50,
           "FISCAL_PERIOD_CONFLICT": 13,
           "PERIOD_MISMATCH": 20,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 12410,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12410
         }
       },
       "latestFiling": {
@@ -293,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "aa69d9df19420a95fb023902eb34d5b7a3092e78c75d05f5138e2df3221b327f",
@@ -309,16 +327,22 @@
       "cik": "0001565025",
       "name": "AMBEV S.A.",
       "sic": "2080",
+      "rawFacts": 5406,
+      "mappedFacts": 801,
+      "unmappedFacts": 4706,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ABEV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 12,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 13,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -383,11 +407,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -414,26 +438,25 @@
         }
       },
       "quality": {
-        "HIGH": 120,
+        "HIGH": 122,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 135,
-        "resolvedValues": 135
+        "datableValues": 137,
+        "resolvedValues": 137
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4806,
+        "total": 4805,
         "by_severity": {
           "INFO": 4706,
-          "WARNING": 100
+          "WARNING": 99
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 86,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 4706,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4706
         }
       },
       "latestFiling": {
@@ -444,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b1f411ba5c893fea8c85080cbb4e2f27bbb9f7386930673541fc578957f93740",
@@ -460,6 +483,12 @@
       "cik": "0001852025",
       "name": "Grayscale Chainlink Trust ETF",
       "sic": "6221",
+      "rawFacts": 384,
+      "mappedFacts": 43,
+      "unmappedFacts": 351,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GLNK"
@@ -593,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c41450dba1a52d1ca4db4e462f7833983239246c6347b8097fb28521ddd44e58",

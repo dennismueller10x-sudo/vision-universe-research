@@ -6,16 +6,22 @@
       "cik": "0001792030",
       "name": "IM Cannabis Corp.",
       "sic": "2833",
+      "rawFacts": 2470,
+      "mappedFacts": 488,
+      "unmappedFacts": 2062,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IMCC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 8,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 9,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 69,
+        "HIGH": 71,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 80,
-        "resolvedValues": 80
+        "datableValues": 82,
+        "resolvedValues": 82
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2135,
+        "total": 2133,
         "by_severity": {
           "INFO": 2062,
           "ERROR": 1,
-          "WARNING": 72
+          "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 2062,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2062
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "95e67357942b0ac217d4b5c41a94f5b488c300dd070a68b47e0fec03da63239d",
@@ -159,16 +164,22 @@
       "cik": "0001857030",
       "name": "Intercure Ltd.",
       "sic": "2834",
+      "rawFacts": 1491,
+      "mappedFacts": 334,
+      "unmappedFacts": 1205,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "INCR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 9,
+      "firstPeriodEnd": "2017-01-16",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -248,7 +259,7 @@
         },
         "total_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 2.0,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 65,
+        "HIGH": 69,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 70,
-        "resolvedValues": 70
+        "datableValues": 74,
+        "resolvedValues": 74
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1246,
+        "total": 1242,
         "by_severity": {
           "INFO": 1205,
-          "WARNING": 41
+          "WARNING": 37
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 32,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 1205,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 1205
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c4e52bef896d891008a7ec2f12bacb546aac47fe5c0260d6014a0a6489faef9d",
@@ -312,6 +322,12 @@
       "cik": "0001866030",
       "name": "A2Z CUST2MATE SOLUTIONS CORP.",
       "sic": "3569",
+      "rawFacts": 1455,
+      "mappedFacts": 429,
+      "unmappedFacts": 1116,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AZ"
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6afdb3a28e2d6c92d5889cc4b42587f225bde6e06436e99bdff124a07af87af7",
@@ -462,6 +478,12 @@
       "cik": "0002057030",
       "name": "Axiom Intelligence Acquisition Corp 1",
       "sic": "6770",
+      "rawFacts": 322,
+      "mappedFacts": 110,
+      "unmappedFacts": 193,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AXIN",
@@ -596,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "106ad465e6f226afa6e29f536e185b625df64a6a19d35f7cdcdc6c5e36520fc9",
@@ -612,6 +634,12 @@
       "cik": "0002140030",
       "name": "Thunder Bridge Capital Partners V, Ltd.",
       "sic": "6770",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TBCV",
@@ -732,13 +760,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "579e93d5d20ec330bc7138f5309f257403bed9fc82ccd9c112199b8a07d27d1c",

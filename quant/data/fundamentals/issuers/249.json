@@ -6,16 +6,30 @@
       "cik": "0001530249",
       "name": "FS Bancorp, Inc.",
       "sic": "6036",
+      "rawFacts": 29154,
+      "mappedFacts": 4420,
+      "unmappedFacts": 24861,
+      "calendarYears": 20,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FSBW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2011-03-31",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 64,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -80,11 +94,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 53,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -111,30 +125,29 @@
         }
       },
       "quality": {
-        "HIGH": 455,
+        "HIGH": 457,
         "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 495,
-        "resolvedValues": 495
+        "datableValues": 497,
+        "resolvedValues": 497
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25302,
+        "total": 25123,
         "by_severity": {
-          "INFO": 25039,
+          "INFO": 24861,
           "ERROR": 1,
-          "WARNING": 262
+          "WARNING": 261
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 154,
-          "FISCAL_PERIOD_CONFLICT": 18,
+          "FISCAL_PERIOD_CONFLICT": 20,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
-          "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 25039,
-          "UNPLACEABLE_PERIOD": 5
+          "RESTATEMENT_CONFLICT": 79,
+          "UNKNOWN_CONCEPT": 24861
         }
       },
       "latestFiling": {
@@ -145,13 +158,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5e10db9cb62af8105e926f1e2be1d7173fb8a2a25f6f9d022aa2c591fd6f4536",

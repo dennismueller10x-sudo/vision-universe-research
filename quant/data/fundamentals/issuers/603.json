@@ -6,16 +6,22 @@
       "cik": "0000723603",
       "name": "CULP INC",
       "sic": "2211",
+      "rawFacts": 22440,
+      "mappedFacts": 7768,
+      "unmappedFacts": 15011,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CULP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2010-05-02",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2009-05-03",
       "lastPeriodEnd": "2026-08-02",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2010-05-02",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-05-03",
           "lastAvailablePeriod": "2026-05-03",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 581,
+        "HIGH": 583,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 602,
-        "resolvedValues": 602
+        "datableValues": 604,
+        "resolvedValues": 604
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15355,
+        "total": 15353,
         "by_severity": {
           "INFO": 15011,
-          "WARNING": 344
+          "WARNING": 342
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 248,
           "FISCAL_PERIOD_CONFLICT": 12,
           "RESTATEMENT_CONFLICT": 82,
-          "UNKNOWN_CONCEPT": 15011,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15011
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f9ce549d542d3e04ba85e60a9677dccb3d9e3072945752387acac801ba9a46a6",
@@ -158,16 +163,22 @@
       "cik": "0001921603",
       "name": "WhiteHawk Minerals Corp.",
       "sic": "1311",
+      "rawFacts": 275,
+      "mappedFacts": 101,
+      "unmappedFacts": 167,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WHK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -178,7 +189,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -197,15 +208,15 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -219,7 +230,7 @@
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -232,17 +243,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -262,22 +273,25 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 19,
+        "MEDIUM": 3
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 22,
+        "resolvedValues": 22
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 275,
+        "total": 176,
         "by_severity": {
           "INFO": 167,
-          "WARNING": 108
+          "WARNING": 9
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 167,
-          "UNPLACEABLE_PERIOD": 108
+          "CONCEPT_DISAGREEMENT": 9,
+          "UNKNOWN_CONCEPT": 167
         }
       },
       "latestFiling": {
@@ -288,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "92c702b7c9298b8ecec7c52e9a90a8853f55119fe1c13f40de95bd4150d22cb9",

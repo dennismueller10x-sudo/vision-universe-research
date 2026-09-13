@@ -6,16 +6,22 @@
       "cik": "0000318833",
       "name": "TEAM INC",
       "sic": "7600",
+      "rawFacts": 23978,
+      "mappedFacts": 6613,
+      "unmappedFacts": 17349,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TISI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2010-05-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2009-05-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.58,
+      "historyYears": 16.58,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 6.58
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 60,
-          "firstAvailablePeriod": "2010-05-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2009-05-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.58
+          "historyYears": 16.58
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 549,
+        "HIGH": 551,
         "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 608,
-        "resolvedValues": 608
+        "datableValues": 610,
+        "resolvedValues": 610
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18080,
+        "total": 18078,
         "by_severity": {
           "INFO": 17349,
-          "WARNING": 731
+          "WARNING": 729
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 491,
           "RESTATEMENT_CONFLICT": 159,
           "UNEXPECTED_DURATION": 79,
-          "UNKNOWN_CONCEPT": 17349,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17349
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d3a8a71711a5cdc69523cd2aae1e72f36254ba23cd14ebfdbf911eed90cc8014",
@@ -158,16 +163,22 @@
       "cik": "0001638833",
       "name": "Surgery Partners, Inc.",
       "sic": "8062",
+      "rawFacts": 16258,
+      "mappedFacts": 3917,
+      "unmappedFacts": 12179,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SGRY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 52,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 53,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 12,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 46,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -263,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 362,
+        "HIGH": 364,
         "MEDIUM": 73
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 435,
-        "resolvedValues": 435
+        "datableValues": 437,
+        "resolvedValues": 437
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12730,
+        "total": 12728,
         "by_severity": {
           "INFO": 12179,
-          "WARNING": 551
+          "WARNING": 549
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 363,
           "RESTATEMENT_CONFLICT": 47,
           "UNEXPECTED_DURATION": 139,
-          "UNKNOWN_CONCEPT": 12179,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12179
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "65cd361651ab1eaaeb8cb3eb7bf93dd89dd756d275deb3473c7ac649d5394db9",
@@ -310,6 +320,12 @@
       "cik": "0001805833",
       "name": "System1, Inc.",
       "sic": "7370",
+      "rawFacts": 8042,
+      "mappedFacts": 1855,
+      "unmappedFacts": 5532,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SST",
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "951e99a328dbf842954dbf1e412f2aede506f715136bcf7316f8012c144bd1b9",
@@ -463,16 +479,22 @@
       "cik": "0001836833",
       "name": "Planet Labs PBC",
       "sic": "3663",
+      "rawFacts": 8084,
+      "mappedFacts": 2132,
+      "unmappedFacts": 6004,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "PL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2020-01-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2019-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -537,11 +559,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 24,
-          "firstAvailablePeriod": "2020-01-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -568,25 +590,24 @@
         }
       },
       "quality": {
-        "HIGH": 205
+        "HIGH": 207
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 205,
-        "resolvedValues": 205
+        "datableValues": 207,
+        "resolvedValues": 207
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6165,
+        "total": 6163,
         "by_severity": {
           "INFO": 6004,
-          "WARNING": 161
+          "WARNING": 159
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 114,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 6004,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6004
         }
       },
       "latestFiling": {
@@ -597,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0d277fb1f91c310f4e6fad7fee3749050f67e865d0f803e2568f8144fe9b5067",
@@ -613,6 +634,12 @@
       "cik": "0001870833",
       "name": "RiverNorth Managed Duration Municipal Income Fund II, Inc.",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "RMMZ"
@@ -732,13 +759,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a255fbcd417fe16002c53ecafa2cb170341d1a7e61715b1565da3eb53266c521",

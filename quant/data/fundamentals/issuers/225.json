@@ -6,16 +6,22 @@
       "cik": "0000887225",
       "name": "KOREA ELECTRIC POWER CORP",
       "sic": "4911",
+      "rawFacts": 7384,
+      "mappedFacts": 754,
+      "unmappedFacts": 6730,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KEP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 107,
+        "HIGH": 109,
         "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 124,
-        "resolvedValues": 124
+        "datableValues": 126,
+        "resolvedValues": 126
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6912,
+        "total": 6910,
         "by_severity": {
           "INFO": 6730,
-          "WARNING": 182
+          "WARNING": 180
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 98,
           "EXTREME_VALUE": 78,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 6730,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6730
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a86eb84ec98d3c53cf82d673af3e526cead74ca00903516b910d4c30aa1ba89d",
@@ -158,16 +163,22 @@
       "cik": "0000917225",
       "name": "SOLITARIO RESOURCES CORP.",
       "sic": "1040",
+      "rawFacts": 12924,
+      "mappedFacts": 3546,
+      "unmappedFacts": 9649,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XPL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -232,11 +243,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,28 +274,27 @@
         }
       },
       "quality": {
-        "HIGH": 365,
+        "HIGH": 367,
         "MEDIUM": 27
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 392,
-        "resolvedValues": 392
+        "datableValues": 394,
+        "resolvedValues": 394
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9916,
+        "total": 9887,
         "by_severity": {
           "ERROR": 17,
-          "INFO": 9682,
-          "WARNING": 217
+          "INFO": 9649,
+          "WARNING": 221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 177,
           "FUTURE_DATA_LEAK": 17,
-          "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 9682,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 44,
+          "UNKNOWN_CONCEPT": 9649
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "83f98ef77dd7add027010534de12e737a9d7f64470c2632483b2a942d4c9cc47",

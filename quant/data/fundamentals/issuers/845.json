@@ -6,6 +6,12 @@
       "cik": "0000006845",
       "name": "APOGEE ENTERPRISES, INC.",
       "sic": "3231",
+      "rawFacts": 25420,
+      "mappedFacts": 6853,
+      "unmappedFacts": 18753,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0301",
       "tickers": [
         "APOG"
@@ -19,21 +25,21 @@
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0,
@@ -46,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-02-26",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
@@ -81,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-02-26",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-02-26",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 15.0
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 602,
-        "MEDIUM": 26
+        "HIGH": 618,
+        "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 628,
-        "resolvedValues": 628
+        "datableValues": 636,
+        "resolvedValues": 636
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19439,
+        "total": 19418,
         "by_severity": {
           "INFO": 18753,
           "ERROR": 5,
-          "WARNING": 681
+          "WARNING": 660
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 540,
+          "CONCEPT_DISAGREEMENT": 522,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 140,
-          "UNKNOWN_CONCEPT": 18753,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 138,
+          "UNKNOWN_CONCEPT": 18753
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f1c90e529fbbb73b68f2cdbd4b2eb26bb88c53385eaa5edbd02fed5a9cff86da",
@@ -159,16 +164,22 @@
       "cik": "0000094845",
       "name": "LEVI STRAUSS & CO",
       "sic": "2300",
+      "rawFacts": 21867,
+      "mappedFacts": 7346,
+      "unmappedFacts": 14903,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1129",
       "tickers": [
         "LEVI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2009-11-29",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2008-11-30",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -233,11 +244,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-11-29",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-11-30",
           "lastAvailablePeriod": "2025-11-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 677,
+        "HIGH": 679,
         "MEDIUM": 67
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 744,
-        "resolvedValues": 744
+        "datableValues": 746,
+        "resolvedValues": 746
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15285,
+        "total": 15283,
         "by_severity": {
           "INFO": 14903,
           "ERROR": 2,
-          "WARNING": 380
+          "WARNING": 378
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 347,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 14903,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14903
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "afc28eee99fb2d8978015f29ad57659e59519ce90008fb917da86b459f85bac4",
@@ -312,16 +322,22 @@
       "cik": "0001477845",
       "name": "Annovis Bio, Inc.",
       "sic": "2834",
+      "rawFacts": 4200,
+      "mappedFacts": 1861,
+      "unmappedFacts": 2357,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ANVS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 30,
-      "firstPeriodEnd": "2019-03-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 31,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -386,11 +402,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 30,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -417,25 +433,24 @@
         }
       },
       "quality": {
-        "HIGH": 208
+        "HIGH": 210
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 208,
-        "resolvedValues": 208
+        "datableValues": 210,
+        "resolvedValues": 210
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2419,
+        "total": 2411,
         "by_severity": {
           "INFO": 2357,
-          "WARNING": 62
+          "WARNING": 54
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 19,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 2357,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 2357
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2f7d57ded3a7478d812e694c59da95dd7c7c5e6602d6cd4fd032cee9ab0ab6a4",
@@ -462,16 +477,22 @@
       "cik": "0001513845",
       "name": "Nebius Group N.V.",
       "sic": "7370",
+      "rawFacts": 9561,
+      "mappedFacts": 1684,
+      "unmappedFacts": 7482,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "NBIS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 17,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 18,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -536,11 +557,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -567,27 +588,26 @@
         }
       },
       "quality": {
-        "HIGH": 146,
+        "HIGH": 148,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 169,
-        "resolvedValues": 169
+        "datableValues": 171,
+        "resolvedValues": 171
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8262,
+        "total": 8259,
         "by_severity": {
-          "INFO": 7483,
-          "WARNING": 779
+          "INFO": 7482,
+          "WARNING": 777
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 687,
           "RESTATEMENT_CONFLICT": 84,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 7483,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7482
         }
       },
       "latestFiling": {
@@ -598,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3515bd911eb092966b0e0cd6dc6ec470412ab6fdfbe7113c8135dcd6987c0c7d",
@@ -614,17 +634,23 @@
       "cik": "0001980845",
       "name": "enGene Therapeutics Inc.",
       "sic": "2836",
+      "rawFacts": 3235,
+      "mappedFacts": 988,
+      "unmappedFacts": 2218,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1031",
       "tickers": [
         "ENGN",
         "ENGNW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 16,
-      "firstPeriodEnd": "2022-10-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 17,
+      "firstPeriodEnd": "2021-10-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -689,11 +715,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 16,
-          "firstAvailablePeriod": "2022-10-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2021-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -720,26 +746,25 @@
         }
       },
       "quality": {
-        "HIGH": 109,
+        "HIGH": 111,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 113,
-        "resolvedValues": 113
+        "datableValues": 115,
+        "resolvedValues": 115
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2259,
+        "total": 2257,
         "by_severity": {
           "INFO": 2218,
-          "WARNING": 41
+          "WARNING": 39
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 25,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 2218,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2218
         }
       },
       "latestFiling": {
@@ -750,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eae6c044df472b43b7c7f69d5848af8edd972cb0795e7a7092d01e1d7964dea5",
@@ -766,16 +791,22 @@
       "cik": "0002015845",
       "name": "Everus Construction Group, Inc.",
       "sic": "1531",
+      "rawFacts": 3037,
+      "mappedFacts": 900,
+      "unmappedFacts": 2204,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ECG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 15,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 16,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -840,11 +871,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 15,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -871,26 +902,25 @@
         }
       },
       "quality": {
-        "HIGH": 125,
+        "HIGH": 127,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 134,
-        "resolvedValues": 134
+        "datableValues": 136,
+        "resolvedValues": 136
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2250,
+        "total": 2248,
         "by_severity": {
           "INFO": 2204,
-          "WARNING": 46
+          "WARNING": 44
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 38,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 2204,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2204
         }
       },
       "latestFiling": {
@@ -901,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8106864c5276330ae42ec833266215d89ae2282110ad90256d6a486523c7a565",
@@ -917,6 +947,12 @@
       "cik": "0002080845",
       "name": "PayPay Corp",
       "sic": "7389",
+      "rawFacts": 1,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "PAYP"
@@ -1045,13 +1081,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "96181e0ef954e1f765ff0fe104bcb57b7c7bbb3dc944cc34277a2082c82bdf10",

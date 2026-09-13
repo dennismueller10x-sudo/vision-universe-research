@@ -6,6 +6,12 @@
       "cik": "0001125376",
       "name": "ENSIGN GROUP, INC",
       "sic": "8051",
+      "rawFacts": 25793,
+      "mappedFacts": 6677,
+      "unmappedFacts": 19369,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ENSG"
@@ -142,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "77876bbc3e742a24e11995aca221254f376faff1db2792e1afd5ffe97bffc9ca",
@@ -158,16 +164,22 @@
       "cik": "0001692376",
       "name": "Velocity Financial, Inc.",
       "sic": "6199",
+      "rawFacts": 9667,
+      "mappedFacts": 2054,
+      "unmappedFacts": 7528,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VEL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 31,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 32,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -232,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 28,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -263,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 200,
+        "HIGH": 202,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 216,
-        "resolvedValues": 216
+        "datableValues": 218,
+        "resolvedValues": 218
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7808,
+        "total": 7675,
         "by_severity": {
-          "INFO": 7660,
-          "WARNING": 148
+          "INFO": 7528,
+          "WARNING": 147
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 143,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 7660,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 7528
         }
       },
       "latestFiling": {
@@ -293,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "179e72191e495b869681281996b7e62efe239d5792e80300c56e1d97651b61ec",
@@ -309,16 +320,22 @@
       "cik": "0001826376",
       "name": "Golden Sun Technology Group Ltd.",
       "sic": "8200",
+      "rawFacts": 1643,
+      "mappedFacts": 459,
+      "unmappedFacts": 1183,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "GSUN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2020-09-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2018-12-12",
       "lastPeriodEnd": "2025-09-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -377,17 +394,17 @@
         },
         "short_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2021-09-30",
           "lastAvailablePeriod": "2025-09-30",
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-09-30",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -414,26 +431,25 @@
         }
       },
       "quality": {
-        "HIGH": 49,
-        "MEDIUM": 25
+        "HIGH": 51,
+        "MEDIUM": 26
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 74,
-        "resolvedValues": 74
+        "datableValues": 77,
+        "resolvedValues": 77
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1387,
+        "total": 1375,
         "by_severity": {
-          "INFO": 1186,
-          "WARNING": 201
+          "INFO": 1183,
+          "WARNING": 192
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 83,
+          "CONCEPT_DISAGREEMENT": 84,
           "RESTATEMENT_CONFLICT": 108,
-          "UNKNOWN_CONCEPT": 1186,
-          "UNPLACEABLE_PERIOD": 10
+          "UNKNOWN_CONCEPT": 1183
         }
       },
       "latestFiling": {
@@ -444,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2afd536ef9b6e8a55c9358c6f6347ccb08fe9e736a5f7728b11f1fe61a44b809",
@@ -460,16 +476,22 @@
       "cik": "0001834376",
       "name": "InnovAge Holding Corp.",
       "sic": "8000",
+      "rawFacts": 7020,
+      "mappedFacts": 2203,
+      "unmappedFacts": 4885,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "INNV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2019-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -534,11 +556,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2020-06-30",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2019-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -565,26 +587,25 @@
         }
       },
       "quality": {
-        "HIGH": 248,
+        "HIGH": 250,
         "MEDIUM": 39
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 287,
-        "resolvedValues": 287
+        "datableValues": 289,
+        "resolvedValues": 289
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5172,
+        "total": 5147,
         "by_severity": {
           "INFO": 4885,
-          "WARNING": 287
+          "WARNING": 262
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 261,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 4885,
-          "UNPLACEABLE_PERIOD": 25
+          "UNKNOWN_CONCEPT": 4885
         }
       },
       "latestFiling": {
@@ -595,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fed114b46823fda28a51d0fc7ce3489dc12086d37336cbbc16451de3578b5caa",
@@ -611,6 +632,12 @@
       "cik": "0002097376",
       "name": "MOZAYYX Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 120,
+      "mappedFacts": 55,
+      "unmappedFacts": 70,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MZYX",
@@ -743,13 +770,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "613fc111c9ba8b844b7fcca4593f2640da7c258a48a241aa10434f4ae30effa0",

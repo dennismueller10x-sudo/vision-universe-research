@@ -6,16 +6,22 @@
       "cik": "0000105319",
       "name": "WW INTERNATIONAL, INC.",
       "sic": "7200",
+      "rawFacts": 25766,
+      "mappedFacts": 7545,
+      "unmappedFacts": 18126,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2009-01-03",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-29",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.92,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 11.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-01-03",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2007-12-29",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.92
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 630,
+        "HIGH": 632,
         "MEDIUM": 61
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 691,
-        "resolvedValues": 691
+        "datableValues": 693,
+        "resolvedValues": 693
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19195,
+        "total": 19193,
         "by_severity": {
           "INFO": 18126,
-          "WARNING": 1069
+          "WARNING": 1067
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 749,
           "FISCAL_PERIOD_CONFLICT": 56,
           "RESTATEMENT_CONFLICT": 206,
           "UNEXPECTED_DURATION": 56,
-          "UNKNOWN_CONCEPT": 18126,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18126
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "df5e94c2b0c8591ee6f090722f6c051738cccbc6b42d98899340546fc350c978",
@@ -159,16 +164,22 @@
       "cik": "0001777319",
       "name": "CISO Global, Inc.",
       "sic": "8742",
+      "rawFacts": 7890,
+      "mappedFacts": 2436,
+      "unmappedFacts": 5512,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CISO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 31,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 32,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -233,11 +244,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 31,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -264,27 +275,26 @@
         }
       },
       "quality": {
-        "HIGH": 259,
+        "HIGH": 261,
         "MEDIUM": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 287,
-        "resolvedValues": 287
+        "datableValues": 289,
+        "resolvedValues": 289
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5844,
+        "total": 5843,
         "by_severity": {
           "INFO": 5512,
-          "WARNING": 332
+          "WARNING": 331
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 212,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 113,
-          "UNKNOWN_CONCEPT": 5512,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5512
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "75f3024979ce5babd1cba59a1d19e510e18e3474386a4ff316cdd05243a9b2b2",
@@ -311,16 +321,22 @@
       "cik": "0001880319",
       "name": "Perimeter Solutions, Inc.",
       "sic": "2800",
+      "rawFacts": 8313,
+      "mappedFacts": 2305,
+      "unmappedFacts": 5963,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -385,11 +401,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -416,27 +432,26 @@
         }
       },
       "quality": {
-        "HIGH": 231,
+        "HIGH": 233,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 235,
-        "resolvedValues": 235
+        "datableValues": 237,
+        "resolvedValues": 237
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6263,
+        "total": 6257,
         "by_severity": {
-          "INFO": 5967,
-          "WARNING": 296
+          "INFO": 5963,
+          "WARNING": 294
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 123,
           "RESTATEMENT_CONFLICT": 38,
           "UNEXPECTED_DURATION": 133,
-          "UNKNOWN_CONCEPT": 5967,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5963
         }
       },
       "latestFiling": {
@@ -447,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f13a075fd1c4cb3bdc3a68db92f74dfbd12f25a31bfe077126715fd1b48c04f2",

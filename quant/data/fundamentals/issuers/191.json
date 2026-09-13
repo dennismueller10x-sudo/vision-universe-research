@@ -6,16 +6,22 @@
       "cik": "0001604191",
       "name": "GridAI Technologies Corp.",
       "sic": "4931",
+      "rawFacts": 9896,
+      "mappedFacts": 3218,
+      "unmappedFacts": 6881,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GRDX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 44,
-      "firstPeriodEnd": "2015-09-30",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 45,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 44,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 259,
+        "HIGH": 261,
         "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 291,
-        "resolvedValues": 291
+        "datableValues": 293,
+        "resolvedValues": 293
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7149,
+        "total": 7143,
         "by_severity": {
           "INFO": 6881,
-          "WARNING": 268
+          "WARNING": 262
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 144,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 6881,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 6881
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "843f8cc18878997ec5d905b60b002201e286333b65b5c897b99e422582a23659",
@@ -158,6 +163,12 @@
       "cik": "0001799191",
       "name": "Starling Oncology, Inc.",
       "sic": "8011",
+      "rawFacts": 8424,
+      "mappedFacts": 2420,
+      "unmappedFacts": 6087,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "STLN",
@@ -275,16 +286,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6368,
+        "total": 6349,
         "by_severity": {
-          "INFO": 6107,
-          "WARNING": 261
+          "INFO": 6087,
+          "WARNING": 262
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 155,
-          "RESTATEMENT_CONFLICT": 79,
+          "RESTATEMENT_CONFLICT": 80,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 6107
+          "UNKNOWN_CONCEPT": 6087
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1d2556fa82cf30a360d0cb57e15841af9bc956dff91942218b3e8bac97c00370",
@@ -311,17 +322,23 @@
       "cik": "0002007191",
       "name": "Telix Pharmaceuticals Ltd",
       "sic": "2834",
+      "rawFacts": 975,
+      "mappedFacts": 200,
+      "unmappedFacts": 818,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TLX",
         "TLPPF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -386,11 +403,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -417,25 +434,24 @@
         }
       },
       "quality": {
-        "HIGH": 46
+        "HIGH": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 46,
-        "resolvedValues": 46
+        "datableValues": 48,
+        "resolvedValues": 48
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 889,
+        "total": 887,
         "by_severity": {
           "INFO": 818,
-          "WARNING": 71
+          "WARNING": 69
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
           "RESTATEMENT_CONFLICT": 63,
-          "UNKNOWN_CONCEPT": 818,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 818
         }
       },
       "latestFiling": {
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9bd45e262702936a2ce75746fdf97dd8bf6868e5a8e9cc7f6f3293ec1f650ccd",

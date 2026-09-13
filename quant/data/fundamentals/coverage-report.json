@@ -1,14 +1,14 @@
 {
-  "generatedAtUtc": "2026-09-13T12:23:55+00:00",
+  "generatedAtUtc": "2026-09-13T15:58:42+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.7.1",
+    "normalization_logic": "1.8.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.3.0"
+      "mapping_version": "1.4.0"
     }
   },
   "note": "Gezaehlt gegen das Produktuniversum, nicht gegen die ingestierten Emittenten. Ein Nenner aus dem eigenen Bestand wuerde jede Luecke wegdefinieren (\u00a719).",
@@ -58,27 +58,27 @@
       "PERCENT_OF_PRODUCT_UNIVERSE": 64.4061
     },
     "total_assets": {
-      "COUNT": 5087,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 72.6299
+      "COUNT": 5262,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 75.1285
     },
     "total_debt": {
-      "COUNT": 2823,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 40.3055
+      "COUNT": 2842,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 40.5768
     },
     "stockholders_equity": {
-      "COUNT": 5057,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 72.2016
+      "COUNT": 5225,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 74.6002
     }
   },
   "pointInTime": {
     "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
     "denominator": "PRODUCT_TITLES",
-    "PIT_READY_SECURITIES": 5470,
+    "PIT_READY_SECURITIES": 5663,
     "PIT_PARTIAL_SECURITIES": 0,
-    "PIT_UNAVAILABLE_SECURITIES": 1534,
+    "PIT_UNAVAILABLE_SECURITIES": 1341,
     "BY_ISSUER": {
-      "PIT_READY": 5117,
-      "PIT_UNAVAILABLE": 320
+      "PIT_READY": 5303,
+      "PIT_UNAVAILABLE": 134
     },
     "SURVIVORSHIP_FREE_UNIVERSE": false,
     "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein Delisting-Ereignisfeed. Ein ueberlebensfreies Universum laesst sich daraus nicht bauen; ein PASS waere eine Falschaussage ueber die Quelle."

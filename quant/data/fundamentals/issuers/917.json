@@ -6,17 +6,23 @@
       "cik": "0000028917",
       "name": "DILLARD'S, INC.",
       "sic": "5311",
+      "rawFacts": 19242,
+      "mappedFacts": 6127,
+      "unmappedFacts": 13387,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0130",
       "tickers": [
         "DDS",
         "DDT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2009-01-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2008-02-02",
       "lastPeriodEnd": "2026-08-01",
-      "historyYears": 17.0,
+      "historyYears": 17.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -81,11 +87,11 @@
           "historyYears": 11.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2009-01-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 17.0
+          "historyYears": 17.92
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -112,28 +118,27 @@
         }
       },
       "quality": {
-        "HIGH": 671,
+        "HIGH": 673,
         "MEDIUM": 47
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 718,
-        "resolvedValues": 718
+        "datableValues": 720,
+        "resolvedValues": 720
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13791,
+        "total": 13659,
         "by_severity": {
-          "INFO": 13517,
+          "INFO": 13387,
           "ERROR": 1,
-          "WARNING": 273
+          "WARNING": 271
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 261,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 13517,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13387
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7ad154bec2244515828b12305a645c1ac012959363b9bb4965f0aa189839e212",
@@ -160,17 +165,23 @@
       "cik": "0001336917",
       "name": "Under Armour, Inc.",
       "sic": "2300",
+      "rawFacts": 21031,
+      "mappedFacts": 7909,
+      "unmappedFacts": 13651,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "UAA",
         "UA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.25,
+      "historyYears": 18.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -235,11 +246,11 @@
           "historyYears": 16.25
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 69,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 17.25
+          "historyYears": 18.25
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -266,28 +277,27 @@
         }
       },
       "quality": {
-        "HIGH": 715,
+        "HIGH": 717,
         "MEDIUM": 47
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 762,
-        "resolvedValues": 762
+        "datableValues": 764,
+        "resolvedValues": 764
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14455,
+        "total": 14255,
         "by_severity": {
-          "INFO": 13852,
+          "INFO": 13651,
           "ERROR": 19,
-          "WARNING": 584
+          "WARNING": 585
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 468,
+          "CONCEPT_DISAGREEMENT": 469,
           "FUTURE_DATA_LEAK": 19,
-          "RESTATEMENT_CONFLICT": 114,
-          "UNKNOWN_CONCEPT": 13852,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 116,
+          "UNKNOWN_CONCEPT": 13651
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f5f969645a3df3085de76d968130499fb71e4ddeb6e3d1ba9cb7ce653d9ad9c0",
@@ -314,16 +324,22 @@
       "cik": "0001488917",
       "name": "Electromed, Inc.",
       "sic": "3845",
+      "rawFacts": 12871,
+      "mappedFacts": 5854,
+      "unmappedFacts": 7517,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "ELMD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2010-09-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -388,11 +404,11 @@
           "historyYears": 10.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 59,
-          "firstAvailablePeriod": "2011-06-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -419,26 +435,25 @@
         }
       },
       "quality": {
-        "HIGH": 596,
+        "HIGH": 598,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 608,
-        "resolvedValues": 608
+        "datableValues": 610,
+        "resolvedValues": 610
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7847,
+        "total": 7736,
         "by_severity": {
-          "INFO": 7625,
-          "WARNING": 222
+          "INFO": 7517,
+          "WARNING": 219
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 137,
-          "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 7625,
-          "UNPLACEABLE_PERIOD": 6
+          "CONCEPT_DISAGREEMENT": 138,
+          "RESTATEMENT_CONFLICT": 81,
+          "UNKNOWN_CONCEPT": 7517
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4a58bdad53c7705da34aedb7c0628a0901eaa7fb1c0e6db9d80fb708a761675e",
@@ -465,16 +480,22 @@
       "cik": "0001633917",
       "name": "PayPal Holdings, Inc.",
       "sic": "7389",
+      "rawFacts": 19392,
+      "mappedFacts": 4871,
+      "unmappedFacts": 14733,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PYPL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 50,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 51,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -539,11 +560,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 46,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -570,28 +591,27 @@
         }
       },
       "quality": {
-        "HIGH": 462,
+        "HIGH": 464,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 463,
-        "resolvedValues": 463
+        "datableValues": 465,
+        "resolvedValues": 465
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15142,
+        "total": 15140,
         "by_severity": {
           "INFO": 14733,
-          "WARNING": 409
+          "WARNING": 407
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 345,
           "FISCAL_PERIOD_CONFLICT": 1,
           "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 14733,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14733
         }
       },
       "latestFiling": {
@@ -602,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "93deee741c2ceb77727ca090f91531d2a16c4e52699263357038cbac6f24adf6",

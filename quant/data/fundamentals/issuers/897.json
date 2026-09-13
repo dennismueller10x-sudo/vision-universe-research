@@ -6,16 +6,22 @@
       "cik": "0001878897",
       "name": "Douglas Elliman Inc.",
       "sic": "6531",
+      "rawFacts": 7370,
+      "mappedFacts": 2002,
+      "unmappedFacts": 5275,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DOUG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 24,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 25,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -80,11 +86,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 24,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 213,
+        "HIGH": 215,
         "MEDIUM": 19
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 232,
-        "resolvedValues": 232
+        "datableValues": 234,
+        "resolvedValues": 234
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5528,
+        "total": 5526,
         "by_severity": {
           "INFO": 5275,
-          "WARNING": 253
+          "WARNING": 251
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 211,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 5275,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5275
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "78fe7fbd7c7c2a6850a805a17d04b2ef661c1c7db2fc6304a33836817c7d9140",
@@ -157,6 +162,20 @@
       "cik": "0002058897",
       "name": "Grupo Cibest S.A.",
       "sic": "6029",
+      "rawFacts": 1,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CIB"
@@ -285,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d86c6a5fb660e9a1ff3b8944d8c9cbb480383d20cfab3e2c0760c535d0182f11",
@@ -301,6 +320,12 @@
       "cik": "0002092897",
       "name": "Armada Acquisition Corp. III",
       "sic": "6770",
+      "rawFacts": 206,
+      "mappedFacts": 89,
+      "unmappedFacts": 124,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "AACI",
@@ -435,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3de6c09c8705a21ecf3a0c0946320b0977c0c2f9c56a8792f6314dd5b3f06319",

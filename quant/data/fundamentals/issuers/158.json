@@ -6,6 +6,12 @@
       "cik": "0000310158",
       "name": "Merck & Co., Inc.",
       "sic": "2834",
+      "rawFacts": 29347,
+      "mappedFacts": 7894,
+      "unmappedFacts": 21863,
+      "calendarYears": 21,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MRK"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f367e06747be5f485867d28c7710b7e89ce155a841c03faa4cd209a6f58802af",
@@ -159,6 +165,12 @@
       "cik": "0000775158",
       "name": "OSHKOSH CORP",
       "sic": "3711",
+      "rawFacts": 28458,
+      "mappedFacts": 7554,
+      "unmappedFacts": 20638,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OSK"
@@ -274,16 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21824,
+        "total": 21632,
         "by_severity": {
-          "INFO": 20831,
-          "WARNING": 993
+          "INFO": 20638,
+          "WARNING": 994
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 898,
-          "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 20831,
-          "UNPLACEABLE_PERIOD": 1
+          "CONCEPT_DISAGREEMENT": 899,
+          "RESTATEMENT_CONFLICT": 95,
+          "UNKNOWN_CONCEPT": 20638
         }
       },
       "latestFiling": {
@@ -294,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "18df9e95f89bb8ef423c3bb1540d032ee9d3b02168b9184b4a6e197c917e1b8f",
@@ -310,6 +321,12 @@
       "cik": "0000894158",
       "name": "Theriva Biologics, Inc.",
       "sic": "2834",
+      "rawFacts": 13902,
+      "mappedFacts": 4605,
+      "unmappedFacts": 9336,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TOVX"
@@ -447,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "14abd32dae07c74fab79f899ca1d38577e6d1171c026824bad29f213b5b358aa",
@@ -463,14 +480,20 @@
       "cik": "0001275158",
       "name": "NOODLES & Co",
       "sic": "5812",
+      "rawFacts": 16197,
+      "mappedFacts": 5600,
+      "unmappedFacts": 10779,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1229",
       "tickers": [
         "NDLS"
       ],
       "status": "INGESTED",
       "annualPeriods": 15,
-      "quarterlyPeriods": 53,
-      "firstPeriodEnd": "2012-01-03",
+      "quarterlyPeriods": 54,
+      "firstPeriodEnd": "2010-12-28",
       "lastPeriodEnd": "2026-06-30",
       "historyYears": 13.92,
       "metrics": {
@@ -538,7 +561,7 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2012-01-03",
           "lastAvailablePeriod": "2025-12-30",
           "historyYears": 13.92
@@ -568,26 +591,25 @@
         }
       },
       "quality": {
-        "HIGH": 510,
+        "HIGH": 511,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 525,
-        "resolvedValues": 525
+        "datableValues": 526,
+        "resolvedValues": 526
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11633,
+        "total": 11631,
         "by_severity": {
           "INFO": 10779,
-          "WARNING": 854
+          "WARNING": 852
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 627,
           "RESTATEMENT_CONFLICT": 225,
-          "UNKNOWN_CONCEPT": 10779,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10779
         }
       },
       "latestFiling": {
@@ -598,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "98bdf670e304ff877d5b9106875543bed28ee5e0ceaafa4d4ec3294fb8b508e9",
@@ -614,17 +636,23 @@
       "cik": "0001921158",
       "name": "Bitfufu Inc.",
       "sic": "6199",
+      "rawFacts": 973,
+      "mappedFacts": 319,
+      "unmappedFacts": 685,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "FUFU",
         "FUFUW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -689,11 +717,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -720,25 +748,24 @@
         }
       },
       "quality": {
-        "HIGH": 42,
+        "HIGH": 44,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 46,
-        "resolvedValues": 46
+        "datableValues": 48,
+        "resolvedValues": 48
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 701,
+        "total": 700,
         "by_severity": {
           "INFO": 685,
-          "WARNING": 16
+          "WARNING": 15
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
-          "UNKNOWN_CONCEPT": 685,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 685
         }
       },
       "latestFiling": {
@@ -749,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b02560aae20ab120ad3abdab7874d19a1815eb1674d8ae2e8be47e3d4ca041b8",
@@ -765,16 +792,22 @@
       "cik": "0001941158",
       "name": "Wetour Robotics Ltd",
       "sic": "4100",
+      "rawFacts": 441,
+      "mappedFacts": 118,
+      "unmappedFacts": 296,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "WETO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2023-06-30",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2022-06-30",
       "lastPeriodEnd": "2025-06-30",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -839,11 +872,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-06-30",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -870,25 +903,24 @@
         }
       },
       "quality": {
-        "HIGH": 20,
+        "HIGH": 22,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 33,
-        "resolvedValues": 33
+        "datableValues": 35,
+        "resolvedValues": 35
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 340,
+        "total": 337,
         "by_severity": {
           "INFO": 296,
-          "WARNING": 44
+          "WARNING": 41
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 41,
-          "UNKNOWN_CONCEPT": 296,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 296
         }
       },
       "latestFiling": {
@@ -899,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9cccd9e3336de2d7213314a33d02a5105938cf64f96e3d1fa70d2a0437fd67e8",

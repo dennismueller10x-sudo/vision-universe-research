@@ -6,16 +6,22 @@
       "cik": "0000874015",
       "name": "IONIS PHARMACEUTICALS INC",
       "sic": "2834",
+      "rawFacts": 17762,
+      "mappedFacts": 6133,
+      "unmappedFacts": 11713,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IONS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 578,
+        "HIGH": 580,
         "MEDIUM": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 612,
-        "resolvedValues": 612
+        "datableValues": 614,
+        "resolvedValues": 614
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12008,
+        "total": 12006,
         "by_severity": {
           "INFO": 11713,
           "ERROR": 6,
-          "WARNING": 289
+          "WARNING": 287
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 211,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11713,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11713
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "aaf2873fe1d4936e36897b2af090f007a5b3df6656e332f5ef3f3be8582aa9da",
@@ -160,16 +165,22 @@
       "cik": "0000931015",
       "name": "Polaris Inc.",
       "sic": "3790",
+      "rawFacts": 26026,
+      "mappedFacts": 7540,
+      "unmappedFacts": 18669,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PII"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -234,11 +245,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -265,28 +276,27 @@
         }
       },
       "quality": {
-        "HIGH": 614,
+        "HIGH": 616,
         "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 646,
-        "resolvedValues": 646
+        "datableValues": 648,
+        "resolvedValues": 648
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19317,
+        "total": 19315,
         "by_severity": {
           "INFO": 18669,
           "ERROR": 3,
-          "WARNING": 645
+          "WARNING": 643
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 579,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 18669,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18669
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "362e36b75dce886517a33629b49df8919816cfb7d223f6304bec60cc871c0a2d",
@@ -313,16 +323,22 @@
       "cik": "0001453015",
       "name": "Ballard Power Systems Inc.",
       "sic": "3620",
+      "rawFacts": 3305,
+      "mappedFacts": 574,
+      "unmappedFacts": 2844,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BLDP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -387,11 +403,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -418,26 +434,25 @@
         }
       },
       "quality": {
-        "HIGH": 73,
+        "HIGH": 75,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 76,
-        "resolvedValues": 76
+        "datableValues": 78,
+        "resolvedValues": 78
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2913,
+        "total": 2911,
         "by_severity": {
           "INFO": 2844,
-          "WARNING": 69
+          "WARNING": 67
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 48,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 2844,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2844
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0d059eef49cae4a2fa19b8e3d70cfd599404b5e6393c6a0be15e04bd1ce69590",

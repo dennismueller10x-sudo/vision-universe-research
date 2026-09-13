@@ -6,16 +6,22 @@
       "cik": "0001015650",
       "name": "SK TELECOM CO LTD",
       "sic": "4812",
+      "rawFacts": 5681,
+      "mappedFacts": 652,
+      "unmappedFacts": 5117,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SKM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 79,
+        "HIGH": 81,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 93,
-        "resolvedValues": 93
+        "datableValues": 95,
+        "resolvedValues": 95
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5223,
+        "total": 5221,
         "by_severity": {
           "INFO": 5117,
-          "WARNING": 106
+          "WARNING": 104
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 78,
           "EXTREME_VALUE": 15,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 5117,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5117
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d99eecd33771f38b7bdd110e68575fb879f3cd153304913b40a42c8a28fd7b4b",
@@ -158,6 +163,12 @@
       "cik": "0001383650",
       "name": "Cheniere Energy Partners, L.P.",
       "sic": "4924",
+      "rawFacts": 14479,
+      "mappedFacts": 4388,
+      "unmappedFacts": 10137,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CQP"
@@ -273,17 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10586,
+        "total": 10585,
         "by_severity": {
           "INFO": 10137,
-          "WARNING": 449
+          "WARNING": 448
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "RESTATEMENT_CONFLICT": 121,
-          "UNKNOWN_CONCEPT": 10137,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 10137
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3b5b8eb93a97746be9b8e763008839721ba7168040708302fa05e9e32c6f01cb",

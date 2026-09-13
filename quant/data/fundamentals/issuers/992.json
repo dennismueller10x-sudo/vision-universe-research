@@ -6,16 +6,22 @@
       "cik": "0000033992",
       "name": "KINGSTONE COMPANIES, INC.",
       "sic": "6331",
+      "rawFacts": 21589,
+      "mappedFacts": 4653,
+      "unmappedFacts": 17179,
+      "calendarYears": 16,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KINS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 12,
@@ -80,11 +86,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 584,
+        "HIGH": 586,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 607,
-        "resolvedValues": 607
+        "datableValues": 609,
+        "resolvedValues": 609
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17519,
+        "total": 17515,
         "by_severity": {
           "INFO": 17179,
           "ERROR": 7,
-          "WARNING": 333
+          "WARNING": 329
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 287,
           "FUTURE_DATA_LEAK": 7,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 17179,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 17179
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5001f61a824f23c077b82991bf56e2fe56b8ccc3f5fcc2912e186daf8d64a11d",
@@ -160,17 +165,23 @@
       "cik": "0000771992",
       "name": "PAN AMERICAN SILVER CORP",
       "sic": "1040",
+      "rawFacts": 3443,
+      "mappedFacts": 604,
+      "unmappedFacts": 2961,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PAAS",
         "PAASF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -235,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -266,24 +277,23 @@
         }
       },
       "quality": {
-        "HIGH": 120
+        "HIGH": 122
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 120,
-        "resolvedValues": 120
+        "datableValues": 122,
+        "resolvedValues": 122
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2981,
+        "total": 2979,
         "by_severity": {
           "INFO": 2961,
-          "WARNING": 20
+          "WARNING": 18
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
-          "UNKNOWN_CONCEPT": 2961,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2961
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6cc99fe0d5a82d0c5aead70760fcb9cf84428859c3ea452d991545b45f2bcd15",
@@ -310,16 +320,22 @@
       "cik": "0002035992",
       "name": "Charming Medical Ltd",
       "sic": "8090",
+      "rawFacts": 295,
+      "mappedFacts": 98,
+      "unmappedFacts": 207,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "MCTA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2024-03-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2023-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -384,11 +400,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2024-03-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2023-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -415,25 +431,24 @@
         }
       },
       "quality": {
-        "HIGH": 27,
+        "HIGH": 29,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 31,
-        "resolvedValues": 31
+        "datableValues": 33,
+        "resolvedValues": 33
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 213,
+        "total": 211,
         "by_severity": {
           "INFO": 207,
-          "WARNING": 6
+          "WARNING": 4
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
-          "UNKNOWN_CONCEPT": 207,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 207
         }
       },
       "latestFiling": {
@@ -444,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cf8448aae1ee654e17b143ebd8a21e77742ae82534ed3868a0881d2b8d7ea597",

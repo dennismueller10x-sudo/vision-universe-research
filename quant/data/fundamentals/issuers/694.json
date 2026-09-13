@@ -6,16 +6,22 @@
       "cik": "0001000694",
       "name": "NOVAVAX INC",
       "sic": "2836",
+      "rawFacts": 18889,
+      "mappedFacts": 5461,
+      "unmappedFacts": 13596,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NVAX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 526
+        "HIGH": 528
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 526,
-        "resolvedValues": 526
+        "datableValues": 528,
+        "resolvedValues": 528
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14029,
+        "total": 14027,
         "by_severity": {
           "INFO": 13596,
           "ERROR": 2,
-          "WARNING": 431
+          "WARNING": 429
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 352,
           "FISCAL_PERIOD_CONFLICT": 2,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 75,
-          "UNKNOWN_CONCEPT": 13596,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13596
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "960bd603ed1560888d4e0315397a202f98bb776455680f603409fa530f1f743f",
@@ -159,16 +164,22 @@
       "cik": "0001392694",
       "name": "SurgePays, Inc.",
       "sic": "4813",
+      "rawFacts": 14872,
+      "mappedFacts": 4950,
+      "unmappedFacts": 10054,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SURG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-04-30",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-04-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.67,
+      "historyYears": 18.67,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -206,7 +217,7 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2008-04-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.67
@@ -233,11 +244,11 @@
           "historyYears": 11.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2008-04-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2007-04-30",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.67
+          "historyYears": 18.67
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,19 +275,19 @@
         }
       },
       "quality": {
-        "HIGH": 506,
+        "HIGH": 507,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 522,
-        "resolvedValues": 522
+        "datableValues": 523,
+        "resolvedValues": 523
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10649,
+        "total": 10637,
         "by_severity": {
-          "INFO": 10066,
+          "INFO": 10054,
           "ERROR": 2,
           "WARNING": 581
         },
@@ -286,9 +297,8 @@
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 200,
-          "UNEXPECTED_DURATION": 127,
-          "UNKNOWN_CONCEPT": 10066,
-          "UNPLACEABLE_PERIOD": 8
+          "UNEXPECTED_DURATION": 135,
+          "UNKNOWN_CONCEPT": 10054
         }
       },
       "latestFiling": {
@@ -299,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "199d4d36c5d74b693c529dfc4b29489302c34a606aa6b19160d0858df243c765",
@@ -315,6 +325,12 @@
       "cik": "0001572694",
       "name": "Goldman Sachs BDC, Inc.",
       "sic": null,
+      "rawFacts": 4443,
+      "mappedFacts": 985,
+      "unmappedFacts": 3517,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GSBD"
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "142e336a2b555d321e13885407ab34042af113fb94105a6da1d4889df0296397",
@@ -463,16 +479,22 @@
       "cik": "0001954694",
       "name": "Lucas GC Ltd",
       "sic": "7370",
+      "rawFacts": 1241,
+      "mappedFacts": 310,
+      "unmappedFacts": 868,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "LGCL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -537,11 +559,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -568,26 +590,25 @@
         }
       },
       "quality": {
-        "HIGH": 35,
+        "HIGH": 37,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 51,
-        "resolvedValues": 51
+        "datableValues": 53,
+        "resolvedValues": 53
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 994,
+        "total": 993,
         "by_severity": {
           "INFO": 868,
-          "WARNING": 126
+          "WARNING": 125
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 117,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 868,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 868
         }
       },
       "latestFiling": {
@@ -598,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0405f9a7f9d5d3fafdddc70be13ac18e059691a82f78bab2f955cba311440810",
@@ -614,16 +635,22 @@
       "cik": "0002042694",
       "name": "Primo Brands Corp",
       "sic": "2080",
+      "rawFacts": 3414,
+      "mappedFacts": 873,
+      "unmappedFacts": 2549,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRMB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 12,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 13,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -688,11 +715,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 12,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -719,27 +746,26 @@
         }
       },
       "quality": {
-        "HIGH": 108,
+        "HIGH": 110,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 120,
-        "resolvedValues": 120
+        "datableValues": 122,
+        "resolvedValues": 122
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2634,
+        "total": 2633,
         "by_severity": {
           "INFO": 2549,
-          "WARNING": 85
+          "WARNING": 84
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
           "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 15,
-          "UNKNOWN_CONCEPT": 2549,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 2549
         }
       },
       "latestFiling": {
@@ -750,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5c4803f0abd96598faa3611f4f56f366cc2fc18e1d68c5ad8d72daa584b4b5ba",

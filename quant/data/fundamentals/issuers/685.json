@@ -6,16 +6,22 @@
       "cik": "0001139685",
       "name": "20/20 Biolabs, Inc.",
       "sic": "8734",
+      "rawFacts": 750,
+      "mappedFacts": 263,
+      "unmappedFacts": 486,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AIDX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2024-12-31",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2023-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2024-12-31",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 37,
+        "HIGH": 39,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 38,
-        "resolvedValues": 38
+        "datableValues": 40,
+        "resolvedValues": 40
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 506,
+        "total": 502,
         "by_severity": {
           "INFO": 486,
-          "WARNING": 20
+          "WARNING": 16
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 13,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 486,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 486
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "76aa76ce4a15c743ad27f16f78dcae886c6f54f57283231e8db43364533a8937",
@@ -157,6 +162,12 @@
       "cik": "0001273685",
       "name": "ADAMAS TRUST, INC.",
       "sic": "6798",
+      "rawFacts": 26968,
+      "mappedFacts": 5017,
+      "unmappedFacts": 21406,
+      "calendarYears": 16,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ADAM",
@@ -171,11 +182,11 @@
         "ADAMZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -240,11 +251,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -271,27 +282,26 @@
         }
       },
       "quality": {
-        "HIGH": 412,
+        "HIGH": 414,
         "MEDIUM": 77
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 489,
-        "resolvedValues": 489
+        "datableValues": 491,
+        "resolvedValues": 491
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22355,
+        "total": 22101,
         "by_severity": {
-          "INFO": 21660,
+          "INFO": 21406,
           "WARNING": 695
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 565,
-          "RESTATEMENT_CONFLICT": 124,
+          "RESTATEMENT_CONFLICT": 129,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 21660,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 21406
         }
       },
       "latestFiling": {
@@ -302,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a4fa501ea19dae0f9bb677cac54c08d3b41ac3e0224578baf7183f0f62890e84",
@@ -318,16 +328,22 @@
       "cik": "0001317685",
       "name": "Alliance Laundry Holdings Inc.",
       "sic": "3580",
+      "rawFacts": 1484,
+      "mappedFacts": 382,
+      "unmappedFacts": 1119,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2023-12-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2022-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -392,11 +408,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -423,25 +439,24 @@
         }
       },
       "quality": {
-        "HIGH": 73
+        "HIGH": 75
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 73,
-        "resolvedValues": 73
+        "datableValues": 75,
+        "resolvedValues": 75
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1151,
+        "total": 1149,
         "by_severity": {
           "INFO": 1119,
-          "WARNING": 32
+          "WARNING": 30
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 26,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 1119,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1119
         }
       },
       "latestFiling": {
@@ -452,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0df6d6714c59c441e36342ac7ef202ac6521a64a92c2d99d050535c0e7216d38",
@@ -468,16 +483,22 @@
       "cik": "0001411685",
       "name": "Vistagen Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 13721,
+      "mappedFacts": 5245,
+      "unmappedFacts": 8589,
+      "calendarYears": 27,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "VTGN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 27,
-      "quarterlyPeriods": 77,
-      "firstPeriodEnd": "2000-03-31",
+      "annualPeriods": 28,
+      "quarterlyPeriods": 78,
+      "firstPeriodEnd": "1999-03-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 26.0,
+      "historyYears": 27.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -542,11 +563,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 27,
-          "quarterlyPeriods": 73,
-          "firstAvailablePeriod": "2000-03-31",
+          "annualPeriods": 28,
+          "quarterlyPeriods": 74,
+          "firstAvailablePeriod": "1999-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 26.0
+          "historyYears": 27.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -573,19 +594,19 @@
         }
       },
       "quality": {
-        "HIGH": 474,
+        "HIGH": 476,
         "MEDIUM": 35
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 509,
-        "resolvedValues": 509
+        "datableValues": 511,
+        "resolvedValues": 511
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9223,
+        "total": 9143,
         "by_severity": {
-          "INFO": 8669,
+          "INFO": 8589,
           "ERROR": 2,
           "WARNING": 552
         },
@@ -594,10 +615,9 @@
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 158,
+          "RESTATEMENT_CONFLICT": 162,
           "UNEXPECTED_DURATION": 180,
-          "UNKNOWN_CONCEPT": 8669,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 8589
         }
       },
       "latestFiling": {
@@ -608,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4f82656e16eda769e3b7032047f245613c9399efe33ecbe867c8876b0b2afeba",
@@ -624,6 +644,12 @@
       "cik": "0001858685",
       "name": "Biofrontera Inc.",
       "sic": "2834",
+      "rawFacts": 5150,
+      "mappedFacts": 1638,
+      "unmappedFacts": 3586,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BFRI",
@@ -739,9 +765,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3767,
+        "total": 3731,
         "by_severity": {
-          "INFO": 3622,
+          "INFO": 3586,
           "ERROR": 1,
           "WARNING": 144
         },
@@ -749,7 +775,7 @@
           "CONCEPT_DISAGREEMENT": 104,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 3622
+          "UNKNOWN_CONCEPT": 3586
         }
       },
       "latestFiling": {
@@ -760,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d8494f79c6deb48cea09484f1ab16334fd6f45d3a0da302e0c7f6e79dcd321aa",
@@ -776,6 +802,12 @@
       "cik": "0001883685",
       "name": "DraftKings Inc.",
       "sic": "7990",
+      "rawFacts": 5687,
+      "mappedFacts": 1804,
+      "unmappedFacts": 3961,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DKNG"
@@ -890,15 +922,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4085,
+        "total": 4072,
         "by_severity": {
-          "INFO": 3974,
+          "INFO": 3961,
           "WARNING": 111
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 93,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 3974
+          "UNKNOWN_CONCEPT": 3961
         }
       },
       "latestFiling": {
@@ -909,13 +941,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "64b033a68b2f4f83b3b3159a21ef32ef21ff800a5ca24f8030a58250c3e13ef8",
@@ -925,6 +957,12 @@
       "cik": "0001963685",
       "name": "RICHTECH ROBOTICS INC.",
       "sic": "3569",
+      "rawFacts": 3671,
+      "mappedFacts": 1596,
+      "unmappedFacts": 2154,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "RR"
@@ -1060,13 +1098,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2c90f0e2a4ccba6d79f497549b27bdb72bf93bad5300e0e19038054d59a3417c",

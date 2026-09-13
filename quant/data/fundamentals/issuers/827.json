@@ -6,6 +6,12 @@
       "cik": "0000052827",
       "name": "RAYONIER INC",
       "sic": "6798",
+      "rawFacts": 26527,
+      "mappedFacts": 7408,
+      "unmappedFacts": 19106,
+      "calendarYears": 18,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RYN"
@@ -121,19 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19951,
+        "total": 19950,
         "by_severity": {
           "INFO": 19106,
           "ERROR": 3,
-          "WARNING": 842
+          "WARNING": 841
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 670,
           "FUTURE_DATA_LEAK": 3,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 165,
-          "UNKNOWN_CONCEPT": 19106,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 19106
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b675f017b2a5e79261848c9313e0e9163f088459ea03143cfad1c19766708384",
@@ -160,6 +165,12 @@
       "cik": "0001570827",
       "name": "Victory Capital Holdings, Inc.",
       "sic": "6282",
+      "rawFacts": 12277,
+      "mappedFacts": 3430,
+      "unmappedFacts": 8885,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VCTR"
@@ -296,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "31ff2ffc9f878f8a81b61fb5aa1715252dabd07bb866a632400d81a8106c5124",
@@ -312,17 +323,23 @@
       "cik": "0001738827",
       "name": "KLX Energy Services Holdings, Inc.",
       "sic": "1389",
+      "rawFacts": 7787,
+      "mappedFacts": 3165,
+      "unmappedFacts": 4645,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KLXE",
         "KLXER"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2017-01-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2016-01-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.92,
+      "historyYears": 9.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -387,11 +404,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 32,
-          "firstAvailablePeriod": "2017-01-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2016-01-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.92
+          "historyYears": 9.92
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -418,28 +435,27 @@
         }
       },
       "quality": {
-        "HIGH": 328,
+        "HIGH": 330,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 342,
-        "resolvedValues": 342
+        "datableValues": 344,
+        "resolvedValues": 344
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5164,
+        "total": 5163,
         "by_severity": {
           "INFO": 4645,
-          "WARNING": 519
+          "WARNING": 518
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 329,
           "EXTREME_VALUE": 2,
           "FISCAL_PERIOD_CONFLICT": 19,
           "RESTATEMENT_CONFLICT": 168,
-          "UNKNOWN_CONCEPT": 4645,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4645
         }
       },
       "latestFiling": {
@@ -450,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2d7783d1b21d56334a51d695b6b1e0f202a3d487047359eee23ce081cdd3bd23",
@@ -466,16 +482,22 @@
       "cik": "0001842827",
       "name": "Kanzhun Ltd",
       "sic": "7370",
+      "rawFacts": 2339,
+      "mappedFacts": 543,
+      "unmappedFacts": 1694,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -540,11 +562,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -571,26 +593,25 @@
         }
       },
       "quality": {
-        "HIGH": 45,
+        "HIGH": 47,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 60,
-        "resolvedValues": 60
+        "datableValues": 62,
+        "resolvedValues": 62
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1918,
+        "total": 1915,
         "by_severity": {
           "INFO": 1694,
-          "WARNING": 224
+          "WARNING": 221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 219,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1694,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 1694
         }
       },
       "latestFiling": {
@@ -601,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eb8f216208eec8ef972d96f4fc52bb874a48c9a191ed81d0322fda086d7e8dee",
@@ -617,16 +638,22 @@
       "cik": "0001885827",
       "name": "Virax Biolabs Group Ltd",
       "sic": "2835",
+      "rawFacts": 743,
+      "mappedFacts": 247,
+      "unmappedFacts": 543,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "VRAX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2021-03-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2020-03-31",
       "lastPeriodEnd": "2025-03-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -691,11 +718,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-03-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-03-31",
           "lastAvailablePeriod": "2025-03-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -722,26 +749,25 @@
         }
       },
       "quality": {
-        "HIGH": 32,
+        "HIGH": 34,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 38,
-        "resolvedValues": 38
+        "datableValues": 40,
+        "resolvedValues": 40
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 577,
+        "total": 575,
         "by_severity": {
           "INFO": 543,
-          "WARNING": 34
+          "WARNING": 32
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 20,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 543,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 543
         }
       },
       "latestFiling": {
@@ -752,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "870ed08a77eef86adca80ea3bae70c484020cd2591fbe32b859d76d24d757f1d",
@@ -768,17 +794,23 @@
       "cik": "0001956827",
       "name": "Abivax S.A.",
       "sic": "2834",
+      "rawFacts": 1400,
+      "mappedFacts": 225,
+      "unmappedFacts": 1220,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ABVX",
         "AAVXF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -843,11 +875,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -874,24 +906,23 @@
         }
       },
       "quality": {
-        "HIGH": 40
+        "HIGH": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 40,
-        "resolvedValues": 40
+        "datableValues": 42,
+        "resolvedValues": 42
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1226,
+        "total": 1224,
         "by_severity": {
           "INFO": 1220,
-          "WARNING": 6
+          "WARNING": 4
         },
         "by_code": {
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 1220,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1220
         }
       },
       "latestFiling": {
@@ -902,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3368d34f3add040254c3b543587389b9733a92da794b23eae738e28ee7c92cbb",

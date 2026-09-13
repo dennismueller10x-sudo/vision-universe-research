@@ -6,6 +6,12 @@
       "cik": "0001000209",
       "name": "MEDALLION FINANCIAL CORP",
       "sic": "6199",
+      "rawFacts": 17666,
+      "mappedFacts": 2810,
+      "unmappedFacts": 14847,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MFIN",
@@ -122,18 +128,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15479,
+        "total": 15370,
         "by_severity": {
-          "INFO": 14963,
+          "INFO": 14847,
           "ERROR": 1,
-          "WARNING": 515
+          "WARNING": 522
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 422,
-          "FISCAL_PERIOD_CONFLICT": 9,
+          "CONCEPT_DISAGREEMENT": 425,
+          "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 14963
+          "RESTATEMENT_CONFLICT": 87,
+          "UNKNOWN_CONCEPT": 14847
         }
       },
       "latestFiling": {
@@ -144,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d9dbbacca1f3a47c1da56439ffb3d22ae0def6768f9629b6cb4db2a6bf43e3fd",
@@ -160,16 +166,22 @@
       "cik": "0001796209",
       "name": "APi Group Corp",
       "sic": "7340",
+      "rawFacts": 10076,
+      "mappedFacts": 3094,
+      "unmappedFacts": 7219,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "APG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 31,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 32,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -234,11 +246,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 31,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -265,26 +277,25 @@
         }
       },
       "quality": {
-        "HIGH": 326,
+        "HIGH": 328,
         "MEDIUM": 22
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 348,
-        "resolvedValues": 348
+        "datableValues": 350,
+        "resolvedValues": 350
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7349,
+        "total": 7347,
         "by_severity": {
           "INFO": 7219,
-          "WARNING": 130
+          "WARNING": 128
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 98,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 7219,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7219
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cbe090599f1d313c41d9d9be037bc297750dce73458ac2f7434a5b2d9c1241a2",
@@ -311,17 +322,23 @@
       "cik": "0001841209",
       "name": "MicroCloud Hologram Inc.",
       "sic": "7370",
+      "rawFacts": 3039,
+      "mappedFacts": 833,
+      "unmappedFacts": 2052,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HOLO",
         "HOLOW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 16,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 17,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -386,11 +403,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 16,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -417,27 +434,26 @@
         }
       },
       "quality": {
-        "HIGH": 60,
+        "HIGH": 62,
         "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 100,
-        "resolvedValues": 100
+        "datableValues": 102,
+        "resolvedValues": 102
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2451,
+        "total": 2445,
         "by_severity": {
           "INFO": 2052,
-          "WARNING": 399
+          "WARNING": 393
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 226,
           "EXTREME_VALUE": 3,
           "RESTATEMENT_CONFLICT": 164,
-          "UNKNOWN_CONCEPT": 2052,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 2052
         }
       },
       "latestFiling": {
@@ -448,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e2ac5721d796ade4acdd5c797e91b33b7ce4e5243633fa5b662ae30e6e40974f",

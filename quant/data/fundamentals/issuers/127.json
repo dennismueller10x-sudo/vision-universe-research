@@ -6,14 +6,20 @@
       "cik": "0000004127",
       "name": "SKYWORKS SOLUTIONS, INC.",
       "sic": "3674",
+      "rawFacts": 21625,
+      "mappedFacts": 8032,
+      "unmappedFacts": 14275,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1002",
       "tickers": [
         "SWKS"
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 71,
-      "firstPeriodEnd": "2008-10-03",
+      "quarterlyPeriods": 72,
+      "firstPeriodEnd": "2007-09-28",
       "lastPeriodEnd": "2026-07-03",
       "historyYears": 17.0,
       "metrics": {
@@ -81,7 +87,7 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-10-03",
           "lastAvailablePeriod": "2025-10-03",
           "historyYears": 17.0
@@ -111,25 +117,24 @@
         }
       },
       "quality": {
-        "HIGH": 681
+        "HIGH": 682
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 681,
-        "resolvedValues": 681
+        "datableValues": 682,
+        "resolvedValues": 682
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14465,
+        "total": 14463,
         "by_severity": {
           "INFO": 14275,
-          "WARNING": 190
+          "WARNING": 188
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 165,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 14275,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14275
         }
       },
       "latestFiling": {
@@ -140,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "60b9d18d8cea0e79e5a3574162665a2fbb4b555d68c7cf07840cb7f0f20d4170",
@@ -156,16 +161,22 @@
       "cik": "0001047127",
       "name": "AMKOR TECHNOLOGY, INC.",
       "sic": "3674",
+      "rawFacts": 25699,
+      "mappedFacts": 7474,
+      "unmappedFacts": 18283,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AMKR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -230,11 +241,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -261,29 +272,28 @@
         }
       },
       "quality": {
-        "HIGH": 718,
+        "HIGH": 720,
         "MEDIUM": 79
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 797,
-        "resolvedValues": 797
+        "datableValues": 799,
+        "resolvedValues": 799
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19027,
+        "total": 19025,
         "by_severity": {
           "INFO": 18283,
           "ERROR": 1,
-          "WARNING": 743
+          "WARNING": 741
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 714,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 25,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 18283,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18283
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "801e58e6f9818ed76cc0301ff73dfaa22e449e664710e98029d43a4d01119b83",
@@ -310,16 +320,22 @@
       "cik": "0001632127",
       "name": "Cable One, Inc.",
       "sic": "4841",
+      "rawFacts": 17875,
+      "mappedFacts": 5112,
+      "unmappedFacts": 12896,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CABO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 51,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 52,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -384,11 +400,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 45,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -415,21 +431,21 @@
         }
       },
       "quality": {
-        "HIGH": 487,
+        "HIGH": 489,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 497,
-        "resolvedValues": 497
+        "datableValues": 499,
+        "resolvedValues": 499
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13363,
+        "total": 13361,
         "by_severity": {
           "INFO": 12896,
           "ERROR": 1,
-          "WARNING": 466
+          "WARNING": 464
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 390,
@@ -437,8 +453,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 70,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 12896,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12896
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f4bd5a966104246a371ac0d4908cd71c1ce5d4af8c1ef0b6e6c4370abb04eea4",
@@ -465,16 +480,22 @@
       "cik": "0001863127",
       "name": "Tyra Biosciences, Inc.",
       "sic": "2834",
+      "rawFacts": 4574,
+      "mappedFacts": 1429,
+      "unmappedFacts": 3150,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TYRA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -539,11 +560,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -570,25 +591,24 @@
         }
       },
       "quality": {
-        "HIGH": 175
+        "HIGH": 177
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 175,
-        "resolvedValues": 175
+        "datableValues": 177,
+        "resolvedValues": 177
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3276,
+        "total": 3272,
         "by_severity": {
           "INFO": 3150,
-          "WARNING": 126
+          "WARNING": 122
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 108,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 3150,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 3150
         }
       },
       "latestFiling": {
@@ -599,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2ef36660fac50d62a40c9d2f05a4417bbaaa563293bded6ddb87c474b1151bb7",
@@ -615,6 +635,12 @@
       "cik": "0002040127",
       "name": "Karman Holdings Inc.",
       "sic": "3728",
+      "rawFacts": 2471,
+      "mappedFacts": 766,
+      "unmappedFacts": 1715,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KRMN"
@@ -748,13 +774,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "caa247aad9c97283c891718d2e83f324b67085374f4f9fd202c60cfa7b2c2dbb",

@@ -6,16 +6,22 @@
       "cik": "0001085243",
       "name": "VirTra, Inc",
       "sic": "3990",
+      "rawFacts": 9538,
+      "mappedFacts": 3392,
+      "unmappedFacts": 6392,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VTSI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 40,
-      "firstPeriodEnd": "2016-09-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 41,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 33,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -111,21 +117,21 @@
         }
       },
       "quality": {
-        "HIGH": 322,
+        "HIGH": 324,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 335,
-        "resolvedValues": 335
+        "datableValues": 337,
+        "resolvedValues": 337
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6606,
+        "total": 6603,
         "by_severity": {
           "ERROR": 1,
           "INFO": 6392,
-          "WARNING": 213
+          "WARNING": 210
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 102,
@@ -133,8 +139,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 80,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 6392,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 6392
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8d82b2c70df9c90ddfe0b507389f90cfb3a39107f125bcb29c295b1028b895c4",
@@ -161,16 +166,22 @@
       "cik": "0001526243",
       "name": "PERPETUA RESOURCES CORP.",
       "sic": "1040",
+      "rawFacts": 3890,
+      "mappedFacts": 1455,
+      "unmappedFacts": 2535,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PPTA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 24,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 25,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -235,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 24,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -266,25 +277,24 @@
         }
       },
       "quality": {
-        "HIGH": 166
+        "HIGH": 168
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 166,
-        "resolvedValues": 166
+        "datableValues": 168,
+        "resolvedValues": 168
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2614,
+        "total": 2612,
         "by_severity": {
           "INFO": 2535,
-          "WARNING": 79
+          "WARNING": 77
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 2535,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2535
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "29ab524d3ff4c98d5e2b8e58c87fc6c2478924899678938d8cc531465c08d3fe",
@@ -311,16 +321,22 @@
       "cik": "0001668243",
       "name": "UroGen Pharma Ltd.",
       "sic": "2834",
+      "rawFacts": 7951,
+      "mappedFacts": 2811,
+      "unmappedFacts": 5339,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "URGN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 40,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 41,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -385,11 +401,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 37,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -416,26 +432,25 @@
         }
       },
       "quality": {
-        "HIGH": 294,
+        "HIGH": 296,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 299,
-        "resolvedValues": 299
+        "datableValues": 301,
+        "resolvedValues": 301
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5427,
+        "total": 5421,
         "by_severity": {
-          "INFO": 5343,
-          "WARNING": 84
+          "INFO": 5339,
+          "WARNING": 82
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 73,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 5343,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5339
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5a909f464702502054f2b6ed35537bcc2d5026e5c8106104c3667abfb3cf4974",
@@ -462,6 +477,12 @@
       "cik": "0001736243",
       "name": "Acurx Pharmaceuticals, Inc.",
       "sic": "2834",
+      "rawFacts": 2831,
+      "mappedFacts": 1219,
+      "unmappedFacts": 1643,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ACXP"
@@ -597,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e38a695708729679ae6c4d76b5c86ec0eabac23d8b7e1aa54bd52d53390a96d4",
@@ -613,16 +634,22 @@
       "cik": "0001992243",
       "name": "T1 Energy Inc.",
       "sic": "3674",
+      "rawFacts": 3909,
+      "mappedFacts": 1124,
+      "unmappedFacts": 2772,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 16,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 17,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -687,11 +714,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 16,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -718,26 +745,25 @@
         }
       },
       "quality": {
-        "HIGH": 125,
+        "HIGH": 127,
         "MEDIUM": 25
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 150,
-        "resolvedValues": 150
+        "datableValues": 152,
+        "resolvedValues": 152
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2949,
+        "total": 2947,
         "by_severity": {
           "INFO": 2772,
-          "WARNING": 177
+          "WARNING": 175
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 147,
           "RESTATEMENT_CONFLICT": 28,
-          "UNKNOWN_CONCEPT": 2772,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2772
         }
       },
       "latestFiling": {
@@ -748,13 +774,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4fd8c3afea537f41c7e784597c8e8d586add8340947261d5732fcc5a353ae969",
@@ -764,6 +790,12 @@
       "cik": "0002052243",
       "name": "Twelve Seas Investment Co III/Cayman",
       "sic": "6770",
+      "rawFacts": 236,
+      "mappedFacts": 120,
+      "unmappedFacts": 127,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TWLV",
@@ -771,11 +803,11 @@
         "TWLVU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -840,18 +872,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -871,24 +903,23 @@
         }
       },
       "quality": {
-        "HIGH": 18
+        "HIGH": 22
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 18,
-        "resolvedValues": 18
+        "datableValues": 22,
+        "resolvedValues": 22
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 145,
+        "total": 131,
         "by_severity": {
           "INFO": 127,
-          "WARNING": 18
+          "WARNING": 4
         },
         "by_code": {
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 127,
-          "UNPLACEABLE_PERIOD": 14
+          "UNKNOWN_CONCEPT": 127
         }
       },
       "latestFiling": {
@@ -899,13 +930,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c2858774b79bda095a1a8cefe4767c766b97b2be1b5eaffb903fc891fca700bc",

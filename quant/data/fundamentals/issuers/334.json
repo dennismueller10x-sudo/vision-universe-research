@@ -6,16 +6,22 @@
       "cik": "0000076334",
       "name": "Parker-Hannifin Corp",
       "sic": "3490",
+      "rawFacts": 26330,
+      "mappedFacts": 8251,
+      "unmappedFacts": 18561,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "PH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2008-06-30",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2007-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -80,11 +86,11 @@
           "historyYears": 17.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-06-30",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 19,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 713,
+        "HIGH": 715,
         "MEDIUM": 66
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 779,
-        "resolvedValues": 779
+        "datableValues": 781,
+        "resolvedValues": 781
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18964,
+        "total": 18962,
         "by_severity": {
           "INFO": 18561,
-          "WARNING": 403
+          "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 340,
           "RESTATEMENT_CONFLICT": 61,
-          "UNKNOWN_CONCEPT": 18561,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18561
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5ee46d84582bc047924374b16640fd6edced3cbc559830fa742bb87ea377665e",
@@ -157,6 +162,12 @@
       "cik": "0001176334",
       "name": "MARTIN MIDSTREAM PARTNERS L.P.",
       "sic": "5171",
+      "rawFacts": 20186,
+      "mappedFacts": 4901,
+      "unmappedFacts": 15103,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MMLP"
@@ -272,17 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15926,
+        "total": 15815,
         "by_severity": {
-          "INFO": 15226,
-          "WARNING": 700
+          "INFO": 15103,
+          "WARNING": 712
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 475,
-          "FISCAL_PERIOD_CONFLICT": 16,
-          "RESTATEMENT_CONFLICT": 208,
-          "UNKNOWN_CONCEPT": 15226,
-          "UNPLACEABLE_PERIOD": 1
+          "CONCEPT_DISAGREEMENT": 482,
+          "FISCAL_PERIOD_CONFLICT": 17,
+          "RESTATEMENT_CONFLICT": 213,
+          "UNKNOWN_CONCEPT": 15103
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7edf2b2d1337482082853d7dbadf8a681b7b425e6d30b91b63abbead99c3eb83",
@@ -309,16 +319,22 @@
       "cik": "0001473334",
       "name": "XMax Inc.",
       "sic": "2510",
+      "rawFacts": 19366,
+      "mappedFacts": 5909,
+      "unmappedFacts": 13704,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XMAX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -383,11 +399,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -414,27 +430,26 @@
         }
       },
       "quality": {
-        "HIGH": 485,
+        "HIGH": 487,
         "MEDIUM": 47
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 532,
-        "resolvedValues": 532
+        "datableValues": 534,
+        "resolvedValues": 534
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14245,
+        "total": 14112,
         "by_severity": {
-          "INFO": 13836,
-          "WARNING": 409
+          "INFO": 13704,
+          "WARNING": 408
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 253,
-          "RESTATEMENT_CONFLICT": 151,
+          "RESTATEMENT_CONFLICT": 154,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 13836,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 13704
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f0c2b693c013ea01409997905d89e521c902244eb26aa514250a3263db8cd139",
@@ -461,6 +476,20 @@
       "cik": "0001572334",
       "name": "Virginia National Bankshares Corp",
       "sic": "6021",
+      "rawFacts": 19187,
+      "mappedFacts": 3262,
+      "unmappedFacts": 16182,
+      "calendarYears": 15,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "VABK"
@@ -576,16 +605,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16383,
+        "total": 16234,
         "by_severity": {
-          "INFO": 16332,
-          "WARNING": 51
+          "INFO": 16182,
+          "WARNING": 52
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 29,
-          "FISCAL_PERIOD_CONFLICT": 7,
+          "FISCAL_PERIOD_CONFLICT": 8,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 16332
+          "UNKNOWN_CONCEPT": 16182
         }
       },
       "latestFiling": {
@@ -596,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4888292c67e7495b9247afc931ca9b1795586e5ccd133c36e034841a2977926c",
@@ -612,16 +641,22 @@
       "cik": "0001660334",
       "name": "Verrica Pharmaceuticals Inc.",
       "sic": "2834",
+      "rawFacts": 7773,
+      "mappedFacts": 2586,
+      "unmappedFacts": 5349,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VRCA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 38,
-      "firstPeriodEnd": "2017-03-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 39,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -686,11 +721,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 35,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -717,21 +752,21 @@
         }
       },
       "quality": {
-        "HIGH": 305,
+        "HIGH": 307,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 306,
-        "resolvedValues": 306
+        "datableValues": 308,
+        "resolvedValues": 308
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5427,
+        "total": 5423,
         "by_severity": {
           "INFO": 5349,
           "ERROR": 1,
-          "WARNING": 77
+          "WARNING": 73
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
@@ -740,8 +775,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 5349,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 5349
         }
       },
       "latestFiling": {
@@ -752,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5a544b1b9820c4c71f5fbb64d738baedaa5ba2b4569cc63454f7fa20188eb1b0",
@@ -768,16 +802,22 @@
       "cik": "0001690334",
       "name": "SEACOR Marine Holdings Inc.",
       "sic": "4412",
+      "rawFacts": 14956,
+      "mappedFacts": 3750,
+      "unmappedFacts": 11371,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SMHI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 43,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 44,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -842,11 +882,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 40,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -873,27 +913,26 @@
         }
       },
       "quality": {
-        "HIGH": 427,
+        "HIGH": 429,
         "MEDIUM": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 463,
-        "resolvedValues": 463
+        "datableValues": 465,
+        "resolvedValues": 465
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11759,
+        "total": 11757,
         "by_severity": {
           "INFO": 11371,
-          "WARNING": 388
+          "WARNING": 386
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 262,
           "EXTREME_VALUE": 2,
           "RESTATEMENT_CONFLICT": 122,
-          "UNKNOWN_CONCEPT": 11371,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11371
         }
       },
       "latestFiling": {
@@ -904,13 +943,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f938be3999894de287623093df8b411ea75967ce6588f4dbbdcf3eff2c5f09cf",
@@ -920,6 +959,12 @@
       "cik": "0001713334",
       "name": "STUDIO CITY INTERNATIONAL HOLDINGS Ltd",
       "sic": "7011",
+      "rawFacts": 2445,
+      "mappedFacts": 721,
+      "unmappedFacts": 1842,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MSC"
@@ -1035,15 +1080,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1910,
+        "total": 1909,
         "by_severity": {
           "INFO": 1842,
-          "WARNING": 68
+          "WARNING": 67
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 67,
-          "UNKNOWN_CONCEPT": 1842,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1842
         }
       },
       "latestFiling": {
@@ -1054,13 +1098,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "883626471142d2fb60fd5e1c5bf0d0139e7da4ed579f9943b0acfbf83583b1dd",

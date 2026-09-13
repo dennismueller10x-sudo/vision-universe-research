@@ -6,6 +6,20 @@
       "cik": "0000910073",
       "name": "FLAGSTAR BANK, NATIONAL ASSOCIATION",
       "sic": "6036",
+      "rawFacts": 34744,
+      "mappedFacts": 5759,
+      "unmappedFacts": 29116,
+      "calendarYears": 19,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FLG",
@@ -123,16 +137,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29749,
+        "total": 29517,
         "by_severity": {
-          "INFO": 29348,
+          "INFO": 29116,
           "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 357,
-          "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 29348,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 44,
+          "UNKNOWN_CONCEPT": 29116
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0d782f64c589fe283550b7ae58252c0c9c290a6e479deb7e3bb24af8be8dd2d2",
@@ -159,6 +172,12 @@
       "cik": "0001095073",
       "name": "EVEREST GROUP, LTD.",
       "sic": "6331",
+      "rawFacts": 30936,
+      "mappedFacts": 4909,
+      "unmappedFacts": 25954,
+      "calendarYears": 18,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EG"
@@ -274,16 +293,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26443,
+        "total": 26442,
         "by_severity": {
           "INFO": 25954,
-          "WARNING": 489
+          "WARNING": 488
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 407,
           "RESTATEMENT_CONFLICT": 81,
-          "UNKNOWN_CONCEPT": 25954,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 25954
         }
       },
       "latestFiling": {
@@ -294,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "659ef2ffa9212b22415dbaca3a0c85eb40eee8aec94e3760944b9447b2a8e563",
@@ -310,6 +328,12 @@
       "cik": "0001757073",
       "name": "Envista Holdings Corp",
       "sic": "3843",
+      "rawFacts": 11805,
+      "mappedFacts": 3066,
+      "unmappedFacts": 8750,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NVST"
@@ -425,17 +449,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9037,
+        "total": 9036,
         "by_severity": {
           "INFO": 8750,
-          "WARNING": 287
+          "WARNING": 286
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 224,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 8750,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 8750
         }
       },
       "latestFiling": {
@@ -446,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "09322f042e58f8d5e03478e2eaa0c29717ac027796a52aa4f80011211ce6ca0e",
@@ -462,6 +485,12 @@
       "cik": "0001952073",
       "name": "Madison Square Garden Entertainment Corp.",
       "sic": "7990",
+      "rawFacts": 4602,
+      "mappedFacts": 1350,
+      "unmappedFacts": 3340,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "MSGE"
@@ -595,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "08d8ec64a87aa6f17c6022e981bef03a98110fd4238b1efb27f498c876b4e6c2",
@@ -611,6 +640,12 @@
       "cik": "0002080073",
       "name": "Versamet Royalties Corp",
       "sic": "6795",
+      "rawFacts": 1,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VMET"
@@ -739,13 +774,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a95d3e362996599d2d829d45f42fa7d140baf2cb777955a6b86d4982e650c3f8",
@@ -755,6 +790,12 @@
       "cik": "0002094073",
       "name": "Clearthink 1 Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 209,
+      "mappedFacts": 65,
+      "unmappedFacts": 145,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CTAA",
@@ -762,10 +803,10 @@
         "CTAAU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2025-12-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -804,14 +845,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -831,17 +872,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -861,23 +902,25 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 12
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 12,
+        "resolvedValues": 12
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 209,
+        "total": 154,
         "by_severity": {
           "INFO": 145,
-          "WARNING": 64
+          "WARNING": 9
         },
         "by_code": {
+          "RESTATEMENT_CONFLICT": 2,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 145,
-          "UNPLACEABLE_PERIOD": 57
+          "UNKNOWN_CONCEPT": 145
         }
       },
       "latestFiling": {
@@ -888,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "34f4bad8a4201f73d194e1af0c10fde70593fa99a53fadea1a7910911253e97d",

@@ -6,16 +6,22 @@
       "cik": "0001359931",
       "name": "Protara Therapeutics, Inc.",
       "sic": "2836",
+      "rawFacts": 10467,
+      "mappedFacts": 3418,
+      "unmappedFacts": 7160,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TARA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 55,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 56,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -80,11 +86,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 50,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 346,
+        "HIGH": 348,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 364,
-        "resolvedValues": 364
+        "datableValues": 366,
+        "resolvedValues": 366
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7371,
+        "total": 7349,
         "by_severity": {
-          "INFO": 7181,
+          "INFO": 7160,
           "ERROR": 2,
-          "WARNING": 188
+          "WARNING": 187
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 110,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 76,
-          "UNKNOWN_CONCEPT": 7181,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 77,
+          "UNKNOWN_CONCEPT": 7160
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "351cad1d544b2f391c06f2bcd565edb7a33cb16cd097db6a14c982e1af88225a",

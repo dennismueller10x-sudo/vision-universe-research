@@ -6,6 +6,12 @@
       "cik": "0001808997",
       "name": "American Outdoor Brands, Inc.",
       "sic": "3949",
+      "rawFacts": 7479,
+      "mappedFacts": 2482,
+      "unmappedFacts": 5042,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0430",
       "tickers": [
         "AOUT"
@@ -140,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a3809eccda07f9fe2c7bbbfa76cbcd1429185988c0d6b6006f51253ba9132e98",
@@ -156,6 +162,12 @@
       "cik": "0001810997",
       "name": "XPENG INC.",
       "sic": "3711",
+      "rawFacts": 3533,
+      "mappedFacts": 752,
+      "unmappedFacts": 2808,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XPEV",
@@ -291,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c20d484a909bc147726db0f75e47b35f4ce54cffb2ad9edc25f618156b0de199",
@@ -307,16 +319,22 @@
       "cik": "0002096997",
       "name": "Kailera Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 507,
+      "mappedFacts": 138,
+      "unmappedFacts": 371,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KLRA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -327,7 +345,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -354,14 +372,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -381,17 +399,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -411,22 +429,25 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 24
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 24,
+        "resolvedValues": 24
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 507,
+        "total": 382,
         "by_severity": {
           "INFO": 371,
-          "WARNING": 136
+          "WARNING": 11
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 371,
-          "UNPLACEABLE_PERIOD": 136
+          "CONCEPT_DISAGREEMENT": 5,
+          "EXTREME_VALUE": 6,
+          "UNKNOWN_CONCEPT": 371
         }
       },
       "latestFiling": {
@@ -437,13 +458,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "099a2c606f74856ad1224cc3b789d39a3dcce1ccb8a04b4d9c24dd3ff5e54432",

@@ -6,6 +6,12 @@
       "cik": "0000068622",
       "name": "QWEST CORP",
       "sic": "4813",
+      "rawFacts": 14905,
+      "mappedFacts": 4704,
+      "unmappedFacts": 10311,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [],
       "status": "INGESTED",
@@ -119,16 +125,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10687,
+        "total": 10686,
         "by_severity": {
           "INFO": 10311,
-          "WARNING": 376
+          "WARNING": 375
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 336,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 10311,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 10311
         }
       },
       "latestFiling": {
@@ -139,13 +144,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "de40a63f769758c9c115ed2375aa844ecc5d65eefe3e5e99001e3ff21973632b",
@@ -155,6 +160,12 @@
       "cik": "0000764622",
       "name": "PINNACLE WEST CAPITAL CORP",
       "sic": "4911",
+      "rawFacts": 27984,
+      "mappedFacts": 6203,
+      "unmappedFacts": 21794,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PNW"
@@ -270,16 +281,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22446,
+        "total": 22445,
         "by_severity": {
           "INFO": 21794,
-          "WARNING": 652
+          "WARNING": 651
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 640,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 21794,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 21794
         }
       },
       "latestFiling": {
@@ -290,13 +300,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d8138ee57d5e41eb48fd2a750842402b7639341201c93cde3398671795392a23",
@@ -306,16 +316,22 @@
       "cik": "0000896622",
       "name": "APTARGROUP, INC.",
       "sic": "3089",
+      "rawFacts": 26006,
+      "mappedFacts": 7321,
+      "unmappedFacts": 18616,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ATR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -380,11 +396,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -411,26 +427,25 @@
         }
       },
       "quality": {
-        "HIGH": 679,
+        "HIGH": 681,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 687,
-        "resolvedValues": 687
+        "datableValues": 689,
+        "resolvedValues": 689
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19255,
+        "total": 19253,
         "by_severity": {
           "INFO": 18616,
-          "WARNING": 639
+          "WARNING": 637
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 613,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 18616,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18616
         }
       },
       "latestFiling": {
@@ -441,13 +456,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "de26602b3c6dac64ed4a7880affd731b15681180ac67e5970bc7c0f80af1ce59",
@@ -457,16 +472,22 @@
       "cik": "0001368622",
       "name": "AeroVironment Inc",
       "sic": "3721",
+      "rawFacts": 21476,
+      "mappedFacts": 6473,
+      "unmappedFacts": 14777,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0430",
       "tickers": [
         "AVAV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2010-04-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2009-04-30",
       "lastPeriodEnd": "2026-08-01",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -531,11 +552,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-04-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-04-30",
           "lastAvailablePeriod": "2026-04-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -562,27 +583,26 @@
         }
       },
       "quality": {
-        "HIGH": 574,
+        "HIGH": 576,
         "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 614,
-        "resolvedValues": 614
+        "datableValues": 616,
+        "resolvedValues": 616
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15548,
+        "total": 15546,
         "by_severity": {
           "INFO": 14777,
-          "WARNING": 771
+          "WARNING": 769
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 611,
           "FISCAL_PERIOD_CONFLICT": 38,
           "RESTATEMENT_CONFLICT": 120,
-          "UNKNOWN_CONCEPT": 14777,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14777
         }
       },
       "latestFiling": {
@@ -593,13 +613,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3a5de8ccef84b471051fda6987bda48c81c2e6e9423bbdaad4919ca71cd31bba",
@@ -609,6 +629,12 @@
       "cik": "0001681622",
       "name": "Varex Imaging Corp",
       "sic": "3679",
+      "rawFacts": 16630,
+      "mappedFacts": 4397,
+      "unmappedFacts": 12275,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1002",
       "tickers": [
         "VREX"
@@ -743,13 +769,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bd7cc1c2406756332e195cd5b9dc953aa016bc23c50941079f5f7f26f277b1bb",
@@ -759,16 +785,22 @@
       "cik": "0001834622",
       "name": "Hayward Holdings, Inc.",
       "sic": "3580",
+      "rawFacts": 8620,
+      "mappedFacts": 2372,
+      "unmappedFacts": 6340,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HAYW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-03-28",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -833,11 +865,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -864,27 +896,26 @@
         }
       },
       "quality": {
-        "HIGH": 225,
+        "HIGH": 227,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 231,
-        "resolvedValues": 231
+        "datableValues": 233,
+        "resolvedValues": 233
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6547,
+        "total": 6536,
         "by_severity": {
-          "INFO": 6349,
-          "WARNING": 198
+          "INFO": 6340,
+          "WARNING": 196
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 170,
           "PERIOD_MISMATCH": 12,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 6349,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6340
         }
       },
       "latestFiling": {
@@ -895,13 +926,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ab6c41fef14ab58e55b021e1a13247b3f9de431daa5e55227e9ba8d66cb07f78",
@@ -911,16 +942,22 @@
       "cik": "0001861622",
       "name": "Jet.AI Inc.",
       "sic": "4522",
+      "rawFacts": 3734,
+      "mappedFacts": 1520,
+      "unmappedFacts": 2317,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "JTAI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2022-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 21,
+      "firstPeriodEnd": "2021-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -958,14 +995,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -985,18 +1022,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -1016,28 +1053,26 @@
         }
       },
       "quality": {
-        "HIGH": 132,
+        "HIGH": 144,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 135,
-        "resolvedValues": 135
+        "datableValues": 147,
+        "resolvedValues": 147
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2593,
+        "total": 2467,
         "by_severity": {
           "INFO": 2317,
-          "WARNING": 276
+          "WARNING": 150
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 37,
-          "FISCAL_PERIOD_CONFLICT": 16,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 110,
-          "UNKNOWN_CONCEPT": 2317,
-          "UNPLACEABLE_PERIOD": 112
+          "RESTATEMENT_CONFLICT": 112,
+          "UNKNOWN_CONCEPT": 2317
         }
       },
       "latestFiling": {
@@ -1048,13 +1083,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c472b4a3623ff5db02565a56719647aed12fc83c11200a2cc017c86736613e1a",
@@ -1064,6 +1099,12 @@
       "cik": "0001970622",
       "name": "USA Rare Earth, Inc.",
       "sic": "1000",
+      "rawFacts": 2373,
+      "mappedFacts": 580,
+      "unmappedFacts": 1669,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "USAR"
@@ -1200,13 +1241,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1d89c0c54f97fda837062197837612685f3cd3d2029fc9a4745242b1381f4cd1",

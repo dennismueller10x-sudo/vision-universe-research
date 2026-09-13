@@ -6,16 +6,22 @@
       "cik": "0001001316",
       "name": "TG THERAPEUTICS, INC.",
       "sic": "2834",
+      "rawFacts": 15370,
+      "mappedFacts": 5068,
+      "unmappedFacts": 10522,
+      "calendarYears": 26,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TGTX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 25,
-      "quarterlyPeriods": 73,
-      "firstPeriodEnd": "2001-12-31",
+      "annualPeriods": 26,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2000-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 24.0,
+      "historyYears": 25.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -80,11 +86,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 25,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2001-12-31",
+          "annualPeriods": 26,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2000-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 24.0
+          "historyYears": 25.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 526,
+        "HIGH": 528,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 542,
-        "resolvedValues": 542
+        "datableValues": 544,
+        "resolvedValues": 544
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11009,
+        "total": 11007,
         "by_severity": {
           "INFO": 10522,
-          "WARNING": 487
+          "WARNING": 485
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 241,
           "RESTATEMENT_CONFLICT": 102,
           "UNEXPECTED_DURATION": 142,
-          "UNKNOWN_CONCEPT": 10522,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10522
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4d148512c3e6d01feb1a66db06299590b59e811667e57890a694fa3290d2cd2d",
@@ -158,16 +163,22 @@
       "cik": "0001031316",
       "name": "FRANKLIN STREET PROPERTIES CORP /MA/",
       "sic": "6798",
+      "rawFacts": 17270,
+      "mappedFacts": 4582,
+      "unmappedFacts": 12654,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FSP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2009-06-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -263,28 +274,27 @@
         }
       },
       "quality": {
-        "HIGH": 517,
+        "HIGH": 519,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 522,
-        "resolvedValues": 522
+        "datableValues": 524,
+        "resolvedValues": 524
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12908,
+        "total": 12904,
         "by_severity": {
           "INFO": 12654,
           "ERROR": 1,
-          "WARNING": 253
+          "WARNING": 249
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 217,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 12654,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 12654
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2058bf0b75bc9cf59218576209c384afc4605c0f6e8dc064b98071a321bc314c",
@@ -311,16 +321,22 @@
       "cik": "0001434316",
       "name": "FATE THERAPEUTICS INC",
       "sic": "2836",
+      "rawFacts": 11439,
+      "mappedFacts": 3870,
+      "unmappedFacts": 7753,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FATE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 62,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 63,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -385,11 +401,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 57,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -416,26 +432,25 @@
         }
       },
       "quality": {
-        "HIGH": 505,
+        "HIGH": 507,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 511,
-        "resolvedValues": 511
+        "datableValues": 513,
+        "resolvedValues": 513
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7874,
+        "total": 7873,
         "by_severity": {
           "INFO": 7753,
-          "WARNING": 121
+          "WARNING": 120
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 75,
           "UNEXPECTED_DURATION": 45,
-          "UNKNOWN_CONCEPT": 7753,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 7753
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8ad9709c06c979bcdca51038f981e7be92b0c74356ba4fbbe65b6c937cf035e6",
@@ -462,6 +477,12 @@
       "cik": "0001828316",
       "name": "Pharming Group N.V.",
       "sic": "2834",
+      "rawFacts": 2576,
+      "mappedFacts": 480,
+      "unmappedFacts": 2179,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PHAR"
@@ -597,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bd7aa940b5b407739b4a3f2bc6bdeb3d3539a30206a0da5406dabf4c7c008c74",

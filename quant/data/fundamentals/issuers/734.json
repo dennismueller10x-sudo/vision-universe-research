@@ -6,17 +6,23 @@
       "cik": "0001775734",
       "name": "Beneficient",
       "sic": "6199",
+      "rawFacts": 4129,
+      "mappedFacts": 845,
+      "unmappedFacts": 3264,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "BENF",
         "BENFW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 21,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 22,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.25,
+      "historyYears": 6.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -81,11 +87,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 20,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 5.25
+          "historyYears": 6.25
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -112,28 +118,27 @@
         }
       },
       "quality": {
-        "HIGH": 122,
+        "HIGH": 124,
         "MEDIUM": 24
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 146,
-        "resolvedValues": 146
+        "datableValues": 148,
+        "resolvedValues": 148
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3406,
+        "total": 3403,
         "by_severity": {
           "INFO": 3264,
-          "WARNING": 142
+          "WARNING": 139
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
           "EXTREME_VALUE": 27,
           "NEGATIVE_WHERE_IMPOSSIBLE": 27,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 3264,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 3264
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9d4678d678d60b1d43a5b64e5fc1c9fda0b9fb36994c998884ab709f4c42a695",

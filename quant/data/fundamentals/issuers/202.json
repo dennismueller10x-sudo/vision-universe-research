@@ -6,16 +6,22 @@
       "cik": "0001069202",
       "name": "LENNOX INTERNATIONAL INC",
       "sic": "3585",
+      "rawFacts": 28521,
+      "mappedFacts": 7508,
+      "unmappedFacts": 21294,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LII"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 636,
+        "HIGH": 638,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 654,
-        "resolvedValues": 654
+        "datableValues": 656,
+        "resolvedValues": 656
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21839,
+        "total": 21837,
         "by_severity": {
           "INFO": 21294,
-          "WARNING": 545
+          "WARNING": 543
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 431,
           "RESTATEMENT_CONFLICT": 112,
-          "UNKNOWN_CONCEPT": 21294,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 21294
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a6c4fa6fa9e743df98a15be5a41c9a50d0cd3b5680ee0f70af1b4d6a4fd55f9a",

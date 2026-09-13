@@ -6,16 +6,22 @@
       "cik": "0000215466",
       "name": "Coeur Mining, Inc.",
       "sic": "1040",
+      "rawFacts": 27465,
+      "mappedFacts": 6980,
+      "unmappedFacts": 20575,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CDE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 654,
+        "HIGH": 656,
         "MEDIUM": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 690,
-        "resolvedValues": 690
+        "datableValues": 692,
+        "resolvedValues": 692
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21093,
+        "total": 21091,
         "by_severity": {
           "INFO": 20575,
-          "WARNING": 518
+          "WARNING": 516
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 445,
           "RESTATEMENT_CONFLICT": 71,
-          "UNKNOWN_CONCEPT": 20575,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20575
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2193ad410b6854efe0b800ed30c70089342a58ffa7ee147b85f5a9146e01a6ea",
@@ -157,6 +162,12 @@
       "cik": "0001746466",
       "name": "Equillium, Inc.",
       "sic": "2834",
+      "rawFacts": 6826,
+      "mappedFacts": 2337,
+      "unmappedFacts": 4579,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EQ"
@@ -294,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1be5ce2f29655c51f72cab8b3f0a85d3a12bc387bf2cc961b6d75f0f29ca4931",
@@ -310,16 +321,22 @@
       "cik": "0001832466",
       "name": "Alignment Healthcare, Inc.",
       "sic": "6324",
+      "rawFacts": 7705,
+      "mappedFacts": 2232,
+      "unmappedFacts": 5360,
+      "calendarYears": 7,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALHC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -384,11 +401,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -415,26 +432,25 @@
         }
       },
       "quality": {
-        "HIGH": 260,
+        "HIGH": 262,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 265,
-        "resolvedValues": 265
+        "datableValues": 267,
+        "resolvedValues": 267
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5512,
+        "total": 5510,
         "by_severity": {
           "INFO": 5360,
-          "WARNING": 152
+          "WARNING": 150
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 138,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 5360,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5360
         }
       },
       "latestFiling": {
@@ -445,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "da33941b9f91261866dd82fbcff6afc84979bc092878432b570738944ebd4c28",
@@ -461,6 +477,20 @@
       "cik": "0001849466",
       "name": "Texas Community Bancshares, Inc.",
       "sic": "6036",
+      "rawFacts": 8435,
+      "mappedFacts": 1431,
+      "unmappedFacts": 7054,
+      "calendarYears": 6,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "TCBS"
@@ -575,16 +605,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7170,
+        "total": 7100,
         "by_severity": {
-          "INFO": 7120,
-          "WARNING": 50
+          "INFO": 7054,
+          "WARNING": 46
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 42,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 7120,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 7054
         }
       },
       "latestFiling": {
@@ -595,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c28bbf93419766bf5c242c9726073441518eacae0c50cd5b7dc1fd640ca75d60",

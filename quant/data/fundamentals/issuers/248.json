@@ -6,6 +6,12 @@
       "cik": "0001127248",
       "name": "EMERA INC",
       "sic": "4911",
+      "rawFacts": 5690,
+      "mappedFacts": 990,
+      "unmappedFacts": 4827,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EMA",
@@ -14,11 +20,11 @@
         "EMRJF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 13,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 14,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -83,11 +89,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 13,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -114,26 +120,25 @@
         }
       },
       "quality": {
-        "HIGH": 117,
+        "HIGH": 119,
         "MEDIUM": 52
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 169,
-        "resolvedValues": 169
+        "datableValues": 171,
+        "resolvedValues": 171
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4979,
+        "total": 4960,
         "by_severity": {
-          "INFO": 4849,
-          "WARNING": 130
+          "INFO": 4827,
+          "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 4849,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 9,
+          "UNKNOWN_CONCEPT": 4827
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "16f29bb8617449d1dcd2cd0b88abbe2ecb74c78c3aba07f3986cc088c9c2ce9e",
@@ -160,16 +165,22 @@
       "cik": "0001534248",
       "name": "Chemomab Therapeutics Ltd.",
       "sic": "2834",
+      "rawFacts": 3196,
+      "mappedFacts": 1215,
+      "unmappedFacts": 2037,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CMMB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 23,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 24,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -265,27 +276,26 @@
         }
       },
       "quality": {
-        "HIGH": 155
+        "HIGH": 157
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 155,
-        "resolvedValues": 155
+        "datableValues": 157,
+        "resolvedValues": 157
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2165,
+        "total": 2163,
         "by_severity": {
           "ERROR": 1,
           "INFO": 2037,
-          "WARNING": 127
+          "WARNING": 125
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 42,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 83,
-          "UNKNOWN_CONCEPT": 2037,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2037
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9faaa4706eb25c65e1eba3a7e875664dea1ddb4cac87c770164863f97e80a43f",
@@ -312,6 +322,12 @@
       "cik": "0001595248",
       "name": "Genprex, Inc.",
       "sic": "2834",
+      "rawFacts": 6423,
+      "mappedFacts": 2409,
+      "unmappedFacts": 4226,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GNPX"
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bb7d1898a9ec8f2db87050e74cce7a1eb7eca9d7bb2e13f0fd5fe3646e2e4232",
@@ -462,17 +478,23 @@
       "cik": "0001786248",
       "name": "NexPoint Real Estate Finance, Inc.",
       "sic": "6798",
+      "rawFacts": 6552,
+      "mappedFacts": 1483,
+      "unmappedFacts": 5066,
+      "calendarYears": 6,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NREF",
         "NREF-PA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -537,11 +559,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -568,26 +590,25 @@
         }
       },
       "quality": {
-        "HIGH": 158,
+        "HIGH": 160,
         "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 190,
-        "resolvedValues": 190
+        "datableValues": 192,
+        "resolvedValues": 192
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5309,
+        "total": 5220,
         "by_severity": {
-          "INFO": 5142,
-          "WARNING": 167
+          "INFO": 5066,
+          "WARNING": 154
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 134,
-          "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 5142,
-          "UNPLACEABLE_PERIOD": 15
+          "RESTATEMENT_CONFLICT": 20,
+          "UNKNOWN_CONCEPT": 5066
         }
       },
       "latestFiling": {
@@ -598,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cab6203d1e3873ab50d7ff464dc1ccff22180a3da8a26f1a95dda728567bccdb",
@@ -614,17 +635,23 @@
       "cik": "0001879248",
       "name": "Ads-Tec Energy Public Ltd Co",
       "sic": "3690",
+      "rawFacts": 1751,
+      "mappedFacts": 317,
+      "unmappedFacts": 1475,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ADSE",
         "ADSEW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -689,11 +716,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -720,25 +747,24 @@
         }
       },
       "quality": {
-        "HIGH": 58
+        "HIGH": 60
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 58,
-        "resolvedValues": 58
+        "datableValues": 60,
+        "resolvedValues": 60
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1491,
+        "total": 1489,
         "by_severity": {
           "INFO": 1475,
-          "WARNING": 16
+          "WARNING": 14
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 1475,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1475
         }
       },
       "latestFiling": {
@@ -749,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "725e33270364d993396f2b1a4ebac4608d521913b5221ee00662e9fb70d48638",
@@ -765,6 +791,12 @@
       "cik": "0002049248",
       "name": "Lakeshore Acquisition III Corp.",
       "sic": "6770",
+      "rawFacts": 567,
+      "mappedFacts": 290,
+      "unmappedFacts": 285,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LCCC",
@@ -772,11 +804,11 @@
         "LCCCU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2024-10-21",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -841,18 +873,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -872,26 +904,25 @@
         }
       },
       "quality": {
-        "HIGH": 35
+        "HIGH": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 35,
-        "resolvedValues": 35
+        "datableValues": 40,
+        "resolvedValues": 40
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 367,
+        "total": 309,
         "by_severity": {
-          "INFO": 297,
-          "WARNING": 70
+          "INFO": 285,
+          "WARNING": 24
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 7,
           "RESTATEMENT_CONFLICT": 5,
-          "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 297,
-          "UNPLACEABLE_PERIOD": 47
+          "UNEXPECTED_DURATION": 12,
+          "UNKNOWN_CONCEPT": 285
         }
       },
       "latestFiling": {
@@ -902,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ac8d422c6a7cbe50d00161f306e65c335646002ee05554329fcb336d7ec810f8",

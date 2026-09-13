@@ -6,17 +6,31 @@
       "cik": "0001089113",
       "name": "HSBC HOLDINGS PLC",
       "sic": "6035",
+      "rawFacts": 6350,
+      "mappedFacts": 616,
+      "unmappedFacts": 5790,
+      "calendarYears": 11,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HSBC",
         "HBCYF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -81,11 +95,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -112,26 +126,25 @@
         }
       },
       "quality": {
-        "HIGH": 78,
+        "HIGH": 80,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 88,
-        "resolvedValues": 88
+        "datableValues": 90,
+        "resolvedValues": 90
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5881,
+        "total": 5879,
         "by_severity": {
           "INFO": 5790,
-          "WARNING": 91
+          "WARNING": 89
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 85,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5790,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5790
         }
       },
       "latestFiling": {
@@ -142,13 +155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "847bf8577152556ef7f745819b88cd555ffd74faabc7a58c05a40fd96a70f09c",
@@ -158,16 +171,22 @@
       "cik": "0001361113",
       "name": "VARONIS SYSTEMS INC",
       "sic": "7372",
+      "rawFacts": 14432,
+      "mappedFacts": 4654,
+      "unmappedFacts": 10057,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VRNS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 55,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 56,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -232,11 +251,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 51,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -263,25 +282,24 @@
         }
       },
       "quality": {
-        "HIGH": 448
+        "HIGH": 450
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 448,
-        "resolvedValues": 448
+        "datableValues": 450,
+        "resolvedValues": 450
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10135,
+        "total": 10133,
         "by_severity": {
           "INFO": 10057,
-          "WARNING": 78
+          "WARNING": 76
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 34,
           "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 10057,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10057
         }
       },
       "latestFiling": {
@@ -292,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "99376aeb238c2d409ff8092ad554c7ec42e828248c86073c32261a7c4b78f8fd",
@@ -308,6 +326,12 @@
       "cik": "0001526113",
       "name": "Global Net Lease, Inc.",
       "sic": "6798",
+      "rawFacts": 19677,
+      "mappedFacts": 4443,
+      "unmappedFacts": 14958,
+      "calendarYears": 15,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GNL",
@@ -427,18 +451,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15642,
+        "total": 15640,
         "by_severity": {
           "INFO": 14958,
-          "WARNING": 684
+          "WARNING": 682
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 541,
           "FISCAL_PERIOD_CONFLICT": 27,
           "RESTATEMENT_CONFLICT": 107,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 14958,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14958
         }
       },
       "latestFiling": {
@@ -449,13 +472,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "babdb6e8c0c7cbbf8664ee8c77139fa7eaaa2931bb82c103452a1c636bd64eaf",
@@ -465,6 +488,12 @@
       "cik": "0001529113",
       "name": "XTI Aerospace, Inc.",
       "sic": "7371",
+      "rawFacts": 15874,
+      "mappedFacts": 4810,
+      "unmappedFacts": 10940,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XTIA"
@@ -580,18 +609,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11931,
+        "total": 11819,
         "by_severity": {
-          "INFO": 11064,
-          "WARNING": 867
+          "INFO": 10940,
+          "WARNING": 879
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 471,
           "FISCAL_PERIOD_CONFLICT": 10,
-          "RESTATEMENT_CONFLICT": 382,
+          "RESTATEMENT_CONFLICT": 395,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 11064,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 10940
         }
       },
       "latestFiling": {
@@ -602,13 +630,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5781377d274b923a76637a0326b3a69f6cdb24a4e2bd48ad70c04d0cc05ac167",
@@ -618,16 +646,22 @@
       "cik": "0001645113",
       "name": "NovoCure Ltd",
       "sic": "3841",
+      "rawFacts": 16759,
+      "mappedFacts": 6069,
+      "unmappedFacts": 10824,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NVCR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 49,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 50,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -692,11 +726,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 46,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -723,25 +757,24 @@
         }
       },
       "quality": {
-        "HIGH": 448
+        "HIGH": 450
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 448,
-        "resolvedValues": 448
+        "datableValues": 450,
+        "resolvedValues": 450
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11012,
+        "total": 10997,
         "by_severity": {
-          "INFO": 10837,
-          "WARNING": 175
+          "INFO": 10824,
+          "WARNING": 173
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 160,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 10837,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10824
         }
       },
       "latestFiling": {
@@ -752,13 +785,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "25c222ab32c39a6878529072869d288268ea460ce589145be6c292280bace12c",

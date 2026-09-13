@@ -6,16 +6,22 @@
       "cik": "0000730464",
       "name": "Covista Inc.",
       "sic": "8200",
+      "rawFacts": 33320,
+      "mappedFacts": 7246,
+      "unmappedFacts": 25328,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "CVSA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 20,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-06-30",
+      "annualPeriods": 21,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 8.5
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2009-06-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 485,
+        "HIGH": 487,
         "MEDIUM": 163
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 648,
-        "resolvedValues": 648
+        "datableValues": 650,
+        "resolvedValues": 650
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26795,
+        "total": 26751,
         "by_severity": {
-          "INFO": 25380,
+          "INFO": 25328,
           "ERROR": 7,
-          "WARNING": 1408
+          "WARNING": 1416
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1081,
+          "CONCEPT_DISAGREEMENT": 1087,
           "FUTURE_DATA_LEAK": 7,
-          "RESTATEMENT_CONFLICT": 322,
+          "RESTATEMENT_CONFLICT": 326,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 25380,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 25328
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "430bb27a55174bbc693aec7d1a7572002e3523de640640040ce6b447f3b99ed1",
@@ -160,16 +165,22 @@
       "cik": "0001130464",
       "name": "BLACK HILLS CORP /SD/",
       "sic": "4911",
+      "rawFacts": 28966,
+      "mappedFacts": 7513,
+      "unmappedFacts": 21386,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BKH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -234,11 +245,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -265,28 +276,27 @@
         }
       },
       "quality": {
-        "HIGH": 571,
+        "HIGH": 573,
         "MEDIUM": 208
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 779,
-        "resolvedValues": 779
+        "datableValues": 781,
+        "resolvedValues": 781
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22516,
+        "total": 22472,
         "by_severity": {
-          "INFO": 21428,
-          "WARNING": 1088
+          "INFO": 21386,
+          "WARNING": 1086
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 955,
           "FISCAL_PERIOD_CONFLICT": 9,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 21428,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 21386
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d595272e93090b7dceebe5c74ffd7174700aa0b780db65c0cd9eaa18a02ddadc",
@@ -313,6 +323,12 @@
       "cik": "0001203464",
       "name": "IAMGOLD CORP",
       "sic": "1040",
+      "rawFacts": 4046,
+      "mappedFacts": 626,
+      "unmappedFacts": 3533,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IAG"
@@ -428,16 +444,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3609,
+        "total": 3608,
         "by_severity": {
           "INFO": 3533,
-          "WARNING": 76
+          "WARNING": 75
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 68,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 3533,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 3533
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ee186f4b7bb173ae9a9182f78ccc173a0d4e15b67b63f0e946c4f7e72296395c",
@@ -464,6 +479,12 @@
       "cik": "0001604464",
       "name": "Atara Biotherapeutics, Inc.",
       "sic": "2836",
+      "rawFacts": 12507,
+      "mappedFacts": 3821,
+      "unmappedFacts": 8826,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ATRA"
@@ -598,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "46a8418fa5948e11ee15371c7a5d79fd14faa28a85e87a440ac7987b58cb24e9",
@@ -614,16 +635,22 @@
       "cik": "0001723464",
       "name": "BIOHARVEST SCIENCES INC.",
       "sic": "2834",
+      "rawFacts": 351,
+      "mappedFacts": 132,
+      "unmappedFacts": 245,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BHST"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2023-12-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2022-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -688,11 +715,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -719,24 +746,23 @@
         }
       },
       "quality": {
-        "HIGH": 30
+        "HIGH": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 30,
-        "resolvedValues": 30
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 248,
+        "total": 246,
         "by_severity": {
           "INFO": 245,
-          "WARNING": 3
+          "WARNING": 1
         },
         "by_code": {
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 245,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 245
         }
       },
       "latestFiling": {
@@ -747,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c14ce337c52d84723423bd854fb22842d280466931dc8dcccce77f6719169b1c",

@@ -6,16 +6,22 @@
       "cik": "0001628369",
       "name": "Cushman & Wakefield Ltd.",
       "sic": "6500",
+      "rawFacts": 13570,
+      "mappedFacts": 3394,
+      "unmappedFacts": 10279,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CWK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -80,11 +86,11 @@
           "historyYears": 8.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 38,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 366,
+        "HIGH": 368,
         "MEDIUM": 46
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 412,
-        "resolvedValues": 412
+        "datableValues": 414,
+        "resolvedValues": 414
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10642,
+        "total": 10640,
         "by_severity": {
           "INFO": 10279,
-          "WARNING": 363
+          "WARNING": 361
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 337,
+          "CONCEPT_DISAGREEMENT": 339,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 10279,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 10279
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7ca1c8bccf2a390738d4b62dc56ee217733a5c8e910c7564aed9583c9ddc0544",
@@ -158,34 +163,40 @@
       "cik": "0001633369",
       "name": "FreeCast, Inc.",
       "sic": "7374",
+      "rawFacts": 497,
+      "mappedFacts": 189,
+      "unmappedFacts": 304,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "CAST"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2024-06-30",
+      "lastPeriodEnd": "2026-03-31",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -205,21 +216,21 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -232,17 +243,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2024-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2025-06-30",
+          "lastAvailablePeriod": "2025-06-30",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -262,22 +273,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 32
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 497,
+        "total": 306,
         "by_severity": {
           "INFO": 304,
-          "WARNING": 193
+          "WARNING": 2
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 304,
-          "UNPLACEABLE_PERIOD": 193
+          "CONCEPT_DISAGREEMENT": 2,
+          "UNKNOWN_CONCEPT": 304
         }
       },
       "latestFiling": {
@@ -288,13 +301,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fa2bdecb16519ac8ad5282e0298a9b0abdb7c0194880e437ac6dc53bf0664dd7",

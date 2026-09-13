@@ -6,16 +6,30 @@
       "cik": "0001531031",
       "name": "Esquire Financial Holdings, Inc.",
       "sic": "6029",
+      "rawFacts": 14044,
+      "mappedFacts": 2534,
+      "unmappedFacts": 11533,
+      "calendarYears": 11,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ESQ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 42,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 43,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -111,27 +125,26 @@
         }
       },
       "quality": {
-        "HIGH": 295,
+        "HIGH": 297,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 304,
-        "resolvedValues": 304
+        "datableValues": 306,
+        "resolvedValues": 306
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11731,
+        "total": 11609,
         "by_severity": {
-          "INFO": 11654,
-          "WARNING": 77
+          "INFO": 11533,
+          "WARNING": 76
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 70,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11654,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 11533
         }
       },
       "latestFiling": {
@@ -142,13 +155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "552b02ce9c4fdc01d7dd4ec4c427b05fb46ffc1fc969cb8e3c7636be605871c6",
@@ -158,6 +171,12 @@
       "cik": "0001699031",
       "name": "GRAIL, Inc.",
       "sic": "8071",
+      "rawFacts": 2637,
+      "mappedFacts": 767,
+      "unmappedFacts": 1860,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GRAL"
@@ -272,17 +291,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1955,
+        "total": 1954,
         "by_severity": {
           "INFO": 1860,
-          "WARNING": 95
+          "WARNING": 94
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
           "FISCAL_PERIOD_CONFLICT": 1,
           "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 1860,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1860
         }
       },
       "latestFiling": {
@@ -293,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b7bef2bf2dd13dd3402029d2149bbd40a4cfb922c1b13384d97f52b038148eb5",
@@ -309,6 +327,12 @@
       "cik": "0001856031",
       "name": "Vivid Seats Inc.",
       "sic": "7990",
+      "rawFacts": 5319,
+      "mappedFacts": 1368,
+      "unmappedFacts": 4087,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SEAT",
@@ -425,11 +449,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4201,
+        "total": 4200,
         "by_severity": {
           "INFO": 4087,
           "ERROR": 2,
-          "WARNING": 112
+          "WARNING": 111
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 85,
@@ -440,8 +464,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 18,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 4087,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4087
         }
       },
       "latestFiling": {
@@ -452,13 +475,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b21053f5f2d38f8e40962bde8b8507461a8390f97eda2f37edd4e4f23bbeb9b9",

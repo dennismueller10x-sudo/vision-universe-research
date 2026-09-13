@@ -6,6 +6,12 @@
       "cik": "0000010456",
       "name": "BAXTER INTERNATIONAL INC",
       "sic": "3841",
+      "rawFacts": 29635,
+      "mappedFacts": 8362,
+      "unmappedFacts": 21152,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BAX"
@@ -121,16 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22284,
+        "total": 22156,
         "by_severity": {
-          "INFO": 21280,
+          "INFO": 21152,
           "WARNING": 1004
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 762,
-          "RESTATEMENT_CONFLICT": 241,
-          "UNKNOWN_CONCEPT": 21280,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 242,
+          "UNKNOWN_CONCEPT": 21152
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5be02b298cf9fd2b6b97d7036746bcdea3964198c010d65439c62e9dd8307d59",
@@ -157,6 +162,12 @@
       "cik": "0000895456",
       "name": "ROCKY BRANDS, INC.",
       "sic": "3140",
+      "rawFacts": 18848,
+      "mappedFacts": 7170,
+      "unmappedFacts": 12193,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RCKY"
@@ -294,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c0a9afff1ede00581c77f98abe97103b5ef11059e2d8788dc3f0f3f0f030b8e2",

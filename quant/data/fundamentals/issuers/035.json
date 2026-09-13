@@ -6,16 +6,22 @@
       "cik": "0000080035",
       "name": "PREFORMED LINE PRODUCTS CO",
       "sic": "1623",
+      "rawFacts": 23986,
+      "mappedFacts": 7388,
+      "unmappedFacts": 16890,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PLPC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 668,
+        "HIGH": 670,
         "MEDIUM": 78
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 746,
-        "resolvedValues": 746
+        "datableValues": 748,
+        "resolvedValues": 748
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17416,
+        "total": 17414,
         "by_severity": {
           "INFO": 16890,
-          "WARNING": 526
+          "WARNING": 524
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 458,
           "FISCAL_PERIOD_CONFLICT": 14,
           "RESTATEMENT_CONFLICT": 52,
-          "UNKNOWN_CONCEPT": 16890,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16890
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8eb965a9e52e2f92d6e7f57e909a267630873d0316b346064e28c37608d5c801",
@@ -158,16 +163,22 @@
       "cik": "0001708035",
       "name": "Ecovyst Inc.",
       "sic": "2800",
+      "rawFacts": 15551,
+      "mappedFacts": 4588,
+      "unmappedFacts": 10734,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ECVT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 43,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 44,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -232,11 +243,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 41,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -263,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 336,
+        "HIGH": 338,
         "MEDIUM": 114
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 450,
-        "resolvedValues": 450
+        "datableValues": 452,
+        "resolvedValues": 452
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11599,
+        "total": 11597,
         "by_severity": {
           "INFO": 10734,
-          "WARNING": 865
+          "WARNING": 863
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 629,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 233,
-          "UNKNOWN_CONCEPT": 10734,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10734
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d6a15fd4df1f76724e8681dfca1a156bd9e9d76be059addf44fcd61e3dbb788d",
@@ -310,6 +320,12 @@
       "cik": "0001736035",
       "name": "Blackstone Secured Lending Fund",
       "sic": null,
+      "rawFacts": 5469,
+      "mappedFacts": 1062,
+      "unmappedFacts": 4504,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BXSL"
@@ -442,13 +458,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "66e6f8885031ba283cf448bb02d43a757691988352cb362f35aaefda8de1a037",
@@ -458,6 +474,12 @@
       "cik": "0001859035",
       "name": "Mountain Crest Acquisition Corp. V",
       "sic": "3841",
+      "rawFacts": 2473,
+      "mappedFacts": 997,
+      "unmappedFacts": 1477,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MCAG",
@@ -594,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e73ef6c890fb14b7f8b74ea90fe85158b599dc655746bbb224b07e77564db709",

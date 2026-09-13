@@ -6,16 +6,22 @@
       "cik": "0001095435",
       "name": "Alpha Compute Corp",
       "sic": "6199",
+      "rawFacts": 1661,
+      "mappedFacts": 578,
+      "unmappedFacts": 1185,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "ALP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-03-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-03-31",
       "lastPeriodEnd": "2025-03-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-03-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-03-31",
           "lastAvailablePeriod": "2025-03-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 59,
+        "HIGH": 61,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 68,
-        "resolvedValues": 68
+        "datableValues": 70,
+        "resolvedValues": 70
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1267,
+        "total": 1265,
         "by_severity": {
           "INFO": 1185,
-          "WARNING": 82
+          "WARNING": 80
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 53,
           "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 1185,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1185
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5d4e8eb80b4dd94b61e0f826bca52e5d83b7c051ba898fd67508de3384976a8e",
@@ -157,16 +162,22 @@
       "cik": "0001500435",
       "name": "GoPro, Inc.",
       "sic": "3861",
+      "rawFacts": 19151,
+      "mappedFacts": 5329,
+      "unmappedFacts": 14271,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GPRO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 54,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 55,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -231,11 +242,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 51,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -262,27 +273,26 @@
         }
       },
       "quality": {
-        "HIGH": 530
+        "HIGH": 532
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 530,
-        "resolvedValues": 530
+        "datableValues": 532,
+        "resolvedValues": 532
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14700,
+        "total": 14698,
         "by_severity": {
           "INFO": 14271,
           "ERROR": 102,
-          "WARNING": 327
+          "WARNING": 325
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 309,
           "FUTURE_DATA_LEAK": 102,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 14271,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14271
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "19492fe9d4b9caa02a449513c62fda2652d0383caa42e6d584b08cf6af4b05f6",
@@ -309,16 +319,22 @@
       "cik": "0001537435",
       "name": "TECOGEN INC.",
       "sic": "3585",
+      "rawFacts": 13710,
+      "mappedFacts": 5205,
+      "unmappedFacts": 8294,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TGEN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 59,
-      "firstPeriodEnd": "2011-12-31",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 60,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -383,11 +399,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 55,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -414,26 +430,25 @@
         }
       },
       "quality": {
-        "HIGH": 365,
+        "HIGH": 367,
         "MEDIUM": 113
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 478,
-        "resolvedValues": 478
+        "datableValues": 480,
+        "resolvedValues": 480
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9048,
+        "total": 8921,
         "by_severity": {
-          "INFO": 8422,
-          "WARNING": 626
+          "INFO": 8294,
+          "WARNING": 627
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 584,
-          "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 8422,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 43,
+          "UNKNOWN_CONCEPT": 8294
         }
       },
       "latestFiling": {
@@ -444,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "436baa7c3d479a6b596057fe5be65f218246213a38458c746a5c1ba06d0bca7b",
@@ -460,6 +475,12 @@
       "cik": "0002019435",
       "name": "Blue Gold Ltd",
       "sic": "1000",
+      "rawFacts": 242,
+      "mappedFacts": 64,
+      "unmappedFacts": 180,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "BGL",
@@ -575,14 +596,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 189,
+        "total": 187,
         "by_severity": {
-          "INFO": 182,
+          "INFO": 180,
           "WARNING": 7
         },
         "by_code": {
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 182
+          "UNKNOWN_CONCEPT": 180
         }
       },
       "latestFiling": {
@@ -593,13 +614,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1fe19e45aed7dece12a25552e2194d5526d64a0f636b2453e7ff3052e298921e",

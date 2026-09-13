@@ -6,6 +6,12 @@
       "cik": "0000728387",
       "name": "Perspective Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 16183,
+      "mappedFacts": 5146,
+      "unmappedFacts": 11180,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CATX"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2a5a57290cc674a4ff411961118dcaf3d2163fad6afa66bbe4a861c0f63fe27d",
@@ -159,16 +165,30 @@
       "cik": "0001302387",
       "name": "BV Financial, Inc.",
       "sic": "6035",
+      "rawFacts": 6982,
+      "mappedFacts": 936,
+      "unmappedFacts": 6057,
+      "calendarYears": 4,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BVFL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2022-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 19,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -233,11 +253,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -264,25 +284,24 @@
         }
       },
       "quality": {
-        "HIGH": 146
+        "HIGH": 148
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 146,
-        "resolvedValues": 146
+        "datableValues": 148,
+        "resolvedValues": 148
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6165,
+        "total": 6118,
         "by_severity": {
-          "INFO": 6099,
-          "WARNING": 66
+          "INFO": 6057,
+          "WARNING": 61
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 6099,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 6057
         }
       },
       "latestFiling": {
@@ -293,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "555c86e9aa47f4b3b8a5a0700f6d53fa1c6b00b6614ff842d6a399ca8e624b1a",
@@ -309,6 +328,12 @@
       "cik": "0001722387",
       "name": "Integra Resources Corp.",
       "sic": "1040",
+      "rawFacts": 1823,
+      "mappedFacts": 475,
+      "unmappedFacts": 1465,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ITRG"
@@ -442,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "524207f65ab0ed420cef7ea5d78ef81676229bfd9e8d569462e7b5486003968f",
@@ -458,16 +483,22 @@
       "cik": "0001841387",
       "name": "Candel Therapeutics, Inc.",
       "sic": "2836",
+      "rawFacts": 5058,
+      "mappedFacts": 1599,
+      "unmappedFacts": 3458,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CADL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -532,11 +563,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -563,27 +594,26 @@
         }
       },
       "quality": {
-        "HIGH": 222
+        "HIGH": 224
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 222,
-        "resolvedValues": 222
+        "datableValues": 224,
+        "resolvedValues": 224
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3525,
+        "total": 3517,
         "by_severity": {
-          "INFO": 3460,
+          "INFO": 3458,
           "ERROR": 1,
-          "WARNING": 64
+          "WARNING": 58
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 53,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 3460,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 3458
         }
       },
       "latestFiling": {
@@ -594,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "705b7e0b7a5d9b2cf581d62a932e8fe3b4fb004a9d3f3d61b893b06f1fcb5468",
@@ -610,17 +640,23 @@
       "cik": "0001971387",
       "name": "Liminatus Pharma, Inc.",
       "sic": "2836",
+      "rawFacts": 815,
+      "mappedFacts": 382,
+      "unmappedFacts": 458,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LIMN",
         "LIMNW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2024-03-31",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2023-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -685,11 +721,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2024-12-31",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -716,25 +752,24 @@
         }
       },
       "quality": {
-        "HIGH": 66
+        "HIGH": 68
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 66,
-        "resolvedValues": 66
+        "datableValues": 68,
+        "resolvedValues": 68
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 489,
+        "total": 486,
         "by_severity": {
           "INFO": 458,
-          "WARNING": 31
+          "WARNING": 28
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
-          "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 458,
-          "UNPLACEABLE_PERIOD": 5
+          "RESTATEMENT_CONFLICT": 24,
+          "UNKNOWN_CONCEPT": 458
         }
       },
       "latestFiling": {
@@ -745,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "692063e0d4acff953e99e1f18cc7e13d642c9bc7e15c7c8ce81ccbb4727aebe4",
@@ -761,6 +796,12 @@
       "cik": "0002136387",
       "name": "Real REMAX Group Inc.",
       "sic": "6531",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "REAX"
@@ -880,13 +921,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4ba69cd86ea39e95830672fd3c65b8d61a8a263a94e14d4daaa0f3307d5cc988",

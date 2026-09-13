@@ -6,16 +6,22 @@
       "cik": "0001156039",
       "name": "Elevance Health, Inc.",
       "sic": "6324",
+      "rawFacts": 40102,
+      "mappedFacts": 8447,
+      "unmappedFacts": 31770,
+      "calendarYears": 20,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ELV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2007-12-31",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2006-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -80,11 +86,11 @@
           "historyYears": 17.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 73,
-          "firstAvailablePeriod": "2007-12-31",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 74,
+          "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 675,
+        "HIGH": 677,
         "MEDIUM": 136
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 811,
-        "resolvedValues": 811
+        "datableValues": 813,
+        "resolvedValues": 813
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32523,
+        "total": 32521,
         "by_severity": {
           "INFO": 31770,
-          "WARNING": 753
+          "WARNING": 751
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 679,
           "FISCAL_PERIOD_CONFLICT": 32,
           "RESTATEMENT_CONFLICT": 25,
           "UNEXPECTED_DURATION": 15,
-          "UNKNOWN_CONCEPT": 31770,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 31770
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "75f33897e6d63f80c4b068bfafce35c690e0851b22e3f71b6e2ef1af46c8ecc0",
@@ -159,16 +164,22 @@
       "cik": "0001262039",
       "name": "Fortinet, Inc.",
       "sic": "3577",
+      "rawFacts": 23255,
+      "mappedFacts": 6768,
+      "unmappedFacts": 16381,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FTNT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-28",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -233,11 +244,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-28",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,27 +275,26 @@
         }
       },
       "quality": {
-        "HIGH": 565,
+        "HIGH": 567,
         "MEDIUM": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 607,
-        "resolvedValues": 607
+        "datableValues": 609,
+        "resolvedValues": 609
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16920,
+        "total": 16918,
         "by_severity": {
           "INFO": 16381,
-          "WARNING": 539
+          "WARNING": 537
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 494,
           "RESTATEMENT_CONFLICT": 41,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16381,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16381
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6113c049f33de17a2d2f8ab65af5f38cfa87d0cf9a807a93bf655cba89b9de15",
@@ -311,16 +321,22 @@
       "cik": "0001488039",
       "name": "ATOSSA THERAPEUTICS, INC.",
       "sic": "2834",
+      "rawFacts": 13385,
+      "mappedFacts": 4272,
+      "unmappedFacts": 9079,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ATOS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 61,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 63,
+      "firstPeriodEnd": "2009-04-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -385,11 +401,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 58,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -416,27 +432,26 @@
         }
       },
       "quality": {
-        "HIGH": 360,
+        "HIGH": 363,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 378,
-        "resolvedValues": 378
+        "datableValues": 381,
+        "resolvedValues": 381
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9508,
+        "total": 9495,
         "by_severity": {
           "INFO": 9079,
-          "WARNING": 429
+          "WARNING": 416
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 187,
           "RESTATEMENT_CONFLICT": 99,
           "UNEXPECTED_DURATION": 130,
-          "UNKNOWN_CONCEPT": 9079,
-          "UNPLACEABLE_PERIOD": 13
+          "UNKNOWN_CONCEPT": 9079
         }
       },
       "latestFiling": {
@@ -447,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "428508bcea3e0654c7af6b4fc3c856ba5fe01c3888717c76629ba55bd42626e7",
@@ -463,6 +478,12 @@
       "cik": "0001699039",
       "name": "Ranger Energy Services, Inc.",
       "sic": "1389",
+      "rawFacts": 9772,
+      "mappedFacts": 3354,
+      "unmappedFacts": 6428,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RNGR"
@@ -578,17 +599,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6737,
+        "total": 6736,
         "by_severity": {
           "INFO": 6428,
-          "WARNING": 309
+          "WARNING": 308
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 273,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 6428,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 6428
         }
       },
       "latestFiling": {
@@ -599,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b96b46a3aa7e8440dca3fd8d694961aabc61f425441e1a1a534bc1261f8c93d9",
@@ -615,6 +635,12 @@
       "cik": "0002029039",
       "name": "Nasus Pharma Ltd",
       "sic": "2834",
+      "rawFacts": 304,
+      "mappedFacts": 77,
+      "unmappedFacts": 222,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NSRX"
@@ -748,13 +774,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bf0085a46f8fe4d024fe2b78d8ded43279195ac8b7b315c2996c69a22a7a6230",
@@ -764,16 +790,22 @@
       "cik": "0002099039",
       "name": "Wise Group plc",
       "sic": "7389",
+      "rawFacts": 445,
+      "mappedFacts": 113,
+      "unmappedFacts": 350,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "WSE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2024-03-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2023-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -838,11 +870,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2024-03-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2023-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -869,24 +901,23 @@
         }
       },
       "quality": {
-        "HIGH": 33
+        "HIGH": 35
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 33,
-        "resolvedValues": 33
+        "datableValues": 35,
+        "resolvedValues": 35
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 355,
+        "total": 353,
         "by_severity": {
           "INFO": 350,
-          "WARNING": 5
+          "WARNING": 3
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
-          "UNKNOWN_CONCEPT": 350,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 350
         }
       },
       "latestFiling": {
@@ -897,13 +928,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "823fb59761336913720242139a55b1f2788efeb534051f97ef16408514d69dd0",

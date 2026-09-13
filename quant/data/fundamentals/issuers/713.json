@@ -6,6 +6,12 @@
       "cik": "0001130713",
       "name": "NEIGHBORHOOD INTELLIGENCE, INC.",
       "sic": "5961",
+      "rawFacts": 25539,
+      "mappedFacts": 7652,
+      "unmappedFacts": 17324,
+      "calendarYears": 43,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NXH",
@@ -13,11 +19,11 @@
         "BBBYW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -82,11 +88,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 40,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -113,27 +119,26 @@
         }
       },
       "quality": {
-        "HIGH": 467,
+        "HIGH": 469,
         "MEDIUM": 101
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 568,
-        "resolvedValues": 568
+        "datableValues": 570,
+        "resolvedValues": 570
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18809,
+        "total": 18720,
         "by_severity": {
-          "INFO": 17411,
-          "WARNING": 1398
+          "INFO": 17324,
+          "WARNING": 1396
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 949,
           "FISCAL_PERIOD_CONFLICT": 90,
           "RESTATEMENT_CONFLICT": 357,
-          "UNKNOWN_CONCEPT": 17411,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17324
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a6f5063e4ebb5e8ecad8dd74b80cde6689d989ad59ab81c64a745d848b6e55fd",
@@ -160,16 +165,22 @@
       "cik": "0001734713",
       "name": "BrightView Holdings, Inc.",
       "sic": "0700",
+      "rawFacts": 11232,
+      "mappedFacts": 3840,
+      "unmappedFacts": 7605,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "BV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-09-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.75,
+      "historyYears": 9.75,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -234,11 +245,11 @@
           "historyYears": 8.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 37,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 8.75
+          "historyYears": 9.75
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -265,27 +276,26 @@
         }
       },
       "quality": {
-        "HIGH": 351,
+        "HIGH": 353,
         "MEDIUM": 43
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 394,
-        "resolvedValues": 394
+        "datableValues": 396,
+        "resolvedValues": 396
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7929,
+        "total": 7893,
         "by_severity": {
-          "INFO": 7639,
-          "WARNING": 290
+          "INFO": 7605,
+          "WARNING": 288
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 231,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 7639,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7605
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "14c6e6671bbe39a7e08196ee1a828a269af2074b602fed6783a2b0cdcd58c1c0",
@@ -312,16 +322,22 @@
       "cik": "0001817713",
       "name": "Janux Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 5639,
+      "mappedFacts": 1589,
+      "unmappedFacts": 4141,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "JANX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -386,11 +402,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -417,25 +433,24 @@
         }
       },
       "quality": {
-        "HIGH": 208
+        "HIGH": 210
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 208,
-        "resolvedValues": 208
+        "datableValues": 210,
+        "resolvedValues": 210
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4191,
+        "total": 4188,
         "by_severity": {
           "INFO": 4141,
-          "WARNING": 50
+          "WARNING": 47
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 39,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 4141,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 4141
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fa50af496bfd660e5289536ff461b22842355f36bd6f2fd0139a622c5999f2e8",
@@ -462,6 +477,12 @@
       "cik": "0001958713",
       "name": "NFT Ltd",
       "sic": "6199",
+      "rawFacts": 653,
+      "mappedFacts": 248,
+      "unmappedFacts": 418,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MI"
@@ -596,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2d82885c8f1c98a5d3126849f9010ad42bbb67e61ff967aa389b2fe713c48f21",

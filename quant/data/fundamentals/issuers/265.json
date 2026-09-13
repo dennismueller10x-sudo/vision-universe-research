@@ -6,16 +6,22 @@
       "cik": "0001368265",
       "name": "Clean Energy Fuels Corp.",
       "sic": "4932",
+      "rawFacts": 22423,
+      "mappedFacts": 6303,
+      "unmappedFacts": 16138,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLNE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 495,
+        "HIGH": 497,
         "MEDIUM": 134
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 629,
-        "resolvedValues": 629
+        "datableValues": 631,
+        "resolvedValues": 631
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16942,
+        "total": 16940,
         "by_severity": {
           "INFO": 16138,
           "ERROR": 1,
-          "WARNING": 803
+          "WARNING": 801
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 722,
           "FISCAL_PERIOD_CONFLICT": 11,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 68,
-          "UNKNOWN_CONCEPT": 16138,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16138
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9af73bb28ff55298ef0ac6030baeb37c8cf8722b2e0fcc7bbb749345338e95d8",
@@ -160,17 +165,23 @@
       "cik": "0001434265",
       "name": "GENMAB A/S",
       "sic": "2834",
+      "rawFacts": 794,
+      "mappedFacts": 185,
+      "unmappedFacts": 629,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "GMAB",
         "GNMSF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -235,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -266,25 +277,24 @@
         }
       },
       "quality": {
-        "HIGH": 50,
+        "HIGH": 52,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 64,
-        "resolvedValues": 64
+        "datableValues": 66,
+        "resolvedValues": 66
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 661,
+        "total": 659,
         "by_severity": {
           "INFO": 629,
-          "WARNING": 32
+          "WARNING": 30
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 30,
-          "UNKNOWN_CONCEPT": 629,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 629
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e657e5de5c56fe741a9147874a86c721bd04d4871806164b109669a6dc8739fe",
@@ -311,6 +321,20 @@
       "cik": "0001471265",
       "name": "Northwest Bancshares, Inc.",
       "sic": "6021",
+      "rawFacts": 32856,
+      "mappedFacts": 6256,
+      "unmappedFacts": 26981,
+      "calendarYears": 20,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NWBI"
@@ -426,15 +450,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27442,
+        "total": 27122,
         "by_severity": {
-          "INFO": 27302,
-          "WARNING": 140
+          "INFO": 26981,
+          "WARNING": 141
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 122,
+          "CONCEPT_DISAGREEMENT": 123,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 27302
+          "UNKNOWN_CONCEPT": 26981
         }
       },
       "latestFiling": {
@@ -445,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "97ed13090c0e6141ac4bd438852f178d51b3ffd3d071314e2361549171ef815b",
@@ -461,6 +485,12 @@
       "cik": "0001720265",
       "name": "Zcash ETF",
       "sic": "6221",
+      "rawFacts": 1925,
+      "mappedFacts": 237,
+      "unmappedFacts": 1732,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ZCSH"
@@ -594,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ff8ed14acc1fdfc493f83856a8a8a91326a9a2b0537baab4ffdbf5cedab31ee1",
@@ -610,6 +640,12 @@
       "cik": "0002094265",
       "name": "Mountain Lake Acquisition Corp. II",
       "sic": "6770",
+      "rawFacts": 176,
+      "mappedFacts": 80,
+      "unmappedFacts": 106,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MLAA",
@@ -742,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "76af5974da4e1b706f9d800cac7dfacd7f27ebb2e79687e478e10f554a7ba536",

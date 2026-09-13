@@ -6,16 +6,30 @@
       "cik": "0000726854",
       "name": "CITY HOLDING CO",
       "sic": "6021",
+      "rawFacts": 34834,
+      "mappedFacts": 5550,
+      "unmappedFacts": 29588,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CHCO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +125,25 @@
         }
       },
       "quality": {
-        "HIGH": 489,
+        "HIGH": 491,
         "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 548,
-        "resolvedValues": 548
+        "datableValues": 550,
+        "resolvedValues": 550
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30119,
+        "total": 29918,
         "by_severity": {
-          "INFO": 29787,
-          "WARNING": 332
+          "INFO": 29588,
+          "WARNING": 330
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 270,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 29787,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 29588
         }
       },
       "latestFiling": {
@@ -141,13 +154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8dd382d6914d0da161a9c5810de42ce2d96c0c6358a868f93b375f92ddedf39e",
@@ -157,16 +170,22 @@
       "cik": "0001320854",
       "name": "FreightCar America, Inc.",
       "sic": "3743",
+      "rawFacts": 18981,
+      "mappedFacts": 6420,
+      "unmappedFacts": 12963,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RAIL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -231,11 +250,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -262,28 +281,27 @@
         }
       },
       "quality": {
-        "HIGH": 563,
+        "HIGH": 565,
         "MEDIUM": 66
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 629,
-        "resolvedValues": 629
+        "datableValues": 631,
+        "resolvedValues": 631
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13334,
+        "total": 13239,
         "by_severity": {
-          "INFO": 13056,
+          "INFO": 12963,
           "ERROR": 2,
-          "WARNING": 276
+          "WARNING": 274
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 249,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 13056,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12963
         }
       },
       "latestFiling": {
@@ -294,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "677150f42c5a41639ab963d0d8184a02dc4f3f5e36de212bbe69cd77a18bf02f",
@@ -310,17 +328,23 @@
       "cik": "0001760854",
       "name": "Nanobiotix S.A.",
       "sic": "2834",
+      "rawFacts": 3064,
+      "mappedFacts": 553,
+      "unmappedFacts": 2604,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NBTX",
         "NNBXF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -385,11 +409,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 8,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -416,25 +440,24 @@
         }
       },
       "quality": {
-        "HIGH": 72
+        "HIGH": 74
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 72,
-        "resolvedValues": 72
+        "datableValues": 74,
+        "resolvedValues": 74
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2612,
+        "total": 2608,
         "by_severity": {
           "INFO": 2604,
-          "WARNING": 8
+          "WARNING": 4
         },
         "by_code": {
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "UNKNOWN_CONCEPT": 2604,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 2604
         }
       },
       "latestFiling": {
@@ -445,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "010059194fbdeec3161f3dc2d9b4042746b776bd2f31037d0a3dd9fdd5b40311",

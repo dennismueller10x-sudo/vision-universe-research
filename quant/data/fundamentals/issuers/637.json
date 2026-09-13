@@ -6,16 +6,22 @@
       "cik": "0001282637",
       "name": "NEWMARKET CORP",
       "sic": "2860",
+      "rawFacts": 22891,
+      "mappedFacts": 6867,
+      "unmappedFacts": 16384,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NEU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 13.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 633,
+        "HIGH": 635,
         "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 673,
-        "resolvedValues": 673
+        "datableValues": 675,
+        "resolvedValues": 675
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16595,
+        "total": 16593,
         "by_severity": {
           "INFO": 16384,
           "ERROR": 1,
-          "WARNING": 210
+          "WARNING": 208
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 186,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 16384,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16384
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9f559d251c59795931891e0e347024b9d58ba22ae4d3ad3c23ecd047d0051e83",
@@ -159,16 +164,22 @@
       "cik": "0001370637",
       "name": "ETSY INC",
       "sic": "7389",
+      "rawFacts": 16876,
+      "mappedFacts": 5003,
+      "unmappedFacts": 12124,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ETSY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 51,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 52,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -233,11 +244,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 47,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -264,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 467,
+        "HIGH": 469,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 477,
-        "resolvedValues": 477
+        "datableValues": 479,
+        "resolvedValues": 479
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12382,
+        "total": 12380,
         "by_severity": {
           "INFO": 12124,
-          "WARNING": 258
+          "WARNING": 256
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 225,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 12124,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12124
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d368afc2d5fa4dba19000c85870fbdc7c0fabc7bd308cd2e5a7ebcd83e3b2fe0",
@@ -310,16 +320,22 @@
       "cik": "0001800637",
       "name": "RYTHM, Inc.",
       "sic": "0700",
+      "rawFacts": 10302,
+      "mappedFacts": 2815,
+      "unmappedFacts": 7416,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RYM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -384,11 +400,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -415,29 +431,28 @@
         }
       },
       "quality": {
-        "HIGH": 237,
+        "HIGH": 239,
         "MEDIUM": 25
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 262,
-        "resolvedValues": 262
+        "datableValues": 264,
+        "resolvedValues": 264
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7962,
+        "total": 7893,
         "by_severity": {
-          "INFO": 7484,
+          "INFO": 7416,
           "ERROR": 3,
-          "WARNING": 475
+          "WARNING": 474
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 301,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 164,
+          "RESTATEMENT_CONFLICT": 171,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7484,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 7416
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "febce1c1c733f6d1f435cfa2d9796e303f5585c65133cd6d4b14ddd958045c87",
@@ -464,16 +479,30 @@
       "cik": "0001901637",
       "name": "USCB FINANCIAL HOLDINGS, INC.",
       "sic": "6022",
+      "rawFacts": 7818,
+      "mappedFacts": 1035,
+      "unmappedFacts": 6825,
+      "calendarYears": 6,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "USCB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 23,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 24,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -538,11 +567,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -569,25 +598,24 @@
         }
       },
       "quality": {
-        "HIGH": 143,
+        "HIGH": 145,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 149,
-        "resolvedValues": 149
+        "datableValues": 151,
+        "resolvedValues": 151
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6894,
+        "total": 6834,
         "by_severity": {
-          "INFO": 6883,
-          "WARNING": 11
+          "INFO": 6825,
+          "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 9,
-          "UNKNOWN_CONCEPT": 6883,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6825
         }
       },
       "latestFiling": {
@@ -598,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "207b780e67338f8a4da39725fffb65264fdfa29953edc3ab830e37b7fe2b369d",
@@ -614,16 +642,22 @@
       "cik": "0001997637",
       "name": "iOThree Ltd",
       "sic": "4899",
+      "rawFacts": 937,
+      "mappedFacts": 313,
+      "unmappedFacts": 684,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "IOTR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2023-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2022-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -688,11 +722,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2023-03-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -719,26 +753,25 @@
         }
       },
       "quality": {
-        "HIGH": 42,
+        "HIGH": 44,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 45,
-        "resolvedValues": 45
+        "datableValues": 47,
+        "resolvedValues": 47
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 707,
+        "total": 705,
         "by_severity": {
           "INFO": 684,
-          "WARNING": 23
+          "WARNING": 21
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 684,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 684
         }
       },
       "latestFiling": {
@@ -749,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2f10b6347f4aa3a4290c3aba82da149bc06d8bcd6595fc2a40d48c42d71eb9cf",

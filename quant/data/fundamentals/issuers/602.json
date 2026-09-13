@@ -6,16 +6,30 @@
       "cik": "0001258602",
       "name": "NELNET INC",
       "sic": "6141",
+      "rawFacts": 25078,
+      "mappedFacts": 5364,
+      "unmappedFacts": 19343,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NNI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +125,27 @@
         }
       },
       "quality": {
-        "HIGH": 464,
+        "HIGH": 466,
         "MEDIUM": 50
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 514,
-        "resolvedValues": 514
+        "datableValues": 516,
+        "resolvedValues": 516
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20237,
+        "total": 19960,
         "by_severity": {
-          "INFO": 19618,
+          "INFO": 19343,
           "ERROR": 2,
-          "WARNING": 617
+          "WARNING": 615
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 564,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 19618,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19343
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4a80ae4294fbd88f87e9799edaed3bd5849aed26f97789ba1193942daea48866",
@@ -159,6 +172,12 @@
       "cik": "0002070602",
       "name": "Highview Merger Corp.",
       "sic": "6770",
+      "rawFacts": 346,
+      "mappedFacts": 128,
+      "unmappedFacts": 217,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HVMC",
@@ -166,10 +185,10 @@
         "HVMCW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2025-04-15",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -181,7 +200,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -208,14 +227,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -235,17 +254,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -265,22 +284,22 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 22
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 22,
+        "resolvedValues": 22
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 346,
+        "total": 217,
         "by_severity": {
-          "INFO": 217,
-          "WARNING": 129
+          "INFO": 217
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 217,
-          "UNPLACEABLE_PERIOD": 129
+          "UNKNOWN_CONCEPT": 217
         }
       },
       "latestFiling": {
@@ -291,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c2e83b35a4f2151c6dccfb29e5c673e43b720bb2cb27a513e04f6c2d962811fd",

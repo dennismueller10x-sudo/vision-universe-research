@@ -6,16 +6,22 @@
       "cik": "0000030305",
       "name": "DUCOMMUN INC /DE/",
       "sic": "3728",
+      "rawFacts": 21297,
+      "mappedFacts": 7660,
+      "unmappedFacts": 14092,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DCO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-07-04",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 677,
+        "HIGH": 679,
         "MEDIUM": 39
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 716,
-        "resolvedValues": 716
+        "datableValues": 718,
+        "resolvedValues": 718
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14724,
+        "total": 14543,
         "by_severity": {
-          "INFO": 14271,
-          "WARNING": 453
+          "INFO": 14092,
+          "WARNING": 451
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 363,
           "RESTATEMENT_CONFLICT": 88,
-          "UNKNOWN_CONCEPT": 14271,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14092
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7200f14273b3439fdd78dd89cf3042b90e77f2430f66497af3a998bb2b8bdd96",
@@ -157,6 +162,12 @@
       "cik": "0001024305",
       "name": "COTY INC.",
       "sic": "2844",
+      "rawFacts": 26922,
+      "mappedFacts": 5947,
+      "unmappedFacts": 20870,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "COTY"
@@ -272,16 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22165,
+        "total": 22038,
         "by_severity": {
-          "INFO": 21004,
-          "WARNING": 1161
+          "INFO": 20870,
+          "WARNING": 1168
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 999,
           "PERIOD_MISMATCH": 71,
-          "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 21004
+          "RESTATEMENT_CONFLICT": 98,
+          "UNKNOWN_CONCEPT": 20870
         }
       },
       "latestFiling": {
@@ -292,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0304afd366aa9271d7f44a3f6b4505a025d6a81daf9e14fe470e1dc14be8ac7f",
@@ -308,6 +319,12 @@
       "cik": "0001445305",
       "name": "WORKIVA INC",
       "sic": "7372",
+      "rawFacts": 18795,
+      "mappedFacts": 5489,
+      "unmappedFacts": 13590,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WK"
@@ -423,17 +440,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13743,
+        "total": 13742,
         "by_severity": {
           "INFO": 13590,
-          "WARNING": 153
+          "WARNING": 152
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 135,
           "RESTATEMENT_CONFLICT": 14,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 13590,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 13590
         }
       },
       "latestFiling": {
@@ -444,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7341aa96cec5791410aeeffd1ee0f5390fde99ccf34966685ef597ab1c229c0b",

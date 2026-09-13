@@ -6,16 +6,22 @@
       "cik": "0000046765",
       "name": "Helmerich & Payne, Inc.",
       "sic": "1381",
+      "rawFacts": 28181,
+      "mappedFacts": 7451,
+      "unmappedFacts": 20123,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "HP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2007-09-30",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2006-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -80,11 +86,11 @@
           "historyYears": 17.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 71,
-          "firstAvailablePeriod": "2007-09-30",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2006-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 686,
+        "HIGH": 688,
         "MEDIUM": 101
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 787,
-        "resolvedValues": 787
+        "datableValues": 789,
+        "resolvedValues": 789
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21148,
+        "total": 21146,
         "by_severity": {
           "INFO": 20123,
           "ERROR": 2,
-          "WARNING": 1023
+          "WARNING": 1021
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 982,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 20123,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20123
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a89622a251d85b6ea6c2145174dcf218b4b0ef868298902ca2a7943f6d01ee44",
@@ -159,6 +164,20 @@
       "cik": "0001039765",
       "name": "ING GROEP NV",
       "sic": "6029",
+      "rawFacts": 6871,
+      "mappedFacts": 649,
+      "unmappedFacts": 6284,
+      "calendarYears": 12,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ING",
@@ -294,13 +313,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "187e32a981379a52768cc2dcd303ff6da3f086191fdfb28c6e391ee5ba7ccdba",
@@ -310,16 +329,22 @@
       "cik": "0001084765",
       "name": "RESOURCES CONNECTION, INC.",
       "sic": "7389",
+      "rawFacts": 21081,
+      "mappedFacts": 6677,
+      "unmappedFacts": 14868,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0531",
       "tickers": [
         "RGP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-05-30",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-05-31",
       "lastPeriodEnd": "2026-05-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -384,11 +409,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-05-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-05-31",
           "lastAvailablePeriod": "2026-05-30",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -415,25 +440,24 @@
         }
       },
       "quality": {
-        "HIGH": 609
+        "HIGH": 611
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 609,
-        "resolvedValues": 609
+        "datableValues": 611,
+        "resolvedValues": 611
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15249,
+        "total": 15247,
         "by_severity": {
           "INFO": 14868,
-          "WARNING": 381
+          "WARNING": 379
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 325,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 14868,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14868
         }
       },
       "latestFiling": {
@@ -444,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a54bec3d616739eb1c28b6b304fa74694d4043a2b9005f92bbbb2be54066a2b3",
@@ -460,6 +484,12 @@
       "cik": "0001476765",
       "name": "GOLUB CAPITAL BDC, Inc.",
       "sic": null,
+      "rawFacts": 5676,
+      "mappedFacts": 1097,
+      "unmappedFacts": 4684,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "GBDC"
@@ -593,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f7e74101cab2005459994440634611b2d94ca22554f26a99a641d68264cb0133",

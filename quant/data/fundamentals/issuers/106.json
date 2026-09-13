@@ -6,6 +6,20 @@
       "cik": "0001160106",
       "name": "Lloyds Banking Group plc",
       "sic": "6029",
+      "rawFacts": 5435,
+      "mappedFacts": 530,
+      "unmappedFacts": 4932,
+      "calendarYears": 12,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": null,
       "tickers": [
         "LYG",
@@ -146,13 +160,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "070674561cbc7fc023baf4911d14cc06b2187b76473b6e98cc5ca82b3409eb3b",
@@ -162,16 +176,22 @@
       "cik": "0001380106",
       "name": "RAPID MICRO BIOSYSTEMS, INC.",
       "sic": "3826",
+      "rawFacts": 7828,
+      "mappedFacts": 1914,
+      "unmappedFacts": 6063,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RPID"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -236,11 +256,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -267,25 +287,24 @@
         }
       },
       "quality": {
-        "HIGH": 225,
+        "HIGH": 227,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 231,
-        "resolvedValues": 231
+        "datableValues": 233,
+        "resolvedValues": 233
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6172,
+        "total": 6146,
         "by_severity": {
-          "INFO": 6083,
-          "WARNING": 89
+          "INFO": 6063,
+          "WARNING": 83
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 83,
-          "UNKNOWN_CONCEPT": 6083,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 6063
         }
       },
       "latestFiling": {
@@ -296,13 +315,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0ca362165ccd77be542cc9c190d650ffedde821ac17b3bc337dee3ee14c777ea",
@@ -312,16 +331,22 @@
       "cik": "0001750106",
       "name": "Alset Inc.",
       "sic": "6500",
+      "rawFacts": 8272,
+      "mappedFacts": 2136,
+      "unmappedFacts": 6072,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AEI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 30,
-      "firstPeriodEnd": "2019-03-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 31,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -386,11 +411,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 30,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -417,21 +442,21 @@
         }
       },
       "quality": {
-        "HIGH": 213,
+        "HIGH": 215,
         "MEDIUM": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 247,
-        "resolvedValues": 247
+        "datableValues": 249,
+        "resolvedValues": 249
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6446,
+        "total": 6431,
         "by_severity": {
-          "INFO": 6083,
+          "INFO": 6072,
           "ERROR": 3,
-          "WARNING": 360
+          "WARNING": 356
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 279,
@@ -439,8 +464,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 6083,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 6072
         }
       },
       "latestFiling": {
@@ -451,13 +475,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "03697adeb50b4919b45667038a3e422c23740de4cfd7183170eee8964ffa5eed",
@@ -467,6 +491,12 @@
       "cik": "0002079106",
       "name": "LaFayette Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 332,
+      "mappedFacts": 146,
+      "unmappedFacts": 189,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LAFA",
@@ -474,11 +504,11 @@
         "LAFAU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 9,
+      "firstPeriodEnd": "2024-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -543,18 +573,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -574,26 +604,25 @@
         }
       },
       "quality": {
-        "HIGH": 23
+        "HIGH": 29
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 23,
-        "resolvedValues": 23
+        "datableValues": 29,
+        "resolvedValues": 29
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 226,
+        "total": 207,
         "by_severity": {
           "INFO": 189,
-          "WARNING": 37
+          "WARNING": 18
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 4,
+          "CONCEPT_DISAGREEMENT": 6,
           "RESTATEMENT_CONFLICT": 2,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 189,
-          "UNPLACEABLE_PERIOD": 21
+          "UNKNOWN_CONCEPT": 189
         }
       },
       "latestFiling": {
@@ -604,13 +633,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2561ca68599db361b117900bc2ac0d1e12b13071d99975eaead3c0bea621f2bb",

@@ -6,16 +6,22 @@
       "cik": "0001504678",
       "name": "Loop Industries, Inc.",
       "sic": "2800",
+      "rawFacts": 11891,
+      "mappedFacts": 3939,
+      "unmappedFacts": 8139,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0228",
       "tickers": [
         "LOOP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 14.42,
+      "historyYears": 15.42,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -53,7 +59,7 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-09-30",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 14.42
@@ -80,18 +86,18 @@
           "historyYears": 8.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2011-09-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-09-30",
           "lastAvailablePeriod": "2026-02-28",
-          "historyYears": 14.42
+          "historyYears": 15.42
         },
         "total_assets": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2011-09-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-09-30",
           "lastAvailablePeriod": "2026-02-28",
-          "historyYears": 14.42
+          "historyYears": 15.42
         },
         "total_debt": {
           "annualPeriods": 9,
@@ -111,30 +117,29 @@
         }
       },
       "quality": {
-        "HIGH": 458,
+        "HIGH": 463,
         "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 490,
-        "resolvedValues": 490
+        "datableValues": 495,
+        "resolvedValues": 495
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8541,
+        "total": 8499,
         "by_severity": {
           "INFO": 8139,
           "ERROR": 2,
-          "WARNING": 400
+          "WARNING": 358
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 171,
+          "CONCEPT_DISAGREEMENT": 166,
           "FISCAL_PERIOD_CONFLICT": 3,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 103,
+          "RESTATEMENT_CONFLICT": 95,
           "UNEXPECTED_DURATION": 94,
-          "UNKNOWN_CONCEPT": 8139,
-          "UNPLACEABLE_PERIOD": 29
+          "UNKNOWN_CONCEPT": 8139
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e6f95d171a5494b446d5499ce33bdfeefe086f49d1a8945edf53eda7df6eedce",
@@ -161,16 +166,22 @@
       "cik": "0001607678",
       "name": "Viking Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 10721,
+      "mappedFacts": 3003,
+      "unmappedFacts": 7868,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VKTX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 50,
-      "firstPeriodEnd": "2014-03-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 51,
+      "firstPeriodEnd": "2013-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 11.0,
+      "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -235,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 47,
-          "firstAvailablePeriod": "2014-12-31",
+          "annualPeriods": 13,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 11.0
+          "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -266,25 +277,24 @@
         }
       },
       "quality": {
-        "HIGH": 333
+        "HIGH": 335
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 333,
-        "resolvedValues": 333
+        "datableValues": 335,
+        "resolvedValues": 335
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7900,
+        "total": 7895,
         "by_severity": {
           "INFO": 7868,
-          "WARNING": 32
+          "WARNING": 27
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 20,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 7868,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 7868
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a01b9342d77a159c4f420727f52c2125de5542494101a1099da98c706f407b42",
@@ -311,16 +321,22 @@
       "cik": "0001966678",
       "name": "DirectBooking Technology Co., Ltd.",
       "sic": "1540",
+      "rawFacts": 1013,
+      "mappedFacts": 269,
+      "unmappedFacts": 780,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "ZDAI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2022-03-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2021-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -385,11 +401,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2022-03-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -416,26 +432,25 @@
         }
       },
       "quality": {
-        "HIGH": 42,
+        "HIGH": 44,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 48,
-        "resolvedValues": 48
+        "datableValues": 50,
+        "resolvedValues": 50
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 803,
+        "total": 802,
         "by_severity": {
           "INFO": 780,
-          "WARNING": 23
+          "WARNING": 22
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 12,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 780,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 780
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "75dadb9e1308f70ee1487d86ecf562312faa3ad6d1e0b4c5ba5faf0055329c6c",

@@ -6,6 +6,12 @@
       "cik": "0000821130",
       "name": "ARRAY DIGITAL INFRASTRUCTURE, INC.",
       "sic": "4812",
+      "rawFacts": 22404,
+      "mappedFacts": 6333,
+      "unmappedFacts": 15811,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AD",
@@ -14,11 +20,11 @@
         "UZF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -83,11 +89,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -114,26 +120,25 @@
         }
       },
       "quality": {
-        "HIGH": 432,
+        "HIGH": 434,
         "MEDIUM": 172
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 604,
-        "resolvedValues": 604
+        "datableValues": 606,
+        "resolvedValues": 606
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16853,
+        "total": 16851,
         "by_severity": {
           "INFO": 15811,
-          "WARNING": 1042
+          "WARNING": 1040
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 956,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 15811,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15811
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d1139656a6119ae3ffd14e6dcfd34bf0f3097543924bed636ec03c27a8424f42",
@@ -160,16 +165,22 @@
       "cik": "0001040130",
       "name": "PETMED EXPRESS INC",
       "sic": "5912",
+      "rawFacts": 14362,
+      "mappedFacts": 6408,
+      "unmappedFacts": 8484,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "PETS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2010-03-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2009-03-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-03-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -265,25 +276,24 @@
         }
       },
       "quality": {
-        "HIGH": 568
+        "HIGH": 570
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 568,
-        "resolvedValues": 568
+        "datableValues": 570,
+        "resolvedValues": 570
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8634,
+        "total": 8632,
         "by_severity": {
           "INFO": 8484,
-          "WARNING": 150
+          "WARNING": 148
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 34,
           "RESTATEMENT_CONFLICT": 114,
-          "UNKNOWN_CONCEPT": 8484,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 8484
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "77c074013573e3abdfbae426c3639c198d6c9f088776227e2817d02b6c2c9f9b",
@@ -310,16 +320,22 @@
       "cik": "0001299130",
       "name": "PACIFIC BIOSCIENCES OF CALIFORNIA, INC.",
       "sic": "3826",
+      "rawFacts": 16733,
+      "mappedFacts": 6045,
+      "unmappedFacts": 10838,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PACB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -384,11 +400,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -415,27 +431,26 @@
         }
       },
       "quality": {
-        "HIGH": 579,
+        "HIGH": 581,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 587,
-        "resolvedValues": 587
+        "datableValues": 589,
+        "resolvedValues": 589
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11353,
+        "total": 11351,
         "by_severity": {
           "INFO": 10838,
-          "WARNING": 515
+          "WARNING": 513
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 449,
           "RESTATEMENT_CONFLICT": 48,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 10838,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10838
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c1c8e5dbf804eb34f37579107ba2996c37c46302919427538a756342485dee83",
@@ -462,16 +477,22 @@
       "cik": "0001652130",
       "name": "Intellia Therapeutics, Inc.",
       "sic": "2835",
+      "rawFacts": 10942,
+      "mappedFacts": 3387,
+      "unmappedFacts": 7715,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NTLA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 46,
-      "firstPeriodEnd": "2015-03-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 48,
+      "firstPeriodEnd": "2014-05-06",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -536,11 +557,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 43,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -567,27 +588,26 @@
         }
       },
       "quality": {
-        "HIGH": 351,
+        "HIGH": 354,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 354,
-        "resolvedValues": 354
+        "datableValues": 357,
+        "resolvedValues": 357
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7780,
+        "total": 7772,
         "by_severity": {
           "INFO": 7715,
-          "WARNING": 65
+          "WARNING": 57
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 40,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 7715,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 7715
         }
       },
       "latestFiling": {
@@ -598,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8747005284974a1281e2d8db49d7dfb3f703b4a58930f17322ad59fc117bdc05",

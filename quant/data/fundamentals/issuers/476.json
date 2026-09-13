@@ -6,6 +6,12 @@
       "cik": "0000077476",
       "name": "PEPSICO INC",
       "sic": "2080",
+      "rawFacts": 31006,
+      "mappedFacts": 7969,
+      "unmappedFacts": 23188,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1226",
       "tickers": [
         "PEP"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23894,
+        "total": 23891,
         "by_severity": {
-          "INFO": 23190,
+          "INFO": 23188,
           "ERROR": 4,
-          "WARNING": 700
+          "WARNING": 699
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 655,
@@ -133,8 +139,7 @@
           "RESTATEMENT_CONFLICT": 25,
           "UNEXPECTED_DURATION": 15,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 23190,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 23188
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f8a2971301c5069a62329cc4f442baa2ea7fb77b2be9556e88f748142fdbc685",
@@ -161,6 +166,12 @@
       "cik": "0000097476",
       "name": "TEXAS INSTRUMENTS INC",
       "sic": "3674",
+      "rawFacts": 23939,
+      "mappedFacts": 8194,
+      "unmappedFacts": 16484,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TXN"
@@ -276,10 +287,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16980,
+        "total": 16979,
         "by_severity": {
           "INFO": 16484,
-          "WARNING": 496
+          "WARNING": 495
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 398,
@@ -287,8 +298,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 70,
           "UNEXPECTED_DURATION": 22,
-          "UNKNOWN_CONCEPT": 16484,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 16484
         }
       },
       "latestFiling": {
@@ -299,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "96bd75342c0dc99e09cbdf407a0ff3f7bfe68a011e013b1cba6f699df60dcea0",
@@ -315,16 +325,22 @@
       "cik": "0001779476",
       "name": "36Kr Holdings Inc.",
       "sic": "7389",
+      "rawFacts": 2872,
+      "mappedFacts": 749,
+      "unmappedFacts": 2155,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KRKR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -389,11 +405,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -420,25 +436,24 @@
         }
       },
       "quality": {
-        "HIGH": 71,
+        "HIGH": 73,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 79,
-        "resolvedValues": 79
+        "datableValues": 81,
+        "resolvedValues": 81
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2283,
+        "total": 2282,
         "by_severity": {
           "INFO": 2155,
-          "WARNING": 128
+          "WARNING": 127
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 127,
-          "UNKNOWN_CONCEPT": 2155,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 2155
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3690efe08f6a96723238820bc7c48b74b227390b196067ef1dc59843e0b42a4c",

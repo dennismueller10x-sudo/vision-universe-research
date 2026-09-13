@@ -6,6 +6,12 @@
       "cik": "0000064803",
       "name": "CVS HEALTH Corp",
       "sic": "5912",
+      "rawFacts": 28164,
+      "mappedFacts": 8200,
+      "unmappedFacts": 19773,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CVS"
@@ -121,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20616,
+        "total": 20483,
         "by_severity": {
-          "INFO": 19910,
-          "WARNING": 706
+          "INFO": 19773,
+          "WARNING": 710
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 675,
-          "RESTATEMENT_CONFLICT": 27,
+          "RESTATEMENT_CONFLICT": 31,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 19910
+          "UNKNOWN_CONCEPT": 19773
         }
       },
       "latestFiling": {
@@ -141,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f00c3ac6600d2aacd13fae2a86b6632a68ebe46639ef7fbdcfe8c5450f5e7d8f",
@@ -157,16 +163,22 @@
       "cik": "0001041803",
       "name": "PRICESMART INC",
       "sic": "5331",
+      "rawFacts": 24520,
+      "mappedFacts": 7483,
+      "unmappedFacts": 16963,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0831",
       "tickers": [
         "PSMT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-08-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-08-31",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -231,11 +243,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-08-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-08-31",
           "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -262,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 548,
+        "HIGH": 550,
         "MEDIUM": 177
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 725,
-        "resolvedValues": 725
+        "datableValues": 727,
+        "resolvedValues": 727
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18022,
+        "total": 18018,
         "by_severity": {
           "INFO": 16963,
-          "WARNING": 1059
+          "WARNING": 1055
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1000,
           "RESTATEMENT_CONFLICT": 48,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 16963,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 16963
         }
       },
       "latestFiling": {
@@ -293,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4f38d078a8778c7bbf49509bb4809d1693b6e3e013e724ec0c49f84b08a7f18d",
@@ -309,16 +320,22 @@
       "cik": "0001110803",
       "name": "ILLUMINA, INC.",
       "sic": "3826",
+      "rawFacts": 23704,
+      "mappedFacts": 7409,
+      "unmappedFacts": 16282,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0103",
       "tickers": [
         "ILMN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2008-12-28",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2007-12-30",
       "lastPeriodEnd": "2026-06-28",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -383,11 +400,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2008-12-28",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2007-12-30",
           "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -414,28 +431,27 @@
         }
       },
       "quality": {
-        "HIGH": 613,
+        "HIGH": 615,
         "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 653,
-        "resolvedValues": 653
+        "datableValues": 655,
+        "resolvedValues": 655
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17138,
+        "total": 17136,
         "by_severity": {
           "INFO": 16282,
           "ERROR": 2,
-          "WARNING": 854
+          "WARNING": 852
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 728,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 124,
-          "UNKNOWN_CONCEPT": 16282,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16282
         }
       },
       "latestFiling": {
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f567bb9430c7edacb81135d0132dab1db7cae5b1f393089c94654253e70e93ca",
@@ -462,16 +478,22 @@
       "cik": "0001787803",
       "name": "Meiwu Technology Co Ltd",
       "sic": "2840",
+      "rawFacts": 2255,
+      "mappedFacts": 810,
+      "unmappedFacts": 1468,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WNW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 8,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 9,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -536,11 +558,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 8,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -567,27 +589,26 @@
         }
       },
       "quality": {
-        "HIGH": 68,
+        "HIGH": 70,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 78,
-        "resolvedValues": 78
+        "datableValues": 80,
+        "resolvedValues": 80
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1557,
+        "total": 1556,
         "by_severity": {
           "INFO": 1468,
-          "WARNING": 89
+          "WARNING": 88
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 65,
           "RESTATEMENT_CONFLICT": 22,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 1468,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1468
         }
       },
       "latestFiling": {
@@ -598,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9eb5522e3fc33c1f40d7691346942b742cb76198e8d0ed9b4306046feb8fd2b1",

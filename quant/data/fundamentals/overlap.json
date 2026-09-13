@@ -1,13 +1,13 @@
 {
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.7.1",
+    "normalization_logic": "1.8.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.3.0"
+      "mapping_version": "1.4.0"
     }
   },
   "note": "Das langfristige Ziel ist TECHNICAL_WITHOUT_FUNDAMENTALS gegen null. Die Zahl steht hier, damit sie sinkt und nicht behauptet wird.",
@@ -36,5 +36,5 @@
   "TECHNICAL_WITHOUT_FUNDAMENTALS": null,
   "FUNDAMENTALS_WITHOUT_TECHNICAL": null,
   "unmeasured": "Der Overlap wird erst berechnet, wenn die kanonische Marktdaten-/R2-Quelle in diesen Workstream eingebunden ist. Bis dahin waere jede Zahl hier eine Verrechnung zweier verschiedener Bestaende auf zwei verschiedenen Ebenen (Instrument gegen Mitglied).",
-  "generatedAtUtc": "2026-09-13T12:23:55+00:00"
+  "generatedAtUtc": "2026-09-13T15:58:42+00:00"
 }

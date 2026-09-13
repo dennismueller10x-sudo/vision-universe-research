@@ -6,6 +6,20 @@
       "cik": "0000351569",
       "name": "Ameris Bancorp",
       "sic": "6022",
+      "rawFacts": 30682,
+      "mappedFacts": 5134,
+      "unmappedFacts": 25845,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ABCB"
@@ -121,16 +135,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26334,
+        "total": 26069,
         "by_severity": {
-          "INFO": 26111,
-          "WARNING": 223
+          "INFO": 25845,
+          "WARNING": 224
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 177,
-          "FISCAL_PERIOD_CONFLICT": 6,
+          "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 26111
+          "UNKNOWN_CONCEPT": 25845
         }
       },
       "latestFiling": {
@@ -141,13 +155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9df8bab47febe524fa28c53ecd34cee2f0d0d42c2609a6ebce519f2cf7641d49",
@@ -157,6 +171,12 @@
       "cik": "0000883569",
       "name": "Fossil Group, Inc.",
       "sic": "3873",
+      "rawFacts": 25279,
+      "mappedFacts": 6824,
+      "unmappedFacts": 18453,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FOSL"
@@ -295,13 +315,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3daf00f0317fc394aa5191625f8f089eef0b02b0f62d3927046c3e0abacd85ed",
@@ -311,16 +331,22 @@
       "cik": "0001020569",
       "name": "IRON MOUNTAIN INC",
       "sic": "6798",
+      "rawFacts": 28914,
+      "mappedFacts": 6707,
+      "unmappedFacts": 21143,
+      "calendarYears": 19,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IRM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 71,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 72,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -385,11 +411,11 @@
           "historyYears": 11.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -416,21 +442,21 @@
         }
       },
       "quality": {
-        "HIGH": 489,
+        "HIGH": 491,
         "MEDIUM": 240
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 729,
-        "resolvedValues": 729
+        "datableValues": 731,
+        "resolvedValues": 731
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22533,
+        "total": 22408,
         "by_severity": {
-          "INFO": 21266,
+          "INFO": 21143,
           "ERROR": 2,
-          "WARNING": 1265
+          "WARNING": 1263
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1102,
@@ -439,8 +465,7 @@
           "PERIOD_MISMATCH": 15,
           "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 70,
-          "UNKNOWN_CONCEPT": 21266,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 21143
         }
       },
       "latestFiling": {
@@ -451,13 +476,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "154e79514957597dce8742ffeb4d52c44ce16f2ef96e58fe75f6983e9802e011",
@@ -467,6 +492,12 @@
       "cik": "0001438569",
       "name": "Grifols SA",
       "sic": "2834",
+      "rawFacts": 4523,
+      "mappedFacts": 704,
+      "unmappedFacts": 3933,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "GRFS",
@@ -475,11 +506,11 @@
         "GIKLY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -544,11 +575,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -575,26 +606,25 @@
         }
       },
       "quality": {
-        "HIGH": 96,
+        "HIGH": 98,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 108,
-        "resolvedValues": 108
+        "datableValues": 110,
+        "resolvedValues": 110
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3993,
+        "total": 3991,
         "by_severity": {
           "INFO": 3933,
-          "WARNING": 60
+          "WARNING": 58
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 43,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 3933,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3933
         }
       },
       "latestFiling": {
@@ -605,13 +635,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f789ef2b6c6ce91324f01e172a0f8e189e23cbb12ee379325f83a05a430efef0",
@@ -621,16 +651,22 @@
       "cik": "0001558569",
       "name": "iSpecimen Inc.",
       "sic": "8731",
+      "rawFacts": 5497,
+      "mappedFacts": 1806,
+      "unmappedFacts": 3810,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ISPC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -695,11 +731,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -726,27 +762,26 @@
         }
       },
       "quality": {
-        "HIGH": 208
+        "HIGH": 210
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 208,
-        "resolvedValues": 208
+        "datableValues": 210,
+        "resolvedValues": 210
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3914,
+        "total": 3908,
         "by_severity": {
           "INFO": 3810,
-          "WARNING": 104
+          "WARNING": 98
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 43,
           "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 44,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 3810,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 3810
         }
       },
       "latestFiling": {
@@ -757,13 +792,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ac186621b1e095fe4bfc8d5f8ea06e59514eefde5a8c0464b48fd92371c22946",
@@ -773,6 +808,12 @@
       "cik": "0001631569",
       "name": "Community Healthcare Trust Inc",
       "sic": "6798",
+      "rawFacts": 13934,
+      "mappedFacts": 3445,
+      "unmappedFacts": 10277,
+      "calendarYears": 12,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CHCT"
@@ -888,16 +929,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10681,
+        "total": 10664,
         "by_severity": {
-          "INFO": 10294,
+          "INFO": 10277,
           "WARNING": 387
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 352,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 10294
+          "UNKNOWN_CONCEPT": 10277
         }
       },
       "latestFiling": {
@@ -908,13 +949,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "40b0b6588a49e4fc8f4a14c2f6e15ea7223b1e45e962b60aaabdf4fe9129374a",
@@ -924,6 +965,12 @@
       "cik": "0001938569",
       "name": "Palomino Laboratories Inc.",
       "sic": "3674",
+      "rawFacts": 1285,
+      "mappedFacts": 706,
+      "unmappedFacts": 618,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PALX"
@@ -1059,13 +1106,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b25a4f6415877804507b5e48126d887a33079de38120673531b2be7c841ef2b9",

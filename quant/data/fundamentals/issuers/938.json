@@ -6,6 +6,12 @@
       "cik": "0000049938",
       "name": "IMPERIAL OIL LTD",
       "sic": "2911",
+      "rawFacts": 17459,
+      "mappedFacts": 6914,
+      "unmappedFacts": 11274,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IMO"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11475,
+        "total": 11428,
         "by_severity": {
-          "INFO": 11320,
+          "INFO": 11274,
           "ERROR": 3,
-          "WARNING": 152
+          "WARNING": 151
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 129,
@@ -133,8 +139,7 @@
           "RESTATEMENT_CONFLICT": 13,
           "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 11320,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 11274
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "636b0edb641dcfb3b2393e3b45baf62db46d3079d8e7744ca6e69ad5b0971125",
@@ -161,16 +166,22 @@
       "cik": "0001454938",
       "name": "Teads Holding Co.",
       "sic": "7370",
+      "rawFacts": 9535,
+      "mappedFacts": 2453,
+      "unmappedFacts": 7138,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TEAD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -235,11 +246,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -266,26 +277,25 @@
         }
       },
       "quality": {
-        "HIGH": 262,
+        "HIGH": 264,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 265,
-        "resolvedValues": 265
+        "datableValues": 267,
+        "resolvedValues": 267
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7303,
+        "total": 7301,
         "by_severity": {
           "INFO": 7138,
-          "WARNING": 165
+          "WARNING": 163
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 158,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 7138,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7138
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5587f693424b834bc4cd5192b177470006b6e27f127fe1ee2c5143b9d7edf78c",

@@ -6,6 +6,12 @@
       "cik": "0001075415",
       "name": "DIVERSIFIED HEALTHCARE TRUST",
       "sic": "6798",
+      "rawFacts": 17185,
+      "mappedFacts": 5133,
+      "unmappedFacts": 11967,
+      "calendarYears": 18,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DHC",
@@ -13,11 +19,11 @@
         "DHCNL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -82,11 +88,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -113,21 +119,21 @@
         }
       },
       "quality": {
-        "HIGH": 534,
+        "HIGH": 536,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 548,
-        "resolvedValues": 548
+        "datableValues": 550,
+        "resolvedValues": 550
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12391,
+        "total": 12389,
         "by_severity": {
           "ERROR": 10,
           "INFO": 11967,
-          "WARNING": 414
+          "WARNING": 412
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 284,
@@ -136,8 +142,7 @@
           "PERIOD_MISMATCH": 63,
           "RESTATEMENT_CONFLICT": 28,
           "UNEXPECTED_DURATION": 32,
-          "UNKNOWN_CONCEPT": 11967,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11967
         }
       },
       "latestFiling": {
@@ -148,13 +153,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "732c1299a83c4d482f7758d27f335b562eea3424b92f73a129cbd58186a3084e",
@@ -164,16 +169,22 @@
       "cik": "0001692415",
       "name": "Co-Diagnostics, Inc.",
       "sic": "3841",
+      "rawFacts": 9426,
+      "mappedFacts": 3454,
+      "unmappedFacts": 6201,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CODX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 41,
-      "firstPeriodEnd": "2016-06-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 42,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -238,11 +249,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 38,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -269,26 +280,25 @@
         }
       },
       "quality": {
-        "HIGH": 338
+        "HIGH": 340
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 338,
-        "resolvedValues": 338
+        "datableValues": 340,
+        "resolvedValues": 340
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6320,
+        "total": 6316,
         "by_severity": {
           "INFO": 6201,
-          "WARNING": 119
+          "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 68,
           "EXTREME_VALUE": 8,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 6201,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 6201
         }
       },
       "latestFiling": {
@@ -299,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a84c3fcd447c6b3c9d863f4abc93189739337482a9c646b50c6f926ed8dcad18",
@@ -315,16 +325,22 @@
       "cik": "0001945415",
       "name": "HUHUTECH International Group Inc.",
       "sic": "3360",
+      "rawFacts": 708,
+      "mappedFacts": 235,
+      "unmappedFacts": 494,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HUHU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -389,11 +405,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -420,25 +436,24 @@
         }
       },
       "quality": {
-        "HIGH": 41,
+        "HIGH": 43,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 44,
-        "resolvedValues": 44
+        "datableValues": 46,
+        "resolvedValues": 46
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 517,
+        "total": 515,
         "by_severity": {
           "INFO": 494,
-          "WARNING": 23
+          "WARNING": 21
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 21,
-          "UNKNOWN_CONCEPT": 494,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 494
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "681e34031d4448c06148ddfe73266ed44b10e503527bfd8369cca3a18f6d9752",

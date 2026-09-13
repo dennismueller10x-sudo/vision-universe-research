@@ -6,6 +6,12 @@
       "cik": "0001289945",
       "name": "Spok Holdings, Inc",
       "sic": "4812",
+      "rawFacts": 17988,
+      "mappedFacts": 6535,
+      "unmappedFacts": 11985,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SPOK"
@@ -120,9 +126,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12346,
+        "total": 12183,
         "by_severity": {
-          "INFO": 12148,
+          "INFO": 11985,
           "ERROR": 1,
           "WARNING": 197
         },
@@ -131,7 +137,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 42,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 12148
+          "UNKNOWN_CONCEPT": 11985
         }
       },
       "latestFiling": {
@@ -142,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b68587700fedf0ab78117ad676124b5c324d3b7d6744c381d9958bcb282a4979",
@@ -158,16 +164,22 @@
       "cik": "0001317945",
       "name": "Omega Flex, Inc.",
       "sic": "3430",
+      "rawFacts": 15530,
+      "mappedFacts": 5373,
+      "unmappedFacts": 10328,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OFLX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -232,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,21 +275,21 @@
         }
       },
       "quality": {
-        "HIGH": 469,
+        "HIGH": 471,
         "MEDIUM": 43
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 512,
-        "resolvedValues": 512
+        "datableValues": 514,
+        "resolvedValues": 514
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11010,
+        "total": 10818,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10516,
-          "WARNING": 493
+          "INFO": 10328,
+          "WARNING": 489
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 412,
@@ -285,8 +297,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 17,
           "RESTATEMENT_CONFLICT": 44,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 10516,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 10328
         }
       },
       "latestFiling": {
@@ -297,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4f72d1e292f65a63f7200dc9843b53e2666576b82f5cc05958dbe7e39959c869",
@@ -313,16 +324,22 @@
       "cik": "0001419945",
       "name": "TEEKAY TANKERS LTD.",
       "sic": "4400",
+      "rawFacts": 4917,
+      "mappedFacts": 1597,
+      "unmappedFacts": 3577,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TNK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 17,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 18,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 12,
@@ -387,11 +404,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -418,27 +435,26 @@
         }
       },
       "quality": {
-        "HIGH": 159,
+        "HIGH": 161,
         "MEDIUM": 35
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 194,
-        "resolvedValues": 194
+        "datableValues": 196,
+        "resolvedValues": 196
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3800,
+        "total": 3798,
         "by_severity": {
           "INFO": 3577,
-          "WARNING": 223
+          "WARNING": 221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 130,
           "RESTATEMENT_CONFLICT": 88,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 3577,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3577
         }
       },
       "latestFiling": {
@@ -449,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "30e15890631bbeeb2581e5989cd31c1d40d0dcfe6b9b16be6eb5c3823767a21e",
@@ -465,6 +481,12 @@
       "cik": "0001823945",
       "name": "BLUE OWL CAPITAL INC.",
       "sic": "6282",
+      "rawFacts": 6360,
+      "mappedFacts": 1799,
+      "unmappedFacts": 4430,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OWL"
@@ -580,17 +602,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4689,
+        "total": 4685,
         "by_severity": {
-          "INFO": 4433,
-          "WARNING": 256
+          "INFO": 4430,
+          "WARNING": 255
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 163,
           "RESTATEMENT_CONFLICT": 41,
           "UNEXPECTED_DURATION": 51,
-          "UNKNOWN_CONCEPT": 4433,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4430
         }
       },
       "latestFiling": {
@@ -601,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c8922736a8794a634ca2413658fc4daf24aa80f232f8087a5c49b86304f3700c",

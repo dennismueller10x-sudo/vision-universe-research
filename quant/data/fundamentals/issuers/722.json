@@ -6,16 +6,22 @@
       "cik": "0001734722",
       "name": "UiPath, Inc.",
       "sic": "7372",
+      "rawFacts": 9371,
+      "mappedFacts": 2298,
+      "unmappedFacts": 7194,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "PATH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2020-01-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2019-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2020-01-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2019-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -111,24 +117,23 @@
         }
       },
       "quality": {
-        "HIGH": 227
+        "HIGH": 229
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 227,
-        "resolvedValues": 227
+        "datableValues": 229,
+        "resolvedValues": 229
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7256,
+        "total": 7254,
         "by_severity": {
           "INFO": 7194,
-          "WARNING": 62
+          "WARNING": 60
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 60,
-          "UNKNOWN_CONCEPT": 7194,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7194
         }
       },
       "latestFiling": {
@@ -139,13 +144,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0c98a23ac2450d073cc45412e9a79e5a8ee59d0a506ef53e1377561985f9a419",
@@ -155,16 +160,22 @@
       "cik": "0002027722",
       "name": "Grande Group Ltd/HK",
       "sic": "6199",
+      "rawFacts": 508,
+      "mappedFacts": 182,
+      "unmappedFacts": 347,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "GRAN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2023-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2022-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -229,11 +240,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2023-03-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -260,26 +271,25 @@
         }
       },
       "quality": {
-        "HIGH": 27,
+        "HIGH": 29,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 31,
-        "resolvedValues": 31
+        "datableValues": 33,
+        "resolvedValues": 33
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 355,
+        "total": 353,
         "by_severity": {
           "INFO": 347,
-          "WARNING": 8
+          "WARNING": 6
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
           "PERIOD_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 347,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 347
         }
       },
       "latestFiling": {
@@ -290,13 +300,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "88d5cff21066aa272e93163118a66257314ddbb416bb55142e450149bf375a89",

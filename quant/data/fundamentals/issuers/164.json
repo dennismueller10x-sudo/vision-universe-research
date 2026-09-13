@@ -6,16 +6,22 @@
       "cik": "0000778164",
       "name": "Alto Ingredients, Inc.",
       "sic": "2860",
+      "rawFacts": 17102,
+      "mappedFacts": 6206,
+      "unmappedFacts": 10890,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALTO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 540,
+        "HIGH": 542,
         "MEDIUM": 140
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 680,
-        "resolvedValues": 680
+        "datableValues": 682,
+        "resolvedValues": 682
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11719,
+        "total": 11687,
         "by_severity": {
-          "INFO": 10918,
+          "INFO": 10890,
           "ERROR": 2,
-          "WARNING": 799
+          "WARNING": 795
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 679,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 112,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 10918,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 10890
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "31b873d509a0f1a0677b98985675c8bec942aa82b75605692d8b0c8f227dc04e",
@@ -160,16 +165,30 @@
       "cik": "0000803164",
       "name": "CHOICEONE FINANCIAL SERVICES INC",
       "sic": "6022",
+      "rawFacts": 28162,
+      "mappedFacts": 5172,
+      "unmappedFacts": 23360,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "COFS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -234,11 +253,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -265,26 +284,25 @@
         }
       },
       "quality": {
-        "HIGH": 514,
+        "HIGH": 516,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 521,
-        "resolvedValues": 521
+        "datableValues": 523,
+        "resolvedValues": 523
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23667,
+        "total": 23383,
         "by_severity": {
-          "INFO": 23642,
-          "WARNING": 25
+          "INFO": 23360,
+          "WARNING": 23
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 23642,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 23360
         }
       },
       "latestFiling": {
@@ -295,13 +313,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6ad684aea914d5f00262d02690a2bb178396c1e3143079ccd372bc4875588cd1",
@@ -311,16 +329,22 @@
       "cik": "0001018164",
       "name": "WILLIS LEASE FINANCE CORP",
       "sic": "5080",
+      "rawFacts": 19996,
+      "mappedFacts": 6042,
+      "unmappedFacts": 13994,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WLFC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -385,11 +409,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -416,26 +440,25 @@
         }
       },
       "quality": {
-        "HIGH": 589,
+        "HIGH": 591,
         "MEDIUM": 56
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 645,
-        "resolvedValues": 645
+        "datableValues": 647,
+        "resolvedValues": 647
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14524,
+        "total": 14522,
         "by_severity": {
           "INFO": 13994,
-          "WARNING": 530
+          "WARNING": 528
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 375,
           "RESTATEMENT_CONFLICT": 153,
-          "UNKNOWN_CONCEPT": 13994,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13994
         }
       },
       "latestFiling": {
@@ -446,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d87463def71379deb99721a8e3b8bc3d760e5940c2b522e3414f39671a5fe538",
@@ -462,16 +485,22 @@
       "cik": "0001650164",
       "name": "Toast, Inc.",
       "sic": "7374",
+      "rawFacts": 7929,
+      "mappedFacts": 2154,
+      "unmappedFacts": 5897,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TOST"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -536,11 +565,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -567,25 +596,24 @@
         }
       },
       "quality": {
-        "HIGH": 218
+        "HIGH": 220
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 218,
-        "resolvedValues": 218
+        "datableValues": 220,
+        "resolvedValues": 220
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6080,
+        "total": 6020,
         "by_severity": {
-          "INFO": 5955,
-          "WARNING": 125
+          "INFO": 5897,
+          "WARNING": 123
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 111,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 5955,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5897
         }
       },
       "latestFiling": {
@@ -596,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1f8856cff62b8d3cf1aa1da0986c07c59a7ffc18c2bb581d3d4f2c4c782d3c83",
@@ -612,6 +640,12 @@
       "cik": "0001709164",
       "name": "Hamilton Beach Brands Holding Co",
       "sic": "3634",
+      "rawFacts": 12888,
+      "mappedFacts": 4257,
+      "unmappedFacts": 8886,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HBB"
@@ -727,16 +761,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9157,
+        "total": 9156,
         "by_severity": {
           "INFO": 8886,
-          "WARNING": 271
+          "WARNING": 270
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 96,
           "RESTATEMENT_CONFLICT": 174,
-          "UNKNOWN_CONCEPT": 8886,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 8886
         }
       },
       "latestFiling": {
@@ -747,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a4c52e9d53574656a2e0c423365e98030c0187862393c34c53c20f49f2b64857",
@@ -763,6 +796,12 @@
       "cik": "0002108164",
       "name": "Pono Capital Four, Inc.",
       "sic": "6770",
+      "rawFacts": 106,
+      "mappedFacts": 0,
+      "unmappedFacts": 70,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PONO",
@@ -895,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7bd82d46a36fa59fe8905abcdb2019086a4c6462d306190136c741b0ad15e480",

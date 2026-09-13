@@ -6,6 +6,12 @@
       "cik": "0000788611",
       "name": "NextTrip, Inc.",
       "sic": "4700",
+      "rawFacts": 13068,
+      "mappedFacts": 4678,
+      "unmappedFacts": 8643,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0228",
       "tickers": [
         "NTRP"
@@ -121,18 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9035,
+        "total": 9032,
         "by_severity": {
           "INFO": 8643,
-          "WARNING": 392
+          "WARNING": 389
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 211,
           "FISCAL_PERIOD_CONFLICT": 14,
           "RESTATEMENT_CONFLICT": 158,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 8643,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 8643
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4a9ebcc2d699e761aaef21557ee8878d09384e8a7c9cd2d9671bf76d5478ffbd",
@@ -159,16 +164,22 @@
       "cik": "0002056611",
       "name": "Latigo Biotherapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 254,
+      "mappedFacts": 89,
+      "unmappedFacts": 162,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LTGO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
@@ -264,24 +275,23 @@
         }
       },
       "quality": {
-        "HIGH": 15
+        "HIGH": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 15,
-        "resolvedValues": 15
+        "datableValues": 17,
+        "resolvedValues": 17
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 165,
+        "total": 163,
         "by_severity": {
           "INFO": 162,
-          "WARNING": 3
+          "WARNING": 1
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 162,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 162
         }
       },
       "latestFiling": {
@@ -292,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2153cde1c56b7aef986b86ff3a27dd705f9e09688dab0c86ce97299c7aaa62b4",

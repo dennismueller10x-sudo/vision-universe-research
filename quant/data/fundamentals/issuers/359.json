@@ -6,16 +6,30 @@
       "cik": "0000790359",
       "name": "NBT BANCORP INC",
       "sic": "6021",
+      "rawFacts": 33964,
+      "mappedFacts": 5548,
+      "unmappedFacts": 29177,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NBTB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +94,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,25 +125,24 @@
         }
       },
       "quality": {
-        "HIGH": 664
+        "HIGH": 666
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 664,
-        "resolvedValues": 664
+        "datableValues": 666,
+        "resolvedValues": 666
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29516,
+        "total": 29302,
         "by_severity": {
-          "INFO": 29389,
-          "WARNING": 127
+          "INFO": 29177,
+          "WARNING": 125
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 80,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 29389,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 29177
         }
       },
       "latestFiling": {
@@ -140,13 +153,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a69fbe028a4ed603506185f836a05d93790be289a500c9b39452c413f895b656",
@@ -156,16 +169,22 @@
       "cik": "0000798359",
       "name": "CENTERSPACE",
       "sic": "6798",
+      "rawFacts": 20872,
+      "mappedFacts": 4875,
+      "unmappedFacts": 15264,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CSR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2010-04-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2009-04-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.67,
+      "historyYears": 16.67,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -230,11 +249,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-04-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-04-30",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.67
+          "historyYears": 16.67
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -261,28 +280,27 @@
         }
       },
       "quality": {
-        "HIGH": 441,
+        "HIGH": 443,
         "MEDIUM": 112
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 553,
-        "resolvedValues": 553
+        "datableValues": 555,
+        "resolvedValues": 555
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16482,
+        "total": 16480,
         "by_severity": {
           "INFO": 15264,
-          "WARNING": 1218
+          "WARNING": 1216
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 903,
           "RESTATEMENT_CONFLICT": 256,
           "UNEXPECTED_DURATION": 55,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 15264,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15264
         }
       },
       "latestFiling": {
@@ -293,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "33e5aa1caeb963861f85a64550abfcc91d4405a4b786974f03f194347d6e438e",
@@ -309,6 +327,12 @@
       "cik": "0000887359",
       "name": "Vericel Corp",
       "sic": "2836",
+      "rawFacts": 16225,
+      "mappedFacts": 5837,
+      "unmappedFacts": 10345,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VCEL"
@@ -424,17 +448,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10911,
+        "total": 10910,
         "by_severity": {
           "INFO": 10345,
-          "WARNING": 566
+          "WARNING": 565
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 285,
           "RESTATEMENT_CONFLICT": 79,
           "UNEXPECTED_DURATION": 201,
-          "UNKNOWN_CONCEPT": 10345,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 10345
         }
       },
       "latestFiling": {
@@ -445,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f87208ec2a30a29353c41fe69d9ae416852dc6c02f9fbf28f3767bec1a7456d2",
@@ -461,6 +484,12 @@
       "cik": "0001822359",
       "name": "DocGo Inc.",
       "sic": "8000",
+      "rawFacts": 9446,
+      "mappedFacts": 2137,
+      "unmappedFacts": 7200,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DCGO"
@@ -576,16 +605,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7655,
+        "total": 7626,
         "by_severity": {
-          "INFO": 7229,
+          "INFO": 7200,
           "WARNING": 426
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
           "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 33,
-          "UNKNOWN_CONCEPT": 7229
+          "UNKNOWN_CONCEPT": 7200
         }
       },
       "latestFiling": {
@@ -596,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f69f2a7f4c5c94005aad06ee278a599c0578a96b716151427d40464da2e6ff4e",
@@ -612,17 +641,23 @@
       "cik": "0001838359",
       "name": "Rigetti Computing, Inc.",
       "sic": "7371",
+      "rawFacts": 6324,
+      "mappedFacts": 2051,
+      "unmappedFacts": 4328,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RGTI",
         "RGTIW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 23,
-      "firstPeriodEnd": "2021-01-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 24,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -687,18 +722,18 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 22,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 22,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_debt": {
           "annualPeriods": 4,
@@ -718,28 +753,27 @@
         }
       },
       "quality": {
-        "HIGH": 221
+        "HIGH": 225
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 221,
-        "resolvedValues": 221
+        "datableValues": 225,
+        "resolvedValues": 225
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4493,
+        "total": 4462,
         "by_severity": {
           "INFO": 4328,
-          "WARNING": 165
+          "WARNING": 134
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 37,
+          "CONCEPT_DISAGREEMENT": 38,
           "FISCAL_PERIOD_CONFLICT": 7,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 82,
+          "RESTATEMENT_CONFLICT": 84,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 4328,
-          "UNPLACEABLE_PERIOD": 34
+          "UNKNOWN_CONCEPT": 4328
         }
       },
       "latestFiling": {
@@ -750,13 +784,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4f2e330417fb31d90db0998f9ae144adbb5892715eab29f941647ad711d3da43",
@@ -766,6 +800,12 @@
       "cik": "0002058359",
       "name": "Cal Redwood Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 497,
+      "mappedFacts": 178,
+      "unmappedFacts": 320,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CRAQ",
@@ -898,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4b80e46f01c22239121fe2370c38d52d1e88654b1026321676ecfc21fbe1879f",

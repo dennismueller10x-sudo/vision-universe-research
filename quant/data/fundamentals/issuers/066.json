@@ -6,6 +6,12 @@
       "cik": "0000927066",
       "name": "DAVITA INC.",
       "sic": "8090",
+      "rawFacts": 29184,
+      "mappedFacts": 7430,
+      "unmappedFacts": 21586,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DVA"
@@ -121,16 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22694,
+        "total": 22693,
         "by_severity": {
           "INFO": 21586,
-          "WARNING": 1108
+          "WARNING": 1107
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1002,
           "RESTATEMENT_CONFLICT": 105,
-          "UNKNOWN_CONCEPT": 21586,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 21586
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d9606aba508aeb5d902c9f6469052cd7465ede76b204cc2c621252fb98441a20",
@@ -157,6 +162,12 @@
       "cik": "0001546066",
       "name": "PEMBINA PIPELINE CORP",
       "sic": "1382",
+      "rawFacts": 3971,
+      "mappedFacts": 729,
+      "unmappedFacts": 3394,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PBA",
@@ -168,11 +179,11 @@
         "PPLOF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 12,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 13,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -237,11 +248,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -268,27 +279,26 @@
         }
       },
       "quality": {
-        "HIGH": 118,
+        "HIGH": 120,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 121,
-        "resolvedValues": 121
+        "datableValues": 123,
+        "resolvedValues": 123
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3433,
+        "total": 3431,
         "by_severity": {
           "INFO": 3394,
-          "WARNING": 39
+          "WARNING": 37
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 7,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 3394,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3394
         }
       },
       "latestFiling": {
@@ -299,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "861a26a241a530c5496daa3470cb56516f99738652fc7b3bb7952c6ff20c9665",
@@ -315,6 +325,12 @@
       "cik": "0001855066",
       "name": "NYLI CBRE Global Infrastructure Megatrends Term Fund",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0531",
       "tickers": [
         "MEGI"
@@ -434,13 +450,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a02540bf0f0de696c1a35d7838a439b948cef2b2662a6f959c72dcd1b0dc3457",
@@ -450,16 +466,22 @@
       "cik": "0001867066",
       "name": "Journey Medical Corp",
       "sic": "2834",
+      "rawFacts": 5076,
+      "mappedFacts": 1798,
+      "unmappedFacts": 3239,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DERM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 25,
-      "firstPeriodEnd": "2020-06-30",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 26,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -524,11 +546,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 25,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -555,28 +577,27 @@
         }
       },
       "quality": {
-        "HIGH": 197,
+        "HIGH": 199,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 218,
-        "resolvedValues": 218
+        "datableValues": 220,
+        "resolvedValues": 220
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3384,
+        "total": 3379,
         "by_severity": {
           "INFO": 3239,
           "ERROR": 3,
-          "WARNING": 142
+          "WARNING": 137
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 125,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 3239,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 3239
         }
       },
       "latestFiling": {
@@ -587,13 +608,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5146d10f22942c21ed9e7daf75c31bf0a1cdfc7df1bc68fad39a6bb4f22889fa",

@@ -6,16 +6,30 @@
       "cik": "0001745916",
       "name": "PennyMac Financial Services, Inc.",
       "sic": "6162",
+      "rawFacts": 10742,
+      "mappedFacts": 2786,
+      "unmappedFacts": 7937,
+      "calendarYears": 10,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "PFSI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -80,11 +94,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -111,26 +125,25 @@
         }
       },
       "quality": {
-        "HIGH": 374,
+        "HIGH": 376,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 387,
-        "resolvedValues": 387
+        "datableValues": 389,
+        "resolvedValues": 389
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8101,
+        "total": 7995,
         "by_severity": {
-          "INFO": 8041,
-          "WARNING": 60
+          "INFO": 7937,
+          "WARNING": 58
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 51,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 8041,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7937
         }
       },
       "latestFiling": {
@@ -141,13 +154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "09a153f7d3c3555ed06da41b313c2d3350c57a2975cc4f7a57e7f89fedf37e08",

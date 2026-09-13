@@ -6,6 +6,12 @@
       "cik": "0000107687",
       "name": "WINNEBAGO INDUSTRIES INC",
       "sic": "3716",
+      "rawFacts": 21903,
+      "mappedFacts": 6765,
+      "unmappedFacts": 15583,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0830",
       "tickers": [
         "WGO"
@@ -142,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "67d632a81b9c57296810a1ac1b546d4c6196db3b7c9fa2ef48778e1acd873699",
@@ -158,16 +164,22 @@
       "cik": "0001453687",
       "name": "Cartesian Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 12803,
+      "mappedFacts": 3554,
+      "unmappedFacts": 9275,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RNAC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 47,
-      "firstPeriodEnd": "2014-12-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 48,
+      "firstPeriodEnd": "2013-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 11.0,
+      "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 12,
@@ -232,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 43,
-          "firstAvailablePeriod": "2014-12-31",
+          "annualPeriods": 13,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 11.0
+          "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -263,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 347,
+        "HIGH": 349,
         "MEDIUM": 24
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 371,
-        "resolvedValues": 371
+        "datableValues": 373,
+        "resolvedValues": 373
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9571,
+        "total": 9569,
         "by_severity": {
           "INFO": 9275,
-          "WARNING": 296
+          "WARNING": 294
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 258,
           "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 9275,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9275
         }
       },
       "latestFiling": {
@@ -293,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "32c656a6747b3b591216361a00a8a78f3a64790d1aa2855939a68eb642a455ac",
@@ -309,16 +320,22 @@
       "cik": "0001565687",
       "name": "Intapp, Inc.",
       "sic": "7372",
+      "rawFacts": 7200,
+      "mappedFacts": 2060,
+      "unmappedFacts": 5161,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "INTA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 25,
-      "firstPeriodEnd": "2020-06-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 26,
+      "firstPeriodEnd": "2019-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -383,11 +400,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 25,
-          "firstAvailablePeriod": "2020-06-30",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -414,26 +431,25 @@
         }
       },
       "quality": {
-        "HIGH": 209,
+        "HIGH": 211,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 215,
-        "resolvedValues": 215
+        "datableValues": 217,
+        "resolvedValues": 217
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5271,
+        "total": 5270,
         "by_severity": {
           "INFO": 5161,
-          "WARNING": 110
+          "WARNING": 109
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 107,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 5161,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5161
         }
       },
       "latestFiling": {
@@ -444,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "814bd76ad7645e29d28cb7477d927d1b7f758580b01d533f2d0844459ad94460",

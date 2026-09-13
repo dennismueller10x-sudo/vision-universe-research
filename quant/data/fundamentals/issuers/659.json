@@ -6,16 +6,22 @@
       "cik": "0000012659",
       "name": "H&R BLOCK INC",
       "sic": "7200",
+      "rawFacts": 30147,
+      "mappedFacts": 7645,
+      "unmappedFacts": 22141,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "HRB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 78,
-      "firstPeriodEnd": "2008-04-30",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 79,
+      "firstPeriodEnd": "2007-04-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.17,
+      "historyYears": 19.17,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -80,11 +86,11 @@
           "historyYears": 17.17
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-04-30",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-04-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 18.17
+          "historyYears": 19.17
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -111,21 +117,21 @@
         }
       },
       "quality": {
-        "HIGH": 699,
+        "HIGH": 701,
         "MEDIUM": 97
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 796,
-        "resolvedValues": 796
+        "datableValues": 798,
+        "resolvedValues": 798
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23367,
+        "total": 23365,
         "by_severity": {
           "INFO": 22141,
           "ERROR": 3,
-          "WARNING": 1223
+          "WARNING": 1221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 976,
@@ -133,8 +139,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 190,
           "UNEXPECTED_DURATION": 53,
-          "UNKNOWN_CONCEPT": 22141,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 22141
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5324c09d4b8d229e3d935fc4d0d98bc72aa884b16dc9b5e8f8fb383d013ab83f",
@@ -161,6 +166,12 @@
       "cik": "0001049659",
       "name": "NATIONAL STEEL CO",
       "sic": "3310",
+      "rawFacts": 4378,
+      "mappedFacts": 735,
+      "unmappedFacts": 3742,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SID"
@@ -276,18 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3843,
+        "total": 3842,
         "by_severity": {
           "INFO": 3742,
-          "WARNING": 101
+          "WARNING": 100
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
           "EXTREME_VALUE": 1,
           "RESTATEMENT_CONFLICT": 22,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 3742,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 3742
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a565c68952cf87b1494a439bff22e1ad5274ba57e1fb80eb8214d0d0286156cb",
@@ -314,6 +324,12 @@
       "cik": "0001398659",
       "name": "Genpact LTD",
       "sic": "8742",
+      "rawFacts": 34057,
+      "mappedFacts": 7763,
+      "unmappedFacts": 26154,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "G"
@@ -451,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0a9292684414681a648f9490493ea1ff6f80de34b5ebba49b2312e9240821eb8",
@@ -467,6 +483,12 @@
       "cik": "0001793659",
       "name": "Rush Street Interactive, Inc.",
       "sic": "7990",
+      "rawFacts": 7289,
+      "mappedFacts": 2240,
+      "unmappedFacts": 5015,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RSI"
@@ -582,16 +604,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5399,
+        "total": 5378,
         "by_severity": {
-          "INFO": 5034,
-          "WARNING": 365
+          "INFO": 5015,
+          "WARNING": 363
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 264,
           "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 5034,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5015
         }
       },
       "latestFiling": {
@@ -602,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3f1f51116aad6df58f67f85f38bebf0b77d076f69426b68895c2757eee6080e5",
@@ -618,6 +639,12 @@
       "cik": "0002085659",
       "name": "Silicon Valley Acquisition Corp.",
       "sic": "7372",
+      "rawFacts": 215,
+      "mappedFacts": 84,
+      "unmappedFacts": 138,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SVAQ",
@@ -625,10 +652,10 @@
         "SVAQW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2025-09-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -667,14 +694,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -694,17 +721,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -724,24 +751,25 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 14
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 14,
+        "resolvedValues": 14
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 215,
+        "total": 145,
         "by_severity": {
           "INFO": 138,
-          "WARNING": 77
+          "WARNING": 7
         },
         "by_code": {
           "PERIOD_MISMATCH": 3,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 138,
-          "UNPLACEABLE_PERIOD": 70
+          "UNKNOWN_CONCEPT": 138
         }
       },
       "latestFiling": {
@@ -752,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8e233c243c86839d3bfd6405e7b5788f88c6bafeafc6835b3b99eac62340fb6d",
@@ -768,6 +796,12 @@
       "cik": "0002129659",
       "name": "Freedom Metals Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 47,
+      "mappedFacts": 0,
+      "unmappedFacts": 19,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FDMM",
@@ -901,13 +935,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fdab800858167bff4a3f6280002a706d7c18bf6e84fdc71ab6a73ecd93e2907c",
@@ -917,6 +951,12 @@
       "cik": "0002145659",
       "name": "JATT III Acquisition Corp",
       "sic": "6770",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "JTTT"
@@ -1036,13 +1076,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5c8ed77070b6a3fffe80617bf911e4c7789e73f8c9419aeb7502d8b1d0a12979",

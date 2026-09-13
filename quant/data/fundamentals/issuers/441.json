@@ -6,16 +6,30 @@
       "cik": "0001050441",
       "name": "EAGLE BANCORP INC",
       "sic": "6022",
+      "rawFacts": 35716,
+      "mappedFacts": 5352,
+      "unmappedFacts": 30412,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EGBN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 11.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +125,27 @@
         }
       },
       "quality": {
-        "HIGH": 568,
+        "HIGH": 570,
         "MEDIUM": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 604,
-        "resolvedValues": 604
+        "datableValues": 606,
+        "resolvedValues": 606
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30922,
+        "total": 30648,
         "by_severity": {
-          "INFO": 30687,
+          "INFO": 30412,
           "ERROR": 2,
-          "WARNING": 233
+          "WARNING": 234
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 202,
+          "CONCEPT_DISAGREEMENT": 205,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 30687,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 30412
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "10af5c18573998da00e469e1b5966b5e98786f0e2bacbb97c60f6b188a39b22a",
@@ -159,6 +172,12 @@
       "cik": "0001273441",
       "name": "GRAN TIERRA ENERGY INC.",
       "sic": "1311",
+      "rawFacts": 19961,
+      "mappedFacts": 5518,
+      "unmappedFacts": 14645,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GTE"
@@ -274,16 +293,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15155,
+        "total": 15153,
         "by_severity": {
           "INFO": 14645,
-          "WARNING": 510
+          "WARNING": 508
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 435,
           "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 14645,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14645
         }
       },
       "latestFiling": {
@@ -294,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "642aa1ba551fb9d53604cb22c0f9a50a3e106a512a3647e2a80bd5731e8f7007",
@@ -310,16 +328,22 @@
       "cik": "0001708441",
       "name": "Mynd.ai, Inc.",
       "sic": "3577",
+      "rawFacts": 4435,
+      "mappedFacts": 1041,
+      "unmappedFacts": 3460,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MYND"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -384,11 +408,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -415,27 +439,26 @@
         }
       },
       "quality": {
-        "HIGH": 96,
+        "HIGH": 98,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 117,
-        "resolvedValues": 117
+        "datableValues": 119,
+        "resolvedValues": 119
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3684,
+        "total": 3682,
         "by_severity": {
           "INFO": 3460,
-          "WARNING": 224
+          "WARNING": 222
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 140,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 81,
-          "UNKNOWN_CONCEPT": 3460,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3460
         }
       },
       "latestFiling": {
@@ -446,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d1172e35c35e9a49de983c15c087840bd1b7f972af6708624662efffb06c9ea1",
@@ -462,6 +485,12 @@
       "cik": "0002090441",
       "name": "Iron Dome Acquisition I Corp.",
       "sic": "6770",
+      "rawFacts": 99,
+      "mappedFacts": 43,
+      "unmappedFacts": 60,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IDAC",
@@ -594,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d712ef6482dbed3e6134cdd7180b72c0883b34f6778ed644aa7e224e8acb7758",

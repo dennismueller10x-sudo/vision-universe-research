@@ -6,6 +6,12 @@
       "cik": "0000709283",
       "name": "QUANTUM CORP /DE/",
       "sic": "3572",
+      "rawFacts": 21119,
+      "mappedFacts": 6614,
+      "unmappedFacts": 14532,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "QMCO"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a38f8a4312b467223d0a0a00b51ccb48f54e4996a38e5a8986408932a706af66",
@@ -159,6 +165,12 @@
       "cik": "0001571283",
       "name": "Rexford Industrial Realty, Inc.",
       "sic": "6798",
+      "rawFacts": 19983,
+      "mappedFacts": 4097,
+      "unmappedFacts": 15532,
+      "calendarYears": 15,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "REXR",
@@ -166,11 +178,11 @@
         "REXR-PC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 57,
-      "firstPeriodEnd": "2011-12-31",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 58,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 12,
@@ -235,11 +247,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 55,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -266,20 +278,20 @@
         }
       },
       "quality": {
-        "HIGH": 412,
+        "HIGH": 414,
         "MEDIUM": 107
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 519,
-        "resolvedValues": 519
+        "datableValues": 521,
+        "resolvedValues": 521
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16185,
+        "total": 16184,
         "by_severity": {
           "INFO": 15532,
-          "WARNING": 653
+          "WARNING": 652
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 536,
@@ -287,8 +299,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 63,
-          "UNKNOWN_CONCEPT": 15532,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 15532
         }
       },
       "latestFiling": {
@@ -299,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f8967dd9dc2abebd3bf32509c8ae00ed77617a5cdf66986fa5ea8add54655938",
@@ -315,15 +326,21 @@
       "cik": "0001925283",
       "name": "Lincoln International, Inc.",
       "sic": "6282",
+      "rawFacts": 284,
+      "mappedFacts": 60,
+      "unmappedFacts": 214,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LCLN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2025-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -354,15 +371,15 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -376,7 +393,7 @@
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -390,16 +407,16 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -419,23 +436,26 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 10,
+        "MEDIUM": 3
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 13,
+        "resolvedValues": 13
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 284,
+        "total": 229,
         "by_severity": {
           "INFO": 214,
-          "WARNING": 70
+          "WARNING": 15
         },
         "by_code": {
+          "CONCEPT_DISAGREEMENT": 12,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 214,
-          "UNPLACEABLE_PERIOD": 67
+          "UNKNOWN_CONCEPT": 214
         }
       },
       "latestFiling": {
@@ -446,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5144463bdb6e989391c21a3db9a068e94fd874796ef672847d185565ea45e508",
@@ -462,6 +482,12 @@
       "cik": "0002089283",
       "name": "Eagle Nuclear Energy Corp.",
       "sic": "1090",
+      "rawFacts": 415,
+      "mappedFacts": 118,
+      "unmappedFacts": 290,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1130",
       "tickers": [
         "NUCL",
@@ -596,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5440a22a0a1c5cc91fdab708840d42bb99749977958480d0b3737e0bc2b77cba",

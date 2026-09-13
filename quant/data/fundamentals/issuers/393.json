@@ -6,6 +6,12 @@
       "cik": "0001489393",
       "name": "LyondellBasell Industries N.V.",
       "sic": "2860",
+      "rawFacts": 24157,
+      "mappedFacts": 6411,
+      "unmappedFacts": 17489,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LYB"
@@ -121,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18049,
+        "total": 18047,
         "by_severity": {
-          "INFO": 17491,
+          "INFO": 17489,
           "WARNING": 558
         },
         "by_code": {
@@ -131,7 +137,7 @@
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 30,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 17491
+          "UNKNOWN_CONCEPT": 17489
         }
       },
       "latestFiling": {
@@ -142,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fe3ad777b6a9786f9564e93ea2a4ad695c2fa3cc11f2ec2ddfa433c91090e6eb",
@@ -158,6 +164,12 @@
       "cik": "0001620393",
       "name": "NexPoint Residential Trust, Inc.",
       "sic": "6798",
+      "rawFacts": 12554,
+      "mappedFacts": 3262,
+      "unmappedFacts": 8934,
+      "calendarYears": 15,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NXRT"
@@ -293,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9de7093aabf8371ea831f27543a245066483079f8e112d0e5afa8fdcbf470b08",
@@ -309,6 +321,12 @@
       "cik": "0001717393",
       "name": "CORPORACION AMERICA AIRPORTS S.A.",
       "sic": "4581",
+      "rawFacts": 5167,
+      "mappedFacts": 844,
+      "unmappedFacts": 4463,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CAAP"
@@ -444,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fd5dea57eefe3655a127c8013b3c204a54a33e965ea5ed5c172c73b2565b94f8",
@@ -460,16 +478,22 @@
       "cik": "0001777393",
       "name": "ChargePoint Holdings, Inc.",
       "sic": "3690",
+      "rawFacts": 8725,
+      "mappedFacts": 2691,
+      "unmappedFacts": 6027,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "CHPT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 33,
-      "firstPeriodEnd": "2019-06-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 34,
+      "firstPeriodEnd": "2019-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -534,11 +558,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 29,
-          "firstAvailablePeriod": "2020-01-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2019-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -565,28 +589,27 @@
         }
       },
       "quality": {
-        "HIGH": 270,
+        "HIGH": 272,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 275,
-        "resolvedValues": 275
+        "datableValues": 277,
+        "resolvedValues": 277
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6290,
+        "total": 6288,
         "by_severity": {
           "INFO": 6027,
-          "WARNING": 263
+          "WARNING": 261
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 103,
           "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 92,
           "UNEXPECTED_DURATION": 59,
-          "UNKNOWN_CONCEPT": 6027,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6027
         }
       },
       "latestFiling": {
@@ -597,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d8d63c9fd0002f4cf41d1b90702bd40febdab669ec61dba519cda1bb564e9579",
@@ -613,16 +636,22 @@
       "cik": "0001932393",
       "name": "GE HealthCare Technologies Inc.",
       "sic": "3844",
+      "rawFacts": 6995,
+      "mappedFacts": 1359,
+      "unmappedFacts": 5597,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GEHC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 19,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -687,11 +716,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -718,26 +747,25 @@
         }
       },
       "quality": {
-        "HIGH": 145,
+        "HIGH": 147,
         "MEDIUM": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 187,
-        "resolvedValues": 187
+        "datableValues": 189,
+        "resolvedValues": 189
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5762,
+        "total": 5760,
         "by_severity": {
           "INFO": 5597,
-          "WARNING": 165
+          "WARNING": 163
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 159,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5597,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5597
         }
       },
       "latestFiling": {
@@ -748,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2d81305bc65bbe9a729ddf4422007ccad2ef87deac436e33d6f89cfdf5ae0a30",
@@ -764,6 +792,12 @@
       "cik": "0002101393",
       "name": "AmperCap Acquisition Co",
       "sic": "6770",
+      "rawFacts": 105,
+      "mappedFacts": 0,
+      "unmappedFacts": 71,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1130",
       "tickers": [
         "APMC",
@@ -896,13 +930,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f3a1fb63710a5fdb0080a69fa0f0f0b00b8fba1badf407164e1b6af1c19e515f",

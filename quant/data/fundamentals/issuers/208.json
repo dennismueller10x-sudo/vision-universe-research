@@ -6,17 +6,23 @@
       "cik": "0000012208",
       "name": "BIO-RAD LABORATORIES, INC.",
       "sic": "3826",
+      "rawFacts": 26753,
+      "mappedFacts": 7766,
+      "unmappedFacts": 19575,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BIO",
         "BIO-B"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 71,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 72,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -81,11 +87,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -112,27 +118,26 @@
         }
       },
       "quality": {
-        "HIGH": 669,
+        "HIGH": 671,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 687,
-        "resolvedValues": 687
+        "datableValues": 689,
+        "resolvedValues": 689
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19855,
+        "total": 19853,
         "by_severity": {
           "INFO": 19575,
-          "WARNING": 280
+          "WARNING": 278
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 213,
           "NEGATIVE_WHERE_IMPOSSIBLE": 9,
           "RESTATEMENT_CONFLICT": 56,
-          "UNKNOWN_CONCEPT": 19575,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19575
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ecdf09eb5191d946492c55024d88d2ec7c3ee2dcf38aca963162827c49015773",
@@ -159,16 +164,22 @@
       "cik": "0000074208",
       "name": "UDR, Inc.",
       "sic": "6798",
+      "rawFacts": 26126,
+      "mappedFacts": 5073,
+      "unmappedFacts": 20077,
+      "calendarYears": 18,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "UDR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -265,27 +276,26 @@
       },
       "quality": {
         "MEDIUM": 157,
-        "HIGH": 493
+        "HIGH": 495
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 650,
-        "resolvedValues": 650
+        "datableValues": 652,
+        "resolvedValues": 652
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21039,
+        "total": 21037,
         "by_severity": {
           "INFO": 20077,
           "ERROR": 5,
-          "WARNING": 957
+          "WARNING": 955
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 850,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 105,
-          "UNKNOWN_CONCEPT": 20077,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20077
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1617b6be54fafea633e9a4dc2def89663f8563e695f363a35bf91b8b02b2170e",
@@ -312,16 +322,22 @@
       "cik": "0000914208",
       "name": "Invesco Ltd.",
       "sic": "6282",
+      "rawFacts": 26972,
+      "mappedFacts": 6762,
+      "unmappedFacts": 20459,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IVZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2007-12-31",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2006-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -386,11 +402,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 72,
-          "firstAvailablePeriod": "2007-12-31",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -417,29 +433,28 @@
         }
       },
       "quality": {
-        "HIGH": 630,
+        "HIGH": 632,
         "MEDIUM": 106
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 736,
-        "resolvedValues": 736
+        "datableValues": 738,
+        "resolvedValues": 738
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21355,
+        "total": 21353,
         "by_severity": {
           "INFO": 20459,
           "ERROR": 5,
-          "WARNING": 891
+          "WARNING": 889
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 784,
           "FISCAL_PERIOD_CONFLICT": 11,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 20459,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20459
         }
       },
       "latestFiling": {
@@ -450,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2fdf527a9ad0d14953ddefc5f76aec170b06826cbc58643d1f8bc5f6769d5cb5",
@@ -466,6 +481,12 @@
       "cik": "0001032208",
       "name": "SEMPRA",
       "sic": "4932",
+      "rawFacts": 32922,
+      "mappedFacts": 6462,
+      "unmappedFacts": 26212,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SRE",
@@ -604,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b54ffc08daf285e8ef902c473299206cbab918b9abcaff8c0b14328ae5ee0c3e",
@@ -620,6 +641,12 @@
       "cik": "0001308208",
       "name": "UNIVERSAL LOGISTICS HOLDINGS, INC.",
       "sic": "4213",
+      "rawFacts": 20030,
+      "mappedFacts": 7069,
+      "unmappedFacts": 13508,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ULH"
@@ -756,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "06aa314fc659d298d1cddede0e8926b30bd80213779d984441bd523c82ea859b",
@@ -772,6 +799,12 @@
       "cik": "0001436208",
       "name": "Legacy Housing Corp",
       "sic": "2451",
+      "rawFacts": 9260,
+      "mappedFacts": 2890,
+      "unmappedFacts": 6285,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LEGH"
@@ -908,13 +941,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bb33c3d4c84050ab25f95e16b6b99dae584239e3c2c703741670dabec8efe7ea",
@@ -924,6 +957,12 @@
       "cik": "0001864208",
       "name": "Guggenheim Active Allocation Fund",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0531",
       "tickers": [
         "GUG"
@@ -1043,13 +1082,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bc172848467bb4e9631a48b777649a0522b933f1027352b390bab9bc8f666dda",
@@ -1059,6 +1098,12 @@
       "cik": "0002011208",
       "name": "Safe Pro Group Inc.",
       "sic": "3842",
+      "rawFacts": 2765,
+      "mappedFacts": 852,
+      "unmappedFacts": 1925,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SPAI"
@@ -1194,13 +1239,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "263593c285971b3ad364961e969c94a3021dd65be9b120212af0925b63cd0ae4",

@@ -6,6 +6,12 @@
       "cik": "0001442620",
       "name": "Recon Technology, Ltd",
       "sic": "1389",
+      "rawFacts": 13981,
+      "mappedFacts": 2736,
+      "unmappedFacts": 10127,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "RCON"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f06ae570690bd5d6c0c7cc36bf89b6523ce6c8be39d70fe044abf4ef7b50bf45",
@@ -159,16 +165,22 @@
       "cik": "0001499620",
       "name": "TAL Education Group",
       "sic": "8200",
+      "rawFacts": 6788,
+      "mappedFacts": 1703,
+      "unmappedFacts": 5304,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "TAL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 17,
-      "firstPeriodEnd": "2010-02-28",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 18,
+      "firstPeriodEnd": "2009-02-28",
       "lastPeriodEnd": "2026-02-28",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -233,11 +245,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2010-02-28",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2009-02-28",
           "lastAvailablePeriod": "2026-02-28",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,28 +276,27 @@
         }
       },
       "quality": {
-        "HIGH": 161,
+        "HIGH": 163,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 169,
-        "resolvedValues": 169
+        "datableValues": 171,
+        "resolvedValues": 171
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5426,
+        "total": 5424,
         "by_severity": {
           "INFO": 5304,
-          "WARNING": 122
+          "WARNING": 120
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 13,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 5304,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5304
         }
       },
       "latestFiling": {
@@ -296,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "acd7ebaff3c6849fcc2d465a314be8b98a8cabb4a89890e59b0457111155767b",
@@ -312,6 +323,12 @@
       "cik": "0001600620",
       "name": "Aurinia Pharmaceuticals Inc.",
       "sic": "2834",
+      "rawFacts": 8543,
+      "mappedFacts": 2556,
+      "unmappedFacts": 6140,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AUPH"
@@ -446,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6ba229aa30f50674d4a03edf7dd8c74298422762bfe9505fe6db6dcc70092616",

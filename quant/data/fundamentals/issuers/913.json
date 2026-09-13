@@ -6,16 +6,22 @@
       "cik": "0000846913",
       "name": "FUEL TECH, INC.",
       "sic": "3564",
+      "rawFacts": 19296,
+      "mappedFacts": 6854,
+      "unmappedFacts": 12842,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FTEK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 569,
+        "HIGH": 571,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 599,
-        "resolvedValues": 599
+        "datableValues": 601,
+        "resolvedValues": 601
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13285,
+        "total": 13283,
         "by_severity": {
           "INFO": 12842,
-          "WARNING": 443
+          "WARNING": 441
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 338,
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
           "RESTATEMENT_CONFLICT": 94,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12842,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12842
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e21c22f8f8d45f4da0517c5b5e3b7755f7f3cc980bd1a0883bb1f2ed2359b0c4",
@@ -159,17 +164,23 @@
       "cik": "0000915913",
       "name": "ALBEMARLE CORP",
       "sic": "2821",
+      "rawFacts": 29456,
+      "mappedFacts": 7934,
+      "unmappedFacts": 21641,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALB",
         "ALB-PA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -234,11 +245,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -265,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 626,
+        "HIGH": 628,
         "MEDIUM": 142
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 768,
-        "resolvedValues": 768
+        "datableValues": 770,
+        "resolvedValues": 770
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22590,
+        "total": 22588,
         "by_severity": {
           "INFO": 21641,
-          "WARNING": 949
+          "WARNING": 947
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 819,
           "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 21641,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 21641
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "48297f7ee30284e039fc6a7a3bd3f00b64868f33fc2df3bd6ef1269ff8d0f9f2",
@@ -311,6 +321,12 @@
       "cik": "0001550913",
       "name": "MacKenzie Realty Capital, Inc.",
       "sic": "6798",
+      "rawFacts": 6929,
+      "mappedFacts": 1536,
+      "unmappedFacts": 5237,
+      "calendarYears": 9,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "MKZR"
@@ -445,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "70bff96a0e8fd3c476f8a050855e2234b4d2d2db8359408293b332b7eb73a049",

@@ -6,16 +6,22 @@
       "cik": "0000073756",
       "name": "OCEANEERING INTERNATIONAL INC",
       "sic": "1389",
+      "rawFacts": 18958,
+      "mappedFacts": 6601,
+      "unmappedFacts": 12820,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OII"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 653,
+        "HIGH": 655,
         "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 685,
-        "resolvedValues": 685
+        "datableValues": 687,
+        "resolvedValues": 687
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13219,
+        "total": 13217,
         "by_severity": {
           "INFO": 12820,
           "ERROR": 10,
-          "WARNING": 389
+          "WARNING": 387
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 347,
           "FUTURE_DATA_LEAK": 10,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 12820,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12820
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "21e2e0444919699b37a6a9d390f59aa81cd27ff69c1b85478da4e3326669f6d7",
@@ -159,6 +164,12 @@
       "cik": "0001618756",
       "name": "Restaurant Brands International Inc.",
       "sic": "5812",
+      "rawFacts": 22245,
+      "mappedFacts": 5350,
+      "unmappedFacts": 16863,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "QSR"
@@ -293,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "69b1eb58ee1d7654b5e6ebced3c36495c9f67537ff1152c9d45372e7cec1b9a6",
@@ -309,16 +320,22 @@
       "cik": "0001701756",
       "name": "Sadot Group Inc.",
       "sic": "5810",
+      "rawFacts": 11165,
+      "mappedFacts": 3186,
+      "unmappedFacts": 8031,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SDOT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 40,
-      "firstPeriodEnd": "2016-09-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 41,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -383,11 +400,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 40,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -414,29 +431,28 @@
         }
       },
       "quality": {
-        "HIGH": 298,
+        "HIGH": 300,
         "MEDIUM": 26
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 324,
-        "resolvedValues": 324
+        "datableValues": 326,
+        "resolvedValues": 326
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8503,
+        "total": 8480,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 8051,
-          "WARNING": 451
+          "INFO": 8031,
+          "WARNING": 448
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 317,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 126,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 8051,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 8031
         }
       },
       "latestFiling": {
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "de6929032b8901c25e2b29a88924a5e27d4483f71aca5833dc239af97269c6f4",
@@ -463,16 +479,22 @@
       "cik": "0001833756",
       "name": "Leonardo DRS, Inc.",
       "sic": "3812",
+      "rawFacts": 7681,
+      "mappedFacts": 2258,
+      "unmappedFacts": 5499,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DRS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -537,11 +559,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -568,26 +590,25 @@
         }
       },
       "quality": {
-        "HIGH": 238,
+        "HIGH": 240,
         "MEDIUM": 29
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 267,
-        "resolvedValues": 267
+        "datableValues": 269,
+        "resolvedValues": 269
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5650,
+        "total": 5648,
         "by_severity": {
           "INFO": 5499,
-          "WARNING": 151
+          "WARNING": 149
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 130,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 5499,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5499
         }
       },
       "latestFiling": {
@@ -598,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f3c4831d84ad75dbdd97d1ab209d25f40f435e800be35128148ee7a1dd7e0597",
@@ -614,6 +635,12 @@
       "cik": "0002000756",
       "name": "Nexus Advanced Technologies Inc.",
       "sic": "7819",
+      "rawFacts": 1,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KWM",
@@ -743,13 +770,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e2b52c1018bf5138ff55385f8f458cc596e587dfabcd0aa0c3f5a010dfa3f816",

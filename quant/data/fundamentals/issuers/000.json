@@ -6,16 +6,22 @@
       "cik": "0001043000",
       "name": "SONIDA SENIOR LIVING, INC.",
       "sic": "8050",
+      "rawFacts": 18639,
+      "mappedFacts": 5774,
+      "unmappedFacts": 12947,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SNDA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 577,
+        "HIGH": 579,
         "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 625,
-        "resolvedValues": 625
+        "datableValues": 627,
+        "resolvedValues": 627
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13368,
+        "total": 13366,
         "by_severity": {
           "INFO": 12947,
-          "WARNING": 421
+          "WARNING": 419
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
           "RESTATEMENT_CONFLICT": 97,
-          "UNKNOWN_CONCEPT": 12947,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12947
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "98fae657363739682d495f52f26faee54b641611bdb126df08785320f0263a4d",
@@ -157,6 +162,12 @@
       "cik": "0001552000",
       "name": "MPLX LP",
       "sic": "4610",
+      "rawFacts": 17671,
+      "mappedFacts": 3828,
+      "unmappedFacts": 13999,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MPLX",
@@ -273,17 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14515,
+        "total": 14514,
         "by_severity": {
           "INFO": 13999,
-          "WARNING": 516
+          "WARNING": 515
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 354,
           "RESTATEMENT_CONFLICT": 160,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 13999,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 13999
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d0d55e96bd0a6694c769f9b9b3ef6d1a8a6d7d10b48a73a298f14fcbddae8541",
@@ -310,16 +320,22 @@
       "cik": "0001616000",
       "name": "Xenia Hotels & Resorts, Inc.",
       "sic": "7011",
+      "rawFacts": 15794,
+      "mappedFacts": 4018,
+      "unmappedFacts": 11477,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XHR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 51,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 52,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -384,11 +400,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 48,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -415,26 +431,25 @@
         }
       },
       "quality": {
-        "HIGH": 397,
+        "HIGH": 399,
         "MEDIUM": 61
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 458,
-        "resolvedValues": 458
+        "datableValues": 460,
+        "resolvedValues": 460
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12042,
+        "total": 12040,
         "by_severity": {
           "INFO": 11477,
-          "WARNING": 565
+          "WARNING": 563
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 533,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 11477,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11477
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a17c0d7db6b98b713b21cadfff354e75bc262cf6febb6a115c30b3a7cc9d1b74",

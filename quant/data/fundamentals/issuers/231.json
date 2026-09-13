@@ -6,6 +6,12 @@
       "cik": "0001062231",
       "name": "Dauch Corp",
       "sic": "3714",
+      "rawFacts": 23097,
+      "mappedFacts": 7362,
+      "unmappedFacts": 15915,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DCH"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c86b75d58ca6970a1c1d4e44324eb7820e510767242f19047c9dd01652276fef",
@@ -159,16 +165,22 @@
       "cik": "0001495231",
       "name": "IZEA Worldwide, Inc.",
       "sic": "7310",
+      "rawFacts": 15666,
+      "mappedFacts": 5298,
+      "unmappedFacts": 10826,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IZEA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -233,11 +245,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,27 +276,26 @@
         }
       },
       "quality": {
-        "HIGH": 540,
+        "HIGH": 542,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 544,
-        "resolvedValues": 544
+        "datableValues": 546,
+        "resolvedValues": 546
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11104,
+        "total": 11100,
         "by_severity": {
           "INFO": 10826,
-          "WARNING": 278
+          "WARNING": 274
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 182,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 10826,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 10826
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "88829dee75afbe9b8cd28888570b1f2ad341101e328d0284a39facb35f4811b7",

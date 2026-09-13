@@ -6,6 +6,12 @@
       "cik": "0000069422",
       "name": "INTERGROUP CORP",
       "sic": "6513",
+      "rawFacts": 15399,
+      "mappedFacts": 4312,
+      "unmappedFacts": 10639,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "INTG"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ea0489dc81d4581f322b57024d3c8e0ab22f3007b80e6e474089dd643c5f8c5b",
@@ -159,16 +165,22 @@
       "cik": "0001322422",
       "name": "Hudbay Minerals Inc.",
       "sic": "1000",
+      "rawFacts": 3782,
+      "mappedFacts": 656,
+      "unmappedFacts": 3307,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HBM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -233,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2017-01-01",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.92
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -264,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 121,
+        "HIGH": 123,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 126,
-        "resolvedValues": 126
+        "datableValues": 128,
+        "resolvedValues": 128
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3332,
+        "total": 3330,
         "by_severity": {
           "INFO": 3307,
-          "WARNING": 25
+          "WARNING": 23
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 13,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 3307,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3307
         }
       },
       "latestFiling": {
@@ -294,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ca12b5db8ba86ab212d061b280c045abe4aedc0936ed435cc8a0168648217c96",
@@ -310,16 +321,30 @@
       "cik": "0001499422",
       "name": "RBB Bancorp",
       "sic": "6022",
+      "rawFacts": 22114,
+      "mappedFacts": 3339,
+      "unmappedFacts": 18746,
+      "calendarYears": 12,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "RBB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 42,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 43,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -384,11 +409,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 40,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.5
+          "historyYears": 10.5
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -415,27 +440,26 @@
         }
       },
       "quality": {
-        "HIGH": 388,
+        "HIGH": 390,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 390,
-        "resolvedValues": 390
+        "datableValues": 392,
+        "resolvedValues": 392
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19037,
+        "total": 18866,
         "by_severity": {
-          "INFO": 18918,
-          "WARNING": 119
+          "INFO": 18746,
+          "WARNING": 120
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 93,
-          "FISCAL_PERIOD_CONFLICT": 8,
-          "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 18918,
-          "UNPLACEABLE_PERIOD": 1
+          "FISCAL_PERIOD_CONFLICT": 9,
+          "RESTATEMENT_CONFLICT": 18,
+          "UNKNOWN_CONCEPT": 18746
         }
       },
       "latestFiling": {
@@ -446,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3eae259a9001670b45b116167bf8f77a8379144035fefa6f77133833c1d5d0af",
@@ -462,16 +486,22 @@
       "cik": "0001636422",
       "name": "Health Catalyst, Inc.",
       "sic": "7370",
+      "rawFacts": 11300,
+      "mappedFacts": 2872,
+      "unmappedFacts": 8455,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HCAT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -536,11 +566,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 35,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -567,26 +597,25 @@
         }
       },
       "quality": {
-        "HIGH": 317,
+        "HIGH": 319,
         "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 337,
-        "resolvedValues": 337
+        "datableValues": 339,
+        "resolvedValues": 339
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8623,
+        "total": 8621,
         "by_severity": {
           "INFO": 8455,
-          "WARNING": 168
+          "WARNING": 166
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 160,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 8455,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 8455
         }
       },
       "latestFiling": {
@@ -597,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5a0b5b9c404e541cfa2142c19e6c8589fd27787a22bdc43ae0badde0b1bbf331",

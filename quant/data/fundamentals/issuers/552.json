@@ -6,16 +6,30 @@
       "cik": "0001027552",
       "name": "BANCO SANTANDER CHILE",
       "sic": "6029",
+      "rawFacts": 4515,
+      "mappedFacts": 638,
+      "unmappedFacts": 3950,
+      "calendarYears": 11,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BSAC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -111,28 +125,27 @@
         }
       },
       "quality": {
-        "HIGH": 84,
+        "HIGH": 86,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 98,
-        "resolvedValues": 98
+        "datableValues": 100,
+        "resolvedValues": 100
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4040,
+        "total": 4038,
         "by_severity": {
           "INFO": 3950,
-          "WARNING": 90
+          "WARNING": 88
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 69,
           "RESTATEMENT_CONFLICT": 12,
           "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 6,
-          "UNKNOWN_CONCEPT": 3950,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3950
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0ade121b94391a033a1c83b4c9a017dcb7a858710db1239b8d3269c6c7c21a9f",
@@ -159,6 +172,12 @@
       "cik": "0001577552",
       "name": "Alibaba Group Holding Ltd",
       "sic": "7389",
+      "rawFacts": 6697,
+      "mappedFacts": 1337,
+      "unmappedFacts": 5120,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "BABA",
@@ -166,11 +185,11 @@
         "BBAAY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 14,
-      "firstPeriodEnd": "2013-03-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 15,
+      "firstPeriodEnd": "2012-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -235,11 +254,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 14,
-          "firstAvailablePeriod": "2013-03-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -266,26 +285,25 @@
         }
       },
       "quality": {
-        "HIGH": 102,
+        "HIGH": 104,
         "MEDIUM": 24
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 126,
-        "resolvedValues": 126
+        "datableValues": 128,
+        "resolvedValues": 128
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5632,
+        "total": 5629,
         "by_severity": {
           "INFO": 5120,
-          "WARNING": 512
+          "WARNING": 509
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 475,
           "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 5120,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 5120
         }
       },
       "latestFiling": {
@@ -296,13 +314,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ce21d16b966f2b431dd731053caee0f61d46bdf3a925a8f68e96a8d49f04258b",
@@ -312,16 +330,22 @@
       "cik": "0001944552",
       "name": "Adlai Nortye Group Ltd.",
       "sic": "2834",
+      "rawFacts": 1088,
+      "mappedFacts": 312,
+      "unmappedFacts": 837,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ANL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -386,11 +410,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -417,23 +441,21 @@
         }
       },
       "quality": {
-        "HIGH": 40
+        "HIGH": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 40,
-        "resolvedValues": 40
+        "datableValues": 42,
+        "resolvedValues": 42
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 839,
+        "total": 837,
         "by_severity": {
-          "INFO": 837,
-          "WARNING": 2
+          "INFO": 837
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 837,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 837
         }
       },
       "latestFiling": {
@@ -444,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "366197d751c9287ba3e2777ccb6c27d99ee07c3b5c17d5a038e010722e890ed8",

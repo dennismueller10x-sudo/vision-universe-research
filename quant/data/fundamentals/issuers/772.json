@@ -6,6 +6,20 @@
       "cik": "0000736772",
       "name": "CNB FINANCIAL CORP/PA",
       "sic": "6022",
+      "rawFacts": 34491,
+      "mappedFacts": 5151,
+      "unmappedFacts": 29600,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CCNE",
@@ -122,15 +136,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30090,
+        "total": 29811,
         "by_severity": {
-          "INFO": 29879,
+          "INFO": 29600,
           "WARNING": 211
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 194,
           "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 29879
+          "UNKNOWN_CONCEPT": 29600
         }
       },
       "latestFiling": {
@@ -141,13 +155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7ff24d2036b3547fee9f0c244bcd4117e56ddd5af08fc6cbf97e440785ce3e7f",
@@ -157,6 +171,12 @@
       "cik": "0001545772",
       "name": "Brookfield Property Partners L.P.",
       "sic": "6500",
+      "rawFacts": 3690,
+      "mappedFacts": 645,
+      "unmappedFacts": 3181,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BPYPP",
@@ -165,11 +185,11 @@
         "BPYPO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -234,11 +254,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -265,25 +285,24 @@
         }
       },
       "quality": {
-        "HIGH": 132
+        "HIGH": 134
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 132,
-        "resolvedValues": 132
+        "datableValues": 134,
+        "resolvedValues": 134
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3238,
+        "total": 3236,
         "by_severity": {
           "INFO": 3181,
-          "WARNING": 57
+          "WARNING": 55
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 43,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 3181,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3181
         }
       },
       "latestFiling": {
@@ -294,13 +313,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "64f5425c4607eb7464343b8e6c6f1608d5c507bd7ecaec27c97c854d7e3d3204",

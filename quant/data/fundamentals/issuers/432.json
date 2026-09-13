@@ -6,16 +6,30 @@
       "cik": "0000705432",
       "name": "SOUTHSIDE BANCSHARES INC",
       "sic": "6022",
+      "rawFacts": 39995,
+      "mappedFacts": 6017,
+      "unmappedFacts": 34379,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "SBSI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +125,27 @@
         }
       },
       "quality": {
-        "HIGH": 582,
+        "HIGH": 584,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 603,
-        "resolvedValues": 603
+        "datableValues": 605,
+        "resolvedValues": 605
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 34921,
+        "total": 34633,
         "by_severity": {
-          "INFO": 34665,
+          "INFO": 34379,
           "ERROR": 2,
-          "WARNING": 254
+          "WARNING": 252
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 201,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 34665,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 34379
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "84f598afacc4d31ddc83eef2b10a5eec8b7f2c1cc00af26a5ea9ecb6c571ca8e",
@@ -159,16 +172,22 @@
       "cik": "0001474432",
       "name": "Everpure, Inc.",
       "sic": "3572",
+      "rawFacts": 17309,
+      "mappedFacts": 4560,
+      "unmappedFacts": 12838,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "P"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 49,
-      "firstPeriodEnd": "2014-01-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 50,
+      "firstPeriodEnd": "2013-01-31",
       "lastPeriodEnd": "2026-08-02",
-      "historyYears": 12.08,
+      "historyYears": 13.08,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -233,11 +252,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 46,
-          "firstAvailablePeriod": "2014-01-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2013-01-31",
           "lastAvailablePeriod": "2026-02-01",
-          "historyYears": 12.08
+          "historyYears": 13.08
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -264,26 +283,25 @@
         }
       },
       "quality": {
-        "HIGH": 420,
+        "HIGH": 422,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 435,
-        "resolvedValues": 435
+        "datableValues": 437,
+        "resolvedValues": 437
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13204,
+        "total": 13202,
         "by_severity": {
           "INFO": 12838,
-          "WARNING": 366
+          "WARNING": 364
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 347,
           "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 12838,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12838
         }
       },
       "latestFiling": {
@@ -294,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d22ff49290347ed407981669c5dd8187e46f3cf47e8784e2798897cf25ba5375",
@@ -310,6 +328,12 @@
       "cik": "0001559432",
       "name": "TXO Partners, L.P.",
       "sic": "1311",
+      "rawFacts": 3687,
+      "mappedFacts": 1046,
+      "unmappedFacts": 2588,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TXO"
@@ -425,15 +449,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2661,
+        "total": 2660,
         "by_severity": {
           "INFO": 2588,
-          "WARNING": 73
+          "WARNING": 72
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 72,
-          "UNKNOWN_CONCEPT": 2588,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 2588
         }
       },
       "latestFiling": {
@@ -444,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f9433bce313c2d3722db718d0f77f112d138232469970f201b481a1729edf345",

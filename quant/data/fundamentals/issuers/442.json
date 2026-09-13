@@ -6,16 +6,30 @@
       "cik": "0001709442",
       "name": "FIRSTSUN CAPITAL BANCORP",
       "sic": "6021",
+      "rawFacts": 12501,
+      "mappedFacts": 1754,
+      "unmappedFacts": 10773,
+      "calendarYears": 7,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FSUN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -111,25 +125,24 @@
         }
       },
       "quality": {
-        "HIGH": 193
+        "HIGH": 195
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 193,
-        "resolvedValues": 193
+        "datableValues": 195,
+        "resolvedValues": 195
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10901,
+        "total": 10827,
         "by_severity": {
-          "INFO": 10844,
-          "WARNING": 57
+          "INFO": 10773,
+          "WARNING": 54
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 48,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 10844,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 10773
         }
       },
       "latestFiling": {
@@ -140,13 +153,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "96835895c885ed7e96b43d6a777eca74f96fd29b58eda930df87b17408720b85",
@@ -156,16 +169,22 @@
       "cik": "0001815442",
       "name": "Kymera Therapeutics, Inc.",
       "sic": "2836",
+      "rawFacts": 7160,
+      "mappedFacts": 1916,
+      "unmappedFacts": 5203,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KYMR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 29,
-      "firstPeriodEnd": "2019-06-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 30,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -230,11 +249,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 29,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -261,26 +280,25 @@
         }
       },
       "quality": {
-        "HIGH": 230,
+        "HIGH": 232,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 233,
-        "resolvedValues": 233
+        "datableValues": 235,
+        "resolvedValues": 235
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5268,
+        "total": 5265,
         "by_severity": {
           "INFO": 5203,
-          "WARNING": 65
+          "WARNING": 62
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 5203,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 5203
         }
       },
       "latestFiling": {
@@ -291,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "214f55657e258734010e4fc2ac65fc65afe6bcb16ae58c165e2c8df74c16eeae",

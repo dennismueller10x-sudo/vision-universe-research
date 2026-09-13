@@ -6,16 +6,22 @@
       "cik": "0001327567",
       "name": "Palo Alto Networks Inc",
       "sic": "3577",
+      "rawFacts": 21057,
+      "mappedFacts": 6240,
+      "unmappedFacts": 14377,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0731",
       "tickers": [
         "PANW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 61,
-      "firstPeriodEnd": "2011-07-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 62,
+      "firstPeriodEnd": "2010-07-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 58,
-          "firstAvailablePeriod": "2011-07-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-07-31",
           "lastAvailablePeriod": "2026-07-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 506,
+        "HIGH": 508,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 536,
-        "resolvedValues": 536
+        "datableValues": 538,
+        "resolvedValues": 538
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14962,
+        "total": 14959,
         "by_severity": {
           "INFO": 14377,
-          "WARNING": 585
+          "WARNING": 582
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 481,
           "RESTATEMENT_CONFLICT": 101,
-          "UNKNOWN_CONCEPT": 14377,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 14377
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ee559a4b367b67b705d1dabeeac83108b0e211966a92634d1cf74b1ad8404c8e",
@@ -157,16 +162,30 @@
       "cik": "0001431567",
       "name": "Oak Valley Bancorp",
       "sic": "6022",
+      "rawFacts": 22549,
+      "mappedFacts": 3995,
+      "unmappedFacts": 18772,
+      "calendarYears": 16,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "OVLY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -231,11 +250,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -262,26 +281,25 @@
         }
       },
       "quality": {
-        "HIGH": 461,
+        "HIGH": 463,
         "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 478,
-        "resolvedValues": 478
+        "datableValues": 480,
+        "resolvedValues": 480
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19019,
+        "total": 18827,
         "by_severity": {
-          "INFO": 18958,
-          "WARNING": 61
+          "INFO": 18772,
+          "WARNING": 55
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 44,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 18958,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 18772
         }
       },
       "latestFiling": {
@@ -292,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ae2d631a88de536dccec5d65acb918b9e95c1a825da9d0872e5059947bc31cda",
@@ -308,6 +326,12 @@
       "cik": "0001799567",
       "name": "DoubleDown Interactive Co., Ltd.",
       "sic": "7374",
+      "rawFacts": 2259,
+      "mappedFacts": 577,
+      "unmappedFacts": 1754,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DDI"
@@ -442,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d4d225a2035c88b896841c450215a99fd833bd7cbc8e4b98842c4465559eebc9",
@@ -458,16 +482,22 @@
       "cik": "0001933567",
       "name": "Neuraxis, INC",
       "sic": "3845",
+      "rawFacts": 3577,
+      "mappedFacts": 1278,
+      "unmappedFacts": 2329,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NRXS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2022-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 19,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -532,11 +562,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -563,28 +593,27 @@
         }
       },
       "quality": {
-        "HIGH": 148,
+        "HIGH": 150,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 159,
-        "resolvedValues": 159
+        "datableValues": 161,
+        "resolvedValues": 161
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2424,
+        "total": 2419,
         "by_severity": {
           "INFO": 2329,
           "ERROR": 3,
-          "WARNING": 92
+          "WARNING": 87
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 67,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 2329,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 2329
         }
       },
       "latestFiling": {
@@ -595,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "40fb1f1df6ae745498a18f02e33a4c7d65a5479470b0b5c9a9a19f217ce175ce",
@@ -611,6 +640,12 @@
       "cik": "0002125567",
       "name": "Samos Energy Acquisition Corp",
       "sic": "6770",
+      "rawFacts": 68,
+      "mappedFacts": 0,
+      "unmappedFacts": 38,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SAMO",
@@ -743,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "13dd6b70ed75154901a5c16eea1a75776eb8ab7e81dac098b3ae545c16dcf8a4",

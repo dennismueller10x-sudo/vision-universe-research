@@ -6,16 +6,22 @@
       "cik": "0000768899",
       "name": "TrueBlue, Inc.",
       "sic": "7363",
+      "rawFacts": 20892,
+      "mappedFacts": 7317,
+      "unmappedFacts": 14062,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1227",
       "tickers": [
         "TBI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 73,
-      "firstPeriodEnd": "2008-12-26",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2007-12-28",
       "lastPeriodEnd": "2026-06-28",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 2.92
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-26",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-28",
           "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 640,
+        "HIGH": 642,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 658,
-        "resolvedValues": 658
+        "datableValues": 660,
+        "resolvedValues": 660
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14504,
+        "total": 14502,
         "by_severity": {
           "INFO": 14062,
-          "WARNING": 442
+          "WARNING": 440
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 315,
           "FISCAL_PERIOD_CONFLICT": 24,
           "RESTATEMENT_CONFLICT": 101,
-          "UNKNOWN_CONCEPT": 14062,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14062
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7f782bae3e4930be1a897483515859407d98cbc5d26a4560161a59f01d11836d",
@@ -158,16 +163,22 @@
       "cik": "0001069899",
       "name": "PHIBRO ANIMAL HEALTH CORP",
       "sic": "2834",
+      "rawFacts": 17773,
+      "mappedFacts": 5760,
+      "unmappedFacts": 12473,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "PAHC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 57,
-      "firstPeriodEnd": "2012-06-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 58,
+      "firstPeriodEnd": "2011-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -232,11 +243,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2012-06-30",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -263,28 +274,27 @@
         }
       },
       "quality": {
-        "HIGH": 526,
+        "HIGH": 528,
         "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 546,
-        "resolvedValues": 546
+        "datableValues": 548,
+        "resolvedValues": 548
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12882,
+        "total": 12753,
         "by_severity": {
-          "INFO": 12602,
+          "INFO": 12473,
           "ERROR": 4,
           "WARNING": 276
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 218,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 56,
-          "UNKNOWN_CONCEPT": 12602,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 58,
+          "UNKNOWN_CONCEPT": 12473
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d3032e9bb5bbdbaedc995cf285adc9590ea149c72088924a1e8377af0ab7d875",
@@ -311,6 +321,12 @@
       "cik": "0001516899",
       "name": "Yatra Online, Inc.",
       "sic": "4700",
+      "rawFacts": 5281,
+      "mappedFacts": 777,
+      "unmappedFacts": 4417,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "YTRA"
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "184dbe5c146b7f9b5f0d741b3ee693ecfbc61ee63e5241990e5455bb6d8e9f5a",
@@ -462,16 +478,22 @@
       "cik": "0001593899",
       "name": "Atea Pharmaceuticals, Inc.",
       "sic": "2834",
+      "rawFacts": 5118,
+      "mappedFacts": 1898,
+      "unmappedFacts": 3245,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AVIR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 31,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 32,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -536,11 +558,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 31,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -567,24 +589,23 @@
         }
       },
       "quality": {
-        "HIGH": 195
+        "HIGH": 197
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 195,
-        "resolvedValues": 195
+        "datableValues": 197,
+        "resolvedValues": 197
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3256,
+        "total": 3254,
         "by_severity": {
           "INFO": 3245,
-          "WARNING": 11
+          "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 9,
-          "UNKNOWN_CONCEPT": 3245,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3245
         }
       },
       "latestFiling": {
@@ -595,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "05e3abab94a92ee47f412cb588e664bea43f6dc98f790e8de2ced875ba4dd1f2",
@@ -611,16 +632,22 @@
       "cik": "0001714899",
       "name": "Denali Therapeutics Inc.",
       "sic": "2836",
+      "rawFacts": 9469,
+      "mappedFacts": 2738,
+      "unmappedFacts": 6805,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DNLI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -685,11 +712,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 36,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -716,26 +743,25 @@
         }
       },
       "quality": {
-        "HIGH": 306,
+        "HIGH": 308,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 315,
-        "resolvedValues": 315
+        "datableValues": 317,
+        "resolvedValues": 317
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6950,
+        "total": 6948,
         "by_severity": {
           "INFO": 6805,
-          "WARNING": 145
+          "WARNING": 143
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 141,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 6805,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6805
         }
       },
       "latestFiling": {
@@ -746,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0dc830c156c74dad501adf0a2f779cc4cd8c5310ba24757cfa7a44c5af082880",

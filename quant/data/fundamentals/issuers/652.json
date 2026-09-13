@@ -6,16 +6,22 @@
       "cik": "0001022652",
       "name": "INSEEGO CORP.",
       "sic": "3669",
+      "rawFacts": 20191,
+      "mappedFacts": 6146,
+      "unmappedFacts": 14013,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "INSG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 498,
+        "HIGH": 500,
         "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 557,
-        "resolvedValues": 557
+        "datableValues": 559,
+        "resolvedValues": 559
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14518,
+        "total": 14503,
         "by_severity": {
-          "INFO": 14026,
-          "WARNING": 492
+          "INFO": 14013,
+          "WARNING": 490
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 381,
           "RESTATEMENT_CONFLICT": 109,
-          "UNKNOWN_CONCEPT": 14026,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14013
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "49ae977796dfd56879c5f6bc634d908f146e2caa5f52ea5ca437a26e191b87df",
@@ -157,16 +162,22 @@
       "cik": "0001780652",
       "name": "Canaan Inc.",
       "sic": "6199",
+      "rawFacts": 3187,
+      "mappedFacts": 746,
+      "unmappedFacts": 2425,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CAN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -231,11 +242,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -262,26 +273,25 @@
         }
       },
       "quality": {
-        "HIGH": 93
+        "HIGH": 95
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 93,
-        "resolvedValues": 93
+        "datableValues": 95,
+        "resolvedValues": 95
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2657,
+        "total": 2656,
         "by_severity": {
           "INFO": 2425,
-          "WARNING": 232
+          "WARNING": 231
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 173,
           "RESTATEMENT_CONFLICT": 56,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2425,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 2425
         }
       },
       "latestFiling": {
@@ -292,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b2822a9ebbc75b9af1d6fc9835da9afc28bbdc032a9e6f5145168f8b16948156",
@@ -308,17 +318,23 @@
       "cik": "0001823652",
       "name": "Eve Holding, Inc.",
       "sic": "3721",
+      "rawFacts": 5239,
+      "mappedFacts": 1991,
+      "unmappedFacts": 3331,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EVEX",
         "EVEX-WT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 25,
-      "firstPeriodEnd": "2020-08-06",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 26,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -383,11 +399,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 25,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -414,27 +430,26 @@
         }
       },
       "quality": {
-        "HIGH": 191,
+        "HIGH": 193,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 195,
-        "resolvedValues": 195
+        "datableValues": 197,
+        "resolvedValues": 197
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3520,
+        "total": 3516,
         "by_severity": {
           "INFO": 3331,
-          "WARNING": 189
+          "WARNING": 185
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 77,
           "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 3331,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 3331
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "48498e2f5b9ff07c43cf812c5cffee880fa0e7af7ce29dcac775334390f2345f",
@@ -461,17 +476,23 @@
       "cik": "0001997652",
       "name": "Tamboran Resources Corp",
       "sic": "1311",
+      "rawFacts": 2036,
+      "mappedFacts": 541,
+      "unmappedFacts": 1486,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "TBN",
         "TBNRL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2023-09-30",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2023-06-30",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -536,11 +557,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2024-06-30",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -567,26 +588,25 @@
         }
       },
       "quality": {
-        "HIGH": 81,
+        "HIGH": 83,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 91,
-        "resolvedValues": 91
+        "datableValues": 93,
+        "resolvedValues": 93
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1565,
+        "total": 1556,
         "by_severity": {
           "INFO": 1486,
-          "WARNING": 79
+          "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 1486,
-          "UNPLACEABLE_PERIOD": 9
+          "UNKNOWN_CONCEPT": 1486
         }
       },
       "latestFiling": {
@@ -597,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f6ab83f8215f130cb1a553b3a8fb1dd0cd1a9b589366ea66dc68b47366be016c",

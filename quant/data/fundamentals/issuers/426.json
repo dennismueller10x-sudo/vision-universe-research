@@ -6,6 +6,12 @@
       "cik": "0000102426",
       "name": "SRH Total Return Fund, Inc.",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1130",
       "tickers": [
         "STEW"
@@ -125,13 +131,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4cbe83bf48ca748887922c98bc48887da57da9be08e945f4e22407ab6a0e46ae",
@@ -141,16 +147,22 @@
       "cik": "0001108426",
       "name": "TXNM ENERGY INC",
       "sic": "4911",
+      "rawFacts": 27882,
+      "mappedFacts": 7090,
+      "unmappedFacts": 20545,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TXNM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -215,11 +227,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -246,20 +258,20 @@
         }
       },
       "quality": {
-        "HIGH": 484,
+        "HIGH": 486,
         "MEDIUM": 229
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 713,
-        "resolvedValues": 713
+        "datableValues": 715,
+        "resolvedValues": 715
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21534,
+        "total": 21532,
         "by_severity": {
           "INFO": 20545,
-          "WARNING": 989
+          "WARNING": 987
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 891,
@@ -267,8 +279,7 @@
           "RESTATEMENT_CONFLICT": 66,
           "UNEXPECTED_DURATION": 3,
           "UNIT_MISMATCH": 10,
-          "UNKNOWN_CONCEPT": 20545,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20545
         }
       },
       "latestFiling": {
@@ -279,13 +290,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eadcdda7754f91b4708de0d060993c5c4365480c624a271cc5d866d94acfbe7e",
@@ -295,6 +306,20 @@
       "cik": "0001347426",
       "name": "Macro Bank Inc.",
       "sic": "6029",
+      "rawFacts": 2470,
+      "mappedFacts": 424,
+      "unmappedFacts": 2071,
+      "calendarYears": 9,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BMA"
@@ -429,13 +454,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "16efbd1c01e9c7b9629d8063c494ffe432e60b728c2703d13636c5b82e89c835",
@@ -445,16 +470,22 @@
       "cik": "0001694426",
       "name": "Delek US Holdings, Inc.",
       "sic": "2911",
+      "rawFacts": 19194,
+      "mappedFacts": 4372,
+      "unmappedFacts": 14654,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 43,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 44,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -519,11 +550,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -550,26 +581,25 @@
         }
       },
       "quality": {
-        "HIGH": 337,
+        "HIGH": 339,
         "MEDIUM": 121
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 458,
-        "resolvedValues": 458
+        "datableValues": 460,
+        "resolvedValues": 460
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15407,
+        "total": 15369,
         "by_severity": {
-          "INFO": 14690,
-          "WARNING": 717
+          "INFO": 14654,
+          "WARNING": 715
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 620,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 14690,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14654
         }
       },
       "latestFiling": {
@@ -580,13 +610,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d9e38bd748c8cc7ae1993514234aa3e005520f02586f40d604ff026796032f4b",

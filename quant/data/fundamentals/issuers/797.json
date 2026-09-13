@@ -6,6 +6,12 @@
       "cik": "0001050797",
       "name": "COLUMBIA SPORTSWEAR CO",
       "sic": "2300",
+      "rawFacts": 23885,
+      "mappedFacts": 7073,
+      "unmappedFacts": 16963,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "COLM"
@@ -140,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9ae497e24bf38b348b0fab7914f701d5e23299ee3626ca4e9fe84dbb9513f92b",
@@ -156,6 +162,12 @@
       "cik": "0001552797",
       "name": "Delek Logistics Partners, LP",
       "sic": "4610",
+      "rawFacts": 15343,
+      "mappedFacts": 4327,
+      "unmappedFacts": 11235,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DKL"
@@ -271,17 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11622,
+        "total": 11608,
         "by_severity": {
-          "INFO": 11248,
-          "WARNING": 374
+          "INFO": 11235,
+          "WARNING": 373
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 227,
-          "RESTATEMENT_CONFLICT": 126,
+          "RESTATEMENT_CONFLICT": 128,
           "UNEXPECTED_DURATION": 18,
-          "UNKNOWN_CONCEPT": 11248,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 11235
         }
       },
       "latestFiling": {
@@ -292,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e85be364d0950aeae455b9df578d2e3988d36e156f3720d3f730ee3d95635a5b",
@@ -308,16 +319,22 @@
       "cik": "0001748797",
       "name": "BRP Inc.",
       "sic": "3790",
+      "rawFacts": 3053,
+      "mappedFacts": 550,
+      "unmappedFacts": 2596,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "DOO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2018-01-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2017-02-01",
       "lastPeriodEnd": "2026-01-31",
-      "historyYears": 8.0,
+      "historyYears": 8.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -347,11 +364,11 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2018-01-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2017-02-01",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 8.0
+          "historyYears": 8.92
         },
         "net_income": {
           "annualPeriods": 9,
@@ -382,25 +399,25 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2018-01-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2017-02-01",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 8.0
+          "historyYears": 8.92
         },
         "total_assets": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2018-01-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2017-02-01",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 8.0
+          "historyYears": 8.92
         },
         "total_debt": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2018-01-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2017-02-01",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 8.0,
+          "historyYears": 8.92,
           "derivedFrom": [
             [
               "total_debt"
@@ -413,28 +430,27 @@
         }
       },
       "quality": {
-        "HIGH": 116,
+        "HIGH": 124,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 117,
-        "resolvedValues": 117
+        "datableValues": 125,
+        "resolvedValues": 125
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2629,
+        "total": 2620,
         "by_severity": {
           "INFO": 2596,
           "ERROR": 3,
-          "WARNING": 30
+          "WARNING": 21
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 17,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2596,
-          "UNPLACEABLE_PERIOD": 9
+          "UNKNOWN_CONCEPT": 2596
         }
       },
       "latestFiling": {
@@ -445,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "47f94366ef1846089e318c1c3531410a541022f525cb6b02755edd5b84d19f06",

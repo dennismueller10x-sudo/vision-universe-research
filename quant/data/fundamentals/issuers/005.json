@@ -6,6 +6,12 @@
       "cik": "0000720005",
       "name": "RAYMOND JAMES FINANCIAL INC",
       "sic": "6211",
+      "rawFacts": 36866,
+      "mappedFacts": 5403,
+      "unmappedFacts": 31435,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "RJF"
@@ -121,19 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32397,
+        "total": 32198,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 31635,
-          "WARNING": 759
+          "INFO": 31435,
+          "WARNING": 760
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 662,
-          "FISCAL_PERIOD_CONFLICT": 8,
+          "FISCAL_PERIOD_CONFLICT": 9,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 88,
-          "UNKNOWN_CONCEPT": 31635,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 89,
+          "UNKNOWN_CONCEPT": 31435
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bdadb031c54b74b1ce5aa9ca0c3cfee9e9c4f73c66236f0184ce232398f384ed",
@@ -160,16 +165,22 @@
       "cik": "0000857005",
       "name": "PTC INC.",
       "sic": "7372",
+      "rawFacts": 25755,
+      "mappedFacts": 6850,
+      "unmappedFacts": 19284,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "PTC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-09-30",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -234,11 +245,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-09-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -265,29 +276,28 @@
         }
       },
       "quality": {
-        "HIGH": 660,
+        "HIGH": 662,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 676,
-        "resolvedValues": 676
+        "datableValues": 678,
+        "resolvedValues": 678
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19459,
+        "total": 19457,
         "by_severity": {
           "INFO": 19284,
           "ERROR": 5,
-          "WARNING": 170
+          "WARNING": 168
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 160,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 19284,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19284
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e9e9955a7e132af975370b57e1b1421812c0c7df2edbb1a6b84154366709e5e0",
@@ -314,16 +324,22 @@
       "cik": "0001339005",
       "name": "FEMASYS INC",
       "sic": "3841",
+      "rawFacts": 6149,
+      "mappedFacts": 2150,
+      "unmappedFacts": 4041,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FEMY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -388,11 +404,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -419,26 +435,25 @@
         }
       },
       "quality": {
-        "HIGH": 212,
+        "HIGH": 214,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 213,
-        "resolvedValues": 213
+        "datableValues": 215,
+        "resolvedValues": 215
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4171,
+        "total": 4165,
         "by_severity": {
           "INFO": 4041,
-          "WARNING": 130
+          "WARNING": 124
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 111,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 4041,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 4041
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5f3b6b30320e5acbbe9ff8868ffa83181bc9749cc7ab4b670b57e1b06d52cc9b",
@@ -465,16 +480,22 @@
       "cik": "0001611005",
       "name": "Kenon Holdings Ltd.",
       "sic": "4911",
+      "rawFacts": 4269,
+      "mappedFacts": 798,
+      "unmappedFacts": 3617,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KEN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -539,11 +560,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -570,26 +591,25 @@
         }
       },
       "quality": {
-        "HIGH": 117,
+        "HIGH": 119,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 132,
-        "resolvedValues": 132
+        "datableValues": 134,
+        "resolvedValues": 134
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3732,
+        "total": 3730,
         "by_severity": {
           "INFO": 3617,
-          "WARNING": 115
+          "WARNING": 113
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 92,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 3617,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3617
         }
       },
       "latestFiling": {
@@ -600,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d9644406ec3569313209f6056942047c0dfc0f006b4822b0e58e46ddaeded672",
@@ -616,6 +636,12 @@
       "cik": "0001734005",
       "name": "Niki BioSolutions, Inc.",
       "sic": "3829",
+      "rawFacts": 3054,
+      "mappedFacts": 743,
+      "unmappedFacts": 2377,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NIKI"
@@ -731,17 +757,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2538,
+        "total": 2536,
         "by_severity": {
           "INFO": 2377,
-          "WARNING": 161
+          "WARNING": 159
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 118,
           "RESTATEMENT_CONFLICT": 18,
           "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 2377,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2377
         }
       },
       "latestFiling": {
@@ -752,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "90186ff24456e228cb474c5d021cf061e74dc232325f473a1cb0a0dacb13ce34",
@@ -768,16 +793,22 @@
       "cik": "0001899005",
       "name": "Beamr Imaging Ltd.",
       "sic": "7372",
+      "rawFacts": 1387,
+      "mappedFacts": 456,
+      "unmappedFacts": 980,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BMR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -842,11 +873,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -873,26 +904,25 @@
         }
       },
       "quality": {
-        "HIGH": 61,
+        "HIGH": 63,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 66,
-        "resolvedValues": 66
+        "datableValues": 68,
+        "resolvedValues": 68
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 995,
+        "total": 993,
         "by_severity": {
           "INFO": 980,
-          "WARNING": 15
+          "WARNING": 13
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 980,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 980
         }
       },
       "latestFiling": {
@@ -903,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9dfdd1649a7112d1a6ee66b7bdbd098a7d76d1f128b701ba30f71d183d762bff",
@@ -919,6 +949,12 @@
       "cik": "0001979005",
       "name": "Aimei Health Technology Co., Ltd.",
       "sic": "6770",
+      "rawFacts": 1217,
+      "mappedFacts": 493,
+      "unmappedFacts": 782,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AFJK",
@@ -1055,13 +1091,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "37c4fcf4656bd6487f93bce7354b987c558328d4f8a380ebb323287f31112f36",

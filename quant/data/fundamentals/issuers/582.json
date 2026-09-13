@@ -6,16 +6,22 @@
       "cik": "0000042582",
       "name": "GOODYEAR TIRE & RUBBER CO /OH/",
       "sic": "3011",
+      "rawFacts": 29886,
+      "mappedFacts": 7358,
+      "unmappedFacts": 22888,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,21 +117,21 @@
         }
       },
       "quality": {
-        "HIGH": 585,
+        "HIGH": 587,
         "MEDIUM": 177
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 762,
-        "resolvedValues": 762
+        "datableValues": 764,
+        "resolvedValues": 764
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23728,
+        "total": 23726,
         "by_severity": {
           "INFO": 22888,
           "ERROR": 1,
-          "WARNING": 839
+          "WARNING": 837
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 800,
@@ -133,8 +139,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 32,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 22888,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 22888
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a84d31d9392b7c7099e513f1cbf191211f79b0a921b6a0f9d816bb1ae3725018",
@@ -161,16 +166,22 @@
       "cik": "0000875582",
       "name": "NORTHERN TECHNOLOGIES INTERNATIONAL CORP",
       "sic": "3470",
+      "rawFacts": 19167,
+      "mappedFacts": 5621,
+      "unmappedFacts": 13558,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0831",
       "tickers": [
         "NTIC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-11-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2010-08-31",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -235,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 60,
-          "firstAvailablePeriod": "2011-08-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-08-31",
           "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -266,21 +277,21 @@
         }
       },
       "quality": {
-        "HIGH": 451,
+        "HIGH": 453,
         "MEDIUM": 89
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 540,
-        "resolvedValues": 540
+        "datableValues": 542,
+        "resolvedValues": 542
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14095,
+        "total": 14086,
         "by_severity": {
           "ERROR": 12,
-          "INFO": 13562,
-          "WARNING": 521
+          "INFO": 13558,
+          "WARNING": 516
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 396,
@@ -289,8 +300,7 @@
           "FUTURE_DATA_LEAK": 12,
           "RESTATEMENT_CONFLICT": 69,
           "UNEXPECTED_DURATION": 24,
-          "UNKNOWN_CONCEPT": 13562,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 13558
         }
       },
       "latestFiling": {
@@ -301,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7011128567d6d612dc748954788c4c512cf2f142b2dca90645e115f43352eacc",
@@ -317,16 +327,22 @@
       "cik": "0000921582",
       "name": "IMAX CORP",
       "sic": "3861",
+      "rawFacts": 28697,
+      "mappedFacts": 6085,
+      "unmappedFacts": 22031,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IMAX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -391,11 +407,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -422,28 +438,27 @@
         }
       },
       "quality": {
-        "HIGH": 501,
+        "HIGH": 503,
         "MEDIUM": 102
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 603,
-        "resolvedValues": 603
+        "datableValues": 605,
+        "resolvedValues": 605
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22795,
+        "total": 22792,
         "by_severity": {
           "INFO": 22031,
           "ERROR": 3,
-          "WARNING": 761
+          "WARNING": 758
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 638,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 120,
-          "UNKNOWN_CONCEPT": 22031,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 22031
         }
       },
       "latestFiling": {
@@ -454,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4255fbb0046b409cd555bbff8cb4c88ef2891fcc54b260e4b1676f3c4d648f07",
@@ -470,6 +485,12 @@
       "cik": "0001232582",
       "name": "ASHFORD HOSPITALITY TRUST INC",
       "sic": "6798",
+      "rawFacts": 25788,
+      "mappedFacts": 5963,
+      "unmappedFacts": 19321,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AHT",
@@ -480,11 +501,11 @@
         "AHT-PI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -549,11 +570,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -580,31 +601,30 @@
         }
       },
       "quality": {
-        "HIGH": 550,
+        "HIGH": 552,
         "MEDIUM": 92
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 642,
-        "resolvedValues": 642
+        "datableValues": 644,
+        "resolvedValues": 644
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20110,
+        "total": 20066,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 19364,
-          "WARNING": 745
+          "INFO": 19321,
+          "WARNING": 744
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 609,
           "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 122,
+          "RESTATEMENT_CONFLICT": 123,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 19364,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19321
         }
       },
       "latestFiling": {
@@ -615,13 +635,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6e66888c538b348beb0616d603a4b474a4d8ac6f4d4895123e363f737d63a6c9",
@@ -631,16 +651,22 @@
       "cik": "0001481582",
       "name": "Ryerson Holding Corp",
       "sic": "5051",
+      "rawFacts": 18317,
+      "mappedFacts": 5972,
+      "unmappedFacts": 12749,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RYZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -705,11 +731,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 58,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -736,29 +762,28 @@
         }
       },
       "quality": {
-        "HIGH": 611,
+        "HIGH": 613,
         "MEDIUM": 97
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 708,
-        "resolvedValues": 708
+        "datableValues": 710,
+        "resolvedValues": 710
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13345,
+        "total": 13330,
         "by_severity": {
           "INFO": 12749,
           "ERROR": 4,
-          "WARNING": 592
+          "WARNING": 577
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 558,
           "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 12749,
-          "UNPLACEABLE_PERIOD": 15
+          "UNKNOWN_CONCEPT": 12749
         }
       },
       "latestFiling": {
@@ -769,13 +794,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a575fea7d4f5da75827c853279f78856473736adbee5ad29aa2512c340da80ad",
@@ -785,6 +810,12 @@
       "cik": "0001494582",
       "name": "BOSTON OMAHA Corp",
       "sic": "6510",
+      "rawFacts": 15799,
+      "mappedFacts": 4530,
+      "unmappedFacts": 11614,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BOC"
@@ -900,18 +931,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12080,
+        "total": 12078,
         "by_severity": {
           "INFO": 11614,
           "ERROR": 9,
-          "WARNING": 457
+          "WARNING": 455
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 364,
           "FUTURE_DATA_LEAK": 9,
           "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 11614,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11614
         }
       },
       "latestFiling": {
@@ -922,13 +952,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a45cc474222df054c63366dd0998f479ab14240a62a394d0b4763776a5dfa2e4",
@@ -938,6 +968,12 @@
       "cik": "0002132582",
       "name": "Lyntris Inc.",
       "sic": "3812",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LYNX"
@@ -1057,13 +1093,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "efc5d79f65e42a90a5a601f8b0fd1b43febcaf92403e052d1a2f5f77a91a9404",

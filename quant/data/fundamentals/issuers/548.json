@@ -6,16 +6,22 @@
       "cik": "0001601548",
       "name": "V2X, Inc.",
       "sic": "8744",
+      "rawFacts": 15289,
+      "mappedFacts": 5197,
+      "unmappedFacts": 10546,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VVX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 58,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 59,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-07-03",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -80,11 +86,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 49,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 549,
+        "HIGH": 551,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 563,
-        "resolvedValues": 563
+        "datableValues": 565,
+        "resolvedValues": 565
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10649,
+        "total": 10647,
         "by_severity": {
           "INFO": 10546,
-          "WARNING": 103
+          "WARNING": 101
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 75,
           "FISCAL_PERIOD_CONFLICT": 17,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 10546,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10546
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d37f3118388c9ba338a20b9d3d5eff27756e4a780d411d52909f37fd686892aa",
@@ -158,16 +163,22 @@
       "cik": "0001689548",
       "name": "Praxis Precision Medicines, Inc.",
       "sic": "2834",
+      "rawFacts": 5905,
+      "mappedFacts": 1892,
+      "unmappedFacts": 4072,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRAX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 29,
-      "firstPeriodEnd": "2019-06-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 30,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 29,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -263,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 216,
+        "HIGH": 218,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 220,
-        "resolvedValues": 220
+        "datableValues": 222,
+        "resolvedValues": 222
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4189,
+        "total": 4185,
         "by_severity": {
           "INFO": 4072,
-          "WARNING": 117
+          "WARNING": 113
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 85,
           "RESTATEMENT_CONFLICT": 28,
-          "UNKNOWN_CONCEPT": 4072,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 4072
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b04a00e398b906076efba463a9cd1369c6ab9d6a43d44c69a1789f23b0da2b22",

@@ -6,16 +6,22 @@
       "cik": "0001690511",
       "name": "Canada Goose Holdings Inc.",
       "sic": "2300",
+      "rawFacts": 3458,
+      "mappedFacts": 664,
+      "unmappedFacts": 2886,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "GOOS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-03-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-03-31",
       "lastPeriodEnd": "2025-03-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-03-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-03-31",
           "lastAvailablePeriod": "2025-03-30",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 79,
+        "HIGH": 81,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 88,
-        "resolvedValues": 88
+        "datableValues": 90,
+        "resolvedValues": 90
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2941,
+        "total": 2937,
         "by_severity": {
           "INFO": 2886,
-          "WARNING": 55
+          "WARNING": 51
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 47,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2886,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 2886
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e45406523c22d3ab7d1645242796f6a2a932097f520fd17c34004dc8c4eaf2e5",
@@ -157,6 +162,12 @@
       "cik": "0001832511",
       "name": "P3 Health Partners Inc.",
       "sic": "8000",
+      "rawFacts": 4860,
+      "mappedFacts": 1795,
+      "unmappedFacts": 3059,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PIII",
@@ -273,17 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3448,
+        "total": 3390,
         "by_severity": {
-          "INFO": 3118,
-          "WARNING": 330
+          "INFO": 3059,
+          "WARNING": 331
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 202,
           "RESTATEMENT_CONFLICT": 86,
-          "UNEXPECTED_DURATION": 41,
-          "UNKNOWN_CONCEPT": 3118,
-          "UNPLACEABLE_PERIOD": 1
+          "UNEXPECTED_DURATION": 43,
+          "UNKNOWN_CONCEPT": 3059
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "26f18258026f4b2dfec06d6c1cf239e18a34ad49ce934b5300709bbebd8a9b69",
@@ -310,16 +320,22 @@
       "cik": "0001905511",
       "name": "JE Cleantech Holdings Ltd",
       "sic": "3990",
+      "rawFacts": 1997,
+      "mappedFacts": 470,
+      "unmappedFacts": 1478,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "JCSE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -384,11 +400,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -415,26 +431,25 @@
         }
       },
       "quality": {
-        "HIGH": 50,
+        "HIGH": 52,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 59,
-        "resolvedValues": 59
+        "datableValues": 61,
+        "resolvedValues": 61
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1652,
+        "total": 1651,
         "by_severity": {
           "INFO": 1478,
-          "WARNING": 174
+          "WARNING": 173
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 161,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 1478,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1478
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "160c16277cb71173e9d0d2abf506d074e3ee915a92088b38451085360326cec9",

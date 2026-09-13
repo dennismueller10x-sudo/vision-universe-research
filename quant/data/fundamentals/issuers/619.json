@@ -6,17 +6,23 @@
       "cik": "0000046619",
       "name": "HEICO CORP",
       "sic": "3724",
+      "rawFacts": 25284,
+      "mappedFacts": 6976,
+      "unmappedFacts": 18250,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1031",
       "tickers": [
         "HEI",
         "HEI-A"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-10-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-10-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -81,11 +87,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-10-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -112,26 +118,25 @@
         }
       },
       "quality": {
-        "HIGH": 486,
+        "HIGH": 488,
         "MEDIUM": 151
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 637,
-        "resolvedValues": 637
+        "datableValues": 639,
+        "resolvedValues": 639
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19276,
+        "total": 19274,
         "by_severity": {
           "INFO": 18250,
-          "WARNING": 1026
+          "WARNING": 1024
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 864,
           "RESTATEMENT_CONFLICT": 160,
-          "UNKNOWN_CONCEPT": 18250,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18250
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "552c37ab65990275e7463cd26b0790db4df806a332c466d6d1093ac699bd060b",
@@ -158,6 +163,12 @@
       "cik": "0001504619",
       "name": "PennantPark Floating Rate Capital Ltd.",
       "sic": null,
+      "rawFacts": 4010,
+      "mappedFacts": 674,
+      "unmappedFacts": 3376,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "PFLT",
@@ -292,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ad469c4c4f0f2ace6ccc7d7fb9b518e5d326e5d204f0584728c7878258134e5b",
@@ -308,17 +319,23 @@
       "cik": "0001532619",
       "name": "Power REIT",
       "sic": "6798",
+      "rawFacts": 11196,
+      "mappedFacts": 3996,
+      "unmappedFacts": 7299,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PW",
         "PW-PA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -383,11 +400,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -414,21 +431,21 @@
         }
       },
       "quality": {
-        "HIGH": 514,
+        "HIGH": 516,
         "MEDIUM": 68
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 582,
-        "resolvedValues": 582
+        "datableValues": 584,
+        "resolvedValues": 584
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7704,
+        "total": 7702,
         "by_severity": {
           "INFO": 7299,
           "ERROR": 26,
-          "WARNING": 379
+          "WARNING": 377
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 254,
@@ -436,8 +453,7 @@
           "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 94,
           "UNEXPECTED_DURATION": 19,
-          "UNKNOWN_CONCEPT": 7299,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7299
         }
       },
       "latestFiling": {
@@ -448,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5858fe4802b3ba25a3966c0e87a52b12ed7a18f4c54698b5fcd087871d529317",
@@ -464,16 +480,22 @@
       "cik": "0001672619",
       "name": "Enliven Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 6023,
+      "mappedFacts": 1894,
+      "unmappedFacts": 4178,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ELVN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 30,
-      "firstPeriodEnd": "2019-03-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 31,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -538,11 +560,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 30,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -569,25 +591,24 @@
         }
       },
       "quality": {
-        "HIGH": 206
+        "HIGH": 208
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 206,
-        "resolvedValues": 206
+        "datableValues": 208,
+        "resolvedValues": 208
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4301,
+        "total": 4293,
         "by_severity": {
           "INFO": 4178,
-          "WARNING": 123
+          "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 24,
           "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 4178,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 4178
         }
       },
       "latestFiling": {
@@ -598,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "de6b37f07f0fae61033c267483ac66f92c6dd03bbf41933b013e11d8d03c5b41",

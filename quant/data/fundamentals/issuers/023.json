@@ -6,16 +6,22 @@
       "cik": "0000842023",
       "name": "BIO-TECHNE Corp",
       "sic": "2836",
+      "rawFacts": 23494,
+      "mappedFacts": 7136,
+      "unmappedFacts": 16817,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "TECH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2009-06-30",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2008-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-06-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 611,
+        "HIGH": 613,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 617,
-        "resolvedValues": 617
+        "datableValues": 619,
+        "resolvedValues": 619
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16995,
+        "total": 16993,
         "by_severity": {
           "INFO": 16817,
-          "WARNING": 178
+          "WARNING": 176
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 95,
           "RESTATEMENT_CONFLICT": 81,
-          "UNKNOWN_CONCEPT": 16817,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16817
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ceb3204dabca0382963c5c1ac0e5db7c377a41430c4c45d6b6f567091d2ebc66",
@@ -157,6 +162,12 @@
       "cik": "0002080023",
       "name": "Viking Acquisition Corp I",
       "sic": "4899",
+      "rawFacts": 224,
+      "mappedFacts": 83,
+      "unmappedFacts": 147,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VACI",
@@ -164,10 +175,10 @@
         "VACI-WT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2025-09-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -206,14 +217,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -233,17 +244,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -263,23 +274,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 14
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 14,
+        "resolvedValues": 14
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 224,
+        "total": 154,
         "by_severity": {
           "INFO": 147,
-          "WARNING": 77
+          "WARNING": 7
         },
         "by_code": {
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 147,
-          "UNPLACEABLE_PERIOD": 70
+          "UNKNOWN_CONCEPT": 147
         }
       },
       "latestFiling": {
@@ -290,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "58adee002e30297676d4dc32f85f07dbe779670019b9f6af03224fe142453ceb",

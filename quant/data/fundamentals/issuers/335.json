@@ -6,6 +6,12 @@
       "cik": "0000320335",
       "name": "GLOBE LIFE INC.",
       "sic": "6311",
+      "rawFacts": 31281,
+      "mappedFacts": 6825,
+      "unmappedFacts": 24619,
+      "calendarYears": 20,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GL",
@@ -141,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "057b000a55d8dd9b3539053bf79de4d9810b35928448f0e44a94c33b02eb9a3b",
@@ -157,16 +163,22 @@
       "cik": "0001047335",
       "name": "NATIONAL HEALTHCARE CORP",
       "sic": "8051",
+      "rawFacts": 27530,
+      "mappedFacts": 6492,
+      "unmappedFacts": 21076,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NHC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -231,11 +243,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -262,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 534,
+        "HIGH": 536,
         "MEDIUM": 90
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 624,
-        "resolvedValues": 624
+        "datableValues": 626,
+        "resolvedValues": 626
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21648,
+        "total": 21646,
         "by_severity": {
           "INFO": 21076,
-          "WARNING": 572
+          "WARNING": 570
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 506,
           "FISCAL_PERIOD_CONFLICT": 10,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 21076,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 21076
         }
       },
       "latestFiling": {
@@ -293,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9267cebaf6bdb56b2e0200f7c051c0f9f2e04e7b726a987c6ee16f540de6d2fa",
@@ -309,6 +320,12 @@
       "cik": "0001111335",
       "name": "VISTEON CORP",
       "sic": "3714",
+      "rawFacts": 26836,
+      "mappedFacts": 6763,
+      "unmappedFacts": 19928,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VC"
@@ -424,19 +441,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21382,
+        "total": 21257,
         "by_severity": {
-          "INFO": 20065,
+          "INFO": 19928,
           "ERROR": 7,
-          "WARNING": 1310
+          "WARNING": 1322
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1048,
-          "FISCAL_PERIOD_CONFLICT": 14,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "FUTURE_DATA_LEAK": 7,
-          "RESTATEMENT_CONFLICT": 239,
+          "RESTATEMENT_CONFLICT": 250,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 20065
+          "UNKNOWN_CONCEPT": 19928
         }
       },
       "latestFiling": {
@@ -447,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a8f284f5c585ab72c74f12d341b1004afbf0638b436f24c642f09b7b2a574ee6",
@@ -463,6 +480,12 @@
       "cik": "0001341335",
       "name": "FORTUNA MINING CORP.",
       "sic": "1040",
+      "rawFacts": 2791,
+      "mappedFacts": 532,
+      "unmappedFacts": 2360,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FSM"
@@ -597,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9de54442b5c392f12c237974da475303e1eee1b44897c183b47b250ce29ed40b",
@@ -613,6 +636,12 @@
       "cik": "0001674335",
       "name": "JELD-WEN Holding, Inc.",
       "sic": "2430",
+      "rawFacts": 20920,
+      "mappedFacts": 4538,
+      "unmappedFacts": 16261,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "JELD"
@@ -748,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5ab35bd6951b9dbc9d888696162f525d37ab401565a8bde7d940ed79ebd82694",
@@ -764,16 +793,22 @@
       "cik": "0001781335",
       "name": "Otis Worldwide Corp",
       "sic": "3600",
+      "rawFacts": 11992,
+      "mappedFacts": 3032,
+      "unmappedFacts": 8856,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OTIS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 32,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 33,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -838,11 +873,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 31,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -869,27 +904,26 @@
         }
       },
       "quality": {
-        "HIGH": 246,
+        "HIGH": 248,
         "MEDIUM": 85
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 331,
-        "resolvedValues": 331
+        "datableValues": 333,
+        "resolvedValues": 333
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9386,
+        "total": 9332,
         "by_severity": {
-          "INFO": 8908,
-          "WARNING": 478
+          "INFO": 8856,
+          "WARNING": 476
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 454,
           "RESTATEMENT_CONFLICT": 20,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 8908,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 8856
         }
       },
       "latestFiling": {
@@ -900,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1e8892ad1b2cbd7c6d580b6e197d2e0c416c28974e48f2d7caaaca51ca16d816",

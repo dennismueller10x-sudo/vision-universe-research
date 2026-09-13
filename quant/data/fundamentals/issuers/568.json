@@ -6,16 +6,22 @@
       "cik": "0001046568",
       "name": "PERDOCEO EDUCATION Corp",
       "sic": "8200",
+      "rawFacts": 23668,
+      "mappedFacts": 6235,
+      "unmappedFacts": 17502,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRDO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 71,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 72,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 591,
+        "HIGH": 593,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 609,
-        "resolvedValues": 609
+        "datableValues": 611,
+        "resolvedValues": 611
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18289,
+        "total": 18287,
         "by_severity": {
           "INFO": 17502,
-          "WARNING": 787
+          "WARNING": 785
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 639,
           "RESTATEMENT_CONFLICT": 146,
-          "UNKNOWN_CONCEPT": 17502,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17502
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "205c041b8f841b377e820011008eaac3c4c3f064088b55281f0b47eba427a3eb",
@@ -157,16 +162,22 @@
       "cik": "0001403568",
       "name": "Ulta Beauty, Inc.",
       "sic": "5990",
+      "rawFacts": 17019,
+      "mappedFacts": 6930,
+      "unmappedFacts": 10036,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0130",
       "tickers": [
         "ULTA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2010-01-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 64,
+      "firstPeriodEnd": "2009-01-31",
       "lastPeriodEnd": "2026-08-01",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -231,11 +242,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-01-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -262,27 +273,26 @@
         }
       },
       "quality": {
-        "HIGH": 555,
+        "HIGH": 557,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 556,
-        "resolvedValues": 556
+        "datableValues": 558,
+        "resolvedValues": 558
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10753,
+        "total": 10668,
         "by_severity": {
-          "INFO": 10137,
-          "WARNING": 616
+          "INFO": 10036,
+          "WARNING": 632
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 486,
-          "RESTATEMENT_CONFLICT": 125,
+          "CONCEPT_DISAGREEMENT": 497,
+          "RESTATEMENT_CONFLICT": 132,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 10137,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10036
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "df6fdd219ddc5cda49314a953704a235d71bca84a9980c9f7684328b63cb5087",
@@ -309,16 +319,22 @@
       "cik": "0001563568",
       "name": "AZIO AI HOLDINGS, INC.",
       "sic": "3714",
+      "rawFacts": 9234,
+      "mappedFacts": 3665,
+      "unmappedFacts": 5808,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AZIO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 43,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 44,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -383,11 +399,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 40,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -414,26 +430,25 @@
         }
       },
       "quality": {
-        "HIGH": 329
+        "HIGH": 331
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 329,
-        "resolvedValues": 329
+        "datableValues": 331,
+        "resolvedValues": 331
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6065,
+        "total": 6063,
         "by_severity": {
           "INFO": 5808,
-          "WARNING": 257
+          "WARNING": 255
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 88,
           "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 162,
-          "UNKNOWN_CONCEPT": 5808,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5808
         }
       },
       "latestFiling": {
@@ -444,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "776f3e15d25d29edccbd57984d1769259d85dcd9f63b2d23476a33d566466086",
@@ -460,16 +475,22 @@
       "cik": "0001688568",
       "name": "DXC Technology Co",
       "sic": "7374",
+      "rawFacts": 19760,
+      "mappedFacts": 3933,
+      "unmappedFacts": 15738,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "DXC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 46,
-      "firstPeriodEnd": "2015-10-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 47,
+      "firstPeriodEnd": "2015-04-03",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.92,
+      "historyYears": 10.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -534,11 +555,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 44,
-          "firstAvailablePeriod": "2016-04-01",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2015-04-03",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 9.92
+          "historyYears": 10.92
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -565,27 +586,26 @@
         }
       },
       "quality": {
-        "HIGH": 352,
+        "HIGH": 354,
         "MEDIUM": 105
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 457,
-        "resolvedValues": 457
+        "datableValues": 459,
+        "resolvedValues": 459
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16297,
+        "total": 16296,
         "by_severity": {
           "INFO": 15738,
-          "WARNING": 559
+          "WARNING": 558
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 504,
           "RESTATEMENT_CONFLICT": 51,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 15738,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 15738
         }
       },
       "latestFiling": {
@@ -596,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8ca92b558139f29423763faf5ddb3f36f7b90084bd95d6348a1d7a80fe1278ca",
@@ -612,6 +632,12 @@
       "cik": "0002052568",
       "name": "Legence Corp.",
       "sic": "1700",
+      "rawFacts": 1497,
+      "mappedFacts": 344,
+      "unmappedFacts": 1166,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LGN"
@@ -747,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0bf05f2c6519afec4c6839b1e8cacddfb6052b2ffcce32723e8b130c8a9888f0",

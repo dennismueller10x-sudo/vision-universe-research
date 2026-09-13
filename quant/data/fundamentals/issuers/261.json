@@ -6,6 +6,12 @@
       "cik": "0000925261",
       "name": "ANDINA BOTTLING CO INC",
       "sic": "2086",
+      "rawFacts": 5183,
+      "mappedFacts": 741,
+      "unmappedFacts": 4569,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AKO-A",
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6ab47aa1d1d897b135e89a89af751e3f0449d94c65b172a4528156d22db8a974",
@@ -159,14 +165,20 @@
       "cik": "0001509261",
       "name": "Rezolute, Inc.",
       "sic": "2834",
+      "rawFacts": 12540,
+      "mappedFacts": 3745,
+      "unmappedFacts": 8794,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "RZLT"
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 60,
-      "firstPeriodEnd": "2010-12-31",
+      "quarterlyPeriods": 61,
+      "firstPeriodEnd": "2010-03-09",
       "lastPeriodEnd": "2026-03-31",
       "historyYears": 14.0,
       "metrics": {
@@ -234,7 +246,7 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2025-06-30",
           "historyYears": 14.0
@@ -264,28 +276,27 @@
         }
       },
       "quality": {
-        "HIGH": 330,
+        "HIGH": 331,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 341,
-        "resolvedValues": 341
+        "datableValues": 342,
+        "resolvedValues": 342
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9239,
+        "total": 9229,
         "by_severity": {
           "INFO": 8794,
-          "WARNING": 445
+          "WARNING": 435
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 165,
           "FISCAL_PERIOD_CONFLICT": 6,
           "RESTATEMENT_CONFLICT": 149,
           "UNEXPECTED_DURATION": 115,
-          "UNKNOWN_CONCEPT": 8794,
-          "UNPLACEABLE_PERIOD": 10
+          "UNKNOWN_CONCEPT": 8794
         }
       },
       "latestFiling": {
@@ -296,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0d30092118a761cc4a6e1dc043d4efa9efe7598db9dea376e7e15629b349e91f",
@@ -312,16 +323,22 @@
       "cik": "0001701261",
       "name": "Farmmi, Inc.",
       "sic": "2033",
+      "rawFacts": 3013,
+      "mappedFacts": 958,
+      "unmappedFacts": 2092,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "FAMI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-09-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-09-30",
       "lastPeriodEnd": "2025-09-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -386,11 +403,11 @@
           "historyYears": 8.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-09-30",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -417,28 +434,27 @@
         }
       },
       "quality": {
-        "HIGH": 115,
+        "HIGH": 117,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 128,
-        "resolvedValues": 128
+        "datableValues": 130,
+        "resolvedValues": 130
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2278,
+        "total": 2276,
         "by_severity": {
           "INFO": 2092,
           "ERROR": 6,
-          "WARNING": 180
+          "WARNING": 178
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 109,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 69,
-          "UNKNOWN_CONCEPT": 2092,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2092
         }
       },
       "latestFiling": {
@@ -449,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6ddc630bd06819afa7b45ca23f4580fc2cb0c70f1a5a23b6be7add9074cc4da4",

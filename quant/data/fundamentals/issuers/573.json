@@ -6,17 +6,23 @@
       "cik": "0000072573",
       "name": "MOVADO GROUP INC",
       "sic": "3873",
+      "rawFacts": 24643,
+      "mappedFacts": 6918,
+      "unmappedFacts": 17848,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "MOV",
         "MOVAA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2010-01-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2009-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -81,11 +87,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2010-01-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2009-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -112,26 +118,25 @@
         }
       },
       "quality": {
-        "HIGH": 490,
+        "HIGH": 492,
         "MEDIUM": 83
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 573,
-        "resolvedValues": 573
+        "datableValues": 575,
+        "resolvedValues": 575
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18268,
+        "total": 18266,
         "by_severity": {
           "INFO": 17848,
-          "WARNING": 420
+          "WARNING": 418
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 373,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 17848,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17848
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "11170fc4e00a6bb7979a5ec957234d8dd4153a6f0e2a0e92e39d47b8eb0749b7",
@@ -158,16 +163,22 @@
       "cik": "0001657573",
       "name": "Xometry, Inc.",
       "sic": "7389",
+      "rawFacts": 7623,
+      "mappedFacts": 2043,
+      "unmappedFacts": 5604,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XMTR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -263,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 199,
+        "HIGH": 201,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 202,
-        "resolvedValues": 202
+        "datableValues": 204,
+        "resolvedValues": 204
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5668,
+        "total": 5667,
         "by_severity": {
           "INFO": 5604,
-          "WARNING": 64
+          "WARNING": 63
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 61,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 5604,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5604
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8830a0f98068c55160043054de64b9319fa9314b3a88acaa3de25b939905982e",
@@ -309,17 +319,23 @@
       "cik": "0001946573",
       "name": "Nakamoto Inc.",
       "sic": "6199",
+      "rawFacts": 2305,
+      "mappedFacts": 857,
+      "unmappedFacts": 1485,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NAKA",
         "NAKAW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 14,
-      "firstPeriodEnd": "2023-03-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 15,
+      "firstPeriodEnd": "2022-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -384,11 +400,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 14,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -415,26 +431,25 @@
         }
       },
       "quality": {
-        "HIGH": 111,
+        "HIGH": 113,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 115,
-        "resolvedValues": 115
+        "datableValues": 117,
+        "resolvedValues": 117
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1540,
+        "total": 1526,
         "by_severity": {
-          "INFO": 1491,
-          "WARNING": 49
+          "INFO": 1485,
+          "WARNING": 41
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 1491,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 1485
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cfa5759dbe45bada566358b07a93bab3c1f42b5ee0b935a06b13ba58e8f99b09",

@@ -6,16 +6,22 @@
       "cik": "0000790051",
       "name": "CARLISLE COMPANIES INC",
       "sic": "3060",
+      "rawFacts": 25866,
+      "mappedFacts": 7406,
+      "unmappedFacts": 18319,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CSL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 626,
+        "HIGH": 628,
         "MEDIUM": 85
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 711,
-        "resolvedValues": 711
+        "datableValues": 713,
+        "resolvedValues": 713
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19232,
+        "total": 19182,
         "by_severity": {
-          "INFO": 18369,
+          "INFO": 18319,
           "WARNING": 863
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 713,
-          "RESTATEMENT_CONFLICT": 149,
-          "UNKNOWN_CONCEPT": 18369,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 150,
+          "UNKNOWN_CONCEPT": 18319
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1996c8b64d5b8c2da095df98f373a2d5225733e65a1c7e5229ee782a5011636a",
@@ -157,6 +162,12 @@
       "cik": "0000899051",
       "name": "ALLSTATE CORP",
       "sic": "6331",
+      "rawFacts": 37458,
+      "mappedFacts": 6046,
+      "unmappedFacts": 31427,
+      "calendarYears": 20,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALL",
@@ -296,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a2664b3375faa5529d28ea727d5410265ebd98bb19e73aafc505b30d7cff8187",

@@ -6,6 +6,12 @@
       "cik": "0000069891",
       "name": "NATIONAL BEVERAGE CORP",
       "sic": "2086",
+      "rawFacts": 15596,
+      "mappedFacts": 6259,
+      "unmappedFacts": 9862,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0502",
       "tickers": [
         "FIZZ"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10265,
+        "total": 10263,
         "by_severity": {
           "INFO": 9862,
           "ERROR": 1,
-          "WARNING": 402
+          "WARNING": 400
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 237,
@@ -133,8 +139,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 23,
           "RESTATEMENT_CONFLICT": 93,
-          "UNKNOWN_CONCEPT": 9862,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9862
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "be403e00579ff1ba26260139114d176374981ff5afc519ad3421bd5f6133f244",
@@ -161,6 +166,12 @@
       "cik": "0001009891",
       "name": "AIR INDUSTRIES GROUP",
       "sic": "3728",
+      "rawFacts": 16590,
+      "mappedFacts": 5261,
+      "unmappedFacts": 11767,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AIRI"
@@ -298,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ef07e8a2306936231fd8e0d123041f037fcf74836c7a591d4713599431b2830e",
@@ -314,6 +325,12 @@
       "cik": "0001400891",
       "name": "iHeartMedia, Inc.",
       "sic": "4832",
+      "rawFacts": 25736,
+      "mappedFacts": 6667,
+      "unmappedFacts": 18743,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IHRT",
@@ -321,11 +338,11 @@
         "IHETW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -390,11 +407,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -421,27 +438,26 @@
         }
       },
       "quality": {
-        "HIGH": 627,
+        "HIGH": 629,
         "MEDIUM": 106
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 733,
-        "resolvedValues": 733
+        "datableValues": 735,
+        "resolvedValues": 735
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19799,
+        "total": 19797,
         "by_severity": {
           "INFO": 18743,
-          "WARNING": 1056
+          "WARNING": 1054
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 440,
           "RESTATEMENT_CONFLICT": 168,
           "UNEXPECTED_DURATION": 446,
-          "UNKNOWN_CONCEPT": 18743,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18743
         }
       },
       "latestFiling": {
@@ -452,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ed319b9ab349cc2e695ec4f6fcb6967d7852e91c309b978317b189590e2f76d7",
@@ -468,6 +484,12 @@
       "cik": "0001494891",
       "name": "Sensus Healthcare, Inc.",
       "sic": "3841",
+      "rawFacts": 10228,
+      "mappedFacts": 3721,
+      "unmappedFacts": 6704,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SRTS"
@@ -583,9 +605,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6907,
+        "total": 6895,
         "by_severity": {
-          "INFO": 6716,
+          "INFO": 6704,
           "ERROR": 6,
           "WARNING": 185
         },
@@ -594,7 +616,7 @@
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 6716
+          "UNKNOWN_CONCEPT": 6704
         }
       },
       "latestFiling": {
@@ -605,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b51e55d6816d05302c2da799728bccb022e07f8a6e6ba941678a53edbf91956b",
@@ -621,16 +643,22 @@
       "cik": "0001655891",
       "name": "TORM plc",
       "sic": "4412",
+      "rawFacts": 4481,
+      "mappedFacts": 909,
+      "unmappedFacts": 3764,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TRMD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -695,11 +723,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -726,25 +754,24 @@
         }
       },
       "quality": {
-        "HIGH": 131
+        "HIGH": 133
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 131,
-        "resolvedValues": 131
+        "datableValues": 133,
+        "resolvedValues": 133
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3795,
+        "total": 3793,
         "by_severity": {
           "INFO": 3764,
-          "WARNING": 31
+          "WARNING": 29
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 3764,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3764
         }
       },
       "latestFiling": {
@@ -755,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "86e0eaf35ef93a4989825a58a3d515f077e45b9408a04fca95ae523e816a2462",
@@ -771,16 +798,22 @@
       "cik": "0001923891",
       "name": "Nano Nuclear Energy Inc.",
       "sic": "4911",
+      "rawFacts": 2196,
+      "mappedFacts": 654,
+      "unmappedFacts": 1595,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "NNE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 15,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 16,
+      "firstPeriodEnd": "2022-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -845,11 +878,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 14,
-          "firstAvailablePeriod": "2023-09-30",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -876,28 +909,27 @@
         }
       },
       "quality": {
-        "HIGH": 84,
+        "HIGH": 86,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 85,
-        "resolvedValues": 85
+        "datableValues": 87,
+        "resolvedValues": 87
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1633,
+        "total": 1626,
         "by_severity": {
-          "INFO": 1599,
-          "WARNING": 34
+          "INFO": 1595,
+          "WARNING": 31
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 12,
           "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 11,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 1599,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 1595
         }
       },
       "latestFiling": {
@@ -908,13 +940,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a7eab403e31be74920f2cce7f2a2f5417b9010174b69e3ec79d0bb5be307e1e2",
@@ -924,6 +956,12 @@
       "cik": "0001937891",
       "name": "AMC Robotics Corp",
       "sic": "5700",
+      "rawFacts": 2206,
+      "mappedFacts": 695,
+      "unmappedFacts": 1562,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AMCI"
@@ -1057,13 +1095,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "92ddd2e5ba325114b91fc6a6273533ecb613726f34e6d405382afa356fb2717e",

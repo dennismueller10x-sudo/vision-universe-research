@@ -6,17 +6,23 @@
       "cik": "0000898174",
       "name": "REINSURANCE GROUP OF AMERICA INC",
       "sic": "6311",
+      "rawFacts": 35309,
+      "mappedFacts": 5593,
+      "unmappedFacts": 29876,
+      "calendarYears": 18,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RGA",
         "RZC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -81,11 +87,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -112,20 +118,20 @@
         }
       },
       "quality": {
-        "HIGH": 644,
+        "HIGH": 646,
         "MEDIUM": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 672,
-        "resolvedValues": 672
+        "datableValues": 674,
+        "resolvedValues": 674
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30321,
+        "total": 30319,
         "by_severity": {
           "INFO": 29876,
-          "WARNING": 445
+          "WARNING": 443
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 333,
@@ -133,8 +139,7 @@
           "FISCAL_PERIOD_CONFLICT": 8,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 86,
-          "UNKNOWN_CONCEPT": 29876,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 29876
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ed0614616fad566e698b60890434e54fb6d0575fd1ce27fc4502c3e3ddb85939",
@@ -161,16 +166,22 @@
       "cik": "0001468174",
       "name": "Hyatt Hotels Corp",
       "sic": "7011",
+      "rawFacts": 27618,
+      "mappedFacts": 6647,
+      "unmappedFacts": 20959,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "H"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -235,11 +246,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -266,26 +277,25 @@
         }
       },
       "quality": {
-        "HIGH": 638,
+        "HIGH": 640,
         "MEDIUM": 39
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 677,
-        "resolvedValues": 677
+        "datableValues": 679,
+        "resolvedValues": 679
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21483,
+        "total": 21481,
         "by_severity": {
           "INFO": 20959,
-          "WARNING": 524
+          "WARNING": 522
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 478,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 20959,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20959
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0ba03cd1ecc143e07b65bfa9b631fdb4849ea41be2e3379445c776dbd1e93454",
@@ -312,6 +322,12 @@
       "cik": "0001604174",
       "name": "Eagle Point Credit Co",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ECC",
@@ -435,13 +451,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a9722c3f357f2905c6c08925b999ccc72f2ec9a9708f9c35ffa6fff33f9ce19e",
@@ -451,6 +467,12 @@
       "cik": "0001714174",
       "name": "Burford Capital Ltd",
       "sic": "6199",
+      "rawFacts": 4292,
+      "mappedFacts": 1106,
+      "unmappedFacts": 3218,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BUR"
@@ -566,18 +588,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3398,
+        "total": 3396,
         "by_severity": {
           "INFO": 3218,
-          "WARNING": 180
+          "WARNING": 178
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 119,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 3218,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3218
         }
       },
       "latestFiling": {
@@ -588,13 +609,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6cf4e35745f6fcba7a03b574b64bbe7a541355d967778905640029a68cad9ef2",
@@ -604,6 +625,12 @@
       "cik": "0001739174",
       "name": "BiomX Inc.",
       "sic": "7372",
+      "rawFacts": 6402,
+      "mappedFacts": 2117,
+      "unmappedFacts": 4253,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PHGE"
@@ -740,13 +767,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ae3feb3670dc327b9fa46c3b5ec046b6fda5b9d587d8c2890b27148d884e9cda",
@@ -756,16 +783,22 @@
       "cik": "0001781174",
       "name": "Acrivon Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 3826,
+      "mappedFacts": 1145,
+      "unmappedFacts": 2694,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ACRV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 22,
-      "firstPeriodEnd": "2021-03-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 23,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -830,11 +863,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 22,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -861,25 +894,24 @@
         }
       },
       "quality": {
-        "HIGH": 149
+        "HIGH": 151
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 149,
-        "resolvedValues": 149
+        "datableValues": 151,
+        "resolvedValues": 151
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2732,
+        "total": 2730,
         "by_severity": {
           "INFO": 2694,
-          "WARNING": 38
+          "WARNING": 36
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 33,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 2694,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2694
         }
       },
       "latestFiling": {
@@ -890,13 +922,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ea28b1955f7617b530301136dbf6a4c5b3cd5034c05d85d6fa642a9ad49a59b6",

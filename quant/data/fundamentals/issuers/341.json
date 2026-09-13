@@ -6,16 +6,30 @@
       "cik": "0000913341",
       "name": "C & F FINANCIAL CORP",
       "sic": "6022",
+      "rawFacts": 30844,
+      "mappedFacts": 5062,
+      "unmappedFacts": 25907,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CFFI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +125,27 @@
         }
       },
       "quality": {
-        "HIGH": 608,
+        "HIGH": 610,
         "MEDIUM": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 650,
-        "resolvedValues": 650
+        "datableValues": 652,
+        "resolvedValues": 652
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26259,
+        "total": 26059,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 26106,
-          "WARNING": 152
+          "INFO": 25907,
+          "WARNING": 151
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 130,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 26106,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 25907
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fc311286dbf62134ad311397a51a0e37d0ce433443adcbe0ecb97e3cc6de6291",
@@ -159,6 +172,20 @@
       "cik": "0001297341",
       "name": "Kentucky First Federal Bancorp",
       "sic": "6035",
+      "rawFacts": 21440,
+      "mappedFacts": 3517,
+      "unmappedFacts": 18206,
+      "calendarYears": 16,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "0630",
       "tickers": [
         "KFFB"
@@ -274,17 +301,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18510,
+        "total": 18340,
         "by_severity": {
-          "INFO": 18376,
+          "INFO": 18206,
           "WARNING": 134
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
-          "FISCAL_PERIOD_CONFLICT": 3,
+          "FISCAL_PERIOD_CONFLICT": 4,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 18376,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 18206
         }
       },
       "latestFiling": {
@@ -295,13 +321,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0fb35992ab975bc5800345a22b804afdcef16941d8a4fb1e0aaf7ca8f6b1463e",
@@ -311,6 +337,12 @@
       "cik": "0001708341",
       "name": "All In FutureTech Alliance, Inc.",
       "sic": "7900",
+      "rawFacts": 9775,
+      "mappedFacts": 2804,
+      "unmappedFacts": 6942,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AIFA"
@@ -426,9 +458,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7481,
+        "total": 7455,
         "by_severity": {
-          "INFO": 6968,
+          "INFO": 6942,
           "WARNING": 513
         },
         "by_code": {
@@ -436,7 +468,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 193,
           "UNEXPECTED_DURATION": 46,
-          "UNKNOWN_CONCEPT": 6968
+          "UNKNOWN_CONCEPT": 6942
         }
       },
       "latestFiling": {
@@ -447,13 +479,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b4d7f7e499fc6faaa1905bcc1ae6833113d011724476f1a1bf4ae1abd89604a8",
@@ -463,6 +495,12 @@
       "cik": "0001839341",
       "name": "Core Scientific, Inc./tx",
       "sic": "6199",
+      "rawFacts": 8634,
+      "mappedFacts": 2315,
+      "unmappedFacts": 6373,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CORZ",
@@ -471,11 +509,11 @@
         "CORZZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 23,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 24,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -540,11 +578,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -571,27 +609,26 @@
         }
       },
       "quality": {
-        "HIGH": 195,
+        "HIGH": 197,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 205,
-        "resolvedValues": 205
+        "datableValues": 207,
+        "resolvedValues": 207
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6591,
+        "total": 6589,
         "by_severity": {
           "INFO": 6373,
-          "WARNING": 218
+          "WARNING": 216
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 106,
           "RESTATEMENT_CONFLICT": 105,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 6373,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6373
         }
       },
       "latestFiling": {
@@ -602,13 +639,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7c0cfb54a3ace64de6bf3dd24fa9de66ba944cfb2c30b98c310a0e680bed1577",
@@ -618,6 +655,12 @@
       "cik": "0002025341",
       "name": "Andretti Acquisition Corp. II",
       "sic": "6770",
+      "rawFacts": 617,
+      "mappedFacts": 259,
+      "unmappedFacts": 353,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "POLE",
@@ -753,13 +796,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ec1665eb6f72806be780d47505ac24cbc0eb2db2e73569102a2b28928d47d0f0",
@@ -769,16 +812,22 @@
       "cik": "0002032341",
       "name": "CYABRA, INC.",
       "sic": "7372",
+      "rawFacts": 391,
+      "mappedFacts": 196,
+      "unmappedFacts": 208,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CYAB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -843,11 +892,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
@@ -874,27 +923,25 @@
         }
       },
       "quality": {
-        "HIGH": 35,
+        "HIGH": 37,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 36,
-        "resolvedValues": 36
+        "datableValues": 38,
+        "resolvedValues": 38
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 245,
+        "total": 226,
         "by_severity": {
           "INFO": 208,
-          "WARNING": 37
+          "WARNING": 18
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 10,
-          "FISCAL_PERIOD_CONFLICT": 6,
-          "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 208,
-          "UNPLACEABLE_PERIOD": 9
+          "RESTATEMENT_CONFLICT": 8,
+          "UNKNOWN_CONCEPT": 208
         }
       },
       "latestFiling": {
@@ -905,13 +952,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8dcca457a97e34df4858f5d2107f0e89e9aca910fd4c128152e00aa0a414df97",

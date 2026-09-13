@@ -6,16 +6,30 @@
       "cik": "0001471055",
       "name": "Banco Santander (Brasil) S.A.",
       "sic": "6029",
+      "rawFacts": 5593,
+      "mappedFacts": 406,
+      "unmappedFacts": 5232,
+      "calendarYears": 11,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BSBR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -112,25 +126,24 @@
       },
       "quality": {
         "MEDIUM": 9,
-        "HIGH": 57
+        "HIGH": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 66,
-        "resolvedValues": 66
+        "datableValues": 68,
+        "resolvedValues": 68
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5280,
+        "total": 5278,
         "by_severity": {
           "INFO": 5232,
-          "WARNING": 48
+          "WARNING": 46
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 42,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5232,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5232
         }
       },
       "latestFiling": {
@@ -141,13 +154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1a64d8e8e673863b95c5240f390a16c5113b01aac91b2552ff0d7face365f558",
@@ -157,16 +170,22 @@
       "cik": "0001708055",
       "name": "Ribbon Communications Inc.",
       "sic": "7373",
+      "rawFacts": 17586,
+      "mappedFacts": 4704,
+      "unmappedFacts": 13201,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RBBN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 43,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 44,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.25,
+      "historyYears": 11.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -231,11 +250,11 @@
           "historyYears": 7.25
         },
         "stockholders_equity": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 38,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 13,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 10.25
+          "historyYears": 11.25
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -262,29 +281,28 @@
         }
       },
       "quality": {
-        "HIGH": 415,
+        "HIGH": 417,
         "MEDIUM": 22
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 437,
-        "resolvedValues": 437
+        "datableValues": 439,
+        "resolvedValues": 439
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13386,
+        "total": 13381,
         "by_severity": {
-          "INFO": 13204,
+          "INFO": 13201,
           "ERROR": 1,
-          "WARNING": 181
+          "WARNING": 179
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 123,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 43,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 13204,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13201
         }
       },
       "latestFiling": {
@@ -295,13 +313,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f8d47c8952c6dd0fb2302d8cbb1696c14a0ff1310632879b164b533f300c87a5",
@@ -311,6 +329,12 @@
       "cik": "0001864055",
       "name": "Abits Group Inc",
       "sic": "6199",
+      "rawFacts": 1360,
+      "mappedFacts": 516,
+      "unmappedFacts": 904,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ABTS"
@@ -446,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5e3befc2470b2aba8adb5bebb44195aaefbf2772e69703a413655ff4648a094d",

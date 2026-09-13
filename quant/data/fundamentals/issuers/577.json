@@ -6,17 +6,31 @@
       "cik": "0000750577",
       "name": "HANCOCK WHITNEY CORP",
       "sic": "6022",
+      "rawFacts": 33267,
+      "mappedFacts": 5495,
+      "unmappedFacts": 28290,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HWC",
         "HWCPZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -81,11 +95,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -112,25 +126,24 @@
         }
       },
       "quality": {
-        "HIGH": 678
+        "HIGH": 680
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 678,
-        "resolvedValues": 678
+        "datableValues": 680,
+        "resolvedValues": 680
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28646,
+        "total": 28433,
         "by_severity": {
-          "INFO": 28502,
-          "WARNING": 144
+          "INFO": 28290,
+          "WARNING": 143
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 142,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 28502,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 28290
         }
       },
       "latestFiling": {
@@ -141,13 +154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6d3e0c3f4332848463e3e3df720a81e27860594d20798a51b6cfde79548c73be",
@@ -157,17 +170,31 @@
       "cik": "0001693577",
       "name": "MainStreet Bancshares, Inc.",
       "sic": "6022",
+      "rawFacts": 14522,
+      "mappedFacts": 2102,
+      "unmappedFacts": 12384,
+      "calendarYears": 8,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MNSB",
         "MNSBP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 34,
-      "firstPeriodEnd": "2018-03-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 35,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -232,11 +259,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 34,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -263,26 +290,25 @@
         }
       },
       "quality": {
-        "HIGH": 234,
+        "HIGH": 236,
         "MEDIUM": 41
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 275,
-        "resolvedValues": 275
+        "datableValues": 277,
+        "resolvedValues": 277
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12620,
+        "total": 12517,
         "by_severity": {
-          "INFO": 12479,
-          "WARNING": 141
+          "INFO": 12384,
+          "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 125,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 12479,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 12384
         }
       },
       "latestFiling": {
@@ -293,13 +319,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d370ec5b34af80224ed5dc83d310afd2e6bd72e981b6c0c714470fd8ea9aaf4f",
@@ -309,6 +335,12 @@
       "cik": "0002068577",
       "name": "Black Rock Coffee Bar, Inc.",
       "sic": "5810",
+      "rawFacts": 1337,
+      "mappedFacts": 365,
+      "unmappedFacts": 956,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BRCB"
@@ -424,17 +456,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 999,
+        "total": 998,
         "by_severity": {
           "INFO": 956,
-          "WARNING": 43
+          "WARNING": 42
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 38,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 956,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 956
         }
       },
       "latestFiling": {
@@ -445,13 +476,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "24a358437368cf100181e347fee46af9a50eafddfd9816b29ab2b752b5d0f397",

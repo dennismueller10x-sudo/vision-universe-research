@@ -6,6 +6,12 @@
       "cik": "0000078128",
       "name": "Essential Utilities, Inc.",
       "sic": "4941",
+      "rawFacts": 23582,
+      "mappedFacts": 7161,
+      "unmappedFacts": 16485,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WTRG"
@@ -121,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17167,
+        "total": 17122,
         "by_severity": {
-          "INFO": 16530,
+          "INFO": 16485,
           "WARNING": 637
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 575,
           "RESTATEMENT_CONFLICT": 55,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 16530
+          "UNKNOWN_CONCEPT": 16485
         }
       },
       "latestFiling": {
@@ -141,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e943ade3605ee1019f0ae83b2fff791733daf618a9f5dcc56f9a5d655e123d78",
@@ -157,17 +163,23 @@
       "cik": "0000886128",
       "name": "FUELCELL ENERGY INC",
       "sic": "3620",
+      "rawFacts": 21081,
+      "mappedFacts": 6973,
+      "unmappedFacts": 13679,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1031",
       "tickers": [
         "FCEL",
         "FCELB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-10-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-10-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -232,11 +244,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-10-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 543,
+        "HIGH": 545,
         "MEDIUM": 132
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 675,
-        "resolvedValues": 675
+        "datableValues": 677,
+        "resolvedValues": 677
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14759,
+        "total": 14757,
         "by_severity": {
           "INFO": 13679,
           "ERROR": 6,
-          "WARNING": 1074
+          "WARNING": 1072
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 899,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 173,
-          "UNKNOWN_CONCEPT": 13679,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13679
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d36b995792347b45bc20eb74052e97b8fe03b3705b0b2c2905619bf85c3793e8",
@@ -311,16 +322,22 @@
       "cik": "0001023128",
       "name": "LITHIA MOTORS INC",
       "sic": "5500",
+      "rawFacts": 21001,
+      "mappedFacts": 6658,
+      "unmappedFacts": 14698,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LAD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -385,11 +402,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -416,29 +433,28 @@
         }
       },
       "quality": {
-        "HIGH": 546,
+        "HIGH": 548,
         "MEDIUM": 47
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 593,
-        "resolvedValues": 593
+        "datableValues": 595,
+        "resolvedValues": 595
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15049,
+        "total": 15047,
         "by_severity": {
           "INFO": 14698,
           "ERROR": 2,
-          "WARNING": 349
+          "WARNING": 347
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 279,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 62,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14698,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14698
         }
       },
       "latestFiling": {
@@ -449,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "af00275c03961a8caf157139733fb237f3aa27d8909c1a59ce699ef6a5ae05e4",
@@ -465,6 +481,12 @@
       "cik": "0001465128",
       "name": "STARWOOD PROPERTY TRUST, INC.",
       "sic": "6798",
+      "rawFacts": 31257,
+      "mappedFacts": 5367,
+      "unmappedFacts": 25687,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "STWD"
@@ -580,18 +602,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26604,
+        "total": 26587,
         "by_severity": {
-          "INFO": 25705,
+          "INFO": 25687,
           "ERROR": 15,
-          "WARNING": 884
+          "WARNING": 885
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 805,
           "FUTURE_DATA_LEAK": 15,
           "RESTATEMENT_CONFLICT": 67,
-          "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 25705
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 25687
         }
       },
       "latestFiling": {
@@ -602,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9064b63fcb5e7d121e40aaf58e3fa94d2d0a986653c29f4783e2fefeda8d8a5c",
@@ -618,6 +640,12 @@
       "cik": "0001723128",
       "name": "Amneal Pharmaceuticals, Inc.",
       "sic": "2834",
+      "rawFacts": 13251,
+      "mappedFacts": 3435,
+      "unmappedFacts": 9792,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AMRX"
@@ -733,18 +761,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10405,
+        "total": 10404,
         "by_severity": {
           "INFO": 9792,
-          "WARNING": 613
+          "WARNING": 612
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 540,
           "FISCAL_PERIOD_CONFLICT": 2,
           "RESTATEMENT_CONFLICT": 64,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 9792,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 9792
         }
       },
       "latestFiling": {
@@ -755,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fb51a77c17f369751467d7591fb286da1453eca7b4f12a1e9ef1316a41028e6d",
@@ -771,16 +798,22 @@
       "cik": "0001779128",
       "name": "Strata Critical Medical, Inc.",
       "sic": "8000",
+      "rawFacts": 6893,
+      "mappedFacts": 2212,
+      "unmappedFacts": 4778,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SRTA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 28,
-      "firstPeriodEnd": "2019-05-23",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 29,
+      "firstPeriodEnd": "2018-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.25,
+      "historyYears": 7.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -845,11 +878,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2019-09-30",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-09-30",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.25
+          "historyYears": 7.25
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -876,30 +909,29 @@
         }
       },
       "quality": {
-        "HIGH": 205,
+        "HIGH": 207,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 216,
-        "resolvedValues": 216
+        "datableValues": 218,
+        "resolvedValues": 218
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5195,
+        "total": 5146,
         "by_severity": {
-          "INFO": 4828,
+          "INFO": 4778,
           "ERROR": 1,
-          "WARNING": 366
+          "WARNING": 367
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 159,
-          "FISCAL_PERIOD_CONFLICT": 16,
+          "FISCAL_PERIOD_CONFLICT": 17,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 135,
+          "RESTATEMENT_CONFLICT": 137,
           "UNEXPECTED_DURATION": 54,
-          "UNKNOWN_CONCEPT": 4828,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 4778
         }
       },
       "latestFiling": {
@@ -910,13 +942,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "87bfe9c37992c8a5a9e085e4fc320d022343ec30694939a6825e8ca3678f9035",

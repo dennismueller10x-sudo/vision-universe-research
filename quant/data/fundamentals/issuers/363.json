@@ -6,16 +6,22 @@
       "cik": "0000725363",
       "name": "CEL SCI CORP",
       "sic": "2836",
+      "rawFacts": 17606,
+      "mappedFacts": 5667,
+      "unmappedFacts": 12224,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "CVM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-09-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-09-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -112,29 +118,28 @@
       },
       "quality": {
         "MEDIUM": 27,
-        "HIGH": 475
+        "HIGH": 477
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 502,
-        "resolvedValues": 502
+        "datableValues": 504,
+        "resolvedValues": 504
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12785,
+        "total": 12660,
         "by_severity": {
-          "INFO": 12365,
+          "INFO": 12224,
           "ERROR": 8,
-          "WARNING": 412
+          "WARNING": 428
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 214,
           "FUTURE_DATA_LEAK": 8,
           "NEGATIVE_WHERE_IMPOSSIBLE": 11,
-          "RESTATEMENT_CONFLICT": 182,
+          "RESTATEMENT_CONFLICT": 200,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 12365,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12224
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8737f331201b8068032558415cf714066a23e928ca5328972a7dfc5c3ef27cc0",
@@ -161,6 +166,12 @@
       "cik": "0001513363",
       "name": "FIDUS INVESTMENT Corp",
       "sic": null,
+      "rawFacts": 5368,
+      "mappedFacts": 981,
+      "unmappedFacts": 4438,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FDUS"
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "712f3c27fcda123d306102ce6e232939fbf03034b607a31a4ca846dbf48cc55f",
@@ -311,16 +322,22 @@
       "cik": "0001987363",
       "name": "Waton Financial Ltd",
       "sic": "6200",
+      "rawFacts": 723,
+      "mappedFacts": 192,
+      "unmappedFacts": 545,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "WTF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2023-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2022-03-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -385,11 +402,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2023-03-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -416,25 +433,24 @@
         }
       },
       "quality": {
-        "HIGH": 34
+        "HIGH": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 34,
-        "resolvedValues": 34
+        "datableValues": 36,
+        "resolvedValues": 36
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 571,
+        "total": 565,
         "by_severity": {
           "INFO": 545,
-          "WARNING": 26
+          "WARNING": 20
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 545,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 545
         }
       },
       "latestFiling": {
@@ -445,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "aad08dda0fcf6d03e96028a44c71c0157ee7cafc80561890bbea25e08f9431eb",

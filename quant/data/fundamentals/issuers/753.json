@@ -6,16 +6,22 @@
       "cik": "0001000753",
       "name": "INSPERITY, INC.",
       "sic": "7363",
+      "rawFacts": 19166,
+      "mappedFacts": 6335,
+      "unmappedFacts": 13027,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NSP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 71,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 72,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 644,
+        "HIGH": 646,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 655,
-        "resolvedValues": 655
+        "datableValues": 657,
+        "resolvedValues": 657
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13576,
+        "total": 13570,
         "by_severity": {
-          "INFO": 13031,
-          "WARNING": 545
+          "INFO": 13027,
+          "WARNING": 543
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 446,
           "RESTATEMENT_CONFLICT": 97,
-          "UNKNOWN_CONCEPT": 13031,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13027
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0097a2b7a97b781e17123af83ebe324b90b7c63165ae67d408658ab3a2e35bcd",
@@ -157,16 +162,22 @@
       "cik": "0001527753",
       "name": "Personalis, Inc.",
       "sic": "8071",
+      "rawFacts": 8513,
+      "mappedFacts": 2685,
+      "unmappedFacts": 5903,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PSNL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -231,11 +242,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 34,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -262,26 +273,25 @@
         }
       },
       "quality": {
-        "HIGH": 289,
+        "HIGH": 291,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 290,
-        "resolvedValues": 290
+        "datableValues": 292,
+        "resolvedValues": 292
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5922,
+        "total": 5921,
         "by_severity": {
           "INFO": 5903,
-          "WARNING": 19
+          "WARNING": 18
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 5903,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5903
         }
       },
       "latestFiling": {
@@ -292,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "68687efaebb1645521cd6c710c3c45d3ce1c97eacffa3d5bb4f217bef8a93a7e",
@@ -308,16 +318,22 @@
       "cik": "0001707753",
       "name": "Elastic N.V.",
       "sic": "7372",
+      "rawFacts": 12173,
+      "mappedFacts": 3204,
+      "unmappedFacts": 9211,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0430",
       "tickers": [
         "ESTC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 37,
-      "firstPeriodEnd": "2017-04-30",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 38,
+      "firstPeriodEnd": "2016-04-30",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -382,11 +398,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 37,
-          "firstAvailablePeriod": "2017-04-30",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-04-30",
           "lastAvailablePeriod": "2026-04-30",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -413,25 +429,24 @@
         }
       },
       "quality": {
-        "HIGH": 327
+        "HIGH": 329
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 327,
-        "resolvedValues": 327
+        "datableValues": 329,
+        "resolvedValues": 329
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9326,
+        "total": 9325,
         "by_severity": {
           "INFO": 9211,
-          "WARNING": 115
+          "WARNING": 114
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 105,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 9211,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 9211
         }
       },
       "latestFiling": {
@@ -442,13 +457,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b0c21df6bc983fd7226d00830aa259395c12d8d52f4e89c292c88080f1039946",
@@ -458,16 +473,22 @@
       "cik": "0001781753",
       "name": "Youdao, Inc.",
       "sic": "8200",
+      "rawFacts": 3776,
+      "mappedFacts": 790,
+      "unmappedFacts": 2805,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DAO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -532,11 +553,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -563,26 +584,25 @@
         }
       },
       "quality": {
-        "HIGH": 56,
+        "HIGH": 58,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 79,
-        "resolvedValues": 79
+        "datableValues": 81,
+        "resolvedValues": 81
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3138,
+        "total": 3136,
         "by_severity": {
           "INFO": 2805,
-          "WARNING": 333
+          "WARNING": 331
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 316,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 2805,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2805
         }
       },
       "latestFiling": {
@@ -593,13 +613,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5a153858feefe0dbe3199d0d58b9a7a26732691b2f5f838fae7707f44b577f75",

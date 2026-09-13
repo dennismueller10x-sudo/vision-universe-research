@@ -6,16 +6,22 @@
       "cik": "0001500881",
       "name": "enCore Energy Corp.",
       "sic": "1090",
+      "rawFacts": 3231,
+      "mappedFacts": 910,
+      "unmappedFacts": 2331,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 15,
-      "firstPeriodEnd": "2021-01-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 16,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -80,11 +86,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 14,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 115,
+        "HIGH": 117,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 128,
-        "resolvedValues": 128
+        "datableValues": 130,
+        "resolvedValues": 130
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2489,
+        "total": 2487,
         "by_severity": {
           "INFO": 2331,
-          "WARNING": 158
+          "WARNING": 156
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 105,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 2331,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2331
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3c57691aad5bd6f08330ac946442bd39825f34abc21708df39cdf5cba4e69db5",
@@ -159,16 +164,22 @@
       "cik": "0001743881",
       "name": "BridgeBio Pharma, Inc.",
       "sic": "2834",
+      "rawFacts": 10228,
+      "mappedFacts": 2582,
+      "unmappedFacts": 7564,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BBIO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 35,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -265,26 +276,25 @@
       },
       "quality": {
         "HIGH": 254,
-        "MEDIUM": 46
+        "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 300,
-        "resolvedValues": 300
+        "datableValues": 302,
+        "resolvedValues": 302
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8003,
+        "total": 8002,
         "by_severity": {
           "INFO": 7564,
-          "WARNING": 439
+          "WARNING": 438
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 401,
+          "CONCEPT_DISAGREEMENT": 403,
           "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 7564,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 7564
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a4e8ee3ce540d22cab707568ed6770466c2cebf6254ff0623587c302a06e535d",

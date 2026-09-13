@@ -6,16 +6,22 @@
       "cik": "0001650372",
       "name": "Atlassian Corp",
       "sic": "7372",
+      "rawFacts": 8597,
+      "mappedFacts": 2286,
+      "unmappedFacts": 6509,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "TEAM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2016-06-30",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2015-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -80,11 +86,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2016-06-30",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2015-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -111,25 +117,24 @@
         }
       },
       "quality": {
-        "HIGH": 260
+        "HIGH": 262
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 260,
-        "resolvedValues": 260
+        "datableValues": 262,
+        "resolvedValues": 262
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6614,
+        "total": 6612,
         "by_severity": {
           "INFO": 6509,
-          "WARNING": 105
+          "WARNING": 103
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 74,
           "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 6509,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6509
         }
       },
       "latestFiling": {
@@ -140,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "283dce9fdffdc760aac3ccd554e01634aa3b53055d0ba3836ca4a6db917c1052",
@@ -156,17 +161,23 @@
       "cik": "0001779372",
       "name": "HeartBeam, Inc.",
       "sic": "3841",
+      "rawFacts": 3644,
+      "mappedFacts": 1410,
+      "unmappedFacts": 2263,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BEAT",
         "BEATW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 25,
-      "firstPeriodEnd": "2020-06-30",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 26,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -231,11 +242,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 25,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -262,25 +273,24 @@
         }
       },
       "quality": {
-        "HIGH": 166
+        "HIGH": 168
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 166,
-        "resolvedValues": 166
+        "datableValues": 168,
+        "resolvedValues": 168
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2329,
+        "total": 2325,
         "by_severity": {
           "INFO": 2263,
-          "WARNING": 66
+          "WARNING": 62
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 58,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2263,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 2263
         }
       },
       "latestFiling": {
@@ -291,13 +301,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "55197e803909f270f73f16c6b923d411fb1b00d5c9279d0aff16011f94092c51",

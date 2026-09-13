@@ -6,16 +6,22 @@
       "cik": "0000046080",
       "name": "HASBRO, INC.",
       "sic": "3944",
+      "rawFacts": 26880,
+      "mappedFacts": 8356,
+      "unmappedFacts": 18834,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1227",
       "tickers": [
         "HAS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-28",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-30",
       "lastPeriodEnd": "2026-06-28",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 69,
-          "firstAvailablePeriod": "2008-12-28",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2007-12-30",
           "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 683,
+        "HIGH": 685,
         "MEDIUM": 88
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 771,
-        "resolvedValues": 771
+        "datableValues": 773,
+        "resolvedValues": 773
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19520,
+        "total": 19518,
         "by_severity": {
           "INFO": 18834,
-          "WARNING": 686
+          "WARNING": 684
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 527,
           "RESTATEMENT_CONFLICT": 155,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 18834,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18834
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8c54af2a25cb97d6523581fe5455af5209e6044812321a90101308e5f2e91d12",
@@ -158,16 +163,22 @@
       "cik": "0001690080",
       "name": "FORUM MARKETS Inc",
       "sic": "6199",
+      "rawFacts": 8544,
+      "mappedFacts": 2790,
+      "unmappedFacts": 5866,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FRMM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2017-03-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -232,18 +243,18 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 37,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 37,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -263,21 +274,21 @@
         }
       },
       "quality": {
-        "HIGH": 227,
+        "HIGH": 231,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 248,
-        "resolvedValues": 248
+        "datableValues": 252,
+        "resolvedValues": 252
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6235,
+        "total": 6193,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 5872,
-          "WARNING": 362
+          "INFO": 5866,
+          "WARNING": 326
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 84,
@@ -285,8 +296,7 @@
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 216,
           "UNEXPECTED_DURATION": 18,
-          "UNKNOWN_CONCEPT": 5872,
-          "UNPLACEABLE_PERIOD": 36
+          "UNKNOWN_CONCEPT": 5866
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "10cd46feb1921740fa50165ade211ab33fb4ab02e6e2be46180e80394903ef79",

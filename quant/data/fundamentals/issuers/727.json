@@ -6,6 +6,12 @@
       "cik": "0001090727",
       "name": "UNITED PARCEL SERVICE INC",
       "sic": "4210",
+      "rawFacts": 26714,
+      "mappedFacts": 7353,
+      "unmappedFacts": 19956,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "UPS"
@@ -121,18 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20263,
+        "total": 20262,
         "by_severity": {
           "INFO": 19956,
           "ERROR": 1,
-          "WARNING": 306
+          "WARNING": 305
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 285,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 19956,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 19956
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d0d04cff98b44d1830eeb1ce9ed7ef705be68aa4cf840f3848a72cd43d67cecc",
@@ -159,6 +164,12 @@
       "cik": "0001164727",
       "name": "NEWMONT Corp /DE/",
       "sic": "1040",
+      "rawFacts": 35713,
+      "mappedFacts": 7601,
+      "unmappedFacts": 27717,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NEM",
@@ -299,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b64534c3e4aa25a40d625bff2142fc5bdace2d9e569b523d5deaaaac1f4b32f3",
@@ -315,6 +326,12 @@
       "cik": "0001314727",
       "name": "Sonos Inc",
       "sic": "3651",
+      "rawFacts": 11750,
+      "mappedFacts": 3837,
+      "unmappedFacts": 8078,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1003",
       "tickers": [
         "SONO"
@@ -430,17 +447,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8238,
+        "total": 8237,
         "by_severity": {
           "INFO": 8078,
-          "WARNING": 160
+          "WARNING": 159
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 146,
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 8078,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 8078
         }
       },
       "latestFiling": {
@@ -451,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "49d35dc95c3daa9f66dc8d8196c8fbe3570ef4ef5614247a8bcfc19669016e19",
@@ -467,6 +483,12 @@
       "cik": "0001471727",
       "name": "SRX Global Inc.",
       "sic": "2080",
+      "rawFacts": 14545,
+      "mappedFacts": 5388,
+      "unmappedFacts": 9139,
+      "calendarYears": 28,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "SRXH"
@@ -582,18 +604,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10075,
+        "total": 10011,
         "by_severity": {
-          "INFO": 9209,
-          "WARNING": 866
+          "INFO": 9139,
+          "WARNING": 872
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 350,
-          "FISCAL_PERIOD_CONFLICT": 13,
+          "FISCAL_PERIOD_CONFLICT": 14,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 344,
+          "RESTATEMENT_CONFLICT": 349,
           "UNEXPECTED_DURATION": 153,
-          "UNKNOWN_CONCEPT": 9209
+          "UNKNOWN_CONCEPT": 9139
         }
       },
       "latestFiling": {
@@ -604,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "36c1125bea6059f7edc05daeb86b2958226204cdab46e3a419c0874c2e59929f",
@@ -620,6 +642,12 @@
       "cik": "0001522727",
       "name": "USA Compression Partners, LP",
       "sic": "4922",
+      "rawFacts": 13491,
+      "mappedFacts": 3996,
+      "unmappedFacts": 9660,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "USAC"
@@ -735,18 +763,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9958,
+        "total": 9957,
         "by_severity": {
           "INFO": 9660,
           "ERROR": 1,
-          "WARNING": 297
+          "WARNING": 296
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 198,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 98,
-          "UNKNOWN_CONCEPT": 9660,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 9660
         }
       },
       "latestFiling": {
@@ -757,13 +784,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5e66e742e97004a3bfa4892485f2a7b98873a1b2d5d2d07bd6f897bcf0ec9e28",
@@ -773,16 +800,30 @@
       "cik": "0001556727",
       "name": "First Northwest Bancorp",
       "sic": "6036",
+      "rawFacts": 25336,
+      "mappedFacts": 3392,
+      "unmappedFacts": 21923,
+      "calendarYears": 14,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.5
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FNWB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 53,
-      "firstPeriodEnd": "2013-06-30",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 54,
+      "firstPeriodEnd": "2012-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.5,
+      "historyYears": 13.5,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -847,11 +888,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 51,
-          "firstAvailablePeriod": "2013-06-30",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-06-30",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.5
+          "historyYears": 13.5
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -878,28 +919,27 @@
         }
       },
       "quality": {
-        "HIGH": 360,
+        "HIGH": 362,
         "MEDIUM": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 388,
-        "resolvedValues": 388
+        "datableValues": 390,
+        "resolvedValues": 390
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22317,
+        "total": 22132,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 22111,
-          "WARNING": 205
+          "INFO": 21923,
+          "WARNING": 208
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 151,
+          "CONCEPT_DISAGREEMENT": 155,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 52,
-          "UNKNOWN_CONCEPT": 22111,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 53,
+          "UNKNOWN_CONCEPT": 21923
         }
       },
       "latestFiling": {
@@ -910,13 +950,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a96af34a759a98a53278f4c67236f94ea42b499f9cee8f966b36a03b1a9d8c1f",
@@ -926,16 +966,22 @@
       "cik": "0001812727",
       "name": "Reliance Global Group, Inc.",
       "sic": "6411",
+      "rawFacts": 7633,
+      "mappedFacts": 2371,
+      "unmappedFacts": 5195,
+      "calendarYears": 7,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EZRA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 28,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 29,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -1000,11 +1046,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -1031,21 +1077,21 @@
         }
       },
       "quality": {
-        "HIGH": 211,
+        "HIGH": 213,
         "MEDIUM": 63
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 274,
-        "resolvedValues": 274
+        "datableValues": 276,
+        "resolvedValues": 276
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5594,
+        "total": 5592,
         "by_severity": {
           "INFO": 5195,
           "ERROR": 1,
-          "WARNING": 398
+          "WARNING": 396
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 260,
@@ -1053,8 +1099,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 131,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 5195,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5195
         }
       },
       "latestFiling": {
@@ -1065,13 +1110,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "86202e12d494ef6308922329a07f93ad0eb9d3320cef1df615cefd769e08524d",
@@ -1081,16 +1126,22 @@
       "cik": "0001993727",
       "name": "Senstar Technologies Corp",
       "sic": "3669",
+      "rawFacts": 1745,
+      "mappedFacts": 428,
+      "unmappedFacts": 1353,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SNT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -1155,11 +1206,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -1186,25 +1237,24 @@
         }
       },
       "quality": {
-        "HIGH": 41,
+        "HIGH": 43,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 43,
-        "resolvedValues": 43
+        "datableValues": 45,
+        "resolvedValues": 45
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1372,
+        "total": 1371,
         "by_severity": {
           "INFO": 1353,
-          "WARNING": 19
+          "WARNING": 18
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
-          "UNKNOWN_CONCEPT": 1353,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1353
         }
       },
       "latestFiling": {
@@ -1215,13 +1265,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c6b8fa0d9361bc082892818d682d75876f4937b884339b0be6fb4d5c30e31e2b",

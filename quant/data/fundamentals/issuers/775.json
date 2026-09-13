@@ -6,16 +6,22 @@
       "cik": "0000854775",
       "name": "DIGI INTERNATIONAL INC",
       "sic": "3576",
+      "rawFacts": 22884,
+      "mappedFacts": 7143,
+      "unmappedFacts": 16059,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "DGII"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-09-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-09-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 616,
+        "HIGH": 618,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 630,
-        "resolvedValues": 630
+        "datableValues": 632,
+        "resolvedValues": 632
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16480,
+        "total": 16478,
         "by_severity": {
           "INFO": 16059,
-          "WARNING": 421
+          "WARNING": 419
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 337,
           "RESTATEMENT_CONFLICT": 82,
-          "UNKNOWN_CONCEPT": 16059,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16059
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "01384dfab8909fe85185a77d5f9063e6aa1c660e87d2d9fb9548a13c7dae582d",
@@ -157,6 +162,12 @@
       "cik": "0002000775",
       "name": "Black Hawk Acquisition Corp",
       "sic": "2836",
+      "rawFacts": 913,
+      "mappedFacts": 433,
+      "unmappedFacts": 483,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1130",
       "tickers": [
         "BKHA",
@@ -164,11 +175,11 @@
         "BKHAU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2024-02-29",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2023-11-30",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -233,18 +244,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2024-11-30",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2023-11-30",
           "lastAvailablePeriod": "2025-11-30",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2024-11-30",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2023-11-30",
           "lastAvailablePeriod": "2025-11-30",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -264,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 48
+        "HIGH": 52
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 48,
-        "resolvedValues": 48
+        "datableValues": 52,
+        "resolvedValues": 52
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 594,
+        "total": 534,
         "by_severity": {
-          "INFO": 505,
-          "WARNING": 89
+          "INFO": 483,
+          "WARNING": 51
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 25,
-          "RESTATEMENT_CONFLICT": 8,
+          "CONCEPT_DISAGREEMENT": 32,
+          "RESTATEMENT_CONFLICT": 11,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 505,
-          "UNPLACEABLE_PERIOD": 48
+          "UNKNOWN_CONCEPT": 483
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a422ace381bc53627a49d14400d3514a924ae2da014930745f77de5c1d4dcf11",

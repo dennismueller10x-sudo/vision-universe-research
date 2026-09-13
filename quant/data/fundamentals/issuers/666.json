@@ -6,16 +6,22 @@
       "cik": "0001406666",
       "name": "CALIX, INC",
       "sic": "4899",
+      "rawFacts": 20272,
+      "mappedFacts": 6395,
+      "unmappedFacts": 14171,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CALX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-27",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,25 +117,24 @@
         }
       },
       "quality": {
-        "HIGH": 544,
+        "HIGH": 546,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 548,
-        "resolvedValues": 548
+        "datableValues": 550,
+        "resolvedValues": 550
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14445,
+        "total": 14443,
         "by_severity": {
           "INFO": 14171,
-          "WARNING": 274
+          "WARNING": 272
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 272,
-          "UNKNOWN_CONCEPT": 14171,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14171
         }
       },
       "latestFiling": {
@@ -140,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cf82787a36ebd7daa99cff685f3db9a505773752dfd9cd1f0094a4de913adb62",
@@ -156,16 +161,22 @@
       "cik": "0001841666",
       "name": "APA Corp",
       "sic": "1311",
+      "rawFacts": 9010,
+      "mappedFacts": 1911,
+      "unmappedFacts": 7189,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "APA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -230,11 +241,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -261,26 +272,25 @@
         }
       },
       "quality": {
-        "HIGH": 164,
+        "HIGH": 166,
         "MEDIUM": 37
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 201,
-        "resolvedValues": 201
+        "datableValues": 203,
+        "resolvedValues": 203
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7422,
+        "total": 7418,
         "by_severity": {
           "INFO": 7189,
-          "WARNING": 233
+          "WARNING": 229
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 185,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 7189,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 7189
         }
       },
       "latestFiling": {
@@ -291,13 +301,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7f0b5fffe19baea8e7fe8e891de0aed9413554eacf53bed59ed53b9ab525cd2b",

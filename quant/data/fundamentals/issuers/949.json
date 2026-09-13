@@ -6,16 +6,22 @@
       "cik": "0000893949",
       "name": "Pediatrix Medical Group, Inc.",
       "sic": "8060",
+      "rawFacts": 21744,
+      "mappedFacts": 7040,
+      "unmappedFacts": 14683,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 520,
+        "HIGH": 522,
         "MEDIUM": 71
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 591,
-        "resolvedValues": 591
+        "datableValues": 593,
+        "resolvedValues": 593
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15239,
+        "total": 15237,
         "by_severity": {
           "INFO": 14683,
-          "WARNING": 556
+          "WARNING": 554
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 371,
           "FISCAL_PERIOD_CONFLICT": 16,
           "RESTATEMENT_CONFLICT": 163,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 14683,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14683
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "30a1d0c6d21b3f5f6b369fcce6d9b8ab805e7384d7bc338e988d4f59ea26620c",
@@ -159,16 +164,22 @@
       "cik": "0001571949",
       "name": "Intercontinental Exchange, Inc.",
       "sic": "6200",
+      "rawFacts": 24156,
+      "mappedFacts": 6058,
+      "unmappedFacts": 18130,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ICE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 59,
-      "firstPeriodEnd": "2011-12-31",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 60,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -233,11 +244,11 @@
           "historyYears": 13.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 55,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 558,
+        "HIGH": 560,
         "MEDIUM": 65
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 623,
-        "resolvedValues": 623
+        "datableValues": 625,
+        "resolvedValues": 625
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19020,
+        "total": 19018,
         "by_severity": {
           "INFO": 18130,
-          "WARNING": 890
+          "WARNING": 888
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 667,
           "EXTREME_VALUE": 70,
-          "RESTATEMENT_CONFLICT": 146,
+          "RESTATEMENT_CONFLICT": 148,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 18130,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 18130
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "dad39ca094a0ab58a40c625a67b9dee0000dfa76dc9cab68c2a38161e59aed18",
@@ -312,6 +322,12 @@
       "cik": "0001867949",
       "name": "Chicago Atlantic Real Estate Finance, Inc.",
       "sic": "6798",
+      "rawFacts": 4700,
+      "mappedFacts": 1236,
+      "unmappedFacts": 3435,
+      "calendarYears": 5,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "REFI"
@@ -427,16 +443,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3560,
+        "total": 3506,
         "by_severity": {
-          "INFO": 3489,
+          "INFO": 3435,
           "WARNING": 71
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 58,
           "RESTATEMENT_CONFLICT": 10,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 3489
+          "UNKNOWN_CONCEPT": 3435
         }
       },
       "latestFiling": {
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a679ffe037b1f7bc5c462f4efc55bc91f57861d7fde737a176639fe5a4bd05ce",

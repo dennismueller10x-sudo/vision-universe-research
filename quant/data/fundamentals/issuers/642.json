@@ -6,17 +6,23 @@
       "cik": "0000752642",
       "name": "UMH PROPERTIES, INC.",
       "sic": "6798",
+      "rawFacts": 20250,
+      "mappedFacts": 4324,
+      "unmappedFacts": 15596,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "UMH",
         "UMH-PD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -81,11 +87,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -112,20 +118,20 @@
         }
       },
       "quality": {
-        "HIGH": 447,
+        "HIGH": 449,
         "MEDIUM": 98
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 545,
-        "resolvedValues": 545
+        "datableValues": 547,
+        "resolvedValues": 547
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16282,
+        "total": 16278,
         "by_severity": {
           "INFO": 15596,
-          "WARNING": 686
+          "WARNING": 682
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 577,
@@ -133,8 +139,7 @@
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 15596,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 15596
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "329c014c3124f80e51bdaab320f02e5c2e9165696c8894a8c910113e7081206d",
@@ -161,16 +166,22 @@
       "cik": "0001421642",
       "name": "Satellos Bioscience Inc.",
       "sic": "2834",
+      "rawFacts": 233,
+      "mappedFacts": 67,
+      "unmappedFacts": 167,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MSLE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 2,
-      "firstPeriodEnd": "2024-12-31",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2023-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -235,18 +246,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 2,
-          "firstAvailablePeriod": "2024-12-31",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 2,
-          "firstAvailablePeriod": "2024-12-31",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -267,24 +278,23 @@
       },
       "quality": {
         "HIGH": 11,
-        "MEDIUM": 5
+        "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 16,
-        "resolvedValues": 16
+        "datableValues": 20,
+        "resolvedValues": 20
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 199,
+        "total": 197,
         "by_severity": {
           "INFO": 167,
-          "WARNING": 32
+          "WARNING": 30
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 16,
-          "UNKNOWN_CONCEPT": 167,
-          "UNPLACEABLE_PERIOD": 16
+          "CONCEPT_DISAGREEMENT": 30,
+          "UNKNOWN_CONCEPT": 167
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "988ae175815a9d1e205d7306091f1b15244b3146b911573e8baf7b0628f97e27",
@@ -311,6 +321,12 @@
       "cik": "0001433642",
       "name": "Hamilton Lane INC",
       "sic": "6282",
+      "rawFacts": 10242,
+      "mappedFacts": 2177,
+      "unmappedFacts": 7963,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "HLNE"
@@ -426,17 +442,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8361,
+        "total": 8360,
         "by_severity": {
           "INFO": 7963,
-          "WARNING": 398
+          "WARNING": 397
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 352,
           "RESTATEMENT_CONFLICT": 43,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7963,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 7963
         }
       },
       "latestFiling": {
@@ -447,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1b60c778b2de69dd04d369b939a4acaf4c831b0c4b0bbfbed50b83badc34a7f0",
@@ -463,6 +478,12 @@
       "cik": "0001468642",
       "name": "Aura Minerals Inc.",
       "sic": "1000",
+      "rawFacts": 1,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AUGO"
@@ -591,13 +612,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "99bac98594d17254e4e3f76322aac8b25b899258d3cd79f072244445d689efce",
@@ -607,16 +628,22 @@
       "cik": "0001934642",
       "name": "MDB Capital Holdings, LLC",
       "sic": "6199",
+      "rawFacts": 3094,
+      "mappedFacts": 671,
+      "unmappedFacts": 2399,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MDBH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2022-01-16",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 19,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -681,11 +708,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -712,28 +739,27 @@
         }
       },
       "quality": {
-        "HIGH": 83,
+        "HIGH": 85,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 92,
-        "resolvedValues": 92
+        "datableValues": 94,
+        "resolvedValues": 94
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2502,
+        "total": 2496,
         "by_severity": {
           "INFO": 2399,
-          "WARNING": 103
+          "WARNING": 97
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 2399,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 2399
         }
       },
       "latestFiling": {
@@ -744,13 +770,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6dd8ff73f352d804150cd893087f210740a2548b3c727a83e7448dad38dd3c00",

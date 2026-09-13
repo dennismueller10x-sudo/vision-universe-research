@@ -6,6 +6,12 @@
       "cik": "0000007431",
       "name": "ARMSTRONG WORLD INDUSTRIES INC",
       "sic": "3089",
+      "rawFacts": 25130,
+      "mappedFacts": 6762,
+      "unmappedFacts": 18605,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AWI"
@@ -121,18 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19272,
+        "total": 19271,
         "by_severity": {
           "INFO": 18605,
           "ERROR": 1,
-          "WARNING": 666
+          "WARNING": 665
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 528,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 137,
-          "UNKNOWN_CONCEPT": 18605,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 18605
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9eb896c0554816030da0b717d0d00ccf69689cc8af0c13a911968329d1cad1f6",
@@ -159,6 +164,12 @@
       "cik": "0001448431",
       "name": "OptimizeRx Corp",
       "sic": "7389",
+      "rawFacts": 13229,
+      "mappedFacts": 4990,
+      "unmappedFacts": 8567,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OPRX"
@@ -297,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "385cb044829f90afe96cafdfd00df485408ed092d16771c540721d8b61e2d55a",
@@ -313,16 +324,22 @@
       "cik": "0001706431",
       "name": "Vir Biotechnology, Inc.",
       "sic": "2836",
+      "rawFacts": 8696,
+      "mappedFacts": 2718,
+      "unmappedFacts": 6019,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VIR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -387,11 +404,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 34,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -418,27 +435,26 @@
         }
       },
       "quality": {
-        "HIGH": 283
+        "HIGH": 285
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 283,
-        "resolvedValues": 283
+        "datableValues": 285,
+        "resolvedValues": 285
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6218,
+        "total": 6216,
         "by_severity": {
           "INFO": 6019,
-          "WARNING": 199
+          "WARNING": 197
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 183,
           "EXTREME_VALUE": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 6019,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6019
         }
       },
       "latestFiling": {
@@ -449,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "65df261617fc5900be3ef0b6264aca0c144b830d88e48fc2ecdf381d701812f8",
@@ -465,16 +481,22 @@
       "cik": "0001745431",
       "name": "StoneCo Ltd.",
       "sic": "7374",
+      "rawFacts": 3061,
+      "mappedFacts": 589,
+      "unmappedFacts": 2572,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "STNE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -539,11 +561,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -570,26 +592,25 @@
         }
       },
       "quality": {
-        "HIGH": 92,
+        "HIGH": 94,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 102,
-        "resolvedValues": 102
+        "datableValues": 104,
+        "resolvedValues": 104
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2627,
+        "total": 2625,
         "by_severity": {
           "INFO": 2572,
-          "WARNING": 55
+          "WARNING": 53
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 49,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2572,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2572
         }
       },
       "latestFiling": {
@@ -600,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4f7cc141012d38b9e1f416cd0c81ecf85670c881f3d49e58c23913c49ee1faba",
@@ -616,16 +637,22 @@
       "cik": "0001786431",
       "name": "Reynolds Consumer Products Inc.",
       "sic": "2673",
+      "rawFacts": 7288,
+      "mappedFacts": 2830,
+      "unmappedFacts": 4533,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "REYN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 30,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 31,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -690,11 +717,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 30,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -721,25 +748,24 @@
         }
       },
       "quality": {
-        "HIGH": 291,
+        "HIGH": 293,
         "MEDIUM": 33
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 324,
-        "resolvedValues": 324
+        "datableValues": 326,
+        "resolvedValues": 326
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4650,
+        "total": 4649,
         "by_severity": {
           "INFO": 4533,
-          "WARNING": 117
+          "WARNING": 116
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 116,
-          "UNKNOWN_CONCEPT": 4533,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4533
         }
       },
       "latestFiling": {
@@ -750,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4a74e128afde0a3d577c4eb0ed4ce541994a8242f0b810d1d453e7ea2a07cd1e",
@@ -766,17 +792,23 @@
       "cik": "0001816431",
       "name": "Quantum-Si Inc",
       "sic": "3829",
+      "rawFacts": 6852,
+      "mappedFacts": 2074,
+      "unmappedFacts": 4802,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "QSI",
         "CAPA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -841,11 +873,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -872,26 +904,25 @@
         }
       },
       "quality": {
-        "HIGH": 214
+        "HIGH": 216
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 214,
-        "resolvedValues": 214
+        "datableValues": 216,
+        "resolvedValues": 216
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4897,
+        "total": 4892,
         "by_severity": {
-          "INFO": 4805,
-          "WARNING": 92
+          "INFO": 4802,
+          "WARNING": 90
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 37,
           "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 4805,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 4802
         }
       },
       "latestFiling": {
@@ -902,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "badff25a5a3e34e5128753ce4db5ff288046696d69988ca2864b08b875cfebfe",
@@ -918,17 +949,23 @@
       "cik": "0001876431",
       "name": "Prenetics Global Ltd",
       "sic": "2834",
+      "rawFacts": 1533,
+      "mappedFacts": 235,
+      "unmappedFacts": 1339,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRE",
         "PRENW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -993,11 +1030,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -1024,26 +1061,25 @@
         }
       },
       "quality": {
-        "HIGH": 35,
+        "HIGH": 37,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 42,
-        "resolvedValues": 42
+        "datableValues": 44,
+        "resolvedValues": 44
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1369,
+        "total": 1367,
         "by_severity": {
           "INFO": 1339,
-          "WARNING": 30
+          "WARNING": 28
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 14,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 1339,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1339
         }
       },
       "latestFiling": {
@@ -1054,13 +1090,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "42c59dca04425677ebec648d6e455149f3de7adae6506d088b792e94225f1724",
@@ -1070,16 +1106,22 @@
       "cik": "0001993431",
       "name": "Micropolis AI Robotics",
       "sic": "3714",
+      "rawFacts": 332,
+      "mappedFacts": 72,
+      "unmappedFacts": 259,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MCRP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -1144,11 +1186,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -1175,25 +1217,24 @@
         }
       },
       "quality": {
-        "HIGH": 13,
+        "HIGH": 15,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 21,
-        "resolvedValues": 21
+        "datableValues": 23,
+        "resolvedValues": 23
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 288,
+        "total": 286,
         "by_severity": {
           "INFO": 259,
-          "WARNING": 29
+          "WARNING": 27
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
-          "UNKNOWN_CONCEPT": 259,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 259
         }
       },
       "latestFiling": {
@@ -1204,13 +1245,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7e93839a644e9156f5a554988d70bd38fe0ab32a53d88735f5ffac62700bf809",

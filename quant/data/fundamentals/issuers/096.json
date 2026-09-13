@@ -6,6 +6,12 @@
       "cik": "0001649096",
       "name": "Clipper Realty Inc.",
       "sic": "6798",
+      "rawFacts": 9767,
+      "mappedFacts": 3128,
+      "unmappedFacts": 6391,
+      "calendarYears": 11,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLPR"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7030,
+        "total": 7029,
         "by_severity": {
           "INFO": 6391,
           "ERROR": 1,
-          "WARNING": 638
+          "WARNING": 637
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 563,
@@ -133,8 +139,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 64,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 6391,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 6391
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5a35ec49891f4b9ef63cdfad080f2c375c9918aeca6a4568b9eff5cc3a4b2f10",
@@ -161,17 +166,23 @@
       "cik": "0001831096",
       "name": "Great Elm Group, Inc.",
       "sic": "7372",
+      "rawFacts": 7635,
+      "mappedFacts": 2021,
+      "unmappedFacts": 5432,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "GEG",
         "GEGGL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 28,
-      "firstPeriodEnd": "2019-09-30",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 29,
+      "firstPeriodEnd": "2019-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -236,11 +247,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 28,
-          "firstAvailablePeriod": "2020-06-30",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2019-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -267,26 +278,25 @@
         }
       },
       "quality": {
-        "HIGH": 172,
+        "HIGH": 174,
         "MEDIUM": 54
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 226,
-        "resolvedValues": 226
+        "datableValues": 228,
+        "resolvedValues": 228
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5856,
+        "total": 5850,
         "by_severity": {
           "INFO": 5432,
-          "WARNING": 424
+          "WARNING": 418
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 335,
           "RESTATEMENT_CONFLICT": 83,
-          "UNKNOWN_CONCEPT": 5432,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 5432
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fd6da5689f44a77ca34f0b1efed8dd754f9fb484d91a4549f696fbe1eff78ff9",
@@ -313,16 +323,22 @@
       "cik": "0001867096",
       "name": "Xeris Biopharma Holdings, Inc.",
       "sic": "2834",
+      "rawFacts": 7098,
+      "mappedFacts": 2072,
+      "unmappedFacts": 5174,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XERS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -387,11 +403,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -418,26 +434,25 @@
         }
       },
       "quality": {
-        "HIGH": 212,
+        "HIGH": 214,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 219,
-        "resolvedValues": 219
+        "datableValues": 221,
+        "resolvedValues": 221
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5265,
+        "total": 5261,
         "by_severity": {
           "INFO": 5174,
-          "WARNING": 91
+          "WARNING": 87
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 86,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 5174,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 5174
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0c2a55265a2f29452ef6f40e40c6bf520008cd860a55b627a4c2ecc2e9d1e311",
@@ -464,16 +479,22 @@
       "cik": "0002012096",
       "name": "Powell Max Ltd",
       "sic": "7380",
+      "rawFacts": 362,
+      "mappedFacts": 85,
+      "unmappedFacts": 273,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "PMAX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -538,11 +559,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -569,25 +590,24 @@
         }
       },
       "quality": {
-        "HIGH": 17,
+        "HIGH": 19,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 28,
-        "resolvedValues": 28
+        "datableValues": 30,
+        "resolvedValues": 30
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 307,
+        "total": 305,
         "by_severity": {
           "INFO": 273,
-          "WARNING": 34
+          "WARNING": 32
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 32,
-          "UNKNOWN_CONCEPT": 273,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 273
         }
       },
       "latestFiling": {
@@ -598,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "228424715dc6a2717ee8eee959743468c59b38bcfc9f09009541547b96bec458",
@@ -614,6 +634,12 @@
       "cik": "0002095096",
       "name": "Einride AB",
       "sic": "7373",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ENRD",
@@ -734,13 +760,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3db6425fee041a241ee2dc744cfbdee5268dfd57105175d6e345a47055de00f3",

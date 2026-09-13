@@ -6,6 +6,12 @@
       "cik": "0000798783",
       "name": "UNIVERSAL HEALTH REALTY INCOME TRUST",
       "sic": "6798",
+      "rawFacts": 14684,
+      "mappedFacts": 4504,
+      "unmappedFacts": 10141,
+      "calendarYears": 19,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "UHT"
@@ -121,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10397,
+        "total": 10264,
         "by_severity": {
-          "INFO": 10275,
-          "WARNING": 122
+          "INFO": 10141,
+          "WARNING": 123
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 67,
-          "FISCAL_PERIOD_CONFLICT": 9,
+          "FISCAL_PERIOD_CONFLICT": 10,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 44,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 10275
+          "UNKNOWN_CONCEPT": 10141
         }
       },
       "latestFiling": {
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f30e70c5abbc47f6b0e484221d5e449d8fafcdd503b0ed64c8b5e90c17c5039e",
@@ -159,16 +165,22 @@
       "cik": "0001759783",
       "name": "EHang Holdings Ltd",
       "sic": "3728",
+      "rawFacts": 4514,
+      "mappedFacts": 818,
+      "unmappedFacts": 3495,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -233,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -264,27 +276,26 @@
         }
       },
       "quality": {
-        "HIGH": 69,
+        "HIGH": 71,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 90,
-        "resolvedValues": 90
+        "datableValues": 92,
+        "resolvedValues": 92
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3856,
+        "total": 3854,
         "by_severity": {
           "INFO": 3495,
-          "WARNING": 361
+          "WARNING": 359
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 350,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 3495,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3495
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2ea5cd0531403739adf5d5da34c60c8503812e46404eab790d27387b2d5546ea",
@@ -311,16 +322,22 @@
       "cik": "0001794783",
       "name": "SelectQuote, Inc.",
       "sic": "6411",
+      "rawFacts": 10856,
+      "mappedFacts": 2706,
+      "unmappedFacts": 8012,
+      "calendarYears": 9,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "SLQT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 33,
-      "firstPeriodEnd": "2018-06-30",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 34,
+      "firstPeriodEnd": "2017-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -385,11 +402,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 30,
-          "firstAvailablePeriod": "2018-06-30",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2017-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -416,27 +433,26 @@
         }
       },
       "quality": {
-        "HIGH": 290,
+        "HIGH": 292,
         "MEDIUM": 41
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 331,
-        "resolvedValues": 331
+        "datableValues": 333,
+        "resolvedValues": 333
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8290,
+        "total": 8288,
         "by_severity": {
           "INFO": 8012,
-          "WARNING": 278
+          "WARNING": 276
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 265,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 8012,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 8012
         }
       },
       "latestFiling": {
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b3cd1e90a96e9ddf8966d719870b3600eae58c91f6b8036f4add4364e88b9d8b",
@@ -463,16 +479,22 @@
       "cik": "0001813783",
       "name": "Vision Marine Technologies Inc.",
       "sic": "3730",
+      "rawFacts": 1521,
+      "mappedFacts": 427,
+      "unmappedFacts": 1194,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "VMAR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2018-08-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2017-08-31",
       "lastPeriodEnd": "2023-08-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -537,11 +559,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2018-08-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2017-08-31",
           "lastAvailablePeriod": "2023-08-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -568,25 +590,24 @@
         }
       },
       "quality": {
-        "HIGH": 70
+        "HIGH": 72
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 70,
-        "resolvedValues": 70
+        "datableValues": 72,
+        "resolvedValues": 72
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1209,
+        "total": 1208,
         "by_severity": {
           "INFO": 1194,
-          "WARNING": 15
+          "WARNING": 14
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 12,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1194,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1194
         }
       },
       "latestFiling": {
@@ -597,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0dfb6d14550ec014a4cffc23a406b325a0ebc8fa8bfd304f9bd332f7a5d0483b",
@@ -613,16 +634,22 @@
       "cik": "0001929783",
       "name": "WORK Medical Technology Group LTD",
       "sic": "3841",
+      "rawFacts": 707,
+      "mappedFacts": 218,
+      "unmappedFacts": 507,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "WOK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-09-30",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-09-30",
       "lastPeriodEnd": "2025-09-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -687,11 +714,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-09-30",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -718,26 +745,25 @@
         }
       },
       "quality": {
-        "HIGH": 32,
+        "HIGH": 34,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 40,
-        "resolvedValues": 40
+        "datableValues": 42,
+        "resolvedValues": 42
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 537,
+        "total": 535,
         "by_severity": {
           "INFO": 507,
-          "WARNING": 30
+          "WARNING": 28
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 26,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 507,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 507
         }
       },
       "latestFiling": {
@@ -748,13 +774,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a1c9388c90e47355c17c520a6ae1bdd64f7845c3d1e13e172d8b7470fbec3d26",

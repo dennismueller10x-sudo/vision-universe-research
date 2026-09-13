@@ -6,16 +6,22 @@
       "cik": "0000084748",
       "name": "ROGERS CORP",
       "sic": "2821",
+      "rawFacts": 24843,
+      "mappedFacts": 6646,
+      "unmappedFacts": 18596,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ROG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 621,
+        "HIGH": 623,
         "MEDIUM": 37
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 658,
-        "resolvedValues": 658
+        "datableValues": 660,
+        "resolvedValues": 660
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18991,
+        "total": 18906,
         "by_severity": {
-          "INFO": 18679,
-          "WARNING": 312
+          "INFO": 18596,
+          "WARNING": 310
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 294,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 18679,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18596
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6183f63517581d2f32c98be18186565bd760b36f845c27b2a7a35b817222bd46",
@@ -157,6 +162,12 @@
       "cik": "0000860748",
       "name": "KEMPER Corp",
       "sic": "6331",
+      "rawFacts": 33284,
+      "mappedFacts": 5563,
+      "unmappedFacts": 27588,
+      "calendarYears": 19,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KMPR",
@@ -298,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5c68305398ffe8bb9df62538351de0140f1cdd764fee4dd29373a52e1ae24cec",
@@ -314,16 +325,22 @@
       "cik": "0001307748",
       "name": "InvenTrust Properties Corp.",
       "sic": "6798",
+      "rawFacts": 21758,
+      "mappedFacts": 4474,
+      "unmappedFacts": 17006,
+      "calendarYears": 17,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IVT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -388,11 +405,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -419,27 +436,26 @@
         }
       },
       "quality": {
-        "HIGH": 524,
+        "HIGH": 526,
         "MEDIUM": 25
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 549,
-        "resolvedValues": 549
+        "datableValues": 551,
+        "resolvedValues": 551
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17431,
+        "total": 17429,
         "by_severity": {
           "INFO": 17006,
-          "WARNING": 425
+          "WARNING": 423
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 231,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 190,
-          "UNKNOWN_CONCEPT": 17006,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17006
         }
       },
       "latestFiling": {
@@ -450,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "46f037a6a47119dfb1101788cc6baf3e0dee54512435a91da582b2e25049a58a",
@@ -466,16 +482,22 @@
       "cik": "0001468748",
       "name": "Kodiak Sciences Inc.",
       "sic": "2836",
+      "rawFacts": 7147,
+      "mappedFacts": 2466,
+      "unmappedFacts": 4801,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KOD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -540,11 +562,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 36,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -571,25 +593,24 @@
         }
       },
       "quality": {
-        "HIGH": 253
+        "HIGH": 255
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 253,
-        "resolvedValues": 253
+        "datableValues": 255,
+        "resolvedValues": 255
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4831,
+        "total": 4830,
         "by_severity": {
           "INFO": 4801,
-          "WARNING": 30
+          "WARNING": 29
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 12,
           "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 4801,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4801
         }
       },
       "latestFiling": {
@@ -600,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c1c4aaeeaac260cba776f4ea7ecda974e3aca04e7bf4e1de1024d11067b1b79c",
@@ -616,6 +637,12 @@
       "cik": "0001713748",
       "name": "Skeena Resources Ltd",
       "sic": "1040",
+      "rawFacts": 856,
+      "mappedFacts": 272,
+      "unmappedFacts": 659,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SKE"
@@ -746,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d420429c75b53b33de0624996c19d6012045bd491a569e81be4ad1556f836084",

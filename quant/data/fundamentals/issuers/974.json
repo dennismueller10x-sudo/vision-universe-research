@@ -6,16 +6,22 @@
       "cik": "0000933974",
       "name": "Azenta, Inc.",
       "sic": "3559",
+      "rawFacts": 28159,
+      "mappedFacts": 6946,
+      "unmappedFacts": 20855,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "AZTA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-09-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-09-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 495,
+        "HIGH": 497,
         "MEDIUM": 109
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 604,
-        "resolvedValues": 604
+        "datableValues": 606,
+        "resolvedValues": 606
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21877,
+        "total": 21875,
         "by_severity": {
           "INFO": 20855,
           "ERROR": 3,
-          "WARNING": 1019
+          "WARNING": 1017
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 784,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 233,
-          "UNKNOWN_CONCEPT": 20855,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20855
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e4d6d991fdf2c57cb73598dfb13fc83a0c3f9cdb15d0befd36b9f7355e5cf04e",
@@ -159,16 +164,22 @@
       "cik": "0001595974",
       "name": "MAGNITE, INC.",
       "sic": "7370",
+      "rawFacts": 17399,
+      "mappedFacts": 5364,
+      "unmappedFacts": 12127,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MGNI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 55,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 56,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -233,11 +244,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -264,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 509,
+        "HIGH": 511,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 539,
-        "resolvedValues": 539
+        "datableValues": 541,
+        "resolvedValues": 541
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12457,
+        "total": 12326,
         "by_severity": {
-          "INFO": 12257,
-          "WARNING": 200
+          "INFO": 12127,
+          "WARNING": 199
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 186,
-          "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 12257,
-          "UNPLACEABLE_PERIOD": 3
+          "RESTATEMENT_CONFLICT": 13,
+          "UNKNOWN_CONCEPT": 12127
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "84738d8dbb3b1bb6edfae43b7cdf6ea4901679a1506b4577d4b3a895f03648b4",
@@ -310,16 +320,22 @@
       "cik": "0001802974",
       "name": "Mission Produce, Inc.",
       "sic": "0700",
+      "rawFacts": 7766,
+      "mappedFacts": 2368,
+      "unmappedFacts": 5408,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1031",
       "tickers": [
         "AVO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 28,
-      "firstPeriodEnd": "2019-10-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 29,
+      "firstPeriodEnd": "2018-10-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -384,11 +400,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 28,
-          "firstAvailablePeriod": "2019-10-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2018-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -415,26 +431,25 @@
         }
       },
       "quality": {
-        "HIGH": 216,
+        "HIGH": 218,
         "MEDIUM": 63
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 279,
-        "resolvedValues": 279
+        "datableValues": 281,
+        "resolvedValues": 281
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5726,
+        "total": 5724,
         "by_severity": {
           "INFO": 5408,
-          "WARNING": 318
+          "WARNING": 316
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 311,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 5408,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5408
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f0d4c205b437f918e46a4ba63e198702e393a2a67394874738944a13c0aa3be9",
@@ -461,6 +476,12 @@
       "cik": "0001843974",
       "name": "Destiny Tech100 Inc.",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DXYZ"
@@ -580,13 +601,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bd08449b268ead64f08e8353da22856d6bd4a321a7d7252b9ee6f718115b328d",
@@ -596,17 +617,23 @@
       "cik": "0001861974",
       "name": "ECARX Holdings Inc.",
       "sic": "7373",
+      "rawFacts": 2552,
+      "mappedFacts": 447,
+      "unmappedFacts": 2032,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "ECX",
         "ECXWW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -671,11 +698,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -702,26 +729,25 @@
         }
       },
       "quality": {
-        "HIGH": 54,
+        "HIGH": 56,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 62,
-        "resolvedValues": 62
+        "datableValues": 64,
+        "resolvedValues": 64
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2272,
+        "total": 2270,
         "by_severity": {
           "INFO": 2032,
-          "WARNING": 240
+          "WARNING": 238
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 154,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 2032,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2032
         }
       },
       "latestFiling": {
@@ -732,13 +758,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e00e24747ae877442ee5a4b01f7df798a82d0b569bfc7b3eb16a3a06701da35a",

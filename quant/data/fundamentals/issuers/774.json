@@ -6,16 +6,22 @@
       "cik": "0001119774",
       "name": "COMPUGEN LTD",
       "sic": "2836",
+      "rawFacts": 4568,
+      "mappedFacts": 1555,
+      "unmappedFacts": 3151,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CGEN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 17,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 18,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 145,
+        "HIGH": 147,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 146,
-        "resolvedValues": 146
+        "datableValues": 148,
+        "resolvedValues": 148
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3240,
+        "total": 3238,
         "by_severity": {
           "INFO": 3151,
           "ERROR": 1,
-          "WARNING": 88
+          "WARNING": 86
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 56,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 3,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 3151,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3151
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fd3adbaeda7c7722913245c36d570b1574fa4a233d6ef4ed64b7647a353df03e",
@@ -160,6 +165,12 @@
       "cik": "0001137774",
       "name": "PRUDENTIAL FINANCIAL INC",
       "sic": "6311",
+      "rawFacts": 44837,
+      "mappedFacts": 5435,
+      "unmappedFacts": 39224,
+      "calendarYears": 20,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRU",
@@ -300,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "71edcd6441b8e2bf0ce6183104c472b4f553972a4461563e6c456fa9f9e0dbd0",
@@ -316,6 +327,12 @@
       "cik": "0001296774",
       "name": "The9 LTD",
       "sic": "6199",
+      "rawFacts": 8618,
+      "mappedFacts": 1476,
+      "unmappedFacts": 6820,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NCTY"
@@ -431,15 +448,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7514,
+        "total": 7502,
         "by_severity": {
-          "INFO": 6836,
-          "WARNING": 678
+          "INFO": 6820,
+          "WARNING": 682
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 616,
+          "CONCEPT_DISAGREEMENT": 620,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 6836
+          "UNKNOWN_CONCEPT": 6820
         }
       },
       "latestFiling": {
@@ -450,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e197d2e5ae45612e51e0a0af0b3a2fb2809bec4b631308ef275d898fb7dccebc",
@@ -466,16 +483,22 @@
       "cik": "0001662774",
       "name": "Quince Therapeutics, Inc.",
       "sic": "2836",
+      "rawFacts": 7784,
+      "mappedFacts": 2313,
+      "unmappedFacts": 5557,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "QNCX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 34,
-      "firstPeriodEnd": "2018-03-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 35,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -540,11 +563,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 34,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -571,28 +594,27 @@
         }
       },
       "quality": {
-        "HIGH": 251,
+        "HIGH": 253,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 252,
-        "resolvedValues": 252
+        "datableValues": 254,
+        "resolvedValues": 254
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5686,
+        "total": 5676,
         "by_severity": {
           "INFO": 5557,
-          "WARNING": 129
+          "WARNING": 119
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 88,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 22,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 5557,
-          "UNPLACEABLE_PERIOD": 10
+          "UNKNOWN_CONCEPT": 5557
         }
       },
       "latestFiling": {
@@ -603,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "922b4f60d82f4787ba3fe35a4d9b58fc62cff2a1eaa623e47aff9919889a2e10",
@@ -619,16 +641,22 @@
       "cik": "0001759774",
       "name": "Postal Realty Trust, Inc.",
       "sic": "6798",
+      "rawFacts": 8888,
+      "mappedFacts": 2226,
+      "unmappedFacts": 6508,
+      "calendarYears": 8,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PSTL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 33,
-      "firstPeriodEnd": "2018-03-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 34,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -693,11 +721,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 32,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -724,21 +752,21 @@
         }
       },
       "quality": {
-        "HIGH": 259,
+        "HIGH": 261,
         "MEDIUM": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 287,
-        "resolvedValues": 287
+        "datableValues": 289,
+        "resolvedValues": 289
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6967,
+        "total": 6900,
         "by_severity": {
-          "INFO": 6574,
+          "INFO": 6508,
           "ERROR": 8,
-          "WARNING": 385
+          "WARNING": 384
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 295,
@@ -746,8 +774,7 @@
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 77,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 6574,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 6508
         }
       },
       "latestFiling": {
@@ -758,13 +785,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "60f1db16febbc6a16ec5cfb2c2d336239a237c6c8cbc73b3da7e0917b4a4f03e",
@@ -774,6 +801,12 @@
       "cik": "0002025774",
       "name": "Alps Group Inc",
       "sic": "8000",
+      "rawFacts": 1,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "ALPS",
@@ -903,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a55c3b8779db788846d54d9613bab4fd5fab929a5df5c57ed606d96ddc58ab47",

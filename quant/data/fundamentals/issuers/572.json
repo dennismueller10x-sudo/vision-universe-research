@@ -6,16 +6,22 @@
       "cik": "0000722572",
       "name": "FRANKLIN WIRELESS CORP",
       "sic": "3661",
+      "rawFacts": 17189,
+      "mappedFacts": 5903,
+      "unmappedFacts": 11644,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "FKWL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2010-09-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 64,
+      "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -80,11 +86,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 60,
-          "firstAvailablePeriod": "2011-06-30",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 477,
+        "HIGH": 479,
         "MEDIUM": 90
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 567,
-        "resolvedValues": 567
+        "datableValues": 569,
+        "resolvedValues": 569
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12070,
+        "total": 12055,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 11654,
-          "WARNING": 415
+          "INFO": 11644,
+          "WARNING": 410
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 374,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 11654,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 11644
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9150cc82379595fef9ea6872020cd24f1257b3571d387411fed15446bfa47397",
@@ -159,16 +164,22 @@
       "cik": "0001840572",
       "name": "Lucky Strike Entertainment Corp",
       "sic": "7900",
+      "rawFacts": 8401,
+      "mappedFacts": 2122,
+      "unmappedFacts": 6267,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0629",
       "tickers": [
         "LUCK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2020-12-27",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2020-06-28",
       "lastPeriodEnd": "2026-06-28",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -233,11 +244,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 22,
-          "firstAvailablePeriod": "2021-06-27",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-06-28",
           "lastAvailablePeriod": "2026-06-28",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 226,
+        "HIGH": 228,
         "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 243,
-        "resolvedValues": 243
+        "datableValues": 245,
+        "resolvedValues": 245
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6626,
+        "total": 6588,
         "by_severity": {
-          "INFO": 6300,
-          "WARNING": 326
+          "INFO": 6267,
+          "WARNING": 321
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 242,
+          "CONCEPT_DISAGREEMENT": 244,
           "FISCAL_PERIOD_CONFLICT": 4,
           "PERIOD_MISMATCH": 8,
-          "RESTATEMENT_CONFLICT": 63,
-          "UNKNOWN_CONCEPT": 6300,
-          "UNPLACEABLE_PERIOD": 9
+          "RESTATEMENT_CONFLICT": 65,
+          "UNKNOWN_CONCEPT": 6267
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2be94e3cff295d96e9c7686055cdc9f2e6706b0ad03fafa0908602db22786fe8",
@@ -312,6 +322,12 @@
       "cik": "0001854572",
       "name": "ICZOOM Group Inc.",
       "sic": "5731",
+      "rawFacts": 1728,
+      "mappedFacts": 444,
+      "unmappedFacts": 1263,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "IZM"
@@ -427,16 +443,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1343,
+        "total": 1341,
         "by_severity": {
           "INFO": 1263,
-          "WARNING": 80
+          "WARNING": 78
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1263,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1263
         }
       },
       "latestFiling": {
@@ -447,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "53153a5ae242b0e50517b6f30e1db2cd83e70db2e30ce99c8e750d466eb3756f",

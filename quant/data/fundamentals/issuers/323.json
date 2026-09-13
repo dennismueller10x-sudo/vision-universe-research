@@ -6,16 +6,22 @@
       "cik": "0000007323",
       "name": "ENTERGY ARKANSAS, LLC",
       "sic": "4911",
+      "rawFacts": 467,
+      "mappedFacts": 99,
+      "unmappedFacts": 358,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EAI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2025-03-31",
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2025-12-31",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 0.0
+          "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
@@ -111,25 +117,24 @@
         }
       },
       "quality": {
-        "HIGH": 12,
+        "HIGH": 14,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 23,
-        "resolvedValues": 23
+        "datableValues": 25,
+        "resolvedValues": 25
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 382,
+        "total": 380,
         "by_severity": {
           "INFO": 358,
-          "WARNING": 24
+          "WARNING": 22
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
-          "UNKNOWN_CONCEPT": 358,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 358
         }
       },
       "latestFiling": {
@@ -140,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fce43999ace80d18f0a65d4ec33ddb0d74854ef10101d97b274799a4085cbde1",
@@ -156,16 +161,22 @@
       "cik": "0000829323",
       "name": "Inuvo, Inc.",
       "sic": "7310",
+      "rawFacts": 16724,
+      "mappedFacts": 5681,
+      "unmappedFacts": 11303,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "INUV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2010-03-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -230,11 +241,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -261,27 +272,26 @@
         }
       },
       "quality": {
-        "HIGH": 563,
+        "HIGH": 565,
         "MEDIUM": 31
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 594,
-        "resolvedValues": 594
+        "datableValues": 596,
+        "resolvedValues": 596
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11821,
+        "total": 11773,
         "by_severity": {
-          "INFO": 11347,
-          "WARNING": 474
+          "INFO": 11303,
+          "WARNING": 470
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 405,
           "NEGATIVE_WHERE_IMPOSSIBLE": 6,
           "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 11347,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 11303
         }
       },
       "latestFiling": {
@@ -292,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "47d412969eeaf1ea2ada087327f7f217fd12b450fa669dc7e349f418f517c03b",
@@ -308,17 +318,23 @@
       "cik": "0000938323",
       "name": "PEARSON PLC",
       "sic": "2731",
+      "rawFacts": 5715,
+      "mappedFacts": 749,
+      "unmappedFacts": 5072,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PSO",
         "PSORF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -383,11 +399,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -414,26 +430,25 @@
         }
       },
       "quality": {
-        "HIGH": 131,
+        "HIGH": 133,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 135,
-        "resolvedValues": 135
+        "datableValues": 137,
+        "resolvedValues": 137
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5125,
+        "total": 5124,
         "by_severity": {
           "INFO": 5072,
-          "WARNING": 53
+          "WARNING": 52
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 36,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 5072,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5072
         }
       },
       "latestFiling": {
@@ -444,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f63b5fcbd2db76550586242649658951bbf0416556e13a2d15e15c97729848be",

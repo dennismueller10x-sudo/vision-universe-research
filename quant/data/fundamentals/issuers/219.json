@@ -6,16 +6,22 @@
       "cik": "0000884219",
       "name": "Pursuit Attractions & Hospitality, Inc.",
       "sic": "7990",
+      "rawFacts": 30136,
+      "mappedFacts": 6692,
+      "unmappedFacts": 22901,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRSU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 509,
+        "HIGH": 511,
         "MEDIUM": 131
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 640,
-        "resolvedValues": 640
+        "datableValues": 642,
+        "resolvedValues": 642
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24422,
+        "total": 24420,
         "by_severity": {
           "INFO": 22901,
-          "WARNING": 1521
+          "WARNING": 1519
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1342,
           "RESTATEMENT_CONFLICT": 177,
-          "UNKNOWN_CONCEPT": 22901,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 22901
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "be8fcbd7fdf2d5666a74c5148ff3cb79ec16538ff95bea206758bc9b2aff6558",
@@ -157,6 +162,12 @@
       "cik": "0001043219",
       "name": "ANNALY CAPITAL MANAGEMENT INC",
       "sic": "6798",
+      "rawFacts": 27234,
+      "mappedFacts": 5883,
+      "unmappedFacts": 20998,
+      "calendarYears": 20,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NLY",
@@ -166,11 +177,11 @@
         "NLY-PJ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2007-12-31",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2006-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -235,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2007-12-31",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -266,28 +277,27 @@
         }
       },
       "quality": {
-        "HIGH": 386,
+        "HIGH": 388,
         "MEDIUM": 93
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 479,
-        "resolvedValues": 479
+        "datableValues": 481,
+        "resolvedValues": 481
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21923,
+        "total": 21626,
         "by_severity": {
-          "INFO": 21307,
-          "WARNING": 616
+          "INFO": 20998,
+          "WARNING": 628
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 508,
-          "FISCAL_PERIOD_CONFLICT": 18,
+          "CONCEPT_DISAGREEMENT": 510,
+          "FISCAL_PERIOD_CONFLICT": 20,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 85,
-          "UNKNOWN_CONCEPT": 21307,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 95,
+          "UNKNOWN_CONCEPT": 20998
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d5189a81fb49d45819d431c1e6e1b0054db1a142b053272ce8de6b0b186f3fd4",
@@ -314,6 +324,12 @@
       "cik": "0001061219",
       "name": "ENTERPRISE PRODUCTS PARTNERS L.P.",
       "sic": "4922",
+      "rawFacts": 29127,
+      "mappedFacts": 6254,
+      "unmappedFacts": 23108,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EPD",
@@ -430,17 +446,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23779,
+        "total": 23778,
         "by_severity": {
           "INFO": 23108,
-          "WARNING": 671
+          "WARNING": 670
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 523,
           "FISCAL_PERIOD_CONFLICT": 6,
           "RESTATEMENT_CONFLICT": 141,
-          "UNKNOWN_CONCEPT": 23108,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 23108
         }
       },
       "latestFiling": {
@@ -451,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "40f07408a9491be8868c8c2f7fdabef464eaaa52297cdcc18e47c66d1085740f",
@@ -467,6 +482,12 @@
       "cik": "0001099219",
       "name": "METLIFE INC",
       "sic": "6311",
+      "rawFacts": 55626,
+      "mappedFacts": 6130,
+      "unmappedFacts": 48870,
+      "calendarYears": 20,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MET",
@@ -604,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "042426a34e9e081400c822c771b02281f79beb41b80f239fc5bb235b6de288c2",
@@ -620,6 +641,12 @@
       "cik": "0001615219",
       "name": "Decoy Therapeutics Inc.",
       "sic": "2834",
+      "rawFacts": 9998,
+      "mappedFacts": 3449,
+      "unmappedFacts": 6606,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DCOY"
@@ -755,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "78af8b392ce3db68d2c5952f7e863de8c22ff57857cb55d536f4683720b063e0",
@@ -771,16 +798,22 @@
       "cik": "0002012219",
       "name": "OMS Energy Technologies Inc.",
       "sic": "3533",
+      "rawFacts": 591,
+      "mappedFacts": 102,
+      "unmappedFacts": 499,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "OMSE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2023-03-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2022-03-31",
       "lastPeriodEnd": "2025-03-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -845,11 +878,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2023-03-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2025-03-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -876,25 +909,24 @@
         }
       },
       "quality": {
-        "HIGH": 20,
+        "HIGH": 22,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 27,
-        "resolvedValues": 27
+        "datableValues": 29,
+        "resolvedValues": 29
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 511,
+        "total": 510,
         "by_severity": {
           "INFO": 499,
-          "WARNING": 12
+          "WARNING": 11
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
-          "UNKNOWN_CONCEPT": 499,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 499
         }
       },
       "latestFiling": {
@@ -905,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "aedb0781877c487083899772533dc1afaecfe220661c878e06d6f66d6790e2fe",
@@ -921,6 +953,12 @@
       "cik": "0002147219",
       "name": "Rainier Acquisition Corp",
       "sic": "6770",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RNAQ",
@@ -1041,13 +1079,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "71776987ee72d22d522ec5a0850adc0e2a384d69a22adc27e304cec4c4786ed4",

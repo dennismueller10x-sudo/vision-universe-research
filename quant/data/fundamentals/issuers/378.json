@@ -6,6 +6,12 @@
       "cik": "0000100378",
       "name": "TWIN DISC INC",
       "sic": "3560",
+      "rawFacts": 21785,
+      "mappedFacts": 6472,
+      "unmappedFacts": 15551,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "TWIN"
@@ -143,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3d4d0c3a77babd26d7df0ca0cdd3c22cbd0c5ffc170c489d2fc412fc183e4c7a",
@@ -159,6 +165,12 @@
       "cik": "0001025378",
       "name": "W. P. Carey Inc.",
       "sic": "6798",
+      "rawFacts": 30754,
+      "mappedFacts": 5661,
+      "unmappedFacts": 24416,
+      "calendarYears": 20,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WPC"
@@ -274,9 +286,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25340,
+        "total": 25339,
         "by_severity": {
-          "INFO": 24417,
+          "INFO": 24416,
           "ERROR": 1,
           "WARNING": 922
         },
@@ -287,7 +299,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 89,
           "UNEXPECTED_DURATION": 25,
-          "UNKNOWN_CONCEPT": 24417
+          "UNKNOWN_CONCEPT": 24416
         }
       },
       "latestFiling": {
@@ -298,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f9a3d01a63738bca6610eae3d5f611a585700cc11bd0f2e6c1e9631ec0ea2b2b",
@@ -314,6 +326,12 @@
       "cik": "0001076378",
       "name": "CEMEX SAB DE CV",
       "sic": "3241",
+      "rawFacts": 5107,
+      "mappedFacts": 785,
+      "unmappedFacts": 4480,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CX",
@@ -450,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "dc74516f2868332d1836e2dde6c951b4feb2a6673d947ca27c283b6c287e7f0e",
@@ -466,16 +484,22 @@
       "cik": "0001644378",
       "name": "RMR GROUP INC.",
       "sic": "8742",
+      "rawFacts": 11888,
+      "mappedFacts": 3916,
+      "unmappedFacts": 7768,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "RMR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 49,
-      "firstPeriodEnd": "2014-09-30",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 50,
+      "firstPeriodEnd": "2013-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 11.0,
+      "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 12,
@@ -540,11 +564,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 46,
-          "firstAvailablePeriod": "2014-09-30",
+          "annualPeriods": 13,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2013-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 11.0
+          "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -571,27 +595,26 @@
         }
       },
       "quality": {
-        "HIGH": 342,
+        "HIGH": 344,
         "MEDIUM": 70
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 412,
-        "resolvedValues": 412
+        "datableValues": 414,
+        "resolvedValues": 414
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8298,
+        "total": 8296,
         "by_severity": {
           "INFO": 7768,
-          "WARNING": 530
+          "WARNING": 528
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 443,
           "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 7768,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7768
         }
       },
       "latestFiling": {
@@ -602,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eb9927aa3b27e9fb8a7f8ab8a7770b7497dee3fb8bddde97cd84d8629d0cf40b",
@@ -618,16 +641,22 @@
       "cik": "0001680378",
       "name": "SenesTech, Inc.",
       "sic": "2870",
+      "rawFacts": 10551,
+      "mappedFacts": 3654,
+      "unmappedFacts": 7018,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SNES"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 43,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 44,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -692,11 +721,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 40,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 11,
@@ -723,26 +752,25 @@
         }
       },
       "quality": {
-        "HIGH": 376,
+        "HIGH": 378,
         "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 394,
-        "resolvedValues": 394
+        "datableValues": 396,
+        "resolvedValues": 396
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7209,
+        "total": 7207,
         "by_severity": {
           "INFO": 7018,
-          "WARNING": 191
+          "WARNING": 189
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 112,
           "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 7018,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7018
         }
       },
       "latestFiling": {
@@ -753,13 +781,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2c41c1b05f45bc3aaa7d113e23df0aac3897a2b1009fe5fa366b3f366f30af8b",
@@ -769,6 +797,12 @@
       "cik": "0001820378",
       "name": "Thornburg Income Builder Opportunities Trust",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "TBLD"
@@ -888,13 +922,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2b9b320a1adbb297c87c0270cd8acab8926260874831fa57a0565610285c5003",

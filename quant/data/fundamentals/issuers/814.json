@@ -6,6 +6,12 @@
       "cik": "0000078814",
       "name": "PITNEY BOWES INC /DE/",
       "sic": "3579",
+      "rawFacts": 37376,
+      "mappedFacts": 8523,
+      "unmappedFacts": 28533,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PBI",
@@ -122,18 +128,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30182,
+        "total": 30093,
         "by_severity": {
-          "INFO": 28623,
+          "INFO": 28533,
           "ERROR": 12,
-          "WARNING": 1547
+          "WARNING": 1548
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1264,
           "FUTURE_DATA_LEAK": 12,
-          "RESTATEMENT_CONFLICT": 282,
-          "UNKNOWN_CONCEPT": 28623,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 284,
+          "UNKNOWN_CONCEPT": 28533
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "82bda96b1b976d3006a603db6e79abf2e23b972dd0074906e6c3ba484900193f",
@@ -160,16 +165,22 @@
       "cik": "0001396814",
       "name": "Pacira BioSciences, Inc.",
       "sic": "2834",
+      "rawFacts": 21291,
+      "mappedFacts": 6684,
+      "unmappedFacts": 14787,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PCRX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -234,11 +245,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -265,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 589,
+        "HIGH": 591,
         "MEDIUM": 22
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 611,
-        "resolvedValues": 611
+        "datableValues": 613,
+        "resolvedValues": 613
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15143,
+        "total": 15141,
         "by_severity": {
           "INFO": 14787,
-          "WARNING": 356
+          "WARNING": 354
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 333,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 14787,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14787
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "52d4e905f35ef0a7182bfce1c185f62893ff063e5d1703b0e63c71777034b335",
@@ -311,6 +321,12 @@
       "cik": "0001813814",
       "name": "Definium Therapeutics, Inc.",
       "sic": "2833",
+      "rawFacts": 4227,
+      "mappedFacts": 1362,
+      "unmappedFacts": 2943,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DFTX"
@@ -425,16 +441,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3020,
+        "total": 2994,
         "by_severity": {
-          "INFO": 2970,
-          "WARNING": 50
+          "INFO": 2943,
+          "WARNING": 51
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 21,
           "RESTATEMENT_CONFLICT": 17,
-          "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 2970
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 2943
         }
       },
       "latestFiling": {
@@ -445,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "04916aef7b885d89da0998d798761ea2636db308858ed73ea3204105459ec379",
@@ -461,16 +477,22 @@
       "cik": "0001824814",
       "name": "Cognyte Software Ltd.",
       "sic": "7372",
+      "rawFacts": 3737,
+      "mappedFacts": 686,
+      "unmappedFacts": 3057,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "CGNT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-01-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-01-31",
       "lastPeriodEnd": "2025-01-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -535,11 +557,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-01-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2025-01-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -566,26 +588,25 @@
         }
       },
       "quality": {
-        "HIGH": 52,
+        "HIGH": 54,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 67,
-        "resolvedValues": 67
+        "datableValues": 69,
+        "resolvedValues": 69
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3202,
+        "total": 3200,
         "by_severity": {
           "INFO": 3057,
-          "WARNING": 145
+          "WARNING": 143
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 134,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 3057,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3057
         }
       },
       "latestFiling": {
@@ -596,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7a47b3821ea30e748d50c61011eba7c1195f6862bec05600a30783a5c46dd257",
@@ -612,17 +633,23 @@
       "cik": "0001883814",
       "name": "Southland Holdings, Inc.",
       "sic": "1600",
+      "rawFacts": 5009,
+      "mappedFacts": 1639,
+      "unmappedFacts": 3364,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SLND",
         "SLND-WT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 21,
-      "firstPeriodEnd": "2021-07-13",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 22,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -687,11 +714,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 21,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -718,26 +745,25 @@
         }
       },
       "quality": {
-        "HIGH": 163,
+        "HIGH": 165,
         "MEDIUM": 37
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 200,
-        "resolvedValues": 200
+        "datableValues": 202,
+        "resolvedValues": 202
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3661,
+        "total": 3659,
         "by_severity": {
           "INFO": 3364,
-          "WARNING": 297
+          "WARNING": 295
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 220,
           "RESTATEMENT_CONFLICT": 75,
-          "UNKNOWN_CONCEPT": 3364,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3364
         }
       },
       "latestFiling": {
@@ -748,13 +774,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "835989c0b320e780a23929427d7c655c8ca6797cf2cc98f688580f7516e7ef96",

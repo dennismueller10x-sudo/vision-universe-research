@@ -6,17 +6,31 @@
       "cik": "0001341317",
       "name": "Bridgewater Bancshares Inc",
       "sic": "6022",
+      "rawFacts": 18886,
+      "mappedFacts": 2721,
+      "unmappedFacts": 16173,
+      "calendarYears": 10,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BWB",
         "BWBBP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -81,11 +95,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -112,26 +126,25 @@
         }
       },
       "quality": {
-        "HIGH": 261,
+        "HIGH": 263,
         "MEDIUM": 24
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 285,
-        "resolvedValues": 285
+        "datableValues": 287,
+        "resolvedValues": 287
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16378,
+        "total": 16241,
         "by_severity": {
-          "INFO": 16309,
-          "WARNING": 69
+          "INFO": 16173,
+          "WARNING": 68
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 63,
-          "PERIOD_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 16309,
-          "UNPLACEABLE_PERIOD": 2
+          "PERIOD_MISMATCH": 5,
+          "UNKNOWN_CONCEPT": 16173
         }
       },
       "latestFiling": {
@@ -142,13 +155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d946a5faeb99fae7fb34b68676a6df408afc234763d8f4b629b39f80884c10a5",
@@ -158,6 +171,12 @@
       "cik": "0001840317",
       "name": "VEEA INC.",
       "sic": "7373",
+      "rawFacts": 3900,
+      "mappedFacts": 1373,
+      "unmappedFacts": 2564,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VEEA",
@@ -296,13 +315,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e4e8a3c1309dfd6de2e8fd29f267d4a1815509f4f1d3ea6be24469e8bbaf1ab2",
@@ -312,16 +331,22 @@
       "cik": "0002027317",
       "name": "Curbline Properties Corp.",
       "sic": "6500",
+      "rawFacts": 1718,
+      "mappedFacts": 480,
+      "unmappedFacts": 1210,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CURB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 12,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 13,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -386,11 +411,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -417,23 +442,21 @@
         }
       },
       "quality": {
-        "HIGH": 91
+        "HIGH": 93
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 91,
-        "resolvedValues": 91
+        "datableValues": 93,
+        "resolvedValues": 93
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1211,
+        "total": 1210,
         "by_severity": {
-          "INFO": 1210,
-          "WARNING": 1
+          "INFO": 1210
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 1210,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1210
         }
       },
       "latestFiling": {
@@ -444,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9d0d71a277322f8270c986e384933cfffe8f540e3afae4aee7a6241fa7372812",

@@ -6,17 +6,23 @@
       "cik": "0000102752",
       "name": "VSE CORP",
       "sic": "8711",
+      "rawFacts": 17065,
+      "mappedFacts": 6988,
+      "unmappedFacts": 9990,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VSEC",
         "VSECU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -81,11 +87,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -112,27 +118,26 @@
         }
       },
       "quality": {
-        "HIGH": 604,
+        "HIGH": 606,
         "MEDIUM": 118
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 722,
-        "resolvedValues": 722
+        "datableValues": 724,
+        "resolvedValues": 724
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10981,
+        "total": 10807,
         "by_severity": {
-          "INFO": 10163,
-          "WARNING": 818
+          "INFO": 9990,
+          "WARNING": 817
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 659,
           "NEGATIVE_WHERE_IMPOSSIBLE": 17,
           "RESTATEMENT_CONFLICT": 141,
-          "UNKNOWN_CONCEPT": 10163,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 9990
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f080d358baeebb5196e63c99a91b4438db4a3368f3d9bfc8e17e37cdd0808564",
@@ -159,16 +164,22 @@
       "cik": "0000865752",
       "name": "Monster Beverage Corp",
       "sic": "2086",
+      "rawFacts": 21887,
+      "mappedFacts": 6856,
+      "unmappedFacts": 15431,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MNST"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -233,11 +244,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -264,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 614
+        "HIGH": 616
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 614,
-        "resolvedValues": 614
+        "datableValues": 616,
+        "resolvedValues": 616
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15975,
+        "total": 15973,
         "by_severity": {
           "INFO": 15431,
-          "WARNING": 544
+          "WARNING": 542
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 416,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 123,
-          "UNKNOWN_CONCEPT": 15431,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15431
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f53098daa4b5f1123e9d7514482b1aa8ad2b57257d6e8a0c4e78c836a8e70ded",
@@ -310,6 +320,12 @@
       "cik": "0001052752",
       "name": "GETTY REALTY CORP /MD/",
       "sic": "6500",
+      "rawFacts": 16760,
+      "mappedFacts": 4208,
+      "unmappedFacts": 12460,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GTY"
@@ -425,10 +441,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12737,
+        "total": 12736,
         "by_severity": {
           "INFO": 12460,
-          "WARNING": 277
+          "WARNING": 276
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 166,
@@ -436,8 +452,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 56,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12460,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 12460
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "32634ae80613cf03446a82a21f4246bf7cc256a38433798c62bd414089cbef18",
@@ -464,6 +479,12 @@
       "cik": "0001096752",
       "name": "EDGEWELL PERSONAL CARE Co",
       "sic": "2844",
+      "rawFacts": 25069,
+      "mappedFacts": 7720,
+      "unmappedFacts": 17855,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "EPC"
@@ -579,11 +600,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18579,
+        "total": 18578,
         "by_severity": {
           "INFO": 17855,
           "ERROR": 9,
-          "WARNING": 715
+          "WARNING": 714
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 595,
@@ -592,8 +613,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 110,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 17855,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 17855
         }
       },
       "latestFiling": {
@@ -604,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3ba929bf2561f89ebae0e1589677a75f74134e0ee947834e5dfa54f2d617af8f",
@@ -620,6 +640,12 @@
       "cik": "0001278752",
       "name": "MidCap Financial Investment Corp",
       "sic": null,
+      "rawFacts": 4853,
+      "mappedFacts": 773,
+      "unmappedFacts": 4026,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MFIC",
@@ -756,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "19629026617218dc439f31d0ee835d94aa7ac25a5f8db0968199ed4753e60106",
@@ -772,6 +798,12 @@
       "cik": "0001649752",
       "name": "Nouveau Monde Graphite Inc.",
       "sic": "1090",
+      "rawFacts": 1359,
+      "mappedFacts": 350,
+      "unmappedFacts": 1107,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NMG"
@@ -905,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "44686069ede527264a2d1ff935d2b20b42f6cceb8e19537947cadfae9e74051d",

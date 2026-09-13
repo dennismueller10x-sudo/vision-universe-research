@@ -6,16 +6,22 @@
       "cik": "0000017843",
       "name": "CARPENTER TECHNOLOGY CORP",
       "sic": "3312",
+      "rawFacts": 24777,
+      "mappedFacts": 7949,
+      "unmappedFacts": 17346,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "CRS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2009-06-30",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2008-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2009-06-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 706,
+        "HIGH": 708,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 729,
-        "resolvedValues": 729
+        "datableValues": 731,
+        "resolvedValues": 731
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17730,
+        "total": 17727,
         "by_severity": {
           "INFO": 17346,
           "ERROR": 4,
-          "WARNING": 380
+          "WARNING": 377
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 357,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 17346,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 17346
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "02ab073fb1cafd36531e51386319efb88714d8e68a20c641e0c7261998824fb2",
@@ -159,16 +164,22 @@
       "cik": "0001107843",
       "name": "QUALYS, INC.",
       "sic": "7372",
+      "rawFacts": 22689,
+      "mappedFacts": 6549,
+      "unmappedFacts": 16443,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "QLYS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 63,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 64,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 58,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -264,27 +275,26 @@
         }
       },
       "quality": {
-        "HIGH": 522,
+        "HIGH": 524,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 530,
-        "resolvedValues": 530
+        "datableValues": 532,
+        "resolvedValues": 532
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16728,
+        "total": 16726,
         "by_severity": {
           "INFO": 16443,
-          "WARNING": 285
+          "WARNING": 283
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 246,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 16443,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16443
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "79ec7a3316ae61a7e9bdb27d77ef42792d304bb97ca003945c00ffa346b9bf87",
@@ -311,16 +321,22 @@
       "cik": "0001705843",
       "name": "Cibus, Inc.",
       "sic": "2870",
+      "rawFacts": 10469,
+      "mappedFacts": 3497,
+      "unmappedFacts": 7084,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CBUS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 42,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 43,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -385,11 +401,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -416,28 +432,27 @@
         }
       },
       "quality": {
-        "HIGH": 356,
+        "HIGH": 358,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 377,
-        "resolvedValues": 377
+        "datableValues": 379,
+        "resolvedValues": 379
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7322,
+        "total": 7316,
         "by_severity": {
-          "INFO": 7088,
+          "INFO": 7084,
           "ERROR": 3,
-          "WARNING": 231
+          "WARNING": 229
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 181,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 48,
-          "UNKNOWN_CONCEPT": 7088,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7084
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cada9c04ae90a5fd5fb359c8c0d5c3b9c48247a8d52c16eb0b9fc916fee3e45a",
@@ -464,6 +479,12 @@
       "cik": "0001864843",
       "name": "BlackRock ESG Capital Allocation Term Trust",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ECAT"
@@ -583,13 +604,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d8e216337c2976ce5935e2edd0e7527e138183f258ec636a6bd40faa81137d54",

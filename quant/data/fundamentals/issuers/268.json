@@ -6,6 +6,12 @@
       "cik": "0000748268",
       "name": "Red Cat Holdings, Inc.",
       "sic": "7372",
+      "rawFacts": 11143,
+      "mappedFacts": 4085,
+      "unmappedFacts": 7342,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RCAT"
@@ -121,20 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7850,
+        "total": 7831,
         "by_severity": {
-          "INFO": 7366,
+          "INFO": 7342,
           "ERROR": 4,
-          "WARNING": 480
+          "WARNING": 485
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 210,
-          "FISCAL_PERIOD_CONFLICT": 8,
+          "CONCEPT_DISAGREEMENT": 211,
+          "FISCAL_PERIOD_CONFLICT": 9,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 234,
+          "RESTATEMENT_CONFLICT": 238,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 7366,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 7342
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5bd03770794dae9fd930dac08bedc858954930ae53cc2c9aa19b56779762c093",
@@ -161,16 +166,22 @@
       "cik": "0001048268",
       "name": "IES Holdings, Inc.",
       "sic": "1731",
+      "rawFacts": 23060,
+      "mappedFacts": 7475,
+      "unmappedFacts": 15684,
+      "calendarYears": 20,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "IESC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2009-09-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2008-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -235,11 +246,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-09-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -266,29 +277,28 @@
         }
       },
       "quality": {
-        "HIGH": 583,
+        "HIGH": 585,
         "MEDIUM": 82
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 665,
-        "resolvedValues": 665
+        "datableValues": 667,
+        "resolvedValues": 667
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16640,
+        "total": 16636,
         "by_severity": {
           "ERROR": 28,
           "INFO": 15684,
-          "WARNING": 928
+          "WARNING": 924
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 674,
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 28,
           "RESTATEMENT_CONFLICT": 245,
-          "UNKNOWN_CONCEPT": 15684,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 15684
         }
       },
       "latestFiling": {
@@ -299,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e7151ab2ae12ee67eb43fd27070afd38e5d44468b4a31019bc90a04b622cd929",
@@ -315,6 +325,12 @@
       "cik": "0001679268",
       "name": "MAMMOTH ENERGY SERVICES, INC.",
       "sic": "1389",
+      "rawFacts": 15930,
+      "mappedFacts": 4482,
+      "unmappedFacts": 11635,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TUSK"
@@ -430,11 +446,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11951,
+        "total": 11950,
         "by_severity": {
           "INFO": 11635,
           "ERROR": 1,
-          "WARNING": 315
+          "WARNING": 314
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 215,
@@ -442,8 +458,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 90,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 11635,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 11635
         }
       },
       "latestFiling": {
@@ -454,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9ad6201adcb2d42b35b3fe1888ca4a5d571bf1b1dfda1b2e27abcae1704808c0",

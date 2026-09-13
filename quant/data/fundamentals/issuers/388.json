@@ -6,14 +6,20 @@
       "cik": "0000091388",
       "name": "SMITHFIELD FOODS INC",
       "sic": "2011",
+      "rawFacts": 8878,
+      "mappedFacts": 2702,
+      "unmappedFacts": 6254,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0103",
       "tickers": [
         "SFD"
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 44,
-      "firstPeriodEnd": "2009-05-03",
+      "quarterlyPeriods": 45,
+      "firstPeriodEnd": "2008-04-27",
       "lastPeriodEnd": "2026-06-28",
       "historyYears": 16.58,
       "metrics": {
@@ -81,7 +87,7 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2009-05-03",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 16.58
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 308,
+        "HIGH": 309,
         "MEDIUM": 37
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 345,
-        "resolvedValues": 345
+        "datableValues": 346,
+        "resolvedValues": 346
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6476,
+        "total": 6474,
         "by_severity": {
           "INFO": 6254,
           "ERROR": 6,
-          "WARNING": 216
+          "WARNING": 214
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 145,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 65,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 6254,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6254
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4bc97cb037772cc5ddc99591c77c5d6028a52e22160843a2505df1f6342556e4",
@@ -160,16 +165,22 @@
       "cik": "0001334388",
       "name": "OBSIDIAN ENERGY LTD.",
       "sic": "1311",
+      "rawFacts": 2332,
+      "mappedFacts": 686,
+      "unmappedFacts": 1842,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OBE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -265,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 128,
+        "HIGH": 130,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 130,
-        "resolvedValues": 130
+        "datableValues": 132,
+        "resolvedValues": 132
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1853,
+        "total": 1851,
         "by_severity": {
           "INFO": 1842,
-          "WARNING": 11
+          "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 1842,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1842
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ea9b099f2ecd08c690db6e01b73dc2ae56ce8b2f2122360ba619d1f178b33d7a",
@@ -311,16 +321,22 @@
       "cik": "0001402388",
       "name": "WEST FRASER TIMBER CO., LTD",
       "sic": "2421",
+      "rawFacts": 1601,
+      "mappedFacts": 370,
+      "unmappedFacts": 1328,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WFG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2020-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -350,11 +366,11 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "net_income": {
           "annualPeriods": 6,
@@ -385,25 +401,25 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_debt": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0,
+          "historyYears": 6.0,
           "derivedFrom": [
             [
               "total_debt"
@@ -416,24 +432,23 @@
         }
       },
       "quality": {
-        "HIGH": 78
+        "HIGH": 86
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 78,
-        "resolvedValues": 78
+        "datableValues": 86,
+        "resolvedValues": 86
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1348,
+        "total": 1337,
         "by_severity": {
           "INFO": 1328,
-          "WARNING": 20
+          "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 9,
-          "UNKNOWN_CONCEPT": 1328,
-          "UNPLACEABLE_PERIOD": 11
+          "UNKNOWN_CONCEPT": 1328
         }
       },
       "latestFiling": {
@@ -444,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8417e768046df28170c453d4acc417316b4224660e3ae517bb7c0998c58c8cfb",
@@ -460,16 +475,22 @@
       "cik": "0001731388",
       "name": "EuroDry Ltd.",
       "sic": "4400",
+      "rawFacts": 2370,
+      "mappedFacts": 762,
+      "unmappedFacts": 1722,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EDRY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -534,11 +555,11 @@
           "historyYears": 8.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -565,25 +586,24 @@
         }
       },
       "quality": {
-        "HIGH": 98,
+        "HIGH": 100,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 111,
-        "resolvedValues": 111
+        "datableValues": 113,
+        "resolvedValues": 113
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1769,
+        "total": 1768,
         "by_severity": {
           "INFO": 1722,
-          "WARNING": 47
+          "WARNING": 46
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 46,
-          "UNKNOWN_CONCEPT": 1722,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 1722
         }
       },
       "latestFiling": {
@@ -594,13 +614,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6d5bf5cce4807e6740083c480d76c4107fe2dbe83647da7a7f4999187bcf4aaa",
@@ -610,6 +630,12 @@
       "cik": "0002057388",
       "name": "Franklin Solana Trust",
       "sic": "6221",
+      "rawFacts": 220,
+      "mappedFacts": 38,
+      "unmappedFacts": 177,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "SOEZ"
@@ -743,13 +769,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "115baeef2438a2b5f467cf52f96e62dd385df24e10d726aeeae55816132fa3b4",

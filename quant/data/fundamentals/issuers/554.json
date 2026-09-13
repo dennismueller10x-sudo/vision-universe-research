@@ -6,16 +6,22 @@
       "cik": "0001082554",
       "name": "UNITED THERAPEUTICS Corp",
       "sic": "2834",
+      "rawFacts": 20782,
+      "mappedFacts": 6928,
+      "unmappedFacts": 14152,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "UTHR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 591,
+        "HIGH": 593,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 601,
-        "resolvedValues": 601
+        "datableValues": 603,
+        "resolvedValues": 603
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14505,
+        "total": 14503,
         "by_severity": {
           "INFO": 14152,
-          "WARNING": 353
+          "WARNING": 351
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 347,
           "RESTATEMENT_CONFLICT": 3,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 14152,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14152
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5d7fe157534b26e47c1fa4a6a5b64cc4788b9c53b7495329da5ed83e65b09d1b",
@@ -158,16 +163,22 @@
       "cik": "0001084554",
       "name": "LIGHTBRIDGE Corp",
       "sic": "2810",
+      "rawFacts": 11930,
+      "mappedFacts": 4738,
+      "unmappedFacts": 7375,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LTBR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 427,
+        "HIGH": 429,
         "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 444,
-        "resolvedValues": 444
+        "datableValues": 446,
+        "resolvedValues": 446
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7749,
+        "total": 7612,
         "by_severity": {
-          "INFO": 7508,
-          "WARNING": 241
+          "INFO": 7375,
+          "WARNING": 237
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 168,
           "RESTATEMENT_CONFLICT": 68,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 7508,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 7375
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "878dc846d80b54e0aeddee38d6b0061b7cfbc3d0d1e4900d284682f59b7fb254",
@@ -310,17 +320,23 @@
       "cik": "0001419554",
       "name": "Bone Biologics Corp",
       "sic": "3842",
+      "rawFacts": 8925,
+      "mappedFacts": 3526,
+      "unmappedFacts": 5601,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BBLG",
         "BBLGW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-10-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-10-17",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.17,
+      "historyYears": 18.17,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -385,11 +401,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2008-10-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2007-10-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.17
+          "historyYears": 18.17
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -416,29 +432,28 @@
         }
       },
       "quality": {
-        "HIGH": 346,
-        "MEDIUM": 4
+        "HIGH": 347,
+        "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 350,
-        "resolvedValues": 350
+        "datableValues": 352,
+        "resolvedValues": 352
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5977,
+        "total": 5956,
         "by_severity": {
-          "INFO": 5609,
-          "WARNING": 368
+          "INFO": 5601,
+          "WARNING": 355
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 36,
+          "CONCEPT_DISAGREEMENT": 38,
           "FISCAL_PERIOD_CONFLICT": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 11,
-          "RESTATEMENT_CONFLICT": 188,
+          "RESTATEMENT_CONFLICT": 189,
           "UNEXPECTED_DURATION": 113,
-          "UNKNOWN_CONCEPT": 5609,
-          "UNPLACEABLE_PERIOD": 16
+          "UNKNOWN_CONCEPT": 5601
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "09c50fbd80b661a0a6d675a2c9e4f994f89bedaaa0f17c40eba52280fe608012",
@@ -465,16 +480,22 @@
       "cik": "0001582554",
       "name": "Matinas BioPharma Holdings, Inc.",
       "sic": "2834",
+      "rawFacts": 11844,
+      "mappedFacts": 3559,
+      "unmappedFacts": 8422,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MTNB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 54,
-      "firstPeriodEnd": "2013-03-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 55,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -539,11 +560,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 51,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -570,29 +591,28 @@
         }
       },
       "quality": {
-        "HIGH": 346,
+        "HIGH": 348,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 376,
-        "resolvedValues": 376
+        "datableValues": 378,
+        "resolvedValues": 378
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8729,
+        "total": 8722,
         "by_severity": {
           "INFO": 8422,
           "ERROR": 3,
-          "WARNING": 304
+          "WARNING": 297
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 233,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 55,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 8422,
-          "UNPLACEABLE_PERIOD": 7
+          "UNKNOWN_CONCEPT": 8422
         }
       },
       "latestFiling": {
@@ -603,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "72b445deeecd23c57e401ded3595f3d98e45c3b6cf76d5076b350d0250143139",

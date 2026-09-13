@@ -6,6 +6,12 @@
       "cik": "0000056047",
       "name": "KIRBY CORP",
       "sic": "4400",
+      "rawFacts": 24068,
+      "mappedFacts": 7130,
+      "unmappedFacts": 16946,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KEX"
@@ -121,19 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17392,
+        "total": 17391,
         "by_severity": {
           "INFO": 16946,
           "ERROR": 6,
-          "WARNING": 440
+          "WARNING": 439
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 380,
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 16946,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 16946
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c4295eb62c6263a7a1edf95cff4c46bc8daeeac0d4f626592f2749246401aa51",
@@ -160,16 +165,22 @@
       "cik": "0001002047",
       "name": "NetApp, Inc.",
       "sic": "3572",
+      "rawFacts": 28617,
+      "mappedFacts": 7938,
+      "unmappedFacts": 20920,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0424",
       "tickers": [
         "NTAP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2009-04-24",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2008-04-25",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -234,11 +245,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2009-04-24",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-04-25",
           "lastAvailablePeriod": "2026-04-24",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -265,29 +276,28 @@
         }
       },
       "quality": {
-        "HIGH": 669,
+        "HIGH": 671,
         "MEDIUM": 63
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 732,
-        "resolvedValues": 732
+        "datableValues": 734,
+        "resolvedValues": 734
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21521,
+        "total": 21519,
         "by_severity": {
           "INFO": 20920,
           "ERROR": 5,
-          "WARNING": 596
+          "WARNING": 594
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 511,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 47,
-          "UNKNOWN_CONCEPT": 20920,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20920
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "789db9ee953019dd01729a7322dcbabf1e6956ad4def459551b5e6256458a1bb",
@@ -314,6 +324,12 @@
       "cik": "0001551047",
       "name": "Bluerock Private Real Estate Fund",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "BPRE"
@@ -433,13 +449,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "da3d4203b89447be186b5d3c24e3fefcdd214897c88cfa3bd1d931602aaa77ea",
@@ -449,6 +465,12 @@
       "cik": "0001676047",
       "name": "NutriBand Inc.",
       "sic": "3842",
+      "rawFacts": 8459,
+      "mappedFacts": 3224,
+      "unmappedFacts": 5290,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "NTRB",
@@ -588,13 +610,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "35729b13384233941a70c08664ca5a01d3dd82498ba00c907307467f89b3ab79",
@@ -604,6 +626,12 @@
       "cik": "0001857047",
       "name": "MDA Space Ltd.",
       "sic": "3760",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MDA"
@@ -723,13 +751,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7fbcfeda4a60e4b3fb795807ed54341ddf41c019dd73f9050b2bb8905ae74039",

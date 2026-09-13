@@ -6,6 +6,12 @@
       "cik": "0000067887",
       "name": "MOOG INC.",
       "sic": "3590",
+      "rawFacts": 27251,
+      "mappedFacts": 7688,
+      "unmappedFacts": 20275,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1003",
       "tickers": [
         "MOG-A",
@@ -122,17 +128,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20549,
+        "total": 20548,
         "by_severity": {
           "INFO": 20275,
-          "WARNING": 274
+          "WARNING": 273
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 222,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 20275,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 20275
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "212d4c38fd3baba24d617d1ebb6026bb9739e07a19fc1fec687827bc1e24602b",
@@ -159,16 +164,22 @@
       "cik": "0000884887",
       "name": "ROYAL CARIBBEAN CRUISES LTD",
       "sic": "4400",
+      "rawFacts": 22154,
+      "mappedFacts": 6818,
+      "unmappedFacts": 15761,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RCL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -233,11 +244,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -264,29 +275,28 @@
         }
       },
       "quality": {
-        "HIGH": 658,
+        "HIGH": 660,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 679,
-        "resolvedValues": 679
+        "datableValues": 681,
+        "resolvedValues": 681
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16300,
+        "total": 16255,
         "by_severity": {
-          "INFO": 15813,
-          "WARNING": 487
+          "INFO": 15761,
+          "WARNING": 494
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 352,
+          "CONCEPT_DISAGREEMENT": 356,
           "EXTREME_VALUE": 3,
-          "FISCAL_PERIOD_CONFLICT": 11,
+          "FISCAL_PERIOD_CONFLICT": 12,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 15813,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 120,
+          "UNKNOWN_CONCEPT": 15761
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "deaac04f2c7302b7673cb7e870e298eb952232c23be147caa6ddd4c97ba56fc2",
@@ -313,16 +323,22 @@
       "cik": "0001807887",
       "name": "Laser Photonics Corp",
       "sic": "3690",
+      "rawFacts": 6862,
+      "mappedFacts": 2850,
+      "unmappedFacts": 3880,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LASE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 24,
-      "firstPeriodEnd": "2019-06-30",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 25,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -387,11 +403,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -418,29 +434,28 @@
         }
       },
       "quality": {
-        "HIGH": 163,
+        "HIGH": 165,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 178,
-        "resolvedValues": 178
+        "datableValues": 180,
+        "resolvedValues": 180
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4431,
+        "total": 4428,
         "by_severity": {
           "ERROR": 2,
           "INFO": 3880,
-          "WARNING": 549
+          "WARNING": 546
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 307,
           "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 236,
-          "UNKNOWN_CONCEPT": 3880,
-          "UNPLACEABLE_PERIOD": 5
+          "RESTATEMENT_CONFLICT": 238,
+          "UNKNOWN_CONCEPT": 3880
         }
       },
       "latestFiling": {
@@ -451,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "95b77ef98b4f4df918182f831cfe60471f3164a80edb76e7a9d1ba17ee886224",
@@ -467,16 +482,22 @@
       "cik": "0001979887",
       "name": "XCHG Ltd",
       "sic": "3690",
+      "rawFacts": 735,
+      "mappedFacts": 194,
+      "unmappedFacts": 559,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XCH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -541,11 +562,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -572,25 +593,24 @@
         }
       },
       "quality": {
-        "HIGH": 29,
+        "HIGH": 31,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 33,
-        "resolvedValues": 33
+        "datableValues": 35,
+        "resolvedValues": 35
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 571,
+        "total": 570,
         "by_severity": {
           "INFO": 559,
-          "WARNING": 12
+          "WARNING": 11
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
-          "UNKNOWN_CONCEPT": 559,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 559
         }
       },
       "latestFiling": {
@@ -601,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8a6270aa943b966cacb3afb2ed69a7614b883084dbc231692ca32639edf340e8",
@@ -617,6 +637,12 @@
       "cik": "0002070887",
       "name": "Crown Reserve Acquisition Corp. I",
       "sic": "6770",
+      "rawFacts": 232,
+      "mappedFacts": 78,
+      "unmappedFacts": 135,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CRAC",
@@ -625,10 +651,10 @@
         "CRACW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2025-04-28",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -640,7 +666,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -667,14 +693,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -694,17 +720,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -724,23 +750,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 20
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 20,
+        "resolvedValues": 20
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 232,
+        "total": 160,
         "by_severity": {
           "INFO": 135,
-          "WARNING": 97
+          "WARNING": 25
         },
         "by_code": {
           "UNEXPECTED_DURATION": 25,
-          "UNKNOWN_CONCEPT": 135,
-          "UNPLACEABLE_PERIOD": 72
+          "UNKNOWN_CONCEPT": 135
         }
       },
       "latestFiling": {
@@ -751,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8fd69418b6e391b86e795f4125f429501c42adfb4e8e6b1d5a1d092e81605383",

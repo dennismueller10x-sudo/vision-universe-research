@@ -6,17 +6,23 @@
       "cik": "0000806968",
       "name": "WPP plc",
       "sic": "7311",
+      "rawFacts": 5738,
+      "mappedFacts": 808,
+      "unmappedFacts": 5041,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WPP",
         "WPPGF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -81,11 +87,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 0,
@@ -112,26 +118,25 @@
         }
       },
       "quality": {
-        "HIGH": 102,
+        "HIGH": 104,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 117,
-        "resolvedValues": 117
+        "datableValues": 119,
+        "resolvedValues": 119
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5187,
+        "total": 5186,
         "by_severity": {
           "INFO": 5041,
-          "WARNING": 146
+          "WARNING": 145
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 106,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 5041,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5041
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a86b6d2d129a52f5b503439233b1d7e5345f5b9b7817660421f0ec7c9f32b14a",
@@ -158,16 +163,22 @@
       "cik": "0000851968",
       "name": "MOHAWK INDUSTRIES INC",
       "sic": "2273",
+      "rawFacts": 24852,
+      "mappedFacts": 7753,
+      "unmappedFacts": 17621,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MHK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 73,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-07-04",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -232,11 +243,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -263,21 +274,21 @@
         }
       },
       "quality": {
-        "HIGH": 752,
+        "HIGH": 754,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 767,
-        "resolvedValues": 767
+        "datableValues": 769,
+        "resolvedValues": 769
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17972,
+        "total": 17970,
         "by_severity": {
           "INFO": 17621,
           "ERROR": 1,
-          "WARNING": 350
+          "WARNING": 348
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 260,
@@ -286,8 +297,7 @@
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 20,
           "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 17621,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17621
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1b48022905491de7fe8d031cff406ac770ea2b86af7b3676fbba51a09c51f347",
@@ -314,16 +324,22 @@
       "cik": "0001841968",
       "name": "Ridgepost Capital, Inc.",
       "sic": "6282",
+      "rawFacts": 7260,
+      "mappedFacts": 1955,
+      "unmappedFacts": 5299,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RPC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -388,11 +404,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 27,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -419,26 +435,25 @@
         }
       },
       "quality": {
-        "HIGH": 222,
+        "HIGH": 224,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 243,
-        "resolvedValues": 243
+        "datableValues": 245,
+        "resolvedValues": 245
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5620,
+        "total": 5618,
         "by_severity": {
           "INFO": 5299,
-          "WARNING": 321
+          "WARNING": 319
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 288,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 5299,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5299
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a58c4c152b4907c819d196f3fe258be20a273b6580e2242498a8374bfd4bac40",

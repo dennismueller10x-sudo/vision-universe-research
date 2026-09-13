@@ -6,16 +6,22 @@
       "cik": "0000075252",
       "name": "ACCENDRA HEALTH INC/VA/",
       "sic": "5047",
+      "rawFacts": 22340,
+      "mappedFacts": 6819,
+      "unmappedFacts": 15764,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ACH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 531,
+        "HIGH": 533,
         "MEDIUM": 121
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 652,
-        "resolvedValues": 652
+        "datableValues": 654,
+        "resolvedValues": 654
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16311,
+        "total": 16309,
         "by_severity": {
           "INFO": 15764,
           "ERROR": 1,
-          "WARNING": 546
+          "WARNING": 544
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 413,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 131,
-          "UNKNOWN_CONCEPT": 15764,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15764
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "84c431964dc82c1d669f1a007f07e4aa1376c2c38566c51d66130f28ef2f1908",
@@ -159,6 +164,12 @@
       "cik": "0001874252",
       "name": "Quantum Cyber N.V.",
       "sic": "2834",
+      "rawFacts": 1965,
+      "mappedFacts": 542,
+      "unmappedFacts": 1482,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "QUCY"
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "24baac382bdeb8743a9b53c5b087511a74489bb820c763e789596e252372866a",

@@ -6,6 +6,12 @@
       "cik": "0000746598",
       "name": "BRADY CORP",
       "sic": "3990",
+      "rawFacts": 23302,
+      "mappedFacts": 7010,
+      "unmappedFacts": 17044,
+      "calendarYears": 21,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0731",
       "tickers": [
         "BRC"
@@ -144,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bde237ca6f2513818e50b8e1339b01eafb15a596a9943add665411c2582a5450",
@@ -160,16 +166,22 @@
       "cik": "0001130598",
       "name": "Traws Pharma, Inc.",
       "sic": "2834",
+      "rawFacts": 10677,
+      "mappedFacts": 3703,
+      "unmappedFacts": 7049,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TRAW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 59,
-      "firstPeriodEnd": "2011-12-31",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 60,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -234,11 +246,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 57,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -265,26 +277,25 @@
         }
       },
       "quality": {
-        "HIGH": 373,
+        "HIGH": 375,
         "MEDIUM": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 409,
-        "resolvedValues": 409
+        "datableValues": 411,
+        "resolvedValues": 411
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7276,
+        "total": 7273,
         "by_severity": {
-          "INFO": 7050,
-          "WARNING": 226
+          "INFO": 7049,
+          "WARNING": 224
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 160,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 7050,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7049
         }
       },
       "latestFiling": {
@@ -295,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "acf84179cfc46e05b0c5ded73d3ccb73a371796ab750a01f271a7a8c368776b1",

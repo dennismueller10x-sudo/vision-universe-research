@@ -6,16 +6,22 @@
       "cik": "0000045919",
       "name": "HARTE HANKS INC",
       "sic": "7331",
+      "rawFacts": 21678,
+      "mappedFacts": 6496,
+      "unmappedFacts": 15276,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HHS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 587,
+        "HIGH": 589,
         "MEDIUM": 85
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 672,
-        "resolvedValues": 672
+        "datableValues": 674,
+        "resolvedValues": 674
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16187,
+        "total": 16066,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 15396,
-          "WARNING": 788
+          "INFO": 15276,
+          "WARNING": 787
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 615,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 171,
-          "UNKNOWN_CONCEPT": 15396,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 172,
+          "UNKNOWN_CONCEPT": 15276
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "69da052230832c145c5484d20c2e2182c2268f153e235ace0a43bddbdb50b424",
@@ -159,6 +164,12 @@
       "cik": "0001328919",
       "name": "StealthGas Inc.",
       "sic": "4412",
+      "rawFacts": 5384,
+      "mappedFacts": 1605,
+      "unmappedFacts": 3937,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GASS"
@@ -294,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a8d10ab739f4f6ebde588c852cc869e757b4382b573175a9945cd1545d95743d",
@@ -310,6 +321,12 @@
       "cik": "0002094919",
       "name": "Tribeca Strategic Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 107,
+      "mappedFacts": 30,
+      "unmappedFacts": 79,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BID",
@@ -442,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f192719607775a1e6a9f58360776709fd3776d034a7fc1bf339fbe852fa81bad",

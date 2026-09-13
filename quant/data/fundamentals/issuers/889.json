@@ -6,6 +6,12 @@
       "cik": "0000104889",
       "name": "Graham Holdings Co",
       "sic": "8200",
+      "rawFacts": 34777,
+      "mappedFacts": 7805,
+      "unmappedFacts": 26400,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GHC"
@@ -121,19 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27888,
+        "total": 27671,
         "by_severity": {
-          "INFO": 26630,
+          "INFO": 26400,
           "ERROR": 1,
-          "WARNING": 1257
+          "WARNING": 1270
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 994,
-          "FISCAL_PERIOD_CONFLICT": 12,
+          "CONCEPT_DISAGREEMENT": 1005,
+          "FISCAL_PERIOD_CONFLICT": 13,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 250,
-          "UNKNOWN_CONCEPT": 26630,
-          "UNPLACEABLE_PERIOD": 1
+          "RESTATEMENT_CONFLICT": 252,
+          "UNKNOWN_CONCEPT": 26400
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1027586bfca382d88bcbbef4964b3d664bbe7427d544213e6b111739dd5e9297",

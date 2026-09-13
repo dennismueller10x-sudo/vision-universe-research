@@ -6,16 +6,22 @@
       "cik": "0000351998",
       "name": "DATA I/O CORP",
       "sic": "3825",
+      "rawFacts": 15048,
+      "mappedFacts": 5466,
+      "unmappedFacts": 9927,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1211",
       "tickers": [
         "DAIO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 557,
+        "HIGH": 559,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 559,
-        "resolvedValues": 559
+        "datableValues": 561,
+        "resolvedValues": 561
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10125,
+        "total": 10119,
         "by_severity": {
-          "INFO": 9929,
-          "WARNING": 196
+          "INFO": 9927,
+          "WARNING": 192
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 75,
           "NEGATIVE_WHERE_IMPOSSIBLE": 30,
           "RESTATEMENT_CONFLICT": 87,
-          "UNKNOWN_CONCEPT": 9929,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 9927
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9b450214715572ac41ba7e9fa4da65365dd7b1696e2f3ee766289b2a5287a2c7",
@@ -158,16 +163,22 @@
       "cik": "0001533998",
       "name": "DarioHealth Corp.",
       "sic": "3841",
+      "rawFacts": 12622,
+      "mappedFacts": 4563,
+      "unmappedFacts": 8264,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DRIO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 58,
-      "firstPeriodEnd": "2012-03-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 60,
+      "firstPeriodEnd": "2011-08-10",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -232,11 +243,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 55,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -263,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 472,
+        "HIGH": 475,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 495,
-        "resolvedValues": 495
+        "datableValues": 498,
+        "resolvedValues": 498
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8621,
+        "total": 8602,
         "by_severity": {
           "INFO": 8264,
-          "WARNING": 357
+          "WARNING": 338
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 175,
           "RESTATEMENT_CONFLICT": 106,
           "UNEXPECTED_DURATION": 57,
-          "UNKNOWN_CONCEPT": 8264,
-          "UNPLACEABLE_PERIOD": 19
+          "UNKNOWN_CONCEPT": 8264
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "529cc6d23a8897441885b310240ceee539ce2626b9f4238b9363770f8b40f455",
@@ -310,17 +320,23 @@
       "cik": "0001661998",
       "name": "Q32 Bio Inc.",
       "sic": "2834",
+      "rawFacts": 8885,
+      "mappedFacts": 2552,
+      "unmappedFacts": 6367,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "QTTB",
         "FIXX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 38,
-      "firstPeriodEnd": "2017-03-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 39,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -385,11 +401,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 35,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -416,20 +432,20 @@
         }
       },
       "quality": {
-        "HIGH": 282,
+        "HIGH": 284,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 288,
-        "resolvedValues": 288
+        "datableValues": 290,
+        "resolvedValues": 290
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6626,
+        "total": 6601,
         "by_severity": {
-          "INFO": 6387,
-          "WARNING": 239
+          "INFO": 6367,
+          "WARNING": 234
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 98,
@@ -437,8 +453,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 133,
-          "UNKNOWN_CONCEPT": 6387,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 6367
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9b1eada462b26ddf94daaf526541172808a2f2f23b0b7cf3627b76b6a766cd6a",
@@ -465,16 +480,22 @@
       "cik": "0001733998",
       "name": "Northwest Natural Holding Co",
       "sic": "4924",
+      "rawFacts": 13935,
+      "mappedFacts": 2943,
+      "unmappedFacts": 10683,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NWN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -539,11 +560,11 @@
           "historyYears": 8.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 36,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -570,26 +591,25 @@
         }
       },
       "quality": {
-        "HIGH": 279,
+        "HIGH": 281,
         "MEDIUM": 127
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 406,
-        "resolvedValues": 406
+        "datableValues": 408,
+        "resolvedValues": 408
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11199,
+        "total": 11197,
         "by_severity": {
           "INFO": 10683,
-          "WARNING": 516
+          "WARNING": 514
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 495,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 10683,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10683
         }
       },
       "latestFiling": {
@@ -600,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3f2b46119512c43fdeb7cf3848a06a4639c35f26f25e1a3bccb94f731c4aa19d",

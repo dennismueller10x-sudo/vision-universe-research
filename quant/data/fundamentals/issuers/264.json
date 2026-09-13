@@ -6,16 +6,22 @@
       "cik": "0000038264",
       "name": "Forward Industries, Inc.",
       "sic": "6199",
+      "rawFacts": 14851,
+      "mappedFacts": 5591,
+      "unmappedFacts": 9573,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "FWDI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-09-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 511,
+        "HIGH": 513,
         "MEDIUM": 46
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 557,
-        "resolvedValues": 557
+        "datableValues": 559,
+        "resolvedValues": 559
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9929,
+        "total": 9916,
         "by_severity": {
-          "INFO": 9583,
-          "WARNING": 346
+          "INFO": 9573,
+          "WARNING": 343
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 210,
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
           "RESTATEMENT_CONFLICT": 125,
-          "UNKNOWN_CONCEPT": 9583,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 9573
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cdc12562e42b5777063aab186832b9125414492d23d8598d2595d5475fba5b0e",
@@ -158,16 +163,22 @@
       "cik": "0000896264",
       "name": "USANA HEALTH SCIENCES INC",
       "sic": "2833",
+      "rawFacts": 17493,
+      "mappedFacts": 5957,
+      "unmappedFacts": 11436,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0103",
       "tickers": [
         "USNA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 59,
-      "firstPeriodEnd": "2010-01-02",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 60,
+      "firstPeriodEnd": "2009-01-03",
       "lastPeriodEnd": "2026-07-04",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 59,
-          "firstAvailablePeriod": "2010-01-02",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-01-03",
           "lastAvailablePeriod": "2026-01-03",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -263,27 +274,26 @@
         }
       },
       "quality": {
-        "HIGH": 503,
+        "HIGH": 505,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 510,
-        "resolvedValues": 510
+        "datableValues": 512,
+        "resolvedValues": 512
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12189,
+        "total": 12187,
         "by_severity": {
           "INFO": 11436,
-          "WARNING": 753
+          "WARNING": 751
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 543,
           "RESTATEMENT_CONFLICT": 207,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11436,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11436
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b43d2a6a07bd48f52aea1e3ef772b66f090b52a532545155a8e57b40f3ace13d",
@@ -310,16 +320,22 @@
       "cik": "0001206264",
       "name": "SOMNIGROUP INTERNATIONAL INC.",
       "sic": "2510",
+      "rawFacts": 23598,
+      "mappedFacts": 7201,
+      "unmappedFacts": 16479,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SGI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -384,11 +400,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -415,27 +431,26 @@
         }
       },
       "quality": {
-        "HIGH": 635,
+        "HIGH": 637,
         "MEDIUM": 62
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 697,
-        "resolvedValues": 697
+        "datableValues": 699,
+        "resolvedValues": 699
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17083,
+        "total": 17081,
         "by_severity": {
           "INFO": 16479,
-          "WARNING": 604
+          "WARNING": 602
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 467,
           "NEGATIVE_WHERE_IMPOSSIBLE": 9,
           "RESTATEMENT_CONFLICT": 126,
-          "UNKNOWN_CONCEPT": 16479,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16479
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3ebcb78e414b5671e5d5d75517c6adf307170f97f2ec163157c54eecadc65993",
@@ -462,16 +477,22 @@
       "cik": "0001567264",
       "name": "INTENSITY THERAPEUTICS, INC.",
       "sic": "2836",
+      "rawFacts": 2959,
+      "mappedFacts": 980,
+      "unmappedFacts": 1987,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "INTS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2022-03-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 19,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -536,11 +557,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -567,25 +588,24 @@
         }
       },
       "quality": {
-        "HIGH": 102
+        "HIGH": 104
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 102,
-        "resolvedValues": 102
+        "datableValues": 104,
+        "resolvedValues": 104
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2070,
+        "total": 2062,
         "by_severity": {
           "INFO": 1987,
-          "WARNING": 83
+          "WARNING": 75
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 51,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 1987,
-          "UNPLACEABLE_PERIOD": 8
+          "UNKNOWN_CONCEPT": 1987
         }
       },
       "latestFiling": {
@@ -596,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e68d941ea2cd420702542f2de0abee87c1d5bb826e3dd8c4c2aef319dbb197f0",
@@ -612,6 +632,12 @@
       "cik": "0001750264",
       "name": "Maase Inc.",
       "sic": "6282",
+      "rawFacts": 3295,
+      "mappedFacts": 661,
+      "unmappedFacts": 2533,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "MAAS"
@@ -727,15 +753,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2783,
+        "total": 2781,
         "by_severity": {
-          "INFO": 2536,
-          "WARNING": 247
+          "INFO": 2533,
+          "WARNING": 248
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 215,
-          "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 2536
+          "RESTATEMENT_CONFLICT": 33,
+          "UNKNOWN_CONCEPT": 2533
         }
       },
       "latestFiling": {
@@ -746,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8b87099b52395da6c7bb0b705441ff7f98df7f0800c08080f848b51a85a87d26",
@@ -762,6 +788,12 @@
       "cik": "0002086264",
       "name": "Vine Hill Capital Investment Corp. II",
       "sic": "6770",
+      "rawFacts": 208,
+      "mappedFacts": 74,
+      "unmappedFacts": 132,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VHCP",
@@ -897,13 +929,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "773cd63b9b0e63d082a94f90ed194b0255a94fff8adc74e417bea2c4db67b228",

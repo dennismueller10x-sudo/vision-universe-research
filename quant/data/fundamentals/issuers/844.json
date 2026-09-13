@@ -6,16 +6,22 @@
       "cik": "0001818844",
       "name": "Dogwood Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 3959,
+      "mappedFacts": 1586,
+      "unmappedFacts": 2420,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DWTX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 146,
+        "HIGH": 148,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 150,
-        "resolvedValues": 150
+        "datableValues": 152,
+        "resolvedValues": 152
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2547,
+        "total": 2502,
         "by_severity": {
-          "INFO": 2460,
-          "WARNING": 87
+          "INFO": 2420,
+          "WARNING": 82
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 44,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 2460,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 2420
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2dff1e93689f4c982ff702a36d420875b6d16424cad8266d263e7ce300edec67",
@@ -158,6 +163,12 @@
       "cik": "0002082844",
       "name": "Safeguard Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 208,
+      "mappedFacts": 85,
+      "unmappedFacts": 124,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SAC",
@@ -292,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1cdbe7e3a8a1eb6fe59388a66c59ecc0958427c8c2377fdfcbf375ace6da97a3",

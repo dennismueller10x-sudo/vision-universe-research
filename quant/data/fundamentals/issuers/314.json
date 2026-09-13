@@ -6,6 +6,12 @@
       "cik": "0000093314",
       "name": "VOLITIONRX LTD",
       "sic": "2835",
+      "rawFacts": 11111,
+      "mappedFacts": 4150,
+      "unmappedFacts": 6989,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VNRX"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7517,
+        "total": 7508,
         "by_severity": {
           "ERROR": 1,
           "INFO": 6989,
-          "WARNING": 527
+          "WARNING": 518
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 270,
@@ -133,8 +139,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 15,
           "RESTATEMENT_CONFLICT": 74,
           "UNEXPECTED_DURATION": 159,
-          "UNKNOWN_CONCEPT": 6989,
-          "UNPLACEABLE_PERIOD": 9
+          "UNKNOWN_CONCEPT": 6989
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cfbb204831345f4ddcba3d66e50ab9c861bf871eb27708cbfb1326386a0f7a2c",
@@ -161,16 +166,22 @@
       "cik": "0000716314",
       "name": "GRAHAM CORP",
       "sic": "3560",
+      "rawFacts": 20131,
+      "mappedFacts": 6701,
+      "unmappedFacts": 13906,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "GHM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2010-03-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2009-03-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -235,11 +246,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 60,
-          "firstAvailablePeriod": "2010-03-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -266,26 +277,25 @@
         }
       },
       "quality": {
-        "HIGH": 610,
+        "HIGH": 612,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 616,
-        "resolvedValues": 616
+        "datableValues": 618,
+        "resolvedValues": 618
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14413,
+        "total": 14374,
         "by_severity": {
-          "INFO": 13943,
-          "WARNING": 470
+          "INFO": 13906,
+          "WARNING": 468
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 380,
           "RESTATEMENT_CONFLICT": 88,
-          "UNKNOWN_CONCEPT": 13943,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13906
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "caa8ea0711b1589e6d8cb7a1d555d115da52631924b70e2eb5161b5ac3d47918",
@@ -312,6 +322,12 @@
       "cik": "0001856314",
       "name": "Clear Secure, Inc.",
       "sic": "7372",
+      "rawFacts": 7002,
+      "mappedFacts": 1777,
+      "unmappedFacts": 5219,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "YOU"
@@ -427,18 +443,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5566,
+        "total": 5565,
         "by_severity": {
           "INFO": 5219,
-          "WARNING": 347
+          "WARNING": 346
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 304,
           "FISCAL_PERIOD_CONFLICT": 2,
           "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 5219,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5219
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f831cd9b67370f5ec0be2b765b80bafb04b6c28c9d1c4343bc56b2f2e8fc103a",
@@ -465,16 +480,22 @@
       "cik": "0001902314",
       "name": "M-tron Industries, Inc.",
       "sic": "3679",
+      "rawFacts": 3885,
+      "mappedFacts": 1652,
+      "unmappedFacts": 2338,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MPTI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 22,
-      "firstPeriodEnd": "2021-03-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 23,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -539,11 +560,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 20,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -570,25 +591,24 @@
         }
       },
       "quality": {
-        "HIGH": 177
+        "HIGH": 179
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 177,
-        "resolvedValues": 177
+        "datableValues": 179,
+        "resolvedValues": 179
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2465,
+        "total": 2382,
         "by_severity": {
-          "INFO": 2418,
-          "WARNING": 47
+          "INFO": 2338,
+          "WARNING": 44
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 40,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2418,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 2338
         }
       },
       "latestFiling": {
@@ -599,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "447c3e71fd39f7e6b744a8eda686616b0a5607a312b2fec5a2fe813332901400",
@@ -615,6 +635,12 @@
       "cik": "0001926314",
       "name": "Ocean Capital Acquisition Corp",
       "sic": "6770",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "OCAC",
@@ -737,13 +763,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "234a00aa3435e032863771aa551b9bb30cb65d4754557a2cb847b451f7bdefdf",
@@ -753,16 +779,22 @@
       "cik": "0001964314",
       "name": "JBDI Holdings Ltd",
       "sic": "3412",
+      "rawFacts": 780,
+      "mappedFacts": 315,
+      "unmappedFacts": 523,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0531",
       "tickers": [
         "JBDI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2022-05-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2021-05-31",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -827,11 +859,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2022-05-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -858,25 +890,24 @@
         }
       },
       "quality": {
-        "HIGH": 55
+        "HIGH": 57
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 55,
-        "resolvedValues": 55
+        "datableValues": 57,
+        "resolvedValues": 57
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 539,
+        "total": 538,
         "by_severity": {
           "INFO": 523,
-          "WARNING": 16
+          "WARNING": 15
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 523,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 523
         }
       },
       "latestFiling": {
@@ -887,13 +918,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3f87504804fb188b18b4b0634144cf50ef7cc7ac17b5f5e91931bc89fa28d1b6",
@@ -903,6 +934,12 @@
       "cik": "0002092314",
       "name": "Air Water Ventures Ltd",
       "sic": "2080",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WATR"
@@ -1027,13 +1064,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5fe2bd9b7c4dbe296be944f765e05931b06272f5135dc96bcdf6d7053cd91ee2",

@@ -6,16 +6,22 @@
       "cik": "0000042888",
       "name": "GRACO INC",
       "sic": "3561",
+      "rawFacts": 23668,
+      "mappedFacts": 7469,
+      "unmappedFacts": 16674,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1226",
       "tickers": [
         "GGG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-26",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-28",
       "lastPeriodEnd": "2026-06-26",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-26",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-28",
           "lastAvailablePeriod": "2025-12-26",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 691
+        "HIGH": 693
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 691,
-        "resolvedValues": 691
+        "datableValues": 693,
+        "resolvedValues": 693
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17082,
+        "total": 17080,
         "by_severity": {
           "INFO": 16674,
           "ERROR": 1,
-          "WARNING": 407
+          "WARNING": 405
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 361,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 16674,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16674
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a1301bd22bc965c7a30ac2739b3859aea767bdae93af04365c4a4aa67d7f740c",
@@ -158,16 +163,22 @@
       "cik": "0000316888",
       "name": "AVINO SILVER & GOLD MINES LTD",
       "sic": "1000",
+      "rawFacts": 2441,
+      "mappedFacts": 539,
+      "unmappedFacts": 2023,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ASM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -263,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 93
+        "HIGH": 95
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 93,
-        "resolvedValues": 93
+        "datableValues": 95,
+        "resolvedValues": 95
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2058,
+        "total": 2056,
         "by_severity": {
           "INFO": 2023,
-          "WARNING": 35
+          "WARNING": 33
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 2023,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2023
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0f9722587f54ee2b9df80821cc6f814a0644c6213272d4350c0887f2d4c7ded3",
@@ -309,6 +319,12 @@
       "cik": "0001086888",
       "name": "MANULIFE FINANCIAL CORP",
       "sic": "6311",
+      "rawFacts": 3411,
+      "mappedFacts": 443,
+      "unmappedFacts": 3015,
+      "calendarYears": 11,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MFC",
@@ -428,18 +444,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3107,
+        "total": 3106,
         "by_severity": {
           "INFO": 3015,
           "ERROR": 2,
-          "WARNING": 90
+          "WARNING": 89
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 74,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 3015,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 3015
         }
       },
       "latestFiling": {
@@ -450,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f558794d0f7d15a900f6e0c1616706c70ac9b536c854a62845bbe78210e19ab9",
@@ -466,6 +481,12 @@
       "cik": "0001655888",
       "name": "Blue Owl Capital Corp",
       "sic": null,
+      "rawFacts": 5131,
+      "mappedFacts": 1129,
+      "unmappedFacts": 4115,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OBDC"
@@ -600,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d780a589ee1716dd10418e8a2724b6c821815f4e83f06a8a76df44810bc9e040",

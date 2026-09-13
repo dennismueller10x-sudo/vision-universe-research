@@ -6,16 +6,22 @@
       "cik": "0000714256",
       "name": "Sanara MedTech Inc.",
       "sic": "3842",
+      "rawFacts": 14467,
+      "mappedFacts": 5144,
+      "unmappedFacts": 9495,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SMTI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -80,11 +86,11 @@
           "historyYears": 4.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 59,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,30 +117,29 @@
         }
       },
       "quality": {
-        "HIGH": 481,
+        "HIGH": 483,
         "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 529,
-        "resolvedValues": 529
+        "datableValues": 531,
+        "resolvedValues": 531
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9955,
+        "total": 9953,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 9498,
-          "WARNING": 456
+          "INFO": 9495,
+          "WARNING": 457
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 307,
           "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 1,
-          "NEGATIVE_WHERE_IMPOSSIBLE": 1,
+          "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "RESTATEMENT_CONFLICT": 131,
-          "UNKNOWN_CONCEPT": 9498,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 9495
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7aca9ae89a18bb5da7a75341a1738297be18c60059ba8ce4fef67b6f48243e87",
@@ -161,6 +166,12 @@
       "cik": "0001693256",
       "name": "Select Water Solutions, Inc.",
       "sic": "1389",
+      "rawFacts": 13446,
+      "mappedFacts": 3635,
+      "unmappedFacts": 9693,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WTTR"
@@ -276,18 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10343,
+        "total": 10331,
         "by_severity": {
-          "INFO": 9704,
-          "WARNING": 639
+          "INFO": 9693,
+          "WARNING": 638
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 578,
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 51,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 9704,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 9693
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "7ed1f632cefd5e02a14c63b281b357acb3f06c68202e0dc3944763ae8c0bb672",
@@ -314,16 +324,22 @@
       "cik": "0001769256",
       "name": "XChange TEC.INC",
       "sic": "6411",
+      "rawFacts": 3264,
+      "mappedFacts": 689,
+      "unmappedFacts": 2330,
+      "calendarYears": 10,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "XHG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2017-09-30",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2016-09-30",
       "lastPeriodEnd": "2025-09-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -388,11 +404,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2017-09-30",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -419,30 +435,29 @@
         }
       },
       "quality": {
-        "HIGH": 66,
+        "HIGH": 68,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 96,
-        "resolvedValues": 96
+        "datableValues": 98,
+        "resolvedValues": 98
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2675,
+        "total": 2670,
         "by_severity": {
-          "INFO": 2334,
+          "INFO": 2330,
           "ERROR": 1,
-          "WARNING": 340
+          "WARNING": 339
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 300,
+          "CONCEPT_DISAGREEMENT": 301,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 34,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2334,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2330
         }
       },
       "latestFiling": {
@@ -453,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8f1f55f85905b99c2264ba025f9a2cbaca272f70b270d8a53a8ecf9c7b57bcdd",
@@ -469,16 +484,22 @@
       "cik": "0002088256",
       "name": "Horizon Quantum Holdings Ltd.",
       "sic": "7371",
+      "rawFacts": 29,
+      "mappedFacts": 16,
+      "unmappedFacts": 10,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HQ",
         "HQWWW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 1,
+      "firstPeriodEnd": "2025-12-31",
+      "lastPeriodEnd": "2025-12-31",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -544,17 +565,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -574,23 +595,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 4
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 4,
+        "resolvedValues": 4
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29,
+        "total": 18,
         "by_severity": {
           "INFO": 10,
-          "WARNING": 19
+          "WARNING": 8
         },
         "by_code": {
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 10,
-          "UNPLACEABLE_PERIOD": 11
+          "UNKNOWN_CONCEPT": 10
         }
       },
       "latestFiling": {
@@ -601,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "55fa54ce21e928d11ca1ee8ba8f196747f0a594b6604c7feae00acee46a196a9",

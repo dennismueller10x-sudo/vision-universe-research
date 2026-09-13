@@ -6,6 +6,12 @@
       "cik": "0000049826",
       "name": "ILLINOIS TOOL WORKS INC",
       "sic": "3560",
+      "rawFacts": 23557,
+      "mappedFacts": 7538,
+      "unmappedFacts": 16530,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ITW"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17159,
+        "total": 17157,
         "by_severity": {
           "INFO": 16530,
           "ERROR": 10,
-          "WARNING": 619
+          "WARNING": 617
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 527,
@@ -133,8 +139,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 81,
           "UNIT_MISMATCH": 5,
-          "UNKNOWN_CONCEPT": 16530,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16530
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a516792bcd85c08ec373cb956126e13b069dd56102b45553a4f923c784d1ec9c",
@@ -161,17 +166,23 @@
       "cik": "0000717826",
       "name": "ERICSSON LM TELEPHONE CO",
       "sic": "3663",
+      "rawFacts": 5589,
+      "mappedFacts": 832,
+      "unmappedFacts": 4872,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ERIC",
         "ERIXF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -236,11 +247,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2016-01-01",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.92
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -267,26 +278,25 @@
         }
       },
       "quality": {
-        "HIGH": 123,
+        "HIGH": 125,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 139,
-        "resolvedValues": 139
+        "datableValues": 141,
+        "resolvedValues": 141
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4987,
+        "total": 4985,
         "by_severity": {
           "INFO": 4872,
-          "WARNING": 115
+          "WARNING": 113
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 95,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 4872,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 4872
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "00da24ade92b953f3127acb83db49c3f9eeb4baf2b768cb0388510f81f228ab2",
@@ -313,16 +323,22 @@
       "cik": "0001638826",
       "name": "ServiceTitan, Inc.",
       "sic": "7372",
+      "rawFacts": 2923,
+      "mappedFacts": 859,
+      "unmappedFacts": 2078,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "TTAN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 15,
-      "firstPeriodEnd": "2023-01-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 16,
+      "firstPeriodEnd": "2022-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -387,11 +403,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 15,
-          "firstAvailablePeriod": "2023-01-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2022-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -418,26 +434,25 @@
         }
       },
       "quality": {
-        "HIGH": 121,
+        "HIGH": 123,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 131,
-        "resolvedValues": 131
+        "datableValues": 133,
+        "resolvedValues": 133
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2110,
+        "total": 2108,
         "by_severity": {
           "INFO": 2078,
-          "WARNING": 32
+          "WARNING": 30
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 2078,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2078
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0d0313115fd0a99ce85e7dc7369c3a77a70587ba815592bf7ede368002a7470a",

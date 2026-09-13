@@ -6,14 +6,20 @@
       "cik": "0001158449",
       "name": "ADVANCE AUTO PARTS INC",
       "sic": "5531",
+      "rawFacts": 23418,
+      "mappedFacts": 6937,
+      "unmappedFacts": 16049,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0102",
       "tickers": [
         "AAP"
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-01-03",
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2007-12-29",
       "lastPeriodEnd": "2026-07-18",
       "historyYears": 17.0,
       "metrics": {
@@ -81,7 +87,7 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-01-03",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 17.0
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 605,
+        "HIGH": 606,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 628,
-        "resolvedValues": 628
+        "datableValues": 629,
+        "resolvedValues": 629
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17537,
+        "total": 17535,
         "by_severity": {
           "INFO": 16049,
-          "WARNING": 1488
+          "WARNING": 1486
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 463,
           "RESTATEMENT_CONFLICT": 167,
           "UNEXPECTED_DURATION": 856,
-          "UNKNOWN_CONCEPT": 16049,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16049
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5026789046f31c755ce149abc2d3a0459df30bd30492cd09d724c5fba7197563",
@@ -158,16 +163,22 @@
       "cik": "0001477449",
       "name": "Teladoc Health, Inc.",
       "sic": "8011",
+      "rawFacts": 14505,
+      "mappedFacts": 4725,
+      "unmappedFacts": 9965,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TDOC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 50,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 51,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
@@ -232,11 +243,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 47,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -263,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 410,
+        "HIGH": 412,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 425,
-        "resolvedValues": 425
+        "datableValues": 427,
+        "resolvedValues": 427
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10185,
+        "total": 10055,
         "by_severity": {
-          "INFO": 10093,
-          "WARNING": 92
+          "INFO": 9965,
+          "WARNING": 90
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 77,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 10093,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9965
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "59aeac784d1044c52f2cc13ab998e7e0367ba86bcb546cf5b2328b95e6d67848",
@@ -309,6 +319,12 @@
       "cik": "0001519449",
       "name": "Skyward Specialty Insurance Group, Inc.",
       "sic": "6331",
+      "rawFacts": 7876,
+      "mappedFacts": 1216,
+      "unmappedFacts": 6622,
+      "calendarYears": 6,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SKWD"
@@ -443,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b532f52fdea4e78a095b1b17999b7629e5e6584c23644d4edaae8aa83857f212",

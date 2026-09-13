@@ -6,16 +6,22 @@
       "cik": "0001273813",
       "name": "ASSURED GUARANTY LTD",
       "sic": "6351",
+      "rawFacts": 30572,
+      "mappedFacts": 5536,
+      "unmappedFacts": 24732,
+      "calendarYears": 18,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AGO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,21 +117,21 @@
         }
       },
       "quality": {
-        "HIGH": 527,
+        "HIGH": 529,
         "MEDIUM": 71
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 598,
-        "resolvedValues": 598
+        "datableValues": 600,
+        "resolvedValues": 600
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25316,
+        "total": 25311,
         "by_severity": {
           "INFO": 24732,
           "ERROR": 1,
-          "WARNING": 583
+          "WARNING": 578
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 495,
@@ -135,8 +141,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 24732,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 24732
         }
       },
       "latestFiling": {
@@ -147,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6b2d0f130842e0262cd9ce7c738811fdc71a46261de1a7c7e280d4b27f06caf8",
@@ -163,17 +168,31 @@
       "cik": "0001488813",
       "name": "Customers Bancorp, Inc.",
       "sic": "6022",
+      "rawFacts": 38738,
+      "mappedFacts": 5432,
+      "unmappedFacts": 33235,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CUBI",
         "CUBB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -238,11 +257,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -269,26 +288,25 @@
         }
       },
       "quality": {
-        "HIGH": 508,
+        "HIGH": 510,
         "MEDIUM": 66
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 574,
-        "resolvedValues": 574
+        "datableValues": 576,
+        "resolvedValues": 576
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 34162,
+        "total": 33859,
         "by_severity": {
-          "INFO": 33538,
+          "INFO": 33235,
           "WARNING": 624
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 522,
-          "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 33538,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 102,
+          "UNKNOWN_CONCEPT": 33235
         }
       },
       "latestFiling": {
@@ -299,13 +317,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d473d913eacee0df8d7a29d83bc807d3b2452ec8dc9eb3d4e069e2b76de755bf",

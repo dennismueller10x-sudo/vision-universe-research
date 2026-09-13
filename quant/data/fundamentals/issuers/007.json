@@ -6,16 +6,22 @@
       "cik": "0001771007",
       "name": "Afya Ltd",
       "sic": "8200",
+      "rawFacts": 2958,
+      "mappedFacts": 609,
+      "unmappedFacts": 2428,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AFYA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 82,
+        "HIGH": 84,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 95,
-        "resolvedValues": 95
+        "datableValues": 97,
+        "resolvedValues": 97
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2505,
+        "total": 2503,
         "by_severity": {
           "INFO": 2428,
           "ERROR": 1,
-          "WARNING": 76
+          "WARNING": 74
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 67,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 2428,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2428
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f2702ac1396ae081f4c739f8b05c484c596ecf29425f43a997f9a24b426e1959",
@@ -160,16 +165,22 @@
       "cik": "0001816007",
       "name": "Lufax Holding Ltd",
       "sic": "6199",
+      "rawFacts": 2482,
+      "mappedFacts": 360,
+      "unmappedFacts": 2159,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -265,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 39,
+        "HIGH": 41,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 52,
-        "resolvedValues": 52
+        "datableValues": 54,
+        "resolvedValues": 54
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2219,
+        "total": 2217,
         "by_severity": {
           "INFO": 2159,
-          "WARNING": 60
+          "WARNING": 58
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 49,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 2159,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2159
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "14c5e6767613e4d45fa2509e8df51db5604c195829edca3b727633af3b7dd6ff",
@@ -311,16 +321,22 @@
       "cik": "0002008007",
       "name": "MaxsMaking Inc.",
       "sic": "2390",
+      "rawFacts": 320,
+      "mappedFacts": 101,
+      "unmappedFacts": 232,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1031",
       "tickers": [
         "MAMK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2023-10-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2022-10-31",
       "lastPeriodEnd": "2025-10-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -385,11 +401,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-10-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -416,25 +432,24 @@
         }
       },
       "quality": {
-        "HIGH": 19,
+        "HIGH": 21,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 30,
-        "resolvedValues": 30
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 245,
+        "total": 243,
         "by_severity": {
           "INFO": 232,
-          "WARNING": 13
+          "WARNING": 11
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
-          "UNKNOWN_CONCEPT": 232,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 232
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ad0271127609f168c2c611a217b14097878005558bdfffaad06b548ad304c77b",

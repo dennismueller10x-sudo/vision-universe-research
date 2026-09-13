@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-13T12:15:36+00:00",
+  "generated_at_utc": "2026-09-13T15:50:17+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.7.1",
+    "normalization_logic": "1.8.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.3.0"
+      "mapping_version": "1.4.0"
     }
   },
   "note": "Zurueckgeladene Objekte als eigener Faktenspeicher gelesen, kanonisch abgeleitet und mit dem lokalen Stand verglichen. Netzwerkzugriff war waehrend des Vergleichs gesperrt.",
@@ -32,7 +32,7 @@
       "quarterlyPeriods": 75,
       "restated": 156,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -49,7 +49,7 @@
       "quarterlyPeriods": 75,
       "restated": 260,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -57,16 +57,16 @@
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 48,
+      "canonicalFacts": 49,
       "canonicalFactsIdentical": true,
       "currencies": [
         "EUR"
       ],
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
       "restated": 12,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -74,16 +74,16 @@
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 1042,
+      "canonicalFacts": 1043,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
-      "annualPeriods": 20,
-      "quarterlyPeriods": 74,
+      "annualPeriods": 21,
+      "quarterlyPeriods": 75,
       "restated": 116,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -100,7 +100,7 @@
       "quarterlyPeriods": 14,
       "restated": 15,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -108,16 +108,16 @@
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 827,
+      "canonicalFacts": 828,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
-      "annualPeriods": 20,
-      "quarterlyPeriods": 74,
+      "annualPeriods": 21,
+      "quarterlyPeriods": 75,
       "restated": 234,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -134,7 +134,7 @@
       "quarterlyPeriods": 20,
       "restated": 43,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     },
     {
@@ -142,16 +142,16 @@
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 604,
+      "canonicalFacts": 606,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
-      "annualPeriods": 24,
-      "quarterlyPeriods": 72,
+      "annualPeriods": 25,
+      "quarterlyPeriods": 74,
       "restated": 55,
       "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.7.1",
+      "normalizationLogic": "1.8.0",
       "pass": true
     }
   ]

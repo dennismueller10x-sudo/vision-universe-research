@@ -6,6 +6,20 @@
       "cik": "0000072971",
       "name": "WELLS FARGO & COMPANY/MN",
       "sic": "6021",
+      "rawFacts": 50810,
+      "mappedFacts": 5807,
+      "unmappedFacts": 45301,
+      "calendarYears": 21,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "WFC",
@@ -128,15 +142,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 46093,
+        "total": 45868,
         "by_severity": {
-          "INFO": 45526,
+          "INFO": 45301,
           "WARNING": 567
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 521,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 45526
+          "UNKNOWN_CONCEPT": 45301
         }
       },
       "latestFiling": {
@@ -147,13 +161,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b684a3ccda11bbb29e71d19a1cfe604057bcc6bf5aafa92b916cf0e364a1d295",
@@ -163,6 +177,12 @@
       "cik": "0000889971",
       "name": "LIGHTPATH TECHNOLOGIES INC",
       "sic": "3674",
+      "rawFacts": 18518,
+      "mappedFacts": 5713,
+      "unmappedFacts": 13260,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "LPTH"
@@ -298,13 +318,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6d799fea249e20bb404a3b012df4e7781540c298134e97b884294c0d93f4d54d",
@@ -314,16 +334,22 @@
       "cik": "0000911971",
       "name": "TEEKAY CORP LTD",
       "sic": "4412",
+      "rawFacts": 10116,
+      "mappedFacts": 2034,
+      "unmappedFacts": 8309,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TK"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 18,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 19,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -388,11 +414,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -419,28 +445,27 @@
         }
       },
       "quality": {
-        "HIGH": 156,
+        "HIGH": 158,
         "MEDIUM": 58
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 214,
-        "resolvedValues": 214
+        "datableValues": 216,
+        "resolvedValues": 216
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8575,
+        "total": 8573,
         "by_severity": {
           "INFO": 8309,
           "ERROR": 6,
-          "WARNING": 260
+          "WARNING": 258
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 211,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 47,
-          "UNKNOWN_CONCEPT": 8309,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 8309
         }
       },
       "latestFiling": {
@@ -451,13 +476,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6a2cefc27590d531ed5817867e12b1b0b70cf27d8cb1925dbe7eb520dad53c53",
@@ -467,6 +492,20 @@
       "cik": "0000927971",
       "name": "BANK OF MONTREAL /CAN/",
       "sic": "6029",
+      "rawFacts": 3534,
+      "mappedFacts": 444,
+      "unmappedFacts": 3132,
+      "calendarYears": 10,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1031",
       "tickers": [
         "BMO",
@@ -613,18 +652,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3154,
+        "total": 3153,
         "by_severity": {
           "INFO": 3132,
           "ERROR": 1,
-          "WARNING": 21
+          "WARNING": 20
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 19,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 3132,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 3132
         }
       },
       "latestFiling": {
@@ -635,13 +673,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "738d8638865db4f5cd613cdef191d06b6b5bca7c1b02ed2e1e092e6abfebbd45",
@@ -651,6 +689,12 @@
       "cik": "0001040971",
       "name": "SL GREEN REALTY CORP",
       "sic": "6798",
+      "rawFacts": 30414,
+      "mappedFacts": 5242,
+      "unmappedFacts": 24496,
+      "calendarYears": 19,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SLG",
@@ -767,15 +811,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25763,
+        "total": 25589,
         "by_severity": {
-          "INFO": 24686,
-          "WARNING": 1077
+          "INFO": 24496,
+          "WARNING": 1093
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1026,
-          "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 24686
+          "RESTATEMENT_CONFLICT": 67,
+          "UNKNOWN_CONCEPT": 24496
         }
       },
       "latestFiling": {
@@ -786,13 +830,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0d27bb6496f9937d8e23c82ce2a05081664f3ad20cbe1e71eda21de1d5108c87",
@@ -802,16 +846,22 @@
       "cik": "0001357971",
       "name": "Energy Services of America CORP",
       "sic": "1623",
+      "rawFacts": 16189,
+      "mappedFacts": 6532,
+      "unmappedFacts": 9654,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "ESOA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -876,11 +926,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2010-09-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -907,29 +957,28 @@
         }
       },
       "quality": {
-        "HIGH": 593,
+        "HIGH": 595,
         "MEDIUM": 109
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 702,
-        "resolvedValues": 702
+        "datableValues": 704,
+        "resolvedValues": 704
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10277,
+        "total": 10273,
         "by_severity": {
           "ERROR": 1,
           "INFO": 9654,
-          "WARNING": 622
+          "WARNING": 618
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 490,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 127,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 9654,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 9654
         }
       },
       "latestFiling": {
@@ -940,13 +989,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "adf4b18f668812e79bf687284ee0c784a9650fc265a949fccffade79ad7b5a60",
@@ -956,6 +1005,12 @@
       "cik": "0001626971",
       "name": "Corvus Pharmaceuticals, Inc.",
       "sic": "2834",
+      "rawFacts": 10146,
+      "mappedFacts": 3125,
+      "unmappedFacts": 7044,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CRVS"
@@ -1090,13 +1145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "aa9a959d14ef11d2e0d033deeab61804f1033c1b97daff0fa4a51f930c3a4477",
@@ -1106,6 +1161,12 @@
       "cik": "0001743971",
       "name": "MOGU Inc.",
       "sic": "7389",
+      "rawFacts": 4627,
+      "mappedFacts": 920,
+      "unmappedFacts": 3514,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "MOGU"
@@ -1239,13 +1300,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "51d42e9ccb69ad1a8a8f84b57c4469b3441e09269e8f632f16479533f2c363cc",
@@ -1255,6 +1316,12 @@
       "cik": "0001785971",
       "name": "BlackRock Health Sciences Term Trust",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BMEZ"
@@ -1374,13 +1441,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9aaea22c862c5bda794e57d4a9f46558ed323f2ec043d7da2f33aa461bb52b2c",
@@ -1390,17 +1457,23 @@
       "cik": "0001844971",
       "name": "Vulcan Infrastructure & Power Inc.",
       "sic": "6199",
+      "rawFacts": 6052,
+      "mappedFacts": 1838,
+      "unmappedFacts": 4188,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VIP",
         "GREEL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -1465,11 +1538,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 25,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -1497,28 +1570,27 @@
       },
       "quality": {
         "MEDIUM": 14,
-        "HIGH": 178
+        "HIGH": 180
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 192,
-        "resolvedValues": 192
+        "datableValues": 194,
+        "resolvedValues": 194
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4413,
+        "total": 4407,
         "by_severity": {
           "INFO": 4188,
           "ERROR": 1,
-          "WARNING": 224
+          "WARNING": 218
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 122,
           "FISCAL_PERIOD_CONFLICT": 11,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 85,
-          "UNKNOWN_CONCEPT": 4188,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 4188
         }
       },
       "latestFiling": {
@@ -1529,13 +1601,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c5dfef3a0358323a170cbc6228efe277a5dc19081344d42c9e8f2a427c27dba3",
@@ -1545,6 +1617,20 @@
       "cik": "0001913971",
       "name": "Princeton Bancorp, Inc.",
       "sic": "6022",
+      "rawFacts": 6452,
+      "mappedFacts": 1178,
+      "unmappedFacts": 5409,
+      "calendarYears": 6,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BPRN"
@@ -1659,15 +1745,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5482,
+        "total": 5438,
         "by_severity": {
-          "INFO": 5453,
+          "INFO": 5409,
           "WARNING": 29
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 24,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 5453
+          "UNKNOWN_CONCEPT": 5409
         }
       },
       "latestFiling": {
@@ -1678,13 +1764,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4fb8873aed61ad9cc76088c96e4228a46916e5006fd06e09fdb9fb7365ecef2a",

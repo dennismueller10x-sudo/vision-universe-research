@@ -6,16 +6,22 @@
       "cik": "0000078890",
       "name": "BRINKS CO",
       "sic": "4731",
+      "rawFacts": 31239,
+      "mappedFacts": 7122,
+      "unmappedFacts": 23609,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BCO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 563,
+        "HIGH": 565,
         "MEDIUM": 204
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 767,
-        "resolvedValues": 767
+        "datableValues": 769,
+        "resolvedValues": 769
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24988,
+        "total": 24986,
         "by_severity": {
           "INFO": 23609,
           "ERROR": 6,
-          "WARNING": 1373
+          "WARNING": 1371
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1236,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 135,
-          "UNKNOWN_CONCEPT": 23609,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 23609
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1b9f8c29c95ebbfc6f5aed014ff7f89fa159f2a1a81c489a2c49c6be606f742c",
@@ -159,17 +164,23 @@
       "cik": "0001591890",
       "name": "FG Nexus Inc.",
       "sic": "6199",
+      "rawFacts": 16478,
+      "mappedFacts": 3276,
+      "unmappedFacts": 12941,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FGNX",
         "FGNXP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 54,
-      "firstPeriodEnd": "2013-03-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 55,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -234,11 +245,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 54,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -265,20 +276,20 @@
         }
       },
       "quality": {
-        "HIGH": 348,
+        "HIGH": 350,
         "MEDIUM": 82
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 430,
-        "resolvedValues": 430
+        "datableValues": 432,
+        "resolvedValues": 432
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13623,
+        "total": 13610,
         "by_severity": {
           "INFO": 12941,
-          "WARNING": 682
+          "WARNING": 669
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 427,
@@ -286,8 +297,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 13,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 215,
-          "UNKNOWN_CONCEPT": 12941,
-          "UNPLACEABLE_PERIOD": 13
+          "UNKNOWN_CONCEPT": 12941
         }
       },
       "latestFiling": {
@@ -298,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d5b18ceb045e55c0cf986f3232e3aafd545fd17f316d75b8bff15fc2cfedbf12",

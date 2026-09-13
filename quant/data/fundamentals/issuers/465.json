@@ -6,16 +6,22 @@
       "cik": "0000048465",
       "name": "HORMEL FOODS CORP /DE/",
       "sic": "2011",
+      "rawFacts": 23186,
+      "mappedFacts": 7518,
+      "unmappedFacts": 16076,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1025",
       "tickers": [
         "HRL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-10-26",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-10-28",
       "lastPeriodEnd": "2026-07-26",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-10-26",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2007-10-28",
           "lastAvailablePeriod": "2025-10-26",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 713,
+        "HIGH": 715,
         "MEDIUM": 26
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 739,
-        "resolvedValues": 739
+        "datableValues": 741,
+        "resolvedValues": 741
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16308,
+        "total": 16306,
         "by_severity": {
           "INFO": 16076,
-          "WARNING": 232
+          "WARNING": 230
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 165,
           "FISCAL_PERIOD_CONFLICT": 10,
           "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 16076,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 16076
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "98685e03fa0df87c47fdfface72807d60b8d16e2a524d1639f9490cb156bb8a2",
@@ -158,16 +163,22 @@
       "cik": "0000837465",
       "name": "Callaway Golf Co",
       "sic": "3949",
+      "rawFacts": 27893,
+      "mappedFacts": 7121,
+      "unmappedFacts": 20847,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CALY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -232,11 +243,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 559,
+        "HIGH": 561,
         "MEDIUM": 98
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 657,
-        "resolvedValues": 657
+        "datableValues": 659,
+        "resolvedValues": 659
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21645,
+        "total": 21612,
         "by_severity": {
-          "INFO": 20878,
-          "WARNING": 767
+          "INFO": 20847,
+          "WARNING": 765
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 669,
           "RESTATEMENT_CONFLICT": 96,
-          "UNKNOWN_CONCEPT": 20878,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 20847
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8ef2ce1b0d27976232464e04885ebb4075409446bc49507424032250052fc9de",
@@ -309,16 +319,30 @@
       "cik": "0000906465",
       "name": "QCR HOLDINGS INC",
       "sic": "6022",
+      "rawFacts": 36875,
+      "mappedFacts": 5559,
+      "unmappedFacts": 31531,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "QCRH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -383,11 +407,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -414,29 +438,28 @@
         }
       },
       "quality": {
-        "HIGH": 618,
+        "HIGH": 620,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 630,
-        "resolvedValues": 630
+        "datableValues": 632,
+        "resolvedValues": 632
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 31929,
+        "total": 31668,
         "by_severity": {
-          "INFO": 31790,
+          "INFO": 31531,
           "ERROR": 2,
-          "WARNING": 137
+          "WARNING": 135
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 127,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 31790,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 31531
         }
       },
       "latestFiling": {
@@ -447,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1488042e1b0ea6b173dcee158786d62f6f278fc1e31d092e2381d7098d6a20ba",
@@ -463,16 +486,22 @@
       "cik": "0000928465",
       "name": "AMCON DISTRIBUTING CO",
       "sic": "5141",
+      "rawFacts": 15574,
+      "mappedFacts": 6471,
+      "unmappedFacts": 9291,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "DIT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -537,11 +566,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-09-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -568,26 +597,25 @@
         }
       },
       "quality": {
-        "HIGH": 621,
+        "HIGH": 623,
         "MEDIUM": 80
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 701,
-        "resolvedValues": 701
+        "datableValues": 703,
+        "resolvedValues": 703
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9760,
+        "total": 9757,
         "by_severity": {
           "INFO": 9291,
-          "WARNING": 469
+          "WARNING": 466
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 448,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 9291,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 9291
         }
       },
       "latestFiling": {
@@ -598,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "84dec7a1a3d9d9e60712a4776a0c05b9341b7585daa8773d676fd081a4599ba0",

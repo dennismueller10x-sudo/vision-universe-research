@@ -6,6 +6,12 @@
       "cik": "0001320461",
       "name": "Cooper-Standard Holdings Inc.",
       "sic": "3714",
+      "rawFacts": 24046,
+      "mappedFacts": 6818,
+      "unmappedFacts": 17314,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CPS"
@@ -121,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18317,
+        "total": 18277,
         "by_severity": {
-          "INFO": 17354,
+          "INFO": 17314,
           "ERROR": 6,
           "WARNING": 957
         },
@@ -133,7 +139,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "RESTATEMENT_CONFLICT": 57,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 17354
+          "UNKNOWN_CONCEPT": 17314
         }
       },
       "latestFiling": {
@@ -144,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "950edac44a5da7c130bc0efabc77153af44bda99216b21b7d30eafa7496beb3e",
@@ -160,6 +166,12 @@
       "cik": "0001421461",
       "name": "Intrepid Potash, Inc.",
       "sic": "1400",
+      "rawFacts": 21252,
+      "mappedFacts": 6521,
+      "unmappedFacts": 15155,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IPI"
@@ -298,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ee0da854becdef732c886736c41a59ccd26361d9532e2af76bead6e7d5821be1",
@@ -314,6 +326,12 @@
       "cik": "0001504461",
       "name": "NGL Energy Partners LP",
       "sic": "4922",
+      "rawFacts": 26394,
+      "mappedFacts": 4811,
+      "unmappedFacts": 21374,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "NGL",
@@ -321,15 +339,15 @@
         "NGL-PB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 61,
-      "firstPeriodEnd": "2011-06-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 63,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.0
@@ -343,7 +361,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.0,
@@ -355,39 +373,39 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2012-03-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.0
         },
         "short_term_debt": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 24,
-          "firstAvailablePeriod": "2012-03-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "stockholders_equity": {
           "annualPeriods": 0,
@@ -397,18 +415,18 @@
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2012-03-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_debt": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 24,
-          "firstAvailablePeriod": "2012-03-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 14.0,
+          "historyYears": 15.0,
           "derivedFrom": [
             [
               "total_debt"
@@ -422,25 +440,24 @@
       },
       "quality": {
         "MEDIUM": 92,
-        "HIGH": 391
+        "HIGH": 403
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 483,
-        "resolvedValues": 483
+        "datableValues": 495,
+        "resolvedValues": 495
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22100,
+        "total": 22019,
         "by_severity": {
           "INFO": 21374,
-          "WARNING": 726
+          "WARNING": 645
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 489,
-          "RESTATEMENT_CONFLICT": 166,
-          "UNKNOWN_CONCEPT": 21374,
-          "UNPLACEABLE_PERIOD": 71
+          "CONCEPT_DISAGREEMENT": 490,
+          "RESTATEMENT_CONFLICT": 155,
+          "UNKNOWN_CONCEPT": 21374
         }
       },
       "latestFiling": {
@@ -451,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "28942d980c08b533c5a3011e0f21f1a8ad37b01af7da6d80cffbeb4ffbd3f226",
@@ -467,17 +484,23 @@
       "cik": "0001518461",
       "name": "AmpliTech Group, Inc.",
       "sic": "3669",
+      "rawFacts": 12397,
+      "mappedFacts": 4871,
+      "unmappedFacts": 7774,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AMPG",
         "AMPGZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 60,
-      "firstPeriodEnd": "2011-09-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 61,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -542,11 +565,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 56,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -573,20 +596,20 @@
         }
       },
       "quality": {
-        "HIGH": 478,
+        "HIGH": 480,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 480,
-        "resolvedValues": 480
+        "datableValues": 482,
+        "resolvedValues": 482
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8273,
+        "total": 8232,
         "by_severity": {
-          "INFO": 7814,
-          "WARNING": 459
+          "INFO": 7774,
+          "WARNING": 458
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 321,
@@ -594,8 +617,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 126,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 7814,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 7774
         }
       },
       "latestFiling": {
@@ -606,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e02f6f620e740acee358beb2de8ccc01ce75140d22302db46956dcf934991aa9",

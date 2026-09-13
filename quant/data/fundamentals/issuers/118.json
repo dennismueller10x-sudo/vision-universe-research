@@ -6,16 +6,22 @@
       "cik": "0001138118",
       "name": "CBRE GROUP, INC.",
       "sic": "6500",
+      "rawFacts": 28089,
+      "mappedFacts": 6731,
+      "unmappedFacts": 21323,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CBRE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 559,
+        "HIGH": 561,
         "MEDIUM": 218
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 777,
-        "resolvedValues": 777
+        "datableValues": 779,
+        "resolvedValues": 779
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22349,
+        "total": 22274,
         "by_severity": {
-          "INFO": 21396,
-          "WARNING": 953
+          "INFO": 21323,
+          "WARNING": 951
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 874,
           "FISCAL_PERIOD_CONFLICT": 14,
           "RESTATEMENT_CONFLICT": 63,
-          "UNKNOWN_CONCEPT": 21396,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 21323
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "daf52b19732b6b1892a9b04dd7b074e029f0671c669508810994c584f21c8336",
@@ -158,6 +163,12 @@
       "cik": "0001400118",
       "name": "Sagimet Biosciences Inc.",
       "sic": "2834",
+      "rawFacts": 2499,
+      "mappedFacts": 868,
+      "unmappedFacts": 1691,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SGMT"
@@ -292,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cbfb0acab6b3b629a6f57c9007af88a49d80030d1a4c4aa80ea94ed73cf63829",
@@ -308,6 +319,12 @@
       "cik": "0001829118",
       "name": "Tuya Inc.",
       "sic": "7372",
+      "rawFacts": 2491,
+      "mappedFacts": 581,
+      "unmappedFacts": 1954,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TUYA"
@@ -441,13 +458,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d6ebd02ff2a3c376eb38a9a3a53f1e83be5b7d655c76c9b22355075d8b0438e1",

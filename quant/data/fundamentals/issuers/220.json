@@ -6,16 +6,30 @@
       "cik": "0000719220",
       "name": "S&T BANCORP INC",
       "sic": "6022",
+      "rawFacts": 34375,
+      "mappedFacts": 5591,
+      "unmappedFacts": 28769,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "STBA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +94,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +125,27 @@
         }
       },
       "quality": {
-        "HIGH": 578,
+        "HIGH": 580,
         "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 610,
-        "resolvedValues": 610
+        "datableValues": 612,
+        "resolvedValues": 612
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29599,
+        "total": 29390,
         "by_severity": {
-          "INFO": 28984,
+          "INFO": 28769,
           "ERROR": 2,
-          "WARNING": 613
+          "WARNING": 619
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 585,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 28984,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 34,
+          "UNKNOWN_CONCEPT": 28769
         }
       },
       "latestFiling": {
@@ -143,13 +156,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "44dbb1c609f03a3935fbd4360d059ce7a8e56620fd3c363fefd487ac5d40f566",
@@ -159,16 +172,22 @@
       "cik": "0001032220",
       "name": "MAXIMUS, INC.",
       "sic": "7389",
+      "rawFacts": 19798,
+      "mappedFacts": 7299,
+      "unmappedFacts": 12783,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "MMS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2009-09-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2008-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -233,11 +252,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-09-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -264,28 +283,27 @@
         }
       },
       "quality": {
-        "HIGH": 675,
+        "HIGH": 677,
         "MEDIUM": 55
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 730,
-        "resolvedValues": 730
+        "datableValues": 732,
+        "resolvedValues": 732
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13343,
+        "total": 13341,
         "by_severity": {
           "INFO": 12783,
           "ERROR": 2,
-          "WARNING": 558
+          "WARNING": 556
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 462,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 12783,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12783
         }
       },
       "latestFiling": {
@@ -296,13 +314,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a346073c35016c8a0912fd71a70a7c0a0e291c4958aa8283b7d953103fbff124",
@@ -312,16 +330,22 @@
       "cik": "0001083220",
       "name": "XCel Brands, Inc.",
       "sic": "6794",
+      "rawFacts": 15597,
+      "mappedFacts": 5776,
+      "unmappedFacts": 9952,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "XELB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 61,
-      "firstPeriodEnd": "2011-06-30",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 63,
+      "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -332,7 +356,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -359,7 +383,7 @@
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -386,18 +410,18 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 13,
@@ -417,27 +441,26 @@
         }
       },
       "quality": {
-        "HIGH": 517,
-        "MEDIUM": 125
+        "HIGH": 525,
+        "MEDIUM": 124
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 642,
-        "resolvedValues": 642
+        "datableValues": 649,
+        "resolvedValues": 649
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10702,
+        "total": 10653,
         "by_severity": {
-          "INFO": 9978,
-          "WARNING": 724
+          "INFO": 9952,
+          "WARNING": 701
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 599,
-          "RESTATEMENT_CONFLICT": 97,
+          "CONCEPT_DISAGREEMENT": 593,
+          "RESTATEMENT_CONFLICT": 107,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 9978,
-          "UNPLACEABLE_PERIOD": 27
+          "UNKNOWN_CONCEPT": 9952
         }
       },
       "latestFiling": {
@@ -448,13 +471,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "fe556b188e9cd7314398c0245ed208c9d814d762e59745f379dc1c0551e3a9f5",
@@ -464,16 +487,22 @@
       "cik": "0001318220",
       "name": "Waste Connections, Inc.",
       "sic": "4953",
+      "rawFacts": 19761,
+      "mappedFacts": 5319,
+      "unmappedFacts": 14456,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WCN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 51,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 52,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -538,11 +567,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 48,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -569,27 +598,26 @@
         }
       },
       "quality": {
-        "HIGH": 490,
+        "HIGH": 492,
         "MEDIUM": 25
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 515,
-        "resolvedValues": 515
+        "datableValues": 517,
+        "resolvedValues": 517
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15044,
+        "total": 15042,
         "by_severity": {
           "INFO": 14456,
-          "WARNING": 588
+          "WARNING": 586
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 419,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 154,
-          "UNKNOWN_CONCEPT": 14456,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14456
         }
       },
       "latestFiling": {
@@ -600,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a6cb367d89cb9b0e7b9b4642442f476af51a546f32d0123fc04db2cd106353ba",
@@ -616,6 +644,12 @@
       "cik": "0001682220",
       "name": "Sachem Capital Corp.",
       "sic": "6798",
+      "rawFacts": 10049,
+      "mappedFacts": 2417,
+      "unmappedFacts": 7633,
+      "calendarYears": 10,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SACH",
@@ -736,19 +770,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7771,
+        "total": 7759,
         "by_severity": {
-          "INFO": 7641,
+          "INFO": 7633,
           "ERROR": 1,
-          "WARNING": 129
+          "WARNING": 125
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 20,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 7641,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 7633
         }
       },
       "latestFiling": {
@@ -759,13 +792,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c80bf6de9c0bde2f75a255d4d16bfcb4f5e3f8398dd9c6f836d8a2e3d9fb6a6c",

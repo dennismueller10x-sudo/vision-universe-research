@@ -6,16 +6,22 @@
       "cik": "0000795403",
       "name": "WATTS WATER TECHNOLOGIES INC",
       "sic": "3490",
+      "rawFacts": 21507,
+      "mappedFacts": 7573,
+      "unmappedFacts": 14080,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WTS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 78,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 79,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-28",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 10.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 699,
+        "HIGH": 701,
         "MEDIUM": 37
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 736,
-        "resolvedValues": 736
+        "datableValues": 738,
+        "resolvedValues": 738
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14588,
+        "total": 14586,
         "by_severity": {
           "INFO": 14080,
-          "WARNING": 508
+          "WARNING": 506
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 479,
           "FISCAL_PERIOD_CONFLICT": 15,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 14080,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14080
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "94e71919950dd80b57fe38519dfc6e724ed61adbc778ab65103b29f2b81896d5",
@@ -158,17 +163,23 @@
       "cik": "0000835403",
       "name": "DIAGEO PLC",
       "sic": "2080",
+      "rawFacts": 5073,
+      "mappedFacts": 628,
+      "unmappedFacts": 4534,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "DEO",
         "DGEAF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2016-06-30",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2015-06-30",
       "lastPeriodEnd": "2025-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2016-06-30",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2015-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 90,
+        "HIGH": 92,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 98,
-        "resolvedValues": 98
+        "datableValues": 100,
+        "resolvedValues": 100
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4712,
+        "total": 4711,
         "by_severity": {
           "INFO": 4534,
           "ERROR": 5,
-          "WARNING": 173
+          "WARNING": 172
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 108,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 4534,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4534
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e0b195ca5a6612db828cf1024f8ede3076b24a7b84e0ad5ee02aefaf231f42f5",
@@ -312,6 +322,12 @@
       "cik": "0001288403",
       "name": "W&T OFFSHORE INC",
       "sic": "1311",
+      "rawFacts": 18742,
+      "mappedFacts": 4895,
+      "unmappedFacts": 13647,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WTI"
@@ -427,9 +443,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14463,
+        "total": 14461,
         "by_severity": {
-          "INFO": 13649,
+          "INFO": 13647,
           "WARNING": 814
         },
         "by_code": {
@@ -437,7 +453,7 @@
           "FISCAL_PERIOD_CONFLICT": 13,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 13649
+          "UNKNOWN_CONCEPT": 13647
         }
       },
       "latestFiling": {
@@ -448,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8ecc50d8dabae135b1e7379ffae2594c7dc00470e97f5a624f642f43ced67c5f",
@@ -464,16 +480,22 @@
       "cik": "0001498403",
       "name": "BioLineRx Ltd.",
       "sic": "2834",
+      "rawFacts": 2916,
+      "mappedFacts": 725,
+      "unmappedFacts": 2368,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BLRX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -538,11 +560,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -569,26 +591,25 @@
         }
       },
       "quality": {
-        "HIGH": 94,
+        "HIGH": 96,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 96,
-        "resolvedValues": 96
+        "datableValues": 98,
+        "resolvedValues": 98
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2378,
+        "total": 2376,
         "by_severity": {
           "INFO": 2368,
-          "WARNING": 10
+          "WARNING": 8
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 2,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 2368,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2368
         }
       },
       "latestFiling": {
@@ -599,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "781153c2e6cc0308857957a5ca25801d3b0a9203d722b1ebb76af240e3f967bf",
@@ -615,6 +636,12 @@
       "cik": "0001824403",
       "name": "Reservoir Media, Inc.",
       "sic": "7900",
+      "rawFacts": 6151,
+      "mappedFacts": 2077,
+      "unmappedFacts": 3976,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "RSVR",
@@ -731,9 +758,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4232,
+        "total": 4172,
         "by_severity": {
-          "INFO": 4036,
+          "INFO": 3976,
           "ERROR": 6,
           "WARNING": 190
         },
@@ -741,7 +768,7 @@
           "CONCEPT_DISAGREEMENT": 128,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 4036
+          "UNKNOWN_CONCEPT": 3976
         }
       },
       "latestFiling": {
@@ -752,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9544e5634d8d9a05b4b01e736d127e76a52d33d2e1b1c08b7c0235ca2c328b95",
@@ -768,16 +795,22 @@
       "cik": "0001879403",
       "name": "La Rosa Holdings Corp.",
       "sic": "6531",
+      "rawFacts": 3781,
+      "mappedFacts": 1131,
+      "unmappedFacts": 2572,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LRHC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 17,
-      "firstPeriodEnd": "2022-06-30",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 18,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -842,11 +875,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -873,28 +906,27 @@
         }
       },
       "quality": {
-        "HIGH": 118,
+        "HIGH": 120,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 133,
-        "resolvedValues": 133
+        "datableValues": 135,
+        "resolvedValues": 135
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2780,
+        "total": 2776,
         "by_severity": {
           "INFO": 2572,
-          "WARNING": 208
+          "WARNING": 204
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 111,
           "EXTREME_VALUE": 2,
           "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 81,
-          "UNKNOWN_CONCEPT": 2572,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 2572
         }
       },
       "latestFiling": {
@@ -905,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e8781f7160be61a0803ccbc9647ec5eb4a7c9e1d912d773e102e7769363c9397",
@@ -921,16 +953,22 @@
       "cik": "0001997403",
       "name": "ZenaTech, Inc.",
       "sic": "7372",
+      "rawFacts": 938,
+      "mappedFacts": 334,
+      "unmappedFacts": 669,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ZENA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2023-12-31",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2022-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
@@ -995,11 +1033,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -1026,25 +1064,24 @@
         }
       },
       "quality": {
-        "HIGH": 26
+        "HIGH": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 26,
-        "resolvedValues": 26
+        "datableValues": 28,
+        "resolvedValues": 28
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 682,
+        "total": 676,
         "by_severity": {
           "INFO": 669,
-          "WARNING": 13
+          "WARNING": 7
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 669,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 669
         }
       },
       "latestFiling": {
@@ -1055,13 +1092,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "198369407602aeed3cc7ecb21334fd2762fef621cbaffaf47987706452fd6748",
@@ -1071,6 +1108,12 @@
       "cik": "0002124403",
       "name": "Vicore Pharma Holding AB",
       "sic": "2834",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "VCRE"
@@ -1190,13 +1233,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4f7f21c1484d014063799b65f9b07f9f25b3bad1c987d2a588b24fe6956e93da",

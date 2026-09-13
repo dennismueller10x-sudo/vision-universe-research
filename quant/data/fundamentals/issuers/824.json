@@ -6,6 +6,12 @@
       "cik": "0001471824",
       "name": "Teucrium Commodity Trust",
       "sic": "6221",
+      "rawFacts": 1537,
+      "mappedFacts": 326,
+      "unmappedFacts": 1269,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BTCK",
@@ -125,14 +131,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1300,
+        "total": 1269,
         "by_severity": {
-          "INFO": 1298,
-          "WARNING": 2
+          "INFO": 1269
         },
         "by_code": {
-          "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1298
+          "UNKNOWN_CONCEPT": 1269
         }
       },
       "latestFiling": {
@@ -143,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "12851349137aee4e0d73df2dbc2bb829f2205aaf62f9b1231b65c7aa53915214",
@@ -159,16 +163,22 @@
       "cik": "0001748824",
       "name": "Acadian Asset Management Inc.",
       "sic": "6282",
+      "rawFacts": 7502,
+      "mappedFacts": 2157,
+      "unmappedFacts": 5102,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AAMI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -233,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 22,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2023-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -264,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 204,
+        "HIGH": 206,
         "MEDIUM": 57
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 261,
-        "resolvedValues": 261
+        "datableValues": 263,
+        "resolvedValues": 263
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5435,
+        "total": 5376,
         "by_severity": {
-          "INFO": 5159,
-          "WARNING": 276
+          "INFO": 5102,
+          "WARNING": 274
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 221,
           "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 5159,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 5102
         }
       },
       "latestFiling": {
@@ -294,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8bdf7185da63168708da0c1b92d67a8ffb0fe6a4b77827299d01af2a90167747",
@@ -310,17 +319,23 @@
       "cik": "0001759824",
       "name": "ALTA EQUIPMENT GROUP INC.",
       "sic": "5084",
+      "rawFacts": 9103,
+      "mappedFacts": 2965,
+      "unmappedFacts": 6156,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALTG",
         "ALTG-PA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 34,
-      "firstPeriodEnd": "2018-03-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 35,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -385,11 +400,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 34,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -416,27 +431,26 @@
         }
       },
       "quality": {
-        "HIGH": 312,
+        "HIGH": 314,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 335,
-        "resolvedValues": 335
+        "datableValues": 337,
+        "resolvedValues": 337
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6540,
+        "total": 6538,
         "by_severity": {
           "INFO": 6156,
-          "WARNING": 384
+          "WARNING": 382
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 304,
-          "RESTATEMENT_CONFLICT": 71,
+          "RESTATEMENT_CONFLICT": 73,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 6156,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 6156
         }
       },
       "latestFiling": {
@@ -447,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8f05e96b032584f70ad6a40c982216a6c2af9f3ed10d89149761fe06dd2379c3",

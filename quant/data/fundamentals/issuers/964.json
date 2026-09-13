@@ -6,16 +6,22 @@
       "cik": "0001325964",
       "name": "Lightwave Logic, Inc.",
       "sic": "3080",
+      "rawFacts": 12014,
+      "mappedFacts": 4474,
+      "unmappedFacts": 7744,
+      "calendarYears": 22,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LWLG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 22,
-      "quarterlyPeriods": 71,
-      "firstPeriodEnd": "2004-12-31",
+      "annualPeriods": 24,
+      "quarterlyPeriods": 73,
+      "firstPeriodEnd": "2002-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 21.0,
+      "historyYears": 23.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 22,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2004-12-31",
+          "annualPeriods": 24,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2002-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 21.0
+          "historyYears": 23.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 465,
+        "HIGH": 469,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 470,
-        "resolvedValues": 470
+        "datableValues": 474,
+        "resolvedValues": 474
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8128,
+        "total": 8102,
         "by_severity": {
           "INFO": 7744,
           "ERROR": 2,
-          "WARNING": 382
+          "WARNING": 356
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 202,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 26,
           "UNEXPECTED_DURATION": 128,
-          "UNKNOWN_CONCEPT": 7744,
-          "UNPLACEABLE_PERIOD": 26
+          "UNKNOWN_CONCEPT": 7744
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e458648e2fe55b04cda1fafb6c0bbd3cdae01d7654afe777c6cc44f683f0f977",
@@ -160,16 +165,22 @@
       "cik": "0001725964",
       "name": "Nutrien Ltd.",
       "sic": "2870",
+      "rawFacts": 3298,
+      "mappedFacts": 514,
+      "unmappedFacts": 2869,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NTR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 9,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 8,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -265,28 +276,27 @@
         }
       },
       "quality": {
-        "HIGH": 88,
+        "HIGH": 90,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 92,
-        "resolvedValues": 92
+        "datableValues": 94,
+        "resolvedValues": 94
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2956,
+        "total": 2954,
         "by_severity": {
           "INFO": 2869,
           "ERROR": 10,
-          "WARNING": 77
+          "WARNING": 75
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 52,
           "FUTURE_DATA_LEAK": 10,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 2869,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2869
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "54292e6cb421607021ec199f48c02b2c4b53c3edf87f30ebb55f270f0da725f7",
@@ -313,6 +323,12 @@
       "cik": "0001872964",
       "name": "Maris Tech Ltd.",
       "sic": "3669",
+      "rawFacts": 1548,
+      "mappedFacts": 514,
+      "unmappedFacts": 1105,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MTEK",
@@ -450,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "eb1b94013e650cea041b7308d74bf4d8df7ca9411a9e965c0298f082fa0ee191",

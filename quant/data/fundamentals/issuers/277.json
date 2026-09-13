@@ -6,6 +6,12 @@
       "cik": "0000823277",
       "name": "CHS INC",
       "sic": "5150",
+      "rawFacts": 19927,
+      "mappedFacts": 5224,
+      "unmappedFacts": 14834,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0831",
       "tickers": [
         "CHSCP",
@@ -15,11 +21,11 @@
         "CHSCO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-08-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-08-31",
       "lastPeriodEnd": "2026-05-31",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -84,11 +90,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2010-08-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-08-31",
           "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -115,28 +121,27 @@
         }
       },
       "quality": {
-        "HIGH": 587,
+        "HIGH": 589,
         "MEDIUM": 39
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 626,
-        "resolvedValues": 626
+        "datableValues": 628,
+        "resolvedValues": 628
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15276,
+        "total": 15206,
         "by_severity": {
-          "INFO": 14909,
+          "INFO": 14834,
           "ERROR": 1,
-          "WARNING": 366
+          "WARNING": 371
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 246,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 118,
-          "UNKNOWN_CONCEPT": 14909,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 125,
+          "UNKNOWN_CONCEPT": 14834
         }
       },
       "latestFiling": {
@@ -147,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f2225cdb7f72bd082151bf2b4a0f6f41dff45a36bdbdff956552c260900245c8",
@@ -163,16 +168,22 @@
       "cik": "0000913277",
       "name": "Clarus Corp",
       "sic": "3949",
+      "rawFacts": 21660,
+      "mappedFacts": 7016,
+      "unmappedFacts": 14945,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLAR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -237,11 +248,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -268,21 +279,21 @@
         }
       },
       "quality": {
-        "HIGH": 622,
+        "HIGH": 624,
         "MEDIUM": 71
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 693,
-        "resolvedValues": 693
+        "datableValues": 695,
+        "resolvedValues": 695
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15541,
+        "total": 15539,
         "by_severity": {
           "INFO": 14945,
           "ERROR": 4,
-          "WARNING": 592
+          "WARNING": 590
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 406,
@@ -290,8 +301,7 @@
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 7,
           "RESTATEMENT_CONFLICT": 170,
-          "UNKNOWN_CONCEPT": 14945,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14945
         }
       },
       "latestFiling": {
@@ -302,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "35674cbec7b63f07fe685d438fba651ad19c53b699273a11e39b0dbc59e3fb96",
@@ -318,16 +328,22 @@
       "cik": "0001043277",
       "name": "C. H. ROBINSON WORLDWIDE, INC.",
       "sic": "4731",
+      "rawFacts": 21914,
+      "mappedFacts": 7598,
+      "unmappedFacts": 14483,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CHRW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2007-12-31",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2006-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -392,11 +408,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 71,
-          "firstAvailablePeriod": "2007-12-31",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -423,26 +439,25 @@
         }
       },
       "quality": {
-        "HIGH": 699,
+        "HIGH": 701,
         "MEDIUM": 74
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 773,
-        "resolvedValues": 773
+        "datableValues": 775,
+        "resolvedValues": 775
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15141,
+        "total": 15139,
         "by_severity": {
           "INFO": 14483,
-          "WARNING": 658
+          "WARNING": 656
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 650,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 14483,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14483
         }
       },
       "latestFiling": {
@@ -453,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f6daef1bfd4374eb6efed6ff7bbee847effc62aa47642c2fbe6694661cc05a11",
@@ -469,6 +484,12 @@
       "cik": "0002030277",
       "name": "LEIFRAS Co., Ltd.",
       "sic": "8200",
+      "rawFacts": 565,
+      "mappedFacts": 125,
+      "unmappedFacts": 421,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LFS"
@@ -584,16 +605,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 481,
+        "total": 480,
         "by_severity": {
           "INFO": 421,
-          "WARNING": 60
+          "WARNING": 59
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 57,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 421,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 421
         }
       },
       "latestFiling": {
@@ -604,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f14f9eac281ae6071f9f8181d0b1f4f12252ce5136e763ee357ceba7e581ac89",

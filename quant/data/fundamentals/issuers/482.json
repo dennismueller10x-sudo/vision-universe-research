@@ -6,16 +6,22 @@
       "cik": "0000891482",
       "name": "FULL HOUSE RESORTS INC",
       "sic": "7011",
+      "rawFacts": 16717,
+      "mappedFacts": 5579,
+      "unmappedFacts": 11427,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FLL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 10.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 65,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 612,
+        "HIGH": 614,
         "MEDIUM": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 654,
-        "resolvedValues": 654
+        "datableValues": 656,
+        "resolvedValues": 656
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11869,
+        "total": 11851,
         "by_severity": {
-          "INFO": 11439,
-          "WARNING": 430
+          "INFO": 11427,
+          "WARNING": 424
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 365,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 11439,
-          "UNPLACEABLE_PERIOD": 6
+          "UNKNOWN_CONCEPT": 11427
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "2f1fa8affbd9085ed7bfed5caafb7a1b358461c2eee2ffd571d2933dbdec0556",
@@ -158,16 +163,22 @@
       "cik": "0001653482",
       "name": "Gitlab Inc.",
       "sic": "7372",
+      "rawFacts": 8440,
+      "mappedFacts": 1965,
+      "unmappedFacts": 6421,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "GTLB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-01-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-01-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -263,26 +274,25 @@
         }
       },
       "quality": {
-        "HIGH": 183,
+        "HIGH": 185,
         "MEDIUM": 29
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 212,
-        "resolvedValues": 212
+        "datableValues": 214,
+        "resolvedValues": 214
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6583,
+        "total": 6581,
         "by_severity": {
           "INFO": 6421,
-          "WARNING": 162
+          "WARNING": 160
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 159,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 6421,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6421
         }
       },
       "latestFiling": {
@@ -293,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4ce9c8ce3524539ba6a899ee926089e4b900e2971b063abae2f3d1af179201e4",
@@ -309,16 +319,30 @@
       "cik": "0001710482",
       "name": "John Marshall Bancorp, Inc.",
       "sic": "6022",
+      "rawFacts": 8007,
+      "mappedFacts": 1224,
+      "unmappedFacts": 6802,
+      "calendarYears": 5,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "JMSB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 22,
-      "firstPeriodEnd": "2021-03-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 23,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -383,11 +407,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 22,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -414,25 +438,25 @@
         }
       },
       "quality": {
-        "HIGH": 189,
+        "HIGH": 191,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 190,
-        "resolvedValues": 190
+        "datableValues": 192,
+        "resolvedValues": 192
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6865,
+        "total": 6805,
         "by_severity": {
-          "INFO": 6856,
-          "WARNING": 9
+          "INFO": 6802,
+          "WARNING": 3
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 6856,
-          "UNPLACEABLE_PERIOD": 8
+          "RESTATEMENT_CONFLICT": 2,
+          "UNKNOWN_CONCEPT": 6802
         }
       },
       "latestFiling": {
@@ -443,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "668c57e274b8e733e5e5413016363891a9f31390ac6b326577f0d02f90af59e1",
@@ -459,16 +483,22 @@
       "cik": "0001722482",
       "name": "Avantor, Inc.",
       "sic": "3826",
+      "rawFacts": 10463,
+      "mappedFacts": 3277,
+      "unmappedFacts": 7293,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AVTR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 34,
-      "firstPeriodEnd": "2017-12-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 35,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -533,11 +563,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 34,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -564,26 +594,25 @@
         }
       },
       "quality": {
-        "HIGH": 300,
+        "HIGH": 302,
         "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 359,
-        "resolvedValues": 359
+        "datableValues": 361,
+        "resolvedValues": 361
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7576,
+        "total": 7574,
         "by_severity": {
           "INFO": 7293,
-          "WARNING": 283
+          "WARNING": 281
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 280,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 7293,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7293
         }
       },
       "latestFiling": {
@@ -594,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "05282753e5c9d495edaa024b1401aef4c25ec6fc4b08e3d16a963d0993155e57",
@@ -610,16 +639,22 @@
       "cik": "0001924482",
       "name": "Innovation Beverage Group Ltd",
       "sic": "2080",
+      "rawFacts": 246,
+      "mappedFacts": 88,
+      "unmappedFacts": 166,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "IBG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 2,
-      "firstPeriodEnd": "2023-12-31",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2022-12-31",
       "lastPeriodEnd": "2024-12-31",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -684,11 +719,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 2,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -715,24 +750,23 @@
         }
       },
       "quality": {
-        "HIGH": 18
+        "HIGH": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 18,
-        "resolvedValues": 18
+        "datableValues": 20,
+        "resolvedValues": 20
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 173,
+        "total": 171,
         "by_severity": {
           "INFO": 166,
-          "WARNING": 7
+          "WARNING": 5
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 5,
-          "UNKNOWN_CONCEPT": 166,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 166
         }
       },
       "latestFiling": {
@@ -743,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d230d2199779c6f84378585e5448c255e5544dc77f9e6bb356b20448ba90058a",
@@ -759,6 +793,12 @@
       "cik": "0002030482",
       "name": "Plum Acquisition Corp, IV",
       "sic": "4911",
+      "rawFacts": 558,
+      "mappedFacts": 243,
+      "unmappedFacts": 318,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PLMK",
@@ -894,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "747383a93e2e38f44ec80b7b9e5305fbaff220d34d665aa65b66189233551ed3",

@@ -6,6 +6,12 @@
       "cik": "0000058361",
       "name": "LEE ENTERPRISES, Inc",
       "sic": "2711",
+      "rawFacts": 20822,
+      "mappedFacts": 6462,
+      "unmappedFacts": 14450,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0929",
       "tickers": [
         "LEE"
@@ -121,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15223,
+        "total": 15221,
         "by_severity": {
           "INFO": 14450,
           "ERROR": 7,
-          "WARNING": 766
+          "WARNING": 764
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 657,
@@ -133,8 +139,7 @@
           "FUTURE_DATA_LEAK": 7,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 14450,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14450
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ee5eae36e174e68306b7f237bd8abd199592126c56c99c66012ac20fe8b105a9",
@@ -161,6 +166,20 @@
       "cik": "0001128361",
       "name": "HOPE BANCORP INC",
       "sic": "6021",
+      "rawFacts": 36487,
+      "mappedFacts": 5663,
+      "unmappedFacts": 31016,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HOPE"
@@ -276,21 +295,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 31625,
+        "total": 31303,
         "by_severity": {
-          "INFO": 31338,
+          "INFO": 31016,
           "ERROR": 1,
           "WARNING": 286
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 233,
-          "FISCAL_PERIOD_CONFLICT": 6,
+          "FISCAL_PERIOD_CONFLICT": 7,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 31338,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 31016
         }
       },
       "latestFiling": {
@@ -301,13 +319,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "817fcf5ae46542e44f31dc7dae5a5ae9286c1fc3a3f4a84e47728e20a839ab37",
@@ -317,6 +335,12 @@
       "cik": "0001890361",
       "name": "ASPAC III Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 663,
+      "mappedFacts": 330,
+      "unmappedFacts": 345,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ASPC",
@@ -324,11 +348,11 @@
         "ASPCU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 12,
-      "firstPeriodEnd": "2023-09-30",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 13,
+      "firstPeriodEnd": "2022-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 2.0,
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -393,11 +417,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 12,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -424,26 +448,25 @@
         }
       },
       "quality": {
-        "HIGH": 39,
+        "HIGH": 41,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 47,
-        "resolvedValues": 47
+        "datableValues": 49,
+        "resolvedValues": 49
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 366,
+        "total": 364,
         "by_severity": {
           "INFO": 345,
-          "WARNING": 21
+          "WARNING": 19
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 345,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 345
         }
       },
       "latestFiling": {
@@ -454,13 +477,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9f40dd563ba7afcbad9ca5a851b24b7c9af98bc2790e5459b8de3b93362429d2",
@@ -470,6 +493,12 @@
       "cik": "0002087361",
       "name": "M Evo Global Acquisition Corp II",
       "sic": "6770",
+      "rawFacts": 157,
+      "mappedFacts": 59,
+      "unmappedFacts": 98,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MEVO",
@@ -604,13 +633,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ab40e74390826248ad0ad905f4aa9b1c890b9e7ea303637cf2f383604831c3c9",

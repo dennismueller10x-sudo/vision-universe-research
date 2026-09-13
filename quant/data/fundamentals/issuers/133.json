@@ -6,6 +6,12 @@
       "cik": "0001224133",
       "name": "MARCHEX INC",
       "sic": "7372",
+      "rawFacts": 14803,
+      "mappedFacts": 4847,
+      "unmappedFacts": 10123,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MCHX"
@@ -141,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "046e17c73579b8b123e11c770b9b88b5db0063c2e32f98cef1b839caa03e2ad6",
@@ -157,6 +163,12 @@
       "cik": "0001294133",
       "name": "Inogen Inc",
       "sic": "3842",
+      "rawFacts": 19496,
+      "mappedFacts": 5771,
+      "unmappedFacts": 13732,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "INGN"
@@ -291,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a92daedfeb39e9fae050a2fef1f5b0b7314aa9c3a14bd1bd2ff3086fa7e34401",
@@ -307,6 +319,12 @@
       "cik": "0001432133",
       "name": "KALTURA INC",
       "sic": "7372",
+      "rawFacts": 8829,
+      "mappedFacts": 2371,
+      "unmappedFacts": 6501,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KLTR"
@@ -441,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d79a5b721ad010a84ab43963dbeb2e131199d2c3c8abd598d191ebae1520908d",
@@ -457,16 +475,22 @@
       "cik": "0001438133",
       "name": "TANDEM DIABETES CARE INC",
       "sic": "3841",
+      "rawFacts": 16058,
+      "mappedFacts": 5019,
+      "unmappedFacts": 11292,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TNDM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 55,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 56,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -531,11 +555,11 @@
           "historyYears": 1.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -562,27 +586,26 @@
         }
       },
       "quality": {
-        "HIGH": 474
+        "HIGH": 476
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 474,
-        "resolvedValues": 474
+        "datableValues": 476,
+        "resolvedValues": 476
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11399,
+        "total": 11397,
         "by_severity": {
           "INFO": 11292,
-          "WARNING": 107
+          "WARNING": 105
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 74,
           "FISCAL_PERIOD_CONFLICT": 9,
           "RESTATEMENT_CONFLICT": 21,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11292,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11292
         }
       },
       "latestFiling": {
@@ -593,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c14c780545e1013dfcb4e968e61f827b7cec6eafc0fc343fa217cbaeb857dfb5",
@@ -609,16 +632,22 @@
       "cik": "0001534133",
       "name": "CalciMedica, Inc.",
       "sic": "2834",
+      "rawFacts": 4744,
+      "mappedFacts": 1728,
+      "unmappedFacts": 3079,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CALC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 30,
-      "firstPeriodEnd": "2019-03-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 31,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -683,11 +712,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 30,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -714,26 +743,25 @@
         }
       },
       "quality": {
-        "HIGH": 190,
+        "HIGH": 192,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 198,
-        "resolvedValues": 198
+        "datableValues": 200,
+        "resolvedValues": 200
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3197,
+        "total": 3195,
         "by_severity": {
           "INFO": 3079,
-          "WARNING": 118
+          "WARNING": 116
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
           "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 3079,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 3079
         }
       },
       "latestFiling": {
@@ -744,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5b197d770302587540a67e47937f7215f5791e29ecb8b24f3d3ee1183802a8ed",
@@ -760,16 +788,22 @@
       "cik": "0001819133",
       "name": "Tango Therapeutics, Inc.",
       "sic": "2834",
+      "rawFacts": 5308,
+      "mappedFacts": 1850,
+      "unmappedFacts": 3478,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TNGX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 26,
-      "firstPeriodEnd": "2020-03-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 27,
+      "firstPeriodEnd": "2019-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -834,11 +868,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 26,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -865,19 +899,19 @@
         }
       },
       "quality": {
-        "HIGH": 208
+        "HIGH": 210
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 208,
-        "resolvedValues": 208
+        "datableValues": 210,
+        "resolvedValues": 210
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3677,
+        "total": 3612,
         "by_severity": {
-          "INFO": 3540,
-          "WARNING": 137
+          "INFO": 3478,
+          "WARNING": 134
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 55,
@@ -885,8 +919,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 49,
           "UNEXPECTED_DURATION": 24,
-          "UNKNOWN_CONCEPT": 3540,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 3478
         }
       },
       "latestFiling": {
@@ -897,13 +930,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a965902ec6199c1bce6071fb6851af9bd98420a1cf5641d229fbd0fb173aac13",
@@ -913,16 +946,22 @@
       "cik": "0001958133",
       "name": "Decent Holding Inc.",
       "sic": "4950",
+      "rawFacts": 753,
+      "mappedFacts": 213,
+      "unmappedFacts": 564,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "DXST"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-10-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-10-31",
       "lastPeriodEnd": "2025-10-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -987,11 +1026,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-10-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -1018,25 +1057,24 @@
         }
       },
       "quality": {
-        "HIGH": 34
+        "HIGH": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 34,
-        "resolvedValues": 34
+        "datableValues": 36,
+        "resolvedValues": 36
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 572,
+        "total": 570,
         "by_severity": {
           "INFO": 564,
-          "WARNING": 8
+          "WARNING": 6
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 5,
           "PERIOD_MISMATCH": 1,
-          "UNKNOWN_CONCEPT": 564,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 564
         }
       },
       "latestFiling": {
@@ -1047,13 +1085,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "70c8b7ef8c50ead114c417a574816e92b2a7d9adc7d8081b5ce21c9f41c3bc12",

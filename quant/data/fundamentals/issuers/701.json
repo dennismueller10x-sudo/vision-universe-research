@@ -6,16 +6,22 @@
       "cik": "0000022701",
       "name": "SUNation Energy, Inc.",
       "sic": "1700",
+      "rawFacts": 20655,
+      "mappedFacts": 6217,
+      "unmappedFacts": 14564,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SUNE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 5.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 555,
+        "HIGH": 557,
         "MEDIUM": 42
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 597,
-        "resolvedValues": 597
+        "datableValues": 599,
+        "resolvedValues": 599
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15129,
+        "total": 15127,
         "by_severity": {
           "INFO": 14564,
-          "WARNING": 565
+          "WARNING": 563
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 265,
           "EXTREME_VALUE": 10,
           "RESTATEMENT_CONFLICT": 288,
-          "UNKNOWN_CONCEPT": 14564,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14564
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "56f3819f38750a3fcab5030822a5ccb0988755d5e61b3eb1f642a24b3fd01141",
@@ -158,16 +163,22 @@
       "cik": "0000056701",
       "name": "KOSS CORP",
       "sic": "3651",
+      "rawFacts": 13669,
+      "mappedFacts": 5147,
+      "unmappedFacts": 8890,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "KOSS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2010-09-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2011-06-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -263,25 +274,24 @@
         }
       },
       "quality": {
-        "HIGH": 557
+        "HIGH": 559
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 557,
-        "resolvedValues": 557
+        "datableValues": 559,
+        "resolvedValues": 559
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9122,
+        "total": 9117,
         "by_severity": {
           "INFO": 8890,
-          "WARNING": 232
+          "WARNING": 227
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 190,
           "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 8890,
-          "UNPLACEABLE_PERIOD": 5
+          "UNKNOWN_CONCEPT": 8890
         }
       },
       "latestFiling": {
@@ -292,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6918fa962b6c10f9983909343c46e247b9cec2d59bfd9719ad8bd15e3954a516",
@@ -308,6 +318,12 @@
       "cik": "0001067701",
       "name": "UNITED RENTALS, INC.",
       "sic": "7359",
+      "rawFacts": 18658,
+      "mappedFacts": 7015,
+      "unmappedFacts": 12061,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "URI"
@@ -423,16 +439,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12553,
+        "total": 12551,
         "by_severity": {
           "INFO": 12061,
-          "WARNING": 492
+          "WARNING": 490
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 438,
           "RESTATEMENT_CONFLICT": 52,
-          "UNKNOWN_CONCEPT": 12061,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12061
         }
       },
       "latestFiling": {
@@ -443,13 +458,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1be690ecbe9280c55e8147804129bd14098c4571f31c288e77e6568242780b2d",
@@ -459,16 +474,22 @@
       "cik": "0001534701",
       "name": "Phillips 66",
       "sic": "2911",
+      "rawFacts": 24274,
+      "mappedFacts": 5970,
+      "unmappedFacts": 18501,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PSX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 64,
-      "firstPeriodEnd": "2010-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 65,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -533,11 +554,11 @@
           "historyYears": 14.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -564,28 +585,27 @@
         }
       },
       "quality": {
-        "HIGH": 481,
+        "HIGH": 483,
         "MEDIUM": 86
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 567,
-        "resolvedValues": 567
+        "datableValues": 569,
+        "resolvedValues": 569
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19168,
+        "total": 19166,
         "by_severity": {
           "INFO": 18501,
-          "WARNING": 667
+          "WARNING": 665
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 587,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 18501,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18501
         }
       },
       "latestFiling": {
@@ -596,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5a5bf5ac2f9564e77a5841a170e3953c6a882b3dd1aebb0fee29f44b1e2155ca",

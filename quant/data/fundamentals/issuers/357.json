@@ -6,16 +6,30 @@
       "cik": "0000875357",
       "name": "BOK FINANCIAL CORP",
       "sic": "6021",
+      "rawFacts": 40936,
+      "mappedFacts": 5479,
+      "unmappedFacts": 35234,
+      "calendarYears": 18,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BOKF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +94,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 70,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +125,26 @@
         }
       },
       "quality": {
-        "HIGH": 443,
+        "HIGH": 445,
         "MEDIUM": 111
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 554,
-        "resolvedValues": 554
+        "datableValues": 556,
+        "resolvedValues": 556
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 36088,
+        "total": 35874,
         "by_severity": {
-          "INFO": 35446,
-          "WARNING": 642
+          "INFO": 35234,
+          "WARNING": 640
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 593,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 35446,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 35234
         }
       },
       "latestFiling": {
@@ -142,13 +155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d04f4ba26ffe208e6a1e677d1d494c2ea92f3dc0e68067312f027afa9b022137",
@@ -158,6 +171,12 @@
       "cik": "0001109357",
       "name": "EXELON CORP",
       "sic": "4931",
+      "rawFacts": 34632,
+      "mappedFacts": 6874,
+      "unmappedFacts": 27982,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EXC"
@@ -297,13 +316,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "326b74564849880c4dca0f0445a4389ca7597b17e7dbfd83702e3698cb22d350",

@@ -6,16 +6,22 @@
       "cik": "0000744218",
       "name": "Celldex Therapeutics, Inc.",
       "sic": "2835",
+      "rawFacts": 14136,
+      "mappedFacts": 5232,
+      "unmappedFacts": 9366,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLDX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 513
+        "HIGH": 515
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 513,
-        "resolvedValues": 513
+        "datableValues": 515,
+        "resolvedValues": 515
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9439,
+        "total": 9437,
         "by_severity": {
           "INFO": 9366,
           "ERROR": 1,
-          "WARNING": 72
+          "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 30,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 9366,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9366
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "67fdb269a3beb9f1b7ceca355ce7470fa2d79d28ca26061a8c15d9e477b40740",
@@ -158,6 +163,12 @@
       "cik": "0000769218",
       "name": "AEGON LTD.",
       "sic": "6311",
+      "rawFacts": 6323,
+      "mappedFacts": 631,
+      "unmappedFacts": 5750,
+      "calendarYears": 11,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AEG",
@@ -165,11 +176,11 @@
         "AEFC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 14,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 15,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -265,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 99,
+        "HIGH": 101,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 107,
-        "resolvedValues": 107
+        "datableValues": 109,
+        "resolvedValues": 109
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5831,
+        "total": 5830,
         "by_severity": {
           "INFO": 5750,
-          "WARNING": 81
+          "WARNING": 80
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 5750,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 5750
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1182738fac7b39e00def0143aeab2e070323bcc29eec7bfe9804a127d9112f8f",
@@ -311,6 +321,12 @@
       "cik": "0001863218",
       "name": "SHENGFENG DEVELOPMENT Ltd",
       "sic": "4210",
+      "rawFacts": 2150,
+      "mappedFacts": 418,
+      "unmappedFacts": 1730,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SFWL"
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "899c8e510342a33957e408b9358ba8334bd91a2f1a71d6a9db73cb4cf97e0b6f",
@@ -463,6 +479,12 @@
       "cik": "0002024218",
       "name": "Summit Midstream Corp",
       "sic": "4922",
+      "rawFacts": 2478,
+      "mappedFacts": 700,
+      "unmappedFacts": 1763,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "SMC"
@@ -578,17 +600,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1902,
+        "total": 1899,
         "by_severity": {
           "INFO": 1763,
-          "WARNING": 139
+          "WARNING": 136
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 127,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 1763,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 1763
         }
       },
       "latestFiling": {
@@ -599,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5be8e695bcf13778a12d3eaba52518ef3b3aa820d64eb9bb715cfecd66084862",
@@ -615,16 +636,22 @@
       "cik": "0002025218",
       "name": "Delixy Holdings Ltd",
       "sic": "5172",
+      "rawFacts": 476,
+      "mappedFacts": 189,
+      "unmappedFacts": 312,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DLXY"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -689,11 +716,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -720,23 +747,21 @@
         }
       },
       "quality": {
-        "HIGH": 30
+        "HIGH": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 30,
-        "resolvedValues": 30
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 314,
+        "total": 312,
         "by_severity": {
-          "INFO": 312,
-          "WARNING": 2
+          "INFO": 312
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 312,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 312
         }
       },
       "latestFiling": {
@@ -747,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8aa99ea3e60a7224459d4895f850d692b93bcfd4de0138c4f1f3c943f17c175c",

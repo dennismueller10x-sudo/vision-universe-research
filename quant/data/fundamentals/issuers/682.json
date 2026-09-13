@@ -6,16 +6,22 @@
       "cik": "0000042682",
       "name": "GORMAN RUPP CO",
       "sic": "3561",
+      "rawFacts": 14795,
+      "mappedFacts": 5625,
+      "unmappedFacts": 9838,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GRC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 557,
+        "HIGH": 559,
         "MEDIUM": 19
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 576,
-        "resolvedValues": 576
+        "datableValues": 578,
+        "resolvedValues": 578
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10006,
+        "total": 10004,
         "by_severity": {
           "INFO": 9838,
           "ERROR": 5,
-          "WARNING": 163
+          "WARNING": 161
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 137,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 9838,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9838
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "aefe58daf56bfcc7e285d49e5e9279d3b17ed9307a9b0c092ac8ff13f23fafbc",
@@ -159,16 +164,22 @@
       "cik": "0001100682",
       "name": "CHARLES RIVER LABORATORIES INTERNATIONAL, INC.",
       "sic": "8731",
+      "rawFacts": 31487,
+      "mappedFacts": 7397,
+      "unmappedFacts": 23661,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1227",
       "tickers": [
         "CRL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-27",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-29",
       "lastPeriodEnd": "2026-06-27",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -233,11 +244,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-27",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-29",
           "lastAvailablePeriod": "2025-12-27",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 585,
+        "HIGH": 587,
         "MEDIUM": 133
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 718,
-        "resolvedValues": 718
+        "datableValues": 720,
+        "resolvedValues": 720
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24722,
+        "total": 24720,
         "by_severity": {
           "INFO": 23661,
           "ERROR": 5,
-          "WARNING": 1056
+          "WARNING": 1054
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1030,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 23661,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 23661
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0355fdb7cab8be852f767f714602d93f7e23a4de09a29ea97b02e23091bd0d44",
@@ -312,6 +322,12 @@
       "cik": "0001681682",
       "name": "ENDRA Life Sciences Inc.",
       "sic": "3845",
+      "rawFacts": 7618,
+      "mappedFacts": 2832,
+      "unmappedFacts": 4965,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NDRA"
@@ -427,18 +443,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5052,
+        "total": 5048,
         "by_severity": {
           "INFO": 4965,
           "ERROR": 1,
-          "WARNING": 86
+          "WARNING": 82
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 52,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 4965,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 4965
         }
       },
       "latestFiling": {
@@ -449,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ac94edf756cbb4b9aa0d9b7046245cc478c14048aeaea5dabd935c7e8a1c979f",
@@ -465,16 +480,22 @@
       "cik": "0001709682",
       "name": "Custom Truck One Source, Inc.",
       "sic": "7359",
+      "rawFacts": 10232,
+      "mappedFacts": 3209,
+      "unmappedFacts": 7040,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CTOS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 37,
-      "firstPeriodEnd": "2017-06-30",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 38,
+      "firstPeriodEnd": "2016-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -539,11 +560,11 @@
           "historyYears": 7.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 37,
-          "firstAvailablePeriod": "2017-12-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -570,27 +591,26 @@
         }
       },
       "quality": {
-        "HIGH": 302,
+        "HIGH": 304,
         "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 350,
-        "resolvedValues": 350
+        "datableValues": 352,
+        "resolvedValues": 352
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7384,
+        "total": 7382,
         "by_severity": {
           "INFO": 7040,
-          "WARNING": 344
+          "WARNING": 342
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 213,
           "RESTATEMENT_CONFLICT": 72,
           "UNEXPECTED_DURATION": 57,
-          "UNKNOWN_CONCEPT": 7040,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7040
         }
       },
       "latestFiling": {
@@ -601,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "98992d46be4607a9d0be034b73b97fe1a48382f362070d451c54c4b589d80ef6",

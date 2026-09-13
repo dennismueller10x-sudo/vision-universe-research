@@ -6,17 +6,23 @@
       "cik": "0001412100",
       "name": "Maiden Holdings, Ltd.",
       "sic": "6331",
+      "rawFacts": 23135,
+      "mappedFacts": 4241,
+      "unmappedFacts": 18671,
+      "calendarYears": 16,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MHLA",
         "MHNC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 61,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 62,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2025-03-31",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -81,11 +87,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 15,
@@ -112,26 +118,25 @@
         }
       },
       "quality": {
-        "HIGH": 446,
+        "HIGH": 448,
         "MEDIUM": 65
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 511,
-        "resolvedValues": 511
+        "datableValues": 513,
+        "resolvedValues": 513
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19259,
+        "total": 19257,
         "by_severity": {
           "INFO": 18671,
-          "WARNING": 588
+          "WARNING": 586
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 501,
           "RESTATEMENT_CONFLICT": 85,
-          "UNKNOWN_CONCEPT": 18671,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 18671
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c2ccfbb49ad3c1a42da1eec45c452ed68e8d9d989a81e7cb063ee15736c36251",
@@ -158,16 +163,22 @@
       "cik": "0001568100",
       "name": "PagerDuty, Inc.",
       "sic": "7372",
+      "rawFacts": 12235,
+      "mappedFacts": 3195,
+      "unmappedFacts": 9076,
+      "calendarYears": 9,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0131",
       "tickers": [
         "PD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2018-01-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2017-01-31",
       "lastPeriodEnd": "2026-07-31",
-      "historyYears": 8.0,
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 35,
-          "firstAvailablePeriod": "2018-01-31",
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2017-01-31",
           "lastAvailablePeriod": "2026-01-31",
-          "historyYears": 8.0
+          "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -263,25 +274,24 @@
         }
       },
       "quality": {
-        "HIGH": 280,
+        "HIGH": 282,
         "MEDIUM": 19
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 299,
-        "resolvedValues": 299
+        "datableValues": 301,
+        "resolvedValues": 301
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9311,
+        "total": 9297,
         "by_severity": {
-          "INFO": 9088,
-          "WARNING": 223
+          "INFO": 9076,
+          "WARNING": 221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 221,
-          "UNKNOWN_CONCEPT": 9088,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9076
         }
       },
       "latestFiling": {
@@ -292,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "120eb7369bae4f79740d2c488fd39d2ee7c643cde03b827fcc4ad4a80100c61e",
@@ -308,6 +318,12 @@
       "cik": "0001798100",
       "name": "NETSTREIT Corp.",
       "sic": "6798",
+      "rawFacts": 9527,
+      "mappedFacts": 2008,
+      "unmappedFacts": 7328,
+      "calendarYears": 7,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NTST"
@@ -423,18 +439,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7604,
+        "total": 7601,
         "by_severity": {
           "INFO": 7328,
-          "WARNING": 276
+          "WARNING": 273
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 215,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 7,
           "UNEXPECTED_DURATION": 50,
-          "UNKNOWN_CONCEPT": 7328,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 7328
         }
       },
       "latestFiling": {
@@ -445,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d189e8ea00c518bb9fb32ad08f2644a7aa177f144f9e1265a3da03348835bf5c",

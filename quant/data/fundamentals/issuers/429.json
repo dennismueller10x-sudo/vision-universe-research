@@ -6,16 +6,22 @@
       "cik": "0000850429",
       "name": "TREDEGAR CORP",
       "sic": "3350",
+      "rawFacts": 23600,
+      "mappedFacts": 6341,
+      "unmappedFacts": 17542,
+      "calendarYears": 21,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "TG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 59,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 564,
+        "HIGH": 566,
         "MEDIUM": 46
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 610,
-        "resolvedValues": 610
+        "datableValues": 612,
+        "resolvedValues": 612
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18049,
+        "total": 18047,
         "by_severity": {
           "INFO": 17542,
           "ERROR": 7,
-          "WARNING": 500
+          "WARNING": 498
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 380,
           "FISCAL_PERIOD_CONFLICT": 18,
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 17542,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 17542
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "96fb12e07f7078998d54699c9a7ad0191786562cdec0e0274bffcd115625a1e6",
@@ -160,6 +165,12 @@
       "cik": "0001243429",
       "name": "ArcelorMittal",
       "sic": "3312",
+      "rawFacts": 5349,
+      "mappedFacts": 704,
+      "unmappedFacts": 4784,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MT",
@@ -297,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ed9bb222e8516ef7344ff3afa082674d9936fbf68fb7a1073d7e16159b01b0e7",
@@ -313,6 +324,12 @@
       "cik": "0001259429",
       "name": "Oxford Square Capital Corp.",
       "sic": null,
+      "rawFacts": 4680,
+      "mappedFacts": 915,
+      "unmappedFacts": 3678,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OXSQ",
@@ -430,15 +447,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3880,
+        "total": 3851,
         "by_severity": {
-          "INFO": 3707,
+          "INFO": 3678,
           "WARNING": 173
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 167,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 3707
+          "UNKNOWN_CONCEPT": 3678
         }
       },
       "latestFiling": {
@@ -449,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c0de68be57495790d01aac0e0c1716b577f7e4db028442cc5c658583e53e20cf",
@@ -465,16 +482,22 @@
       "cik": "0001837429",
       "name": "Brookfield Wealth Solutions Ltd.",
       "sic": "6399",
+      "rawFacts": 3072,
+      "mappedFacts": 360,
+      "unmappedFacts": 2772,
+      "calendarYears": 7,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BNT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -539,11 +562,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -570,26 +593,25 @@
         }
       },
       "quality": {
-        "HIGH": 51,
+        "HIGH": 53,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 54,
-        "resolvedValues": 54
+        "datableValues": 56,
+        "resolvedValues": 56
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2810,
+        "total": 2808,
         "by_severity": {
           "INFO": 2772,
-          "WARNING": 38
+          "WARNING": 36
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 2772,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2772
         }
       },
       "latestFiling": {
@@ -600,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d907edf9a6a39cbfa612604b7a80f4f7a94f70ff8fe8099ae615599b187c95dc",

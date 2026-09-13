@@ -6,16 +6,22 @@
       "cik": "0000803578",
       "name": "FIREFLY NEUROSCIENCE, INC.",
       "sic": "7372",
+      "rawFacts": 13339,
+      "mappedFacts": 4837,
+      "unmappedFacts": 8644,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AIFF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
-      "firstPeriodEnd": "2010-06-30",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
+      "firstPeriodEnd": "2009-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2010-12-31",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 519,
+        "HIGH": 521,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 533,
-        "resolvedValues": 533
+        "datableValues": 535,
+        "resolvedValues": 535
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9117,
+        "total": 9113,
         "by_severity": {
           "INFO": 8644,
-          "WARNING": 473
+          "WARNING": 469
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 296,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 169,
-          "UNKNOWN_CONCEPT": 8644,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 8644
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "59735d3b3a69eae841f37935b9910fee46c5a6793f79154b7805952949686570",
@@ -158,17 +163,23 @@
       "cik": "0001116578",
       "name": "PRUDENTIAL PLC",
       "sic": "6311",
+      "rawFacts": 4733,
+      "mappedFacts": 509,
+      "unmappedFacts": 4245,
+      "calendarYears": 11,
+      "industry": "INSURER",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PUK",
         "PUKPF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
-      "firstPeriodEnd": "2015-12-31",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 10.0,
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2015-12-31",
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 10.0
+          "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
@@ -264,26 +275,25 @@
         }
       },
       "quality": {
-        "HIGH": 79,
+        "HIGH": 81,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 90,
-        "resolvedValues": 90
+        "datableValues": 92,
+        "resolvedValues": 92
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4362,
+        "total": 4360,
         "by_severity": {
           "INFO": 4245,
-          "WARNING": 117
+          "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 72,
           "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 4245,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 4245
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b1b105f8a91c665b2d2dadd71ee3abd73f8f64edef643c44ddf8c2b2bd43e2b8",
@@ -310,16 +320,22 @@
       "cik": "0001437578",
       "name": "BRIGHT HORIZONS FAMILY SOLUTIONS INC.",
       "sic": "8351",
+      "rawFacts": 19592,
+      "mappedFacts": 6168,
+      "unmappedFacts": 13560,
+      "calendarYears": 15,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BFAM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
-      "quarterlyPeriods": 59,
-      "firstPeriodEnd": "2011-12-31",
+      "annualPeriods": 16,
+      "quarterlyPeriods": 60,
+      "firstPeriodEnd": "2010-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -384,11 +400,11 @@
           "historyYears": 13.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 56,
-          "firstAvailablePeriod": "2011-12-31",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 14.0
+          "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -415,27 +431,26 @@
         }
       },
       "quality": {
-        "HIGH": 584,
+        "HIGH": 586,
         "MEDIUM": 56
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 640,
-        "resolvedValues": 640
+        "datableValues": 642,
+        "resolvedValues": 642
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14165,
+        "total": 14106,
         "by_severity": {
-          "INFO": 13617,
-          "WARNING": 548
+          "INFO": 13560,
+          "WARNING": 546
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 525,
           "RESTATEMENT_CONFLICT": 19,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 13617,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 13560
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "95801790a4235f33e89c987573650f45f6280a59279a0f6483f2c98fbc4b3619",
@@ -462,16 +477,22 @@
       "cik": "0001779578",
       "name": "BGM Group Ltd.",
       "sic": "2834",
+      "rawFacts": 3530,
+      "mappedFacts": 1075,
+      "unmappedFacts": 2532,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "BGM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 8,
-      "firstPeriodEnd": "2018-09-30",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 9,
+      "firstPeriodEnd": "2017-09-30",
       "lastPeriodEnd": "2025-09-30",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -536,11 +557,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 8,
-          "firstAvailablePeriod": "2018-09-30",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2017-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -567,26 +588,25 @@
         }
       },
       "quality": {
-        "HIGH": 61,
+        "HIGH": 63,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 69,
-        "resolvedValues": 69
+        "datableValues": 71,
+        "resolvedValues": 71
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2676,
+        "total": 2668,
         "by_severity": {
-          "INFO": 2538,
-          "WARNING": 138
+          "INFO": 2532,
+          "WARNING": 136
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 112,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 2538,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2532
         }
       },
       "latestFiling": {
@@ -597,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b88fb381a77f2925f537ccb79218589c05982d724dc14c884bfa344ff475f610",
@@ -613,16 +633,22 @@
       "cik": "0001927578",
       "name": "NetClass Technology Inc",
       "sic": "7372",
+      "rawFacts": 628,
+      "mappedFacts": 195,
+      "unmappedFacts": 447,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "NTCL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-09-30",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2021-09-30",
       "lastPeriodEnd": "2025-09-30",
-      "historyYears": 3.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -687,11 +713,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-09-30",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -718,26 +744,25 @@
         }
       },
       "quality": {
-        "HIGH": 28,
+        "HIGH": 30,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 33,
-        "resolvedValues": 33
+        "datableValues": 35,
+        "resolvedValues": 35
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 467,
+        "total": 465,
         "by_severity": {
           "INFO": 447,
-          "WARNING": 20
+          "WARNING": 18
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 447,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 447
         }
       },
       "latestFiling": {
@@ -748,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cb8afba1f8d521674a1598cc3dc16b48a5bc9c114ae134a650adb48c843265cc",

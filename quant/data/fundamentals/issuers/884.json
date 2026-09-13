@@ -6,16 +6,22 @@
       "cik": "0000861884",
       "name": "RELIANCE, INC.",
       "sic": "5051",
+      "rawFacts": 21542,
+      "mappedFacts": 7446,
+      "unmappedFacts": 14423,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "RS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 69,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 719,
+        "HIGH": 721,
         "MEDIUM": 63
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 782,
-        "resolvedValues": 782
+        "datableValues": 784,
+        "resolvedValues": 784
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14748,
+        "total": 14746,
         "by_severity": {
           "INFO": 14423,
           "ERROR": 12,
-          "WARNING": 313
+          "WARNING": 311
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 309,
           "FUTURE_DATA_LEAK": 12,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 14423,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14423
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3d75ab2fdea021a2cf390585681bc49cfcc14bd6932307f87b8a05d8985ad479",
@@ -159,6 +164,12 @@
       "cik": "0001912884",
       "name": "Republic Power Group Ltd",
       "sic": "7372",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "RPGL"
@@ -283,13 +294,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c41c5af40f7a177ab160a96888110674037f549ea8c79de36d832ae44af930f0",

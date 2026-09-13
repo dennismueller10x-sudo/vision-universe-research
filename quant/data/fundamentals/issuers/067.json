@@ -6,16 +6,22 @@
       "cik": "0000034067",
       "name": "DMC Global Inc.",
       "sic": "3390",
+      "rawFacts": 21160,
+      "mappedFacts": 7183,
+      "unmappedFacts": 14142,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BOOM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 581,
+        "HIGH": 583,
         "MEDIUM": 96
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 677,
-        "resolvedValues": 677
+        "datableValues": 679,
+        "resolvedValues": 679
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14636,
+        "total": 14631,
         "by_severity": {
-          "INFO": 14145,
+          "INFO": 14142,
           "ERROR": 2,
-          "WARNING": 489
+          "WARNING": 487
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 441,
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 14145,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 14142
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cfccf26273c0093ec7b460265d2b35da5bd655a5c1f972de6e152f8ea422724f",
@@ -160,16 +165,22 @@
       "cik": "0001776067",
       "name": "Oriental Culture Holding LTD",
       "sic": "7380",
+      "rawFacts": 1966,
+      "mappedFacts": 563,
+      "unmappedFacts": 1460,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OCG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -265,26 +276,25 @@
         }
       },
       "quality": {
-        "HIGH": 62
+        "HIGH": 64
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 62,
-        "resolvedValues": 62
+        "datableValues": 64,
+        "resolvedValues": 64
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1567,
+        "total": 1565,
         "by_severity": {
           "INFO": 1460,
-          "WARNING": 107
+          "WARNING": 105
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 69,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 1460,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1460
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cb7300712377397f8d7e87ea0c1944f441114194333b99144583bc6df58ab6f5",
@@ -311,16 +321,22 @@
       "cik": "0001814067",
       "name": "Lixiang Education Holding Co. Ltd.",
       "sic": "8200",
+      "rawFacts": 3475,
+      "mappedFacts": 828,
+      "unmappedFacts": 2455,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "LXEH"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 8,
-      "firstPeriodEnd": "2018-12-31",
+      "annualPeriods": 9,
+      "quarterlyPeriods": 9,
+      "firstPeriodEnd": "2017-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 7.0,
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -385,11 +401,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 8,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
@@ -416,26 +432,25 @@
         }
       },
       "quality": {
-        "HIGH": 66,
+        "HIGH": 68,
         "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 89,
-        "resolvedValues": 89
+        "datableValues": 91,
+        "resolvedValues": 91
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2846,
+        "total": 2844,
         "by_severity": {
           "INFO": 2455,
-          "WARNING": 391
+          "WARNING": 389
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 350,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 2455,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2455
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3933a8f79835cb26e2b95c43c697f1a87391dbc4e6d79d64158425d8d38f6ca0",
@@ -462,20 +477,26 @@
       "cik": "0001951067",
       "name": "C3is Inc.",
       "sic": "4412",
+      "rawFacts": 754,
+      "mappedFacts": 239,
+      "unmappedFacts": 512,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CISS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 3,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2023-12-31",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2021-03-11",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 2.0,
+      "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -489,7 +510,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -509,21 +530,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -536,18 +557,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 4.0
         },
         "total_assets": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -567,31 +588,30 @@
         }
       },
       "quality": {
-        "HIGH": 27,
-        "MEDIUM": 4
+        "HIGH": 33,
+        "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 31,
-        "resolvedValues": 31
+        "datableValues": 36,
+        "resolvedValues": 36
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 608,
+        "total": 568,
         "by_severity": {
           "INFO": 512,
           "ERROR": 1,
-          "WARNING": 95
+          "WARNING": 55
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 14,
+          "CONCEPT_DISAGREEMENT": 8,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 19,
+          "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 28,
-          "UNKNOWN_CONCEPT": 512,
-          "UNPLACEABLE_PERIOD": 30
+          "UNKNOWN_CONCEPT": 512
         }
       },
       "latestFiling": {
@@ -602,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "610f4725dad5b09970c632a6ef8f43d358102c968e36672ef8ab90ee12e4cd95",

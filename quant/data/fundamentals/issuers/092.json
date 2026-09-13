@@ -6,16 +6,22 @@
       "cik": "0000009092",
       "name": "BADGER METER INC",
       "sic": "3824",
+      "rawFacts": 17372,
+      "mappedFacts": 6826,
+      "unmappedFacts": 11309,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BMI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 68,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,28 +117,27 @@
         }
       },
       "quality": {
-        "HIGH": 625,
+        "HIGH": 627,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 626,
-        "resolvedValues": 626
+        "datableValues": 628,
+        "resolvedValues": 628
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11653,
+        "total": 11460,
         "by_severity": {
-          "INFO": 11500,
+          "INFO": 11309,
           "ERROR": 1,
-          "WARNING": 152
+          "WARNING": 150
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 66,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 11500,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11309
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "73938f76cdc6689984d855783aa144c411eed994b65dd924c509b43a1857f9e5",
@@ -159,16 +164,22 @@
       "cik": "0000039092",
       "name": "FRIEDMAN INDUSTRIES INC",
       "sic": "3310",
+      "rawFacts": 12466,
+      "mappedFacts": 5083,
+      "unmappedFacts": 7782,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "FRD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 15,
+      "annualPeriods": 16,
       "quarterlyPeriods": 63,
       "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 14.0,
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
@@ -233,18 +244,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
+          "annualPeriods": 16,
           "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-03-31",
-          "lastAvailablePeriod": "2025-03-31",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 15.0
         },
         "total_assets": {
-          "annualPeriods": 15,
+          "annualPeriods": 16,
           "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-03-31",
-          "lastAvailablePeriod": "2025-03-31",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -264,28 +275,27 @@
         }
       },
       "quality": {
-        "HIGH": 512,
+        "HIGH": 514,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 524,
-        "resolvedValues": 524
+        "datableValues": 526,
+        "resolvedValues": 526
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8167,
+        "total": 8163,
         "by_severity": {
           "ERROR": 1,
           "INFO": 7782,
-          "WARNING": 384
+          "WARNING": 380
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 230,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 150,
-          "UNKNOWN_CONCEPT": 7782,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 7782
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "700b5693e876b6a4d1f96ee91387ee4d4afa3d54b4df8fa1384d446129d6f019",
@@ -312,16 +322,30 @@
       "cik": "0001035092",
       "name": "SHORE BANCSHARES INC",
       "sic": "6021",
+      "rawFacts": 31732,
+      "mappedFacts": 5387,
+      "unmappedFacts": 26638,
+      "calendarYears": 17,
+      "industry": "BANK",
+      "industryMetrics": {
+        "net_interest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "SHBI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -386,11 +410,11 @@
           "historyYears": 9.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -417,26 +441,25 @@
         }
       },
       "quality": {
-        "HIGH": 604,
+        "HIGH": 606,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 614,
-        "resolvedValues": 614
+        "datableValues": 616,
+        "resolvedValues": 616
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27071,
+        "total": 26805,
         "by_severity": {
-          "INFO": 26902,
-          "WARNING": 169
+          "INFO": 26638,
+          "WARNING": 167
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 90,
           "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 26902,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 26638
         }
       },
       "latestFiling": {
@@ -447,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c111bb14e917a03851d84d86be6c153ea2fd6334de92a7c1caf80426f52144d0",
@@ -463,6 +486,12 @@
       "cik": "0001920092",
       "name": "Gelteq Ltd",
       "sic": "2834",
+      "rawFacts": 456,
+      "mappedFacts": 128,
+      "unmappedFacts": 360,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0630",
       "tickers": [
         "GELS"
@@ -595,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cbd7a37f2608d3f502ea6331702882e56a4ad28e579150b00b14ec3a7ec4f74d",

@@ -1,615 +1,615 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-13T12:27:22+00:00",
+  "generated_at_utc": "2026-09-13T16:01:57+00:00",
   "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert nach betroffenen EMITTENTEN - ein Konzept, das ein einziger Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
   "scope": "issuers_without_any_resolved_value",
+  "sic": null,
   "issuers_scanned": 5437,
-  "issuers_in_scope": 320,
+  "issuers_in_scope": 134,
   "by_taxonomy": {
-    "us-gaap": 31119,
-    "dei": 84,
-    "srt": 2
+    "us-gaap": 1436,
+    "srt": 1
   },
   "concepts": [
     {
+      "concept": "us-gaap:StockIssuedDuringPeriodValueNewIssues",
+      "issuers": 27,
+      "facts": 41
+    },
+    {
       "concept": "us-gaap:PreferredStockSharesAuthorized",
-      "issuers": 179,
-      "facts": 682
+      "issuers": 26,
+      "facts": 44
     },
     {
       "concept": "us-gaap:PreferredStockParOrStatedValuePerShare",
-      "issuers": 174,
-      "facts": 657
-    },
-    {
-      "concept": "us-gaap:AdditionalPaidInCapital",
-      "issuers": 169,
-      "facts": 465
+      "issuers": 26,
+      "facts": 44
     },
     {
       "concept": "us-gaap:NumberOfReportableSegments",
-      "issuers": 151,
-      "facts": 338
-    },
-    {
-      "concept": "us-gaap:StockIssuedDuringPeriodValueNewIssues",
-      "issuers": 148,
-      "facts": 318
-    },
-    {
-      "concept": "us-gaap:PrepaidExpenseCurrent",
-      "issuers": 148,
-      "facts": 478
-    },
-    {
-      "concept": "us-gaap:AccruedLiabilitiesCurrent",
-      "issuers": 145,
-      "facts": 475
-    },
-    {
-      "concept": "us-gaap:InvestmentIncomeInterest",
-      "issuers": 140,
-      "facts": 504
-    },
-    {
-      "concept": "us-gaap:ProceedsFromIssuanceOfPrivatePlacement",
-      "issuers": 133,
-      "facts": 241
-    },
-    {
-      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect",
-      "issuers": 125,
-      "facts": 310
-    },
-    {
-      "concept": "us-gaap:PaymentsOfStockIssuanceCosts",
-      "issuers": 123,
-      "facts": 253
-    },
-    {
-      "concept": "us-gaap:AssetsHeldInTrustNoncurrent",
-      "issuers": 120,
-      "facts": 361
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInAccruedLiabilities",
-      "issuers": 119,
-      "facts": 295
-    },
-    {
-      "concept": "us-gaap:NonoperatingIncomeExpense",
-      "issuers": 111,
-      "facts": 427
-    },
-    {
-      "concept": "us-gaap:CashFDICInsuredAmount",
-      "issuers": 103,
-      "facts": 249
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInPrepaidExpense",
-      "issuers": 103,
-      "facts": 232
-    },
-    {
-      "concept": "us-gaap:TemporaryEquityCarryingAmountAttributableToParent",
-      "issuers": 101,
-      "facts": 286
-    },
-    {
-      "concept": "us-gaap:ProceedsFromIssuanceInitialPublicOffering",
-      "issuers": 96,
-      "facts": 187
-    },
-    {
-      "concept": "us-gaap:DeferredOfferingCosts",
-      "issuers": 95,
-      "facts": 203
-    },
-    {
-      "concept": "us-gaap:TemporaryEquityAccretionToRedemptionValue",
-      "issuers": 94,
-      "facts": 271
-    },
-    {
-      "concept": "us-gaap:RepaymentsOfRelatedPartyDebt",
-      "issuers": 93,
-      "facts": 158
-    },
-    {
-      "concept": "us-gaap:PreferredStockSharesOutstanding",
-      "issuers": 85,
-      "facts": 309
-    },
-    {
-      "concept": "us-gaap:PreferredStockSharesIssued",
-      "issuers": 84,
-      "facts": 312
-    },
-    {
-      "concept": "us-gaap:DeferredCosts",
-      "issuers": 83,
-      "facts": 178
-    },
-    {
-      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalStockIssuedIssuanceCosts",
-      "issuers": 78,
-      "facts": 125
-    },
-    {
-      "concept": "us-gaap:NumberOfOperatingSegments",
-      "issuers": 75,
-      "facts": 156
-    },
-    {
-      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect",
-      "issuers": 75,
-      "facts": 206
-    },
-    {
-      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalWarrantIssued",
-      "issuers": 74,
-      "facts": 118
-    },
-    {
-      "concept": "us-gaap:AccountsPayableCurrent",
-      "issuers": 72,
-      "facts": 249
-    },
-    {
-      "concept": "us-gaap:ProceedsFromIssuanceOfCommonStock",
-      "issuers": 71,
-      "facts": 146
-    },
-    {
-      "concept": "dei:EntityPublicFloat",
-      "issuers": 70,
-      "facts": 71
-    },
-    {
-      "concept": "us-gaap:PaymentsToAcquireInvestments",
-      "issuers": 69,
-      "facts": 119
-    },
-    {
-      "concept": "us-gaap:CommonStockParOrStatedValuePerShare",
-      "issuers": 68,
-      "facts": 208
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInAccountsPayableAndAccruedLiabilities",
-      "issuers": 65,
-      "facts": 149
-    },
-    {
-      "concept": "us-gaap:PrepaidExpenseNoncurrent",
-      "issuers": 65,
-      "facts": 202
-    },
-    {
-      "concept": "us-gaap:CommonStockSharesAuthorized",
-      "issuers": 64,
-      "facts": 194
-    },
-    {
-      "concept": "us-gaap:CommonStockValue",
-      "issuers": 64,
-      "facts": 185
-    },
-    {
-      "concept": "us-gaap:PaymentsForUnderwritingExpense",
-      "issuers": 61,
-      "facts": 129
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInAccountsPayable",
-      "issuers": 59,
-      "facts": 190
-    },
-    {
-      "concept": "us-gaap:OperatingExpenses",
-      "issuers": 55,
-      "facts": 269
-    },
-    {
-      "concept": "us-gaap:ProceedsFromRelatedPartyDebt",
-      "issuers": 55,
-      "facts": 101
-    },
-    {
-      "concept": "us-gaap:NotesPayableCurrent",
-      "issuers": 53,
-      "facts": 108
-    },
-    {
-      "concept": "us-gaap:SharesIssuedPricePerShare",
-      "issuers": 53,
-      "facts": 127
-    },
-    {
-      "concept": "us-gaap:AccountsPayableAndAccruedLiabilitiesCurrent",
-      "issuers": 51,
-      "facts": 165
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInPrepaidDeferredExpenseAndOtherAssets",
-      "issuers": 49,
-      "facts": 134
-    },
-    {
-      "concept": "us-gaap:CashEquivalentsAtCarryingValue",
-      "issuers": 48,
-      "facts": 157
-    },
-    {
-      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue",
-      "issuers": 47,
-      "facts": 186
-    },
-    {
-      "concept": "us-gaap:ClassOfWarrantOrRightExercisePriceOfWarrantsOrRights1",
-      "issuers": 47,
-      "facts": 111
-    },
-    {
-      "concept": "us-gaap:StockIssuedDuringPeriodValueOther",
-      "issuers": 47,
-      "facts": 71
-    },
-    {
-      "concept": "us-gaap:AssetsHeldInTrust",
-      "issuers": 47,
-      "facts": 119
-    },
-    {
-      "concept": "us-gaap:ClassOfWarrantOrRightOutstanding",
-      "issuers": 46,
-      "facts": 134
-    },
-    {
-      "concept": "us-gaap:PropertyPlantAndEquipmentNet",
-      "issuers": 44,
-      "facts": 143
-    },
-    {
-      "concept": "us-gaap:PrepaidExpenseAndOtherAssetsCurrent",
-      "issuers": 42,
-      "facts": 129
-    },
-    {
-      "concept": "us-gaap:UnrecognizedTaxBenefits",
-      "issuers": 42,
-      "facts": 158
-    },
-    {
-      "concept": "us-gaap:OperatingCostsAndExpenses",
-      "issuers": 42,
-      "facts": 115
-    },
-    {
-      "concept": "us-gaap:OtherAssetsNoncurrent",
-      "issuers": 41,
-      "facts": 131
-    },
-    {
-      "concept": "us-gaap:OtherNonoperatingIncomeExpense",
-      "issuers": 41,
-      "facts": 199
-    },
-    {
-      "concept": "us-gaap:AdministrativeFeesExpense",
-      "issuers": 41,
-      "facts": 104
-    },
-    {
-      "concept": "us-gaap:OperatingLeaseLiabilityCurrent",
-      "issuers": 40,
-      "facts": 134
-    },
-    {
-      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations",
-      "issuers": 40,
-      "facts": 186
-    },
-    {
-      "concept": "us-gaap:SharePrice",
-      "issuers": 40,
-      "facts": 109
-    },
-    {
-      "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
-      "issuers": 39,
-      "facts": 140
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInPrepaidInsurance",
-      "issuers": 39,
-      "facts": 83
-    },
-    {
-      "concept": "us-gaap:PreferredStockValue",
-      "issuers": 38,
-      "facts": 120
-    },
-    {
-      "concept": "us-gaap:OperatingLeaseLiabilityNoncurrent",
-      "issuers": 38,
-      "facts": 125
-    },
-    {
-      "concept": "us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax",
-      "issuers": 35,
-      "facts": 115
-    },
-    {
-      "concept": "us-gaap:TemporaryEquityParOrStatedValuePerShare",
-      "issuers": 35,
-      "facts": 84
-    },
-    {
-      "concept": "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShareAmount",
-      "issuers": 35,
-      "facts": 135
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInAccountsReceivable",
-      "issuers": 33,
-      "facts": 101
-    },
-    {
-      "concept": "us-gaap:OtherLiabilitiesCurrent",
-      "issuers": 33,
-      "facts": 105
-    },
-    {
-      "concept": "us-gaap:SaleOfStockNumberOfSharesIssuedInTransaction",
-      "issuers": 33,
-      "facts": 55
-    },
-    {
-      "concept": "us-gaap:OtherAccruedLiabilitiesCurrent",
-      "issuers": 32,
-      "facts": 95
-    },
-    {
-      "concept": "us-gaap:SaleOfStockPricePerShare",
-      "issuers": 32,
-      "facts": 73
-    },
-    {
-      "concept": "us-gaap:OperatingLeaseLiability",
-      "issuers": 32,
-      "facts": 80
-    },
-    {
-      "concept": "us-gaap:InterestPaidNet",
-      "issuers": 31,
-      "facts": 87
-    },
-    {
-      "concept": "us-gaap:ComprehensiveIncomeNetOfTax",
-      "issuers": 31,
-      "facts": 157
-    },
-    {
-      "concept": "us-gaap:PrepaidInsurance",
-      "issuers": 31,
-      "facts": 97
-    },
-    {
-      "concept": "us-gaap:TemporaryEquitySharesAuthorized",
-      "issuers": 31,
-      "facts": 79
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInPrepaidExpensesOther",
-      "issuers": 31,
-      "facts": 66
-    },
-    {
-      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalMarkToMarket",
-      "issuers": 31,
-      "facts": 52
-    },
-    {
-      "concept": "us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-      "issuers": 30,
-      "facts": 134
-    },
-    {
-      "concept": "us-gaap:TemporaryEquitySharesIssued",
-      "issuers": 30,
-      "facts": 82
-    },
-    {
-      "concept": "us-gaap:AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
-      "issuers": 30,
-      "facts": 97
-    },
-    {
-      "concept": "us-gaap:TemporaryEquitySharesOutstanding",
-      "issuers": 30,
-      "facts": 98
-    },
-    {
-      "concept": "us-gaap:OtherLiabilitiesNoncurrent",
-      "issuers": 29,
-      "facts": 85
-    },
-    {
-      "concept": "us-gaap:OtherPrepaidExpenseCurrent",
-      "issuers": 29,
-      "facts": 89
-    },
-    {
-      "concept": "us-gaap:ProceedsFromIssuanceOfWarrants",
-      "issuers": 29,
-      "facts": 53
-    },
-    {
-      "concept": "us-gaap:TemporaryEquityRedemptionPricePerShare",
-      "issuers": 29,
-      "facts": 67
-    },
-    {
-      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalOther",
-      "issuers": 28,
-      "facts": 56
-    },
-    {
-      "concept": "us-gaap:PropertyPlantAndEquipmentGross",
-      "issuers": 27,
-      "facts": 87
-    },
-    {
-      "concept": "us-gaap:UnrecognizedTaxBenefitsIncomeTaxPenaltiesAndInterestAccrued",
-      "issuers": 27,
-      "facts": 107
-    },
-    {
-      "concept": "us-gaap:AssetsNoncurrent",
-      "issuers": 26,
-      "facts": 97
-    },
-    {
-      "concept": "us-gaap:RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability",
-      "issuers": 26,
-      "facts": 76
-    },
-    {
-      "concept": "us-gaap:NoninterestExpenseOfferingCost",
-      "issuers": 26,
-      "facts": 69
-    },
-    {
-      "concept": "us-gaap:TemporaryEquityAccretionToRedemptionValueAdjustment",
-      "issuers": 26,
-      "facts": 69
-    },
-    {
-      "concept": "us-gaap:OperatingLeaseCost",
-      "issuers": 25,
-      "facts": 131
-    },
-    {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDue",
-      "issuers": 25,
-      "facts": 40
-    },
-    {
-      "concept": "us-gaap:IncreaseDecreaseInOperatingLeaseLiability",
-      "issuers": 25,
-      "facts": 92
-    },
-    {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths",
-      "issuers": 25,
-      "facts": 40
-    },
-    {
-      "concept": "us-gaap:EmployeeRelatedLiabilitiesCurrent",
       "issuers": 24,
-      "facts": 78
-    },
-    {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
-      "issuers": 24,
-      "facts": 39
-    },
-    {
-      "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsRiskFreeInterestRate",
-      "issuers": 24,
-      "facts": 62
-    },
-    {
-      "concept": "us-gaap:AdditionalPaidInCapitalCommonStock",
-      "issuers": 24,
-      "facts": 74
-    },
-    {
-      "concept": "us-gaap:OtherAssetsCurrent",
-      "issuers": 23,
-      "facts": 67
-    },
-    {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearTwo",
-      "issuers": 23,
-      "facts": 35
-    },
-    {
-      "concept": "us-gaap:FairValueAdjustmentOfWarrants",
-      "issuers": 22,
-      "facts": 59
-    },
-    {
-      "concept": "us-gaap:AccruedLiabilitiesCurrentAndNoncurrent",
-      "issuers": 22,
-      "facts": 49
-    },
-    {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
-      "issuers": 22,
       "facts": 33
     },
     {
-      "concept": "us-gaap:InterestIncomeOther",
+      "concept": "us-gaap:PrepaidExpenseCurrent",
+      "issuers": 23,
+      "facts": 33
+    },
+    {
+      "concept": "us-gaap:AdditionalPaidInCapital",
       "issuers": 22,
-      "facts": 86
+      "facts": 31
     },
     {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear",
+      "concept": "us-gaap:AccruedLiabilitiesCurrent",
       "issuers": 22,
-      "facts": 34
+      "facts": 31
     },
     {
-      "concept": "us-gaap:OperatingLeasePayments",
-      "issuers": 22,
-      "facts": 74
+      "concept": "us-gaap:InvestmentIncomeInterest",
+      "issuers": 19,
+      "facts": 41
     },
     {
-      "concept": "us-gaap:OperatingLeaseWeightedAverageDiscountRatePercent",
-      "issuers": 22,
-      "facts": 58
+      "concept": "us-gaap:ProceedsFromIssuanceOfPrivatePlacement",
+      "issuers": 18,
+      "facts": 24
     },
     {
-      "concept": "us-gaap:OtherReceivablesNetCurrent",
-      "issuers": 22,
-      "facts": 65
+      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect",
+      "issuers": 18,
+      "facts": 21
     },
     {
-      "concept": "us-gaap:ProceedsFromOtherEquity",
-      "issuers": 22,
-      "facts": 34
+      "concept": "us-gaap:IncreaseDecreaseInAccruedLiabilities",
+      "issuers": 18,
+      "facts": 23
     },
     {
-      "concept": "us-gaap:AmortizationOfIntangibleAssets",
-      "issuers": 21,
-      "facts": 93
+      "concept": "us-gaap:IncreaseDecreaseInPrepaidExpense",
+      "issuers": 17,
+      "facts": 23
     },
     {
-      "concept": "us-gaap:DeferredIncomeTaxExpenseBenefit",
-      "issuers": 21,
-      "facts": 61
+      "concept": "us-gaap:AssetsHeldInTrustNoncurrent",
+      "issuers": 17,
+      "facts": 21
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityAccretionToRedemptionValue",
+      "issuers": 15,
+      "facts": 20
+    },
+    {
+      "concept": "us-gaap:CashFDICInsuredAmount",
+      "issuers": 14,
+      "facts": 22
+    },
+    {
+      "concept": "us-gaap:PaymentsOfStockIssuanceCosts",
+      "issuers": 14,
+      "facts": 18
+    },
+    {
+      "concept": "us-gaap:DeferredCosts",
+      "issuers": 14,
+      "facts": 16
+    },
+    {
+      "concept": "us-gaap:NonoperatingIncomeExpense",
+      "issuers": 14,
+      "facts": 28
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalWarrantIssued",
+      "issuers": 13,
+      "facts": 13
+    },
+    {
+      "concept": "us-gaap:PaymentsForUnderwritingExpense",
+      "issuers": 13,
+      "facts": 16
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityCarryingAmountAttributableToParent",
+      "issuers": 11,
+      "facts": 14
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceOfCommonStock",
+      "issuers": 11,
+      "facts": 17
+    },
+    {
+      "concept": "us-gaap:PreferredStockSharesIssued",
+      "issuers": 11,
+      "facts": 18
+    },
+    {
+      "concept": "us-gaap:PreferredStockSharesOutstanding",
+      "issuers": 11,
+      "facts": 18
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalStockIssuedIssuanceCosts",
+      "issuers": 11,
+      "facts": 12
+    },
+    {
+      "concept": "us-gaap:PaymentsToAcquireInvestments",
+      "issuers": 11,
+      "facts": 12
+    },
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodValueOther",
+      "issuers": 11,
+      "facts": 13
+    },
+    {
+      "concept": "us-gaap:DeferredOfferingCosts",
+      "issuers": 10,
+      "facts": 12
+    },
+    {
+      "concept": "us-gaap:RepaymentsOfRelatedPartyDebt",
+      "issuers": 10,
+      "facts": 11
+    },
+    {
+      "concept": "us-gaap:NotesPayableCurrent",
+      "issuers": 10,
+      "facts": 11
+    },
+    {
+      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect",
+      "issuers": 9,
+      "facts": 13
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceInitialPublicOffering",
+      "issuers": 9,
+      "facts": 12
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInAccountsPayableAndAccruedLiabilities",
+      "issuers": 9,
+      "facts": 10
+    },
+    {
+      "concept": "us-gaap:AccountsPayableCurrent",
+      "issuers": 8,
+      "facts": 10
+    },
+    {
+      "concept": "us-gaap:SharesIssuedPricePerShare",
+      "issuers": 8,
+      "facts": 11
+    },
+    {
+      "concept": "us-gaap:PrepaidExpenseNoncurrent",
+      "issuers": 8,
+      "facts": 9
+    },
+    {
+      "concept": "us-gaap:CommonStockSharesAuthorized",
+      "issuers": 6,
+      "facts": 12
+    },
+    {
+      "concept": "us-gaap:CommonStockValue",
+      "issuers": 6,
+      "facts": 11
+    },
+    {
+      "concept": "us-gaap:CommonStockParOrStatedValuePerShare",
+      "issuers": 6,
+      "facts": 12
+    },
+    {
+      "concept": "us-gaap:ClassOfWarrantOrRightExercisePriceOfWarrantsOrRights1",
+      "issuers": 6,
+      "facts": 9
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInPrepaidInsurance",
+      "issuers": 6,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:ProceedsFromRelatedPartyDebt",
+      "issuers": 6,
+      "facts": 9
+    },
+    {
+      "concept": "us-gaap:TemporaryEquitySharesAuthorized",
+      "issuers": 5,
+      "facts": 8
+    },
+    {
+      "concept": "us-gaap:UnrecognizedTaxBenefits",
+      "issuers": 5,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityParOrStatedValuePerShare",
+      "issuers": 5,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityRedemptionPricePerShare",
+      "issuers": 5,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:AccountsPayableAndAccruedLiabilitiesCurrent",
+      "issuers": 5,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:PaymentOfFinancingAndStockIssuanceCosts",
+      "issuers": 5,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodValueIssuedForServices",
+      "issuers": 5,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:FairValueAdjustmentOfWarrants",
+      "issuers": 5,
+      "facts": 10
+    },
+    {
+      "concept": "us-gaap:PrepaidExpenseAndOtherAssetsCurrent",
+      "issuers": 4,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsRiskFreeInterestRate",
+      "issuers": 4,
+      "facts": 7
     },
     {
       "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsExpectedVolatilityRate",
-      "issuers": 21,
-      "facts": 53
+      "issuers": 4,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInAccountsPayable",
+      "issuers": 4,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:ClassOfWarrantOrRightOutstanding",
+      "issuers": 4,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsExercisePrice",
+      "issuers": 4,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:CashEquivalentsAtCarryingValue",
+      "issuers": 4,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:PreferredStockValue",
+      "issuers": 4,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:CommitmentsAndContingencies",
+      "issuers": 4,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:SharePrice",
+      "issuers": 4,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:AssetsHeldInTrust",
+      "issuers": 4,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInPrepaidExpensesOther",
+      "issuers": 4,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:OtherDeferredCostsNet",
+      "issuers": 4,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:TemporaryEquitySharesOutstanding",
+      "issuers": 3,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:AssetsNoncurrent",
+      "issuers": 3,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:LiabilitiesNoncurrent",
+      "issuers": 3,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceOrSaleOfEquity",
+      "issuers": 3,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:AdministrativeFeesExpense",
+      "issuers": 3,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:PrepaidInsurance",
+      "issuers": 3,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodSharesIssuedForServices",
+      "issuers": 3,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:OtherLiabilitiesCurrent",
+      "issuers": 3,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:OperatingCostsAndExpenses",
+      "issuers": 3,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:FederalDepositInsuranceCorporationPremiumExpense",
+      "issuers": 3,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:CostsAndExpensesRelatedParty",
+      "issuers": 3,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalMarkToMarket",
+      "issuers": 3,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:ProceedsFromOtherEquity",
+      "issuers": 3,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInDeferredCharges",
+      "issuers": 3,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:OtherUnderwritingExpense",
+      "issuers": 3,
+      "facts": 5
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalOther",
+      "issuers": 3,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:UnrecognizedTaxBenefitsIncomeTaxPenaltiesAndInterestAccrued",
+      "issuers": 3,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:InterestIncomeOther",
+      "issuers": 3,
+      "facts": 6
+    },
+    {
+      "concept": "us-gaap:TemporaryEquitySharesIssued",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:NumberOfOperatingSegments",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:OtherLiabilitiesNoncurrent",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceOfWarrants",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInPrepaidDeferredExpenseAndOtherAssets",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:OtherReceivablesNetCurrent",
+      "issuers": 2,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:OperatingExpenses",
+      "issuers": 2,
+      "facts": 7
+    },
+    {
+      "concept": "us-gaap:DebtInstrumentConvertibleConversionPrice1",
+      "issuers": 2,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:SaleOfStockNumberOfSharesIssuedInTransaction",
+      "issuers": 2,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInProfessionalFeePayable",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:DeferredCompensationLiabilityClassifiedNoncurrent",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:PaymentsForFees",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:PaymentForAdministrativeFees",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:BusinessAcquisitionCostOfAcquiredEntityTransactionCosts",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:SaleOfStockConsiderationReceivedOnTransaction",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInDueToRelatedParties",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:SaleOfStockPricePerShare",
+      "issuers": 2,
+      "facts": 3
     },
     {
       "concept": "us-gaap:StockIssuedDuringPeriodSharesNewIssues",
-      "issuers": 21,
-      "facts": 45
+      "issuers": 2,
+      "facts": 4
     },
     {
-      "concept": "us-gaap:IncomeTaxesPaidNet",
-      "issuers": 20,
-      "facts": 58
+      "concept": "us-gaap:IncreaseDecreaseInDueToRelatedPartiesCurrent",
+      "issuers": 2,
+      "facts": 4
     },
     {
-      "concept": "us-gaap:ContractWithCustomerLiabilityRevenueRecognized",
-      "issuers": 20,
-      "facts": 65
+      "concept": "us-gaap:WarrantsAndRightsOutstanding",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityAccretionToRedemptionValueAdjustment",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:DebtInstrumentRedemptionPricePercentage",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodSharesShareBasedCompensationForfeited",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:PaymentsForRepurchaseOfInitialPublicOffering",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:OtherExpenses",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:AdministrativeFeePayable",
+      "issuers": 2,
+      "facts": 3
+    },
+    {
+      "concept": "us-gaap:PaymentsToInvestInDecommissioningFund",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalStockIssuedOwnshareLendingArrangementIssuanceCosts",
+      "issuers": 2,
+      "facts": 2
+    },
+    {
+      "concept": "srt:TaxableInvestmentSecuritiesAverageYield",
+      "issuers": 1,
+      "facts": 1
+    },
+    {
+      "concept": "us-gaap:ShortTermLeaseCost",
+      "issuers": 1,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:OtherAccruedLiabilitiesCurrent",
+      "issuers": 1,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
+      "issuers": 1,
+      "facts": 1
+    },
+    {
+      "concept": "us-gaap:AllowanceForDoubtfulAccountsReceivable",
+      "issuers": 1,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:VariableLeaseCost",
+      "issuers": 1,
+      "facts": 4
+    },
+    {
+      "concept": "us-gaap:PropertyPlantAndEquipmentNet",
+      "issuers": 1,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:PropertySubjectToOrAvailableForOperatingLeaseNet",
+      "issuers": 1,
+      "facts": 2
+    },
+    {
+      "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceived",
+      "issuers": 1,
+      "facts": 1
+    },
+    {
+      "concept": "us-gaap:UnbilledContractsReceivable",
+      "issuers": 1,
+      "facts": 2
     }
   ]
 }

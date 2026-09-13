@@ -6,6 +6,12 @@
       "cik": "0001120914",
       "name": "PDF SOLUTIONS INC",
       "sic": "7372",
+      "rawFacts": 20460,
+      "mappedFacts": 6436,
+      "unmappedFacts": 14353,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PDFS"
@@ -121,18 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14682,
+        "total": 14681,
         "by_severity": {
           "INFO": 14353,
           "ERROR": 1,
-          "WARNING": 328
+          "WARNING": 327
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 298,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 14353,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 14353
         }
       },
       "latestFiling": {
@@ -143,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "81355d8fc2bfdb350a3f10e243a55924f0b954cb18e03af76b1e66b407f54d77",
@@ -159,16 +164,22 @@
       "cik": "0001401914",
       "name": "Dare Bioscience, Inc.",
       "sic": "2834",
+      "rawFacts": 10572,
+      "mappedFacts": 3605,
+      "unmappedFacts": 7058,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "DARE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 55,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 56,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -233,11 +244,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -264,27 +275,26 @@
         }
       },
       "quality": {
-        "HIGH": 396,
+        "HIGH": 398,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 398,
-        "resolvedValues": 398
+        "datableValues": 400,
+        "resolvedValues": 400
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7278,
+        "total": 7272,
         "by_severity": {
-          "INFO": 7062,
-          "WARNING": 216
+          "INFO": 7058,
+          "WARNING": 214
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
           "RESTATEMENT_CONFLICT": 94,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 7062,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 7058
         }
       },
       "latestFiling": {
@@ -295,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "172af5d7ffae2c0f4ebce80485d2c4ee4c41d8ad0a984c16a372d88d74d87e5e",
@@ -311,6 +321,12 @@
       "cik": "0001803914",
       "name": "Playboy, Inc.",
       "sic": "5900",
+      "rawFacts": 10319,
+      "mappedFacts": 2743,
+      "unmappedFacts": 7506,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PLBY"
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "e7028f261903263b0711c6cba9c152713ee59b0b43dc926ff35764cec74f2908",

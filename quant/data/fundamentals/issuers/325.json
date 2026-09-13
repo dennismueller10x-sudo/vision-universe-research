@@ -6,6 +6,12 @@
       "cik": "0000783325",
       "name": "WEC ENERGY GROUP, INC.",
       "sic": "4931",
+      "rawFacts": 27857,
+      "mappedFacts": 6759,
+      "unmappedFacts": 21383,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "WEC"
@@ -121,19 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21824,
+        "total": 21823,
         "by_severity": {
           "INFO": 21383,
           "ERROR": 3,
-          "WARNING": 438
+          "WARNING": 437
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 348,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 88,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 21383,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 21383
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "764a10e6e8849e165e22c22ade2b3931163579054ec68f431e4e18be8d123f4f",
@@ -160,16 +165,22 @@
       "cik": "0001334325",
       "name": "Coda Octopus Group, Inc.",
       "sic": "3812",
+      "rawFacts": 9996,
+      "mappedFacts": 3989,
+      "unmappedFacts": 6304,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1031",
       "tickers": [
         "CODA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 12,
-      "quarterlyPeriods": 47,
-      "firstPeriodEnd": "2009-10-31",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 48,
+      "firstPeriodEnd": "2008-10-31",
       "lastPeriodEnd": "2026-04-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -234,11 +245,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 41,
-          "firstAvailablePeriod": "2009-10-31",
+          "annualPeriods": 13,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2008-10-31",
           "lastAvailablePeriod": "2025-10-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -265,28 +276,27 @@
         }
       },
       "quality": {
-        "HIGH": 384,
+        "HIGH": 386,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 386,
-        "resolvedValues": 386
+        "datableValues": 388,
+        "resolvedValues": 388
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6499,
+        "total": 6474,
         "by_severity": {
-          "INFO": 6327,
-          "WARNING": 172
+          "INFO": 6304,
+          "WARNING": 170
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "FISCAL_PERIOD_CONFLICT": 29,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 80,
-          "UNKNOWN_CONCEPT": 6327,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 6304
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ec8e4428e9ba52b2aebfafb9422d9eee40f3cd6a4736e2668e64babf7caddb3a",
@@ -313,16 +323,22 @@
       "cik": "0001378325",
       "name": "CapsoVision, Inc",
       "sic": "3845",
+      "rawFacts": 1659,
+      "mappedFacts": 465,
+      "unmappedFacts": 1202,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "CV"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 10,
-      "firstPeriodEnd": "2024-03-31",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 11,
+      "firstPeriodEnd": "2023-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 1.0,
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
@@ -387,11 +403,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2024-12-31",
+          "annualPeriods": 3,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 1.0
+          "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
@@ -418,24 +434,23 @@
         }
       },
       "quality": {
-        "HIGH": 74
+        "HIGH": 76
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 74,
-        "resolvedValues": 74
+        "datableValues": 76,
+        "resolvedValues": 76
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1208,
+        "total": 1205,
         "by_severity": {
           "INFO": 1202,
-          "WARNING": 6
+          "WARNING": 3
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
-          "UNKNOWN_CONCEPT": 1202,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 1202
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f7eb7058fc8632afc57fa16360c8d734580c316cac18cb29ba21d7186aa0b642",
@@ -462,6 +477,12 @@
       "cik": "0002088325",
       "name": "OneIM Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 164,
+      "mappedFacts": 67,
+      "unmappedFacts": 99,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "OIM",
@@ -469,10 +490,10 @@
         "OIMAW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 4,
+      "firstPeriodEnd": "2025-09-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -511,14 +532,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -538,17 +559,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -568,23 +589,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 14
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 14,
+        "resolvedValues": 14
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 164,
+        "total": 103,
         "by_severity": {
           "INFO": 99,
-          "WARNING": 65
+          "WARNING": 4
         },
         "by_code": {
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 99,
-          "UNPLACEABLE_PERIOD": 61
+          "UNKNOWN_CONCEPT": 99
         }
       },
       "latestFiling": {
@@ -595,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1906ef2fdbdf2d0383a3f0f2dc90d5efdd14c73e29e73a48e66d71b86827b188",

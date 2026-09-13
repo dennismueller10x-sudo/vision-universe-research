@@ -6,16 +6,22 @@
       "cik": "0001111711",
       "name": "NISOURCE INC.",
       "sic": "4931",
+      "rawFacts": 32939,
+      "mappedFacts": 6513,
+      "unmappedFacts": 25944,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "NI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 521,
+        "HIGH": 523,
         "MEDIUM": 129
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 650,
-        "resolvedValues": 650
+        "datableValues": 652,
+        "resolvedValues": 652
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26996,
+        "total": 26994,
         "by_severity": {
           "INFO": 25944,
           "ERROR": 1,
-          "WARNING": 1051
+          "WARNING": 1049
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 832,
           "FISCAL_PERIOD_CONFLICT": 26,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 191,
-          "UNKNOWN_CONCEPT": 25944,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 25944
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "50eb05dde833d240a4f23d7b9f19a72aed21c9eea7611aadd35ff26258ec49b5",
@@ -160,6 +165,12 @@
       "cik": "0001609711",
       "name": "GoDaddy Inc.",
       "sic": "7373",
+      "rawFacts": 15420,
+      "mappedFacts": 4373,
+      "unmappedFacts": 11277,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GDDY"
@@ -275,17 +286,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11626,
+        "total": 11593,
         "by_severity": {
-          "INFO": 11309,
-          "WARNING": 317
+          "INFO": 11277,
+          "WARNING": 316
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 295,
           "FISCAL_PERIOD_CONFLICT": 2,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 11309,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 11277
         }
       },
       "latestFiling": {
@@ -296,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "100f128ee182caab8e59f262c6d60df88a20ae24a8ad8ca6397a4847a6e61efb",
@@ -312,6 +322,12 @@
       "cik": "0001704711",
       "name": "Funko, Inc.",
       "sic": "3944",
+      "rawFacts": 9557,
+      "mappedFacts": 3700,
+      "unmappedFacts": 5899,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FNKO"
@@ -427,17 +443,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6385,
+        "total": 6381,
         "by_severity": {
           "INFO": 5899,
-          "WARNING": 486
+          "WARNING": 482
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 403,
           "RESTATEMENT_CONFLICT": 56,
           "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 5899,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 5899
         }
       },
       "latestFiling": {
@@ -448,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3c65c139d053df9c6d5028ed5c49baeccf98953d0e30a3bcf4ecab4c859166e7",
@@ -464,16 +479,22 @@
       "cik": "0001997711",
       "name": "Logistic Properties of the Americas",
       "sic": "6500",
+      "rawFacts": 1184,
+      "mappedFacts": 272,
+      "unmappedFacts": 953,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LPA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
-      "firstPeriodEnd": "2021-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 4.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -538,11 +559,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": "2021-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 4.0
+          "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 4,
@@ -569,26 +590,25 @@
         }
       },
       "quality": {
-        "HIGH": 47,
+        "HIGH": 49,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 56,
-        "resolvedValues": 56
+        "datableValues": 58,
+        "resolvedValues": 58
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 995,
+        "total": 993,
         "by_severity": {
           "INFO": 953,
-          "WARNING": 42
+          "WARNING": 40
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 30,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 953,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 953
         }
       },
       "latestFiling": {
@@ -599,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "34dbb6a961412a7951e7fafdb133f1a682c76fcf8bb3917d40e25fc9c54ff6b9",
@@ -615,6 +635,12 @@
       "cik": "0002004711",
       "name": "Bending Spoons S.p.A.",
       "sic": "7370",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "BSP"
@@ -734,13 +760,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b3df37050aa42efb2d0fd1f3a32fb2a73d8a14ad3f36de073959e552ed556e26",

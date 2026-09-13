@@ -6,16 +6,22 @@
       "cik": "0000814547",
       "name": "FAIR ISAAC CORP",
       "sic": "7389",
+      "rawFacts": 22534,
+      "mappedFacts": 7696,
+      "unmappedFacts": 15289,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "FICO"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-09-30",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -80,11 +86,11 @@
           "historyYears": 16.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-09-30",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,27 +117,26 @@
         }
       },
       "quality": {
-        "HIGH": 738,
+        "HIGH": 740,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 750,
-        "resolvedValues": 750
+        "datableValues": 752,
+        "resolvedValues": 752
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15823,
+        "total": 15821,
         "by_severity": {
           "INFO": 15289,
-          "WARNING": 534
+          "WARNING": 532
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 470,
           "FISCAL_PERIOD_CONFLICT": 15,
           "RESTATEMENT_CONFLICT": 47,
-          "UNKNOWN_CONCEPT": 15289,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15289
         }
       },
       "latestFiling": {
@@ -142,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "d7012f24d4c988884be96f403b2c6693e1d4afafb0ab47984675981e4d5f91e2",
@@ -158,16 +163,22 @@
       "cik": "0001308547",
       "name": "Dolby Laboratories, Inc.",
       "sic": "6794",
+      "rawFacts": 32429,
+      "mappedFacts": 8008,
+      "unmappedFacts": 23972,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0927",
       "tickers": [
         "DLB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-09-26",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-09-28",
       "lastPeriodEnd": "2026-06-26",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -232,11 +243,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-09-26",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-09-28",
           "lastAvailablePeriod": "2025-09-26",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -263,21 +274,21 @@
         }
       },
       "quality": {
-        "HIGH": 536,
+        "HIGH": 538,
         "MEDIUM": 65
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 601,
-        "resolvedValues": 601
+        "datableValues": 603,
+        "resolvedValues": 603
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24770,
+        "total": 24759,
         "by_severity": {
-          "INFO": 23981,
+          "INFO": 23972,
           "ERROR": 1,
-          "WARNING": 788
+          "WARNING": 786
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 709,
@@ -285,8 +296,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 23981,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 23972
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "cfe3df8691f61402139bc70d6a857519e41deb2b83ef512e8833cdcbd4306dd4",
@@ -313,16 +323,22 @@
       "cik": "0001584547",
       "name": "GREENPOWER MOTOR Co INC.",
       "sic": "3713",
+      "rawFacts": 1906,
+      "mappedFacts": 365,
+      "unmappedFacts": 1628,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "GP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2018-03-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2017-03-31",
       "lastPeriodEnd": "2024-03-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -387,11 +403,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2018-03-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2017-03-31",
           "lastAvailablePeriod": "2024-03-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -418,24 +434,23 @@
         }
       },
       "quality": {
-        "HIGH": 69
+        "HIGH": 71
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 69,
-        "resolvedValues": 69
+        "datableValues": 71,
+        "resolvedValues": 71
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1633,
+        "total": 1631,
         "by_severity": {
           "INFO": 1628,
-          "WARNING": 5
+          "WARNING": 3
         },
         "by_code": {
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 1628,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1628
         }
       },
       "latestFiling": {
@@ -446,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "59c652874c045ba2e9c461083314450ebd58b812e7c90905f6e14d2b401717a8",
@@ -462,16 +477,22 @@
       "cik": "0001611547",
       "name": "Urban Edge Properties",
       "sic": "6500",
+      "rawFacts": 17013,
+      "mappedFacts": 3976,
+      "unmappedFacts": 12794,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "UE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 50,
-      "firstPeriodEnd": "2013-12-31",
+      "annualPeriods": 14,
+      "quarterlyPeriods": 51,
+      "firstPeriodEnd": "2012-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 12.0,
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -536,11 +557,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 47,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
@@ -567,26 +588,25 @@
         }
       },
       "quality": {
-        "HIGH": 381,
+        "HIGH": 383,
         "MEDIUM": 58
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 439,
-        "resolvedValues": 439
+        "datableValues": 441,
+        "resolvedValues": 441
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13300,
+        "total": 13298,
         "by_severity": {
           "INFO": 12794,
-          "WARNING": 506
+          "WARNING": 504
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 496,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 12794,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 12794
         }
       },
       "latestFiling": {
@@ -597,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9b6689ef73342d51f7f9655a072b8eb76a3007ce5a9b2aaf90d5d63d79feb2cd",
@@ -613,16 +633,22 @@
       "cik": "0001717547",
       "name": "BrightSpire Capital, Inc.",
       "sic": "6798",
+      "rawFacts": 16065,
+      "mappedFacts": 2745,
+      "unmappedFacts": 13015,
+      "calendarYears": 10,
+      "industry": "REIT",
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BRSP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 39,
-      "firstPeriodEnd": "2016-12-31",
+      "annualPeriods": 11,
+      "quarterlyPeriods": 40,
+      "firstPeriodEnd": "2015-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 9.0,
+      "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -687,11 +713,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 10,
-          "quarterlyPeriods": 39,
-          "firstAvailablePeriod": "2016-12-31",
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
@@ -718,28 +744,27 @@
         }
       },
       "quality": {
-        "HIGH": 327,
+        "HIGH": 329,
         "MEDIUM": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 361,
-        "resolvedValues": 361
+        "datableValues": 363,
+        "resolvedValues": 363
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13559,
+        "total": 13518,
         "by_severity": {
-          "INFO": 13055,
-          "WARNING": 504
+          "INFO": 13015,
+          "WARNING": 503
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 471,
+          "CONCEPT_DISAGREEMENT": 473,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 13055,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 13015
         }
       },
       "latestFiling": {
@@ -750,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bc24a998916baeb3a5b4cc18691dc7a49d532716008bb7fa052a0cbc51e1db7b",
@@ -766,17 +791,23 @@
       "cik": "0001875547",
       "name": "Locafy Ltd",
       "sic": "7370",
+      "rawFacts": 1450,
+      "mappedFacts": 424,
+      "unmappedFacts": 1140,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "LCFY",
         "LCFYW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 6,
-      "firstPeriodEnd": "2020-06-30",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2019-06-30",
       "lastPeriodEnd": "2025-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -841,11 +872,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": "2020-06-30",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-06-30",
           "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
@@ -872,25 +903,24 @@
         }
       },
       "quality": {
-        "HIGH": 44
+        "HIGH": 46
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 44,
-        "resolvedValues": 44
+        "datableValues": 46,
+        "resolvedValues": 46
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1155,
+        "total": 1153,
         "by_severity": {
           "INFO": 1140,
-          "WARNING": 15
+          "WARNING": 13
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 2,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 1140,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 1140
         }
       },
       "latestFiling": {
@@ -901,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "b09a215af9264b7799aceff9854bcce352bb0c64b5cf3db0b87c9c03df5d0fe3",
@@ -917,6 +947,12 @@
       "cik": "0002052547",
       "name": "EGH Acquisition Corp.",
       "sic": "6770",
+      "rawFacts": 399,
+      "mappedFacts": 153,
+      "unmappedFacts": 236,
+      "calendarYears": 1,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "EGHA",
@@ -1052,13 +1088,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "9b3657a53dc26c0f6d10e35377498b2af023524330ce9795551cf2fe347de45f",

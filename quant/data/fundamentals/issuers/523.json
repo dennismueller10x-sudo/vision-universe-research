@@ -6,16 +6,22 @@
       "cik": "0000876523",
       "name": "EZCORP INC",
       "sic": "5900",
+      "rawFacts": 27954,
+      "mappedFacts": 8036,
+      "unmappedFacts": 19560,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "EZPW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2009-09-30",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2008-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2009-09-30",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -111,29 +117,28 @@
         }
       },
       "quality": {
-        "HIGH": 655,
+        "HIGH": 657,
         "MEDIUM": 94
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 749,
-        "resolvedValues": 749
+        "datableValues": 751,
+        "resolvedValues": 751
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20961,
+        "total": 20921,
         "by_severity": {
-          "INFO": 19604,
+          "INFO": 19560,
           "ERROR": 5,
-          "WARNING": 1352
+          "WARNING": 1356
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1106,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 237,
+          "RESTATEMENT_CONFLICT": 243,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 19604,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19560
         }
       },
       "latestFiling": {
@@ -144,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1c3d7b045e21f852d8f88ee7f6348ec8478449ceae3bbe702a2b43c84e89356f",
@@ -160,6 +165,12 @@
       "cik": "0001303523",
       "name": "British American Tobacco p.l.c.",
       "sic": "2111",
+      "rawFacts": 5188,
+      "mappedFacts": 704,
+      "unmappedFacts": 4588,
+      "calendarYears": 13,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": null,
       "tickers": [
         "BTI",
@@ -296,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f6800566f2593fb8e21799edfe5e82e1b3ad2fee99bb86fe647a8ca8b3061fcb",
@@ -312,16 +323,22 @@
       "cik": "0001587523",
       "name": "Knowles Corp",
       "sic": "3651",
+      "rawFacts": 21566,
+      "mappedFacts": 5476,
+      "unmappedFacts": 16015,
+      "calendarYears": 14,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "KN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 54,
-      "firstPeriodEnd": "2012-12-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 55,
+      "firstPeriodEnd": "2011-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -386,11 +403,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 51,
-          "firstAvailablePeriod": "2012-12-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
@@ -417,26 +434,25 @@
         }
       },
       "quality": {
-        "HIGH": 502,
+        "HIGH": 504,
         "MEDIUM": 72
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 574,
-        "resolvedValues": 574
+        "datableValues": 576,
+        "resolvedValues": 576
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16908,
+        "total": 16865,
         "by_severity": {
-          "INFO": 16057,
-          "WARNING": 851
+          "INFO": 16015,
+          "WARNING": 850
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 663,
-          "RESTATEMENT_CONFLICT": 186,
-          "UNKNOWN_CONCEPT": 16057,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 187,
+          "UNKNOWN_CONCEPT": 16015
         }
       },
       "latestFiling": {
@@ -447,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "1d13ffb4818522d743066e7684eb8945b16350bb71b02601921d0d63c2ca8901",
@@ -463,16 +479,22 @@
       "cik": "0001737523",
       "name": "BioNexus Gene Lab Corp",
       "sic": "8071",
+      "rawFacts": 6419,
+      "mappedFacts": 2270,
+      "unmappedFacts": 4312,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BGLC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 9,
-      "quarterlyPeriods": 35,
-      "firstPeriodEnd": "2018-03-31",
+      "annualPeriods": 10,
+      "quarterlyPeriods": 36,
+      "firstPeriodEnd": "2018-01-01",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 7.0,
+      "historyYears": 7.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
@@ -537,11 +559,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 8,
-          "quarterlyPeriods": 31,
-          "firstAvailablePeriod": "2018-12-31",
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-01-01",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 7.0
+          "historyYears": 7.92
         },
         "total_assets": {
           "annualPeriods": 8,
@@ -568,29 +590,28 @@
         }
       },
       "quality": {
-        "HIGH": 252,
+        "HIGH": 254,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 254,
-        "resolvedValues": 254
+        "datableValues": 256,
+        "resolvedValues": 256
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4528,
+        "total": 4516,
         "by_severity": {
-          "INFO": 4320,
+          "INFO": 4312,
           "ERROR": 6,
-          "WARNING": 202
+          "WARNING": 198
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 82,
           "FUTURE_DATA_LEAK": 6,
           "NEGATIVE_WHERE_IMPOSSIBLE": 15,
           "RESTATEMENT_CONFLICT": 101,
-          "UNKNOWN_CONCEPT": 4320,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 4312
         }
       },
       "latestFiling": {
@@ -601,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "388f074969e3f9d7fb03399c3c78a3843015e1c0d3cd313a40595cd422ade60c",
@@ -617,6 +638,12 @@
       "cik": "0001810523",
       "name": "FIRST TRUST HIGH YIELD OPPORTUNITIES 2027 TERM FUND",
       "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0531",
       "tickers": [
         "FTHY"
@@ -736,13 +763,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "0c564ee887c46a1674e164fd0e8d1895eab11a3aee2f0ed33092da647947464b",
@@ -752,6 +779,12 @@
       "cik": "0001822523",
       "name": "Advanced Flower Capital Inc.",
       "sic": "0000",
+      "rawFacts": 6426,
+      "mappedFacts": 1339,
+      "unmappedFacts": 4885,
+      "calendarYears": 6,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "AFCG"
@@ -867,16 +900,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5078,
+        "total": 5073,
         "by_severity": {
-          "INFO": 4891,
-          "WARNING": 187
+          "INFO": 4885,
+          "WARNING": 188
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 147,
           "RESTATEMENT_CONFLICT": 9,
-          "UNEXPECTED_DURATION": 31,
-          "UNKNOWN_CONCEPT": 4891
+          "UNEXPECTED_DURATION": 32,
+          "UNKNOWN_CONCEPT": 4885
         }
       },
       "latestFiling": {
@@ -887,13 +920,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "ba0cd702b195e591497f65fac5592e85b39bc9ce85c0a284cb5609c82493609b",
@@ -903,6 +936,12 @@
       "cik": "0002044523",
       "name": "Origin Investment Corp I",
       "sic": "6770",
+      "rawFacts": 484,
+      "mappedFacts": 182,
+      "unmappedFacts": 315,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ORIQ",
@@ -1039,13 +1078,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "51d28bd266ffcdb8a751cfb83e4744e993d59cab5216e2a6aab8c55d9181075c",

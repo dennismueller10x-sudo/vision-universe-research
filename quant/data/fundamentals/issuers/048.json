@@ -6,16 +6,22 @@
       "cik": "0000010048",
       "name": "BARNWELL INDUSTRIES INC",
       "sic": "1311",
+      "rawFacts": 19465,
+      "mappedFacts": 5182,
+      "unmappedFacts": 13975,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "BRN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2010-03-31",
+      "annualPeriods": 17,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2009-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 15.0,
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
@@ -80,11 +86,11 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 66,
-          "firstAvailablePeriod": "2010-09-30",
+          "annualPeriods": 17,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2009-09-30",
           "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 15.0
+          "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,26 +117,25 @@
         }
       },
       "quality": {
-        "HIGH": 469,
+        "HIGH": 471,
         "MEDIUM": 122
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 591,
-        "resolvedValues": 591
+        "datableValues": 593,
+        "resolvedValues": 593
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14650,
+        "total": 14646,
         "by_severity": {
           "INFO": 13975,
-          "WARNING": 675
+          "WARNING": 671
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 626,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 13975,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 13975
         }
       },
       "latestFiling": {
@@ -141,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "8baa951093ebd6068f94ad2c3fd9232409b544f0657cd4c6fb4180d3ccbde373",
@@ -157,16 +162,22 @@
       "cik": "0001084048",
       "name": "ZIFF DAVIS, INC.",
       "sic": "4822",
+      "rawFacts": 29734,
+      "mappedFacts": 7882,
+      "unmappedFacts": 21979,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ZD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 70,
-      "firstPeriodEnd": "2008-12-31",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 71,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -231,11 +242,11 @@
           "historyYears": 13.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 67,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
@@ -262,28 +273,27 @@
         }
       },
       "quality": {
-        "HIGH": 710,
+        "HIGH": 712,
         "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 750,
-        "resolvedValues": 750
+        "datableValues": 752,
+        "resolvedValues": 752
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22513,
+        "total": 22381,
         "by_severity": {
-          "INFO": 22114,
+          "INFO": 21979,
           "ERROR": 1,
-          "WARNING": 398
+          "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 294,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 102,
-          "UNKNOWN_CONCEPT": 22114,
-          "UNPLACEABLE_PERIOD": 2
+          "RESTATEMENT_CONFLICT": 107,
+          "UNKNOWN_CONCEPT": 21979
         }
       },
       "latestFiling": {
@@ -294,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6723ea6cb89cc7c0e13d3324dc1f54636ad1ca0c948378c44c507811309bc39f",
@@ -310,6 +320,12 @@
       "cik": "0001680048",
       "name": "MUSTANG BIO, INC.",
       "sic": "2834",
+      "rawFacts": 7714,
+      "mappedFacts": 2602,
+      "unmappedFacts": 5353,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MBIO"
@@ -446,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "c0473b4446692b44aea9b8892471bce8a8b38332314807452c044bbf04aa1056",
@@ -462,16 +478,22 @@
       "cik": "0001709048",
       "name": "GLOBALFOUNDRIES Inc.",
       "sic": "3674",
+      "rawFacts": 2502,
+      "mappedFacts": 476,
+      "unmappedFacts": 2106,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "GFS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 7,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 8,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2018-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 6.0,
+      "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
@@ -536,11 +558,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2019-12-31",
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
+          "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -567,26 +589,25 @@
         }
       },
       "quality": {
-        "HIGH": 85,
+        "HIGH": 87,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 87,
-        "resolvedValues": 87
+        "datableValues": 89,
+        "resolvedValues": 89
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2137,
+        "total": 2135,
         "by_severity": {
           "INFO": 2106,
-          "WARNING": 31
+          "WARNING": 29
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 26,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 2106,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 2106
         }
       },
       "latestFiling": {
@@ -597,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5357d55f293004402980a0a7dba5eb531bbcb9f4fd3577ace7e2ea7a7ad18777",
@@ -613,16 +634,22 @@
       "cik": "0001944048",
       "name": "Kenvue Inc.",
       "sic": "2844",
+      "rawFacts": 5954,
+      "mappedFacts": 1482,
+      "unmappedFacts": 4275,
+      "calendarYears": 5,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0103",
       "tickers": [
         "KVUE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 16,
-      "firstPeriodEnd": "2022-01-02",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 17,
+      "firstPeriodEnd": "2021-01-03",
       "lastPeriodEnd": "2026-06-28",
-      "historyYears": 3.92,
+      "historyYears": 4.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
@@ -687,11 +714,11 @@
           "historyYears": 2.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 15,
-          "firstAvailablePeriod": "2022-01-02",
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2021-01-03",
           "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 3.92
+          "historyYears": 4.92
         },
         "total_assets": {
           "annualPeriods": 3,
@@ -718,27 +745,26 @@
         }
       },
       "quality": {
-        "HIGH": 140,
+        "HIGH": 142,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 161,
-        "resolvedValues": 161
+        "datableValues": 163,
+        "resolvedValues": 163
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4706,
+        "total": 4696,
         "by_severity": {
-          "INFO": 4288,
-          "WARNING": 418
+          "INFO": 4275,
+          "WARNING": 421
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 335,
+          "CONCEPT_DISAGREEMENT": 340,
           "RESTATEMENT_CONFLICT": 77,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 4288,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 4275
         }
       },
       "latestFiling": {
@@ -749,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a06a7ab4d1488751bd06e04797d5691d43e7633775f393eb65ca43abc7abc761",

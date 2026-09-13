@@ -6,6 +6,12 @@
       "cik": "0000010329",
       "name": "BASSETT FURNITURE INDUSTRIES INC",
       "sic": "2511",
+      "rawFacts": 20183,
+      "mappedFacts": 6082,
+      "unmappedFacts": 14272,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1128",
       "tickers": [
         "BSET"
@@ -144,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "5aaadeac03f657c7dac5622d61e4fcffabec73c119f83a30428c865728704eed",
@@ -160,6 +166,12 @@
       "cik": "0000788329",
       "name": "JOHNSON OUTDOORS INC",
       "sic": "3949",
+      "rawFacts": 22965,
+      "mappedFacts": 7873,
+      "unmappedFacts": 15914,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1002",
       "tickers": [
         "JOUT"
@@ -275,18 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16011,
+        "total": 16008,
         "by_severity": {
           "INFO": 15914,
           "ERROR": 2,
-          "WARNING": 95
+          "WARNING": 92
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 85,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 15914,
-          "UNPLACEABLE_PERIOD": 3
+          "UNKNOWN_CONCEPT": 15914
         }
       },
       "latestFiling": {
@@ -297,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "28fd405fa432d305359c20c529a4714f2a4ad5a042c45a1847e918f74e174a2f",
@@ -313,16 +324,22 @@
       "cik": "0000910329",
       "name": "MEDIFAST INC",
       "sic": "2090",
+      "rawFacts": 17877,
+      "mappedFacts": 6387,
+      "unmappedFacts": 11764,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "MED"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -387,11 +404,11 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -418,26 +435,25 @@
         }
       },
       "quality": {
-        "HIGH": 564,
+        "HIGH": 566,
         "MEDIUM": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 592,
-        "resolvedValues": 592
+        "datableValues": 594,
+        "resolvedValues": 594
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12152,
+        "total": 12150,
         "by_severity": {
           "INFO": 11764,
-          "WARNING": 388
+          "WARNING": 386
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 340,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 11764,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 11764
         }
       },
       "latestFiling": {
@@ -448,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "630c8d65606e0ba25bf06c20449a2e04fd7b003b83d3be1e87a9b94812d7abfc",
@@ -464,16 +480,22 @@
       "cik": "0001413329",
       "name": "Philip Morris International Inc.",
       "sic": "2111",
+      "rawFacts": 27479,
+      "mappedFacts": 7938,
+      "unmappedFacts": 19988,
+      "calendarYears": 19,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "PM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 19,
-      "quarterlyPeriods": 74,
-      "firstPeriodEnd": "2007-12-31",
+      "annualPeriods": 20,
+      "quarterlyPeriods": 75,
+      "firstPeriodEnd": "2006-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 18.0,
+      "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 19,
@@ -538,11 +560,11 @@
           "historyYears": 17.0
         },
         "stockholders_equity": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 73,
-          "firstAvailablePeriod": "2007-12-31",
+          "annualPeriods": 20,
+          "quarterlyPeriods": 74,
+          "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
+          "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -569,28 +591,27 @@
         }
       },
       "quality": {
-        "HIGH": 653,
+        "HIGH": 655,
         "MEDIUM": 90
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 743,
-        "resolvedValues": 743
+        "datableValues": 745,
+        "resolvedValues": 745
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21054,
+        "total": 20857,
         "by_severity": {
-          "INFO": 20183,
+          "INFO": 19988,
           "ERROR": 1,
-          "WARNING": 870
+          "WARNING": 868
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 753,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 115,
-          "UNKNOWN_CONCEPT": 20183,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 19988
         }
       },
       "latestFiling": {
@@ -601,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "623857ded1d952e15120a4a7ef1bb5f06e775d6764978aa61290d5965fe9ab4e",
@@ -617,16 +638,22 @@
       "cik": "0001460329",
       "name": "Fluent, Inc.",
       "sic": "7310",
+      "rawFacts": 14985,
+      "mappedFacts": 4762,
+      "unmappedFacts": 10507,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FLNT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 53,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 54,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -691,11 +718,11 @@
           "historyYears": 15.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -722,26 +749,25 @@
         }
       },
       "quality": {
-        "HIGH": 468,
+        "HIGH": 470,
         "MEDIUM": 65
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 533,
-        "resolvedValues": 533
+        "datableValues": 535,
+        "resolvedValues": 535
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11031,
+        "total": 11029,
         "by_severity": {
           "INFO": 10507,
-          "WARNING": 524
+          "WARNING": 522
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 399,
           "RESTATEMENT_CONFLICT": 123,
-          "UNKNOWN_CONCEPT": 10507,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 10507
         }
       },
       "latestFiling": {
@@ -752,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "3974b3a14c2fc5c6c5f8e6c6b42b51dfbedc858adb8b549c31689e11e8f2dff8",
@@ -768,6 +794,12 @@
       "cik": "0002027329",
       "name": "Optimi Health Corp.",
       "sic": "2834",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0930",
       "tickers": [
         "OPTH"
@@ -887,13 +919,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "bd7f9f27e1062c5b932720704605a93e0b8cce703d38e4839c0466abfa4c4f63",

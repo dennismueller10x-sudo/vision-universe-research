@@ -6,16 +6,22 @@
       "cik": "0001447028",
       "name": "Arbutus Biopharma Corp",
       "sic": "2834",
+      "rawFacts": 13612,
+      "mappedFacts": 4773,
+      "unmappedFacts": 9179,
+      "calendarYears": 17,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ABUS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 58,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 59,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
@@ -80,11 +86,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 55,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -111,21 +117,21 @@
         }
       },
       "quality": {
-        "HIGH": 479,
+        "HIGH": 481,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 495,
-        "resolvedValues": 495
+        "datableValues": 497,
+        "resolvedValues": 497
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9312,
+        "total": 9310,
         "by_severity": {
           "INFO": 9179,
           "ERROR": 1,
-          "WARNING": 132
+          "WARNING": 130
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
@@ -133,8 +139,7 @@
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 9179,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 9179
         }
       },
       "latestFiling": {
@@ -145,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6a57fcb1aa26eafd010658f1f571adac006e9bdd3f2605504a4489ec2fed5c1e",
@@ -161,16 +166,22 @@
       "cik": "0001604028",
       "name": "ADVANCED DRAINAGE SYSTEMS, INC.",
       "sic": "3086",
+      "rawFacts": 21562,
+      "mappedFacts": 6153,
+      "unmappedFacts": 15233,
+      "calendarYears": 16,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "0331",
       "tickers": [
         "WMS"
       ],
       "status": "INGESTED",
-      "annualPeriods": 14,
-      "quarterlyPeriods": 52,
-      "firstPeriodEnd": "2013-03-31",
+      "annualPeriods": 15,
+      "quarterlyPeriods": 53,
+      "firstPeriodEnd": "2012-03-31",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 13.0,
+      "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
@@ -235,11 +246,11 @@
           "historyYears": 12.0
         },
         "stockholders_equity": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 50,
-          "firstAvailablePeriod": "2013-03-31",
+          "annualPeriods": 15,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2012-03-31",
           "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 13.0
+          "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 14,
@@ -266,27 +277,26 @@
         }
       },
       "quality": {
-        "HIGH": 447,
+        "HIGH": 449,
         "MEDIUM": 107
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 554,
-        "resolvedValues": 554
+        "datableValues": 556,
+        "resolvedValues": 556
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16561,
+        "total": 16559,
         "by_severity": {
           "INFO": 15233,
-          "WARNING": 1328
+          "WARNING": 1326
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1073,
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 248,
-          "UNKNOWN_CONCEPT": 15233,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 15233
         }
       },
       "latestFiling": {
@@ -297,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "4cf6fe48cbce452eba0fac78df1567965dbabbe5dc9b79fb8269529bf67be469",
@@ -313,6 +323,12 @@
       "cik": "0001694028",
       "name": "Liberty Energy Inc.",
       "sic": "1389",
+      "rawFacts": 12198,
+      "mappedFacts": 3353,
+      "unmappedFacts": 8786,
+      "calendarYears": 10,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "LBRT"
@@ -428,18 +444,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9116,
+        "total": 9115,
         "by_severity": {
           "INFO": 8786,
-          "WARNING": 330
+          "WARNING": 329
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 295,
           "FISCAL_PERIOD_CONFLICT": 1,
           "RESTATEMENT_CONFLICT": 24,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 8786,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 8786
         }
       },
       "latestFiling": {
@@ -450,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "f9d2d140162d1f2fc1405b91ec3337fe262082147a0faddd081f79456eff15e3",
@@ -466,17 +481,23 @@
       "cik": "0001788028",
       "name": "Jasper Therapeutics, Inc.",
       "sic": "2836",
+      "rawFacts": 5988,
+      "mappedFacts": 1609,
+      "unmappedFacts": 4400,
+      "calendarYears": 8,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "JSPR",
         "JSPRW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 27,
-      "firstPeriodEnd": "2019-12-31",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2019-09-30",
       "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "historyYears": 6.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -541,11 +562,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 25,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.25
         },
         "total_assets": {
           "annualPeriods": 6,
@@ -572,30 +593,29 @@
         }
       },
       "quality": {
-        "HIGH": 147,
+        "HIGH": 149,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 149,
-        "resolvedValues": 149
+        "datableValues": 151,
+        "resolvedValues": 151
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4664,
+        "total": 4639,
         "by_severity": {
-          "INFO": 4428,
+          "INFO": 4400,
           "ERROR": 17,
-          "WARNING": 219
+          "WARNING": 222
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 79,
           "FUTURE_DATA_LEAK": 17,
           "PERIOD_MISMATCH": 7,
-          "RESTATEMENT_CONFLICT": 100,
+          "RESTATEMENT_CONFLICT": 104,
           "UNEXPECTED_DURATION": 32,
-          "UNKNOWN_CONCEPT": 4428,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 4400
         }
       },
       "latestFiling": {
@@ -606,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "6c1fe08302c891a6d6e699a09607c789bc79505370d15abf3449fc566e962e03",
@@ -622,6 +642,12 @@
       "cik": "0001838028",
       "name": "VanEck Bitcoin ETF",
       "sic": "6221",
+      "rawFacts": 979,
+      "mappedFacts": 163,
+      "unmappedFacts": 858,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "HODL"
@@ -757,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.7.1",
+        "normalization_logic": "1.8.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.3.0"
+          "mapping_version": "1.4.0"
         }
       },
       "sourceDigest": "a280304bb3ed6730ec052b1074e20e202eeab9acc60ab1f087345355018c40b6",
