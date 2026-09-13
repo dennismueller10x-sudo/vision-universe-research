@@ -114,7 +114,16 @@ function loadBudget() {
                   `dieser Lauf ist '${OPERATION}'.`);
     process.exit(3);
   }
+  // An offline estimate or a different universe/provider is not permission
+  // to touch this store. Reject malformed/unmetered budgets before the driver.
   const b = pf.budgetForRun;
+  if (pf.measured !== true || pf.offline !== false || pf.gate !== GATE ||
+      pf.provider !== PROVIDER || pf.market !== MARKET || pf.symbolOverride ||
+      !b || b.unmetered || !Number.isSafeInteger(b.classAOperations) || b.classAOperations < 0 ||
+      !Number.isSafeInteger(b.classBOperations) || b.classBOperations < 0) {
+    console.error(Guard.BLOCKED + ": preflight is unmeasured, mismatched or has an invalid budget.");
+    process.exit(3);
+  }
   console.log(`  Vorabrechnung: ${pf.operation} freigegeben ` +
               `(Class A ${b.classAOperations}, Class B ${b.classBOperations})`);
   return { budget: Guard.createBudget(b), preflight: pf };

@@ -23,9 +23,9 @@ function fixture(t){
  const durable=createHistoryStore({driver:createFsDriver(join(dir,'durable')),provider:'tiingo'});
  const series=(bars,meta={})=>({ticker:'TST',securityId:'ref_TST',provider:'tiingo',bars,...meta});
  function local(payload){mkdirSync(dirname(cache),{recursive:true});writeFileSync(cache,JSON.stringify(payload));}
- function run(direction='pull',extra=[],remote=false){
+ function run(direction='pull',extra=[],remote=false,preflightOverride={}){
   const operation=direction==='pull'?'RECOVERY':'BULK_UPLOAD';
-  const preflight=join(dir,'preflight.json');writeFileSync(preflight,JSON.stringify({generatedAt:new Date().toISOString(),operation,verdict:{verdict:Guard.ALLOWED},budgetForRun:{classAOperations:100,classBOperations:100}}));
+  const preflight=join(dir,'preflight.json');writeFileSync(preflight,JSON.stringify({generatedAt:new Date().toISOString(),operation,gate:'TEST',provider:'tiingo',market:'US',measured:true,offline:false,verdict:{verdict:Guard.ALLOWED},budgetForRun:{classAOperations:100,classBOperations:100},...preflightOverride}));
   return spawnSync(process.execPath,[join(dir,files[0]),'--'+direction,'--gate','TEST','--work-dir',workingDir,'--report',join(dir,'report.json'),'--preflight',preflight,...(remote?[]:['--local-root',join(dir,'durable')]),...extra],{encoding:'utf8',env:{PATH:process.env.PATH}});
  }
  return {dir,workingDir,cache,durable,series,local,run,universe};
@@ -91,5 +91,15 @@ test('malformed cache and absent universe members cannot become a successful emp
  const f=fixture(t);f.local({});let r=f.run('push');assert.equal(r.status,1);assert.match(r.stdout,/HISTORY_IDENTITY_MISMATCH/);
  for(const securities of [undefined,[],{}]){
   writeFileSync(f.universe,JSON.stringify({securities}));r=f.run();assert.equal(r.status,1);assert.match(r.stderr,/HISTORY_UNIVERSE_IDENTITY_INVALID/);
+ }
+});
+
+test('offline, mismatched or malformed preflight never authorizes restore',t=>{
+ for(const override of [{measured:false,offline:true},{gate:'OTHER'},{provider:'other'},{market:'OTHER'},
+  {symbolOverride:1},{budgetForRun:{unmetered:true,classAOperations:100,classBOperations:100}},
+  {budgetForRun:{classAOperations:-1,classBOperations:100}},{budgetForRun:null}]){
+  const f=fixture(t),r=f.run('pull',[],false,override);
+  assert.equal(r.status,3,r.stdout+r.stderr);assert.match(r.stderr,/ZERO_COST_GUARD_BLOCKED/);
+  assert.equal(existsSync(f.cache),false);
  }
 });
