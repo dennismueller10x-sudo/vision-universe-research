@@ -19,6 +19,7 @@ import argparse
 import json
 import logging
 import sys
+from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -557,6 +558,83 @@ def _submissions_summary(provider, cik):
     }
 
 
+def cmd_concepts(args):
+    """Welche XBRL-Konzepte meldet der Bestand, die die Registry nicht kennt?
+
+    Die Grundlage jeder Mapping-Arbeit, und zwar GEMESSEN. Ein Mapping
+    aus dem Gedaechtnis trifft die Konzepte, an die man sich erinnert -
+    nicht die, die tatsaechlich vorkommen. Diese Auswertung zaehlt, wie
+    oft ein unbekanntes Konzept auftritt und BEI WIE VIELEN EMITTENTEN;
+    die zweite Zahl entscheidet, denn ein Konzept, das ein einziger
+    Emittent zehntausendmal meldet, bringt gemappt genau einen Titel.
+
+    Mit --only-unresolved zaehlt sie nur Emittenten, aus denen heute
+    KEIN einziger Wert entsteht. Das ist die Liste, die Deckung schafft.
+    """
+    store = JsonFactStore(compress=True)
+    ciks = store.list_companies()
+    if not ciks:
+        print("Kein Faktenspeicher. Erst `ingest`.")
+        return 2
+
+    von_konzept = Counter()          # Fakten je Konzept
+    emittenten_je_konzept = Counter()  # Emittenten je Konzept
+    taxonomien = Counter()
+    geprueft = betroffen = 0
+
+    for cik in ciks:
+        document = store.read_company(cik)
+        if document is None:
+            continue
+        geprueft += 1
+        # Ein Emittent ohne aufloesbare Werte ist der teure Fall.
+        leer = not (document.get("factbook") or {}).get("timelines")
+        if args.only_unresolved and not leer:
+            document = None
+            continue
+        betroffen += 1
+        eigene = set()
+        for finding in (document.get("quality") or {}).get("findings") or []:
+            if finding.get("code") != "UNKNOWN_CONCEPT":
+                continue
+            name = finding.get("concept") or ""
+            if not name:
+                continue
+            von_konzept[name] += 1
+            eigene.add(name)
+            taxonomien[name.split(":")[0]] += 1
+        for name in eigene:
+            emittenten_je_konzept[name] += 1
+        document = None   # nicht zwei Factbooks gleichzeitig halten
+
+    print(f"  Emittenten im Speicher: {geprueft}")
+    print(f"  davon ausgewertet:      {betroffen}")
+    print(f"  Taxonomien der unbekannten Konzepte: {dict(taxonomien.most_common())}")
+    print(f"\n  Top {args.top} unbekannte Konzepte, nach EMITTENTEN sortiert:")
+    print(f"  {'Konzept':<70} {'Emittenten':>10} {'Fakten':>10}")
+    for name, n_emittenten in emittenten_je_konzept.most_common(args.top):
+        print(f"  {name:<70} {n_emittenten:>10} {von_konzept[name]:>10}")
+
+    if args.out:
+        _write(Path(args.out), {
+            "schema_version": 1,
+            "generated_at_utc": _utcnow(),
+            "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert "
+                    "nach betroffenen EMITTENTEN - ein Konzept, das ein einziger "
+                    "Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
+            "scope": "issuers_without_any_resolved_value" if args.only_unresolved
+                     else "all_issuers",
+            "issuers_scanned": geprueft,
+            "issuers_in_scope": betroffen,
+            "by_taxonomy": dict(taxonomien.most_common()),
+            "concepts": [
+                {"concept": name, "issuers": n, "facts": von_konzept[name]}
+                for name, n in emittenten_je_konzept.most_common(args.top)
+            ],
+        })
+    return 0
+
+
 def cmd_reconcile(args):
     """Abgleich Fundamentals x Marktdaten (§3-§10 des Reconciliation-Auftrags).
 
@@ -894,6 +972,14 @@ def build_parser():
     export.add_argument("--universe",
                         help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     export.set_defaults(func=cmd_export)
+
+    con = subparsers.add_parser(
+        "concepts", help="unbekannte XBRL-Konzepte im Bestand zaehlen")
+    con.add_argument("--top", type=int, default=60)
+    con.add_argument("--only-unresolved", action="store_true",
+                     help="nur Emittenten ohne einen einzigen aufloesbaren Wert")
+    con.add_argument("--out", help="Ergebnis zusaetzlich als JSON schreiben")
+    con.set_defaults(func=cmd_concepts)
 
     rec = subparsers.add_parser(
         "reconcile", help="Fundamentals gegen das Marktdaten-/Technical-Universum abgleichen")

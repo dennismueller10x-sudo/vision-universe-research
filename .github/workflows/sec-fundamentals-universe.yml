@@ -316,6 +316,19 @@ jobs:
       # `continue-on-error` auch nicht. Die einzige Verteidigung ist
       # die Reihenfolge: was teuer erkauft und nicht wiederherstellbar
       # ist, liegt im Zweig, bevor etwas Optionales laeuft.
+      - name: Unbekannte XBRL-Konzepte zaehlen
+        # Die Grundlage der Mapping-Arbeit, und zwar GEMESSEN. Ein
+        # Mapping aus dem Gedaechtnis trifft die Konzepte, an die man
+        # sich erinnert - nicht die, die vorkommen. Sortiert nach
+        # betroffenen EMITTENTEN: ein Konzept, das ein einziger
+        # Emittent zehntausendmal meldet, bringt gemappt einen Titel.
+        run: |
+          python3 scripts/quant/cli.py concepts --top 120 --only-unresolved \
+            --out quant/data/fundamentals/unmapped-concepts.json
+          echo "--- und ueber den ganzen Bestand ---"
+          python3 scripts/quant/cli.py concepts --top 40 \
+            --out quant/data/fundamentals/unmapped-concepts-all.json
+
       - name: Abgleich mit dem Marktdaten-Universum
         run: |
           node scripts/universe/build-universe-indexes.mjs
