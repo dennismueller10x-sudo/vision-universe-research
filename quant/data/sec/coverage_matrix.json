@@ -2990,15 +2990,32 @@
           "native_core_metrics": 0,
           "resolvable_core_metrics": 0,
           "core_metric_count": 5,
-          "detail": {},
-          "filings": {
-            "forms": {
-              "10-K": 1,
-              "10-Q": 3,
-              "10-Q/A": 1
+          "detail": {
+            "revenue": {
+              "native": false,
+              "resolvable": false,
+              "reason": "MISSING_XBRL_CONCEPT"
             },
-            "count": 5,
-            "xbrl": 0
+            "net_income": {
+              "native": false,
+              "resolvable": false,
+              "reason": "MISSING_XBRL_CONCEPT"
+            },
+            "operating_cash_flow": {
+              "native": false,
+              "resolvable": false,
+              "reason": "MISSING_XBRL_CONCEPT"
+            },
+            "total_assets": {
+              "native": false,
+              "resolvable": false,
+              "reason": "MISSING_XBRL_CONCEPT"
+            },
+            "stockholders_equity": {
+              "native": false,
+              "resolvable": false,
+              "reason": "MISSING_XBRL_CONCEPT"
+            }
           }
         },
         "2007": {
@@ -4641,16 +4658,16 @@
     "latest_first_usable_year": 2008,
     "note": "STRUCTURED = native XBRL facts; DERIVABLE = reconstructible; FILING_ONLY = a periodic filing exists but carries no usable structured data; MISSING = no periodic filing found."
   },
-  "generated_at_utc": "2026-09-13T16:20:05+00:00",
+  "generated_at_utc": "2026-09-13T18:28:32+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.8.0",
+    "normalization_logic": "1.9.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.4.0"
+      "mapping_version": "1.5.0"
     }
   }
 }

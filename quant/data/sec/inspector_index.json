@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-13T16:20:06+00:00",
+  "generated_at_utc": "2026-09-13T18:28:33+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.8.0",
+    "normalization_logic": "1.9.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.4.0"
+      "mapping_version": "1.5.0"
     }
   },
   "companies": [
@@ -23,19 +23,19 @@
       "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 19973,
+        "total": 19710,
         "by_severity": {
-          "INFO": 19669,
+          "INFO": 19398,
           "ERROR": 5,
-          "WARNING": 299
+          "WARNING": 307
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 199,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 93,
+          "RESTATEMENT_CONFLICT": 101,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 19669
+          "UNKNOWN_CONCEPT": 19398
         }
       }
     },
@@ -49,15 +49,15 @@
       "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 16568,
+        "total": 16282,
         "by_severity": {
-          "INFO": 16124,
-          "WARNING": 444
+          "INFO": 15818,
+          "WARNING": 464
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 318,
-          "RESTATEMENT_CONFLICT": 126,
-          "UNKNOWN_CONCEPT": 16124
+          "RESTATEMENT_CONFLICT": 146,
+          "UNKNOWN_CONCEPT": 15818
         }
       }
     },
@@ -71,15 +71,15 @@
       "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 23278,
+        "total": 22763,
         "by_severity": {
-          "INFO": 22934,
+          "INFO": 22419,
           "WARNING": 344
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 277,
           "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 22934
+          "UNKNOWN_CONCEPT": 22419
         }
       }
     },
@@ -93,15 +93,15 @@
       "rows": 1504,
       "quality": {
         "rules_version": "1.0.0",
-        "total": 43190,
+        "total": 41249,
         "by_severity": {
-          "INFO": 42751,
-          "WARNING": 439
+          "INFO": 40805,
+          "WARNING": 444
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 374,
-          "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 42751
+          "RESTATEMENT_CONFLICT": 70,
+          "UNKNOWN_CONCEPT": 40805
         }
       }
     },
