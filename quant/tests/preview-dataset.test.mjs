@@ -1,3 +1,4 @@
+import {existingFileChanges} from './helpers/existing-file-changes.mjs';
 /* =========================================================================
    VISION UNIVERSE — preview-dataset.test.mjs
 
@@ -320,23 +321,22 @@ test("PD8 — keine oeffentliche Datei wurde fuer die Vorschau veraendert", () =
   /* research.visionuniverse.de soll unveraendert bleiben. Geprueft wird
      der Diff gegen main: die Vorschau darf nur HINZUFUEGEN, nie an
      Seiten, Skripten oder Daten der oeffentlichen Auslieferung ruehren. */
-  let diff = "";
-  try {
-    diff = execFileSync("git", ["diff", "--name-only", "origin/main...HEAD"],
-      { cwd: root, encoding: "utf8" }).trim();
-  } catch (err) { return; }               /* kein origin/main: dann nichts zu pruefen */
-  if (!diff) return;
+  /* Und die Freigabeschalter sind unangetastet. */
+  const gates = JSON.parse(readFileSync(join(root, "quant/config/feature-gates.json"), "utf8"));
+  assert.equal(gates.gates.ENABLE_PUBLIC_LIVE_MARKET_DATA.enabled, false);
+  assert.equal(gates.gates.ENABLE_LIVE_MARKET_DATA.enabled, false);
 
-  const oeffentlich = diff.split("\n").filter((f) =>
+  let changedPaths = [];
+  try {
+    changedPaths = existingFileChanges(root);
+  } catch (err) { return; }               /* kein origin/main: dann nichts zu pruefen */
+
+  const oeffentlich = changedPaths.filter((f) =>
     /^(index\.html|dashboard\/|quant\/(?!data\/preview)(?!tests\/).*\.(html|js)$|morning\/|etf\/|news\/|macro\/)/.test(f))
     .filter((f) => !ausFremdemZweig(f));
   assert.deepEqual(oeffentlich, [],
     `diese oeffentlichen Dateien wurden veraendert: ${oeffentlich.join(", ")}`);
 
-  /* Und die Freigabeschalter sind unangetastet. */
-  const gates = JSON.parse(readFileSync(join(root, "quant/config/feature-gates.json"), "utf8"));
-  assert.equal(gates.gates.ENABLE_PUBLIC_LIVE_MARKET_DATA.enabled, false);
-  assert.equal(gates.gates.ENABLE_LIVE_MARKET_DATA.enabled, false);
 });
 
 test("PD9 — die Ansicht baut ihre Tabelle beim Laden auf", () => {

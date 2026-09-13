@@ -1,3 +1,4 @@
+import {existingFileChanges} from './helpers/existing-file-changes.mjs';
 /* =========================================================================
    VISION UNIVERSE — product-proof.test.mjs
 
@@ -237,14 +238,13 @@ test("PP5 — die Oberflaeche ist die bestehende und veraendert sie nicht", () =
   /* Die harte Zusage: keine Datei der bestehenden Anwendung wurde
      angefasst. Ohne origin/main gibt es nichts zu vergleichen - dann
      schweigt der Test, statt eine Zusicherung zu erfinden. */
-  let diff = "";
+  let changedPaths = [];
   try {
-    diff = execFileSync("git", ["diff", "--name-only", "origin/main...HEAD"],
-      { cwd: root, encoding: "utf8" }).trim();
+    changedPaths = existingFileChanges(root);
   } catch (err) { return; }
-  if (!diff) return;
+  if (!changedPaths.length) return;
 
-  const angefasst = diff.split("\n").filter((f) =>
+  const angefasst = changedPaths.filter((f) =>
     /^quant\/(ui|engines|stock|screener|ranking|markt|radar|watchlist|technical|ai|api|methodology|strategies|backtests)\//.test(f) ||
     f === "quant/app.js" || f === "quant/index.html" ||
     /^assets\//.test(f) || f === "index.html")

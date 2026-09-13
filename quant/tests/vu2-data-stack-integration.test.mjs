@@ -234,11 +234,11 @@ test("IN9 — es ist keine Ansicht hinzugekommen", () => {
   const pfade = (block.match(/"\/vu2\/[^"]*"/g) || []).map((s) => s.slice(1, -1));
   assert.equal(pfade.length, 14, "die Vorschau fuehrt 14 Ansichten - nicht mehr, nicht weniger");
 
-  const vorher = execFileSync("git",
-    ["show", "origin/claude/vu2-owner-preview-integration:scripts/proof/verify-owner-preview.mjs"],
-    { cwd: root, encoding: "utf8" });
-  const blockVorher = vorher.slice(vorher.indexOf("const ANSICHTEN = ["),
-                                  vorher.indexOf("];", vorher.indexOf("const ANSICHTEN = [")));
+  // Immutable reference from the original owner-preview commit; works in shallow CI.
+  // Missing reference is still a failure, never an implicit pass.
+  const baseline = JSON.parse(lies("quant/tests/fixtures/owner-preview-views.json"));
+  assert.equal(baseline.sourceCommit, "8b8166dd6151b3e50f8a15e5f70a93552d42416a");
+  const blockVorher = baseline.block;
   assert.equal(block, blockVorher, "die Ansichtsliste wurde veraendert");
 });
 

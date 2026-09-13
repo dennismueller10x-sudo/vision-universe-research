@@ -1,6 +1,6 @@
 # Vision Universe® — Market Data Infrastructure Contract
 
-**Stand:** 2026-09-12 · **Engine:** `market-data-contract-1.0.0`
+**Stand:** 2026-09-12 · **Engine:** `market-data-contract-1.0.1`
 **Gilt fuer:** jedes gegenwaertige und kuenftige Vision-Universe-Frontend
 
 Historical, Intraday und Realtime sind **eine** Infrastruktur. Dieses
@@ -175,3 +175,7 @@ endpunktspezifische Diagnose erhalten.
 
 Gesamtsuite: 943 Tests, 941 bestanden. Die beiden Roten sind `PD8`/`PP5`
 — vorbestehend, am unveraenderten Vorschauzweig nachgerechnet.
+
+## Handoff hardening (VU2)
+
+`REALTIME_AVAILABLE` certifies socket transport readiness only when the calendar confirms an open phase. It does not certify subscription acknowledgment, price freshness, or trade semantics. The initial status includes `realtimeCapability.availabilityScope: TRANSPORT_ONLY`, `isLive: false` and `priceTypeConfirmed: false`. Unknown/uncovered calendar results remain unknown rather than closed. Invalid bar counts/minima never grant history eligibility. See `docs/vu2/handoffs/25-shared-contract-repair.md` for the bounded repair and original preservation-test findings.
