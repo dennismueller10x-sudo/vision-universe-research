@@ -167,3 +167,24 @@ class NoUndefinedNamesTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SicFilterTests(unittest.TestCase):
+    """`concepts --sic`: das Vokabular einer Branche, nicht das des Zufalls."""
+
+    def test_spannen_und_einzelwerte(self):
+        self.assertEqual(cli._sic_spannen("6020-6036,6021"), [(6020, 6036), (6021, 6021)])
+        self.assertEqual(cli._sic_spannen(""), [])
+        self.assertEqual(cli._sic_spannen(None), [])
+
+    def test_ein_emittent_ohne_sic_faellt_nie_in_eine_spanne(self):
+        spannen = cli._sic_spannen("6020-6036")
+        self.assertTrue(cli._sic_passt("6022", spannen))
+        self.assertTrue(cli._sic_passt(6036, spannen))
+        self.assertFalse(cli._sic_passt("6037", spannen))
+        self.assertFalse(cli._sic_passt(None, spannen))
+        self.assertFalse(cli._sic_passt("", spannen))
+
+    def test_der_parser_kennt_die_option(self):
+        args = cli.build_parser().parse_args(["concepts", "--sic", "6798", "--top", "5"])
+        self.assertEqual(args.sic, "6798")
