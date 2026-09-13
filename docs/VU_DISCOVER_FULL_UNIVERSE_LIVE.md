@@ -268,17 +268,88 @@ Kennzahlen als die der Tagesreihe.
 
 ---
 
-## 3. Coverage vor dem ersten Workflow-Lauf (dieser Sandbox fehlt der Schlüssel)
+## 3. Daten-Coverage nach den ersten Workflow-Läufen (gemessen)
 
-`docs/VU_DISCOVER_PRICE_COVERAGE.md` (aus `scripts/discover/price-coverage.mjs`):
-Discover rechnet hier noch mit den 498 GATE_500-Faktorzeilen (`factorCoverage.partial =
-true`), 5 kompakte Reihen, 0 Intraday-Snapshots. Der Build sagt das im Meta;
-die Seite sagt „Für 5 von 498 Titeln liegt eine Kursreihe vor".
+Drei Läufe auf dem Branch, alle mit echtem Tiingo-Zugang in GitHub Actions:
 
-Der Abschnitt 5 wird nach dem ersten Lauf von `market-data-refresh.yml` und
-`intraday-snapshots.yml` mit den gemessenen Zahlen ergänzt.
+| Lauf | Ergebnis |
+|---|---|
+| `intraday-snapshots.yml` #1 (34764858020, 15:11 UTC, So 13.09.) | Discover-Umfang: 223 Titel, 223 Anfragen in 121 s, **219 Snapshots** der letzten abgeschlossenen Sitzung (Fr 11.09.), 4 ohne reguläre IEX-Bars (ALE, ALOT, BRK-A, NRT); 195 mit allen 78 Fünf-Minuten-Bars, Minimum 41; 563 KB gesamt, Verzeichnis 45 KB |
+| `market-data-refresh.yml` #1 (34764857968) | brach nach ~1.100 Titeln an einer Reihe mit zu wenigen Bars ab (Protokollzeile las `stats.errors` auf `null`) — behoben in abf6f96; Arbeitsablage (330 MB) gesichert |
+| `market-data-refresh.yml` #2 (34765537674, 45 min Ingest) | Ingest, Faktoren, Technical, Discover-Build und Hygiene grün; vier Tests aus der 498er-Zeit rot (Suchindex < 120 KB, „nicht jede Reihe ausgeliefert", „> 50 Karten ohne Reihe", Inline-Punkte der Eingangsfläche) — angepasst in c79aabd; Arbeitsablage 1 561 MB gesichert |
+| `market-data-refresh.yml` #3 (34768312221, 8 min) | aus dem Cache: 5 386 Titel aktuell, 299 erneut abgelehnt (Qualität), 0 fehlgeschlagen; **Commit ae2aa1c** mit 10 785 Dateien |
 
----
+### 3.1 Kennzahlen (Stand ae2aa1c, Kurse bis 11.09.2026)
+
+| Frage | Zahl |
+|---|---|
+| Instrumente in der Universumsquelle (Fallback, Company Master PENDING) | 5 684 (+ Benchmark SPY = Umfang 5 685) |
+| davon bei Tiingo aufgelöst / mit ≥ 250 Tagesbars | 5 684 / 5 663 |
+| Tageskurse in der Arbeitsablage (ab 2023-01-01, fullHistory ab 2015) | 5 386 Titel; 299 von der Qualitätsprüfung abgelehnt (large_move, split_not_adjusted, stale_last_bar …) |
+| kompakte Discover-Reihen (`discover-series/`, 1 Jahr Tagesschluss) | **5 379** geschrieben, 306 übersprungen (301 ohne Arbeitsdaten, 5 mit < 30 Schlusskursen); 33 MB |
+| Faktorzeilen (`factors-FULL_UNIVERSE.json`, jetzt im Repository) | **5 339** gerechnet, 345 übersprungen; 18 MB |
+| Discover US_REAL: Titel / mit Kursreihe / Detailseiten | **5 339 / 5 339 (100 %) / 5 339** |
+| nicht discovery-eligible (Handelsregeln, ausgewiesen, nicht versteckt) | 92 |
+| Karten auf der Startseite / mit echtem Tageschart | 179 (148 Titel) / **179 (100 %)** |
+| Live-Umfang (Titel auf Discover-Flächen) | 293 |
+| Intraday-Snapshots nach Lauf #1 / davon im neuen Live-Umfang | 219 / 136 (Universumslauf siehe 3.2) |
+| Suchindex US_REAL (geladen erst beim Öffnen der Suche) | 536 KB (≈ 100 B je Titel) |
+| `discover/data` gesamt | 94 MB (5 339 Detailseiten, 21 Reihen, Startseite in 3 Stücken) |
+| Hygiene-Guard, Verifier (15 996+ Nachrechnungen), 166 Discover- und 711 Quant-Tests | grün |
+
+### 3.2 Intraday-Universumslauf (gemessen)
+
+`intraday-snapshots.yml` #2 (f0a578b, `[intraday-snapshot:universe]`, Commit d6a342e):
+
+| Kennzahl | Wert |
+|---|---|
+| Umfang / Anfragen / Laufzeit | 5 685 Titel / 5 466 Anfragen / 54 min (100 Anfragen je Minute, Sicherheitsobergrenze) |
+| Snapshots der letzten abgeschlossenen Sitzung (Fr 11.09.) | **4 348** (4 129 neu + 219 unveränderlich aus Lauf #1, 0 Anfragen dafür) |
+| ohne reguläre IEX-Bars (dünn gehandelt; ehrlich ohne Tagesverlauf) | 1 337 |
+| fehlgeschlagen | 0 |
+| vollständige Sitzung (78 Fünf-Minuten-Bars) / weniger als 20 Bars | 2 821 / 134 |
+| Größe | 10,3 MB (Verzeichnis 82 KB: 236 Einträge mit Stand für den Discover-Umfang + 4 348 Kürzel je Sitzung + 107 ID-Ausnahmen) |
+| Live-Umfang mit Tagesverlauf | 236 von 293 (57 ohne IEX-Abschlüsse) |
+| Discover-Titel mit 1T auf der Aktienseite | **4 114 von 5 339** (77 %) |
+
+Die Kursreihe der übrigen Titel bleibt die Tagesreihe: Karte und Aktienseite
+zeigen 1M–1J, kein Tagesverlauf wird geschätzt. Das Verzeichnis führt das
+Universum nur als Kürzelliste je Sitzung; die Aktienseite baut den Pfad aus
+Sitzung, Muster (`ref_<symbol>`) und Ausnahmen — kein Abruf ins Leere, kein 404.
+
+### 3.3 Initial-Load (lokal gemessen, Startseite, echte Daten)
+
+| | Desktop 1440×900 | iPhone 390×844 |
+|---|---|---|
+| Anfragen bis `networkidle` | 67 | 55 |
+| Nutzlast (unkomprimiert) | 1 112 KB | 1 051 KB |
+| davon JS / CSS / JSON (Meta, Startseite Stück 1, Intraday-Verzeichnis 82 KB) | 437 / 125 / 221 KB | 437 / 125 / 221 KB |
+| Kursreihen (Tagesschluss) im Vorlade-Rand | 14 (90 KB) | 6 (38 KB) |
+| Intraday-Snapshots (sichtbar + 80 px, inkl. Vorladen der nächsten Karten) | 13 (111 KB) | 9 (100 KB) |
+| Live-Abonnenten nach dem Laden | 1 (Eingangsfläche; Karten folgen beim Scrollen) | 1 |
+| Karten im DOM (Stück 1) / DOM-Knoten | 52 / ~1 740 | 52 / ~1 680 |
+| Cache-Treffer (Series-Loader / Hub) | jede Reihe und jeder Snapshot genau einmal (requests = cached, failures 0) | dito |
+
+Kein Abruf hängt von der Titelzahl ab: die Startseite lädt drei Stücke,
+Reihen und Snapshots nur für Sichtbares. Die Zeitmessung selbst (DOMContentLoaded)
+ist in dieser Sandbox nicht belastbar (lokaler Node-Server unter Last) und
+wird nicht berichtet.
+
+### 3.4 Bekannte Grenzen nach den Läufen
+
+- **Abgelehnte Reihen werden je Lauf erneut angefragt** (299 Anfragen), weil
+  eine Ablehnung nicht als „erledigt" im Checkpoint steht. Kostet ~3 Minuten
+  Kontingent je Tag; Nacharbeit: Ablehnungen mit Datum merken und erst nach
+  n Tagen erneut prüfen.
+- **`discover/data` (94 MB) wird täglich neu geschrieben**, weil jede
+  Detailseite Stand und Kennzahlen trägt; Git speichert Deltas, die Historie
+  wächst trotzdem um Dutzende MB je Tag. Nacharbeit: Detailseiten nur bei
+  Änderung schreiben oder Kennzahlen aus einer Datei je Universum lesen.
+- Vier Titel des Discover-Umfangs haben keine regulären IEX-Bars (BRK-A,
+  ALE, ALOT, NRT): sie zeigen die Tagesreihe, keinen Tagesverlauf — ehrlich,
+  nicht geschätzt.
+- Der Company Master (7 004 Titel) ist nicht übernommen; das Universum ist
+  der Fallback mit 5 684 Titeln (Abschnitt 1.2).
 
 ## 4. Tests und QA
 
@@ -287,17 +358,20 @@ Der Abschnitt 5 wird nach dem ersten Lauf von `market-data-refresh.yml` und
 | `quant/tests/trading-session.test.mjs` | TS1–TS8 Zeitzustände, IS1–IS4 Intraday-Vertrag | 12 grün |
 | `quant/tests/universe-source.test.mjs` | US1–US5 Company Master / Fallback / Übergabepunkt | 5 grün |
 | `quant/tests/intraday-hygiene.test.mjs` | IH1–IH4 Guard | 4 grün |
-| `quant/tests/*.test.mjs` gesamt | inkl. angepasste R10, DS6, Q11, Q14, I14 | 732 grün |
+| `quant/tests/*.test.mjs` gesamt | inkl. angepasste R10, DS6, Q11, Q14, I14 | 711 grün |
 | `discover/tests/live-hub.test.mjs` | LH1–LH6 Dedup, kein Polling bei Schluss, Wachstum, Rollover, Abschaltung | 6 grün |
 | `discover/tests/scale.test.mjs` | SC1–SC7 keine 498/GATE_500, Universumsquelle, Live-Umfang, kanonische Reihen, Snapshots | 7 grün |
-| `discover/tests/*.test.mjs` gesamt | | 166 grün |
+| `discover/tests/*.test.mjs` gesamt | inkl. LH7 (Pfad aus Sitzung + Muster) | 167 grün |
 | `scripts/discover/verify-discover-data.mjs` | ausgelieferte Daten vs. Engines | keine Abweichung |
 | `scripts/discover/browser-qa-live.mjs` | 29 Prüfpunkte Desktop + iPhone, Uhr Fr 15:00 NY (laufend) und echte Uhr (So, Schluss) | 2 × 29 grün |
-| `scripts/discover/browser-qa-v3.mjs` | 39 Prüfpunkte V3 | grün |
+| `scripts/discover/browser-qa-v3.mjs` | 39 Prüfpunkte V3 (von Golden-Five-Annahmen gelöst) | grün |
+| `scripts/discover/browser-qa.mjs` | 63 Prüfpunkte der Stufen 1–5 (Annahmen aus der 498er-Zeit auf das große Universum umgestellt) | 63/63 |
 
-Die Browser-QA lief gegen einen lokalen Server mit Mock-Snapshots (Werte aus
-einem lokalen Tiingo-Nachbau, nur zum Nachweis des Schreib- und
-Zeichenpfads); diese Mock-Daten liegen **nicht** im Repository. Geprüft
+Die Browser-QA lief zweimal: gegen die echten Daten aus den CI-Läufen (echte
+Uhr, Sonntag → „Letzter Handelstag · Freitag") und gegen Mock-Snapshots aus
+einem lokalen Tiingo-Nachbau mit gestellter Uhr (Freitag 15:00 New York →
+„Heute · Stand 14:55") zum Nachweis des laufenden Zustands; die Mock-Daten
+liegen **nicht** im Repository. Geprüft
 wurden dabei: Verzeichnis einmal geladen, jeder Snapshot höchstens einmal
 geholt, Abonnenten ≤ sichtbare Karten, Kündigungen beim Scrollen, kein Polling
 bei geschlossener Börse, kein Polling im versteckten Fenster, Beschriftung in
@@ -306,15 +380,32 @@ keine 4xx, kein horizontaler Überlauf, keine Layout-Sprünge.
 
 ---
 
-## 5. Abnahmebericht (wird nach dem ersten Workflow-Lauf ergänzt)
+## 5. Abnahmebericht (Stand d6a342e, So 13.09.2026)
 
-Kennzahlen, die hier stehen werden: Instrumente im Company Master / Fallback,
-Tiingo aufgelöst, historische Coverage, Intraday-Coverage (discover /
-universe), Live-Coverage, Discover-eligible, Karten mit echtem Tagesverlauf,
-ohne Chart mit Gründen, Requests und Nutzlast beim Initial-Load, Cache-Trefferquote,
-Mobile-Performance.
+| Kennzahl | Wert | Quelle |
+|---|---|---|
+| Instrumente im Company Master | 7 004 (in `claude/tiingo-us-equity-discovery-k5j4bc`, **nicht übernommen**) | Abschnitt 1.2 |
+| Instrumente in der genutzten Universumsquelle | 5 684 (+ SPY) | `universe-FULL_UNIVERSE.json` |
+| Tiingo-Symbole aufgelöst | 5 684 (100 %) | Gate-Bericht |
+| Historische Coverage (kompakte Jahresreihe) | 5 379 (94,6 %); 301 von der Qualitätsprüfung abgelehnt, 5 zu kurz | `discover-series/index.json` |
+| Faktorzeilen | 5 339 (93,9 %) | `factors-FULL_UNIVERSE-summary.json` |
+| Intraday-Coverage (letzte Sitzung, 5 min, IEX) | 4 348 (76,5 %); 1 337 ohne IEX-Abschlüsse | `intraday/status.json` |
+| Live-Coverage | 0 Ströme — auf GitHub Pages Snapshot-Refresh im 10-Minuten-Takt während der Sitzung (`isLive: false`, Label „Stand HH:MM") | Abschnitt 2.4 |
+| Discover-eligible | 5 339 Titel mit Karte/Detailseite; 92 als nicht handelbar ausgewiesen | `meta.json` |
+| Karten mit echtem Micro-Chart (Startseite) | 179 von 179 mit Tagesreihe (100 %); 152 von 179 Karten (121 von 148 Titeln) mit Tagesverlauf; Live-Umfang 236 von 293 Titeln | Coverage-Bericht |
+| ohne Chart, Gründe | 0 ohne Tagesreihe auf der Startseite; 1 337 Titel ohne Tagesverlauf (keine IEX-Abschlüsse), 306 ohne Jahresreihe (Qualität/zu kurz) | `status.json`, `index.json` |
+| Initial-Load Startseite (Desktop / iPhone) | 67 / 55 Anfragen, 1,11 / 1,05 MB unkomprimiert, 1 Live-Abonnent, Verzeichnis 82 KB | Abschnitt 3.3 |
+| Cache-Trefferquote | jede Reihe und jeder Snapshot genau einmal je Sitzung (requests = cached, failures 0); 219 Snapshots im zweiten Lauf ohne Anfrage (unveränderlich) | Hub-Statistik, `status.json` |
+| Mobile-Performance | 390 px: kein horizontaler Überlauf, erste Reihe bei 784 px im ersten Bild, Kartenbilder 88 px ohne Sprung, ≤ 14 Abonnenten im ersten Bild | Browser-QA live/legacy |
+| QA | Live-QA 29/29 (echte Uhr) + 29/29 (Uhr Fr 15:00 NY, Mock), V3-QA 39/39, Legacy-QA 63/63 — alle auf den echten Daten | `scripts/discover/browser-qa*.mjs` |
+| Tests | 167 Discover, 711 Quant, Verifier ohne Abweichung, Hygiene-Guard grün | `node --test` |
 
----
+Was in dieser Sandbox **nicht** gemessen werden konnte: eine laufende
+Sitzung mit echten Daten (Sonntag). Der Pfad „Heute · Stand 15:42" ist
+durch die Uhr-gestellte Browser-QA (Freitag 15:00 New York) mit
+Mock-Snapshots und durch den Vertrag (IS3: wachsend, nie schrumpfend)
+belegt; die erste echte Sitzung liefert der Montag-Zeitplan — auf diesem
+Branch nur per Push-Marke.
 
 ## 6. Empfehlung
 

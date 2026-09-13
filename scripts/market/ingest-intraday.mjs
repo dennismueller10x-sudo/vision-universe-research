@@ -164,6 +164,14 @@ function previousCloseFor(securityId) {
 
 /* ---------------------------------------------------------- Zugang */
 const apiKey = process.env.TIINGO_API_KEY || null;
+/* --index-only: nur das Verzeichnis aus den vorhandenen Snapshots neu
+   schreiben - kein Abruf, kein Schluessel noetig. */
+if (flag("--index-only")) {
+  const idx = writeIndex();
+  console.log(`  Verzeichnis neu geschrieben: ${idx.entryCount} Eintraege (Discover-Umfang), ` +
+              Object.keys(idx.available).map((d) => d + ": " + idx.available[d].length + " Titel").join(", "));
+  process.exit(0);
+}
 const bilanz = { requested: symbole.length, fetched: 0, written: 0, grown: 0, unchanged: 0,
                  skippedImmutable: 0, notPublishable: 0, failed: 0, requests: 0, reasons: {} };
 const perSymbol = {};
@@ -285,14 +293,24 @@ function writeIndex() {
      ihren Snapshot ueber den Pfad (Sitzung + securityId) direkt. */
   const discoverFile = join(root, "discover", "data", "live-scope", UNIVERSE_ID + ".json");
   const discoverSymbole = new Set(existsSync(discoverFile) ? (JSON.parse(readFileSync(discoverFile, "utf8")).symbols || []) : []);
+  /* Das ganze Universum steht nur als Liste von Kuerzeln je Sitzung im
+     Verzeichnis (available) - ein Eintrag mit Metadaten je Titel waere bei
+     4.000+ Snapshots fast ein Megabyte, das jede Seite laden muesste. Die
+     Aktienseite baut den Pfad aus Sitzung und Kuerzel (idPattern), die
+     Ausnahmen stehen daneben. */
+  const available = {}, idExceptions = {};
+  const explizit = SCOPE !== "discover" && SCOPE !== "universe" ? new Set(symbole) : new Set();
   for (const date of sitzungen) {
     const dateien = readdirSync(join(OUT_DIR, date)).filter((n) => n.endsWith(".json"));
     let complete = 0;
+    available[date] = [];
     for (const name of dateien) {
       let snap; try { snap = JSON.parse(readFileSync(join(OUT_DIR, date, name), "utf8")); } catch (e) { continue; }
       if (snap.regularComplete) complete++;
       const sym = snap.symbol;
-      if (discoverSymbole.has(sym) || symbole.includes(sym)) {
+      available[date].push(sym);
+      if (snap.securityId !== "ref_" + sym) idExceptions[sym] = snap.securityId;
+      if (discoverSymbole.has(sym) || explizit.has(sym)) {
         const alt = entries[sym];
         if (!alt || alt.sessionDate < date) {
           entries[sym] = { securityId: snap.securityId, sessionDate: date, asOf: snap.asOf, asOfLocal: snap.asOfLocal,
@@ -302,6 +320,7 @@ function writeIndex() {
       }
     }
     sessions[date] = { count: dateien.length, regularComplete: complete };
+    available[date].sort();
   }
   const index = {
     schemaVersion: "intraday-index-1.0.0",
@@ -314,10 +333,13 @@ function writeIndex() {
                       isRunning: !!session.isRunning, isComplete: !!session.isComplete },
     sessions,
     pathPattern: "/" + INTRADAY_DIR + "/<sessionDate>/<securityId>.json",
+    idPattern: "ref_<symbol>",
+    idExceptions,
     entryCount: Object.keys(entries).length,
     entries,
-    note: "Verzeichnis der Intraday-Snapshots. entries: Discover-Umfang, je Titel die juengste Sitzung. " +
-          "Titel ausserhalb des Verzeichnisses koennen ueber pathPattern direkt geladen werden (404 = kein Snapshot)."
+    available,
+    note: "Verzeichnis der Intraday-Snapshots. entries: Discover-Umfang, je Titel die juengste Sitzung mit Stand. " +
+          "available: alle Kuerzel mit Snapshot je Sitzung; der Pfad folgt pathPattern + idPattern (idExceptions)."
   };
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(join(OUT_DIR, "index.json"), JSON.stringify(index));

@@ -167,19 +167,24 @@
     chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
     chartHost.appendChild(el("div", { class: "dx-chart", style: "height:320px" }));
 
-    root.appendChild(why(detail));
-    root.appendChild(ueberblick(detail));
-    root.appendChild(waage(detail));
-    root.appendChild(unternehmen(detail));
-    root.appendChild(continueDiscovery(detail, options));
+    /* Ein Kapitel, das fuer diesen Titel nichts zu sagen hat (kein Signal,
+       keine Belege), gibt null zurueck - und faellt dann weg, statt die
+       Seite zu Fall zu bringen. Im grossen Universum ist das der
+       Normalfall fuer viele Titel ohne Discovery-Signal. */
+    var kapitel = function (node) { if (node) root.appendChild(node); };
+    kapitel(why(detail));
+    kapitel(ueberblick(detail));
+    kapitel(waage(detail));
+    kapitel(unternehmen(detail));
+    kapitel(continueDiscovery(detail, options));
 
     /* Ab hier die Analyse. Der Anfaenger muss nicht hierher; der Profi
        kommt mit einem Wisch. */
-    root.appendChild(kapitelTrenner());
-    root.appendChild(belege(detail));
-    root.appendChild(panels(detail));
-    root.appendChild(technicalIntelligence(detail));
-    root.appendChild(provenance(detail));
+    kapitel(kapitelTrenner());
+    kapitel(belege(detail));
+    kapitel(panels(detail));
+    kapitel(technicalIntelligence(detail));
+    kapitel(provenance(detail));
 
     /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
        Titel. Er wird abgewartet, bevor der Chart entsteht - damit der
@@ -237,7 +242,8 @@
       ? el("div", { class: "dx-price" }, [
           el("b", { class: "num", text: C().money(preis) }),
           el("span", { class: C().toneClass(change),
-                       text: isNum(change) ? C().pctPoints(change) + " heute" : "" })
+                       /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute". */
+                       text: isNum(change) ? C().pctPoints(change) + " zum Vortag" : "" })
         ])
       : (text.zahl
           ? el("div", { class: "dx-price" }, [

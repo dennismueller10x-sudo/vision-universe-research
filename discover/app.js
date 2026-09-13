@@ -114,9 +114,10 @@
        "Live" ohne Strom, kein technischer Code. */
     var zusatz;
     if (lage.beschreibung && lage.liveSnapshots) {
-      zusatz = lage.trading.marketState === "OPEN"
-        ? lage.beschreibung.label.replace(/^Heute · /, "")
-        : lage.beschreibung.label;
+      /* Kurz genug fuer die Leiste - auch auf dem Telefon: "Stand 15:42",
+         "Schluss 16:00", "Stand Freitag". Das Wort davor sagt schon, ob
+         die Boerse offen ist. */
+      zusatz = lage.beschreibung.label.replace(/^Heute · /, "").replace(/^Letzter Handelstag · /, "Stand ");
     } else {
       zusatz = universe.asOf ? S.formatDate(universe.asOf) : "";
     }

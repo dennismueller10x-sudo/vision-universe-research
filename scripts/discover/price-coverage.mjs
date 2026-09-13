@@ -87,7 +87,7 @@ for (const u of meta.universes) {
     homeCards: homeCards.length, homeSymbols: homeSymbols.size,
     homeCardsWithChart: homeCards.filter((c) => c.priceSeries && c.priceSeries.status === "CALCULATED").length,
     homeSymbolsWithChart: homeWithChart.size,
-    intraday: { sessions: intradaySessions, symbols: intradaySymbols.size,
+    intraday: { sessions: intradaySessions, symbols: n((r) => r.intraday), snapshotsTotal: intradaySymbols.size,
                 onHome: [...homeSymbols].filter((sym) => intradaySymbols.has(sym)).length,
                 homeCards: homeCards.filter((c) => intradaySymbols.has(c.symbol)).length },
     withoutChart: rows.filter((r) => !r.delivered).reduce((acc, r) => { acc[r.reason] = (acc[r.reason] || 0) + 1; return acc; }, {}),

@@ -220,7 +220,7 @@
   function liveStreifen(host, stock, abo) {
     var Hub = D.LiveHub, MC = D.MicroChart;
     if (!Hub || !Hub.enabled() || stock.dataMode !== "real" || !MC || !MC.renderIntraday) return;
-    if (!Hub.entryFor(stock.symbol)) return;
+    if (!Hub.resolveEntry(stock.symbol)) return;
     var streifen = el("div", { class: "dx-hero-live", "data-symbol": stock.symbol });
     host.appendChild(streifen);
     abo.kuendigen = Hub.subscribe(stock.symbol, function (p) {

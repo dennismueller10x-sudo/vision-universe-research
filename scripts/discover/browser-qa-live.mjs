@@ -71,8 +71,10 @@ ok("Keine technischen Codes auf Karten", labels.every((t) => !/OPEN|CLOSED|PRE_M
 const fake = await d.evaluate(() => [...document.querySelectorAll('[data-art="intraday"]')].map((s) => ({ sess: s.getAttribute("data-session"), n: s.querySelectorAll(".dx-art-line").length, title: s.querySelector("title") && s.querySelector("title").textContent })));
 ok("Jede Intraday-Linie traegt Sitzung, Quelle und Stand", fake.every((f) => f.sess && f.n === 1 && /Quelle tiingo.*Stand/.test(f.title || "")), JSON.stringify(fake[0]));
 const s1 = await stats(d);
-const sichtbar = await d.evaluate(() => [...document.querySelectorAll("[data-live]")].filter((n) => { const r = n.getBoundingClientRect(); return r.bottom > -80 && r.top < innerHeight + 80; }).length);
-ok("Abonnements nur fuer sichtbare Karten (Abonnenten <= sichtbare Live-Karten + Hero)", s1.subscribers <= sichtbar + 2, "subscribers " + s1.subscribers + ", sichtbar " + sichtbar);
+/* Abonniert wird je sichtbarem Kartenbild (data-symbol) - auch eines, fuer
+   das noch kein Snapshot vorliegt: es bekommt ihn, sobald einer kommt. */
+const sichtbar = await d.evaluate(() => [...document.querySelectorAll(".dx-poster-media[data-symbol], .dx-lazy-media[data-symbol]")].filter((n) => { const r = n.getBoundingClientRect(); return r.bottom > -80 && r.top < innerHeight + 80; }).length);
+ok("Abonnements nur fuer sichtbare Karten (Abonnenten <= sichtbare Kartenbilder + Hero)", s1.subscribers <= sichtbar + 2, "subscribers " + s1.subscribers + ", sichtbar " + sichtbar);
 ok("Ein Verzeichnis-Abruf, jeder Snapshot hoechstens einmal geholt (requests == cached, keine Fehler)",
    s1.indexLoads === 1 && s1.snapshotRequests === s1.cachedSnapshots && s1.failures === 0, JSON.stringify(s1));
 ok("Hero traegt den Tagesverlauf", (await d.locator(".dx-hero-live svg").count()) >= 1);

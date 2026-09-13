@@ -1222,7 +1222,10 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-30-beleg{font-size:11.5px}
   .dx-was summary{font-size:11px}
   .dx-searchbtn kbd{display:none}
-  .dx-status{order:3;font-size:10px;margin-left:auto}
+  .dx-status{order:3;font-size:10px;margin-left:auto;max-width:62vw;overflow:hidden;text-overflow:ellipsis}
+  /* "US Market" entfaellt auf dem Telefon: die Lage und der Stand passen
+     dann in die Zeile, ohne abgeschnitten zu werden. */
+  .dx-status b{display:none}
   .dx-rail-section{margin-top:30px;scroll-margin-top:150px}
   .dx-rail{padding-bottom:18px}
   /* Zugeklappt ist der Hinweis ein Satz. Das Pluszeichen sagt, dass es
@@ -1571,7 +1574,14 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-intraday-note{font-size:11.5px;color:var(--discover-dim);margin:6px 10px 8px;line-height:1.5}
 .dx-intraday-note .dx-live-label{position:static;display:inline;text-transform:none;letter-spacing:0;font-size:inherit;color:var(--discover-text)}
 @media (max-width:860px){
-  .dx-hero-live svg{height:64px}
+  /* Auf dem Telefon ersetzt der Tagesverlauf den Jahreschart in der
+     Eingangsflaeche, statt ihn zu ergaenzen: die Flaeche darf nicht
+     hoeher werden - die erste Reihe muss im ersten Bild beginnen. */
+  .dx-hero-media:has(.dx-hero-live) .dx-hero-chart,
+  .dx-hero-media:has(.dx-hero-live) .dx-hero-caption{display:none}
+  .dx-hero-live{margin-top:0}
+  .dx-hero-live svg{height:92px}
+  .dx-hero-live-label{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
   .dx-live-label{font-size:9px;left:10px;top:4px}
   .dx-intraday-chart{max-height:280px}
 }

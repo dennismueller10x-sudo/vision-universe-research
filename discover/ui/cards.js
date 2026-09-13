@@ -32,15 +32,21 @@
   function valueOf(f) { return f && typeof f === "object" ? f.value : (isNum(f) ? f : null); }
   function statusOf(f) { return f && typeof f === "object" ? f.status : "SOURCE_MISSING"; }
 
+  /* Prozent in deutscher Schreibweise: Komma, echtes Minus, geschuetztes
+     Leerzeichen vor dem Zeichen - dieselbe Form wie im Klartext. */
+  function prozentText(p, d) {
+    var s = Math.abs(p).toFixed(d).replace(".", ",");
+    return (p > 0 ? "+" : p < 0 ? "\u2212" : "") + s + "\u00a0%";
+  }
   function pct(v, digits) {
     if (!isNum(v)) return "–";
     var scaled = v * 100;
     var d = digits === undefined ? (Math.abs(scaled) < 1 ? 2 : 1) : digits;
-    return (scaled >= 0 ? "+" : "") + scaled.toFixed(d) + " %";
+    return prozentText(scaled, d);
   }
   function pctPoints(v, digits) {
     if (!isNum(v)) return "–";
-    return (v >= 0 ? "+" : "") + v.toFixed(digits === undefined ? 2 : digits) + " %";
+    return prozentText(v, digits === undefined ? 2 : digits);
   }
   function money(v) {
     if (!isNum(v)) return "–";
@@ -257,7 +263,7 @@
     /* Der Tagesverlauf hat Vorrang - wenn das Verzeichnis den Titel kennt.
        Das Verzeichnis liegt beim Start der Seite vor (app.js laedt es mit
        der Metadatei); die Entscheidung faellt deshalb hier synchron. */
-    var liveEintrag = liveFaehig ? Hub.entryFor(card.symbol) : null;
+    var liveEintrag = liveFaehig ? Hub.resolveEntry(card.symbol) : null;
 
     function tagesreihe() {
       if (host.__live) return;
@@ -619,7 +625,7 @@
         var kind = track.children[index];
         var media = kind && kind.querySelector && kind.querySelector("[data-series]");
         var sym = kind && kind.getAttribute && kind.getAttribute("data-symbol");
-        if (D().LiveHub && D().LiveHub.enabled() && sym && D().LiveHub.entryFor(sym)) D().LiveHub.prefetch(sym);
+        if (D().LiveHub && D().LiveHub.enabled() && sym && D().LiveHub.resolveEntry(sym)) D().LiveHub.prefetch(sym);
         else if (media && D().SeriesLoader && media.getAttribute("data-series")) D().SeriesLoader.prefetch(media.getAttribute("data-series"));
       }
     }) : null;

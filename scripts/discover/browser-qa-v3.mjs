@@ -204,7 +204,7 @@ ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" |
     const Hub = window.VUDiscover.LiveHub;
     for (const p of document.querySelectorAll(".dx-poster")) {
       const s = p.getAttribute("data-symbol"); const media = p.querySelector("[data-series]");
-      const hatReihe = media && media.getAttribute("data-series"); const hatLive = Hub && Hub.enabled() && Hub.entryFor(s);
+      const hatReihe = media && media.getAttribute("data-series"); const hatLive = Hub && Hub.enabled() && Hub.resolveEntry(s);
       if (!hatReihe && !hatLive) { const m = p.querySelector(".dx-art"); return { s, art: m ? m.getAttribute("data-art") : null }; }
     }
     return null;

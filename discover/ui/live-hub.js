@@ -27,7 +27,7 @@
 (function (global) {
   "use strict";
 
-  var MODULE_VERSION = "discover-live-hub-1.0.0";
+  var MODULE_VERSION = "discover-live-hub-1.1.0";
   var MIN_POLL_MS = 60000;
   var MAX_TIMEOUT_MS = 2147483647;
 
@@ -114,6 +114,27 @@
     return st.index && st.index.entries ? (st.index.entries[symbol] || null) : null;
   }
 
+  /* Titel ausserhalb des Discover-Umfangs (Aktienseite, Kategorie): das
+     Verzeichnis fuehrt sie nur als Kuerzel je Sitzung; der Eintrag wird
+     aus Sitzung, Muster und Ausnahmen gebaut - ohne Abruf, ohne 404. */
+  function resolveEntry(symbol) {
+    var e = entryFor(symbol);
+    if (e || !st.index || !st.index.available) return e;
+    var dates = Object.keys(st.index.available).sort();
+    for (var i = dates.length - 1; i >= 0; i--) {
+      var liste = st.index.available[dates[i]];
+      if (liste && liste.indexOf(symbol) !== -1) {
+        var id = (st.index.idExceptions && st.index.idExceptions[symbol]) ||
+                 String(st.index.idPattern || "ref_<symbol>").replace("<symbol>", symbol);
+        var path = String(st.index.pathPattern || "/quant/data/market/intraday/<sessionDate>/<securityId>.json")
+          .replace("<sessionDate>", dates[i]).replace("<securityId>", id);
+        return { securityId: id, sessionDate: dates[i], asOf: null, asOfLocal: null, points: null,
+                 regularComplete: null, path: path, derived: true };
+      }
+    }
+    return null;
+  }
+
   function loadSnapshot(path, frisch) {
     if (st.snapshots[path] && !frisch) { st.stats.snapshotHits++; return Promise.resolve(st.snapshots[path]); }
     if (st.inflight[path]) return st.inflight[path];
@@ -137,11 +158,11 @@
   function payload(symbol, snap) {
     var r = resolution();
     return { symbol: symbol, snapshot: snap || null, resolution: r,
-             label: snap ? TS().describe(r, snap) : TS().describe(r, null), entry: entryFor(symbol) };
+             label: snap ? TS().describe(r, snap) : TS().describe(r, null), entry: resolveEntry(symbol) };
   }
 
   function deliver(symbol, cb) {
-    var e = entryFor(symbol);
+    var e = resolveEntry(symbol);
     if (!e) { cb(payload(symbol, null)); return; }
     loadSnapshot(e.path, false).then(function (s) {
       st.stats.notifications++;
@@ -176,13 +197,13 @@
   function prefetch(symbol) {
     if (!st.enabled) return;
     loadIndex(false).then(function () {
-      var e = entryFor(symbol);
+      var e = resolveEntry(symbol);
       if (e && !st.snapshots[e.path] && !st.inflight[e.path]) loadSnapshot(e.path, false).catch(function () {});
     });
   }
 
   function peek(symbol) {
-    var e = entryFor(symbol);
+    var e = resolveEntry(symbol);
     return e && st.snapshots[e.path] ? st.snapshots[e.path] : null;
   }
 
@@ -207,10 +228,12 @@
     return loadIndex(true).then(function () {
       var jobs = [];
       Object.keys(st.subs).forEach(function (sym) {
-        var e = entryFor(sym);
+        var e = resolveEntry(sym);
         if (!e) return;
         var cached = st.snapshots[e.path];
-        if (cached && cached.asOf === e.asOf && cached.regularComplete === !!e.regularComplete) return;
+        /* Abgeleitete Eintraege tragen keinen Stand: nachgefragt wird dort
+           nur, wenn der Pfad noch nicht geladen ist. */
+        if (cached && (e.derived || (cached.asOf === e.asOf && cached.regularComplete === !!e.regularComplete))) return;
         jobs.push(loadSnapshot(e.path, true).then(function (s) {
           (st.subs[sym] || []).slice().forEach(function (cb) { st.stats.notifications++; cb(payload(sym, s)); });
         }).catch(function () {}));
@@ -264,7 +287,7 @@
     MODULE_VERSION: MODULE_VERSION,
     init: init,
     enabled: function () { return st.enabled; },
-    subscribe: subscribe, prefetch: prefetch, peek: peek, entryFor: entryFor,
+    subscribe: subscribe, prefetch: prefetch, peek: peek, entryFor: entryFor, resolveEntry: resolveEntry,
     loadIndex: loadIndex, resolution: function () { return st.enabled ? resolution() : null; },
     describe: function (snap) { return TS() ? TS().describe(resolution(), snap || null) : null; },
     index: function () { return st.index; },

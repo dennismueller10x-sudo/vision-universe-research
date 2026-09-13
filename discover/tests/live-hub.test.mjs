@@ -162,3 +162,22 @@ test("LH6 · ohne Freigabe (meta.realtime.available=false) tut der Hub nichts", 
   assert.equal(p.snapshot, null);
   assert.equal(calls.length, 0);
 });
+
+test("LH7 · Titel ausserhalb des Discover-Umfangs: Pfad aus Sitzung, Muster und Ausnahmen - kein Abruf ins Leere", async () => {
+  const s = snap("ZZZ", 6, true);
+  const antworten = {
+    "/idx.json": { entries: {}, displaySession: { sessionDate: "2026-09-11", isComplete: true }, sessions: {},
+                   pathPattern: "/i/<sessionDate>/<securityId>.json", idPattern: "ref_<symbol>",
+                   idExceptions: { "BRK-A": "ref_BRK_A" }, available: { "2026-09-10": ["ZZZ"], "2026-09-11": ["ZZZ", "BRK-A"] } },
+    "/i/2026-09-11/ref_ZZZ.json": s
+  };
+  const { Hub, calls } = fenster(antworten, "2026-09-12T14:00:00Z");
+  await Hub.loadIndex();
+  assert.equal(Hub.entryFor("ZZZ"), null, "kein Eintrag mit Metadaten");
+  assert.equal(Hub.resolveEntry("ZZZ").path, "/i/2026-09-11/ref_ZZZ.json", "juengste Sitzung gewinnt");
+  assert.equal(Hub.resolveEntry("BRK-A").securityId, "ref_BRK_A", "Ausnahme statt Muster");
+  assert.equal(Hub.resolveEntry("NOPE"), null, "unbekannt bleibt unbekannt - kein Pfad, kein 404");
+  let p = null; Hub.subscribe("ZZZ", (x) => { p = x; }); await tickMicro(); await tickMicro();
+  assert.equal(p.snapshot.symbol, "ZZZ");
+  assert.equal(calls.filter((c) => c.url.startsWith("/i/")).length, 1);
+});
