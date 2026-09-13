@@ -233,7 +233,11 @@ sagt, ob es sich lohnt, morgen wiederzukommen.
 
 ## 6 — WAS DIE SCHICHT HEUTE TRÄGT
 
-Gemessen gegen **7.004 Produkttitel**:
+Gemessen gegen **7.004 Produkttitel** (Lauf 34768909559, Normalisierung
+1.9.0, Registry 1.5.0; die Zahlen stammen aus `reconciliation.json`,
+`backtest-readiness.json` und `fundamental-quality.json`, der
+Abschlussbericht `docs/VU_SEC_FINAL_RECOVERY_REPORT.md` wird aus denselben
+Artefakten gerendert):
 
 | Universum | Titel | Anteil |
 |---|---:|---:|
@@ -241,17 +245,32 @@ Gemessen gegen **7.004 Produkttitel**:
 | `MARKET_UNIVERSE` (R2) | 6.997 | 99,9 % |
 | `TECHNICAL_UNIVERSE` | 5.963 | 85,14 % |
 | `FUNDAMENTAL_UNIVERSE` | 5.813 | 83,00 % |
-| `PIT_UNIVERSE` | 4.928 | 70,36 % |
-| `BACKTEST_READY_UNIVERSE` | 4.633 | 66,15 % |
+| `PIT_UNIVERSE` | 5.693 | 81,28 % |
+| `BACKTEST_READY_UNIVERSE` | 5.152 | 73,56 % |
 
 **Diese sechs Zahlen sind verschieden, und das ist keine Schwäche, sondern
 die Aussage.** Der Satz „Vision Universe hat Fundamentaldaten für 7.004
 Aktien" ist falsch und darf in keiner Oberfläche, keinem Report und
 keinem Pitch stehen.
 
-Backtestfähig nach Tiefe: **3.955** Titel mit fünf
-Jahren, **2.846** mit zehn, **2.192**
-mit fünfzehn.
+Backtestfähig nach Tiefe: **4.593** Titel mit fünf Jahren, **3.240** mit
+zehn, **2.350** mit fünfzehn.
+
+Titelzustände (§2.2): 5.172 `AVAILABLE`, 521 `PARTIAL`, 58 `MISSING`,
+62 `NOT_APPLICABLE`, 1.191 `UNAVAILABLE`. Von den 161 Titeln, die als
+`SEC_RECOVERABLE` geführt werden, ist **keiner** mehr durch ein Mapping
+lösbar: 62 sind strukturell ohne operativen Abschluss (SPAC, geschlossener
+Fonds), 40 sind jünger als zwei Jahre und warten auf ihren ersten
+Jahresbericht, 16 haben bei der SEC keine XBRL-Abschlüsse (40-F-Befreiung,
+leeres companyfacts), 42 stehen in der Abruf-Fehlerschlange.
+
+Branchenschicht (§2.3): 330 von 362 Banken, 113 von 131 Versicherern und
+174 von 175 REITs tragen mindestens eine Branchenkennzahl.
+
+Die Factbooks aller 5.437 ingestierten Emittenten liegen dauerhaft unter
+`r2:vision-universe-history/v1/sec/fundamentals/`; der Reload ohne SEC-
+Zugriff reproduziert die kanonischen Werte byte-gleich
+(`quant/data/fundamentals/reload-verification.json`).
 
 ---
 
@@ -262,9 +281,9 @@ Jeder ausgelieferte Satz trägt `versions`:
 | Feld | Heute | Ändert sich, wenn |
 |---|---|---|
 | `normalization_schema` | 1.0.0 | sich die Satzstruktur ändert |
-| `normalization_logic` | 1.6.0 | sich die Periodenauflösung ändert |
-| `formula` | 1.1.0 | sich eine Formel in `derived.py` ändert |
-| `metric_registry.mapping_version` | 1.1.0 | ein XBRL-Konzept neu gemappt wird |
+| `normalization_logic` | 1.9.0 | sich Periodenauflösung, Kalender oder Bündelstruktur ändert |
+| `formula` | 1.2.0 | sich eine Formel in `derived.py` ändert |
+| `metric_registry.mapping_version` | 1.5.0 | ein XBRL-Konzept neu gemappt oder eine Branchenkennzahl ergänzt wird |
 
 Ein Konsument, der Werte zwischenspeichert, **muss** auf diese Versionen
 prüfen. Eine geänderte `mapping_version` heißt: dieselbe Kennzahl kann

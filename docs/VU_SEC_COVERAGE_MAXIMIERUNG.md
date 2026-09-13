@@ -157,3 +157,44 @@ Operanden verschiedener Währungen ergeben **keine Zahl**, sondern
 
 *Vorher: `baseline-before-ifrs.json`. Nachher: Lauf `34744796159`,
 gemessen am 2026-09-13.*
+
+---
+
+## 9 — ZWEITER ZYKLUS: KALENDER, BRANCHENSCHICHT, PERSISTENZ
+
+Der erste Zyklus (oben) schloss die IFRS- und Währungslücke. Der zweite
+begann mit den 384 verbliebenen `SEC_RECOVERABLE`-Fällen und der Messung,
+dass **alle** 69 Emittenten ohne einen einzigen Wert einen leeren
+Kalender hatten – kein Mapping-, sondern ein Perioden-Problem. Drei
+Kalenderwege kamen hinzu (Rückwärtsprojektion, Bilanzstichtag des
+Jahresabschlusses, registriertes Jahresende), dazu die Branchenschicht
+mit 28 je SIC gemessenen Kennzahlen und die dauerhafte Ablage in R2.
+
+Gemessen (Baseline = Lauf 34749245361, Ergebnis = Lauf 34768909559; die
+vollständige Tabelle steht in `docs/VU_SEC_FINAL_RECOVERY_REPORT.md`,
+gerendert aus den Artefakten):
+
+| Kennzahl | vorher | nachher | Δ |
+|---|---:|---:|---:|
+| `SEC_RECOVERABLE` | 384 | 161 | **-223** |
+| davon noch durch Mapping lösbar | 72 | 0 | **-72** |
+| `AVAILABLE` (Titel) | 4.987 | 5.172 | **+185** |
+| `MISSING` (Titel) | 343 | 58 | **-285** |
+| `NOT_APPLICABLE` (Titel, neu ausgewiesen) | – | 62 | |
+| `PIT_READY` | 5.470 | 5.693 | **+223** |
+| `BACKTEST_PIT_FUNDAMENTAL_READY` | 5.139 | 5.152 | **+13** |
+| `BACKTEST_5Y_READY` | 4.424 | 4.593 | **+169** |
+| `BACKTEST_10Y_READY` | 3.017 | 3.240 | **+223** |
+| `BACKTEST_15Y_READY` | 2.242 | 2.350 | **+108** |
+| Banken mit Branchenkennzahl | – | 330 / 362 | |
+| Versicherer mit Branchenkennzahl | – | 113 / 131 | |
+| REITs mit Branchenkennzahl | – | 174 / 175 | |
+| `PERSISTED_ISSUERS` (R2) | – | 5.437 | |
+| `RELOAD_WITHOUT_SEC_REFETCH` | – | PASS 8/8 | |
+
+Was von den 161 übrig ist, hat je einen Grund: 62 ohne operativen
+Abschluss (14 SPACs, 48 geschlossene Fonds), 40 jünger als zwei Jahre
+(erster Jahresbericht steht aus), 16 ohne XBRL-Abschlüsse bei der SEC,
+42 in der Abruf-Fehlerschlange (im Bulk-Archiv nicht enthalten), 1 Bank
+ohne Kernkennzahl in der Branchenschicht.
+
