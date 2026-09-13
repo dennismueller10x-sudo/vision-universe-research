@@ -114,6 +114,28 @@ jobs:
           node scripts/universe/build-universe-indexes.mjs
           python3 scripts/quant/cli.py reconcile
 
+      - name: Der Abgleich trifft den abgenommenen Marktdatenstand
+        # §4. Die eigene Rechnung MUSS 6.997 und 5.963 treffen - die
+        # kanonische Quelle fuehrt ihre Ausnahmen namentlich, also ist
+        # das keine Naeherung. Trifft sie nicht, ist entweder das
+        # Produktuniversum ein anderes oder eine Ausnahmeliste
+        # unvollstaendig gelesen. Kein neuer Nenner ohne Ursache.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          a = json.load(open("quant/data/fundamentals/reconciliation.json"))
+          a = a["overlap"]["acceptedMarketDataState"]
+          if a["status"] != "CANONICAL_PER_INSTRUMENT":
+              sys.exit(f"Gerechnet wurde aus {a['status']} - das ist eine Stichprobe "
+                       "und keine Deckung.")
+          if not a["reconciled"]:
+              sys.exit(f"Abweichung vom abgenommenen Stand: {a['delta']}. "
+                       f"{a['explanation']}")
+          print(f"Abgestimmt gegen Lauf {a['sourceRunId']}: "
+                f"{a['computed']['HISTORICAL_CHART_AVAILABLE']} Kurshistorien, "
+                f"{a['computed']['TECHNICAL_HISTORY_ELIGIBLE']} technisch geeignet.")
+          PY
+
       - name: Die fuenf Universen bleiben unterscheidbar
         # §11. Der Satz "Vision Universe hat Fundamentaldaten fuer 7.004
         # Aktien" ist falsch, und diese Pruefung sorgt dafuer, dass er

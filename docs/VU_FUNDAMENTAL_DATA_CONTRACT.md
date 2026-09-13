@@ -41,6 +41,7 @@ Unternehmen.
 |---|---|---|
 | `instrumentId` | ein Listing (`vu_…`) | Kürzelwechsel, Börsenwechsel |
 | `masterMemberId` | ein Papier im Wertpapierstamm | Neuaufnahme des Universums |
+| `securityId` | **dasselbe Papier im Market Data Contract** | — |
 | `issuerId` | eine Gesellschaft (`iss_cik_<10-stellige CIK>`) | Umbenennung, Tickerwechsel |
 | `cik` | die SEC-Kennung, zehnstellig mit führenden Nullen | — |
 
@@ -54,6 +55,19 @@ Unternehmen.
    nicht kopiert und nicht addiert.
 3. **Ohne CIK kein `issuerId`.** Es wird keine geraten. Ein Titel ohne
    Zuordnung steht im Gap Report, nicht im Bestand.
+4. **`securityId` (Market Data Contract) ist identisch mit
+   `masterMemberId`.** Das ist die einzige Brücke zwischen den beiden
+   kanonischen Verträgen — geprüft über alle 7.004 Produkttitel, ohne
+   Abweichung (`scripts/quant/tests/test_canonical_market.py`). Die
+   Marktdatenschicht bleibt ein eigener Vertrag; dieser kopiert keine
+   Kurslogik und rechnet keine Deckung nach.
+
+Die Kette eines Joins lautet damit vollständig:
+
+```
+securityId  ==  masterMemberId  →  issuerId (= iss_cik_<CIK>)  →  CIK
+ (Market)         (Universum)          (Fundamentals)            (SEC)
+```
 
 ---
 
@@ -146,8 +160,8 @@ Jede Oberfläche muss fünf Zustände unterscheiden können — **gemessen auf
 
 | Zustand | Titel | Bedeutung |
 |---|---:|---|
-| `AVAILABLE` | 3.824 | mindestens drei Jahre auflösbare Historie |
-| `PARTIAL` | 1.104 | Werte vorhanden, Historie kürzer als drei Jahre |
+| `AVAILABLE` | 4.447 | mindestens drei Jahre auflösbare Historie |
+| `PARTIAL` | 481 | Werte vorhanden, Historie kürzer als drei Jahre |
 | `MISSING` | 885 | Einreichungen liegen vor, kein Wert auflösbar |
 | `UNAVAILABLE` | 1.191 | kein Factbook |
 | `AMBIGUOUS` | 0 | Zuordnung nicht eindeutig — derzeit kein Fall |
@@ -166,18 +180,19 @@ Gemessen gegen **7.004 Produkttitel**:
 | Universum | Titel | Anteil |
 |---|---:|---:|
 | `PRODUCT_UNIVERSE` | 7.004 | 100 % |
-| `TECHNICAL_UNIVERSE` | 5.378 | 76.7847 % |
-| `FUNDAMENTAL_UNIVERSE` | 5.813 | 82.9954 % |
-| `PIT_UNIVERSE` | 4.928 | 70.3598 % |
-| `BACKTEST_READY_UNIVERSE` | 4.172 | 59.566 % |
+| `MARKET_UNIVERSE` (R2) | 6.997 | 99,9 % |
+| `TECHNICAL_UNIVERSE` | 5.963 | 85,14 % |
+| `FUNDAMENTAL_UNIVERSE` | 5.813 | 83,00 % |
+| `PIT_UNIVERSE` | 4.928 | 70,36 % |
+| `BACKTEST_READY_UNIVERSE` | 4.633 | 66,15 % |
 
-**Diese fünf Zahlen sind verschieden, und das ist keine Schwäche, sondern
+**Diese sechs Zahlen sind verschieden, und das ist keine Schwäche, sondern
 die Aussage.** Der Satz „Vision Universe hat Fundamentaldaten für 7.004
 Aktien" ist falsch und darf in keiner Oberfläche, keinem Report und
 keinem Pitch stehen.
 
-Backtestfähig nach Tiefe: **3.319** Titel mit fünf
-Jahren, **2.283** mit zehn, **1.694**
+Backtestfähig nach Tiefe: **3.955** Titel mit fünf
+Jahren, **2.846** mit zehn, **2.192**
 mit fünfzehn.
 
 ---
