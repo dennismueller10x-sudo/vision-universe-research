@@ -149,3 +149,30 @@ test("die Zusammenfassung haelt nie ein Factbook", () => {
   assert.deepEqual(s.currencies, ["GBP"]);
   assert.equal(JSON.stringify(s).length < 600, true, "der Index bleibt klein");
 });
+
+test("parallel und seriell schreiben denselben Index", async () => {
+  const { mkdtempSync, writeFileSync, mkdirSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { gzipSync } = await import("node:zlib");
+  const { localFacts, push, witness, PREFIX } = await import("../../scripts/quant/sec/persist-fundamentals.mjs");
+  const { createFsDriver } = await import("../../scripts/market/storage/fs-driver.mjs");
+  const treiber = (dir) => witness(createFsDriver(join(root, dir)), PREFIX + "/", []);
+  const root = mkdtempSync(join(tmpdir(), "vu-persist-par-"));
+  const facts = join(root, "facts"); mkdirSync(facts);
+  for (let i = 0; i < 23; i++) {
+    const cik = String(1000 + i).padStart(10, "0");
+    const doc = { cik, versions: { normalization_logic: "t" }, factbook: { timelines: [
+      { fiscal_period: "FY", observations: [{ value: i, unit: "USD", period_end: "2020-12-31", filed: "2021-02-01", accession: "a" }] }] },
+      quality: { summary: { total: 0 } }, filing_index: [], profile: {} };
+    writeFileSync(join(facts, cik + ".json.gz"), gzipSync(Buffer.from(JSON.stringify(doc))));
+  }
+  const seriell = await push(treiber("a"), { facts: localFacts(facts), parallel: 1 });
+  const parallel = await push(treiber("b"), { facts: localFacts(facts), parallel: 8 });
+  assert.equal(parallel.changed, 23);
+  assert.equal(parallel.spent.classA, seriell.spent.classA);
+  const strip = (idx) => Object.fromEntries(Object.entries(idx.objects).map(([k, v]) => {
+    const { persistedAt, ...rest } = v; return [k, rest];
+  }));
+  assert.deepEqual(strip(parallel.index), strip(seriell.index));
+});

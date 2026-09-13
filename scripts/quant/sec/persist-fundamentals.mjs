@@ -150,32 +150,56 @@ async function readIndex(driver, budget) {
 }
 
 /* ------------------------------------------------------------------ PUSH */
-export async function push(driver, { facts, dryRun, log }) {
+/* Wie viele Objekte gleichzeitig unterwegs sind. Ein Lauf, der alle
+   5.437 Factbooks neu normalisiert hat, schreibt alle 5.437 - eines
+   nach dem anderen dauerte ueber vierzig Minuten, und die Zeit ging
+   nicht in die Leitung, sondern ins Warten auf jede einzelne Antwort.
+   Acht parallel ist weit unter dem, was R2 vertraegt, und weit ueber
+   dem, was der Runner braucht. */
+export const PARALLEL_UPLOADS = Math.max(1, Number(process.env.VU_PERSIST_PARALLEL || 8));
+
+export async function push(driver, { facts, dryRun, log, parallel = PARALLEL_UPLOADS }) {
   const changed = [];
   const budget = createBudget({ classAOperations: facts.length + 2, classBOperations: 2 });
   const index = await readIndex(driver, budget);
   const objects = Object.assign({}, index.objects || {});
   let unchanged = 0, bytesUploaded = 0;
 
-  for (const f of facts) {
-    const key = FACTS_PREFIX + f.cik + ".json.gz";
+  const pending = facts.filter((f) => {
     const known = objects[f.cik];
-    if (known && known.sha256 === f.sha256) { unchanged++; budget.noteSkippedWrite(); continue; }
-    const doc = JSON.parse(gunzipSync(f.buf).toString("utf8"));
-    const summary = summarize(doc);
-    if (!dryRun) {
-      budget.consumeClassA(1, "PUT " + key);
-      await driver.put(key, f.buf, {
-        contentType: "application/gzip",
-        metadata: { sha256: f.sha256, cik: f.cik, normalization: summary.normalizationLogic || "" }
-      });
-      budget.noteUpload(f.bytes);
+    if (known && known.sha256 === f.sha256) { unchanged++; budget.noteSkippedWrite(); return false; }
+    return true;
+  });
+
+  /* Jedes Objekt wird genau einmal gelesen, zusammengefasst und
+     geschrieben; der Index bekommt seinen Eintrag erst, wenn das PUT
+     zurueck ist. Ein Fehler bricht den Lauf ab - dann traegt der Index
+     im Speicher noch den alten Stand, und der naechste Lauf schreibt
+     genau die Objekte nach, deren sha256 dort fehlt. */
+  let next = 0;
+  async function worker() {
+    while (next < pending.length) {
+      const f = pending[next++];
+      const key = FACTS_PREFIX + f.cik + ".json.gz";
+      const buf = f.buf;
+      const summary = summarize(JSON.parse(gunzipSync(buf).toString("utf8")));
+      if (!dryRun) {
+        budget.consumeClassA(1, "PUT " + key);
+        await driver.put(key, buf, {
+          contentType: "application/gzip",
+          metadata: { sha256: f.sha256, cik: f.cik, normalization: summary.normalizationLogic || "" }
+        });
+        budget.noteUpload(f.bytes);
+      }
+      bytesUploaded += f.bytes;
+      objects[f.cik] = Object.assign({ key, bytes: f.bytes, sha256: f.sha256,
+                                       persistedAt: new Date().toISOString() }, summary);
+      changed.push(f.cik);
+      if (log && changed.length % 500 === 0) log(`  ${changed.length}/${pending.length} geschrieben`);
     }
-    bytesUploaded += f.bytes;
-    objects[f.cik] = Object.assign({ key, bytes: f.bytes, sha256: f.sha256,
-                                     persistedAt: new Date().toISOString() }, summary);
-    changed.push(f.cik);
   }
+  await Promise.all(Array.from({ length: Math.min(parallel, pending.length) }, worker));
+  changed.sort();
 
   const payload = {
     version: VERSION, prefix: PREFIX, generatedAt: new Date().toISOString(),
