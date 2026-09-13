@@ -175,7 +175,7 @@
        Detail) ist der viewBox 640 bis 900 breit, auf der Karte 300 -
        dieselbe Zahl saehe dort dreimal so gross aus. */
     var gross = opt.scale === "hero";
-    var fLabel = gross ? 13 : 9.5, fValue = gross ? 17 : 11;
+    var fLabel = gross ? 14 : 9.5, fValue = gross ? 20 : 11;
     var labelH = opt.labels === false ? 0 : fLabel + 5;
     var valueH = opt.values ? fValue + 4 : 0;
     var x0 = box.x, y0 = box.y + valueH, w = box.w, h = box.h - labelH - valueH;

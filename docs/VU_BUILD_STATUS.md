@@ -28,6 +28,7 @@ Bereinigungssemantik.**
 | 3 | Bildsprache: Farbwelten, datengetriebenes Artwork, dunkler Header | `VU_DISCOVER_VISUAL_IDENTITY.md` |
 | 4 | Consumer Layer: Klartext statt Scores, Sammlungen, drei Ebenen | `VU_DISCOVER_CONSUMER_LAYER.md` |
 | 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
+| 6 | V3: Surfaces, Relevanz, Diversity, Chart Truth Contract, Themenwelten (Branch, nicht gemergt) | `VU_DISCOVER_V3.md`, `VU_DISCOVER_V3_COLLECTION_AUDIT.md` |
 
 Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
 der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
@@ -37,6 +38,15 @@ der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
 Menüeintrag **Discover** steht in `assets/site-navigation.js` an zweiter
 Stelle und erscheint damit auf jeder Seite. Der Einzelmodus liegt unter
 `/discover/#/einzeln/US_REAL` und ist aus der Discover-Leiste erreichbar.
+
+### Stufe 6 — Discover V3 (Branch `claude/vision-universe-discover-v3`)
+
+Nicht gemergt, nicht veröffentlicht. 150 Discover-Tests, 13 654
+Nachrechnungen, 63/63 + 31/31 Browser-Prüfungen, 684 Quant-Tests. Die
+Startseite ist ein Manifest aus 21 Surfaces in sieben Formen; bekannte Namen
+rücken innerhalb qualifizierter Titel nach vorn; kein Renditepfad wird mehr
+als Kurve gezeichnet — fünf echte Charts, 493 Renditeleitern. Details und
+Empfehlung zur Veröffentlichung in `VU_DISCOVER_V3.md`.
 
 ### Auslieferungskette, geprüft
 

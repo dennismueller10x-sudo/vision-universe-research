@@ -160,7 +160,9 @@
 
     loadSeries(detail).then(function (loaded) {
       S.clear(chartHost);
-      chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
+      /* Ohne Kursreihe heisst das Kapitel nicht "Kursverlauf" - es zeigt
+         keinen. Es zeigt die Wertentwicklung ueber vier Zeitraeume. */
+      chartHost.appendChild(el("h2", { text: loaded ? "Kursverlauf" : "Wertentwicklung" }));
       if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
       state.bars = loaded.bars;
       state.weeklyBars = loaded.weeklyBars || null;

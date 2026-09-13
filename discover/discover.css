@@ -1238,7 +1238,10 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-hero{display:block}
   .dx-hero-inner{grid-template-columns:1fr;gap:12px;padding:20px var(--discover-gutter) 28px}
   .dx-hero-media{min-height:0;order:2;gap:8px}
+  /* Die Renditeleiter braucht mehr Hoehe als die Linie: bei 92 px wird
+     ihre Beschriftung flachgedrueckt (viewBox 640x320 ohne Seitenverhaeltnis). */
   .dx-hero-chart{height:92px}
+  .dx-hero-chart[data-art="ladder"]{height:124px}
   .dx-hero-copy{order:1}
   .dx-hero-title{font-size:clamp(30px,8.4vw,40px);margin-bottom:6px}
   .dx-hero-sym{margin-bottom:14px;font-size:11px}
@@ -1253,7 +1256,11 @@ body.dx-feed-aktiv{overflow:hidden}
   /* Die Bildunterschrift traegt die Einordnung des Datenbildes; die
      ersten Worte - "Rebasierter Renditepfad - keine Kurskurve" - muessen
      ungekuerzt stehen, alles danach erklaert. Drei Zeilen reichen dafuer. */
-  .dx-hero-caption{font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;
+  /* Zwei Zeilen: der erste Satz sagt, was man sieht ("als Balken, nicht
+     als Kurskurve"); der Rest steht im title und auf der Aktienseite. Die
+     dritte Zeile kostete genau die Pixel, mit denen die erste Reihe noch
+     im Bild beginnt. */
+  .dx-hero-caption{font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;
     -webkit-box-orient:vertical;overflow:hidden}
   .dx-cta{gap:8px;flex-wrap:nowrap}
   .dx-btn{flex:1 1 auto;justify-content:center;padding:12px 14px;font-size:12.5px;white-space:nowrap;

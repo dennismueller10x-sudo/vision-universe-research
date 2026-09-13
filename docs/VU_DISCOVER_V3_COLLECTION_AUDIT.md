@@ -161,41 +161,119 @@ Reihen, die von vornherein nach Bekanntheit fragen.
 
 | | |
 |---|---|
-| Zweck | Aktien, die seit Monaten über ihrem Durchschnittskurs liegen. |
-| Aufnahmeregel | `trendIntact` + Kennzahl leadershipScore vorhanden |
-| Reihenfolge | `leadershipScore` absteigend, Gleichstand nach `leadershipScore` |
+| Zweck | Seit Monaten über dem Durchschnittskurs — die ruhigsten zuerst. |
+| Aufnahmeregel | `trendIntact` + Kennzahl leadershipScore, volatility252d vorhanden |
+| Reihenfolge | `volatility252d` aufsteigend, Gleichstand nach `leadershipScore` |
 | Kandidaten | 97 von 498, ausgeliefert 30 |
-| bekannte Namen unter den ausgelieferten | 19 von 30 — erster auf Platz 1 |
+| bekannte Namen unter den ausgelieferten | 22 von 30 — erster auf Platz 2 |
+
+| # | Titel | Name | bekannt | volatility252d | 12M | Aussage |
+|---|---|---|---|---|---|---|
+| 1 | TXNM | TXNM Energy | – | 5.1 % | +5 % | Fast wieder am Jahreshoch |
+| 2 | BRK-A | Berkshire Hathaway | Stufe 1 | 14.2 % | +1 % | Über zwölf Monate im Plus |
+| 3 | JNJ | Johnson & Johnson | Stufe 1 | 19.1 % | +54 % | Gehört zu den Marktführern |
+| 4 | BCE | BCE Inc. | – | 19.7 % | +1 % | Zuletzt schwächer, über zwölf Monate im Plus |
+| 5 | NFG | National Fuel Gas | – | 20.1 % | -1 % | Etwas unter dem Stand vor einem Jahr |
+| 6 | CFR | Cullen/Frost Bankers | – | 20.7 % | +31 % | Gehört zu den Marktführern |
+| 7 | BNY | Bank of New York Mellon | Stufe 2 | 21.2 % | +60 % | Seit Monaten im Aufwärtstrend |
+| 8 | WTRG | Essential Utilities | – | 22.0 % | +10 % | Auf dem höchsten Stand des Jahres |
+| 9 | HTO | H2O America | – | 22.4 % | +33 % | Fast wieder am Jahreshoch |
+| 10 | SHEL | Shell plc | Stufe 1 | 22.5 % | +38 % | Auf dem höchsten Stand des Jahres |
+
+**Warum diese Reihenfolge:** Dann entscheidet `volatility252d`: TXNM führt mit 5.1 %. 6 der ersten zehn sind unbekannte Namen — nicht weil die Regel sie bevorzugt, sondern weil sie die Mehrheit des Universums stellen (siehe oben).
+
+### BEKANNTE NAMEN IN BEWEGUNG
+
+| | |
+|---|---|
+| Zweck | Marken, die man aus dem Alltag kennt — und deren Kurs gerade etwas tut. |
+| Aufnahmeregel | `bekannt` + Kennzahl return3M vorhanden |
+| Reihenfolge | `return3M` absteigend, Gleichstand nach `leadershipScore` |
+| Kandidaten | 36 von 498, ausgeliefert 30 |
+| bekannte Namen unter den ausgelieferten | 30 von 30 — erster auf Platz 1 |
+
+| # | Titel | Name | bekannt | return3M | 12M | Aussage |
+|---|---|---|---|---|---|---|
+| 1 | VLO | Valero Energy | Stufe 1 | 48.7 % | +150 % | Hat sich in zwölf Monaten mehr als verdoppelt |
+| 2 | CRM | Salesforce Inc. | Stufe 1 | 36.8 % | +0 % | Nach schwachen Monaten wieder im Aufwind |
+| 3 | NEM | Newmont Corporation | Stufe 1 | 28.6 % | +68 % | Gehört zu den Marktführern |
+| 4 | MRK | Merck & Co. | Stufe 1 | 25.1 % | +81 % | Eine der stärksten Aktien des Jahres |
+| 5 | HPQ | HP Inc. | Stufe 1 | 24.3 % | +12 % | Nach schwachen Monaten wieder im Aufwind |
+| 6 | SAN | Banco Santander | Stufe 1 | 22.2 % | +60 % | Eine der stärksten Aktien des Jahres |
+| 7 | MSFT | Microsoft Corporation | Stufe 1 | 20.2 % | +1 % | Über zwölf Monate im Plus |
+| 8 | DE | Deere & Company | Stufe 1 | 19.0 % | +46 % | Gehört zu den Marktführern |
+| 9 | BAC | Bank of America | Stufe 1 | 16.9 % | +28 % | Fast wieder am Jahreshoch |
+| 10 | VOD | Vodafone Group | Stufe 1 | 16.9 % | +53 % | Auf dem höchsten Stand des Jahres |
+
+**Warum diese Reihenfolge:** Dann entscheidet `return3M`: VLO führt mit 48.7 %.
+
+### COMEBACK?
+
+| | |
+|---|---|
+| Zweck | Deutlich gefallen — und seit drei Monaten wieder klar im Plus. |
+| Aufnahmeregel | `comeback` + Kennzahl return3M, maxDrawdown252d, distanceTo52wHigh vorhanden |
+| Reihenfolge | `return3M` absteigend, Gleichstand nach `leadershipScore` |
+| Kandidaten | 56 von 498, ausgeliefert 30 |
+| bekannte Namen unter den ausgelieferten | 14 von 30 — erster auf Platz 3 |
+
+| # | Titel | Name | bekannt | return3M | 12M | Aussage |
+|---|---|---|---|---|---|---|
+| 1 | MAN | ManpowerGroup | – | 76.4 % | +45 % | Gehört zu den Marktführern |
+| 2 | THC | Tenet Healthcare | – | 58.9 % | +32 % | Nach schwachen Monaten wieder im Aufwind |
+| 3 | CBRL | Cracker Barrel | Stufe 2 | 54.9 % | +3 % | Nach schwachen Monaten wieder im Aufwind |
+| 4 | NWL | Newell Brands | – | 52.3 % | +6 % | Seit Monaten durchgehend im Aufwärtstrend |
+| 5 | EAT | Brinker International | Stufe 2 | 52.2 % | +41 % | Gehört zu den Marktführern |
+| 6 | SIEB | Siebert Financial | – | 43.4 % | +4 % | Seit Monaten durchgehend im Aufwärtstrend |
+| 7 | AIRT | Air T Inc. | – | 42.5 % | +26 % | Seit Monaten im Aufwärtstrend |
+| 8 | GPC | Genuine Parts Company | Stufe 2 | 39.2 % | -0 % | Etwas unter dem Stand vor einem Jahr |
+| 9 | PAR | PAR Technology | – | 38.5 % | -62 % | Deutlich unter dem Stand vor einem Jahr |
+| 10 | HL | Hecla Mining | Stufe 2 | 37.4 % | +127 % | Hat sich in zwölf Monaten mehr als verdoppelt |
+
+**Warum diese Reihenfolge:** Dann entscheidet `return3M`: MAN führt mit 76.4 %. 6 der ersten zehn sind unbekannte Namen — nicht weil die Regel sie bevorzugt, sondern weil sie die Mehrheit des Universums stellen (siehe oben).
+
+### ÜBERRASCHUNGEN
+
+| | |
+|---|---|
+| Zweck | Stark, aber kaum jemandem ein Begriff — Titel ohne bekannten Namen. |
+| Aufnahmeregel | `ueberraschung` + Kennzahl leadershipScore vorhanden |
+| Reihenfolge | `leadershipScore` absteigend, Gleichstand nach `leadershipScore` |
+| Kandidaten | 31 von 498, ausgeliefert 30 |
+| bekannte Namen unter den ausgelieferten | 0 von 30 — erster auf Platz – |
 
 | # | Titel | Name | bekannt | leadershipScore | 12M | Aussage |
 |---|---|---|---|---|---|---|
-| 1 | VLO | Valero Energy | Stufe 1 | 95.9 | +150 % | Auf dem höchsten Stand des Jahres |
-| 2 | PSX | Phillips 66 | Stufe 2 | 93.4 | +103 % | Auf dem höchsten Stand des Jahres |
-| 3 | ALOT | AstroNova Inc. | – | 93.0 | +154 % | Hat sich in sechs Monaten mehr als verdreifacht |
-| 4 | PBT | Permian Basin Royalty Trust | – | 89.5 | +97 % | Eine der stärksten Aktien des Jahres |
-| 5 | TGT | Target Corporation | Stufe 2 | 88.3 | +82 % | Eine der stärksten Aktien des Jahres |
-| 6 | TWIN | Twin Disc Inc. | – | 87.7 | +89 % | Gehört zu den Marktführern |
-| 7 | BBVA | Banco Bilbao Vizcaya Argentaria | Stufe 2 | 87.1 | +68 % | Gehört zu den Marktführern |
-| 8 | STT | State Street Corporation | Stufe 2 | 86.5 | +74 % | Seit Monaten im Aufwärtstrend |
-| 9 | MATX | Matson Inc. | Stufe 2 | 85.1 | +114 % | Seit Monaten im Aufwärtstrend |
-| 10 | SAN | Banco Santander | Stufe 1 | 84.5 | +60 % | Läuft dem Markt davon |
+| 1 | ALOT | AstroNova Inc. | – | 93.0 | +154 % | Hat sich in zwölf Monaten mehr als verdoppelt |
+| 2 | PBT | Permian Basin Royalty Trust | – | 89.5 | +97 % | Eine der stärksten Aktien des Jahres |
+| 3 | TWIN | Twin Disc Inc. | – | 87.7 | +89 % | Eine der stärksten Aktien des Jahres |
+| 4 | NRT | North European Oil Royalty Trust | – | 81.8 | +111 % | Hat sich in zwölf Monaten mehr als verdoppelt |
+| 5 | AVT | Avnet Inc. | – | 79.2 | +76 % | Gehört zu den Marktführern |
+| 6 | HP | Helmerich & Payne | – | 77.8 | +123 % | Gehört zu den Marktführern |
+| 7 | NHC | National HealthCare Corporation | – | 76.7 | +96 % | Seit Monaten im Aufwärtstrend |
+| 8 | CLDX | Celldex Therapeutics | – | 76.3 | +71 % | Seit Monaten im Aufwärtstrend |
+| 9 | ACU | Acme United Corporation | – | 76.0 | +40 % | Läuft dem Markt davon |
+| 10 | MYE | Myers Industries | – | 75.9 | +101 % | Läuft dem Markt davon |
 
-**Warum diese Reihenfolge:** Dann entscheidet `leadershipScore`: VLO führt mit 95.9.
+**Warum diese Reihenfolge:** Dann entscheidet `leadershipScore`: ALOT führt mit 93.0. 10 der ersten zehn sind unbekannte Namen — nicht weil die Regel sie bevorzugt, sondern weil sie die Mehrheit des Universums stellen (siehe oben).
 
 ## Überschneidungen zwischen den Reihen (erste zehn)
 
 Wie viele der ersten zehn Titel einer Reihe stehen auch unter den ersten zehn einer anderen?
 
-| | new‑52‑week‑highs | market‑leaders | momentum‑leaders | breakout‑watch | relative‑strength | trend‑quality |
-|---|---|---|---|---|---|---|
-| new-52-week-highs | · | 3 | 3 | 2 | 3 | 3 |
-| market-leaders | 3 | · | 7 | 0 | 7 | 10 |
-| momentum-leaders | 3 | 7 | · | 0 | 8 | 7 |
-| breakout-watch | 2 | 0 | 0 | · | 0 | 0 |
-| relative-strength | 3 | 7 | 8 | 0 | · | 7 |
-| trend-quality | 3 | 10 | 7 | 0 | 7 | · |
+| | new‑52‑week‑highs | market‑leaders | momentum‑leaders | breakout‑watch | relative‑strength | trend‑quality | bekannte‑namen | comeback | ueberraschungen |
+|---|---|---|---|---|---|---|---|---|---|
+| new-52-week-highs | · | 3 | 3 | 2 | 3 | 2 | 2 | 0 | 1 |
+| market-leaders | 3 | · | 7 | 0 | 7 | 0 | 2 | 0 | 3 |
+| momentum-leaders | 3 | 7 | · | 0 | 8 | 0 | 1 | 0 | 4 |
+| breakout-watch | 2 | 0 | 0 | · | 0 | 0 | 0 | 1 | 1 |
+| relative-strength | 3 | 7 | 8 | 0 | · | 0 | 1 | 0 | 4 |
+| trend-quality | 2 | 0 | 0 | 0 | 0 | · | 0 | 0 | 0 |
+| bekannte-namen | 2 | 2 | 1 | 0 | 1 | 0 | · | 0 | 0 |
+| comeback | 0 | 0 | 0 | 1 | 0 | 0 | 0 | · | 0 |
+| ueberraschungen | 1 | 3 | 4 | 1 | 4 | 0 | 0 | 0 | · |
 
-Titel, die in drei oder mehr Reihen unter den ersten zehn stehen: VLO (5×), PSX (5×), ALOT (5×), PBT (4×), TWIN (4×), STT (4×), TGT (3×), MATX (3×).
+Titel, die in drei oder mehr Reihen unter den ersten zehn stehen: VLO (5×), ALOT (5×), PSX (4×), PBT (4×), TWIN (4×), STT (3×), MYE (3×).
 
 Das ist die Wiederholung, die auf der Startseite als "kleines Universum" wirkt. Sie ist kein Fehler der Ranglisten — ein Titel, der über zwölf Monate führt, führt meist auch über sechs — sondern eine Frage der Darstellung: welche Karten die Startseite je Reihe zuerst zeigt. Dafür gibt es in V3 die Cross-Collection-Diversity im Build (`buildHome`), nicht eine Änderung der Ranglisten.
 
@@ -203,30 +281,30 @@ Das ist die Wiederholung, die auf der Startseite als "kleines Universum" wirkt. 
 
 | Titel | Name | bekannt | Leadership-Perzentil | 12M | in Reihen (Rang) |
 |---|---|---|---|---|---|
-| VLO | Valero Energy | Stufe 1 | 100 | +150 % | NEUE JAHRESHOCHS #2, DIE STÄRKSTEN AKTIEN #1, SEIT MONATEN IM AUFWIND #1, DEM MARKT VORAUS #1, STABILE AUFWÄRTSTRENDS #1 |
-| SAN | Banco Santander | Stufe 1 | 98 | +60 % | NEUE JAHRESHOCHS #14, DIE STÄRKSTEN AKTIEN #10, SEIT MONATEN IM AUFWIND #36, DEM MARKT VORAUS #26, STABILE AUFWÄRTSTRENDS #10 |
-| MRK | Merck & Co. | Stufe 1 | 98 | +81 % | DIE STÄRKSTEN AKTIEN #11, SEIT MONATEN IM AUFWIND #27, DEM MARKT VORAUS #16, STABILE AUFWÄRTSTRENDS #11 |
-| NEM | Newmont Corporation | Stufe 1 | 96 | +68 % | DIE STÄRKSTEN AKTIEN #18, SEIT MONATEN IM AUFWIND #55, DEM MARKT VORAUS #39, STABILE AUFWÄRTSTRENDS #18 |
-| VOD | Vodafone Group | Stufe 1 | 95 | +53 % | NEUE JAHRESHOCHS #1, DIE STÄRKSTEN AKTIEN #26, DEM MARKT VORAUS #54, STABILE AUFWÄRTSTRENDS #22 |
-| AMD | Advanced Micro Devices | Stufe 1 | 94 | +235 % | DIE STÄRKSTEN AKTIEN #29, SEIT MONATEN IM AUFWIND #11, DEM MARKT VORAUS #19, STABILE AUFWÄRTSTRENDS #23 |
-| JNJ | Johnson & Johnson | Stufe 1 | 94 | +54 % | NEUE JAHRESHOCHS #39, DIE STÄRKSTEN AKTIEN #32, STABILE AUFWÄRTSTRENDS #25 |
-| DE | Deere & Company | Stufe 1 | 93 | +46 % | NEUE JAHRESHOCHS #31, DIE STÄRKSTEN AKTIEN #34, STABILE AUFWÄRTSTRENDS #27 |
-| SHEL | Shell plc | Stufe 1 | 89 | +38 % | NEUE JAHRESHOCHS #3, DIE STÄRKSTEN AKTIEN #53, STABILE AUFWÄRTSTRENDS #42 |
-| HPQ | HP Inc. | Stufe 1 | 89 | +12 % | NEUE JAHRESHOCHS #53, DIE STÄRKSTEN AKTIEN #55, SEIT MONATEN IM AUFWIND #52, DEM MARKT VORAUS #57, STABILE AUFWÄRTSTRENDS #44 |
-| NVDA | NVIDIA Corporation | Stufe 1 | 87 | +35 % | NEUE JAHRESHOCHS #42, STABILE AUFWÄRTSTRENDS #50 |
-| BAC | Bank of America | Stufe 1 | 87 | +28 % | NEUE JAHRESHOCHS #33 |
-| KO | Coca-Cola Company | Stufe 1 | 85 | +34 % | NEUE JAHRESHOCHS #43 |
-| BP | BP plc | Stufe 1 | 84 | +39 % | NEUE JAHRESHOCHS #50, STABILE AUFWÄRTSTRENDS #56 |
-| GM | General Motors | Stufe 1 | 84 | +49 % | — |
-| XOM | Exxon Mobil Corporation | Stufe 1 | 83 | +51 % | — |
-| INTC | Intel Corporation | Stufe 1 | 83 | +327 % | SEIT MONATEN IM AUFWIND #18, DEM MARKT VORAUS #34, STABILE AUFWÄRTSTRENDS #57 |
-| JPM | JPMorgan Chase & Co. | Stufe 1 | 81 | +22 % | NEUE JAHRESHOCHS #30 |
-| VZ | Verizon Communications | Stufe 1 | 80 | +21 % | NEUE JAHRESHOCHS #12 |
-| AAPL | Apple Inc. | Stufe 1 | 80 | +32 % | — |
+| VLO | Valero Energy | Stufe 1 | 100 | +150 % | NEUE JAHRESHOCHS #2, DIE STÄRKSTEN AKTIEN #1, SEIT MONATEN IM AUFWIND #1, DEM MARKT VORAUS #1, STABILE AUFWÄRTSTRENDS #53, BEKANNTE NAMEN IN BEWEGUNG #1 |
+| SAN | Banco Santander | Stufe 1 | 98 | +60 % | NEUE JAHRESHOCHS #14, DIE STÄRKSTEN AKTIEN #10, SEIT MONATEN IM AUFWIND #36, DEM MARKT VORAUS #26, STABILE AUFWÄRTSTRENDS #45, BEKANNTE NAMEN IN BEWEGUNG #6 |
+| MRK | Merck & Co. | Stufe 1 | 98 | +81 % | DIE STÄRKSTEN AKTIEN #11, SEIT MONATEN IM AUFWIND #27, DEM MARKT VORAUS #16, STABILE AUFWÄRTSTRENDS #37, BEKANNTE NAMEN IN BEWEGUNG #4 |
+| NEM | Newmont Corporation | Stufe 1 | 96 | +68 % | DIE STÄRKSTEN AKTIEN #18, SEIT MONATEN IM AUFWIND #55, DEM MARKT VORAUS #39, BEKANNTE NAMEN IN BEWEGUNG #3 |
+| VOD | Vodafone Group | Stufe 1 | 95 | +53 % | NEUE JAHRESHOCHS #1, DIE STÄRKSTEN AKTIEN #26, DEM MARKT VORAUS #54, STABILE AUFWÄRTSTRENDS #40, BEKANNTE NAMEN IN BEWEGUNG #10 |
+| AMD | Advanced Micro Devices | Stufe 1 | 94 | +235 % | DIE STÄRKSTEN AKTIEN #29, SEIT MONATEN IM AUFWIND #11, DEM MARKT VORAUS #19, KÜNSTLICHE INTELLIGENZ #1 |
+| JNJ | Johnson & Johnson | Stufe 1 | 94 | +54 % | NEUE JAHRESHOCHS #39, DIE STÄRKSTEN AKTIEN #32, STABILE AUFWÄRTSTRENDS #3, BEKANNTE NAMEN IN BEWEGUNG #11 |
+| DE | Deere & Company | Stufe 1 | 93 | +46 % | NEUE JAHRESHOCHS #31, DIE STÄRKSTEN AKTIEN #34, STABILE AUFWÄRTSTRENDS #43, BEKANNTE NAMEN IN BEWEGUNG #8, ROBOTIK & AUTOMATION #1 |
+| SHEL | Shell plc | Stufe 1 | 89 | +38 % | NEUE JAHRESHOCHS #3, DIE STÄRKSTEN AKTIEN #53, STABILE AUFWÄRTSTRENDS #10, BEKANNTE NAMEN IN BEWEGUNG #21 |
+| HPQ | HP Inc. | Stufe 1 | 89 | +12 % | NEUE JAHRESHOCHS #53, DIE STÄRKSTEN AKTIEN #55, SEIT MONATEN IM AUFWIND #52, DEM MARKT VORAUS #57, BEKANNTE NAMEN IN BEWEGUNG #5 |
+| NVDA | NVIDIA Corporation | Stufe 1 | 87 | +35 % | NEUE JAHRESHOCHS #42, STABILE AUFWÄRTSTRENDS #60, BEKANNTE NAMEN IN BEWEGUNG #28, KÜNSTLICHE INTELLIGENZ #3 |
+| BAC | Bank of America | Stufe 1 | 87 | +28 % | NEUE JAHRESHOCHS #33, BEKANNTE NAMEN IN BEWEGUNG #9 |
+| KO | Coca-Cola Company | Stufe 1 | 85 | +34 % | NEUE JAHRESHOCHS #43, BEKANNTE NAMEN IN BEWEGUNG #18 |
+| BP | BP plc | Stufe 1 | 84 | +39 % | NEUE JAHRESHOCHS #50, STABILE AUFWÄRTSTRENDS #33, BEKANNTE NAMEN IN BEWEGUNG #36 |
+| GM | General Motors | Stufe 1 | 84 | +49 % | AUTOS & MOBILITÄT #1 |
+| XOM | Exxon Mobil Corporation | Stufe 1 | 83 | +51 % | BEKANNTE NAMEN IN BEWEGUNG #31 |
+| INTC | Intel Corporation | Stufe 1 | 83 | +327 % | SEIT MONATEN IM AUFWIND #18, DEM MARKT VORAUS #34, KÜNSTLICHE INTELLIGENZ #4 |
+| JPM | JPMorgan Chase & Co. | Stufe 1 | 81 | +22 % | NEUE JAHRESHOCHS #30, BEKANNTE NAMEN IN BEWEGUNG #15 |
+| VZ | Verizon Communications | Stufe 1 | 80 | +21 % | NEUE JAHRESHOCHS #12, STABILE AUFWÄRTSTRENDS #20, BEKANNTE NAMEN IN BEWEGUNG #16 |
+| AAPL | Apple Inc. | Stufe 1 | 80 | +32 % | STABILE AUFWÄRTSTRENDS #23, KÜNSTLICHE INTELLIGENZ #5 |
 | FDX | FedEx Corporation | Stufe 1 | 79 | +75 % | — |
 | GS | Goldman Sachs Group | Stufe 1 | 78 | +43 % | — |
-| CRM | Salesforce Inc. | Stufe 1 | 76 | +0 % | — |
-| CSCO | Cisco Systems | Stufe 1 | 75 | +67 % | SEIT MONATEN IM AUFWIND #48 |
+| CRM | Salesforce Inc. | Stufe 1 | 76 | +0 % | BEKANNTE NAMEN IN BEWEGUNG #2, KÜNSTLICHE INTELLIGENZ #6 |
+| CSCO | Cisco Systems | Stufe 1 | 75 | +67 % | SEIT MONATEN IM AUFWIND #48, KÜNSTLICHE INTELLIGENZ #7 |
 | LLY | Eli Lilly and Company | Stufe 1 | 74 | +56 % | — |
 
 Die 25 stärksten Alltagsmarken nach Leadership-Perzentil. Wer hier steht und trotzdem in keiner Reihe unter den ersten zwölf war, ist genau der Fall, den die Discovery-Reihenfolge behebt — ohne die Rangliste zu verändern.
