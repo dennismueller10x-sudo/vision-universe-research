@@ -7,6 +7,7 @@ Faktenspeicher liegt. Der steht in .gitignore; git haette 18 Dateien
 gesehen. Der Schritt hat einen fertigen Lauf wegen Daten abgebrochen,
 die er nie angefasst haette.
 """
+import json
 import os
 import subprocess
 import sys
@@ -83,3 +84,62 @@ class GroessenkontrolleTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CommitAndPushKonfliktTests(unittest.TestCase):
+    """Ein Rebase-Konflikt darf nie Konfliktmarker in den Zweig bringen.
+
+    Nachgestellt: Upstream und Lauf aendern dieselbe Zeile einer
+    generierten Datei. Erwartet: der Lauf gewinnt, der Push landet, und
+    im Zweig steht gueltiges JSON ohne Marker.
+    """
+
+    SKRIPT = Path(__file__).resolve().parents[3] / "scripts" / "ci" / "commit-and-push.sh"
+
+    def _git(self, cwd, *args):
+        return subprocess.run(["git", *args], cwd=cwd, check=True, text=True,
+                              capture_output=True).stdout
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        root = Path(self.tmp.name)
+        self.origin = root / "origin.git"
+        self._git(root, "init", "-q", "--bare", "-b", "main", str(self.origin))
+        self.upstream = root / "upstream"
+        self.lauf = root / "lauf"
+        for clone in (self.upstream, self.lauf):
+            self._git(root, "clone", "-q", str(self.origin), str(clone))
+            self._git(clone, "config", "user.email", "t@t")
+            self._git(clone, "config", "user.name", "t")
+        (self.upstream / "gen.json").write_text('{"generatedAt": "A"}\n')
+        self._git(self.upstream, "add", "gen.json")
+        self._git(self.upstream, "commit", "-q", "-m", "basis")
+        self._git(self.upstream, "push", "-q", "origin", "main")
+        self._git(self.lauf, "pull", "-q", "origin", "main")
+
+    def _skript(self, cwd, *pfade):
+        env = dict(os.environ, GITHUB_REF_NAME="main")
+        return subprocess.run(["bash", str(self.SKRIPT), "Laufergebnis", *pfade], cwd=cwd,
+                              env=env, text=True, capture_output=True)
+
+    def test_der_lauf_gewinnt_und_kein_marker_landet_im_zweig(self):
+        # Upstream bewegt sich, waehrend der Lauf laeuft.
+        (self.upstream / "gen.json").write_text('{"generatedAt": "UPSTREAM"}\n')
+        self._git(self.upstream, "commit", "-q", "-am", "upstream")
+        self._git(self.upstream, "push", "-q", "origin", "main")
+        # Der Lauf hat dieselbe Zeile neu erzeugt.
+        (self.lauf / "gen.json").write_text('{"generatedAt": "LAUF"}\n')
+        ergebnis = self._skript(self.lauf, "gen.json")
+        self.assertEqual(ergebnis.returncode, 0, ergebnis.stdout + ergebnis.stderr)
+        self._git(self.upstream, "fetch", "-q", "origin")
+        inhalt = subprocess.run(["git", "show", "origin/main:gen.json"], cwd=self.upstream,
+                                check=True, text=True, capture_output=True).stdout
+        self.assertNotIn("<<<<<<<", inhalt)
+        self.assertEqual(json.loads(inhalt)["generatedAt"], "LAUF")
+
+    def test_ohne_konflikt_wird_einfach_gepusht(self):
+        (self.lauf / "gen.json").write_text('{"generatedAt": "LAUF"}\n')
+        ergebnis = self._skript(self.lauf, "gen.json")
+        self.assertEqual(ergebnis.returncode, 0, ergebnis.stdout + ergebnis.stderr)
+        self.assertIn("Gepusht", ergebnis.stdout)
