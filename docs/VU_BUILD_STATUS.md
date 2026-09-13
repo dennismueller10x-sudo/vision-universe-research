@@ -61,12 +61,14 @@ sonst 404, Gross-/Kleinschreibung zählt) und protokolliert jede Anfrage.
 veröffentlicht. Geprüft, dass nichts davon abhängt — keine Datei trägt
 YAML-Front-Matter, keine HTML-Seite benutzt Liquid.
 
-**Offen und nur in den GitHub-Einstellungen behebbar:** *Enforce HTTPS*
-ist aus. Alle Pages-Deployments melden `http://research.visionuniverse.de/`
-statt `https://`. Damit fehlt die Umleitung von HTTP auf HTTPS — auf einem
-iPhone, das jede Adresse zuerst über HTTPS versucht, ist das die
-wahrscheinlichste Ursache für eine Seite, die nicht aufgeht.
-Settings → Pages → Enforce HTTPS.
+*Enforce HTTPS* war aus: alle Pages-Deployments bis zum 12.09.2026 meldeten
+`http://research.visionuniverse.de/` statt `https://`, die Umleitung von HTTP
+auf HTTPS fehlte also. Auf einem iPhone, das jede Adresse zuerst über HTTPS
+versucht, war das die wahrscheinlichste Ursache für eine Seite, die nicht
+aufgeht. **Am 13.09.2026 in den Repository-Einstellungen gesetzt**
+(Settings → Pages → Enforce HTTPS); seitdem meldet das Deployment
+`https://`. Die kanonische Adresse des Moduls ist damit
+`https://research.visionuniverse.de/discover/`.
 
 Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
 (SEC-Einreichungen der Golden Five) und für das Modelluniversum;
