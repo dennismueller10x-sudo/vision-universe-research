@@ -18,7 +18,7 @@ const vorhanden = existsSync(join(DATA, "meta.json"));
 const meta = vorhanden ? readJSON(join(DATA, "meta.json")) : null;
 const Relevance = require("../engines/relevance.js");
 const RECOGNITION = readJSON(join(root, "discover", "config", "company-recognition.json")).companies;
-const PREVIEW = new Set(readJSON(join(root, "quant", "config", "development-preview.json")).scope);
+const PREVIEW = (await import("../../scripts/market/preview-scope.mjs")).resolveScope(root).tickers;
 
 function homeSurfaces(universeId) {
   const files = readdirSync(join(DATA, "home")).filter((n) => n.startsWith(universeId) && n.endsWith(".json"))
@@ -36,11 +36,18 @@ test("kein synthetischer Verlauf als Kurschart: Linien nur mit Freigabe", { skip
     if (ps.status === "CALCULATED") {
       assert.ok(PREVIEW.has(c.symbol), c.symbol + " zeichnet ohne Freigabe");
       assert.ok(ps.source && ps.asOf && ps.priceSeriesType, c.symbol + " Reihe ohne Herkunft");
-      const punkte = ps.points || (ps.ranges && Object.values(ps.ranges)[0].points);
-      assert.ok(Array.isArray(punkte) && punkte.length >= 5, c.symbol + " Reihe ohne Punkte");
+      /* Karten tragen Verweise (lazy); die Eingangsflaeche traegt Punkte. */
+      const punkte = ps.points;
+      if (Array.isArray(punkte)) assert.ok(punkte.length >= 5, c.symbol + " Reihe ohne Punkte");
+      else {
+        assert.ok(typeof ps.path === "string", c.symbol + " weder Punkte noch Verweis");
+        const datei = join(DATA, ps.path.replace("/discover/data/", ""));
+        assert.ok(existsSync(datei), c.symbol + " Verweis ohne Datei");
+        assert.ok(readJSON(datei).points.length >= 5, c.symbol + " Datei ohne Punkte");
+      }
     } else {
       assert.equal(ps.points, null, c.symbol + " traegt Punkte ohne Status CALCULATED");
-      assert.equal(ps.ranges, null, c.symbol + " traegt Zeitraeume ohne Status CALCULATED");
+      assert.equal(ps.path || null, null, c.symbol + " traegt Verweis ohne Status CALCULATED");
     }
   }
 });

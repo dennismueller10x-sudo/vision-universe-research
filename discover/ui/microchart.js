@@ -51,12 +51,26 @@
               Array.isArray(ps.points) && ps.points.length >= 5 && ps.source);
   }
 
-  /** Punkte eines Zeitraums aus einer vollen Reihe (Detailseite) oder der
-      schlanken Kartenreihe. */
+  /* Handelstage je Zeitraum. Die Reihe traegt ein Jahr Tagesschluss; der
+     Zeitraum ist ein Fenster darauf - kein zweiter Datensatz. */
+  var RANGE_BARS = { "1M": 21, "3M": 63, "6M": 126, "1J": 252 };
+  var MAX_POINTS = 64;
+
+  /** Punkte eines Zeitraums: aus vorgerechneten Zeitraeumen (ranges) oder
+      als Fenster auf die Tagesreihe (points), auf hoechstens 64 Punkte
+      ausgeduennt - der letzte Punkt bleibt immer der letzte. */
   function pointsFor(ps, range) {
     if (!ps || ps.status !== "CALCULATED") return null;
     if (ps.ranges && range && ps.ranges[range]) return ps.ranges[range].points;
-    if (Array.isArray(ps.points)) return ps.points;
+    if (Array.isArray(ps.points) && ps.points.length) {
+      var n = RANGE_BARS[range] || ps.points.length;
+      var fenster = ps.points.slice(-Math.min(n, ps.points.length));
+      if (fenster.length <= MAX_POINTS) return fenster;
+      var out = [], step = (fenster.length - 1) / (MAX_POINTS - 1);
+      for (var i = 0; i < MAX_POINTS; i++) out.push(fenster[Math.round(i * step)]);
+      out[out.length - 1] = fenster[fenster.length - 1];
+      return out;
+    }
     if (ps.ranges) { var k = Object.keys(ps.ranges); return k.length ? ps.ranges[k[0]].points : null; }
     return null;
   }
@@ -253,6 +267,6 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MicroChart = {
     MODULE_VERSION: MODULE_VERSION, hasSeries: hasSeries, pointsFor: pointsFor,
-    render: render, ladder: ladder, ladderInto: ladderInto, prozent: prozent
+    render: render, ladder: ladder, ladderInto: ladderInto, prozent: prozent, RANGE_BARS: RANGE_BARS
   };
 })(window);

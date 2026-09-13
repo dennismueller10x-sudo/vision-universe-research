@@ -1,0 +1,102 @@
+/* =========================================================================
+   VISION UNIVERSE DISCOVER — price-coverage.mjs
+
+   WIE VIELE KARTEN HABEN EINEN ECHTEN CHART - UND WARUM DIE ANDEREN NICHT
+
+   Der Bericht, den die Abnahme verlangt, aus den Daten, nicht aus dem
+   Gedaechtnis: je Titel des realen Universums, ob der Anbieter Historie
+   hat (Gate-Bilanz und Faktoren), ob sie im freigegebenen Umfang liegt,
+   ob eine Reihe ausgeliefert wird und ob die Startseite sie zeichnet.
+
+   Ausfuehren: node scripts/discover/price-coverage.mjs [--md docs/...]
+   ========================================================================= */
+import { readFileSync, readdirSync, existsSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { resolveScope } from "../market/preview-scope.mjs";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const DATA = join(root, "discover", "data");
+const readJSON = (p) => JSON.parse(readFileSync(p, "utf8"));
+const args = process.argv.slice(2);
+const mdOut = args.includes("--md") ? args[args.indexOf("--md") + 1] : null;
+
+const meta = readJSON(join(DATA, "meta.json"));
+const scope = resolveScope(root);
+const gate = readJSON(join(root, "quant", "data", "market", "scale", "gate-GATE_500.json"));
+const factors = readJSON(join(root, "quant", "data", "market", "factors", "factors-GATE_500.json"));
+const factorReady = new Set(factors.securities.filter((s) => s.values && s.values.returns &&
+  Number.isFinite(s.values.returns["12M"])).map((s) => s.ticker));
+const profile = readJSON(join(root, "quant", "config", "provider-profiles.json")).providers.tiingo;
+
+const out = { generatedAt: meta.generatedAt, universes: [] };
+for (const u of meta.universes) {
+  const stocksDir = join(DATA, "stocks", u.universeId);
+  const stocks = readdirSync(stocksDir).filter((n) => n.endsWith(".json")).map((n) => readJSON(join(stocksDir, n)));
+  const seriesDir = join(DATA, "series", u.universeId);
+  const seriesFiles = existsSync(seriesDir) ? new Set(readdirSync(seriesDir).map((n) => n.replace(/\.json$/, ""))) : new Set();
+  const homeFiles = readdirSync(join(DATA, "home")).filter((n) => n.startsWith(u.universeId) && n.endsWith(".json"));
+  const homeCards = homeFiles.flatMap((f) => readJSON(join(DATA, "home", f)).surfaces || []).flatMap((s) => s.cards || []);
+  const homeSymbols = new Set(homeCards.map((c) => c.symbol));
+  const homeWithChart = new Set(homeCards.filter((c) => c.priceSeries && c.priceSeries.status === "CALCULATED").map((c) => c.symbol));
+
+  const rows = stocks.map((s) => {
+    const real = s.dataMode === "real";
+    const providerHistory = real ? factorReady.has(s.symbol) : true;
+    const inScope = real ? scope.tickers.has(s.symbol) : true;
+    const delivered = seriesFiles.has(s.symbol);
+    let reason = null;
+    if (!delivered) {
+      if (real && !providerHistory) reason = "NO_PROVIDER_HISTORY";
+      else if (real && !inScope) reason = "NOT_IN_PREVIEW_SCOPE";
+      else reason = "NOT_PUBLISHED";
+    }
+    return { symbol: s.symbol, providerHistory, inScope, delivered, onHome: homeSymbols.has(s.symbol),
+             chartOnHome: homeWithChart.has(s.symbol), reason };
+  });
+  const n = (f) => rows.filter(f).length;
+  out.universes.push({
+    universeId: u.universeId, kind: u.kind, securities: rows.length,
+    providerHistory: n((r) => r.providerHistory),
+    inPreviewScope: n((r) => r.inScope),
+    seriesDelivered: n((r) => r.delivered),
+    homeCards: homeCards.length, homeSymbols: homeSymbols.size,
+    homeCardsWithChart: homeCards.filter((c) => c.priceSeries && c.priceSeries.status === "CALCULATED").length,
+    homeSymbolsWithChart: homeWithChart.size,
+    withoutChart: rows.filter((r) => !r.delivered).reduce((acc, r) => { acc[r.reason] = (acc[r.reason] || 0) + 1; return acc; }, {}),
+    examplesWithoutChart: rows.filter((r) => !r.delivered && r.onHome).slice(0, 12).map((r) => r.symbol + " (" + r.reason + ")")
+  });
+}
+out.provider = {
+  id: "tiingo", plan: gate.plan, licensingStatus: profile.licensing.status,
+  findings: profile.licensing.findings,
+  gate500: { requested: gate.accounting.requested, resolved: gate.accounting.resolved,
+             historyCovered: gate.historyCoverage.covered, factorReady: gate.historyCoverage.factorReady,
+             averageBars: gate.historyCoverage.averageBars, oldest: gate.historyCoverage.oldestFirstDate,
+             newest: gate.historyCoverage.newestLastDate, storageMB: gate.accounting.storageMB }
+};
+out.scope = { tickers: [...scope.tickers].sort(), universeFile: scope.universeFile, fullHistory: [...scope.fullHistory].sort() };
+
+console.log(JSON.stringify(out, null, 2));
+if (mdOut) {
+  const r = out.universes.find((x) => x.kind === "real");
+  const md = `# Discover — Abdeckung der Kursreihen
+
+Erzeugt von \`scripts/discover/price-coverage.mjs\`, Stand ${out.generatedAt}.
+
+| Frage | Antwort |
+|---|---|
+| Titel im realen Universum | ${r.securities} |
+| davon mit Historie beim Anbieter (Tiingo, Gate 500: ${out.provider.gate500.historyCovered}/${out.provider.gate500.requested} mit ≥ 250 Bars, im Schnitt ${out.provider.gate500.averageBars} Bars ab ${out.provider.gate500.oldest}) | ${r.providerHistory} |
+| davon im freigegebenen Umfang (\`development-preview.json\`: ${out.scope.universeFile ? "scopeUniverse " + out.scope.universeFile : "Tickerliste"}) | ${r.inPreviewScope} |
+| davon mit ausgelieferter Kursreihe (\`discover/data/series/US_REAL/\`) | ${r.seriesDelivered} |
+| Karten auf der Startseite | ${r.homeCards} (${r.homeSymbols} Titel) |
+| davon mit echtem Chart | ${r.homeCardsWithChart} (${r.homeSymbolsWithChart} Titel) |
+| ohne Chart, nach Grund | ${Object.entries(r.withoutChart).map(([k, v]) => k + ": " + v).join(", ") || "—"} |
+| Lizenzstatus Tiingo (\`provider-profiles.json\`) | ${out.provider.licensingStatus}; externalDisplay ${out.provider.findings.externalDisplay}, redistribution ${out.provider.findings.redistribution}, publicGithubStorage ${out.provider.findings.publicGithubStorage} |
+
+Beispiele ohne Chart auf der Startseite: ${r.examplesWithoutChart.join(", ")}.
+`;
+  writeFileSync(join(root, mdOut), md);
+  console.error("geschrieben: " + mdOut);
+}

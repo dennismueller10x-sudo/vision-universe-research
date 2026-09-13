@@ -32,7 +32,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var CONTRACT_VERSION = "discover-contract-1.1.0";
+  var CONTRACT_VERSION = "discover-contract-1.2.0";
 
   var FIELD_STATUS = [
     "CALCULATED", "WITHHELD_REDISTRIBUTION", "SOURCE_MISSING",
@@ -224,8 +224,13 @@
     if (ps && typeof ps === "object") {
       var hatPunkte = (Array.isArray(ps.points) && ps.points.length > 0) ||
                       (ps.ranges && Object.keys(ps.ranges).length > 0);
-      if (ps.status === "CALCULATED" && !hatPunkte) {
-        throw new Error("discover/contract: " + stock.symbol + " priceSeries CALCULATED ohne Punkte");
+      /* Eine Karte darf die Reihe auch als Verweis tragen (path): die
+         Punkte liegen dann in discover/data/series/ und werden geladen,
+         sobald die Karte sichtbar ist. Der Verweis ist ein Beleg wie die
+         Punkte selbst - die Nachrechnung prueft, dass die Datei existiert. */
+      var hatVerweis = typeof ps.path === "string" && ps.path.length > 0;
+      if (ps.status === "CALCULATED" && !hatPunkte && !hatVerweis) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries CALCULATED ohne Punkte und ohne Verweis");
       }
       if (ps.status !== "CALCULATED" && hatPunkte) {
         throw new Error("discover/contract: " + stock.symbol + " priceSeries traegt Punkte mit Status " + ps.status);

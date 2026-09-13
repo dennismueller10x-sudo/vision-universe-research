@@ -6,6 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveScope } from "./preview-scope.mjs";
 
 /* --root=<path> is test-only: it lets DH3/DH4 point this guard at a
    throwaway fixture tree instead of the real repository, so a test that
@@ -61,6 +62,32 @@ if (existsSync(previewDaily)) {
       findings.push(`quant/data/market/golden-preview/daily/${name}: real bars for ticker ` +
                     `'${payload.ticker || "unknown"}' outside the declared Golden Five scope ` +
                     `(${[...previewScope].join(", ")})`);
+    }
+  }
+}
+
+/* Discover-Kursreihen (kompakt, 1 Jahr Tagesschluss): derselbe Umfang wie
+   golden-preview, aufgeloest ueber preview-scope.mjs - eine Tickerliste
+   ODER ein Universum (scopeUniverse). Eine Reihe fuer einen Titel, den die
+   Konfiguration nicht nennt, ist ein Leck, kein Versehen. */
+const seriesDir = join(root, "quant", "data", "market", "discover-series");
+if (existsSync(seriesDir)) {
+  let seriesScope = new Set();
+  try {
+    seriesScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(seriesDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !seriesScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) {
+      findings.push(`quant/data/market/discover-series/${name}: published without a stated basis`);
     }
   }
 }

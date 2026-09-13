@@ -67,6 +67,26 @@ DisplayPolicy.declareFromConfig(PREVIEW_CONFIG);
    die Bekanntheitsliste bestimmt nie, OB ein Titel in einer Reihe steht,
    und ein Thema ist eine Zuordnung, keine Aussage ueber eine Aktie. */
 const RECOGNITION = readJSON(join(root, "discover", "config", "company-recognition.json")).companies || {};
+
+/* Kompakte Kursreihen (ein Jahr Tagesschluss) fuer den freigegebenen
+   Umfang - quant/data/market/discover-series/, geschrieben von
+   scripts/market/publish-discover-series.mjs, geprueft vom Hygiene-Guard.
+   Fuer jeden Titel dort gibt es einen echten Micro-Chart; fuer jeden
+   anderen die Renditeleiter. Der Build erweitert nichts: er liest, was
+   die Richtlinie freigegeben hat. */
+function discoverSeriesIndex() {
+  const dir = join(root, "quant", "data", "market", "discover-series");
+  const map = new Map();
+  if (!existsSync(dir)) return map;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json") || name === "index.json") continue;
+    const payload = readJSON(join(dir, name));
+    if (payload && payload.ticker && Array.isArray(payload.points) && payload.points.length >= 30) {
+      map.set(payload.ticker, payload);
+    }
+  }
+  return map;
+}
 const THEMES = readJSON(join(root, "discover", "config", "themes.json"));
 
 /* Die Reihen: die der Methodik plus eine je Themenwelt. Themenreihen
@@ -250,46 +270,41 @@ function weeklySparkline(closes, points = 40) {
    die eine Karte braucht: vier Zeitraeume, je hoechstens 64 Punkte,
    Schlusskurse auf zwei Stellen, mit Herkunft und Stand. Zwischen den
    Punkten liegt nichts Erfundenes: jeder Punkt ist ein Tagesschluss. */
-const MICRO_RANGES = { "1M": 21, "3M": 63, "6M": 126, "1J": 252 };
-const MICRO_POINTS = 64;
+/* Ein Jahr Tagesschluss je Titel (270 Handelstage, mit Reserve). Die
+   Zeitraeume 1M/3M/6M/1J sind Fenster darauf, die der Micro-Chart selbst
+   schneidet - ein Datensatz je Titel, nicht vier. */
+const MICRO_DAYS = 270;
 
 function microSeries(dated, source, priceSeriesType) {
   const valid = (dated || []).filter((b) => isNum(b.close) && b.date);
   if (valid.length < 10) {
     return withheldSeries("INSUFFICIENT_HISTORY", "Zu wenig Historie für einen Verlauf.");
   }
-  const ranges = {};
-  for (const [id, n] of Object.entries(MICRO_RANGES)) {
-    const fenster = valid.slice(-Math.min(n, valid.length));
-    if (fenster.length < 5) continue;
-    ranges[id] = {
-      from: fenster[0].date, to: fenster[fenster.length - 1].date, bars: fenster.length,
-      points: downsample(fenster, MICRO_POINTS).map((b) => [b.date, round(b.close, 2)])
-    };
-  }
+  const fenster = valid.slice(-Math.min(MICRO_DAYS, valid.length));
   return { status: "CALCULATED", source, priceSeriesType: priceSeriesType || "SPLIT_ADJUSTED",
-           asOf: valid[valid.length - 1].date, ranges, points: null, range: null, message: null };
-}
-function downsample(list, max) {
-  if (list.length <= max) return list;
-  const out = [];
-  const step = (list.length - 1) / (max - 1);
-  for (let i = 0; i < max; i++) out.push(list[Math.round(i * step)]);
-  out[out.length - 1] = list[list.length - 1];
-  return out;
+           dataMode: null, grain: "daily", asOf: fenster[fenster.length - 1].date,
+           from: fenster[0].date, to: fenster[fenster.length - 1].date,
+           points: fenster.map((b) => [b.date, round(b.close, 2)]), path: null, message: null };
 }
 function withheldSeries(status, message) {
-  return { status, source: null, priceSeriesType: null, asOf: null, ranges: null,
-           points: null, range: null, message };
+  return { status, source: null, priceSeriesType: null, asOf: null, from: null, to: null,
+           points: null, path: null, message };
 }
-/** Die Reihe einer Karte: nur der Zeitraum, den die Reihe zeigt. */
-function slimSeries(series, range) {
-  if (!series || series.status !== "CALCULATED" || !series.ranges) return series;
-  const r = series.ranges[range] || series.ranges["6M"] || Object.values(series.ranges)[0];
+/**
+ * Der Verweis, den eine Karte traegt: Status, Herkunft, Stand, Zeitraum
+ * und der Pfad zur Reihe - keine Punkte. Die Punkte laedt die Karte,
+ * sobald sie sichtbar ist (ui/series-loader.js); ein Titel in drei
+ * Sammlungen laedt sie einmal.
+ */
+function seriesRef(series, range, universeId, symbol) {
+  if (!series || series.status !== "CALCULATED") return series;
   return { status: series.status, source: series.source, priceSeriesType: series.priceSeriesType,
-           asOf: series.asOf, range: range, from: r ? r.from : null, to: r ? r.to : null,
-           points: r ? r.points : null, ranges: null, message: null };
+           asOf: series.asOf, range: range || "6M", from: series.from, to: series.to,
+           points: null, path: "/discover/data/series/" + universeId + "/" + symbol + ".json",
+           message: null };
 }
+/* Kompatibilitaet: aeltere Stellen im Build nennen die Funktion noch so. */
+const slimSeries = (series, range) => series;
 
 /* ============================================================ Kennzahlen */
 
@@ -324,7 +339,7 @@ function scoreAll(metrics, values) {
 }
 
 /* ====================================================== Universum: REAL */
-function buildRealUniverse(nameMap, goldenBars) {
+function buildRealUniverse(nameMap, goldenBars, compactSeries) {
   const factors = readJSON(join(root, "quant", "data", "market", "factors", "factors-GATE_500.json"));
   const universe = readJSON(join(root, "quant", "data", "market", "scale", "universe-GATE_500.json"));
   const byTicker = new Map(universe.securities.map((s) => [s.ticker, s]));
@@ -346,6 +361,11 @@ function buildRealUniverse(nameMap, goldenBars) {
     const goldenDated = golden ? splitAdjustedCloses(golden.bars) : null;
     const goldenCloses = goldenDated ? goldenDated.map((b) => b.close) : null;
     const erkannt = RECOGNITION[sec.ticker] || null;
+    /* Die kompakte Reihe: fuer jeden Titel, den der Umfang freigibt. Die
+       volle Golden-Five-Historie hat Vorrang - dieselben Kurse, nur
+       laenger. */
+    const kompakt = compactSeries.get(sec.ticker) || null;
+    const kompaktDated = kompakt ? kompakt.points.map((p) => ({ date: p[0], close: p[1] })) : null;
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
@@ -370,11 +390,13 @@ function buildRealUniverse(nameMap, goldenBars) {
       sparkline: goldenCloses ? weeklySparkline(goldenCloses) : null,
       sparklineStatus: goldenCloses ? "CALCULATED" : "WITHHELD_REDISTRIBUTION",
       performancePath: performancePath(metrics),
-      hasPriceSeries: !!goldenCloses,
+      hasPriceSeries: !!goldenCloses || !!kompaktDated,
       priceSeries: goldenDated
         ? microSeries(goldenDated, "tiingo", "SPLIT_ADJUSTED")
-        : withheldSeries("WITHHELD_REDISTRIBUTION",
-            "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
+        : kompaktDated
+          ? microSeries(kompaktDated, kompakt.provider || "tiingo", kompakt.priceSeriesType || "SPLIT_ADJUSTED")
+          : withheldSeries("WITHHELD_REDISTRIBUTION",
+              "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
       was: erkannt ? erkannt.was : null,
       recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
@@ -749,9 +771,9 @@ function buildRow(universe, config) {
   const texte = Klartext.reihe(auswahl, config.id);
   const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), {
     plain: texte[i],
-    /* Nur der Zeitraum, den diese Reihe zeigt - eine Karte traegt keine
-       vier Reihen mit sich herum. */
-    priceSeries: slimSeries(s.priceSeries, config.microRange || "6M")
+    /* Der Verweis auf die Reihe, nicht die Reihe: geladen wird, was
+       sichtbar wird. */
+    priceSeries: seriesRef(s.priceSeries, config.microRange || "6M", universe.universeId, s.symbol)
   }));
   /* Die Karte muss sich selbst erklaeren koennen: der Klartext wird aus
      der KARTE nachgerechnet, nicht aus dem Titel im Speicher. Was die
@@ -1009,7 +1031,7 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
       if (list.length < 4) continue;
       const texte = Klartext.reihe(list, "sektor-" + step.sector);
       const cards = list.map((s, i) => Object.assign(Contract.toCard(s), {
-        plain: texte[i], priceSeries: slimSeries(s.priceSeries, "6M")
+        plain: texte[i], priceSeries: seriesRef(s.priceSeries, "6M", U, s.symbol)
       }));
       const ordered = Relevance.discoveryOrder(cards, { recognition: RECOGNITION }).cards;
       surfaces.push({ type: "row", variant: step.variant || "compact", id: "sektor-" + slug(step.sector),
@@ -1169,6 +1191,18 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     series.bars = series.inline.daily.dates.length;
   }
 
+  /* Kompakte Reihe (ein Jahr Tagesschluss) fuer Titel ohne Technical-
+     Bundle: die Aktienseite zeichnet daraus 1M bis 1J - 5J und Max bleiben
+     ehrlich gesperrt, weil die Reihe sie nicht traegt. */
+  if (!series.available && stock.priceSeries && stock.priceSeries.status === "CALCULATED" &&
+      Array.isArray(stock.priceSeries.points)) {
+    series = { available: true, source: "discover-series",
+               path: "/discover/data/series/" + universe.universeId + "/" + stock.symbol + ".json",
+               priceSeriesType: stock.priceSeries.priceSeriesType || "SPLIT_ADJUSTED",
+               dataMode: stock.dataMode, bars: stock.priceSeries.points.length,
+               from: stock.priceSeries.from, reason: null, message: null };
+  }
+
   if (!series.available && stock.dataMode === "real") {
     series.reason = "WITHHELD_REDISTRIBUTION";
     series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
@@ -1188,7 +1222,7 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     price: stock.price, changePercent: stock.changePercent,
     sparkline: stock.sparkline, sparklineStatus: stock.sparklineStatus,
     performancePath: stock.performancePath, performancePathStatus: stock.performancePathStatus,
-    priceSeries: stock.priceSeries,
+    priceSeries: seriesRef(stock.priceSeries, "1J", universe.universeId, stock.symbol),
     was: stock.was || null, recognitionTier: stock.recognitionTier || null,
     signals: stock.signals, badges: stock.badges,
     metrics: stock.metrics, metricStatus: stock.metricStatus,
@@ -1270,9 +1304,11 @@ mkdirSync(OUT, { recursive: true });
 console.log("1/5  Reales Universum (Tiingo-Faktoren) …");
 const nameMap = buildNameMap();
 const goldenBars = loadGoldenPreviewBars();
-const real = applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars));
+const compact = discoverSeriesIndex();
+const real = applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact));
 console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
-            `${goldenBars.size} mit freigegebener Kursreihe`);
+            `${real.stocks.filter((s) => s.hasPriceSeries).length} mit freigegebener Kursreihe ` +
+            `(${goldenBars.size} volle Historie, ${compact.size} kompakt)`);
 
 console.log("2/5  Modelluniversum (synthetisch) …");
 const model = applyPercentilesAndSignals(buildModelUniverse());
@@ -1393,7 +1429,26 @@ for (const universe of universes) {
   });
 }
 
-console.log("4/5  Detailseiten …");
+console.log("4/6  Kursreihen (Series-Store) …");
+for (const universe of universes) {
+  let n = 0;
+  for (const stock of universe.stocks) {
+    const ps = stock.priceSeries;
+    if (!ps || ps.status !== "CALCULATED" || !Array.isArray(ps.points)) continue;
+    write(`series/${universe.universeId}/${stock.symbol}.json`, {
+      contractVersion: Contract.CONTRACT_VERSION,
+      symbol: stock.symbol, instrumentId: stock.symbol, universeId: universe.universeId,
+      dataMode: stock.dataMode,
+      status: ps.status, source: ps.source, priceSeriesType: ps.priceSeriesType,
+      grain: "daily", range: "1J", from: ps.from, to: ps.to, asOf: ps.asOf,
+      points: ps.points, message: null
+    });
+    n++;
+  }
+  console.log(`     ${universe.universeId.padEnd(9)} ${n} Kursreihen`);
+}
+
+console.log("5/6  Detailseiten …");
 const detailSets = new Map();
 for (const universe of universes) {
   /* Fuer welche Titel wird eine Detailseite ausgeliefert?
@@ -1436,7 +1491,7 @@ for (const universe of universes) {
   console.log(`     ${universe.universeId.padEnd(9)} ${written} Detailseiten`);
 }
 
-console.log("5/5  Meta …");
+console.log("6/6  Meta …");
 const meta = {
   module: "discover",
   moduleVersion: "discover-3.0.0",

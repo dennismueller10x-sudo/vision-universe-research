@@ -149,6 +149,44 @@ ok("Gedaechtnis: 'Zuletzt angesehen' erscheint", (await m.locator(".dx-recent").
 ok("Gedaechtnis: gesehene Karte markiert", (await m.locator(".dx-poster--gesehen").count()) >= 0);
 ok("Mobil: keine eigenen 4xx", m.__bad.length === 0, m.__bad.join(" | "));
 ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" | "));
+/* Lazy Loading der Kursreihen: sichtbare Karten laden, ein Titel einmal,
+   Platzhalter ist kein Chart, nichts springt. Gemessen im Modelluniversum,
+   wo jede Karte eine Reihe traegt. */
+{
+  const lz = await seite(desk, "lazy");
+  const serien = [];
+  lz.on("request", (r) => { if (r.url().includes("/discover/data/series/")) serien.push(r.url()); });
+  await lz.goto(BASE + "/discover/#/u/VU_MODEL", { waitUntil: "domcontentloaded" });
+  await warten(lz, 150);
+  const skelett = await lz.evaluate(() => {
+    const s = document.querySelectorAll(".dx-art-skeleton");
+    return { anzahl: s.length, chart: [...s].some((n) => n.querySelector("path, rect.dx-ladder-bar")),
+             text: s[0] ? s[0].textContent : null };
+  });
+  ok("Lazy: Platzhalter ist eindeutig kein Chart", skelett.chart === false && skelett.text === "Kurs lädt", JSON.stringify(skelett));
+  const hoeheVor = await lz.evaluate(() => [...document.querySelectorAll(".dx-poster-media")].slice(0, 6).map((n) => n.getBoundingClientRect().height));
+  await lz.waitForLoadState("networkidle"); await warten(lz, 800);
+  const hoeheNach = await lz.evaluate(() => [...document.querySelectorAll(".dx-poster-media")].slice(0, 6).map((n) => n.getBoundingClientRect().height));
+  ok("Lazy: keine Layout-Spruenge (Hoehe vor/nach dem Laden gleich)", JSON.stringify(hoeheVor) === JSON.stringify(hoeheNach), hoeheVor + " -> " + hoeheNach);
+  const stand = await lz.evaluate(() => window.VUDiscover.SeriesLoader.stats());
+  const eindeutig = new Set(serien).size;
+  ok("Lazy: ein Titel, ein Abruf (Dedup)", serien.length === eindeutig && stand.requests === eindeutig, JSON.stringify({ abrufe: serien.length, titel: eindeutig, stats: stand }));
+  const sichtbar = await lz.evaluate(() => document.querySelectorAll(".dx-poster-media [data-art=\"price\"]").length);
+  const gesamt = await lz.evaluate(() => document.querySelectorAll(".dx-poster-media").length);
+  ok("Lazy: nur sichtbare Karten haben geladen (nicht alle)", sichtbar > 0 && sichtbar < gesamt, sichtbar + " von " + gesamt + " Karten");
+  /* Nach Scrollen laden weitere - ohne Doppelabrufe */
+  for (let i = 0; i < 6; i++) { await lz.mouse.wheel(0, 1200); await warten(lz, 250); }
+  await lz.waitForLoadState("networkidle"); await warten(lz, 500);
+  const danach = await lz.evaluate(() => window.VUDiscover.SeriesLoader.stats());
+  ok("Lazy: beim Scrollen kommen Reihen nach, keine doppelt", danach.requests > stand.requests && danach.requests === new Set(serien).size, JSON.stringify(danach));
+  /* Golden Five im realen Universum: Linie kommt nach dem Laden */
+  await lz.goto(BASE + "/discover/#/c/US_REAL/thema-ki", { waitUntil: "networkidle" }); await warten(lz, 900);
+  const nvda = await lz.evaluate(() => { const m = document.querySelector('.dx-poster[data-symbol="NVDA"] .dx-art'); return m ? m.getAttribute("data-art") : null; });
+  ok("Lazy: NVDA-Karte zeichnet nach dem Laden eine echte Linie", nvda === "price", String(nvda));
+  const amd = await lz.evaluate(() => { const m = document.querySelector('.dx-poster[data-symbol="AMD"] .dx-art'); return m ? m.getAttribute("data-art") : null; });
+  ok("Lazy: AMD-Karte (ausserhalb des Umfangs) zeichnet die Leiter - ohne Abruf", amd === "ladder" && !serien.some((u) => u.includes("/US_REAL/AMD.json")), String(amd));
+}
+
 /* Keine Sackgassen: jeder "Alle anzeigen"-Link fuehrt auf eine Kategorie, die laedt. */
 await d.goto(BASE + "/discover/", { waitUntil: "networkidle" }); await warten(d, 500);
 for (let i = 0; i < 12; i++) { await d.mouse.wheel(0, 1600); await warten(d, 200); }

@@ -29,6 +29,7 @@ Bereinigungssemantik.**
 | 4 | Consumer Layer: Klartext statt Scores, Sammlungen, drei Ebenen | `VU_DISCOVER_CONSUMER_LAYER.md` |
 | 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
 | 6 | V3: Surfaces, Relevanz, Diversity, Chart Truth Contract, Themenwelten (Branch, nicht gemergt) | `VU_DISCOVER_V3.md`, `VU_DISCOVER_V3_COLLECTION_AUDIT.md` |
+| 7 | Price Data Completion: Umfang an einer Stelle, kompakte Reihen, Series-Store, Lazy Loading (Branch) | `VU_DISCOVER_PRICE_DATA_COMPLETION.md`, `VU_DISCOVER_PRICE_COVERAGE.md` |
 
 Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
 der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
@@ -47,6 +48,24 @@ Startseite ist ein Manifest aus 21 Surfaces in sieben Formen; bekannte Namen
 rücken innerhalb qualifizierter Titel nach vorn; kein Renditepfad wird mehr
 als Kurve gezeichnet — fünf echte Charts, 493 Renditeleitern. Details und
 Empfehlung zur Veröffentlichung in `VU_DISCOVER_V3.md`.
+
+### Stufe 7 — Price Data Completion (Branch `claude/vision-universe-discover-v3`)
+
+Befund: alle 498 Titel haben Historie bei Tiingo und wurden ingestiert
+(Gate 500: 500/500, ∅ 9 077 Bars ab 1990); ausgeliefert werden fünf, weil
+`development-preview.json` den Umfang gegen eine ungeklärte Lizenz
+(`LEGAL_REVIEW_REQUIRED`) so setzt. Das ist Richtlinie, nicht Technik — und
+wurde nicht umgangen. Gebaut: Umfang als Tickerliste ODER Universum
+(`scopeUniverse`), aufgelöst von `scripts/market/preview-scope.mjs`; kompakte
+Ein-Jahres-Reihen (`quant/data/market/discover-series/`, ~7 KB je Titel) für
+jeden Titel im Umfang; Ingest mit `--scope-from-preview`; Hygiene-Guard und
+Workflow folgen dem Umfang; Discover-Series-Store
+(`discover/data/series/<U>/<SYMBOL>.json`), Karten tragen Verweise, Reihen
+laden bei Sichtbarkeit (Dedup je Titel, Prefetch der nächsten Karten,
+Platzhalter ohne Chart). 153 Discover-Tests, 44 Hygiene-/Gate-Tests, 15 996
+Nachrechnungen, Browser-QA V3 39/39. Heute 5 Charts von 498 — die Erweiterung
+ist eine Zeile in der Konfiguration und eine Lizenzentscheidung des
+Eigentümers.
 
 ### Auslieferungskette, geprüft
 

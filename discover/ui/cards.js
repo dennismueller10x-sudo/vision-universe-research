@@ -180,12 +180,68 @@
    */
   function posterMedia(card, opts) {
     opts = opts || {};
-    var host = el("div", { class: "dx-poster-media" });
-    host.appendChild(D().Artwork.stockArtwork(card, {
-      width: opts.width || 300, height: opts.height || 104,
-      ticker: opts.ticker === true, band: opts.band !== false,
-      scale: opts.scale || "poster"
-    }));
+    return lazyArtwork(card, Object.assign({ klasse: "dx-poster-media" }, opts));
+  }
+
+  /* Ein Beobachter fuer alle Karten: sobald ein Datenbild in die Naehe
+     des Bildschirms kommt, wird seine Reihe geholt. Nicht vorher. */
+  var lazyBeobachter = null;
+  function beobachten(node, fn) {
+    if (!global.IntersectionObserver) { fn(); return; }
+    if (!lazyBeobachter) {
+      lazyBeobachter = new global.IntersectionObserver(function (eintraege) {
+        eintraege.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          lazyBeobachter.unobserve(e.target);
+          var cb = e.target.__lazy;
+          delete e.target.__lazy;
+          if (cb) cb();
+        });
+      }, { rootMargin: "240px 320px" });
+    }
+    node.__lazy = fn;
+    lazyBeobachter.observe(node);
+  }
+
+  /**
+   * Das Datenbild einer Karte - sofort, wenn die Reihe da ist (oder es
+   * keine gibt: dann die Leiter); sonst ein Platzhalter, der eindeutig
+   * kein Chart ist, und die Reihe, sobald die Karte sichtbar wird.
+   *
+   * Der Platzhalter hat dieselbe Hoehe wie das Bild: beim Laden springt
+   * nichts. Dieselbe Reihe wird je Titel einmal geladen (series-loader).
+   */
+  function lazyArtwork(card, opts) {
+    opts = opts || {};
+    var w = opts.width || 300, h = opts.height || 104;
+    var artOpts = { width: w, height: h, ticker: opts.ticker === true, scale: opts.scale || "poster",
+                    range: opts.range || (card.priceSeries && card.priceSeries.range) || null };
+    var host = el("div", { class: opts.klasse || "dx-lazy-media" });
+    var ps = card.priceSeries;
+    var Loader = D() && D().SeriesLoader;
+    var verweis = ps && ps.status === "CALCULATED" && ps.path && !ps.points && Loader;
+    if (!verweis) {
+      host.appendChild(D().Artwork.stockArtwork(card, artOpts));
+      return host;
+    }
+    host.setAttribute("data-series", ps.path);
+    host.setAttribute("data-loading", "true");
+    host.style.setProperty("--ar", w + " / " + h);
+    host.appendChild(el("div", { class: "dx-art-skeleton", "aria-hidden": "true", text: "Kurs lädt" }));
+    beobachten(host, function () {
+      Loader.get(ps.path).then(function (reihe) {
+        var voll = Object.assign({}, card, { priceSeries: Loader.merge(ps, reihe) });
+        S.clear(host);
+        host.removeAttribute("data-loading");
+        host.appendChild(D().Artwork.stockArtwork(voll, artOpts));
+      }).catch(function () {
+        /* Die Reihe kam nicht: dann das, was ohne sie gilt - die Leiter.
+           Kein leeres Bild, kein Fehlertext auf der Karte. */
+        S.clear(host);
+        host.removeAttribute("data-loading");
+        host.appendChild(D().Artwork.stockArtwork(card, artOpts));
+      });
+    });
     return host;
   }
 
@@ -474,13 +530,12 @@
       /* Vorbereiten, was als Naechstes kommt: die Aktienseite der
          naechsten ein, zwei Karten - nicht die ganze Sammlung. */
       prefetch: options.prefetch || function (index) {
+        /* Die Kursreihe der naechsten ein, zwei Karten - nicht die ganze
+           Sammlung, nicht die Aktienseite. Ein Titel, der schon geladen
+           ist, kostet nichts. */
         var kind = track.children[index];
-        var sym = kind && kind.getAttribute && (kind.getAttribute("data-symbol") ||
-                  (kind.querySelector && kind.querySelector("[data-symbol]") &&
-                   kind.querySelector("[data-symbol]").getAttribute("data-symbol")));
-        if (sym && options.universeId) {
-          D().Swipe.vorladen("/discover/data/stocks/" + options.universeId + "/" + sym + ".json");
-        }
+        var media = kind && kind.querySelector && kind.querySelector("[data-series]");
+        if (media && D().SeriesLoader) D().SeriesLoader.prefetch(media.getAttribute("data-series"));
       }
     }) : null;
 
@@ -544,7 +599,7 @@
     pct: pct, pctPoints: pctPoints, money: money, score: score, times: times,
     toneClass: toneClass, valueOf: valueOf, statusOf: statusOf, STATUS_TEXT: STATUS_TEXT,
     svg: svg, ensureDefs: ensureDefs,
-    areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia,
+    areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia, lazyArtwork: lazyArtwork,
     SIGNAL_TONE: SIGNAL_TONE,
     signalChip: signalChip, poster: poster, rankPoster: rankPoster, sectorTile: sectorTile,
     rail: rail, railHead: railHead, withRailNav: withRailNav, grid: grid,

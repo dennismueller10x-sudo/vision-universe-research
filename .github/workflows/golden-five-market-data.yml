@@ -1,9 +1,14 @@
-name: Golden Five — Development Preview Marktdaten
+name: Development Preview Marktdaten (Umfang aus development-preview.json)
 
 # Phase 5, Eigentuemerentscheidung — siehe quant/config/development-preview.json
 # fuer die vollstaendige Begruendung. Holt und veroeffentlicht echte
-# Tiingo-EOD-Kurse ausschliesslich fuer AAPL/MSFT/NVDA/JPM/XOM in einen
-# eigenen, eng begrenzten Pfad (quant/data/market/golden-preview/daily/).
+# Tiingo-EOD-Kurse fuer GENAU den dort freigegebenen Umfang (heute
+# AAPL/MSFT/NVDA/JPM/XOM; eine Tickerliste oder ein Gate-Universum):
+#   - volle Historie fuer die fullHistory-Titel  -> quant/data/market/golden-preview/daily/
+#   - ein Jahr Tagesschluss fuer alle im Umfang  -> quant/data/market/discover-series/
+# Der Umfang steht nicht in diesem Workflow und in keinem Skript - nur in
+# der Konfiguration. Eine Erweiterung ist dort eine Zeile und bleibt eine
+# Lizenzentscheidung des Eigentuemers.
 # Der Schluessel bleibt ausschliesslich serverseitig (scripts/market/
 # ingest-tiingo.mjs), erscheint nicht im Log, nicht im Bericht und nicht
 # im Repository.
@@ -36,6 +41,8 @@ on:
       - 'scripts/market/assert-public-data-hygiene.mjs'
       - 'scripts/market/verify-golden-five-capabilities.mjs'
       - 'scripts/market/verify-tiingo-realtime.mjs'
+      - 'scripts/market/preview-scope.mjs'
+      - 'scripts/market/publish-discover-series.mjs'
       - 'quant/config/development-preview.json'
       - 'quant/config/feature-gates.json'
       - 'quant/engines/display-policy.js'
@@ -71,11 +78,11 @@ jobs:
           fi
           echo "Zugang vorhanden."
 
-      - name: Ingest + Development-Preview-Veroeffentlichung (nur Golden Five)
+      - name: Ingest + Development-Preview-Veroeffentlichung (Umfang aus der Konfiguration)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
-          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} --publish-preview
+          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} --scope-from-preview --publish-preview
 
       # Frische Kurse ohne Nachbau sind der genaue Fehler, den
       # verify-technical-data.mjs aufdecken soll: Technical Intelligence,
@@ -97,12 +104,12 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/assert-no-secrets.mjs
 
-      - name: Public-Data-Hygiene — die Golden-Five-Ausnahme bleibt eng
+      - name: Public-Data-Hygiene — die Ausnahme bleibt so eng wie der deklarierte Umfang
         run: node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Nur die erwarteten Pfade duerfen sich aendern
         run: |
-          erlaubt='^quant/data/market/golden-preview/|^quant/data/market/tiingo-status\.json$|^quant/data/technical/instruments/(AAPL|MSFT|NVDA|JPM|XOM)\.json$|^quant/data/technical/(index|meta)\.json$|^quant/data/technical/snapshots/|^quant/data/sec/quant-factor-inputs\.json$'
+          erlaubt='^quant/data/market/golden-preview/|^quant/data/market/discover-series/|^quant/data/market/tiingo-status\.json$|^quant/data/technical/instruments/(AAPL|MSFT|NVDA|JPM|XOM)\.json$|^quant/data/technical/(index|meta)\.json$|^quant/data/technical/snapshots/|^quant/data/sec/quant-factor-inputs\.json$'
           changed="$(git status --porcelain -- quant/data/market quant/data/technical quant/data/sec)"
           echo "$changed"
           unerwartet="$(echo "$changed" | awk '{print $2}' | grep -vE "$erlaubt" || true)"
@@ -125,12 +132,13 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/golden-preview quant/data/market/tiingo-status.json \
+          git add quant/data/market/golden-preview quant/data/market/discover-series \
+                  quant/data/market/tiingo-status.json \
                   quant/data/technical quant/data/sec/quant-factor-inputs.json
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Golden-Five-Daten."
           else
-            git commit -m "Golden Five: Development-Preview-Marktdaten + Technical/Elliott/Quant-Panel aktualisiert (Tiingo EOD, AAPL/MSFT/NVDA/JPM/XOM)"
+            git commit -m "Development Preview: Marktdaten fuer den freigegebenen Umfang + Technical/Elliott/Quant-Panel aktualisiert (Tiingo EOD)"
             git push
           fi
 

@@ -204,7 +204,11 @@ await check("Jedes Poster zeigt Symbol, Signal und ein Datenbild", async () => {
      Renditeleiter - beides sind Daten, keines davon ein Fake-Chart. */
   const befund = await desktop.$$eval(".dx-poster", (posters) => posters.slice(0, 24).map((p) => ({
     sym: (p.querySelector(".dx-poster-sym") || {}).textContent || "",
-    media: p.querySelectorAll(".dx-poster-media svg path, .dx-poster-media svg .dx-ladder-bar").length,
+    /* Seit der Price-Data-Schicht laedt eine Karte ihre Reihe erst, wenn
+       sie sichtbar wird. Der Platzhalter dafuer ("Kurs laedt") ist ein
+       gueltiger Zustand - das geladene Bild prueft browser-qa-v3.mjs. */
+    media: p.querySelectorAll(".dx-poster-media svg path, .dx-poster-media svg .dx-ladder-bar, " +
+                              ".dx-poster-media .dx-art-skeleton").length,
     text: p.textContent
   })));
   for (const p of befund) {
@@ -530,7 +534,9 @@ await check("jede Karte beantwortet: welche Firma, warum, wie viel", async () =>
       sym: (n.querySelector(".dx-poster-sym") || {}).textContent || "",
       story: (n.querySelector(".dx-story") || {}).textContent || "",
       zahl: (n.querySelector(".dx-zahl b") || {}).textContent || "",
-      bild: !!n.querySelector(".dx-art")
+      /* Datenbild oder der Platzhalter, der es laedt - beides ist eine
+         Antwort; ein leeres Feld waere keine. */
+      bild: !!n.querySelector(".dx-art, .dx-art-skeleton")
     })));
   assert(karten.length >= 12, "zu wenige Karten");
   for (const k of karten) {

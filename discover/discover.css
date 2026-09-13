@@ -1524,3 +1524,23 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-poster .dx-was-line{font-size:11.5px}
   .dx-recent{margin-top:26px}
 }
+
+/* ------------------------------------------------ Kursreihe wird geladen
+   Der Platzhalter ist eindeutig kein Chart: keine Linie, keine Balken -
+   eine ruhige Flaeche mit einem Wort. Er hat dieselbe Hoehe wie das
+   Datenbild, damit beim Laden nichts springt. */
+.dx-art-skeleton{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;
+  padding:0 0 10px 12px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--discover-dim);
+  background:linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,.05), rgba(255,255,255,.02));
+  background-size:200% 100%;animation:dx-skeleton 1.6s ease-in-out infinite}
+.dx-art-skeleton::before{content:"";position:absolute;left:12px;right:12px;bottom:6px;height:1px;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 4px, transparent 4px 9px)}
+@keyframes dx-skeleton{0%{background-position:0 0}100%{background-position:200% 0}}
+@media (prefers-reduced-motion:reduce){.dx-art-skeleton{animation:none}}
+/* Der Lazy-Rahmen fuellt seinen Behaelter wie das Datenbild zuvor - die
+   Hoehe kommt vom Behaelter (Karte, Kopf, grosse Karte), nicht vom Bild. */
+.dx-lazy-media{position:relative;display:block;width:100%;height:100%}
+.dx-featured-media .dx-lazy-media{height:220px}
+.dx-lazy-media[data-loading]{min-height:60px}
+@media (max-width:860px){.dx-featured-media .dx-lazy-media{height:150px}}

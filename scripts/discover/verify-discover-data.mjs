@@ -76,6 +76,10 @@ check(meta.contractVersion === Contract.CONTRACT_VERSION,
   "meta.json traegt eine andere Contract-Version als die Engine");
 
 /* Die Titel, fuer die eine Kursanzeige ausdruecklich freigegeben ist. */
+/* Der Umfang, in dem reale Kursreihen ausgeliefert werden duerfen:
+   dieselbe Aufloesung wie im Hygiene-Guard (Tickerliste oder Universum). */
+const { resolveScope } = await import(join(root, "scripts", "market", "preview-scope.mjs"));
+const seriesScope = resolveScope(root, PREVIEW).tickers;
 const previewScope = new Set();
 for (const grant of PREVIEW.grants || []) {
   for (const ticker of grant.developmentPreviewScope || []) {
@@ -167,15 +171,29 @@ for (const universe of meta.universes) {
       if (ps) {
         const punkte = Array.isArray(ps.points) ? ps.points.length : 0;
         if (ps.status === "CALCULATED") {
-          check(punkte >= 5, `${file}: ${card.symbol} priceSeries CALCULATED mit ${punkte} Punkten`);
+          /* Karten tragen einen Verweis, keine Punkte: die Reihe liegt in
+             discover/data/series/ und muss dort existieren, mit Punkten,
+             Herkunft und Stand. */
+          check(punkte === 0, `${file}: ${card.symbol} traegt Punkte auf der Karte statt eines Verweises`);
+          check(typeof ps.path === "string" && ps.path.startsWith("/discover/data/series/" + id + "/"),
+            `${file}: ${card.symbol} priceSeries ohne Verweis auf den Series-Store`);
+          const seriesFile = join(DATA, "series", id, card.symbol + ".json");
+          check(existsSync(seriesFile), `${file}: ${card.symbol} Verweis ohne Datei ${seriesFile}`);
+          if (existsSync(seriesFile)) {
+            const reihe = readJSON(seriesFile);
+            check(Array.isArray(reihe.points) && reihe.points.length >= 5 && !!reihe.source && !!reihe.asOf,
+              `${file}: ${card.symbol} Reihe ohne Punkte/Herkunft/Stand`);
+            check(reihe.source === ps.source && reihe.asOf === ps.asOf,
+              `${file}: ${card.symbol} Verweis und Reihe widersprechen sich`);
+          }
           check(!!ps.source && !!ps.asOf, `${file}: ${card.symbol} priceSeries ohne Herkunft/Stand`);
           if (universe.kind === "real") {
-            check(previewScope.has(card.symbol),
+            check(seriesScope.has(card.symbol),
               `${file}: ${card.symbol} traegt eine Micro-Kursreihe ohne Freigabe`);
           }
         } else {
-          check(punkte === 0 && !ps.ranges,
-            `${file}: ${card.symbol} priceSeries ${ps.status} traegt trotzdem Punkte`);
+          check(punkte === 0 && !ps.ranges && !ps.path,
+            `${file}: ${card.symbol} priceSeries ${ps.status} traegt trotzdem Punkte oder Verweis`);
         }
       }
       /* Themenreihen: nur, was in der Themenliste steht. */
@@ -240,6 +258,26 @@ for (const universe of meta.universes) {
     }
   }
 
+  /* Series-Store: jede Datei traegt Punkte, Herkunft, Stand - und im
+     realen Universum nur Titel aus dem freigegebenen Umfang. */
+  const seriesDir = join(DATA, "series", id);
+  let seriesFiles = 0;
+  if (existsSync(seriesDir)) {
+    for (const file of readdirSync(seriesDir).filter((n) => n.endsWith(".json"))) {
+      const reihe = readJSON(join(seriesDir, file));
+      seriesFiles++;
+      check(reihe.status === "CALCULATED" && Array.isArray(reihe.points) && reihe.points.length >= 5,
+        `series/${id}/${file}: keine Punkte`);
+      check(!!reihe.source && !!reihe.asOf && !!reihe.priceSeriesType, `series/${id}/${file}: ohne Herkunft`);
+      check(reihe.points.every((p) => Array.isArray(p) && typeof p[0] === "string" && isNum(p[1])),
+        `series/${id}/${file}: Punkte nicht [datum, schluss]`);
+      if (universe.kind === "real") {
+        check(seriesScope.has(reihe.symbol), `series/${id}/${file}: reale Reihe ausserhalb des Umfangs`);
+      }
+    }
+  }
+  console.log(`           ${seriesFiles} Kursreihen im Series-Store geprueft`);
+
   /* Startseite (V3): jede Karte einer Surface muss in ihrer Reihe stehen -
      die Discovery-Reihenfolge darf umsortieren, nie aufnehmen. Und die
      Diversity-Regeln muessen halten. */
@@ -281,7 +319,7 @@ for (const universe of meta.universes) {
       const kurz = s.type !== "featured-card" && cards.length <= 6 && (!isNum(s.total) || s.total <= 6);
       if (i < 2 && s.type !== "hero" && !kurz) fuehrt[c.symbol] = (fuehrt[c.symbol] || 0) + 1;
       if (universe.kind === "real" && c.priceSeries && c.priceSeries.status === "CALCULATED") {
-        check(previewScope.has(c.symbol), `home ${s.id}: ${c.symbol} zeichnet ohne Freigabe`);
+        check(seriesScope.has(c.symbol), `home ${s.id}: ${c.symbol} zeichnet ohne Freigabe`);
       }
     });
   }

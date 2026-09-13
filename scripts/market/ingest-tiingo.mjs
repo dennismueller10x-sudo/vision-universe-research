@@ -31,6 +31,8 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-scope.mjs";
+import { publishDiscoverSeries } from "./publish-discover-series.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -57,6 +59,18 @@ const PUBLISH = args.has("--publish");
    --publish, sondern verlangt seine eigene, eng begrenzte Erlaubnis. */
 const PUBLISH_PREVIEW = args.has("--publish-preview");
 const PREVIEW_CONFIG_PATH = join(root, "quant", "config", "development-preview.json");
+/* --scope-from-preview: das Universum des Laufs ist der in
+   development-preview.json freigegebene Umfang - eine Tickerliste oder
+   ein ganzes Gate-Universum -, nicht das zwoelf Titel grosse Testset.
+   Damit holt EIN Lauf genau die Titel, die auch ausgeliefert werden
+   duerfen: 5 heute, 498 oder 7.000, sobald der Eigentuemer den Umfang
+   aendert. Requests je Lauf = Titel im Umfang. */
+const SCOPE_FROM_PREVIEW = args.has("--scope-from-preview");
+const PREVIEW_SCOPE = (PUBLISH_PREVIEW || SCOPE_FROM_PREVIEW)
+  ? resolveScope(root, JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"))) : null;
+const SECURITIES = SCOPE_FROM_PREVIEW
+  ? PREVIEW_SCOPE.securities.map((s) => Object.assign({}, s, { mic: s.mic || null }))
+  : SECURITIES;
 const apiKey = process.env.TIINGO_API_KEY || null;
 /* Die Gates kommen aus derselben Datei, die auch der Browser liest.
    Zwei Quellen fuer dieselbe Frage waeren zwei Antworten: der Import
@@ -137,7 +151,7 @@ function writeStatus(fields) {
 }
 
 console.log("Vision Universe — Tiingo-Import\n");
-console.log(`  Universum: ${CONFIG.universeId} (${CONFIG.securities.length} Titel)`);
+console.log(`  Universum: ${SCOPE_FROM_PREVIEW ? "development-preview.json (Umfang)" : CONFIG.universeId} (${SECURITIES.length} Titel)`);
 console.log(`  Modus:     ${DRY_RUN ? "Probelauf" : INITIAL ? "Erstimport" : "inkrementell"}`);
 
 /* ------------------------------------------------------- Ohne Zugang */
@@ -164,7 +178,7 @@ if (!apiKey) {
 /* ---------------------------------------------------------- Aufbau */
 
 const registry = SymbolMapping.createRegistry(
-  CONFIG.securities.map((s) => ({
+  SECURITIES.map((s) => ({
     securityId: s.securityId,
     providerId: Tiingo.PROVIDER_ID,
     providerSymbol: s.ticker,
@@ -198,8 +212,8 @@ const runId = INITIAL ? "initial" : "incremental";
 const checkpoint = store.loadCheckpoint(runId);
 if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 
-const pending = store.remaining(checkpoint, CONFIG.securities.map((s) => s.securityId));
-console.log(`  Ausstehend: ${pending.length} von ${CONFIG.securities.length}` +
+const pending = store.remaining(checkpoint, SECURITIES.map((s) => s.securityId));
+console.log(`  Ausstehend: ${pending.length} von ${SECURITIES.length}` +
             (checkpoint.done.length ? ` (${checkpoint.done.length} bereits erledigt)` : ""));
 console.log(`  Kontingent: ${Tiingo.FREE_LIMITS.requestsPerHour}/Stunde, ` +
             `${Tiingo.FREE_LIMITS.requestsPerDay}/Tag\n`);
@@ -207,7 +221,7 @@ console.log(`  Kontingent: ${Tiingo.FREE_LIMITS.requestsPerHour}/Stunde, ` +
 const perSecurity = {};
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
 
-for (const security of CONFIG.securities) {
+for (const security of SECURITIES) {
   const id = security.securityId;
   const label = `  ${security.ticker.padEnd(6)}`;
 
@@ -375,7 +389,7 @@ if (PUBLISH) {
   }
   console.log("\n  Veroeffentlichter Ausschnitt:");
   console.log(`  Grundlage: ${anzeige.basis}`);
-  for (const security of CONFIG.securities) {
+  for (const security of SECURITIES) {
     const p = store.publish(security.securityId, { permission: anzeige });
     if (p.published) {
       console.log(`    ${security.ticker.padEnd(6)} ${p.bars} von ${p.of} Bars (${Math.round(p.bytes / 1024)} KB)`);
@@ -405,16 +419,23 @@ if (PUBLISH_PREVIEW) {
      Schreiben des bereits geholten Bestands). */
   const GOLDEN_PREVIEW_BAR_LIMIT = 5000;
   const previewConfig = JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"));
-  DisplayPolicy.declareFromConfig(previewConfig);
+  /* Der Umfang, aufgeloest: Tickerliste und/oder Universum. Die
+     Richtlinie bekommt die aufgeloeste Liste, damit sie je Titel
+     entscheiden kann. */
+  DisplayPolicy.declareFromConfig(expandPreviewConfig(previewConfig, PREVIEW_SCOPE));
 
   const previewStore = MarketStore.createMarketStore({
     root, providerId: Tiingo.PROVIDER_ID, workingDir: store.workingDir,
     publishedDir: join(root, "quant", "data", "market", "golden-preview")
   });
 
-  console.log("\n  Development-Preview-Veroeffentlichung (Golden Five):");
-  const scope = new Set(previewConfig.scope || []);
-  for (const security of CONFIG.securities) {
+  console.log("\n  Development-Preview-Veroeffentlichung (volle Historie, fullHistory-Titel):");
+  /* Die volle Historie (5.000 Bars, ~500 KB je Titel) nur fuer die Titel,
+     die die Aktienseite mit 5J/Max und die Technical Intelligence
+     brauchen. Alle anderen im Umfang bekommen die kompakte Discover-Reihe
+     weiter unten - ein Jahr Tagesschluss, 5 KB. */
+  const scope = PREVIEW_SCOPE.fullHistory;
+  for (const security of SECURITIES) {
     if (!scope.has(security.ticker)) continue;
     const anzeige = DisplayPolicy.check({
       providerId: "tiingo", dataClass: "marketData", audience: "development_preview",
@@ -432,6 +453,15 @@ if (PUBLISH_PREVIEW) {
       console.error(`    ${security.ticker.padEnd(6)} NICHT veroeffentlicht: ${p.message || p.reason}`);
     }
   }
+
+  /* Die kompakten Discover-Reihen fuer JEDEN Titel im Umfang - dieselbe
+     Richtlinie, dieselbe Arbeitsablage, ein anderer Ausschnitt. */
+  console.log("\n  Kompakte Discover-Kursreihen (1 Jahr Tagesschluss, alle Titel im Umfang):");
+  const reihen = publishDiscoverSeries({ root, workingDir: store.workingDir, fromPublished: true,
+                                        log: (m) => console.log(m) });
+  console.log(`    ${reihen.written.length} geschrieben, ${reihen.skipped.length} uebersprungen` +
+              (reihen.skipped.length ? " (" + reihen.skipped.map((x) => x.ticker + ":" + x.reason).slice(0, 8).join(", ") +
+               (reihen.skipped.length > 8 ? ", …" : "") + ")" : ""));
 }
 
 writeStatus({
@@ -445,7 +475,7 @@ writeStatus({
   adjustmentStatus: provider.adjustmentStatus(),
   health: { status: health.status, message: health.message },
   quota: quota,
-  summary: { requested: CONFIG.securities.length, ok, failed, rejected, skipped,
+  summary: { requested: SECURITIES.length, ok, failed, rejected, skipped,
              requests: stats.requests, cacheHits: stats.cacheHits, retries: stats.retries,
              bytesReceived: stats.bytesReceived },
   securities: perSecurity,

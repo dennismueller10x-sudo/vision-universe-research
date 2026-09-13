@@ -152,7 +152,7 @@
         text.story ? el("p", { class: "dx-feed-satz", text: text.story }) : null,
         karte.was ? el("p", { class: "dx-was-line", text: karte.was }) : null,
         el("div", { class: "dx-feed-bild" }, [
-          D.Artwork.stockArtwork(karte, { width: 720, height: 260, ticker: true, scale: "hero" })
+          C().lazyArtwork(karte, { width: 720, height: 260, ticker: true, scale: "hero" })
         ]),
         text.zusatz ? el("p", { class: "dx-feed-zusatz", text: text.zusatz }) : null,
         el("div", { class: "dx-cta" }, [

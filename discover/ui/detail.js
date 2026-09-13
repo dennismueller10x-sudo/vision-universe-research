@@ -91,6 +91,22 @@
                  priceSeriesType: payload.priceSeriesType || null };
       });
     }
+    /* Kompakte Reihe (ein Jahr Tagesschluss): dieselbe Datei wie der
+       Micro-Chart der Karte. Sie traegt nur Schlusskurse - Open/High/Low
+       sind deshalb der Schluss, Volumen fehlt, und 5J/Max bleiben
+       gesperrt, weil die Reihe sie nicht hergibt. */
+    if (series.source === "discover-series" && series.path) {
+      var Loader = D.SeriesLoader;
+      var holen = Loader ? Loader.get(series.path) : S.loadJSON(series.path);
+      return holen.then(function (reihe) {
+        var dates = reihe.points.map(function (p) { return p[0]; });
+        var close = reihe.points.map(function (p) { return p[1]; });
+        return { bars: { timestamps: dates, open: close.slice(), high: close.slice(), low: close.slice(),
+                         close: close, volume: close.map(function () { return null; }) },
+                 weeklyBars: null, bundle: null, priceSeriesType: reihe.priceSeriesType || null,
+                 closeOnly: true };
+      });
+    }
     if (series.source === "inline" && series.inline) {
       var d = series.inline.daily, w = series.inline.weekly;
       return Promise.resolve({
@@ -227,8 +243,7 @@
          Seite nicht bei null anfaengt, sondern dort weitermacht, wo man
          geklickt hat. */
       D.Artwork ? el("div", { class: "dx-dhero-art", "aria-hidden": "true" }, [
-        D.Artwork.stockArtwork(detail, { width: 720, height: 220, ticker: false,
-                                         scale: "hero", nodes: true })
+        C().lazyArtwork(detail, { width: 720, height: 220, ticker: false, scale: "hero", range: "1J" })
       ]) : null,
       el("div", { class: "dx-dhero-inner" }, [
         el("div", {}, [

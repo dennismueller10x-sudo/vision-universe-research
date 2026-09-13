@@ -126,10 +126,10 @@
     var text = C().klartext(card, surface.rowId) || {};
     var section = el("section", { class: "dx-featured dx-fade", "data-world": surface.world || card.world || null });
     section.appendChild(el("div", { class: "dx-featured-bg", "aria-hidden": "true" }));
-    var MC = D.MicroChart;
-    var echt = MC && MC.hasSeries(card.priceSeries);
-    var kunst = D.Artwork.stockArtwork(card, { width: 640, height: 260, ticker: true, scale: "hero",
-                                                range: surface.microRange || "6M" });
+    var ps = card.priceSeries || {};
+    var echt = ps.status === "CALCULATED" && !!ps.source;
+    var kunst = C().lazyArtwork(card, { width: 640, height: 260, ticker: true, scale: "hero",
+                                        range: surface.microRange || "6M" });
     var link = el("a", { class: "dx-featured-card", href: surface.href || "#/s/" + ctx.universeId + "/" + card.symbol,
                          "data-symbol": card.symbol,
                          "aria-label": (card.companyName || card.symbol) + " ansehen" }, [
@@ -154,8 +154,8 @@
       el("div", { class: "dx-featured-media" }, [
         kunst,
         el("p", { class: "dx-featured-caption", text: echt
-          ? "Echter Kursverlauf, Tagesschlusskurse — Quelle " + card.priceSeries.source +
-            ", Stand " + (card.priceSeries.asOf || "")
+          ? "Echter Kursverlauf, Tagesschlusskurse — Quelle " + ps.source +
+            ", Stand " + (ps.asOf || "")
           : "Rendite über 1, 3, 6 und 12 Monate als Balken — kein Kursverlauf. Absolute Kurse " +
             "bleiben zurück." })
       ])
