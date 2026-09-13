@@ -1,4 +1,5 @@
 // Explicitly requested static-repository QA. No deployment or provider calls.
+import {assessResourceBudget} from './resource-budget.mjs';
 import {createServer} from 'node:http';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
@@ -12,7 +13,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json
 const server=createServer(async(req,res)=>{try{let pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(pathname.split('/').some(s=>s.startsWith('.')))throw Error('private');if(pathname.endsWith('/'))pathname+='index.html';const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))throw Error('path');res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.statusCode=404;res.end('Not found');}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[];
+const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[],resourceBudgets=[];
 async function auditAccessibility(page,view,width){
  await page.addScriptTag({path:axePath});
  const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}));
@@ -23,6 +24,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist','atlas']){
  const started=performance.now();await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
+ const budget=assessResourceBudget(view,resources);if(budget)resourceBudgets.push({...budget,width});
  if(view==='home'&&resources.some(r=>r.path.includes('/daily/ref_')||r.path.includes('/fixtures/')))throw Error('Home loads raw history or fixtures');
  if(await page.locator('h1').count()!==1)throw Error('missing heading '+view);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
@@ -98,6 +100,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
  const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});for(const view of ['home','compare','research']){await tablet.goto(origin+'/vu2/?view='+view);await tablet.locator('main footer').waitFor();if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('tablet overflow '+view);const nav=tablet.locator('.nav');if(!await nav.isVisible()||await nav.locator('a').count()!==6)throw Error('tablet navigation incomplete');await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});}await tablet.close();
  await writeFile(out+'/results.json',JSON.stringify({checks},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));
+ await writeFile(out+'/resource-budgets.json',JSON.stringify({scope:'Decoded subresource bytes and request count; not production latency',results:resourceBudgets},null,2));
+ console.log(JSON.stringify({resourceBudgetChecks:resourceBudgets.length,resourceBudgetFailures:resourceBudgets.filter(r=>!r.pass)}));
+ if(resourceBudgets.length!==8||resourceBudgets.some(r=>!r.pass))throw Error('Resource budget gate failed; see resource-budgets.json');
  const violations=accessibility.flatMap(r=>r.violations.map(v=>({view:r.view,width:r.width,id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))})));
  console.log(JSON.stringify({accessibilityPages:accessibility.length,violations}));
  if(violations.length)throw Error('Automated accessibility gate failed; see accessibility.json');
