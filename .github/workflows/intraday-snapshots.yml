@@ -51,7 +51,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule' ||
-      contains(github.event.head_commit.message, '[intraday-snapshot]')
+      contains(github.event.head_commit.message, '[intraday-snapshot')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -71,6 +71,10 @@ jobs:
         id: scope
         run: |
           SCOPE='${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}'
+          # Auf Entwicklungsbranches darf die Marke den Umfang nennen: [intraday-snapshot:universe]
+          if [ -z "$SCOPE" ] && [ "${{ github.event_name }}" = "push" ]; then
+            SCOPE=$(printf '%s' "${{ github.event.head_commit.message }}" | grep -o '\[intraday-snapshot:[a-z,A-Z]*\]' | head -1 | sed 's/\[intraday-snapshot:\(.*\)\]/\1/')
+          fi
           if [ -z "$SCOPE" ]; then
             # Der Lauf um 21:35 UTC ist der Universumslauf nach Schluss; alle anderen: Discover-Flaechen.
             if [ "${{ github.event.schedule }}" = "35 21 * * 1-5" ]; then SCOPE=universe; else SCOPE=discover; fi
