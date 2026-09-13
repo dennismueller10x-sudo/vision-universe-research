@@ -1,6 +1,6 @@
 {
   "shard": "882",
-  "count": 3,
+  "count": 4,
   "issuers": [
     {
       "cik": "0000807882",
@@ -382,6 +382,147 @@
       },
       "sourceDigest": "b6f0b1b3ca1a192dbeba33c9981448ec38192440d5dac0bcf939b4412df2c8f1",
       "issuerId": "iss_cik_0001788882"
+    },
+    {
+      "cik": "0001793882",
+      "name": "Cohen & Steers Tax-Advantaged Preferred Securities & Income Fund",
+      "sic": null,
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1031",
+      "tickers": [
+        "PTA"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 0,
+      "quarterlyPeriods": 0,
+      "firstPeriodEnd": null,
+      "lastPeriodEnd": null,
+      "historyYears": 0.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_assets": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {},
+      "pit": {
+        "state": "PIT_UNAVAILABLE",
+        "datableValues": 0,
+        "resolvedValues": 0
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 0,
+        "by_severity": {},
+        "by_code": {}
+      },
+      "latestFiling": null,
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "df90240e407adef98e8a317393692b5f1363cf35a9c7011bf80d940d0177231d",
+      "issuerId": "iss_cik_0001793882"
     },
     {
       "cik": "0002104882",

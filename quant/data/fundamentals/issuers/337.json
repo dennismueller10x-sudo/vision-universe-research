@@ -1,6 +1,6 @@
 {
   "shard": "337",
-  "count": 7,
+  "count": 8,
   "issuers": [
     {
       "cik": "0000311337",
@@ -569,6 +569,152 @@
       },
       "sourceDigest": "265e4f3aded436043a3d5478fc959c9b8efec6f634c5a2933e646df1e2cba75a",
       "issuerId": "iss_cik_0001043337"
+    },
+    {
+      "cik": "0001283337",
+      "name": "STRUCTURED PRODUCTS CORP CRED ENHANCE CORTS TR FOR AON CAP A",
+      "sic": "6189",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "KTN"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 0,
+      "quarterlyPeriods": 0,
+      "firstPeriodEnd": null,
+      "lastPeriodEnd": null,
+      "historyYears": 0.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_assets": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {},
+      "pit": {
+        "state": "PIT_UNAVAILABLE",
+        "datableValues": 0,
+        "resolvedValues": 0
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 0,
+        "by_severity": {},
+        "by_code": {}
+      },
+      "latestFiling": {
+        "accession": "0001068238-26-000053",
+        "filing_date": "2026-03-19",
+        "form": "10-K",
+        "periodic_filings": 23
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "b9657101d3480952dad4cdd79dd4e6cf1b1dd7c339a20d7379ac8379f0fe7643",
+      "issuerId": "iss_cik_0001283337"
     },
     {
       "cik": "0001511337",

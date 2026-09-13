@@ -1,7 +1,153 @@
 {
   "shard": "655",
-  "count": 7,
+  "count": 8,
   "issuers": [
+    {
+      "cik": "0000319655",
+      "name": "SAN JUAN BASIN ROYALTY TRUST",
+      "sic": "6792",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "SJT"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 0,
+      "quarterlyPeriods": 0,
+      "firstPeriodEnd": null,
+      "lastPeriodEnd": null,
+      "historyYears": 0.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_assets": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {},
+      "pit": {
+        "state": "PIT_UNAVAILABLE",
+        "datableValues": 0,
+        "resolvedValues": 0
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 0,
+        "by_severity": {},
+        "by_code": {}
+      },
+      "latestFiling": {
+        "accession": "0001193125-26-348824",
+        "filing_date": "2026-08-13",
+        "form": "10-Q",
+        "periodic_filings": 125
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "ddd4bc8398cea7e43c8b7f7a2dda5358590513a209a80b7296565028aa981655",
+      "issuerId": "iss_cik_0000319655"
+    },
     {
       "cik": "0001006655",
       "name": "EVOLUTION PETROLEUM CORP",

@@ -36,10 +36,15 @@
     },
     {
       "cause": "SPECIAL_PURPOSE_ENTITY",
-      "count": 48,
-      "percent": 29.8137,
+      "count": 56,
+      "percent": 34.7826,
       "consequence": "NOT_APPLICABLE",
       "examples": [
+        {
+          "symbol": "AIO",
+          "cik": "0001778114",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'Virtus Artificial Intelligence & Technol'"
+        },
         {
           "symbol": "ASGI",
           "cik": "0001793855",
@@ -54,11 +59,6 @@
           "symbol": "BMEZ",
           "cik": "0001785971",
           "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock Health Sciences Term Trust'"
-        },
-        {
-          "symbol": "BMN",
-          "cik": "0001832871",
-          "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock 2037 Municipal Target Term Tru'"
         }
       ]
     },
@@ -77,8 +77,8 @@
     },
     {
       "cause": "NO_XBRL_FACTS",
-      "count": 13,
-      "percent": 8.0745,
+      "count": 39,
+      "percent": 24.2236,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -87,19 +87,19 @@
           "evidence": "companyfacts leer, Formular -"
         },
         {
+          "symbol": "BTQ",
+          "cik": "0001821866",
+          "evidence": "companyfacts leer, Formular 40-F/A"
+        },
+        {
+          "symbol": "CRT",
+          "cik": "0000881787",
+          "evidence": "companyfacts leer, Formular 10-Q"
+        },
+        {
           "symbol": "DTSS",
           "cik": "0002110423",
           "evidence": "companyfacts leer, Formular -"
-        },
-        {
-          "symbol": "DXYZ",
-          "cik": "0001843974",
-          "evidence": "companyfacts leer, Formular -"
-        },
-        {
-          "symbol": "ELC",
-          "cik": "0001348952",
-          "evidence": "companyfacts leer, Formular 10-Q"
         }
       ]
     },
@@ -128,8 +128,8 @@
     },
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 40,
-      "percent": 24.8447,
+      "count": 48,
+      "percent": 29.8137,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -153,41 +153,12 @@
           "evidence": "1 Fakten, nur Deckblatt, notiert seit 2025-07-16"
         }
       ]
-    },
-    {
-      "cause": "REQUIRES_REVIEW",
-      "count": 42,
-      "percent": 26.087,
-      "consequence": "REQUIRES_REVIEW",
-      "examples": [
-        {
-          "symbol": "AIO",
-          "cik": "0001778114",
-          "evidence": "kein Factbook (Fehlerschlange / Abruf ausstehend)"
-        },
-        {
-          "symbol": "BMM",
-          "cik": "0001732379",
-          "evidence": "kein Factbook (Fehlerschlange / Abruf ausstehend)"
-        },
-        {
-          "symbol": "BRAI",
-          "cik": "0002076975",
-          "evidence": "kein Factbook (Fehlerschlange / Abruf ausstehend)"
-        },
-        {
-          "symbol": "BSTZ",
-          "cik": "0001768666",
-          "evidence": "kein Factbook (Fehlerschlange / Abruf ausstehend)"
-        }
-      ]
     }
   ],
   "byConsequence": {
-    "RESOLVES_WITH_TIME": 40,
-    "REQUIRES_REVIEW": 42,
-    "EXTERNAL_PROVIDER_CANDIDATE": 16,
-    "NOT_APPLICABLE": 62,
+    "RESOLVES_WITH_TIME": 48,
+    "NOT_APPLICABLE": 70,
+    "EXTERNAL_PROVIDER_CANDIDATE": 42,
     "INDUSTRY_LAYER": 1
   },
   "stillRecoverableBySec": 0,
@@ -210,6 +181,7 @@
     ],
     "SPECIAL_PURPOSE_ENTITY": [
       "0000102426",
+      "0000825202",
       "0000826020",
       "0000880406",
       "0001495222",
@@ -232,8 +204,10 @@
       "0001754836",
       "0001754836",
       "0001756908",
+      "0001768666",
       "0001771226",
       "0001774342",
+      "0001778114",
       "0001785971",
       "0001788399",
       "0001790177",
@@ -241,11 +215,16 @@
       "0001793855",
       "0001809541",
       "0001810523",
+      "0001812923",
       "0001817159",
+      "0001819559",
       "0001820378",
       "0001832871",
+      "0001835068",
+      "0001836057",
       "0001843181",
       "0001855066",
+      "0001861115",
       "0001864208",
       "0001864843",
       "0001866874",
@@ -263,12 +242,38 @@
     ],
     "NO_XBRL_FACTS": [
       "0000041091",
+      "0000062362",
       "0000066901",
+      "0000071508",
+      "0000071508",
+      "0000313364",
+      "0000319654",
+      "0000319655",
+      "0000710752",
+      "0000881787",
+      "0001103838",
+      "0001267332",
+      "0001283337",
+      "0001283464",
+      "0001284143",
+      "0001286405",
+      "0001294808",
+      "0001340909",
+      "0001343491",
       "0001348952",
+      "0001353226",
+      "0001356284",
+      "0001357660",
+      "0001505413",
+      "0001520048",
       "0001568194",
+      "0001569650",
+      "0001569650",
       "0001578987",
       "0001716951",
       "0001716951",
+      "0001724009",
+      "0001821866",
       "0001823255",
       "0001843974",
       "0001857047",
@@ -285,7 +290,11 @@
       "0001467093",
       "0001468642",
       "0001487326",
+      "0001526475",
+      "0001548536",
       "0001716951",
+      "0001732379",
+      "0001782265",
       "0001839970",
       "0001903784",
       "0001912884",
@@ -301,15 +310,19 @@
       "0002025416",
       "0002027329",
       "0002039972",
+      "0002041208",
+      "0002044241",
       "0002052053",
       "0002054507",
       "0002070534",
+      "0002076975",
       "0002080073",
       "0002080845",
       "0002081119",
       "0002081206",
       "0002087398",
       "0002092314",
+      "0002092967",
       "0002095096",
       "0002097725",
       "0002098395",
@@ -322,50 +335,6 @@
       "0002119292",
       "0002124403",
       "0002132582"
-    ],
-    "REQUIRES_REVIEW": [
-      "0000062362",
-      "0000071508",
-      "0000071508",
-      "0000313364",
-      "0000319654",
-      "0000319655",
-      "0000710752",
-      "0000825202",
-      "0000881787",
-      "0001103838",
-      "0001267332",
-      "0001283337",
-      "0001283464",
-      "0001284143",
-      "0001286405",
-      "0001294808",
-      "0001340909",
-      "0001343491",
-      "0001353226",
-      "0001356284",
-      "0001357660",
-      "0001505413",
-      "0001520048",
-      "0001526475",
-      "0001548536",
-      "0001569650",
-      "0001569650",
-      "0001724009",
-      "0001732379",
-      "0001768666",
-      "0001778114",
-      "0001782265",
-      "0001812923",
-      "0001819559",
-      "0001821866",
-      "0001835068",
-      "0001836057",
-      "0001861115",
-      "0002041208",
-      "0002044241",
-      "0002076975",
-      "0002092967"
     ]
   },
   "ciksStillRecoverable": [],
@@ -380,5 +349,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T18:28:25+00:00"
+  "generatedAtUtc": "2026-09-13T19:42:00+00:00"
 }

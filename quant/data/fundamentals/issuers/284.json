@@ -1,6 +1,6 @@
 {
   "shard": "284",
-  "count": 5,
+  "count": 6,
   "issuers": [
     {
       "cik": "0001005284",
@@ -474,6 +474,152 @@
       },
       "sourceDigest": "1b04763b53fb17e77a6fc4c66d9d6a2861c50ff9e3cbb80d63a097720df20c11",
       "issuerId": "iss_cik_0001331284"
+    },
+    {
+      "cik": "0001356284",
+      "name": "STRATS(SM) Trust for Goldman Sachs Group Securities, Series 2006-2",
+      "sic": "6189",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": null,
+      "tickers": [
+        "GJS"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 0,
+      "quarterlyPeriods": 0,
+      "firstPeriodEnd": null,
+      "lastPeriodEnd": null,
+      "historyYears": 0.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_assets": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {},
+      "pit": {
+        "state": "PIT_UNAVAILABLE",
+        "datableValues": 0,
+        "resolvedValues": 0
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 0,
+        "by_severity": {},
+        "by_code": {}
+      },
+      "latestFiling": {
+        "accession": "0001999371-26-007184",
+        "filing_date": "2026-03-30",
+        "form": "10-K",
+        "periodic_filings": 21
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "8bfc354400c28431ea43fe6477cd34266acf71cbbd7281ab666da7fef99290ca",
+      "issuerId": "iss_cik_0001356284"
     },
     {
       "cik": "0001750284",

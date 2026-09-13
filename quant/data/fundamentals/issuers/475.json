@@ -1,6 +1,6 @@
 {
   "shard": "475",
-  "count": 8,
+  "count": 9,
   "issuers": [
     {
       "cik": "0000025475",
@@ -794,6 +794,153 @@
       },
       "sourceDigest": "08285698159ff83aff50df6c581b4ea48ddf561acd6deea4ea0653f0fce1672b",
       "issuerId": "iss_cik_0001508475"
+    },
+    {
+      "cik": "0001526475",
+      "name": "NICOLA MINING INC.",
+      "sic": "1000",
+      "rawFacts": 0,
+      "mappedFacts": 0,
+      "unmappedFacts": 0,
+      "calendarYears": 0,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "NICM",
+        "HUSIF"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 0,
+      "quarterlyPeriods": 0,
+      "firstPeriodEnd": null,
+      "lastPeriodEnd": null,
+      "historyYears": 0.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_assets": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {},
+      "pit": {
+        "state": "PIT_UNAVAILABLE",
+        "datableValues": 0,
+        "resolvedValues": 0
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 0,
+        "by_severity": {},
+        "by_code": {}
+      },
+      "latestFiling": {
+        "accession": "0001104659-26-049487",
+        "filing_date": "2026-04-27",
+        "form": "40-F",
+        "periodic_filings": 1
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "fd3669f6bbb8929e3bc2f31823c4da794e06f04b89951e52cc5d5b474c193ae5",
+      "issuerId": "iss_cik_0001526475"
     },
     {
       "cik": "0001627475",

@@ -127,10 +127,16 @@
     },
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-      "count": 97,
-      "percent": 1.3849,
+      "count": 132,
+      "percent": 1.8846,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
+        {
+          "symbol": "AIO",
+          "cik": "0001778114",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
         {
           "symbol": "ASGI",
           "cik": "0001793855",
@@ -152,12 +158,6 @@
         {
           "symbol": "BLSM",
           "cik": "0001839970",
-          "form": null,
-          "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "BMEZ",
-          "cik": "0001785971",
           "form": null,
           "securityType": "COMMON_STOCK"
         }
@@ -202,47 +202,9 @@
       ]
     },
     {
-      "cause": "NO_SEC_COMPANY_FACTS",
-      "count": 42,
-      "percent": 0.5997,
-      "recoverability": "SEC_RECOVERABLE",
-      "examples": [
-        {
-          "symbol": "AIO",
-          "cik": "0001778114",
-          "form": null,
-          "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "BMM",
-          "cik": "0001732379",
-          "form": null,
-          "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "BRAI",
-          "cik": "0002076975",
-          "form": null,
-          "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "BSTZ",
-          "cik": "0001768666",
-          "form": null,
-          "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "BTQ",
-          "cik": "0001821866",
-          "form": null,
-          "securityType": "COMMON_STOCK"
-        }
-      ]
-    },
-    {
       "cause": "FOREIGN_ISSUER",
-      "count": 22,
-      "percent": 0.3141,
+      "count": 29,
+      "percent": 0.414,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -317,8 +279,8 @@
       {
         "priority": "PRIORITY_1_TECHNICAL_WITHOUT_ANY_FUNDAMENTALS",
         "description": "Technisch gedeckt, aber keinerlei Fundamentaldaten",
-        "COUNT": 748,
-        "PERCENT": 10.6796,
+        "COUNT": 712,
+        "PERCENT": 10.1656,
         "TOP_CAUSES": [
           {
             "cause": "NO_CIK",
@@ -326,25 +288,21 @@
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 310
-          },
-          {
-            "cause": "NO_SEC_COMPANY_FACTS",
-            "count": 34
+            "count": 308
           },
           {
             "cause": "VERY_YOUNG_LISTING",
             "count": 28
           }
         ],
-        "SEC_RECOVERABLE_COUNT": 34,
+        "SEC_RECOVERABLE_COUNT": 0,
         "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 0
       },
       {
         "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
         "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
-        "COUNT": 1157,
-        "PERCENT": 16.5191,
+        "COUNT": 1201,
+        "PERCENT": 17.1473,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -352,7 +310,7 @@
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 97
+            "count": 132
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -360,14 +318,14 @@
           },
           {
             "cause": "FOREIGN_ISSUER",
-            "count": 22
+            "count": 29
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 1
+            "count": 3
           }
         ],
-        "SEC_RECOVERABLE_COUNT": 119,
+        "SEC_RECOVERABLE_COUNT": 161,
         "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 41
       },
       {
@@ -391,23 +349,23 @@
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
-        "COUNT": 120,
-        "PERCENT": 1.7133,
+        "COUNT": 164,
+        "PERCENT": 2.3415,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 97
+            "count": 132
           },
           {
             "cause": "FOREIGN_ISSUER",
-            "count": 22
+            "count": 29
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 1
+            "count": 3
           }
         ],
-        "SEC_RECOVERABLE_COUNT": 119,
+        "SEC_RECOVERABLE_COUNT": 161,
         "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 0
       },
       {
@@ -442,5 +400,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-09-13T18:28:25+00:00"
+  "generatedAtUtc": "2026-09-13T19:42:00+00:00"
 }

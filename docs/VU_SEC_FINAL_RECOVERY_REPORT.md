@@ -1,6 +1,6 @@
 # SEC Fundamentals — Abschlussbericht des Recovery-Zyklus (§25 / §26)
 
-Erzeugt 2026-09-13T18:28:25+00:00 aus den Artefakten unter `quant/data/fundamentals/`. **Jede Zahl ist gelesen, keine getippt.** Vorher = `baseline-before-final-recovery.json` (Lauf 34749245361), Nachher = aktueller Stand (Normalisierung 1.9.0, Registry 1.5.0).
+Erzeugt 2026-09-13T19:42:00+00:00 aus den Artefakten unter `quant/data/fundamentals/`. **Jede Zahl ist gelesen, keine getippt.** Vorher = `baseline-before-final-recovery.json` (Lauf 34749245361), Nachher = aktueller Stand (Normalisierung 1.9.0, Registry 1.5.0).
 
 ## 1 — Luecken nach Loesbarkeit (Produktuniversum 7.004)
 
@@ -14,23 +14,23 @@ Erzeugt 2026-09-13T18:28:25+00:00 aus den Artefakten unter `quant/data/fundament
 
 ## 2 — Die SEC_RECOVERABLE-Faelle, einzeln begruendet (§5)
 
-Nenner: 161 Faelle, 161 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"RESOLVES_WITH_TIME": 40, "REQUIRES_REVIEW": 42, "EXTERNAL_PROVIDER_CANDIDATE": 16, "NOT_APPLICABLE": 62, "INDUSTRY_LAYER": 1}; noch SEC-loesbar: **0** (vorher 72).
+Nenner: 161 Faelle, 161 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"RESOLVES_WITH_TIME": 48, "NOT_APPLICABLE": 70, "EXTERNAL_PROVIDER_CANDIDATE": 42, "INDUSTRY_LAYER": 1}; noch SEC-loesbar: **0** (vorher 72).
 
 | Feinursache | Vorher | Nachher | Δ |
 |---|---:|---:|---:|
-| `SPECIAL_PURPOSE_ENTITY` | 48 | 48 | +0 |
-| `REQUIRES_REVIEW` | 54 | 42 | -12 |
-| `VERY_YOUNG_LISTING` | n/a | 40 |  |
+| `SPECIAL_PURPOSE_ENTITY` | 48 | 56 | +8 |
+| `VERY_YOUNG_LISTING` | n/a | 48 |  |
+| `NO_XBRL_FACTS` | n/a | 39 |  |
 | `SPAC_BLANK_CHECK` | 171 | 14 | -157 |
-| `NO_XBRL_FACTS` | n/a | 13 |  |
 | `NO_XBRL_FINANCIALS` | n/a | 3 |  |
 | `BANK` | 3 | 1 | -2 |
-| `ASSET_MANAGER` | 7 | n/a |  |
-| `IFRS_REMAINING` | 3 | n/a |  |
-| `PERIOD_MAPPING` | 9 | n/a |  |
-| `TRUE_MISSING_TAG_MAPPING` | 32 | n/a |  |
 | `BALANCE_SHEET_ONLY` | 28 | n/a |  |
+| `REQUIRES_REVIEW` | 54 | n/a |  |
+| `IFRS_REMAINING` | 3 | n/a |  |
 | `INSUFFICIENT_DISCLOSURE` | 29 | n/a |  |
+| `TRUE_MISSING_TAG_MAPPING` | 32 | n/a |  |
+| `ASSET_MANAGER` | 7 | n/a |  |
+| `PERIOD_MAPPING` | 9 | n/a |  |
 
 ## 3 — Titelzustaende (§12)
 
@@ -38,10 +38,10 @@ Nenner: 161 Faelle, 161 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"RESOL
 |---|---:|---:|---:|
 | `AVAILABLE` | 4.987 | 5.172 | +185 |
 | `PARTIAL` | 483 | 521 | +38 |
-| `MISSING` | 343 | 58 | -285 |
-| `NOT_APPLICABLE` | n/a | 62 |  |
+| `MISSING` | 343 | 94 | -249 |
+| `NOT_APPLICABLE` | n/a | 70 |  |
 | `REQUIRES_REVIEW` | n/a | 0 |  |
-| `UNAVAILABLE` | 1.191 | 1.191 | +0 |
+| `UNAVAILABLE` | 1.191 | 1.147 | -44 |
 
 ## 4 — Point-in-Time und Kernkennzahlen (Technical-Universum 5.963)
 
@@ -76,14 +76,14 @@ Look-ahead-Regel: PIT_READY verlangt Veroeffentlichungsdatum UND Akzessionsnumme
 
 | Kennzahl | Wert |
 |---|---:|
-| `PERSISTED_ISSUERS` | 5.437 |
+| `PERSISTED_ISSUERS` | 5.479 |
 | `PERSISTED_ANNUAL_HISTORIES` | 5.299 |
 | `PERSISTED_QUARTERLY_HISTORIES` | 5.333 |
 | `PERSISTED_PIT_HISTORIES` | 5.333 |
-| `PERSISTED_METADATA` | 5.356 |
-| `PERSISTED_STORAGE_BYTES` | 639.656.471 |
+| `PERSISTED_METADATA` | 5.384 |
+| `PERSISTED_STORAGE_BYTES` | 639.727.781 |
 | `PERSISTENCE_LOCATION` | r2:vision-universe-history/v1/sec/fundamentals/ |
-| `byNormalizationVersion` | `{"1.9.0": 5437}` |
+| `byNormalizationVersion` | `{"1.9.0": 5479}` |
 | `witness.keysOutsidePrefix` | 0 |
 | `witness.priceStoreUntouched` | True |
 | `RELOAD_WITHOUT_SEC_REFETCH` | **PASS** (8/8, networkBlocked=True) |
@@ -105,7 +105,7 @@ Look-ahead-Regel: PIT_READY verlangt Veroeffentlichungsdatum UND Akzessionsnumme
 |---|---:|---:|---:|---|
 | INSURER | 131 | 113 | 86.3 % | available_for_sale_debt_securities (96), benefits_and_claims_incurred (91), benefits_losses_and_expenses (81), claims_liability (96), deferred_policy_acquisition_costs (92), net_investment_income (90), premiums_earned (100), total_investments (94), unearned_premiums (84) |
 | REIT | 175 | 174 | 99.4 % | dividends_declared_per_share (148), impairment_of_real_estate (112), real_estate_accumulated_depreciation (145), real_estate_gross (143), real_estate_net (131), secured_debt (111) |
-| BANK | 362 | 330 | 91.2 % | allowance_for_loan_losses (288), available_for_sale_debt_securities (294), cash_and_due_from_banks (274), deposits (305), interest_and_dividend_income (296), interest_and_fee_income_loans (279), interest_expense_deposits (260), loans_and_leases_net (285), net_interest_income (316), net_interest_income_after_provision (303), noninterest_expense (302), noninterest_income (303), provision_for_credit_losses (269), time_deposits (290) |
+| BANK | 363 | 330 | 90.9 % | allowance_for_loan_losses (288), available_for_sale_debt_securities (294), cash_and_due_from_banks (274), deposits (305), interest_and_dividend_income (296), interest_and_fee_income_loans (279), interest_expense_deposits (260), loans_and_leases_net (285), net_interest_income (316), net_interest_income_after_provision (303), noninterest_expense (302), noninterest_income (303), provision_for_credit_losses (269), time_deposits (290) |
 
 ## 8 — Anbieterfrage (§22)
 
