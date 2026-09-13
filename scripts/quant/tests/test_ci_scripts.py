@@ -143,3 +143,38 @@ class CommitAndPushKonfliktTests(unittest.TestCase):
         ergebnis = self._skript(self.lauf, "gen.json")
         self.assertEqual(ergebnis.returncode, 0, ergebnis.stdout + ergebnis.stderr)
         self.assertIn("Gepusht", ergebnis.stdout)
+
+
+class JsonPruefungTests(unittest.TestCase):
+    """Die JSON-Pruefung liest den Zweig, nicht den Arbeitsbaum."""
+
+    SKRIPT = Path(__file__).resolve().parents[3] / "scripts" / "ci" / "pruefe-json.sh"
+
+    def _repo(self, inhalt):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        git("init", "-q", "-b", "main", cwd=root)
+        git("config", "user.email", "t@t", cwd=root)
+        git("config", "user.name", "t", cwd=root)
+        (root / "quant" / "data").mkdir(parents=True)
+        (root / "quant" / "data" / "x.json").write_text(inhalt)
+        git("add", "-A", cwd=root)
+        git("commit", "-q", "-m", "x", cwd=root)
+        return root
+
+    def _lauf(self, root):
+        return subprocess.run(["bash", str(self.SKRIPT)], cwd=root, text=True, capture_output=True)
+
+    def test_gueltiges_json_besteht(self):
+        self.assertEqual(self._lauf(self._repo('{"a": 1}\n')).returncode, 0)
+
+    def test_konfliktmarker_fallen_durch(self):
+        r = self._lauf(self._repo('{\n<<<<<<< HEAD\n"a": 1\n=======\n"a": 2\n>>>>>>> x\n}\n'))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("Konfliktmarker", r.stdout)
+
+    def test_kaputtes_json_faellt_durch(self):
+        r = self._lauf(self._repo('{"a": }\n'))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("Kein gueltiges JSON", r.stdout)

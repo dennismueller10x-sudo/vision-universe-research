@@ -79,6 +79,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Committete JSON-Dateien sind gueltig und markerfrei
+        # Liest, was im Zweig steht - nicht, was ein spaeterer Schritt
+        # daraus neu erzeugt. Lauf 34749245361 hatte Konfliktmarker in
+        # zwei JSON-Dateien committet, und jeder Schritt danach war gruen.
+        run: bash scripts/ci/pruefe-json.sh
+
       - name: Python kompiliert
         run: python3 -m compileall -q scripts/quant
 
