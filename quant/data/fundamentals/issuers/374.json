@@ -121,16 +121,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17484,
+        "total": 17362,
         "by_severity": {
-          "INFO": 16920,
+          "INFO": 16798,
           "WARNING": 564
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 488,
           "FISCAL_PERIOD_CONFLICT": 40,
           "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 16920,
+          "UNKNOWN_CONCEPT": 16798,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -142,13 +142,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "d4e799c30573b6e90e65ff5594ad5a673d7c24f82071310a56ee21faf0dc7c71",
@@ -273,19 +273,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15234,
+        "total": 15132,
         "by_severity": {
-          "INFO": 14452,
+          "INFO": 14270,
           "ERROR": 4,
-          "WARNING": 778
+          "WARNING": 858
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 665,
+          "CONCEPT_DISAGREEMENT": 745,
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 97,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 14452,
+          "UNKNOWN_CONCEPT": 14270,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -297,13 +297,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "0345e18dfa34ec9828558fbef37fdfb568976ea21c3916d99af0444a6e656a2c",

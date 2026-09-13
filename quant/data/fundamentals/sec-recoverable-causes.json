@@ -1,53 +1,52 @@
 {
   "note": "Wodurch entstehen die SEC_RECOVERABLE-Luecken? Die Reihenfolge hier ist die Reihenfolge der naechsten Arbeit - gemessen, nicht vermutet. NICHTS davon wurde repariert.",
   "denominator": {
-    "SEC_RECOVERABLE": 926
+    "SEC_RECOVERABLE": 384
   },
   "byCause": [
     {
       "cause": "IFRS_OR_FOREIGN_TAXONOMY",
-      "count": 561,
-      "percent": 60.5832,
+      "count": 25,
+      "percent": 6.5104,
       "formTypes": {
-        "20-F": 386,
-        "40-F": 110,
-        "40-F/A": 35,
-        "20-F/A": 30
+        "20-F": 22,
+        "40-F": 2,
+        "20-F/A": 1
       },
       "examples": [
         {
-          "symbol": "AAPG",
-          "cik": "0002023311",
+          "symbol": "AGBK",
+          "cik": "0002081206",
           "form": "20-F"
         },
         {
-          "symbol": "AAUC",
-          "cik": "0001993344",
-          "form": "40-F"
-        },
-        {
-          "symbol": "ABEV",
-          "cik": "0001565025",
+          "symbol": "AGMB",
+          "cik": "0002020932",
           "form": "20-F"
         },
         {
-          "symbol": "ABVX",
-          "cik": "0001956827",
+          "symbol": "AIIR",
+          "cik": "0002097725",
           "form": "20-F"
         },
         {
-          "symbol": "ACB",
-          "cik": "0001683541",
-          "form": "40-F"
+          "symbol": "ALPS",
+          "cik": "0002025774",
+          "form": "20-F"
+        },
+        {
+          "symbol": "AUGO",
+          "cik": "0001468642",
+          "form": "20-F/A"
         }
       ]
     },
     {
       "cause": "MISSING_CANONICAL_TAG_MAPPING",
-      "count": 223,
-      "percent": 24.0821,
+      "count": 208,
+      "percent": 54.1667,
       "formTypes": {
-        "10-Q": 221,
+        "10-Q": 206,
         "10-Q/A": 2
       },
       "examples": [
@@ -80,15 +79,25 @@
     },
     {
       "cause": "PERIOD_MAPPING",
-      "count": 3,
-      "percent": 0.324,
+      "count": 12,
+      "percent": 3.125,
       "formTypes": {
-        "10-Q": 3
+        "10-Q": 12
       },
       "examples": [
         {
+          "symbol": "AVAT",
+          "cik": "0002092446",
+          "form": "10-Q"
+        },
+        {
           "symbol": "CATLU",
           "cik": "0002104391",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "CCCT",
+          "cik": "0002123471",
           "form": "10-Q"
         },
         {
@@ -106,7 +115,7 @@
     {
       "cause": "OTHER_SEC_RECOVERABLE",
       "count": 139,
-      "percent": 15.0108,
+      "percent": 36.1979,
       "formTypes": {
         "KEINE_EINREICHUNG": 136,
         "10-Q": 3
@@ -140,17 +149,17 @@
       ]
     }
   ],
-  "largestBlock": "IFRS_OR_FOREIGN_TAXONOMY",
+  "largestBlock": "MISSING_CANONICAL_TAG_MAPPING",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.6.0",
+    "normalization_logic": "1.7.0",
     "formula": "1.1.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.1.0"
+      "mapping_version": "1.2.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T07:07:09+00:00"
+  "generatedAtUtc": "2026-09-13T08:42:55+00:00"
 }

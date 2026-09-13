@@ -121,22 +121,22 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25575,
+        "total": 25316,
         "by_severity": {
-          "INFO": 25110,
+          "INFO": 24732,
           "ERROR": 1,
-          "WARNING": 464
+          "WARNING": 583
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 380,
+          "CONCEPT_DISAGREEMENT": 495,
           "EXTREME_VALUE": 5,
           "FISCAL_PERIOD_CONFLICT": 12,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
-          "RESTATEMENT_CONFLICT": 58,
+          "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 25110,
-          "UNPLACEABLE_PERIOD": 2
+          "UNKNOWN_CONCEPT": 24732,
+          "UNPLACEABLE_PERIOD": 5
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "6b2d0f130842e0262cd9ce7c738811fdc71a46261de1a7c7e280d4b27f06caf8",
@@ -279,15 +279,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 34290,
+        "total": 34162,
         "by_severity": {
-          "INFO": 33666,
+          "INFO": 33538,
           "WARNING": 624
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 522,
           "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 33666,
+          "UNKNOWN_CONCEPT": 33538,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -299,13 +299,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "d473d913eacee0df8d7a29d83bc807d3b2452ec8dc9eb3d4e069e2b76de755bf",

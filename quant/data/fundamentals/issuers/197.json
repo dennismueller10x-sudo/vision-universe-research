@@ -111,8 +111,8 @@
         }
       },
       "quality": {
-        "HIGH": 593,
-        "MEDIUM": 93
+        "HIGH": 590,
+        "MEDIUM": 96
       },
       "pit": {
         "state": "PIT_READY",
@@ -121,18 +121,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17672,
+        "total": 17550,
         "by_severity": {
-          "INFO": 17140,
+          "INFO": 17018,
           "ERROR": 1,
           "WARNING": 531
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 479,
+          "CONCEPT_DISAGREEMENT": 489,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 42,
-          "UNIT_MISMATCH": 10,
-          "UNKNOWN_CONCEPT": 17140
+          "UNKNOWN_CONCEPT": 17018
         }
       },
       "latestFiling": {
@@ -143,13 +142,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "828cc0da1a9fcfaf71b764b7827ba4b09f8cb5476d52d51eb6ffb0d15829015c",
@@ -274,15 +273,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19288,
+        "total": 19162,
         "by_severity": {
-          "INFO": 18910,
+          "INFO": 18784,
           "WARNING": 378
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 337,
           "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 18910,
+          "UNKNOWN_CONCEPT": 18784,
           "UNPLACEABLE_PERIOD": 3
         }
       },
@@ -294,13 +293,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "ef56d942ebd89567b2c2626394e63f8d13d34ad3fbfc42525723f5c8d232bd61",
@@ -425,19 +424,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11614,
+        "total": 11296,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 11154,
-          "WARNING": 459
+          "INFO": 10824,
+          "WARNING": 471
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 252,
+          "CONCEPT_DISAGREEMENT": 257,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 161,
+          "RESTATEMENT_CONFLICT": 165,
           "UNEXPECTED_DURATION": 45,
-          "UNKNOWN_CONCEPT": 11154,
-          "UNPLACEABLE_PERIOD": 1
+          "UNKNOWN_CONCEPT": 10824,
+          "UNPLACEABLE_PERIOD": 4
         }
       },
       "latestFiling": {
@@ -448,13 +447,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "da747caaf09504ca91e49bc29787040a60971803f1f6302323e738a79dcab803",
@@ -579,15 +578,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16738,
+        "total": 16597,
         "by_severity": {
-          "INFO": 16386,
+          "INFO": 16245,
           "WARNING": 352
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 225,
           "RESTATEMENT_CONFLICT": 123,
-          "UNKNOWN_CONCEPT": 16386,
+          "UNKNOWN_CONCEPT": 16245,
           "UNPLACEABLE_PERIOD": 4
         }
       },
@@ -599,13 +598,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "bc4b697b26e54316f7392b4532076c41f92ac115cdb4ff4b5846ea450ea8207e",
@@ -730,9 +729,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16881,
+        "total": 16747,
         "by_severity": {
-          "INFO": 16089,
+          "INFO": 15955,
           "ERROR": 9,
           "WARNING": 783
         },
@@ -742,7 +741,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 164,
           "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 16089,
+          "UNKNOWN_CONCEPT": 15955,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -754,13 +753,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "3fa95efc53a913e0984e95ccfe1625845e0fa34f964fbcd9293889c25d1ed80b",
@@ -885,19 +884,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8186,
+        "total": 7970,
         "by_severity": {
-          "INFO": 7604,
+          "INFO": 7371,
           "ERROR": 1,
-          "WARNING": 581
+          "WARNING": 598
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 308,
+          "CONCEPT_DISAGREEMENT": 311,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 188,
+          "NEGATIVE_WHERE_IMPOSSIBLE": 1,
+          "RESTATEMENT_CONFLICT": 194,
           "UNEXPECTED_DURATION": 81,
-          "UNKNOWN_CONCEPT": 7604,
-          "UNPLACEABLE_PERIOD": 4
+          "UNKNOWN_CONCEPT": 7371,
+          "UNPLACEABLE_PERIOD": 11
         }
       },
       "latestFiling": {
@@ -908,13 +908,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "5e4497ab582ceced71e140921b87e1d1792ed0380f098be622383661d699d8b8",
@@ -1039,15 +1039,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8145,
+        "total": 8069,
         "by_severity": {
-          "INFO": 7771,
+          "INFO": 7695,
           "WARNING": 374
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 368,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 7771,
+          "UNKNOWN_CONCEPT": 7695,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -1059,13 +1059,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "c67adc6d81e64677a6816ba5d5f9e8b44ab646ddf904169371467fb6bacd4dff",
@@ -1190,9 +1190,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5538,
+        "total": 5450,
         "by_severity": {
-          "INFO": 5443,
+          "INFO": 5355,
           "ERROR": 1,
           "WARNING": 94
         },
@@ -1201,7 +1201,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5443
+          "UNKNOWN_CONCEPT": 5355
         }
       },
       "latestFiling": {
@@ -1212,13 +1212,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "58d9a34dbd9e3432ed0d59bfef82d0021776ceefe5a88c64cff9255f24c472e0",

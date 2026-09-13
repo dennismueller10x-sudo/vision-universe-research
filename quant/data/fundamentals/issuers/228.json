@@ -88,7 +88,7 @@
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -111,20 +111,20 @@
         }
       },
       "quality": {
-        "HIGH": 593,
+        "HIGH": 595,
         "MEDIUM": 178
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 771,
-        "resolvedValues": 771
+        "datableValues": 773,
+        "resolvedValues": 773
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26949,
+        "total": 26811,
         "by_severity": {
           "ERROR": 6,
-          "INFO": 25639,
+          "INFO": 25501,
           "WARNING": 1304
         },
         "by_code": {
@@ -132,7 +132,7 @@
           "FISCAL_PERIOD_CONFLICT": 67,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 153,
-          "UNKNOWN_CONCEPT": 25639,
+          "UNKNOWN_CONCEPT": 25501,
           "UNPLACEABLE_PERIOD": 1
         }
       },
@@ -144,13 +144,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "3c124a083ddc016aa06ab7b427a6e4595f70633bc50b33e80522b2a22543ca91",
@@ -275,15 +275,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20424,
+        "total": 20294,
         "by_severity": {
-          "INFO": 19635,
+          "INFO": 19505,
           "WARNING": 789
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 586,
           "RESTATEMENT_CONFLICT": 201,
-          "UNKNOWN_CONCEPT": 19635,
+          "UNKNOWN_CONCEPT": 19505,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -295,13 +295,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "1bf20179f90ba814b147ee8336713f25ff9290b2730a11ac81f51c7306cf5497",
@@ -427,18 +427,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7095,
+        "total": 7005,
         "by_severity": {
-          "INFO": 6931,
+          "INFO": 6831,
           "ERROR": 1,
-          "WARNING": 163
+          "WARNING": 173
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 85,
+          "CONCEPT_DISAGREEMENT": 95,
           "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 72,
-          "UNKNOWN_CONCEPT": 6931,
+          "UNKNOWN_CONCEPT": 6831,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -450,13 +450,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "d54cfecccb49adeb4e026d2715af7b2f6a32fbcf32f7c93b310297934f301abd",
@@ -581,16 +581,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13871,
+        "total": 13769,
         "by_severity": {
-          "INFO": 13242,
+          "INFO": 13140,
           "WARNING": 629
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 381,
           "RESTATEMENT_CONFLICT": 234,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 13242
+          "UNKNOWN_CONCEPT": 13140
         }
       },
       "latestFiling": {
@@ -601,13 +601,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "73d415580e1bd171370d0949fb374af47d67954f11dba93d636bae87d55473e0",
@@ -733,10 +733,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 470,
+        "total": 457,
         "by_severity": {
-          "INFO": 394,
-          "WARNING": 76
+          "INFO": 376,
+          "WARNING": 81
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
@@ -744,8 +744,8 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 8,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 394,
-          "UNPLACEABLE_PERIOD": 46
+          "UNKNOWN_CONCEPT": 376,
+          "UNPLACEABLE_PERIOD": 51
         }
       },
       "latestFiling": {
@@ -756,13 +756,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "39fc6bc7d9ac0c05d5b57f74b59eed74b42ee5ad29199dbb21d9977a828f3bef",

@@ -121,15 +121,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5500,
+        "total": 5441,
         "by_severity": {
-          "INFO": 5401,
+          "INFO": 5342,
           "WARNING": 99
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 90,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 5401,
+          "UNKNOWN_CONCEPT": 5342,
           "UNPLACEABLE_PERIOD": 4
         }
       },
@@ -141,13 +141,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "a4baf4beeb70b2d222add48890030d1ab1c956b76863a414e58a99f5b8a2fe34",
@@ -272,17 +272,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14247,
+        "total": 14132,
         "by_severity": {
-          "INFO": 14004,
-          "WARNING": 243
+          "INFO": 13876,
+          "WARNING": 256
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 207,
+          "CONCEPT_DISAGREEMENT": 220,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 23,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 14004,
+          "UNKNOWN_CONCEPT": 13876,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -294,13 +294,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "75a947aedbc752ebdbc26819906507762a14e903c3417ca957f6a25bb6ec6ae0",
@@ -315,32 +315,32 @@
         "OGI"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 6,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2018-08-31",
+      "lastPeriodEnd": "2024-09-30",
+      "historyYears": 6.08,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "eps_diluted": {
-          "annualPeriods": 0,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -349,32 +349,32 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "net_income": {
-          "annualPeriods": 0,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "revenue": {
-          "annualPeriods": 0,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -384,25 +384,25 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08
         },
         "total_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2018-08-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 6.08,
           "derivedFrom": [
             [
               "total_debt"
@@ -414,20 +414,28 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 75,
+        "MEDIUM": 3
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 78,
+        "resolvedValues": 78
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1943,
+        "total": 1688,
         "by_severity": {
-          "INFO": 1943
+          "INFO": 1644,
+          "WARNING": 44
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 1943
+          "CONCEPT_DISAGREEMENT": 9,
+          "RESTATEMENT_CONFLICT": 5,
+          "UNEXPECTED_DURATION": 29,
+          "UNKNOWN_CONCEPT": 1644,
+          "UNPLACEABLE_PERIOD": 1
         }
       },
       "latestFiling": {
@@ -438,13 +446,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "12c447a1eba183c7bb1fec790e3f1114236c3bcd3d20135a02972d69a890a83e",
@@ -460,32 +468,32 @@
         "HSIGF"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 4,
-      "firstPeriodEnd": "2022-12-31",
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2020-12-31",
       "lastPeriodEnd": "2025-12-31",
-      "historyYears": 3.0,
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 4,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": "2022-12-31",
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 5.0
         },
         "eps_diluted": {
-          "annualPeriods": 4,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": "2022-12-31",
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 5.0
         },
         "free_cash_flow": {
-          "annualPeriods": 4,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": "2022-12-31",
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0,
+          "historyYears": 5.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -501,53 +509,53 @@
           "historyYears": 3.0
         },
         "net_income": {
-          "annualPeriods": 4,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": "2022-12-31",
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 5.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 4,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": "2022-12-31",
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 5.0
         },
         "revenue": {
-          "annualPeriods": 4,
+          "annualPeriods": 6,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": "2022-12-31",
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 5.0
         },
         "short_term_debt": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 4,
-          "firstAvailablePeriod": "2022-12-31",
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
+          "historyYears": 5.0
         },
         "total_assets": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "total_debt": {
           "annualPeriods": 4,
           "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
-        },
-        "total_debt": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": "2023-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0,
+          "historyYears": 3.0,
           "derivedFrom": [
             [
               "total_debt"
@@ -560,25 +568,25 @@
         }
       },
       "quality": {
-        "HIGH": 49,
-        "MEDIUM": 1
+        "HIGH": 48,
+        "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 50,
-        "resolvedValues": 50
+        "datableValues": 68,
+        "resolvedValues": 68
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2315,
+        "total": 2074,
         "by_severity": {
-          "INFO": 1878,
-          "WARNING": 437
+          "INFO": 1866,
+          "WARNING": 208
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1,
-          "UNIT_MISMATCH": 436,
-          "UNKNOWN_CONCEPT": 1878
+          "CONCEPT_DISAGREEMENT": 205,
+          "UNKNOWN_CONCEPT": 1866,
+          "UNPLACEABLE_PERIOD": 3
         }
       },
       "latestFiling": {
@@ -589,13 +597,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "834c5cd6014e967d2d10bc1c2d660d56962183ea5ad8d6bf440a8c63d3cc39c4",
@@ -721,17 +729,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1676,
+        "total": 1666,
         "by_severity": {
-          "INFO": 1602,
+          "INFO": 1592,
           "WARNING": 74
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 56,
+          "CONCEPT_DISAGREEMENT": 59,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 14,
-          "UNIT_MISMATCH": 3,
-          "UNKNOWN_CONCEPT": 1602
+          "UNKNOWN_CONCEPT": 1592
         }
       },
       "latestFiling": {
@@ -742,13 +749,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "23d178d07a8f03b25d8d334fb17f986d703eac7168c461c65a707cb90afe43ed",
@@ -764,32 +771,32 @@
         "MLECW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 4,
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2020-12-31",
+      "lastPeriodEnd": "2024-06-30",
+      "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
+          "annualPeriods": 2,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2023-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 1.0
         },
         "eps_diluted": {
-          "annualPeriods": 0,
+          "annualPeriods": 3,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2022-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 2.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
+          "annualPeriods": 2,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
+          "firstAvailablePeriod": "2023-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 1.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -805,25 +812,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 0,
+          "annualPeriods": 3,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2022-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 2.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
+          "annualPeriods": 3,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2022-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 2.0
         },
         "revenue": {
-          "annualPeriods": 0,
+          "annualPeriods": 2,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2023-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 1.0
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -833,18 +840,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 4,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 3.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2022-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 2.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -863,20 +870,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 28
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 28,
+        "resolvedValues": 28
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 868,
+        "total": 713,
         "by_severity": {
-          "INFO": 868
+          "INFO": 697,
+          "WARNING": 16
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 868
+          "UNEXPECTED_DURATION": 16,
+          "UNKNOWN_CONCEPT": 697
         }
       },
       "latestFiling": {
@@ -887,13 +898,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "932aa63c997293330846975ee2189b7ae4109b38086e20f2c6bcf6086de3e2ad",

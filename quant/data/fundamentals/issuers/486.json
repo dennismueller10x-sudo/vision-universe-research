@@ -121,9 +121,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16120,
+        "total": 15990,
         "by_severity": {
-          "INFO": 15365,
+          "INFO": 15235,
           "WARNING": 755
         },
         "by_code": {
@@ -131,7 +131,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 95,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 15365,
+          "UNKNOWN_CONCEPT": 15235,
           "UNPLACEABLE_PERIOD": 1
         }
       },
@@ -143,13 +143,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "44642912e2d3cb0f665a3d5a47a291d3a822c8bbf6588897d546010725c36423",
@@ -274,18 +274,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8186,
+        "total": 8015,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 7889,
-          "WARNING": 296
+          "INFO": 7706,
+          "WARNING": 308
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 71,
+          "CONCEPT_DISAGREEMENT": 83,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 207,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 7889,
+          "UNKNOWN_CONCEPT": 7706,
           "UNPLACEABLE_PERIOD": 4
         }
       },
@@ -297,13 +297,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "2f52c6a8e98694083f9e638abd50921939dd06d2031de91d8910e3d322214ba6",

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-13T07:07:08+00:00",
+  "generated_at_utc": "2026-09-13T08:42:54+00:00",
   "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert nach betroffenen EMITTENTEN - ein Konzept, das ein einziger Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
   "scope": "all_issuers",
   "issuers_scanned": 5437,
   "issuers_in_scope": 5437,
   "by_taxonomy": {
-    "us-gaap": 48032639,
-    "ifrs-full": 1495276,
+    "us-gaap": 47613271,
+    "ifrs-full": 1283225,
     "dei": 54888,
     "srt": 39688,
     "invest": 10642,
@@ -16,11 +16,6 @@
     "fnd": 12
   },
   "concepts": [
-    {
-      "concept": "us-gaap:LiabilitiesAndStockholdersEquity",
-      "issuers": 4828,
-      "facts": 376915
-    },
     {
       "concept": "us-gaap:EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate",
       "issuers": 4184,
@@ -215,6 +210,11 @@
       "concept": "us-gaap:DeferredTaxAssetsOperatingLossCarryforwards",
       "issuers": 3364,
       "facts": 57656
+    },
+    {
+      "concept": "us-gaap:AdditionalPaidInCapital",
+      "issuers": 3351,
+      "facts": 179980
     }
   ]
 }

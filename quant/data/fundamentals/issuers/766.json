@@ -121,9 +121,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21391,
+        "total": 21253,
         "by_severity": {
-          "INFO": 20959,
+          "INFO": 20821,
           "WARNING": 432
         },
         "by_code": {
@@ -131,7 +131,7 @@
           "PERIOD_MISMATCH": 63,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 43,
-          "UNKNOWN_CONCEPT": 20959,
+          "UNKNOWN_CONCEPT": 20821,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -143,13 +143,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "53d8ee3e60ed65ab4d2660dc528be25c7a9579a5f9716c9b49a6d90ed4488c14",
@@ -275,22 +275,23 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 33167,
+        "total": 32911,
         "by_severity": {
           "ERROR": 12,
-          "INFO": 32240,
-          "WARNING": 915
+          "INFO": 31879,
+          "WARNING": 1020
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 716,
+          "CONCEPT_DISAGREEMENT": 809,
           "EXTREME_VALUE": 17,
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 12,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 166,
+          "RESTATEMENT_CONFLICT": 177,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 32240
+          "UNKNOWN_CONCEPT": 31879,
+          "UNPLACEABLE_PERIOD": 1
         }
       },
       "latestFiling": {
@@ -301,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "096b22fe2071ac5113687c9c3f9c0ce138732a0933cd42be47d1769179227096",
@@ -432,15 +433,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14337,
+        "total": 14261,
         "by_severity": {
-          "INFO": 13700,
+          "INFO": 13624,
           "WARNING": 637
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 495,
           "RESTATEMENT_CONFLICT": 142,
-          "UNKNOWN_CONCEPT": 13700
+          "UNKNOWN_CONCEPT": 13624
         }
       },
       "latestFiling": {
@@ -451,13 +452,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "f3294ca8c5d24b51e3d6c069c8539747141e269a4244d09c98512c7427bb7a80",
@@ -582,15 +583,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9049,
+        "total": 8929,
         "by_severity": {
-          "INFO": 8761,
+          "INFO": 8641,
           "WARNING": 288
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 194,
           "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 8761,
+          "UNKNOWN_CONCEPT": 8641,
           "UNPLACEABLE_PERIOD": 3
         }
       },
@@ -602,13 +603,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "a55f4564028cdf76f4b40b0abfdeaeff8be7cf24e194e9cd853e8d580d74dc7c",
@@ -733,18 +734,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10445,
+        "total": 10245,
         "by_severity": {
-          "INFO": 10009,
+          "INFO": 9807,
           "ERROR": 1,
-          "WARNING": 435
+          "WARNING": 437
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 364,
+          "CONCEPT_DISAGREEMENT": 365,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 61,
-          "UNKNOWN_CONCEPT": 10009,
+          "RESTATEMENT_CONFLICT": 62,
+          "UNKNOWN_CONCEPT": 9807,
           "UNPLACEABLE_PERIOD": 4
         }
       },
@@ -756,13 +757,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "d819ea6a3f1735ca33de4674d673efe656a85f193b6ed82fae3860c11ce79392",
@@ -887,15 +888,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6672,
+        "total": 6621,
         "by_severity": {
-          "INFO": 6477,
+          "INFO": 6426,
           "WARNING": 195
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 101,
           "RESTATEMENT_CONFLICT": 86,
-          "UNKNOWN_CONCEPT": 6477,
+          "UNKNOWN_CONCEPT": 6426,
           "UNPLACEABLE_PERIOD": 8
         }
       },
@@ -907,13 +908,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "21e8c91be79244331c8136a22e75e2f2286b65b6baeb75375a9696f72e0ad981",
@@ -1038,15 +1039,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 934,
+        "total": 927,
         "by_severity": {
-          "INFO": 907,
-          "WARNING": 27
+          "INFO": 894,
+          "WARNING": 33
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 15,
+          "CONCEPT_DISAGREEMENT": 21,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 907,
+          "UNKNOWN_CONCEPT": 894,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -1058,13 +1059,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "1b2751f797e4e80f16a0b395835ec18556e946e7011c31cd738770dc9136fa3b",
@@ -1189,9 +1190,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2722,
+        "total": 2652,
         "by_severity": {
-          "INFO": 2611,
+          "INFO": 2541,
           "ERROR": 1,
           "WARNING": 110
         },
@@ -1201,7 +1202,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 2611,
+          "UNKNOWN_CONCEPT": 2541,
           "UNPLACEABLE_PERIOD": 8
         }
       },
@@ -1213,13 +1214,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "26446d2757aaae54928c41d6404161d1bcc92fba5be3d26325c02012359bef10",
@@ -1346,15 +1347,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 337,
+        "total": 318,
         "by_severity": {
-          "INFO": 324,
+          "INFO": 305,
           "WARNING": 13
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 9,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 324
+          "UNKNOWN_CONCEPT": 305
         }
       },
       "latestFiling": {
@@ -1365,13 +1366,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "8811c7020529516927f22e1fdcb65b6e816ec0120394f2759c449de744076b76",

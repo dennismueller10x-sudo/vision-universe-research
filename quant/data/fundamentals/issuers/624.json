@@ -121,15 +121,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14486,
+        "total": 14332,
         "by_severity": {
-          "INFO": 13817,
+          "INFO": 13663,
           "WARNING": 669
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 452,
           "RESTATEMENT_CONFLICT": 215,
-          "UNKNOWN_CONCEPT": 13817,
+          "UNKNOWN_CONCEPT": 13663,
           "UNPLACEABLE_PERIOD": 2
         }
       },
@@ -141,13 +141,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "3edd2190f1d1db0dd0c0dce3fe5a3af6e0c81393e583cac6922d794903085e75",
@@ -273,20 +273,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6332,
+        "total": 6239,
         "by_severity": {
-          "INFO": 5975,
+          "INFO": 5862,
           "ERROR": 1,
-          "WARNING": 356
+          "WARNING": 376
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 135,
+          "CONCEPT_DISAGREEMENT": 150,
           "FISCAL_PERIOD_CONFLICT": 2,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 179,
-          "UNKNOWN_CONCEPT": 5975,
-          "UNPLACEABLE_PERIOD": 39
+          "RESTATEMENT_CONFLICT": 180,
+          "UNKNOWN_CONCEPT": 5862,
+          "UNPLACEABLE_PERIOD": 43
         }
       },
       "latestFiling": {
@@ -297,13 +297,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.6.0",
+        "normalization_logic": "1.7.0",
         "formula": "1.1.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.1.0"
+          "mapping_version": "1.2.0"
         }
       },
       "sourceDigest": "d06a15a0c27212b84ed6ccc381cbee12c493257e9475a0d6bd61a12627dc789c",

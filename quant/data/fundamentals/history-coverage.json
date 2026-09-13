@@ -1,13 +1,13 @@
 {
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.6.0",
+    "normalization_logic": "1.7.0",
     "formula": "1.1.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.1.0"
+      "mapping_version": "1.2.0"
     }
   },
   "note": "Tiefe je Kennzahl, gemessen an aufloesbaren Perioden. Eine Zeitreihe ohne aufloesbaren Wert zaehlt nicht - sonst waere jede leere Huelle eine Deckung.",
@@ -17,82 +17,82 @@
   },
   "annual": {
     "revenue": {
-      ">=1y": 3938,
-      ">=3y": 3623,
-      ">=5y": 3217,
-      ">=10y": 2200,
-      ">=15y": 1626
+      ">=1y": 4359,
+      ">=3y": 4002,
+      ">=5y": 3540,
+      ">=10y": 2303,
+      ">=15y": 1664
     },
     "net_income": {
-      ">=1y": 4430,
-      ">=3y": 4120,
-      ">=5y": 3688,
-      ">=10y": 2650,
-      ">=15y": 2026
+      ">=1y": 4946,
+      ">=3y": 4615,
+      ">=5y": 4136,
+      ">=10y": 2792,
+      ">=15y": 2076
     },
     "eps_diluted": {
-      ">=1y": 4224,
-      ">=3y": 3872,
-      ">=5y": 3193,
-      ">=10y": 2159,
-      ">=15y": 1615
+      ">=1y": 4720,
+      ">=3y": 4334,
+      ">=5y": 3567,
+      ">=10y": 2247,
+      ">=15y": 1651
     },
     "operating_cash_flow": {
-      ">=1y": 4415,
-      ">=3y": 4108,
-      ">=5y": 3686,
-      ">=10y": 2648,
-      ">=15y": 1997
+      ">=1y": 4924,
+      ">=3y": 4596,
+      ">=5y": 4123,
+      ">=10y": 2785,
+      ">=15y": 2046
     },
     "capital_expenditures": {
-      ">=1y": 4007,
-      ">=3y": 3671,
-      ">=5y": 3298,
-      ">=10y": 2331,
-      ">=15y": 1673
+      ">=1y": 4456,
+      ">=3y": 4093,
+      ">=5y": 3664,
+      ">=10y": 2440,
+      ">=15y": 1712
     },
     "free_cash_flow": {
-      ">=1y": 4005,
-      ">=3y": 3669,
-      ">=5y": 3297,
-      ">=10y": 2328,
-      ">=15y": 1673
+      ">=1y": 4445,
+      ">=3y": 4081,
+      ">=5y": 3650,
+      ">=10y": 2432,
+      ">=15y": 1712
     },
     "total_assets": {
-      ">=1y": 4452,
-      ">=3y": 4014,
-      ">=5y": 3610,
-      ">=10y": 2576,
-      ">=15y": 1903
+      ">=1y": 4965,
+      ">=3y": 4488,
+      ">=5y": 4022,
+      ">=10y": 2651,
+      ">=15y": 1953
     },
     "total_debt": {
-      ">=1y": 2265,
-      ">=3y": 1827,
-      ">=5y": 1547,
-      ">=10y": 953,
-      ">=15y": 508
+      ">=1y": 2591,
+      ">=3y": 2087,
+      ">=5y": 1748,
+      ">=10y": 989,
+      ">=15y": 524
     },
     "stockholders_equity": {
-      ">=1y": 4416,
-      ">=3y": 4095,
-      ">=5y": 3682,
-      ">=10y": 2623,
-      ">=15y": 2007
+      ">=1y": 4932,
+      ">=3y": 4589,
+      ">=5y": 4126,
+      ">=10y": 2782,
+      ">=15y": 2053
     }
   },
   "annualOverall": {
-    ">=1y": 3938,
-    ">=3y": 3623,
-    ">=5y": 3217,
-    ">=10y": 2200,
-    ">=15y": 1626
+    ">=1y": 4359,
+    ">=3y": 4002,
+    ">=5y": 3540,
+    ">=10y": 2303,
+    ">=15y": 1664
   },
   "quarterlyOverall": {
-    ">=1y": 3467,
-    ">=3y": 3230,
-    ">=5y": 2945,
-    ">=10y": 2055,
-    ">=15y": 1509
+    ">=1y": 3480,
+    ">=3y": 3238,
+    ">=5y": 2953,
+    ">=10y": 2057,
+    ">=15y": 1510
   },
   "perIssuerSample": [
     {
@@ -149,11 +149,11 @@
       "issuerId": "iss_cik_0000002809",
       "cik": "0000002809",
       "name": "AGNICO EAGLE MINES LTD",
-      "annualPeriods": 7,
-      "quarterlyPeriods": 6,
+      "annualPeriods": 17,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2013-12-31",
-      "historyYears": 6.0
+      "lastPeriodEnd": "2025-12-31",
+      "historyYears": 18.0
     },
     {
       "issuerId": "iss_cik_0000002969",
@@ -539,11 +539,11 @@
       "issuerId": "iss_cik_0000009631",
       "cik": "0000009631",
       "name": "BANK OF NOVA SCOTIA",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2016-10-31",
+      "lastPeriodEnd": "2025-10-31",
+      "historyYears": 9.0
     },
     {
       "issuerId": "iss_cik_0000010048",
@@ -759,11 +759,11 @@
       "issuerId": "iss_cik_0000016859",
       "cik": "0000016859",
       "name": "Scully Royalty Ltd.",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0
+      "annualPeriods": 10,
+      "quarterlyPeriods": 10,
+      "firstPeriodEnd": "2015-12-31",
+      "lastPeriodEnd": "2024-12-31",
+      "historyYears": 9.0
     },
     {
       "issuerId": "iss_cik_0000016868",
@@ -779,11 +779,11 @@
       "issuerId": "iss_cik_0000016875",
       "cik": "0000016875",
       "name": "CANADIAN PACIFIC KANSAS CITY LTD/CN",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0
+      "annualPeriods": 19,
+      "quarterlyPeriods": 57,
+      "firstPeriodEnd": "2007-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 18.0
     },
     {
       "issuerId": "iss_cik_0000016918",
@@ -800,7 +800,7 @@
       "cik": "0000017313",
       "name": "CAPITAL SOUTHWEST CORP",
       "annualPeriods": 11,
-      "quarterlyPeriods": 35,
+      "quarterlyPeriods": 36,
       "firstPeriodEnd": "2010-03-31",
       "lastPeriodEnd": "2026-06-30",
       "historyYears": 16.0
@@ -1450,7 +1450,7 @@
       "cik": "0000034088",
       "name": "EXXON MOBIL CORP",
       "annualPeriods": 19,
-      "quarterlyPeriods": 73,
+      "quarterlyPeriods": 74,
       "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
       "historyYears": 18.0
@@ -2009,11 +2009,11 @@
       "issuerId": "iss_cik_0000049938",
       "cik": "0000049938",
       "name": "IMPERIAL OIL LTD",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0
+      "annualPeriods": 19,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2007-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 18.0
     },
     {
       "issuerId": "iss_cik_0000050471",
@@ -2096,5 +2096,5 @@
       "historyYears": 17.0
     }
   ],
-  "generatedAtUtc": "2026-09-13T07:00:54+00:00"
+  "generatedAtUtc": "2026-09-13T08:35:16+00:00"
 }
