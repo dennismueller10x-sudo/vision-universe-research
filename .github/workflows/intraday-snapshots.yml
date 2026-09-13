@@ -20,7 +20,8 @@ name: Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach S
 # alt, und die Karte schreibt "Heute · Stand 15:42" statt "live".
 #
 # Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
-# dient ein Push mit der Marke `[intraday-snapshot]` als Ausloeser.
+# dient ein Push mit der Marke `[intraday-snapshot]` als Ausloeser (ohne
+# Pfadfilter: die Marke ist das Tor, nicht die Datei).
 
 on:
   workflow_dispatch:
@@ -35,11 +36,6 @@ on:
   push:
     branches:
       - 'claude/**'
-    paths:
-      - 'scripts/market/ingest-intraday.mjs'
-      - 'quant/engines/realtime/trading-session.js'
-      - 'quant/engines/realtime/intraday-snapshot.js'
-      - '.github/workflows/intraday-snapshots.yml'
 
 permissions:
   contents: write

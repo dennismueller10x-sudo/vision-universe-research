@@ -16,7 +16,8 @@ name: Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)
 # Nachfolger von golden-five-market-data.yml (Phase 5, fuenf Titel). Der
 # Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches dient
 # ein Push mit der Marke `[market-data-refresh]` in der Commit-Nachricht als
-# Ausloeser. Ohne Marke laeuft nichts.
+# Ausloeser - ohne Pfadfilter: die Marke ist das Tor, nicht die Datei.
+# Ohne Marke laeuft nichts.
 
 on:
   workflow_dispatch:
@@ -31,16 +32,6 @@ on:
   push:
     branches:
       - 'claude/**'
-    paths:
-      - 'scripts/market/ingest-tiingo.mjs'
-      - 'scripts/market/preview-scope.mjs'
-      - 'scripts/market/universe-source.mjs'
-      - 'scripts/market/publish-discover-series.mjs'
-      - 'scripts/market/build-market-factors.mjs'
-      - 'scripts/discover/build-discover-data.mjs'
-      - 'quant/config/development-preview.json'
-      - 'quant/config/feature-gates.json'
-      - '.github/workflows/market-data-refresh.yml'
 
 permissions:
   contents: write
