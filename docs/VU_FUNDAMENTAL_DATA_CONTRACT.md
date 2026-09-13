@@ -110,6 +110,64 @@ Ein Wert ist ein Satz aus `quant/data/sec/canonical/<TICKER>.json`:
 das Datum sagt *wann*, die Akzessionsnummer sagt *woraus*. Ohne beides ist
 keine Restatement-Kette rekonstruierbar.
 
+### 2.1 — Währung
+
+`currency` ist die **gemeldete** Währung, nicht USD. Unilever meldet in
+EUR, Canadian National in CAD; ihre Werte tragen `eur_m` bzw. `cad_m`.
+**Umgerechnet wird nichts**: ein Kurs von heute auf eine Periode von 2012
+wäre geraten und zerstörte die Point-in-Time-Eigenschaft. Eine abgeleitete
+Kennzahl trägt die Währung ihrer Eingangsgrößen; Eingangsgrößen
+verschiedener Währungen ergeben **keine Zahl**, sondern den Grund
+`MIXED_CURRENCY`. Ein Konsument, der über Emittenten vergleicht, muss
+`currency` lesen.
+
+### 2.2 — Zustände: was eine fehlende Zahl bedeutet
+
+Eine Zelle ohne Wert ist nie einfach leer. Sie trägt einen Grund, und die
+Gründe sind nicht austauschbar:
+
+| Zustand | Bedeutung | Beispiel |
+|---|---|---|
+| `AVAILABLE` | Wert vorhanden, datierbar, mit Quelle | Apple, Umsatz FY2023 |
+| `PARTIAL` | Werte vorhanden, aber nicht jeder Kernkennzahl | Biotech mit Bilanz, ohne Umsatz |
+| `MISSING` | Emittent bekannt, kein auflösbarer Wert, Ursache **noch nicht** entschieden | Emittent mit Konzepten, die die Registry nicht kennt |
+| `NOT_APPLICABLE` | Die Kennzahl ist für diesen Emittenten **strukturell undefiniert** | SPAC ohne Umsatz, Bank ohne Herstellkosten, geschlossener Fonds |
+| `REQUIRES_REVIEW` | Ein Mensch muss entscheiden | Emittent ohne SIC und ohne erkennbares Merkmal |
+| `UNAVAILABLE` | Keine SEC-Quelle für diesen Titel | Titel ohne CIK |
+
+Innerhalb der Pipeline steht dieselbe Unterscheidung am einzelnen Wert:
+`NOT_APPLICABLE_FOR_SECTOR` mit Regel-ID (Registry `sector_rules`),
+`MISSING_INPUT`, `MIXED_CURRENCY`, `NOT_YET_AVAILABLE`. **`MISSING` und
+`NOT_APPLICABLE` sind nicht dasselbe.** Ein SPAC hat keinen Umsatz — das
+ist keine Lücke, die jemand schließt. Eine Null steht nirgends, wo kein
+Wert gemeldet wurde: **richtiger Wert > NOT_APPLICABLE > MISSING >
+erfundener Wert.**
+
+### 2.3 — Die Branchenschicht (`industrySpecificMetrics`)
+
+Eine Bank hat keinen Umsatz im Sinne von `revenue`, sie hat Zinserträge;
+ein Versicherer hat Prämien; ein REIT hat Mieten. Diese Größen werden
+**nicht** in den Kernvertrag gebogen. Das kanonische Bündel eines
+Emittenten, dessen SIC eine Branche der Registry (`industries`) trifft,
+trägt einen eigenen Block:
+
+```json
+"industrySpecificMetrics": {
+  "industry": "BANK",
+  "metricIds": ["netInterestIncome", "deposits"],
+  "facts": [ ...Sätze mit derselben Form wie in `facts`... ]
+}
+```
+
+Die Sätze haben dieselben Pflichtfelder wie in §2, ihre `metricId`s
+kommen **nie** in `facts` vor, und ein Emittent außerhalb der Branche
+bekommt den Block nicht — auch wenn er dieselben Konzepte taggt. Welche
+Kennzahlen eine Branche trägt, sagt `industry_metrics` in der Registry;
+jedes Konzept dort ist am Bestand **gemessen**, nicht erinnert.
+Verbotene Abbildungen bleiben verboten: Treuhandvermögen eines SPAC ist
+keine Bilanzsumme, Treuhandertrag kein Umsatz, aufgeschobene
+Emissionskosten kein operativer Aufwand.
+
 ---
 
 ## 3 — HISTORY CONTRACT
@@ -235,8 +293,9 @@ ist erwünscht; unterschiedliche Zahlen sind ein Fehler.
 - **Keine Schätzungen, keine Analystenerwartungen, keine Forward
   Metrics.** Die SEC veröffentlicht sie nicht.
 - **Keine Garantie auf Vollständigkeit ausländischer Emittenten.** 20-F
-  und 40-F sind geführt, ihre IFRS-Taxonomien noch nicht gemappt: 561
-  Titel betroffen, als `SEC_RECOVERABLE` klassifiziert.
+  und 40-F sind geführt; 31 gemessene `ifrs-full`-Konzepte sind gemappt
+  (Registry ≥ 1.2.0), Werte bleiben in ihrer Meldewährung. Was ein
+  IFRS-Filer nicht taggt, bleibt eine Lücke mit Grund.
 - **Look-ahead-Freiheit ist möglich, nicht automatisch.** Die Daten
   tragen `availableAt` und `sourceFilingId` für jeden Wert. Ob eine
   Abfrage das nutzt, entscheidet ihre Restatement-Politik
