@@ -61,7 +61,7 @@ class ReloadVerificationTests(unittest.TestCase):
         out = io.StringIO()
         with redirect_stdout(out):
             code = cli.cmd_verify_reload(args)
-        bericht = json.load(open(pfad))
+        bericht = json.loads(pfad.read_text(encoding="utf-8"))
         return code, bericht, out.getvalue()
 
     def test_ein_zurueckgeladenes_factbook_reproduziert_die_kanonischen_werte(self):

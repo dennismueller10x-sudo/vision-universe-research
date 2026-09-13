@@ -31,6 +31,15 @@ HALF_RANGE = (160, 200)
 NINE_MONTH_RANGE = (250, 295)
 ANNUAL_RANGE = (330, 390)
 
+# Annual report forms whose own `fp` = FY marks a fiscal year end.
+ANNUAL_FORMS = ("10-K", "20-F", "40-F")
+
+# How the fiscal year ends were learned; persisted with the calendar.
+ANCHOR_SOURCE_ANNUAL_DURATIONS = "ANNUAL_DURATIONS"
+ANCHOR_SOURCE_ANNUAL_FILING_INSTANTS = "ANNUAL_FILING_INSTANTS"
+ANCHOR_SOURCE_YEAR_END_HINT = "REGISTERED_YEAR_END"
+ANCHOR_SOURCE_NONE = "NONE"
+
 # Two annual period ends closer together than this belong to the same fiscal
 # year (a 52/53-week calendar moves the year end by up to a week; amendments and
 # transition periods can move it further).
@@ -88,6 +97,8 @@ class FiscalCalendar:
         # Filled by from_raw_facts: annual filings whose own `fy` field was
         # refused because it would repeat or precede the previous fiscal year.
         self.rejected_anchors = []
+        # Where the year ends were learned from (see from_raw_facts).
+        self.anchor_source = ANCHOR_SOURCE_ANNUAL_DURATIONS if fy_ends else ANCHOR_SOURCE_NONE
 
     # ------------------------------------------------------------------ building
 
@@ -103,11 +114,32 @@ class FiscalCalendar:
                 continue
             end = parse_date(fact.end)
             annual_ends.add(end)
-            if fact.form in ("10-K", "20-F", "40-F") and fact.filing_fp == "FY":
+            if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY":
                 bucket = anchors_by_accession[fact.accession]
                 bucket["ends"].add(end)
                 if fact.filing_fy is not None:
                     bucket["fy"] = int(fact.filing_fy)
+
+        anchor_source = ANCHOR_SOURCE_ANNUAL_DURATIONS if annual_ends else ANCHOR_SOURCE_NONE
+        if not annual_ends:
+            # No full-year duration anywhere: a first fiscal year shorter than
+            # ANNUAL_RANGE (a company that started reporting in May and closed
+            # its books in December) never produced one, and with no year end
+            # every fact of that filer was unplaceable -- balance sheets
+            # included, although the filing states exactly which date they
+            # are drawn on. The annual filing itself is the evidence: its
+            # `fp` says FY and its balance-sheet instants are dated on the
+            # year end. Nothing is inferred that the filer did not declare.
+            annual_ends, anchors_by_accession = cls._year_ends_from_annual_filings(raw_facts)
+            if annual_ends:
+                anchor_source = ANCHOR_SOURCE_ANNUAL_FILING_INSTANTS
+        if not annual_ends and fiscal_year_end_hint:
+            # Last resort, still the filer's own statement: the fiscal year end
+            # (MMDD) it registered with the SEC, applied to the balance-sheet
+            # dates it actually reported. No date is invented.
+            annual_ends = cls._year_ends_from_hint(raw_facts, fiscal_year_end_hint)
+            if annual_ends:
+                anchor_source = ANCHOR_SOURCE_YEAR_END_HINT
 
         # An annual filing's own reporting period is its latest annual period end.
         anchors = {}
@@ -130,6 +162,7 @@ class FiscalCalendar:
         labels, rejected = cls._label_years(fy_ends, anchors, label_offset)
         calendar = cls(cik, fy_ends, labels, label_offset, fiscal_year_end_hint)
         calendar.rejected_anchors = rejected
+        calendar.anchor_source = anchor_source
         LOGGER.info(
             "fiscal calendar cik=%s years=%d offset=%+d anchors=%d rejected=%d",
             cik, len(fy_ends), label_offset, len(anchors), len(rejected),
@@ -141,6 +174,62 @@ class FiscalCalendar:
                 cik, end, claimed, used,
             )
         return calendar
+
+    @staticmethod
+    def _year_ends_from_annual_filings(raw_facts):
+        """Year ends declared by annual filings that contain no full-year duration.
+
+        For every 10-K/20-F/40-F whose `fp` is FY, the latest non-cover-date
+        instant is the balance-sheet date of that fiscal year. Returns the
+        set of ends plus the same accession buckets from_raw_facts builds from
+        durations, so labelling works identically.
+        """
+        instants_by_accession = defaultdict(lambda: {"ends": set(), "fy": None})
+        for fact in raw_facts:
+            if fact.start is not None or fact.taxonomy == "dei":
+                continue
+            if fact.form not in ANNUAL_FORMS or fact.filing_fp != "FY":
+                continue
+            end = parse_date(fact.end)
+            if end is None:
+                continue
+            bucket = instants_by_accession[fact.accession]
+            bucket["ends"].add(end)
+            if fact.filing_fy is not None:
+                bucket["fy"] = int(fact.filing_fy)
+        annual_ends = set()
+        anchors_by_accession = defaultdict(lambda: {"ends": set(), "fy": None})
+        for accession, bucket in instants_by_accession.items():
+            if not bucket["ends"]:
+                continue
+            year_end = max(bucket["ends"])
+            annual_ends.add(year_end)
+            anchors_by_accession[accession]["ends"].add(year_end)
+            anchors_by_accession[accession]["fy"] = bucket["fy"]
+        return annual_ends, anchors_by_accession
+
+    @staticmethod
+    def _year_ends_from_hint(raw_facts, fiscal_year_end_hint):
+        """Balance-sheet dates that fall on the registered fiscal year end (MMDD)."""
+        hint = str(fiscal_year_end_hint).strip()
+        if len(hint) != 4 or not hint.isdigit():
+            return set()
+        month, day = int(hint[:2]), int(hint[2:])
+        ends = set()
+        for fact in raw_facts:
+            if fact.start is not None or fact.taxonomy == "dei":
+                continue
+            end = parse_date(fact.end)
+            if end is None:
+                continue
+            try:
+                registered = date(end.year, month, day)
+            except ValueError:
+                # 0229 in a common year: the filer closes on the last day of February.
+                registered = date(end.year, month, 28)
+            if abs((end - registered).days) <= FY_BOUNDARY_TOLERANCE_DAYS:
+                ends.add(end)
+        return ends
 
     @staticmethod
     def _label_years(fy_ends, anchors, label_offset):
@@ -196,22 +285,57 @@ class FiscalCalendar:
         tolerance = timedelta(days=FY_BOUNDARY_TOLERANCE_DAYS)
 
         ends = self.fy_ends
+        first = ends[0]
+        if period_end <= self._shift_year(first, -1) + tolerance:
+            # The period is older than the first fiscal year we have seen. The
+            # first annual report carries the opening balance sheet, dated
+            # exactly one year before its own year end, and a 40-F carries
+            # three years of comparatives: those belong to fiscal years the
+            # filer never reported as a full-year duration. Project the
+            # calendar backwards one anniversary at a time, the mirror of the
+            # forward projection below.
+            fy_end = first
+            while period_end <= self._shift_year(fy_end, -1) + tolerance:
+                fy_end = self._shift_year(fy_end, -1)
+                self._note_extrapolated(fy_end, first, -1)
+            return self._shift_year(fy_end, -1), fy_end
+
         for index, fy_end in enumerate(ends):
             if period_end <= fy_end + tolerance:
-                previous = ends[index - 1] if index else fy_end - timedelta(days=364)
-                if period_end > previous + tolerance or index == 0:
-                    return previous, fy_end
+                previous = ends[index - 1] if index else self._shift_year(fy_end, -1)
                 return previous, fy_end
 
         # The period is newer than every completed fiscal year we have seen:
         # project the calendar forward one year at a time.
         previous, fy_end = ends[-1], ends[-1]
-        step = 364 if self._is_week_based() else 365
         while period_end > fy_end + tolerance:
             previous = fy_end
-            fy_end = fy_end + timedelta(days=step)
-            self._extrapolated.add(fy_end)
+            fy_end = self._shift_year(fy_end, 1)
+            self._note_extrapolated(fy_end, ends[-1], 1)
         return previous, fy_end
+
+    def _shift_year(self, end, years):
+        """The same fiscal year end `years` years away.
+
+        A 52/53-week filer moves by 364 days; everyone else by calendar
+        anniversary, so that a projection across a leap year does not drift
+        into the neighbouring calendar year and change the label.
+        """
+        if self._is_week_based():
+            return end + timedelta(days=364 * years)
+        try:
+            return end.replace(year=end.year + years)
+        except ValueError:                      # 29 February
+            return end.replace(year=end.year + years, day=28)
+
+    def _note_extrapolated(self, fy_end, anchor, direction):
+        """Remember a projected year end and label it relative to its anchor."""
+        self._extrapolated.add(fy_end)
+        if fy_end in self.labels or anchor not in self.labels:
+            return
+        years_away = abs(fy_end.year - anchor.year) if not self._is_week_based() else max(
+            1, round(abs((fy_end - anchor).days) / 364.0))
+        self.labels[fy_end] = self.labels[anchor] + direction * years_away
 
     def _is_week_based(self):
         """A 52/53-week filer's year ends land on the same weekday."""
@@ -243,7 +367,8 @@ class FiscalCalendar:
     def period_end_is_fy_end(self, period_end):
         period_end = parse_date(period_end)
         tolerance = timedelta(days=FY_BOUNDARY_TOLERANCE_DAYS)
-        return any(abs((period_end - end).days) <= tolerance.days for end in self.fy_ends)
+        return any(abs((period_end - end).days) <= tolerance.days
+                   for end in (*self.fy_ends, *self._extrapolated))
 
     def quarter_ends(self, previous_fy_end, fy_end):
         """The four quarter end dates of one fiscal year window."""
@@ -323,9 +448,11 @@ class FiscalCalendar:
             end = parse_date(row["period_end"])
             fy_ends.append(end)
             labels[end] = row["fiscal_year"]
-        return cls(payload.get("cik"), fy_ends, labels,
-                   payload.get("label_offset", 0),
-                   payload.get("fiscal_year_end_hint"))
+        calendar = cls(payload.get("cik"), fy_ends, labels,
+                       payload.get("label_offset", 0),
+                       payload.get("fiscal_year_end_hint"))
+        calendar.anchor_source = payload.get("anchor_source", calendar.anchor_source)
+        return calendar
 
     def to_dict(self):
         return {
@@ -333,6 +460,7 @@ class FiscalCalendar:
             "label_offset": self.label_offset,
             "fiscal_year_end_hint": self.fiscal_year_end_hint,
             "week_based": self._is_week_based(),
+            "anchor_source": self.anchor_source,
             "fiscal_years": [
                 {"fiscal_year": self.labels[end], "period_end": end.isoformat()}
                 for end in self.fy_ends

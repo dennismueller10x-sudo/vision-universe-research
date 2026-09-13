@@ -63,7 +63,36 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         zwischengespeicherten Emittenten als aktuell gelten, der Lauf
 #         meldete Erfolg, und von der ganzen Mapping-Arbeit kaeme nichts
 #         an.
-NORMALIZATION_LOGIC_VERSION = "1.7.1"
+# 1.8.0 — Perioden vor dem ersten und ohne ein volles Geschaeftsjahr.
+#
+#         Zwei Luecken im Kalender, beide gemessen an Emittenten, die
+#         trotz gemappter Taxonomie keinen einzigen Wert lieferten
+#         (UNPLACEABLE_PERIOD ohne UNKNOWN_CONCEPT):
+#
+#         (a) Die Eroeffnungsbilanz im ersten Jahresabschluss ist genau
+#             ein Jahr vor dem ersten Geschaeftsjahresende datiert, ein
+#             40-F traegt drei Vergleichsjahre. Der Kalender projizierte
+#             nur nach vorn; alles vor dem ersten bekannten Jahresende
+#             war unplatzierbar. Jetzt wird - spiegelbildlich zur
+#             Vorwaertsprojektion - rueckwaerts auf Jahrestage
+#             projiziert, das Label relativ zum naechsten verankerten
+#             Jahr vergeben. Projektionen laufen ueber Kalender-
+#             Jahrestage statt ueber 365 Tage, damit ein Schaltjahr
+#             das Jahresende nicht in das Nachbarjahr driften laesst.
+#
+#         (b) Ein Rumpf-Erstgeschaeftsjahr (Mai bis Dezember) erzeugt
+#             keine FY-Dauer; ohne eine solche kannte der Kalender kein
+#             Jahresende, und JEDER Fakt des Emittenten war
+#             unplatzierbar - auch die Bilanz, deren Stichtag der
+#             Jahresabschluss selbst nennt. Fehlt jede FY-Dauer, gilt
+#             jetzt der Bilanzstichtag des Jahresabschlusses (Formular
+#             10-K/20-F/40-F, fp=FY) als Jahresende, ersatzweise das
+#             bei der SEC registrierte Jahresende (MMDD) auf den
+#             tatsaechlich gemeldeten Stichtagen. Erfunden wird kein
+#             Datum; die Herkunft steht als anchor_source am Kalender.
+#             Die Rumpfperiode selbst bleibt UNEXPECTED_DURATION - ein
+#             Siebenmonatsumsatz ist kein Jahresumsatz.
+NORMALIZATION_LOGIC_VERSION = "1.8.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -94,7 +123,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "c44c45b75b1fdaa4ee71f66204403968070048c03a86dc8bf211bc23fdd04d8e"
+    "63f3b2c3dbc5d60fbd269341618bb529c09924bc7338b34e433141d69a3a1aba"
 )
 
 
