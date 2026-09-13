@@ -164,6 +164,49 @@ function collectEvidence() {
     }
   }
 
+  /* 1b. TECHNISCHE ANALYSE: derselbe Lauf, eigener Bericht.
+        Der Deckungsbericht der technischen Schicht fuehrt Einzelzeilen
+        NUR fuer Befunde - 23 Titel mit zu kurzer Reihe und die fuenf
+        Kanarienvoegel. Wer geprueft wurde und nicht drinsteht, ist
+        durchgelaufen. Dieselbe Disziplin wie oben: die Zahl der still
+        Bestandenen ist durch die Laufgroesse gedeckelt, und was nach dem
+        Lauf in die Mitgliedsdatei kam, bekommt nichts zugeschrieben. */
+  const techDir = join(root, "quant", "data", "technical", "scale");
+  if (existsSync(techDir)) {
+    for (const f of readdirSync(techDir).filter((f) => /^technical-coverage-.*\.json$/.test(f)).sort()) {
+      const rep = readJSON(join(techDir, f));
+      const per = rep.perSymbol || {};
+      let befunde = 0;
+      for (const [sym, row] of Object.entries(per)) {
+        const e = get(sym);
+        e.technicalState = row.technical || null;
+        e.technicalReason = row.reason || null;
+        e.technicalBars = Number(row.bars || 0);
+        e.technicalSource = "technical:" + (rep.gate || f);
+        befunde++;
+      }
+      /* Stilles BESTANDEN nur fuer Titel, die dieser Lauf wirklich
+         angefasst hat: er kennt seine Bewertungszahl, und mehr darf
+         nicht gutgeschrieben werden. Der Beleg ist der Kursverlauf
+         desselben Laufs - ohne ihn gab es nichts zu rechnen. */
+      const evaluiert = Number(rep.evaluated || 0);
+      const obergrenze = Math.max(0, evaluiert - Object.values(per)
+        .filter((r) => r.technical === "TECHNICAL_READY").length);
+      let implizit = 0;
+      for (const [sym, e] of ev.entries()) {
+        if (implizit >= obergrenze) break;
+        if (e.technicalState) continue;
+        if (!(e.priceHistoryBars > 0 || e.priceHistoryVerified === true)) continue;
+        e.technicalState = "TECHNICAL_READY";
+        e.technicalSource = "technical:" + (rep.gate || f) + " (bestanden, ohne Einzelzeile im Bericht)";
+        implizit++;
+      }
+      sources.push({ file: "quant/data/technical/scale/" + f, kind: "technicalReadiness",
+                     symbolsWithReportRow: befunde, symbolsImpliedReady: implizit,
+                     evaluated: evaluiert, requested: rep.requested || null });
+    }
+  }
+
   /* 2. Ausgelieferte Kursreihen. Im Repository liegen nur die der
         Development-Preview-Titel - alles andere bleibt aus
         Redistributionsgruenden in der Arbeitsablage. */
@@ -422,6 +465,71 @@ function main() {
       HAS_THEMES: "Themen sind im Modell vorgesehen (§35) und noch nicht befuellt."
     }
   }, true);
+
+  /* ------------------------------------------ Marktdaten je Mitglied
+
+     §2 des Abgleichs: Fundamentaldaten haengen am EMITTENTEN, Marktdaten
+     am INSTRUMENT. Damit die Schnittmenge ueberhaupt rechenbar ist,
+     braucht die Fundamentalseite eine Datei, die je Mitglied sagt, was
+     an Marktdaten belegt ist. Ohne sie bleibt der Overlap eine
+     Behauptung.
+
+     Ausgeliefert werden ZUSTAENDE, keine Kurse - dieselbe Grenze wie in
+     allen Gate-Berichten (§34). Ein Mitglied kann mehrere Listings
+     haben; gewertet wird das beste Listing, denn der Kursverlauf einer
+     Zweitnotiz ist der Kursverlauf des Papiers. */
+  const marketByMember = new Map();
+  for (const inst of instruments) {
+    if (!Master.inProductUniverse(inst)) continue;
+    const member = inst.masterMemberId || inst.instrumentId;
+    const e = evidence.get(String(inst.symbol).toUpperCase()) || {};
+    const bars = e.priceHistoryBars || 0;
+    const hatVerlauf = bars > 0 || e.priceHistoryVerified === true;
+    const vorher = marketByMember.get(member);
+    const zeile = {
+      m: member,
+      s: inst.symbol,
+      i: inst.instrumentId,
+      ph: hatVerlauf,
+      ps: e.priceSnapshot === true,
+      b: bars,
+      fr: e.factorReady === true,
+      q: e.dataQuality || null,
+      t: e.technicalState || null,
+      f: e.priceHistoryFirst || null,
+      l: e.priceHistoryLast || null,
+      src: e.priceHistorySource || null
+    };
+    /* Bestes Listing gewinnt: erst Kursverlauf, dann Barzahl. */
+    if (!vorher || (zeile.ph && !vorher.ph) || (zeile.ph === vorher.ph && zeile.b > vorher.b)) {
+      marketByMember.set(member, zeile);
+    }
+  }
+  const marketRows = [...marketByMember.values()].sort((a, b) => a.m < b.m ? -1 : 1);
+  writeJSON(join(OUT_ROOT, "market-capability.json"), {
+    version: Master.VERSION,
+    generatedAt: new Date().toISOString(),
+    note: "Marktdaten-Zustaende je Mitglied des Produktuniversums, abgeleitet aus den " +
+          "Gate- und Technical-Berichten. KEINE Kurse, keine Neuberechnung, keine " +
+          "Veraenderung an R2 oder der Marktdaten-Pipeline - diese Datei liest nur.",
+    fields: {
+      m: "masterMemberId", s: "Kuerzel des gewerteten Listings", i: "instrumentId",
+      ph: "Kursverlauf belegt", ps: "Kursstand belegt", b: "Bars (0 = bestanden ohne Einzelzeile)",
+      fr: "faktorfaehig", q: "Datenqualitaet des Gate-Laufs", t: "Zustand der technischen Analyse",
+      f: "erste Bar", l: "letzte Bar", src: "Beleg"
+    },
+    totals: {
+      MEMBERS: marketRows.length,
+      WITH_PRICE_HISTORY: marketRows.filter((r) => r.ph).length,
+      WITH_PRICE_SNAPSHOT: marketRows.filter((r) => r.ps).length,
+      FACTOR_READY: marketRows.filter((r) => r.fr).length,
+      TECHNICAL_READY: marketRows.filter((r) => r.t === "TECHNICAL_READY").length,
+      TECHNICAL_INSUFFICIENT_HISTORY: marketRows.filter((r) => r.t === "INSUFFICIENT_HISTORY").length
+    },
+    evidenceSources: sources.filter((s) => s.kind === "providerPriceHistory" ||
+                                           s.kind === "technicalReadiness"),
+    members: marketRows
+  });
 
   /* ---------------------------------------------------- Deckungsbericht */
   const evidenceForCoverage = {};

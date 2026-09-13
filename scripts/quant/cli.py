@@ -557,6 +557,54 @@ def _submissions_summary(provider, cik):
     }
 
 
+def cmd_reconcile(args):
+    """Abgleich Fundamentals x Marktdaten (§3-§10 des Reconciliation-Auftrags).
+
+    Marktdaten werden READ-ONLY konsumiert: dieser Befehl laedt keine
+    Kurse, veraendert R2 nicht und rechnet keine Eligibility neu. Was er
+    braucht, steht in quant/data/universe/market-capability.json, und die
+    erzeugt der Node-Indexlauf aus den Gate-Berichten.
+    """
+    from quant.sec import reconciliation
+
+    registry = MetricRegistry.load()
+    members = reconciliation.load_product_members(ROOT)
+    if not members:
+        raise SystemExit(
+            "Kein Produktuniversum unter quant/data/universe/instruments. "
+            "Erst node scripts/universe/build-company-master.mjs.")
+    if reconciliation.load_market_capability(ROOT) is None:
+        raise SystemExit(
+            "quant/data/universe/market-capability.json fehlt - ohne die "
+            "Marktdaten je Mitglied waere jede Schnittmenge geraten. "
+            "Erst node scripts/universe/build-universe-indexes.mjs.")
+
+    payloads, records = reconciliation.build_reconciliation(
+        ROOT, registry=registry, today=args.today or date.today().isoformat(),
+        min_years=args.min_years)
+
+    out = ROOT / "quant" / "data" / "fundamentals"
+    now = _utcnow()
+    for name, payload in payloads.items():
+        payload["generatedAtUtc"] = now
+        _write(out / name, payload)
+
+    o = payloads["reconciliation.json"]["overlap"]
+    b = payloads["backtest-readiness.json"]
+    g = payloads["gap-classification.json"]
+    print(f"  Produkttitel:                {o['PRODUCT_TITLES']}")
+    print(f"  Kurshistorie (verbindbar):   {o['MARKET_HISTORY_AVAILABLE']}")
+    print(f"  Technisch gedeckt:           {o['TECHNICAL_COVERED']}")
+    print(f"  Fundamentaldaten:            {o['FUNDAMENTAL_COMPANY_FACTS_AVAILABLE']}")
+    print(f"  Technical UND Fundamental:   {o['TECHNICAL_AND_FUNDAMENTAL']}")
+    print(f"  PIT + Technical + Kurse:     {o['PIT_TECHNICAL_AND_HISTORICAL_PRICE']}")
+    print(f"  Backtestfaehig (PIT):        {b['BACKTEST_PIT_FUNDAMENTAL_READY']}")
+    print(f"  davon 10 Jahre:              {b['BACKTEST_10Y_READY']}")
+    for zustand, anzahl in g["byRecoverability"].items():
+        print(f"  Luecken {zustand:<28} {anzahl}")
+    return 0
+
+
 def cmd_coverage_universe(args):
     """Gemessene Fundamental-Coverage gegen das Produktuniversum (§11-§14, §20).
 
@@ -846,6 +894,13 @@ def build_parser():
     export.add_argument("--universe",
                         help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     export.set_defaults(func=cmd_export)
+
+    rec = subparsers.add_parser(
+        "reconcile", help="Fundamentals gegen das Marktdaten-/Technical-Universum abgleichen")
+    rec.add_argument("--today", help="Stichtag fuer die Alterspruefung junger Notierungen")
+    rec.add_argument("--min-years", type=int, default=3,
+                     help="Jahreshistorie, ab der ein Titel als gedeckt gilt (Standard 3)")
+    rec.set_defaults(func=cmd_reconcile)
 
     cov = subparsers.add_parser("coverage", help="build the coverage matrix")
     cov.add_argument("--universe",

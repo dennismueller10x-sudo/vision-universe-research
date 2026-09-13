@@ -1,0 +1,116 @@
+{
+  "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
+  "values": {
+    "denominator": {
+      "RESOLVED_VALUES": 1813323,
+      "ISSUERS_WITH_VALUES": 4627
+    },
+    "byState": {
+      "VALID": 1649267,
+      "WARNING": 164056
+    },
+    "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
+  },
+  "findings": {
+    "denominator": {
+      "RAW_XBRL_FACTS_WITH_FINDING": 51400511
+    },
+    "byState": {
+      "AMBIGUOUS": 1272985,
+      "RESTATED": 290387,
+      "NON_COMPARABLE": 185884,
+      "MISSING": 49633988,
+      "WARNING": 17267
+    },
+    "byCode": {
+      "UNKNOWN_CONCEPT": 49633988,
+      "CONCEPT_DISAGREEMENT": 1234260,
+      "RESTATEMENT_CONFLICT": 290387,
+      "UNIT_MISMATCH": 132652,
+      "UNEXPECTED_DURATION": 48251,
+      "UNPLACEABLE_PERIOD": 31248,
+      "FISCAL_PERIOD_CONFLICT": 13476,
+      "FUTURE_DATA_LEAK": 7477,
+      "PERIOD_MISMATCH": 4981,
+      "NEGATIVE_WHERE_IMPOSSIBLE": 2473,
+      "EXTREME_VALUE": 1318
+    },
+    "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
+  },
+  "titles": {
+    "denominator": {
+      "PRODUCT_TITLES": 7004
+    },
+    "byState": {
+      "AVAILABLE": 3824,
+      "PARTIAL": 1104,
+      "MISSING": 885,
+      "UNAVAILABLE": 1191
+    },
+    "note": "AVAILABLE = mindestens drei Jahre aufloesbare Historie. MISSING = Einreichungen vorhanden, aber kein aufloesbarer Wert. UNAVAILABLE = kein Factbook."
+  },
+  "metricsByMissingRate": [
+    {
+      "metric": "total_debt",
+      "MISSING_COUNT": 2146,
+      "MISSING_RATE": 46.3799
+    },
+    {
+      "metric": "revenue",
+      "MISSING_COUNT": 635,
+      "MISSING_RATE": 13.7238
+    },
+    {
+      "metric": "free_cash_flow",
+      "MISSING_COUNT": 549,
+      "MISSING_RATE": 11.8651
+    },
+    {
+      "metric": "capital_expenditures",
+      "MISSING_COUNT": 547,
+      "MISSING_RATE": 11.8219
+    },
+    {
+      "metric": "eps_diluted",
+      "MISSING_COUNT": 344,
+      "MISSING_RATE": 7.4346
+    },
+    {
+      "metric": "operating_cash_flow",
+      "MISSING_COUNT": 85,
+      "MISSING_RATE": 1.837
+    },
+    {
+      "metric": "net_income",
+      "MISSING_COUNT": 73,
+      "MISSING_RATE": 1.5777
+    },
+    {
+      "metric": "stockholders_equity",
+      "MISSING_COUNT": 54,
+      "MISSING_RATE": 1.1671
+    },
+    {
+      "metric": "total_assets",
+      "MISSING_COUNT": 18,
+      "MISSING_RATE": 0.389
+    }
+  ],
+  "highestMissingRate": {
+    "metric": "total_debt",
+    "MISSING_COUNT": 2146,
+    "MISSING_RATE": 46.3799
+  },
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "generatedAtUtc": "2026-09-13T03:56:05+00:00"
+}

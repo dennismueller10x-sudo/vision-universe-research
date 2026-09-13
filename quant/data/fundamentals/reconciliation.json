@@ -1,0 +1,213 @@
+{
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "note": "Abgleich der Fundamentalschicht mit dem Marktdaten-/Technical-Universum. Marktdaten werden READ-ONLY konsumiert (\u00a71).",
+  "marketCapabilityPresent": true,
+  "overlap": {
+    "note": "Gezaehlt auf Papierebene gegen PRODUCT_TITLES. Der Join laeuft ueber masterMemberId -> issuerId, nie ueber das Kuerzel (\u00a72).",
+    "denominator": {
+      "PRODUCT_TITLES": 7004
+    },
+    "PRODUCT_TITLES": 7004,
+    "MARKET_HISTORY_AVAILABLE": 5397,
+    "TECHNICAL_COVERED": 5378,
+    "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5813,
+    "PIT_READY": 4928,
+    "TECHNICAL_AND_FUNDAMENTAL": 4676,
+    "TECHNICAL_WITHOUT_FUNDAMENTALS": 702,
+    "FUNDAMENTALS_WITHOUT_TECHNICAL": 1137,
+    "HISTORICAL_PRICE_AND_FUNDAMENTAL": 4683,
+    "PIT_AND_TECHNICAL": 4172,
+    "PIT_AND_HISTORICAL_PRICE": 4175,
+    "PIT_TECHNICAL_AND_HISTORICAL_PRICE": 4172,
+    "percentOfProductUniverse": {
+      "MARKET_HISTORY_AVAILABLE": 77.056,
+      "TECHNICAL_COVERED": 76.7847,
+      "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 82.9954,
+      "PIT_READY": 70.3598,
+      "TECHNICAL_AND_FUNDAMENTAL": 66.7619
+    },
+    "acceptedMarketDataState": {
+      "status": "ACCEPTED_TOTALS_ONLY",
+      "owner": "R2-/Marktdaten-Workstream",
+      "accepted": {
+        "PRODUCT_TITLES": 7004,
+        "R2_SERIES_AVAILABLE": 7802,
+        "HISTORICAL_CHART_AVAILABLE": 6997,
+        "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.9,
+        "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+        "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 85.14
+      },
+      "joinable": {
+        "MARKET_HISTORY_AVAILABLE": 5397,
+        "TECHNICAL_COVERED": 5378,
+        "PRODUCT_TITLES": 7004
+      },
+      "unattributable": {
+        "MARKET_HISTORY": 1600,
+        "TECHNICAL": 585
+      },
+      "evidenceSources": [
+        {
+          "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 3446,
+          "symbolsImpliedPass": 2238,
+          "symbolsNotInThisRun": 2119,
+          "runSize": 5684
+        },
+        {
+          "file": "quant/data/market/scale/gate-GATE_100.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 100,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 100
+        },
+        {
+          "file": "quant/data/market/scale/gate-GATE_2000.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 1138,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 2000
+        },
+        {
+          "file": "quant/data/market/scale/gate-GATE_500.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 500,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 500
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-FULL_UNIVERSE.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 28,
+          "symbolsImpliedReady": 5656,
+          "evaluated": 5661,
+          "requested": 5684
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-GATE_100.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 100,
+          "symbolsImpliedReady": 0,
+          "evaluated": 100,
+          "requested": 100
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-GATE_2000.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 1,
+          "symbolsImpliedReady": 0,
+          "evaluated": 1999,
+          "requested": 2000
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-GATE_500.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 500,
+          "symbolsImpliedReady": 0,
+          "evaluated": 500,
+          "requested": 500
+        }
+      ],
+      "note": "Der abgenommene Stand liegt in diesem Zweig nur als SUMME vor, nicht je Papier. Jede Schnittmenge oben ist deshalb gegen die belegbare Ableitung gerechnet und nicht gegen die abgenommene Summe - sonst waere sie eine Schaetzung mit zwei Nachkommastellen. Die Differenz steht als unattributable daneben und ist die Aufgabe, die der Anschluss an die kanonische R2-Quelle loest."
+    }
+  },
+  "coreMetrics": {
+    "denominator": {
+      "TECHNICAL_UNIVERSE": 5378
+    },
+    "metrics": {
+      "TECHNICAL_WITH_REVENUE": {
+        "COUNT": 3747,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 69.6727
+      },
+      "TECHNICAL_WITH_NET_INCOME": {
+        "COUNT": 4160,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.3522
+      },
+      "TECHNICAL_WITH_EPS": {
+        "COUNT": 4008,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 74.5258
+      },
+      "TECHNICAL_WITH_OPERATING_CASH_FLOW": {
+        "COUNT": 4152,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.2034
+      },
+      "TECHNICAL_WITH_FCF": {
+        "COUNT": 3833,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 71.2718
+      },
+      "TECHNICAL_WITH_ASSETS": {
+        "COUNT": 4160,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.3522
+      },
+      "TECHNICAL_WITH_DEBT": {
+        "COUNT": 2413,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 44.868
+      },
+      "TECHNICAL_WITH_EQUITY": {
+        "COUNT": 4123,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 76.6642
+      }
+    }
+  },
+  "history": {
+    "denominator": {
+      "TECHNICAL_UNIVERSE": 5378
+    },
+    "annual": {
+      "TECHNICAL_WITH_ANNUAL_1Y": {
+        "COUNT": 3728,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 69.3194
+      },
+      "TECHNICAL_WITH_ANNUAL_3Y": {
+        "COUNT": 3601,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 66.958
+      },
+      "TECHNICAL_WITH_ANNUAL_5Y": {
+        "COUNT": 3319,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 61.7144
+      },
+      "TECHNICAL_WITH_ANNUAL_10Y": {
+        "COUNT": 2283,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 42.4507
+      },
+      "TECHNICAL_WITH_ANNUAL_15Y": {
+        "COUNT": 1694,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 31.4987
+      }
+    },
+    "quarterly": {
+      "TECHNICAL_WITH_QUARTERLY_1Y": {
+        "COUNT": 3388,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 62.9974
+      },
+      "TECHNICAL_WITH_QUARTERLY_3Y": {
+        "COUNT": 3264,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 60.6917
+      },
+      "TECHNICAL_WITH_QUARTERLY_5Y": {
+        "COUNT": 3048,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 56.6753
+      },
+      "TECHNICAL_WITH_QUARTERLY_10Y": {
+        "COUNT": 2145,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 39.8847
+      }
+    }
+  },
+  "generatedAtUtc": "2026-09-13T03:56:05+00:00"
+}
