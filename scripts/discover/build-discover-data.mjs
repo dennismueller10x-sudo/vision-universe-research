@@ -54,6 +54,7 @@ const Indicators = require(join(root, "discover", "engines", "indicators.js"));
 const TI = require(join(root, "discover", "engines", "technical-intelligence.js"));
 const Klartext = require(join(root, "discover", "engines", "klartext.js"));
 const Unternehmen = require(join(root, "discover", "engines", "unternehmen.js"));
+const Relevance = require(join(root, "discover", "engines", "relevance.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -61,6 +62,26 @@ const GATES_CONFIG = readJSON(join(root, "quant", "config", "feature-gates.json"
 const PREVIEW_CONFIG = readJSON(join(root, "quant", "config", "development-preview.json"));
 const GATES = DisplayPolicy.gatesFromConfig(GATES_CONFIG);
 DisplayPolicy.declareFromConfig(PREVIEW_CONFIG);
+
+/* Redaktionelle Metadata (V3). Beides ist Beschriftung, keine Kennzahl:
+   die Bekanntheitsliste bestimmt nie, OB ein Titel in einer Reihe steht,
+   und ein Thema ist eine Zuordnung, keine Aussage ueber eine Aktie. */
+const RECOGNITION = readJSON(join(root, "discover", "config", "company-recognition.json")).companies || {};
+const THEMES = readJSON(join(root, "discover", "config", "themes.json"));
+
+/* Die Reihen: die der Methodik plus eine je Themenwelt. Themenreihen
+   entstehen aus derselben Maschine wie alle anderen (buildRow) - mit
+   einer Aufnahmeregel, die "steht in der Themenliste" heisst, und einer
+   Sortierung nach Kennzahl. Was auf der Karte steht, ist gerechnet. */
+function themeRows() {
+  return (THEMES.themes || []).map((t) => ({
+    id: "thema-" + t.id, title: t.title, subtitle: t.lead, theme: t.id, editorial: true,
+    sort: "leadershipScore", direction: "desc", limit: 30, require: ["leadershipScore"],
+    filter: "thema", tickers: t.tickers, world: t.world || "sectors", microRange: "6M",
+    minMembers: isNum(THEMES.minMembers) ? THEMES.minMembers : 5
+  }));
+}
+const ROWS = METHODOLOGY.rows.concat(themeRows());
 
 function readJSON(p) { return JSON.parse(readFileSync(p, "utf8")); }
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -221,6 +242,55 @@ function weeklySparkline(closes, points = 40) {
   return out;
 }
 
+/* ------------------------------------------------- Micro-Kursreihe (V3)
+
+   Die Karten zeichnen keinen Renditepfad mehr als Linie. Was sie zeichnen
+   duerfen, ist eine echte Kursreihe - und die gibt es nur, wo sie
+   ausgeliefert werden darf. Diese Funktion baut daraus die kleinste Form,
+   die eine Karte braucht: vier Zeitraeume, je hoechstens 64 Punkte,
+   Schlusskurse auf zwei Stellen, mit Herkunft und Stand. Zwischen den
+   Punkten liegt nichts Erfundenes: jeder Punkt ist ein Tagesschluss. */
+const MICRO_RANGES = { "1M": 21, "3M": 63, "6M": 126, "1J": 252 };
+const MICRO_POINTS = 64;
+
+function microSeries(dated, source, priceSeriesType) {
+  const valid = (dated || []).filter((b) => isNum(b.close) && b.date);
+  if (valid.length < 10) {
+    return withheldSeries("INSUFFICIENT_HISTORY", "Zu wenig Historie für einen Verlauf.");
+  }
+  const ranges = {};
+  for (const [id, n] of Object.entries(MICRO_RANGES)) {
+    const fenster = valid.slice(-Math.min(n, valid.length));
+    if (fenster.length < 5) continue;
+    ranges[id] = {
+      from: fenster[0].date, to: fenster[fenster.length - 1].date, bars: fenster.length,
+      points: downsample(fenster, MICRO_POINTS).map((b) => [b.date, round(b.close, 2)])
+    };
+  }
+  return { status: "CALCULATED", source, priceSeriesType: priceSeriesType || "SPLIT_ADJUSTED",
+           asOf: valid[valid.length - 1].date, ranges, points: null, range: null, message: null };
+}
+function downsample(list, max) {
+  if (list.length <= max) return list;
+  const out = [];
+  const step = (list.length - 1) / (max - 1);
+  for (let i = 0; i < max; i++) out.push(list[Math.round(i * step)]);
+  out[out.length - 1] = list[list.length - 1];
+  return out;
+}
+function withheldSeries(status, message) {
+  return { status, source: null, priceSeriesType: null, asOf: null, ranges: null,
+           points: null, range: null, message };
+}
+/** Die Reihe einer Karte: nur der Zeitraum, den die Reihe zeigt. */
+function slimSeries(series, range) {
+  if (!series || series.status !== "CALCULATED" || !series.ranges) return series;
+  const r = series.ranges[range] || series.ranges["6M"] || Object.values(series.ranges)[0];
+  return { status: series.status, source: series.source, priceSeriesType: series.priceSeriesType,
+           asOf: series.asOf, range: range, from: r ? r.from : null, to: r ? r.to : null,
+           points: r ? r.points : null, ranges: null, message: null };
+}
+
 /* ============================================================ Kennzahlen */
 
 /** Flache Kennzahlen aus einem market-factors-Ergebnis. */
@@ -273,7 +343,9 @@ function buildRealUniverse(nameMap, goldenBars) {
     metrics.breakoutScore = scores.breakout.score;
 
     const golden = goldenBars.get(sec.ticker);
-    const goldenCloses = golden ? splitAdjustedCloses(golden.bars).map((b) => b.close) : null;
+    const goldenDated = golden ? splitAdjustedCloses(golden.bars) : null;
+    const goldenCloses = goldenDated ? goldenDated.map((b) => b.close) : null;
+    const erkannt = RECOGNITION[sec.ticker] || null;
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
@@ -299,6 +371,12 @@ function buildRealUniverse(nameMap, goldenBars) {
       sparklineStatus: goldenCloses ? "CALCULATED" : "WITHHELD_REDISTRIBUTION",
       performancePath: performancePath(metrics),
       hasPriceSeries: !!goldenCloses,
+      priceSeries: goldenDated
+        ? microSeries(goldenDated, "tiingo", "SPLIT_ADJUSTED")
+        : withheldSeries("WITHHELD_REDISTRIBUTION",
+            "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
+      was: erkannt ? erkannt.was : null,
+      recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
       metrics,
       metricStatus: withheldMetricStatus(metrics, sec.fieldStatus),
@@ -396,6 +474,10 @@ function buildModelUniverse() {
       sparkline: weeklySparkline(closes),
       performancePath: performancePath(metrics),
       hasPriceSeries: true,
+      priceSeries: microSeries(bars.map((b) => ({ date: b.date, close: b.close })),
+                               "VisionUniverseMock", "SPLIT_ADJUSTED"),
+      was: null,
+      recognitionTier: null,
       metrics,
       metricStatus: withheldMetricStatus(metrics),
       dataQuality: result.dataQuality || "PASS",
@@ -603,13 +685,34 @@ const ROW_FILTERS = {
      Titel, die stimmen, als acht, von denen die Haelfte das Gegenteil
      zeigt. */
   breakout: (s) => s.signals.breakout === true,
-  trendIntact: (s) => s.signals.trendIntact === true
+  trendIntact: (s) => s.signals.trendIntact === true,
+
+  /* V3. Die Regeln stehen auch in der Methodik (rows[].rule) - hier ist
+     ihr Code, dort ihr Wortlaut. */
+  /* Bekannt UND in Bewegung. Die Bekanntheit ist redaktionell; die
+     Bewegung ist gerechnet. Ohne die zweite Bedingung waere die Reihe
+     eine Liste von Namen, nicht von Beobachtungen. */
+  bekannt: (s) => s.recognitionTier === 1 &&
+    (s.signals.new52WeekHigh || s.signals.nearHigh || s.signals.breakout ||
+     (isNum(s.metrics.return3M) && s.metrics.return3M >= 0.05)),
+  /* Deutlich gefallen, seit drei Monaten klar im Plus, noch nicht wieder
+     oben. Alle drei Bedingungen aus Kennzahlen - "Comeback?" traegt sein
+     Fragezeichen zu Recht. */
+  comeback: (s) => isNum(s.metrics.maxDrawdown252d) && s.metrics.maxDrawdown252d <= -0.25 &&
+    isNum(s.metrics.return3M) && s.metrics.return3M >= 0.10 &&
+    isNum(s.metrics.distanceTo52wHigh) && s.metrics.distanceTo52wHigh <= -0.08,
+  /* Stark, aber ohne bekannten Namen: das Komplement zu "bekannt". */
+  ueberraschung: (s) => !isNum(s.recognitionTier) &&
+    isNum(s.metrics.leadershipPercentile) && s.metrics.leadershipPercentile >= 85,
+  /* Steht in der Themenliste. Mehr prueft ein Thema nicht - es ist eine
+     Zuordnung, und die Reihe zeigt, was die Zahlen dazu sagen. */
+  thema: (s, config) => Array.isArray(config.tickers) && config.tickers.indexOf(s.symbol) !== -1
 };
 
 function buildRow(universe, config) {
   const pool = universe.stocks.filter((s) => {
     if (s.discoveryEligible === false) return false;
-    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s)) return false;
+    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config)) return false;
     return (config.require || []).every((f) => isNum(s.metrics[f]));
   });
   /* Zweitschluessel, damit eine Zeile nicht an Gleichstaenden haengt: bei
@@ -644,7 +747,12 @@ function buildRow(universe, config) {
   /* Die Uebersetzung kennt die ganze Reihe, nicht nur die einzelne Karte -
      sonst steht derselbe wahre Satz zwoelfmal untereinander. */
   const texte = Klartext.reihe(auswahl, config.id);
-  const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), { plain: texte[i] }));
+  const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), {
+    plain: texte[i],
+    /* Nur der Zeitraum, den diese Reihe zeigt - eine Karte traegt keine
+       vier Reihen mit sich herum. */
+    priceSeries: slimSeries(s.priceSeries, config.microRange || "6M")
+  }));
   /* Die Karte muss sich selbst erklaeren koennen: der Klartext wird aus
      der KARTE nachgerechnet, nicht aus dem Titel im Speicher. Was die
      Uebersetzung liest, muss deshalb auch auf der Karte stehen. */
@@ -659,6 +767,10 @@ function buildRow(universe, config) {
     methodologyVersion: METHODOLOGY.methodologyVersion,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
     sort: config.sort, direction: config.direction,
+    microRange: config.microRange || "6M",
+    rule: config.rule || null,
+    theme: config.theme || null,
+    editorial: config.editorial === true,
     coverage: {
       universeSize: universe.stocks.length,
       matched: pool.length,
@@ -702,7 +814,7 @@ const MEMBERSHIP_RANK_LIMIT = 60;
 
 function buildMemberships(universe) {
   const perSymbol = new Map();
-  for (const config of METHODOLOGY.rows) {
+  for (const config of ROWS) {
     const row = buildRow(universe, Object.assign({}, config, { limit: Infinity }));
     row.cards.forEach((card, index) => {
       if (index >= MEMBERSHIP_RANK_LIMIT) return;
@@ -765,6 +877,8 @@ function buildFeatured(universe, anzahl) {
     let rang = s.metrics.leadershipPercentile;
     if (s.hasPriceSeries) rang += 12;          // traegt eine grosse Flaeche
     if (s.companyName) rang += 6;              // ein Name wirkt anders als ein Kuerzel
+    if (s.recognitionTier === 1) rang += 10;   // ein Name, den man kennt (V3)
+    else if (s.recognitionTier === 2) rang += 5;
     if (s.signals.new52WeekHigh) rang += 4;
     if (s.signals.breakout) rang += 3;
     return { stock: s, rang };
@@ -839,6 +953,134 @@ function heroReasons(stock) {
           value: Klartext.prozent(Math.abs(m.distanceTo52wHigh), false) });
   }
   return out.slice(0, 3);
+}
+
+/* ============================================================ Startseite
+
+   WAS EINE SURFACE IST
+
+   Die Startseite besteht nicht mehr aus Reihen, die alle gleich aussehen,
+   sondern aus Surfaces verschiedener Art: die nummerierte Rangliste, die
+   breite Reihe, die kompakte, die Themenwelt, die eine grosse Karte, die
+   Sektorkacheln, der Einstieg in den Einzelmodus. Jede Surface zeigt eine
+   AUSWAHL aus einer gerechneten Reihe - nie etwas, das nicht in einer
+   Reihe steht.
+
+   ZWEI SCHICHTEN UEBER DER RANGLISTE
+
+   1. Discovery-Reihenfolge (relevance.js): innerhalb der qualifizierten
+      Titel einer Reihe ruecken bekannte Namen nach vorn - im oberen
+      Fenster, mit kleinem Bonus. Die Rangliste selbst bleibt, wie sie
+      ist; die Kategorieseite zeigt sie unveraendert.
+   2. Diversity ueber die Seite: ein Titel fuehrt hoechstens eine Surface
+      an, erscheint hoechstens zweimal. Entfernt wird nur, umsortiert nie.
+
+   Beides ist deterministisch und wird in verify-discover-data.mjs
+   nachgeprueft: jede Karte einer Surface muss in ihrer Reihe stehen. */
+function buildHome(universe, rowsById, sectorPayload, featured) {
+  const plan = (METHODOLOGY.home && METHODOLOGY.home.surfaces) || [];
+  const U = universe.universeId;
+  const heroSymbols = new Set(featured.map((f) => f.symbol));
+  const surfaces = [];
+  const sektorWelten = (METHODOLOGY.visualLanguage && METHODOLOGY.visualLanguage.sectorWorlds) || {};
+
+  for (const step of plan) {
+    if (step.type === "hero") {
+      /* Die Eingangsflaeche zaehlt als Auftritte, damit die Reihen darunter
+         nicht mit demselben Titel beginnen. */
+      surfaces.push({ type: "hero", id: "hero", pure: true, show: featured.length,
+                      cards: featured, title: null });
+      continue;
+    }
+    if (step.type === "immersive") {
+      surfaces.push({ type: "immersive", id: "immersive", pure: true, show: 0, cards: [],
+                      title: step.title, lead: step.lead, href: "#/einzeln/" + U });
+      continue;
+    }
+    if (step.type === "sectors") {
+      surfaces.push({ type: "sectors", id: "sectors", rowId: "sector-leaders", pure: true, show: 0,
+                      cards: [], title: METHODOLOGY.sectorRows.title,
+                      subtitle: "Die stärksten Titel je Sektor.",
+                      sectors: sectorPayload, href: "#/c/" + U + "/sector-leaders" });
+      continue;
+    }
+    if (step.type === "sector-row") {
+      const list = (universe.sectors.get(step.sector) || []).filter((s) => s.discoveryEligible !== false);
+      if (list.length < 4) continue;
+      const texte = Klartext.reihe(list, "sektor-" + step.sector);
+      const cards = list.map((s, i) => Object.assign(Contract.toCard(s), {
+        plain: texte[i], priceSeries: slimSeries(s.priceSeries, "6M")
+      }));
+      const ordered = Relevance.discoveryOrder(cards, { recognition: RECOGNITION }).cards;
+      surfaces.push({ type: "row", variant: step.variant || "compact", id: "sektor-" + slug(step.sector),
+                      rowId: "sector-leaders", sector: step.sector, title: step.title,
+                      subtitle: "Die stärksten Titel des Sektors " + step.sector + ".",
+                      world: sektorWelten[step.sector] || "sectors", microRange: "6M",
+                      cards: ordered, show: step.show || 10, total: list.length,
+                      href: "#/c/" + U + "/sector-leaders" });
+      continue;
+    }
+
+    const row = rowsById.get(step.rowId);
+    if (!row || !row.cards || !row.cards.length) continue;
+    if (row.config && row.config.theme && row.coverage.matched < (row.config.minMembers || 5)) continue;
+
+    if (step.type === "featured-card") {
+      /* Die eine grosse Karte wird erst NACH der Diversity gefuellt: sie
+         soll einen Namen zeigen, der sonst nirgends vorn steht. Hier
+         steht nur der Platzhalter mit der Reihe, aus der sie schoepft. */
+      surfaces.push({ type: "featured-card", id: "featured", rowId: row.rowId, pure: true, show: 0,
+                      kicker: step.kicker || "IM BLICK", title: row.title, world: row.world,
+                      microRange: row.microRange, cards: [], href: null,
+                      quelle: Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION }).cards });
+      continue;
+    }
+
+    const pure = step.type === "ranking";
+    const ordered = pure ? row.cards
+      : Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION }).cards;
+    surfaces.push({
+      type: step.type, variant: step.variant || null, id: step.id || row.rowId, rowId: row.rowId,
+      title: row.title, subtitle: row.subtitle, world: row.world, microRange: row.microRange,
+      theme: row.theme || null, editorial: row.editorial === true, rule: row.rule || null,
+      cards: ordered, show: step.show || 10, pure, total: row.coverage.matched,
+      href: "#/c/" + U + "/" + row.rowId
+    });
+  }
+
+  const diversified = Relevance.diversify(surfaces, {
+    leadPositions: 2, maxAppearances: 2, shortList: 6, exceptionalPercentile: 99
+  });
+  /* Jetzt die grosse Karte: der erste Name aus ihrer Reihe, der weder
+     die Eingangsflaeche traegt noch irgendwo anfuehrt noch schon zweimal
+     zu sehen ist - und der eine Taetigkeit hat, die auf die Karte kann.
+     Keine Geschichte, die nicht auf der Karte steht. */
+  const fuehrt = new Set(), gesehen = Object.create(null);
+  diversified.forEach((v) => (v.cards || []).forEach((c, i) => {
+    gesehen[c.symbol] = (gesehen[c.symbol] || 0) + 1;
+    if (i < 2 && v.type !== "hero") fuehrt.add(c.symbol);
+  }));
+  diversified.forEach((v) => {
+    if (v.type !== "featured-card") return;
+    const frei = (c) => !heroSymbols.has(c.symbol) && !fuehrt.has(c.symbol) && (gesehen[c.symbol] || 0) < 2;
+    const wahl = v.quelle.find((c) => frei(c) && c.was) || v.quelle.find(frei);
+    delete v.quelle;
+    if (!wahl) { v.cards = []; return; }
+    v.cards = [wahl];
+    v.id = "featured-" + wahl.symbol;
+    v.href = "#/s/" + U + "/" + wahl.symbol;
+  });
+  const behalten = diversified.filter((s) =>
+    s.type === "hero" || s.type === "immersive" || s.type === "sectors" ||
+    (s.type === "featured-card" && s.cards.length === 1) || s.cards.length >= 3);
+  /* Die Karten der Startseite tragen keine `config`-Objekte und keine
+     Hilfsfelder; was bleibt, ist genau das, was die Oberflaeche liest. */
+  const hidden = diversified.reduce((n, s) => n + (s.hidden || 0), 0);
+  behalten.forEach((s) => { delete s.pure; delete s.hidden; });
+  return { surfaces: behalten, coverage: { planned: plan.length, shown: behalten.length, hidden } };
+}
+function slug(text) {
+  return String(text).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 /* ====================================================== Geschaeftszahlen
@@ -946,6 +1188,8 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     price: stock.price, changePercent: stock.changePercent,
     sparkline: stock.sparkline, sparklineStatus: stock.sparklineStatus,
     performancePath: stock.performancePath, performancePathStatus: stock.performancePathStatus,
+    priceSeries: stock.priceSeries,
+    was: stock.was || null, recognitionTier: stock.recognitionTier || null,
     signals: stock.signals, badges: stock.badges,
     metrics: stock.metrics, metricStatus: stock.metricStatus,
     high52w: stock.high52w,
@@ -1037,15 +1281,20 @@ console.log(`     ${model.stocks.length} Titel, Stand ${model.asOf}`);
 const instruments = technicalInstrumentIndex();
 const universes = [real, model];
 const rowIndex = [];
+const homeIndex = [];
+const homeSymbols = new Map();
 
 console.log("3/5  Zeilen-Payloads …");
 for (const universe of universes) {
   const rows = [];
-  for (const config of METHODOLOGY.rows) {
+  const rowsById = new Map();
+  for (const config of ROWS) {
     const row = buildRow(universe, config);
     write(`rows/${universe.universeId}/${config.id}.json`, row);
+    rowsById.set(config.id, Object.assign({}, row, { config }));
     rows.push({ rowId: row.rowId, title: row.title, subtitle: row.subtitle,
-                returned: row.coverage.returned, matched: row.coverage.matched });
+                returned: row.coverage.returned, matched: row.coverage.matched,
+                theme: config.theme || null });
   }
 
   /* Sektorzeilen */
@@ -1078,6 +1327,38 @@ for (const universe of universes) {
   /* Die Eingangsflaeche. Eine eigene, sehr kleine Datei: sie wird als
      erste geladen und darf nicht auf eine 250-KB-Zeile warten. */
   const featured = buildFeatured(universe, 5);
+
+  /* Die Startseite (V3): eine Folge von Surfaces, gerechnet und in
+     Stuecken ausgeliefert. Das erste Stueck traegt, was ueber der Falz
+     steht; die weiteren laedt die Seite nach, sobald man dorthin
+     scrollt. */
+  const home = buildHome(universe, rowsById, sectorPayload, featured);
+  const chunkSizes = (METHODOLOGY.home && METHODOLOGY.home.chunkSizes) || [6, 7];
+  const stuecke = [];
+  let rest = home.surfaces.slice();
+  for (let i = 0; rest.length; i++) {
+    const n = i < chunkSizes.length ? chunkSizes[i] : rest.length;
+    stuecke.push(rest.slice(0, n));
+    rest = rest.slice(n);
+  }
+  const chunkNames = stuecke.map((_, i) => `home/${universe.universeId}${i ? "." + (i + 1) : ""}.json`);
+  stuecke.forEach((teil, i) => {
+    write(chunkNames[i], {
+      universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
+      asOf: universe.asOf, generatedAt: universe.generatedAt,
+      methodologyVersion: METHODOLOGY.methodologyVersion,
+      chunk: i + 1, chunks: stuecke.length,
+      next: i + 1 < stuecke.length ? "/discover/data/" + chunkNames[i + 1] : null,
+      surfaces: teil,
+      coverage: i === 0 ? home.coverage : undefined
+    });
+  });
+  homeIndex.push({ universeId: universe.universeId, chunks: chunkNames.map((n) => "/discover/data/" + n),
+                   surfaces: home.surfaces.length, hidden: home.coverage.hidden });
+  /* Jede Karte der Startseite braucht eine Detailseite - auch im
+     Modelluniversum, wo nicht jeder Titel eine bekommt. */
+  homeSymbols.set(universe.universeId,
+    new Set(home.surfaces.flatMap((s) => (s.cards || []).map((c) => c.symbol))));
   write(`featured/${universe.universeId}.json`, {
     universeId: universe.universeId, universeLabel: universe.label,
     universeKind: universe.kind, asOf: universe.asOf, generatedAt: universe.generatedAt,
@@ -1095,6 +1376,7 @@ for (const universe of universes) {
     asOf: universe.asOf, count: universe.stocks.length,
     entries: universe.stocks.map((s) => ({
       s: s.symbol, n: s.companyName, sec: s.sector, m: s.dataMode === "real" ? 1 : 0,
+      a: s.was || null,
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,
       d: isNum(s.metrics.distanceTo52wHigh) ? round(s.metrics.distanceTo52wHigh, 4) : null,
       h: s.signals.new52WeekHigh ? 1 : 0,
@@ -1125,7 +1407,7 @@ for (const universe of universes) {
     symbols = new Set(universe.stocks.map((s) => s.symbol));
   } else {
     symbols = new Set();
-    for (const config of METHODOLOGY.rows) {
+    for (const config of ROWS) {
       const row = buildRow(universe, config);
       row.cards.forEach((c) => symbols.add(c.symbol));
     }
@@ -1135,6 +1417,7 @@ for (const universe of universes) {
     for (const id of instruments.keys()) {
       if (universe.stocks.some((s) => s.symbol === id)) symbols.add(id);
     }
+    for (const sym of homeSymbols.get(universe.universeId) || []) symbols.add(sym);
   }
   detailSets.set(universe.universeId, symbols);
 
@@ -1156,7 +1439,7 @@ for (const universe of universes) {
 console.log("5/5  Meta …");
 const meta = {
   module: "discover",
-  moduleVersion: "discover-1.0.0",
+  moduleVersion: "discover-3.0.0",
   contractVersion: Contract.CONTRACT_VERSION,
   methodologyVersion: METHODOLOGY.methodologyVersion,
   visualLanguage: METHODOLOGY.visualLanguage,
@@ -1164,7 +1447,15 @@ const meta = {
   engines: {
     high52w: High52w.ENGINE_VERSION, scoring: Scoring.ENGINE_VERSION,
     indicators: Indicators.ENGINE_VERSION, technicalIntelligence: TI.ENGINE_VERSION,
+    relevance: Relevance.ENGINE_VERSION, klartext: Klartext.ENGINE_VERSION || null,
     factors: Factors.VERSION
+  },
+  home: homeIndex,
+  editorial: {
+    recognition: { entries: Object.keys(RECOGNITION).length, source: "discover/config/company-recognition.json" },
+    themes: (THEMES.themes || []).map((t) => ({ id: t.id, title: t.title, members: t.tickers.length })),
+    note: "Bekanntheit und Themen sind redaktionelle Zuordnungen. Sie entscheiden nie, ob ein Titel " +
+          "in einer Reihe steht - nur, wie weit vorn er innerhalb der qualifizierten Titel gezeigt wird."
   },
   generatedAt: new Date().toISOString(),
   gates: GATES,
@@ -1198,6 +1489,8 @@ const meta = {
     rankingScope: METHODOLOGY.universes[u.universeId].rankingScope
   })),
   rows: rowIndex,
+  rowConfigs: ROWS.map((r) => ({ id: r.id, title: r.title, theme: r.theme || null,
+                                 microRange: r.microRange || "6M", rule: r.rule || null })),
   sources: [
     "quant/data/market/factors/factors-GATE_500.json",
     "quant/data/market/scale/universe-GATE_500.json",

@@ -34,14 +34,20 @@ test("Realtime wird nicht behauptet, solange das Gate aus ist", { skip: !vorhand
 });
 
 test("eine Startseite kostet eine feste, kleine Zahl von Abrufen (§12)", { skip: !vorhanden }, () => {
-  /* Discovery-first darf nicht heissen: ein Abruf je Titel. Die Startseite
-     laedt meta + eine Datei je Zeile - unabhaengig von der Universumsgroesse. */
+  /* Discovery-first darf nicht heissen: ein Abruf je Titel. Seit V3 laedt
+     die Startseite meta + das erste Stueck des Startseiten-Manifests; die
+     weiteren Stuecke kommen erst, wenn man dorthin scrollt. Unabhaengig
+     von der Universumsgroesse - 498 oder 7 000 Titel kosten dieselben
+     Abrufe. */
   for (const universe of meta.universes) {
-    const zeilen = readdirSync(join(DATA, "rows", universe.universeId));
-    const abrufe = 1 + zeilen.length;          // meta + Zeilen
-    assert.ok(abrufe <= 10, universe.universeId + " braucht " + abrufe + " Abrufe");
-    assert.ok(universe.securities > abrufe * 10,
+    const home = (meta.home || []).find((h) => h.universeId === universe.universeId);
+    assert.ok(home && home.chunks.length >= 1, universe.universeId + " ohne Startseiten-Manifest");
+    const ueberDerFalz = 2;                    // meta + erstes Stueck
+    const gesamt = 1 + home.chunks.length;
+    assert.ok(gesamt <= 5, universe.universeId + " braucht " + gesamt + " Abrufe");
+    assert.ok(universe.securities > gesamt * 10,
       "der Vorteil der Vorberechnung muss deutlich sein");
+    assert.equal(ueberDerFalz, 2);
   }
 });
 

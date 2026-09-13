@@ -110,7 +110,7 @@
              Firmennamen, keine Kuerzelliste. */
           el("span", { class: "nm" }, [
             document.createTextNode(hit.n || hit.s),
-            el("em", { text: [hit.s, hit.sec, hit.m ? null : "Modelltitel",
+            el("em", { text: [hit.s, hit.a || hit.sec, hit.m ? null : "Modelltitel",
                               hit.h ? "am Jahreshoch" : null].filter(Boolean).join(" · ") })
           ]),
           miniPfad(hit),

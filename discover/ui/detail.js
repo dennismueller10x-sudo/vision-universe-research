@@ -861,19 +861,29 @@
              low: cut(bars.low), close: cut(bars.close), volume: cut(bars.volume) };
   }
 
-  /** Ohne Kursreihe: der Renditepfad gross, plus der Grund. */
+  /** Ohne Kursreihe: die Renditeleiter gross, plus der Grund.
+
+      Vorher stand hier der rebasierte Renditepfad als Kurve. Er war
+      rechnerisch korrekt und sah trotzdem aus wie ein Kurschart - seit
+      V3 gibt es ohne Kursreihe keine Kurve mehr, nur die vier Renditen
+      als Balken (Chart Truth Contract, §12). */
   function noSeries(detail) {
     var host = el("div", {});
-    if (Array.isArray(detail.performancePath) && detail.performancePath.length > 2) {
-      var chart = C().pathChart(detail.performancePath, { width: 900, height: 300,
-        label: detail.symbol + ": Renditepfad über zwölf Monate" });
-      chart.setAttribute("class", "dx-spark dx-hero-chart");
+    var MC = D.MicroChart;
+    var leiter = MC ? MC.ladder(detail.metrics, { width: 900, height: 260, values: true,
+                                                    symbol: detail.symbol }) : null;
+    if (leiter) {
+      leiter.classList.add("dx-ladder-gross");
       host.appendChild(el("div", { class: "dx-chart", style: "padding:22px" }, [
-        chart,
+        el("p", { class: "dx-chart-head", style: "margin:0 0 10px" }, [
+          el("b", { text: "Rendite über 1, 3, 6 und 12 Monate" }),
+          el("span", { text: " · als Balken, nicht als Kurskurve" })
+        ]),
+        leiter,
         el("p", { style: "margin:14px 2px 0;font-size:12px;color:var(--discover-dim);line-height:1.6",
-          text: "Rebasiert auf 100, zurückgerechnet aus den ausgelieferten Renditen über 12, 6, " +
-                "3 und 1 Monat. Vier Stützstellen und der heutige Stand — zwischen ihnen wird " +
-                "nichts behauptet." })
+          text: "Vier Zeiträume, vier gerechnete Renditen — dazwischen wird nichts behauptet. " +
+                "Absolute Kurse dieses Titels sind Anbieterdaten und bleiben zurück; deshalb " +
+                "gibt es hier keinen Kursverlauf." })
       ]));
     }
     host.appendChild(el("div", { style: "margin-top:18px" }, [

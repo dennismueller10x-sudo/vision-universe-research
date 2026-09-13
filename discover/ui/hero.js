@@ -28,10 +28,9 @@
 
   /* Der vollständige Wortlaut der Bildunterschrift - auf kleinen Displays
      zeigt die Fläche nur zwei Zeilen davon, der Rest steht im title. */
-  var CAPTION_PATH = "Renditepfad über zwölf Monate, rebasiert auf 100 — zurückgerechnet aus den " +
-    "ausgelieferten Renditen über 12, 6, 3 und 1 Monat. Vier Stützstellen und der heutige Stand; " +
-    "dazwischen wird nichts behauptet. Absolute Kursniveaus dieses Titels sind Anbieterdaten und " +
-    "bleiben zurück.";
+  var CAPTION_PATH = "Vier Renditen über 1, 3, 6 und 12 Monate, gezeichnet als Balken. Das ist " +
+    "kein Kursverlauf: zwischen den Zeiträumen wird nichts behauptet, und absolute Kursniveaus " +
+    "dieses Titels sind Anbieterdaten und bleiben zurück.";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function C() { return D.Cards; }
@@ -182,29 +181,31 @@
     host.appendChild(chartHost);
 
     var kunst = D.Artwork.stockArtwork(stock, { width: 640, height: 320, ticker: true,
-                                                band: true, scale: "hero" });
+                                                scale: "hero", range: "1J" });
     kunst.classList.add("dx-hero-chart");
     chartHost.appendChild(kunst);
 
-    if (Array.isArray(stock.sparkline) && stock.sparkline.length > 2) {
+    var MC = D.MicroChart;
+    var ps = stock.priceSeries;
+    if (MC && ps && ps.status === "CALCULATED" && (ps.ranges || ps.points)) {
       host.appendChild(el("p", { class: "dx-hero-caption",
-        text: "Echter Kursverlauf der letzten zwölf Monate, split-bereinigt. Für diesen " +
-              "Titel ist die Kursreihe freigegeben." }));
+        text: "Echter Kursverlauf über zwölf Monate — Tagesschlusskurse, split-bereinigt. " +
+              "Quelle " + ps.source + ", Stand " + (ps.asOf || "") + ". Für diesen Titel ist die " +
+              "Kursreihe freigegeben." }));
       return host;
     }
-    if (Array.isArray(stock.performancePath) && stock.performancePath.length > 2) {
-      /* Die Kennzeichnung bleibt vollstaendig - sie ist eine
-         Lizenzaussage, keine Bildunterschrift. Sichtbar stehen die zwei
-         Saetze, die man lesen muss; der Rest, der erklaert wie gerechnet
-         wurde, haengt am title-Attribut und steht auf der Aktienseite. */
+    var m = stock.metrics || {};
+    if (isNum(m.return12M) || isNum(m.return6M) || isNum(m.return3M) || isNum(m.return1M)) {
+      /* Die Kennzeichnung ist eine Lizenzaussage, keine Bildunterschrift:
+         was man sieht, sind vier Renditen als Balken - und ausdruecklich
+         kein Kursverlauf. */
       host.appendChild(el("p", { class: "dx-hero-caption", title: CAPTION_PATH,
-        text: "Wertentwicklung statt Kurs: Die Punkte zeigen die Renditen über 12, 6, 3 " +
-              "und 1 Monat (rebasierter Renditepfad — keine Kurskurve). Absolute Kurse " +
-              "dieses Titels sind Anbieterdaten und bleiben zurück." }));
+        text: "Rendite über 1, 3, 6 und 12 Monate — als Balken, nicht als Kurskurve. " +
+              "Absolute Kurse dieses Titels sind Anbieterdaten und bleiben zurück." }));
       return host;
     }
     host.appendChild(el("p", { class: "dx-hero-caption",
-      text: "Für diesen Titel wird kein Verlauf ausgeliefert." }));
+      text: "Für diesen Titel wird keine Rendite ausgeliefert." }));
     return host;
   }
 

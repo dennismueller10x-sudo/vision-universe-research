@@ -1380,3 +1380,140 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-spanne-bar{background:linear-gradient(90deg, var(--discover-line), var(--w-2, var(--w)))}
   .dx-spanne-bar i{box-shadow:0 0 0 4px var(--w-glow)}
 }
+
+/* =========================================================================
+   V3 — SURFACES, MICRO-CHART, RENDITELEITER
+
+   Neue Bausteine der Startseite. Sie benutzen dieselben Welt-Variablen
+   wie alles andere; kein zweites Farbsystem.
+   ========================================================================= */
+
+/* ---------------------------------------------------- Karte: Taetigkeit */
+.dx-was-line{margin:2px 16px 0;font-size:12px;color:var(--discover-dim);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.dx-poster-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dx-poster-cta{font-size:11.5px;color:var(--discover-dim);white-space:nowrap;flex:0 0 auto;
+  transition:color var(--discover-motion-normal) var(--discover-ease)}
+.dx-poster:hover .dx-poster-cta,.dx-poster:focus-visible .dx-poster-cta{color:var(--discover-text)}
+/* Schon angesehen: ein kleiner Punkt hinter dem Namen. Kein Stempel. */
+.dx-poster--gesehen .dx-poster-name::after{content:"";display:inline-block;width:6px;height:6px;
+  border-radius:50%;background:var(--discover-dim);margin-left:8px;vertical-align:middle;opacity:.7}
+
+/* ------------------------------------------------------ Renditeleiter */
+.dx-ladder-base{stroke:rgba(255,255,255,.22);stroke-width:1}
+.dx-ladder-bar{fill:var(--w);opacity:.9}
+.dx-ladder-bar.up{fill:var(--discover-up)}
+.dx-ladder-bar.down{fill:var(--discover-down)}
+.dx-ladder-bar.flat,.dx-ladder-bar--leer{fill:rgba(255,255,255,.18)}
+.dx-ladder-label{fill:var(--discover-dim);font-family:var(--sans);letter-spacing:.08em}
+.dx-ladder-val{fill:var(--discover-text);font-weight:700;font-family:var(--sans)}
+.dx-ladder-val.up{fill:var(--discover-up)}
+.dx-ladder-val.down{fill:var(--discover-down)}
+.dx-ladder-svg{width:100%;height:auto;display:block;color:var(--w)}
+.dx-ladder-gross{max-height:260px}
+/* Auf der Karte tragen die Balken die Weltfarbe, nicht Gruen/Rot: die
+   grosse Zahl darueber sagt schon, in welche Richtung es ging. Auf den
+   grossen Flaechen (Hero, Detail) sind Gruen und Rot lesbar und richtig. */
+.dx-art--poster .dx-ladder-bar.up,.dx-art--mini .dx-ladder-bar.up{fill:var(--w);opacity:.82}
+.dx-art--poster .dx-ladder-bar.down,.dx-art--mini .dx-ladder-bar.down{fill:var(--discover-down);opacity:.72}
+.dx-art--mini .dx-ladder-label{display:none}
+
+/* --------------------------------------------------------- Micro-Chart */
+.dx-micro{width:100%;height:100%;display:block;color:var(--w);overflow:visible}
+.dx-micro-date{fill:var(--discover-dim);font-size:9.5px;font-family:var(--sans)}
+.dx-micro--down .dx-art-line{stroke:var(--discover-down)}
+.dx-micro--down .dx-art-node{fill:var(--discover-down)}
+
+/* ----------------------------------------------------------- Themenwelt */
+.dx-theme{position:relative;margin:56px 0 0;padding:34px 0 6px;isolation:isolate}
+.dx-theme-bg{position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(70% 60% at 12% 0%, var(--w-glow), transparent 60%),
+             linear-gradient(180deg, var(--w-soft), transparent 70%);
+  border-top:1px solid var(--discover-line)}
+.dx-theme-head{position:relative;padding:0 var(--discover-gutter) 18px;max-width:780px}
+.dx-theme-head .dx-kicker{margin-bottom:10px}
+.dx-theme-head h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.025em;line-height:1.05;margin:0 0 10px;
+  font-weight:800}
+.dx-theme-lead{font-size:16px;color:var(--discover-text);opacity:.85;margin:0 0 8px;line-height:1.5}
+.dx-theme-note{font-size:11.5px;color:var(--discover-dim);margin:0 0 14px;line-height:1.5}
+.dx-theme-head .dx-more{display:inline-flex}
+
+/* --------------------------------------------------------- Grosse Karte */
+.dx-featured{position:relative;margin:56px var(--discover-gutter) 0;isolation:isolate}
+.dx-featured-bg{position:absolute;inset:0;z-index:-1;border-radius:var(--discover-radius-lg);
+  background:radial-gradient(80% 90% at 80% 10%, var(--w-glow), transparent 62%),
+             linear-gradient(180deg,var(--discover-surface),var(--discover-bg-2));
+  border:1px solid var(--discover-line)}
+.dx-featured-card{position:relative;display:grid;grid-template-columns:1.05fr 1fr;gap:28px;padding:34px;
+  text-decoration:none;color:var(--discover-text);border-radius:var(--discover-radius-lg);
+  transition:transform var(--discover-motion-normal) var(--discover-ease)}
+.dx-featured-card:hover{transform:translateY(-3px)}
+.dx-featured-card:focus-visible{outline:2px solid var(--w);outline-offset:4px}
+.dx-featured-name{font-size:clamp(30px,4vw,48px);letter-spacing:-.03em;line-height:1;margin:0 0 8px;font-weight:800}
+.dx-featured-copy .dx-was-line{margin:0;font-size:14px;-webkit-line-clamp:2}
+.dx-featured-story{font-size:19px;font-weight:600;margin:14px 0 10px;display:flex;gap:10px;align-items:baseline;line-height:1.3}
+.dx-featured-zahl{display:flex;align-items:baseline;gap:10px;margin:6px 0 8px}
+.dx-featured-zahl b{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.dx-featured-zahl b.up{color:var(--discover-up)}
+.dx-featured-zahl b.down{color:var(--discover-down)}
+.dx-featured-zahl span{color:var(--discover-dim);font-size:13px}
+.dx-featured-copy .dx-zusatz{margin:0}
+.dx-featured-cta{margin-top:18px;display:inline-flex}
+.dx-featured-media{display:flex;flex-direction:column;justify-content:flex-end;gap:10px;min-height:220px;color:var(--w)}
+.dx-featured-media svg{width:100%;height:220px;display:block}
+.dx-featured-caption{font-size:11px;color:var(--discover-dim);margin:0;line-height:1.5}
+
+/* --------------------------------------------------- Einzeln entdecken */
+.dx-immersive{position:relative;margin:64px var(--discover-gutter) 0;border-radius:var(--discover-radius-lg);
+  overflow:hidden;isolation:isolate}
+.dx-immersive-bg{position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(90% 80% at 50% 110%, rgba(111,157,255,.22), transparent 60%),
+             linear-gradient(180deg,var(--discover-surface-2),var(--discover-bg-2));
+  border:1px solid var(--discover-line-strong);border-radius:var(--discover-radius-lg)}
+.dx-immersive-inner{position:relative;padding:56px 34px;text-align:center;max-width:640px;margin:0 auto}
+.dx-immersive h2{font-size:clamp(28px,4vw,46px);letter-spacing:-.03em;line-height:1.02;margin:0 0 12px;font-weight:800}
+.dx-immersive-lead{color:var(--discover-dim);font-size:16px;margin:0 0 22px;line-height:1.5}
+.dx-immersive .dx-cta{justify-content:center}
+
+/* --------------------------------------------------- Zuletzt angesehen */
+.dx-recent{margin:36px 0 0;padding:0 var(--discover-gutter)}
+.dx-recent .dx-rail-head{padding:0 0 12px}
+.dx-recent-clear{margin-left:auto;background:none;border:1px solid var(--discover-line);
+  color:var(--discover-dim);border-radius:999px;padding:6px 12px;font-size:11.5px;cursor:pointer;
+  font-family:inherit}
+.dx-recent-clear:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-recent-track{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;
+  -webkit-overflow-scrolling:touch}
+.dx-recent-track::-webkit-scrollbar{display:none}
+.dx-recent-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;padding:10px 14px;
+  border-radius:999px;border:1px solid var(--discover-line);background:var(--discover-surface);
+  color:var(--discover-text);text-decoration:none;font-size:13px}
+.dx-recent-chip:hover{border-color:var(--discover-line-strong)}
+.dx-recent-chip i{width:8px;height:8px;border-radius:50%;background:var(--w)}
+.dx-recent-chip b{font-weight:600}
+.dx-recent-chip span{color:var(--discover-dim);font-size:11px}
+
+/* --------------------------------------------------------- Nachladen */
+.dx-sentinel{height:1px}
+.dx-cta--stapel{flex-wrap:wrap;justify-content:center}
+
+/* --------------------------------------------------------------- Mobil */
+@media (max-width:860px){
+  .dx-featured{margin:40px var(--discover-gutter) 0}
+  .dx-featured-card{grid-template-columns:1fr;padding:22px 20px 24px;gap:14px}
+  .dx-featured-media{min-height:0}
+  .dx-featured-media svg{height:150px}
+  .dx-featured-name{font-size:clamp(28px,8vw,36px)}
+  .dx-featured-story{font-size:17px}
+  .dx-featured-zahl b{font-size:36px}
+  .dx-theme{margin-top:40px;padding-top:26px}
+  .dx-theme-head h2{font-size:26px}
+  .dx-theme-lead{font-size:14.5px}
+  .dx-theme-note{font-size:11px}
+  .dx-immersive{margin:44px var(--discover-gutter) 0}
+  .dx-immersive-inner{padding:40px 22px}
+  .dx-immersive h2{font-size:30px}
+  .dx-immersive-lead{font-size:14.5px}
+  .dx-poster .dx-was-line{font-size:11.5px}
+  .dx-recent{margin-top:26px}
+}

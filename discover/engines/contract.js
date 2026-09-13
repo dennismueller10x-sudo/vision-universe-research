@@ -32,7 +32,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var CONTRACT_VERSION = "discover-contract-1.0.0";
+  var CONTRACT_VERSION = "discover-contract-1.1.0";
 
   var FIELD_STATUS = [
     "CALCULATED", "WITHHELD_REDISTRIBUTION", "SOURCE_MISSING",
@@ -138,6 +138,20 @@
       performancePathStatus: Array.isArray(raw.performancePath) ? "CALCULATED"
         : (raw.performancePathStatus || "INSUFFICIENT_HISTORY"),
       hasPriceSeries: !!raw.hasPriceSeries,
+      /* Die Micro-Kursreihe (V3). Sie ist die einzige Grundlage, aus der
+         eine Karte einen Verlauf zeichnen darf - und sie traegt ihre
+         Herkunft: Quelle, Reihentyp, Stand. Ohne Status CALCULATED gibt
+         es keine Punkte, und ohne Punkte gibt es keinen Chart. Der
+         rebasierte Renditepfad bleibt als ZAHLENREIHE erhalten, wird aber
+         nicht mehr als Linie gezeichnet (Chart Truth Contract, §12). */
+      priceSeries: raw.priceSeries && typeof raw.priceSeries === "object" ? raw.priceSeries
+        : { status: raw.priceSeriesStatus || "SOURCE_MISSING", source: null,
+            priceSeriesType: null, asOf: null, ranges: null, points: null, message: null },
+      /* Redaktionelle Metadata (discover/config/company-recognition.json):
+         womit die Firma Geld verdient, und wie bekannt sie ist. Kein Score,
+         keine Kennzahl - eine Beschriftung. */
+      was: typeof raw.was === "string" && raw.was ? raw.was : null,
+      recognitionTier: isNum(raw.recognitionTier) ? raw.recognitionTier : null,
       signals: {},
       metrics: {},
       metricStatus: {},
@@ -203,6 +217,23 @@
         throw new Error("discover/contract: Metrik " + m + " ohne Wert, aber Status CALCULATED");
       }
     });
+    /* Der Chart Truth Contract: Punkte nur mit Status CALCULATED, und
+       CALCULATED nur mit Punkten. Alles andere waere ein Verlauf, den
+       niemand belegen kann - oder ein belegter, den niemand sieht. */
+    var ps = stock.priceSeries;
+    if (ps && typeof ps === "object") {
+      var hatPunkte = (Array.isArray(ps.points) && ps.points.length > 0) ||
+                      (ps.ranges && Object.keys(ps.ranges).length > 0);
+      if (ps.status === "CALCULATED" && !hatPunkte) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries CALCULATED ohne Punkte");
+      }
+      if (ps.status !== "CALCULATED" && hatPunkte) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries traegt Punkte mit Status " + ps.status);
+      }
+      if (ps.status === "CALCULATED" && !ps.source) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries ohne Herkunft");
+      }
+    }
     /* Ein Signal ohne die Kennzahl, aus der es entsteht, waere eine
        Behauptung. Die beiden teuersten pruefen wir direkt. */
     if (stock.signals.new52WeekHigh && stock.metrics.distanceTo52wHigh === null) {
@@ -230,6 +261,9 @@
       sparklineStatus: stock.sparklineStatus,
       performancePath: stock.performancePath,
       performancePathStatus: stock.performancePathStatus,
+      priceSeries: stock.priceSeries || null,
+      was: stock.was || null,
+      recognitionTier: stock.recognitionTier || null,
       world: stock.world || null,
       signals: stock.signals,
       metrics: stock.metrics,
@@ -257,6 +291,7 @@
     return {
       symbol: stock.symbol, companyName: stock.companyName, sector: stock.sector,
       dataMode: stock.dataMode, world: stock.world || null,
+      was: stock.was || null,
       price: stock.price, changePercent: stock.changePercent,
       performancePath: stock.performancePath,
       badges: (stock.badges || []).slice(0, 1),

@@ -148,9 +148,12 @@ await check("Eingangsfläche erzählt: Einordnung, Name, eine Zahl, ein Satz", a
 
 await check("Eingangsfläche zeigt ein Datenbild aus echten Werten", async () => {
   const pfade = await desktop.$$eval(".dx-hero-chart path", (ns) => ns.length);
-  assert(pfade > 0, "kein Verlauf in der Eingangsfläche");
+  /* V3: ein Datenbild ist eine echte Linie (Kursreihe) ODER die
+     Renditeleiter - nie mehr ein Renditepfad als Kurve. */
+  const art = await desktop.getAttribute(".dx-hero-chart", "data-art");
+  assert(art === "price" || art === "ladder", "kein Datenbild in der Eingangsfläche");
   const bildunterschrift = await desktop.textContent(".dx-hero-caption");
-  assert(/Renditepfad|Kursverlauf/.test(bildunterschrift), "das Datenbild ist nicht benannt");
+  assert(/Rendite über|Kursverlauf/.test(bildunterschrift), "das Datenbild ist nicht benannt");
 });
 
 await check("Featured-Wechsel über die Striche", async () => {
@@ -164,36 +167,49 @@ await check("Featured-Wechsel über die Striche", async () => {
 });
 
 await check("Signature-Reihe: TOP 10 mit Rangziffern", async () => {
-  const ziffern = await desktop.$$eval('[data-row="top-10"] .dx-rank-num',
+  const ziffern = await desktop.$$eval('[data-surface-type="ranking"] .dx-rank-num',
     (ns) => ns.map((n) => n.textContent.trim()));
   assert(ziffern.length === 10, "TOP 10 zeigt " + ziffern.length + " Titel");
   assert(ziffern[0] === "01" && ziffern[9] === "10", "Rangziffern stimmen nicht: " + ziffern.join(","));
-  await hinScrollen(desktop, '[data-row="top-10"]', 0, 150);
+  await hinScrollen(desktop, '[data-surface-type="ranking"]', 0, 150);
   await shot(desktop, "02-top10");
 });
 
 await check("Die Reihen haben verschiedene Formen (§6)", async () => {
+  /* V3 laedt die Startseite in Stuecken: erst bis unten scrollen. */
+  for (let i = 0; i < 14; i++) { await desktop.mouse.wheel(0, 1600); await desktop.waitForTimeout(250); }
+  await desktop.waitForLoadState("networkidle");
+  await desktop.waitForTimeout(400);
   const formen = await desktop.evaluate(() => ({
     rang: document.querySelectorAll(".dx-rank").length,
     poster: document.querySelectorAll(".dx-poster:not(.dx-poster--compact)").length,
     kompakt: document.querySelectorAll(".dx-poster--compact").length,
-    sektor: document.querySelectorAll(".dx-sector").length
+    sektor: document.querySelectorAll(".dx-sector").length,
+    thema: document.querySelectorAll(".dx-theme").length,
+    gross: document.querySelectorAll(".dx-featured").length,
+    einzeln: document.querySelectorAll(".dx-immersive").length
   }));
   assert(formen.rang >= 10, "keine Rang-Poster");
   assert(formen.poster > 0, "keine Standard-Poster");
   assert(formen.kompakt > 0, "keine kompakten Poster");
   assert(formen.sektor > 0, "keine Sektorkacheln");
+  assert(formen.thema >= 2, "keine Themenwelten");
+  assert(formen.gross === 1, "keine grosse Karte");
+  assert(formen.einzeln === 1, "kein Einstieg in den Einzelmodus");
+  await desktop.evaluate(() => window.scrollTo(0, 0));
 });
 
-await check("Jedes Poster zeigt Symbol, Signal und einen Verlauf", async () => {
+await check("Jedes Poster zeigt Symbol, Signal und ein Datenbild", async () => {
+  /* V3: das Datenbild ist eine Linie (nur mit Kursreihe) oder die
+     Renditeleiter - beides sind Daten, keines davon ein Fake-Chart. */
   const befund = await desktop.$$eval(".dx-poster", (posters) => posters.slice(0, 24).map((p) => ({
     sym: (p.querySelector(".dx-poster-sym") || {}).textContent || "",
-    media: p.querySelectorAll(".dx-poster-media svg path").length,
+    media: p.querySelectorAll(".dx-poster-media svg path, .dx-poster-media svg .dx-ladder-bar").length,
     text: p.textContent
   })));
   for (const p of befund) {
     assert(p.sym.trim().length > 0, "Poster ohne Symbol");
-    assert(p.media > 0, p.sym + ": kein Verlauf gezeichnet");
+    assert(p.media > 0, p.sym + ": kein Datenbild gezeichnet");
     assert(!/\b(NaN|undefined|null)\b/.test(p.text), p.sym + ": Platzhalterwert auf der Karte");
   }
 });
@@ -394,8 +410,11 @@ await check("Titel ohne ausgelieferte Kursreihe bleibt hochwertig (§23)", async
   await desktop.waitForTimeout(2600);
   const text = await desktop.textContent(".dx-detail");
   assert(/Kursreihe/.test(text), "kein Hinweis auf die fehlende Kursreihe");
-  const pfad = await desktop.$$eval(".dx-chart svg path", (ns) => ns.length);
-  assert(pfad > 0, "ohne Kursreihe fehlt auch der Renditepfad");
+  /* V3: ohne Kursreihe steht die Renditeleiter - keine Kurve. */
+  const balken = await desktop.$$eval(".dx-chart .dx-ladder-bar", (ns) => ns.length);
+  assert(balken >= 4, "ohne Kursreihe fehlt die Renditeleiter");
+  const kurve = await desktop.$$eval(".dx-chart .dx-spark", (ns) => ns.length);
+  assert(kurve === 0, "ohne Kursreihe wird trotzdem eine Kurve gezeichnet");
   const preis = await desktop.textContent(".dx-price");
   assert(!/NaN|0,00/.test(preis), "erfundener Kurs statt Begründung");
   await shot(desktop, "11-ohne-kursreihe");
@@ -454,28 +473,30 @@ await check("die Atmosphaere ist Flaeche, kein Kasten", async () => {
 });
 
 await check("das Datenbild folgt den Zahlen, nicht dem Zufall", async () => {
+  /* V3: Linie oder Leiter - die Form entsteht aus den Zahlen. Zwei Titel
+     sehen nur gleich aus, wenn ihre Zahlen gleich sind. */
   const bilder = await desktop.$$eval(".dx-rail-section .dx-poster .dx-art", (ns) =>
     ns.slice(0, 8).map((n) => ({
-      pfad: (n.querySelector(".dx-art-line") || {}).getAttribute
-        ? n.querySelector(".dx-art-line").getAttribute("d") : null,
+      form: n.getAttribute("data-art") === "price"
+        ? (n.querySelector(".dx-art-line") || { getAttribute: () => "" }).getAttribute("d")
+        : [...n.querySelectorAll(".dx-ladder-bar")].map((b) => b.getAttribute("height")).join(","),
       glanz: !!n.querySelector(".dx-art-glow"),
-      punkte: n.querySelectorAll(".dx-art-node").length,
       label: n.getAttribute("aria-label") || ""
     })));
   assert(bilder.length >= 4, "zu wenige Datenbilder");
-  const pfade = new Set(bilder.map((b) => b.pfad));
-  assert(pfade.size === bilder.length, "zwei Titel haben denselben Verlauf");
-  assert(bilder.every((b) => b.punkte >= 3), "die Stuetzstellen fehlen");
-  assert(bilder.every((b) => /Prozent/.test(b.label) && /rebasiert|Kursverlauf/i.test(b.label)),
+  const formen = new Set(bilder.map((b) => b.form));
+  assert(formen.size === bilder.length, "zwei Titel haben dasselbe Datenbild");
+  assert(bilder.every((b) => /Prozent/.test(b.label) && /Balken|Kursverlauf/i.test(b.label)),
     "das Datenbild traegt keine Beschreibung aus seinen eigenen Zahlen");
   await hinScrollen(desktop, ".dx-rail-section .dx-rail", 1, 200);
   await shot(desktop, "04-poster-artwork");
 });
 
-await check("der rebasierte Renditepfad ist als solcher benannt", async () => {
+await check("die Renditeleiter ist als solche benannt - kein Kursverlauf", async () => {
   const text = await desktop.textContent(".dx-hero-caption");
-  assert(/[Rr]ebasiert/.test(text) && /keine Kurskurve/.test(text),
-    "die Bildunterschrift nennt den Pfad nicht beim Namen: " + text);
+  assert(/Rendite über 1, 3, 6 und 12 Monate/.test(text) && /nicht als Kurskurve/.test(text) ||
+         /Echter Kursverlauf/.test(text),
+    "die Bildunterschrift sagt nicht, was man sieht: " + text);
   const zahlen = await desktop.$$eval(".dx-poster .num", (ns) => ns.map((n) => n.textContent));
   assert(!zahlen.some((z) => /^\s*\$/.test(z) && false), "unerwartete Kursangabe");
 });
@@ -604,7 +625,7 @@ await check("jede Zweitnennung sagt, woher man den Titel kennt", async () => {
 });
 
 await check("TOP 10 zeigt die echte Rangliste, ungefiltert", async () => {
-  const gezeigt = await desktop.$$eval("[data-row=\"top-10\"] .dx-poster-sym",
+  const gezeigt = await desktop.$$eval("[data-surface-type=\"ranking\"] .dx-poster-sym",
     (ns) => ns.map((n) => n.textContent));
   const echt = await desktop.evaluate(async () => {
     const r = await fetch("/discover/data/rows/US_REAL/market-leaders.json");

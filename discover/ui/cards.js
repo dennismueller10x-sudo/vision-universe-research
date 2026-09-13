@@ -12,14 +12,14 @@
    sein, WELCHES UNTERNEHMEN, WELCHES SIGNAL und WIE DER VERLAUF AUSSIEHT -
    und erst danach die Zahl.
 
-   WAS GEZEICHNET WIRD, WENN ES KEINE KURSREIHE GIBT
+   WAS GEZEICHNET WIRD, WENN ES KEINE KURSREIHE GIBT (V3)
 
    Fuer reale Titel bleiben absolute Kursniveaus nach der
-   Redistributionsregel zurueck. Statt einer leeren Flaeche zeichnet die
-   Karte dann den REBASIERTEN RENDITEPFAD: fuenf Stuetzstellen (12M, 6M,
-   3M, 1M, heute), zurueckgerechnet aus den freigegebenen Renditen und auf
-   100 normiert. Die Stuetzstellen sind sichtbar markiert - zwischen ihnen
-   wird nichts behauptet, was nicht ausgeliefert wurde.
+   Redistributionsregel zurueck. Die Karte zeichnet dann KEINE Linie -
+   sondern die vier Renditen ueber 1, 3, 6 und 12 Monate als Balken
+   (ui/microchart.js). Eine Linie gibt es nur aus einer ausgelieferten
+   Kursreihe. Der fruehere Renditepfad sah aus wie ein Chart und war
+   keiner; das ist vorbei.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -242,9 +242,12 @@
     var preis = valueOf(card.price);
     var change = valueOf(card.changePercent);
 
+    var gesehen = D() && D().memory && D().memory.opened(card.symbol);
     var node = el("a", {
-      class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : ""),
+      class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : "") +
+             (gesehen ? " dx-poster--gesehen" : ""),
       href: "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
+      "data-symbol": card.symbol,
       /* Die Karte trägt die Welt ihrer REIHE; das Signal darauf trägt seine
          eigene. So bleibt die Reihe als Welt erkennbar, ohne dass ein
          abweichendes Signal verschwiegen wird. */
@@ -268,6 +271,11 @@
           ])
         ])
       ]),
+      /* Womit die Firma Geld verdient - ein Einzeiler aus der
+         redaktionellen Liste. Er beantwortet "Was ist das?", bevor die
+         Zahl "Was ist passiert?" beantwortet. Wo keiner vorliegt, steht
+         auch keiner: erfunden wird nichts. */
+      card.was && !kompakt ? el("p", { class: "dx-was-line", text: card.was }) : null,
       /* Die eine Aussage. Der Punkt davor trägt die Farbwelt - die Farbe
          wiederholt, was im Text steht, sie ersetzt ihn nie. */
       text.story ? el("p", { class: "dx-story" }, [
@@ -288,12 +296,20 @@
     ]);
 
     /* Die kurze Zusatzinfo. Sie wiederholt die Überschrift nicht - dafür
-       sorgt klartext.js - und sie ist immer Text, nie nur Farbe. */
-    if (text.zusatz && !kompakt) {
+       sorgt klartext.js - und sie ist immer Text, nie nur Farbe. Rechts
+       daneben der Grund weiterzuklicken: ein Pfeil, der sagt, dass hinter
+       der Karte eine Seite liegt - auch ohne Hover. */
+    if (!kompakt) {
       node.appendChild(el("div", { class: "dx-poster-foot" }, [
-        el("span", { class: "dx-zusatz", text: text.zusatz })
+        text.zusatz ? el("span", { class: "dx-zusatz", text: text.zusatz }) : el("span", {}),
+        el("span", { class: "dx-poster-cta", "aria-hidden": "true", text: "Ansehen →" })
       ]));
     }
+    node.addEventListener("click", function () {
+      var A = D() && D().Analytics;
+      if (A) A.track("card_open", { universeId: options.universeId || "US_REAL", rowId: options.rowId || null,
+                                    symbol: card.symbol, position: options.position || options.rank || null });
+    });
 
     /* Der Hover-Vorhang zeigt, was als Nächstes interessiert: dieselbe
        Aktie über drei Zeiträume. Keine Scores - drei Zahlen, die jeder
@@ -425,12 +441,12 @@
         ? rankPoster(card, { rowId: row.rowId, universeId: row.universeId, rank: index + 1,
                              world: welt, variant: "rank" })
         : poster(card, { rowId: row.rowId, universeId: row.universeId, variant: variant,
-                         world: welt, hinweis: hinweis });
+                         world: welt, hinweis: hinweis, position: index + 1 });
       item.setAttribute("role", "listitem");
       track.appendChild(item);
     });
 
-    section.appendChild(withRailNav(track, { label: row.rowId }));
+    section.appendChild(withRailNav(track, { label: row.rowId, universeId: row.universeId }));
     return section;
   }
 
@@ -453,8 +469,19 @@
 
     var swipe = D() && D().Swipe ? D().Swipe.verbinden(track, {
       label: options.label || null,
+      universeId: options.universeId || null,
       onKarte: options.onKarte || null,
-      prefetch: options.prefetch || null
+      /* Vorbereiten, was als Naechstes kommt: die Aktienseite der
+         naechsten ein, zwei Karten - nicht die ganze Sammlung. */
+      prefetch: options.prefetch || function (index) {
+        var kind = track.children[index];
+        var sym = kind && kind.getAttribute && (kind.getAttribute("data-symbol") ||
+                  (kind.querySelector && kind.querySelector("[data-symbol]") &&
+                   kind.querySelector("[data-symbol]").getAttribute("data-symbol")));
+        if (sym && options.universeId) {
+          D().Swipe.vorladen("/discover/data/stocks/" + options.universeId + "/" + sym + ".json");
+        }
+      }
     }) : null;
 
     function schritt(richtung) {

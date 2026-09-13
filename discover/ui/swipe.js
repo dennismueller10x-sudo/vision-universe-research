@@ -60,9 +60,26 @@
      welche Karte zur Aktienseite fuehrt. Nicht, wie lange jemand
      wischt. */
   var senke = null;
+  /* Die Ereignisnamen dieses Moduls sind intern. Nach aussen gehen sie
+     ueber den Ereignis-Vertrag (engines/analytics.js) - als "swipe" mit
+     Methode, oder als "card_view". Was dort nicht vereinbart ist, bleibt
+     hier. */
+  var VERTRAG = {
+    "swipe:tastatur": ["swipe", "keyboard"], "swipe:ziehen": ["swipe", "drag"],
+    "swipe:knopf": ["swipe", "button"], "karte:sichtbar": ["card_view", null]
+  };
   function melden(name, daten) {
-    if (typeof senke !== "function") return;
-    try { senke(name, daten || {}); } catch (err) { /* Analytics darf nie stoeren */ }
+    daten = daten || {};
+    if (typeof senke === "function") {
+      try { senke(name, daten); } catch (err) { /* Analytics darf nie stoeren */ }
+    }
+    var A = global.VUDiscover && global.VUDiscover.Analytics;
+    var ziel = VERTRAG[name];
+    if (!A || !ziel) return;
+    try {
+      A.track(ziel[0], { universeId: daten.universeId || null, rowId: daten.sammlung || null,
+                         method: ziel[1], position: daten.index, symbol: daten.symbol || null });
+    } catch (err) { /* nie stoeren */ }
   }
   function setSink(fn) { senke = typeof fn === "function" ? fn : null; }
 
@@ -110,6 +127,7 @@
   function verbinden(track, opt) {
     opt = opt || {};
     if (!track || track.__swipe) return track && track.__swipe;
+    var universeId = opt.universeId || null;
 
     var karten = function () { return Array.prototype.slice.call(track.children); };
     var aufraeumer = [];
@@ -128,7 +146,7 @@
       else if (e.key === "Home") { track.scrollLeft = 0; e.preventDefault(); }
       else if (e.key === "End") { track.scrollLeft = track.scrollWidth; e.preventDefault(); }
       else return;
-      melden("swipe:tastatur", { sammlung: opt.label, taste: e.key });
+      melden("swipe:tastatur", { sammlung: opt.label, taste: e.key, universeId: universeId });
     });
 
     /* ------------------------------------------------------ Maus ziehen */
@@ -167,7 +185,7 @@
         global.setTimeout(function () {
           track.removeEventListener("click", schlucken, { capture: true });
         }, 0);
-        melden("swipe:ziehen", { sammlung: opt.label });
+        melden("swipe:ziehen", { sammlung: opt.label, universeId: universeId });
       }
       if (e && e.pointerId !== undefined && track.hasPointerCapture &&
           track.hasPointerCapture(e.pointerId)) {
@@ -189,7 +207,8 @@
           var index = alle.indexOf(eintrag.target);
           if (index < 0 || gesehen[index]) return;
           gesehen[index] = true;
-          melden("karte:sichtbar", { sammlung: opt.label, index: index });
+          melden("karte:sichtbar", { sammlung: opt.label, index: index, universeId: universeId,
+                                     symbol: eintrag.target.getAttribute("data-symbol") });
           if (typeof opt.onKarte === "function") opt.onKarte(index, eintrag.target);
           /* Vorbereitet wird genau das, was als Naechstes kommt - nicht
              die ganze Sammlung. */
@@ -241,7 +260,7 @@
     function schritt(richtung) {
       var verhalten = reduzierteBewegung() ? "auto" : "smooth";
       track.scrollBy({ left: richtung * schrittweite(), behavior: verhalten });
-      melden("swipe:knopf", { sammlung: opt.label, richtung: richtung });
+      melden("swipe:knopf", { sammlung: opt.label, richtung: richtung, universeId: universeId });
     }
 
     var api = {

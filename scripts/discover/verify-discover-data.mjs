@@ -37,6 +37,14 @@ const Scoring = require(join(root, "discover", "engines", "scoring.js"));
 const High52w = require(join(root, "discover", "engines", "high52w.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
 const METHODOLOGY = require(join(root, "discover", "methodology", "discover-v1.json"));
+const Relevance = require(join(root, "discover", "engines", "relevance.js"));
+const RECOGNITION = JSON.parse(readFileSync(join(root, "discover", "config", "company-recognition.json"), "utf8")).companies || {};
+const THEMES = JSON.parse(readFileSync(join(root, "discover", "config", "themes.json"), "utf8"));
+/* Dieselbe Reihenliste wie im Build: Methodik plus Themen. */
+const ROWS = METHODOLOGY.rows.concat((THEMES.themes || []).map((t) => ({
+  id: "thema-" + t.id, title: t.title, sort: "leadershipScore", direction: "desc",
+  filter: "thema", tickers: t.tickers, theme: t.id
+})));
 
 const PREVIEW = JSON.parse(readFileSync(join(root, "quant", "config", "development-preview.json"), "utf8"));
 const GATES = DisplayPolicy.gatesFromConfig(
@@ -105,7 +113,7 @@ for (const universe of meta.universes) {
   console.log(`  ${id}: ${universe.securities} Titel, ${rows.length} Zeilen, ${universe.detailPages} Detailseiten`);
 
   const detailFiles = new Set(readdirSync(join(DATA, "stocks", id)));
-  const rowConfigs = new Map(METHODOLOGY.rows.map((r) => [r.id, r]));
+  const rowConfigs = new Map(ROWS.map((r) => [r.id, r]));
 
   for (const file of rows) {
     const row = readJSON(join(DATA, "rows", id, file));
@@ -152,6 +160,28 @@ for (const universe of meta.universes) {
       if (universe.kind === "real" && Array.isArray(card.sparkline)) {
         check(previewScope.has(card.symbol),
           `${file}: ${card.symbol} liefert eine Kursreihe ohne Freigabe`);
+      }
+      /* Chart Truth Contract (V3): eine Karte darf nur zeichnen, was sie
+         belegt tragen darf. */
+      const ps = card.priceSeries;
+      if (ps) {
+        const punkte = Array.isArray(ps.points) ? ps.points.length : 0;
+        if (ps.status === "CALCULATED") {
+          check(punkte >= 5, `${file}: ${card.symbol} priceSeries CALCULATED mit ${punkte} Punkten`);
+          check(!!ps.source && !!ps.asOf, `${file}: ${card.symbol} priceSeries ohne Herkunft/Stand`);
+          if (universe.kind === "real") {
+            check(previewScope.has(card.symbol),
+              `${file}: ${card.symbol} traegt eine Micro-Kursreihe ohne Freigabe`);
+          }
+        } else {
+          check(punkte === 0 && !ps.ranges,
+            `${file}: ${card.symbol} priceSeries ${ps.status} traegt trotzdem Punkte`);
+        }
+      }
+      /* Themenreihen: nur, was in der Themenliste steht. */
+      if (config && config.filter === "thema") {
+        check(config.tickers.indexOf(card.symbol) !== -1,
+          `${file}: ${card.symbol} steht nicht in der Themenliste ${config.theme}`);
       }
       for (const key of ["leadershipPercentile", "momentumPercentile", "relativeStrengthPercentile"]) {
         const v = card.metrics[key];
@@ -209,6 +239,66 @@ for (const universe of meta.universes) {
       }
     }
   }
+
+  /* Startseite (V3): jede Karte einer Surface muss in ihrer Reihe stehen -
+     die Discovery-Reihenfolge darf umsortieren, nie aufnehmen. Und die
+     Diversity-Regeln muessen halten. */
+  const homeFiles = readdirSync(join(DATA, "home")).filter((n) => n.startsWith(id) && n.endsWith(".json"))
+    .sort((a, b) => (a.length - b.length) || (a < b ? -1 : 1));
+  const surfaces = [];
+  for (const file of homeFiles) {
+    const teil = readJSON(join(DATA, "home", file));
+    check(teil.methodologyVersion === METHODOLOGY.methodologyVersion, `home/${file}: abweichende Methodikversion`);
+    surfaces.push(...(teil.surfaces || []));
+  }
+  const fuehrt = {}, auftritte = {};
+  for (const s of surfaces) {
+    const cards = s.cards || [];
+    if (s.rowId && s.rowId !== "sector-leaders") {
+      const row = readJSON(join(DATA, "rows", id, s.rowId + ".json"));
+      const erlaubt = new Set(row.cards.map((c) => c.symbol));
+      cards.forEach((c) => check(erlaubt.has(c.symbol),
+        `home ${s.id}: ${c.symbol} steht nicht in der Reihe ${s.rowId} (Relevanz hat aufgenommen statt sortiert)`));
+      if (s.type === "ranking") {
+        check(JSON.stringify(cards.map((c) => c.symbol)) ===
+              JSON.stringify(row.cards.slice(0, cards.length).map((c) => c.symbol)),
+          `home ${s.id}: nummerierte Rangliste weicht von der Reihe ab`);
+      }
+      const ordered = Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION }).cards.map((c) => c.symbol);
+      if (s.type !== "ranking" && s.type !== "featured-card") {
+        const gezeigt = cards.map((c) => c.symbol);
+        const rest = ordered.filter((x) => gezeigt.indexOf(x) !== -1);
+        check(JSON.stringify(rest) === JSON.stringify(gezeigt),
+          `home ${s.id}: Reihenfolge ist nicht die Discovery-Reihenfolge (Diversity darf nur entfernen)`);
+      }
+    }
+    cards.forEach((c, i) => {
+      check(detailFiles.has(c.symbol + ".json"), `home ${s.id}: ${c.symbol} ohne Detailseite`);
+      auftritte[c.symbol] = (auftritte[c.symbol] || 0) + 1;
+      /* Kurze Reihen (bis sechs Treffer) zeigen, was sie haben - sie
+         werden nicht gekuerzt und zaehlen deshalb auch nicht als
+         Anfuehren. Dieselbe Ausnahme wie in relevance.js. */
+      const kurz = s.type !== "featured-card" && cards.length <= 6 && (!isNum(s.total) || s.total <= 6);
+      if (i < 2 && s.type !== "hero" && !kurz) fuehrt[c.symbol] = (fuehrt[c.symbol] || 0) + 1;
+      if (universe.kind === "real" && c.priceSeries && c.priceSeries.status === "CALCULATED") {
+        check(previewScope.has(c.symbol), `home ${s.id}: ${c.symbol} zeichnet ohne Freigabe`);
+      }
+    });
+  }
+  Object.keys(fuehrt).forEach((sym) => {
+    if (fuehrt[sym] > 1) {
+      const karte = surfaces.flatMap((s) => s.cards || []).find((c) => c.symbol === sym);
+      const p = karte && karte.metrics && karte.metrics.leadershipPercentile;
+      check(fuehrt[sym] <= 2 && isNum(p) && p >= 99,
+        `home: ${sym} fuehrt ${fuehrt[sym]} Surfaces an (Perzentil ${p})`);
+    }
+  });
+  Object.keys(auftritte).forEach((sym) => {
+    /* Hero + Rangliste + zwei Reihen sind das Maximum, das die Regel
+       (zwei Auftritte, reine Surfaces zaehlen mit) zulaesst. */
+    check(auftritte[sym] <= 4, `home: ${sym} erscheint ${auftritte[sym]} Mal`);
+  });
+  console.log(`           ${surfaces.length} Surfaces der Startseite geprueft`);
 
   /* Detailseiten: Scores nachrechnen. */
   let recomputed = 0;

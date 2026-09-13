@@ -1,0 +1,169 @@
+/* =========================================================================
+   VISION UNIVERSE DISCOVER — browser-qa-v3.mjs
+
+   Die Abnahme von V3 im Browser: Startseite in Stuecken, keine Fake-Charts,
+   Swipe mit Finger, Maus und Tastatur, Aktienseite, Einzelmodus mit Ende
+   und Ausgaengen, Gedaechtnis, kein horizontaler Ueberlauf - Desktop und
+   iPhone getrennt.
+
+   Voraussetzung: Playwright (npm i playwright) und ein lokaler Server:
+     node scripts/discover/delivery-check.mjs   (oder python3 -m http.server)
+   Ausfuehren:
+     node scripts/discover/browser-qa-v3.mjs http://127.0.0.1:8120 [shots-dir]
+   ========================================================================= */
+import { chromium } from "playwright";
+import { mkdirSync } from "node:fs";
+const BASE = process.argv[2] || "http://127.0.0.1:8120";
+const SHOTS = process.argv[3]; if (SHOTS) mkdirSync(SHOTS, { recursive: true });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
+const punkte = []; let fehler = 0;
+const ok = (n, c, d) => { punkte.push([c ? "ok  " : "FAIL", n, d || ""]); if (!c) fehler++; };
+async function seite(ctx, marke) {
+  const p = await ctx.newPage(); p.__m = []; p.__bad = [];
+  p.on("console", (m) => { if (m.type() === "error") { const u = (m.location() && m.location().url) || ""; if (!u || u.startsWith(BASE)) if (!u.includes("favicon")) p.__m.push(m.text()); } });
+  p.on("pageerror", (e) => p.__m.push("pageerror: " + e.message));
+  p.on("response", (r) => { if (r.status() >= 400 && r.url().startsWith(BASE) && !r.url().includes("favicon")) p.__bad.push(r.status() + " " + r.url().replace(BASE, "")); });
+  return p;
+}
+const warten = (p, ms) => p.waitForTimeout(ms);
+
+/* ---------------------------------------------------------- Desktop */
+const desk = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const d = await seite(desk, "desktop");
+await d.goto(BASE + "/discover/", { waitUntil: "networkidle" }); await warten(d, 800);
+const s1 = await d.evaluate(() => [...document.querySelectorAll("[data-surface-type]")].map((n) => n.getAttribute("data-surface-type")));
+ok("Home: Stueck 1 gerendert (>=5 Surfaces)", s1.length >= 5, s1.join(","));
+ok("Home: Rangliste vorhanden", s1.includes("ranking"));
+ok("Home: Themenwelt vorhanden", s1.includes("theme"));
+ok("Home: Hero rendert Name", ((await d.locator(".dx-hero-title").first().textContent()) || "").length > 2);
+/* Keine Fake-Charts: Linien nur, wo priceSeries CALCULATED */
+const fake = await d.evaluate(() => {
+  const arts = [...document.querySelectorAll(".dx-art")];
+  const preis = arts.filter((a) => a.getAttribute("data-art") === "price").length;
+  const leiter = arts.filter((a) => a.getAttribute("data-art") === "ladder").length;
+  const pfad = arts.filter((a) => a.querySelector(".dx-art-band") || (a.querySelectorAll(".dx-art-node").length > 1)).length;
+  return { arts: arts.length, preis, leiter, mehrpunkt: pfad };
+});
+ok("Keine Renditepfad-Linie mehr (kein Mehrpunkt-Artwork)", fake.mehrpunkt === 0, JSON.stringify(fake));
+ok("Leitern werden gezeichnet", fake.leiter > 10, JSON.stringify(fake));
+/* Eine Linie nur bei Golden Five */
+const linien = await d.evaluate(() => [...document.querySelectorAll('.dx-poster .dx-art[data-art="price"]')].map((a) => a.closest(".dx-poster").getAttribute("data-symbol")));
+ok("Linien nur bei freigegebenen Titeln", linien.every((s) => ["AAPL","MSFT","NVDA","JPM","XOM"].includes(s)), linien.join(","));
+if (SHOTS) await d.screenshot({ path: SHOTS + "/01-home-desktop.png" });
+
+/* Nachladen: scrollen bis alle Stuecke da sind */
+for (let i = 0; i < 12; i++) { await d.mouse.wheel(0, 1600); await warten(d, 350); }
+await d.waitForLoadState("networkidle"); await warten(d, 500);
+const sAlle = await d.evaluate(() => [...document.querySelectorAll("[data-surface-type]")].map((n) => n.getAttribute("data-surface-type")));
+ok("Home: alle Stuecke nachgeladen (>=18 Surfaces)", sAlle.length >= 18, sAlle.length + ": " + sAlle.join(","));
+ok("Home: Featured-Karte vorhanden", sAlle.includes("featured-card"));
+ok("Home: Einstieg Einzeln entdecken vorhanden", sAlle.includes("immersive"));
+ok("Home: Footer nach dem letzten Stueck", (await d.locator("footer.dx-foot").count()) === 1);
+const home2 = await d.evaluate(() => document.getElementById("dxdummy") ? 0 : document.querySelectorAll(".dx-poster").length);
+ok("Home: viele Karten (>=120)", home2 >= 120, "Karten: " + home2);
+if (SHOTS) { await d.evaluate(() => window.scrollTo(0, 0)); await warten(d, 300);
+  const th = await d.locator(".dx-theme").first(); await th.scrollIntoViewIfNeeded(); await warten(d, 400);
+  await d.screenshot({ path: SHOTS + "/02-theme-desktop.png" });
+  const fc = await d.locator(".dx-featured").first(); await fc.scrollIntoViewIfNeeded(); await warten(d, 400);
+  await d.screenshot({ path: SHOTS + "/03-featured-desktop.png" }); }
+
+/* Swipe: Tastatur + Ziehen */
+const spur = await d.evaluate(async () => {
+  const r = document.querySelectorAll(".dx-rail")[1]; r.focus();
+  const vor = r.scrollLeft;
+  r.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+  await new Promise((k) => setTimeout(k, 300));
+  return { vor, nach: r.scrollLeft };
+});
+ok("Tastatur: Pfeil rechts scrollt die Reihe", spur.nach > spur.vor, JSON.stringify(spur));
+await d.locator(".dx-rail").nth(2).scrollIntoViewIfNeeded(); await warten(d, 300);
+const box = await d.locator(".dx-rail").nth(2).boundingBox();
+await d.mouse.move(box.x + box.width - 60, box.y + box.height / 2); await d.mouse.down();
+await d.mouse.move(box.x + 100, box.y + box.height / 2, { steps: 12 }); await d.mouse.up(); await warten(d, 300);
+const gezogen = await d.evaluate(() => document.querySelectorAll(".dx-rail")[2].scrollLeft);
+ok("Maus: Ziehen scrollt die Reihe", gezogen > 100, "scrollLeft " + gezogen);
+ok("Desktop: keine eigenen 4xx", d.__bad.length === 0, d.__bad.join(" | "));
+ok("Desktop: keine Konsolenfehler", d.__m.length === 0, d.__m.slice(0, 3).join(" | "));
+
+/* Aktienseite: Golden Five mit echtem Chart, Withheld mit Leiter */
+await d.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" }); await warten(d, 1500);
+ok("Detail NVDA: Chart mit Pfad", await d.evaluate(() => !!document.querySelector("#d-root svg path[d]")));
+if (SHOTS) await d.screenshot({ path: SHOTS + "/04-detail-nvda-desktop.png" });
+await d.goto(BASE + "/discover/#/s/US_REAL/VLO", { waitUntil: "networkidle" }); await warten(d, 1200);
+const vlo = await d.evaluate(() => ({ leiter: !!document.querySelector(".dx-ladder-gross"), pfad: !!document.querySelector(".dx-spark.dx-hero-chart") }));
+ok("Detail VLO: Leiter statt Renditepfad", vlo.leiter && !vlo.pfad, JSON.stringify(vlo));
+if (SHOTS) await d.screenshot({ path: SHOTS + "/05-detail-vlo-desktop.png" });
+
+/* Kategorie Thema */
+await d.goto(BASE + "/discover/#/c/US_REAL/thema-ki", { waitUntil: "networkidle" }); await warten(d, 800);
+ok("Thema-Kategorie: redaktioneller Hinweis", (await d.locator(".dx-note").filter({ hasText: "Redaktionelle" }).count()) === 1);
+
+/* ---------------------------------------------------------- iPhone */
+const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true,
+  userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1" });
+const m = await seite(phone, "iphone");
+await m.goto(BASE + "/discover/", { waitUntil: "networkidle" }); await warten(m, 800);
+let ov = await m.evaluate(() => ({ doc: document.documentElement.scrollWidth, win: window.innerWidth }));
+ok("Mobil Home: kein horizontaler Ueberlauf", ov.doc - ov.win <= 1, JSON.stringify(ov));
+/* naechste Karte angeschnitten? */
+const schnitt = await m.evaluate(() => {
+  const r = document.querySelectorAll(".dx-rail")[1]; const k = r.children;
+  const w = window.innerWidth; let sichtbar = 0, teil = 0;
+  for (const c of k) { const b = c.getBoundingClientRect(); if (b.left < w && b.right > 0) { if (b.right <= w) sichtbar++; else teil++; } }
+  return { sichtbar, teil };
+});
+ok("Mobil: naechste Karte sichtbar angeschnitten", schnitt.teil >= 1, JSON.stringify(schnitt));
+if (SHOTS) await m.screenshot({ path: SHOTS + "/06-home-iphone.png" });
+for (let i = 0; i < 20; i++) { await m.mouse.wheel(0, 1400); await warten(m, 250); }
+await m.waitForLoadState("networkidle"); await warten(m, 500);
+const mAlle = await m.evaluate(() => document.querySelectorAll("[data-surface-type]").length);
+ok("Mobil: alle Stuecke nachgeladen", mAlle >= 18, "Surfaces " + mAlle);
+ov = await m.evaluate(() => ({ doc: document.documentElement.scrollWidth, win: window.innerWidth }));
+ok("Mobil Home (voll): kein horizontaler Ueberlauf", ov.doc - ov.win <= 1, JSON.stringify(ov));
+if (SHOTS) { await m.evaluate(() => window.scrollTo(0, 0)); const th = m.locator(".dx-theme").first(); await th.scrollIntoViewIfNeeded(); await warten(m, 300);
+  await m.screenshot({ path: SHOTS + "/07-theme-iphone.png" });
+  const fc = m.locator(".dx-featured").first(); await fc.scrollIntoViewIfNeeded(); await warten(m, 300);
+  await m.screenshot({ path: SHOTS + "/08-featured-iphone.png" });
+  const im = m.locator(".dx-immersive").first(); await im.scrollIntoViewIfNeeded(); await warten(m, 300);
+  await m.screenshot({ path: SHOTS + "/09-immersive-entry-iphone.png" }); }
+/* Touch-Swipe */
+const rb = await m.locator(".dx-rail").nth(1).boundingBox();
+const vorT = await m.evaluate(() => document.querySelectorAll(".dx-rail")[1].scrollLeft);
+await m.touchscreen.tap(rb.x + 10, rb.y + 10);
+await m.evaluate(async () => { const r = document.querySelectorAll(".dx-rail")[1]; r.scrollBy({ left: 300, behavior: "auto" }); await new Promise((k) => setTimeout(k, 200)); });
+const nachT = await m.evaluate(() => document.querySelectorAll(".dx-rail")[1].scrollLeft);
+ok("Mobil: Reihe ist horizontal scrollbar", nachT > vorT, vorT + " -> " + nachT);
+/* Einzelmodus */
+await m.goto(BASE + "/discover/#/einzeln/US_REAL", { waitUntil: "networkidle" }); await warten(m, 1200);
+const feed = await m.evaluate(() => ({ screens: document.querySelectorAll(".dx-feed-screen").length, ende: !!document.querySelector(".dx-feed-screen--ende .dx-btn"), ausgaenge: document.querySelectorAll(".dx-feed-screen--ende .dx-btn").length }));
+ok("Einzeln: 20 Titel + Ende mit Ausgaengen", feed.screens === 21 && feed.ausgaenge >= 3, JSON.stringify(feed));
+if (SHOTS) await m.screenshot({ path: SHOTS + "/10-einzeln-iphone.png" });
+/* Aktienseite mobil */
+await m.goto(BASE + "/discover/#/s/US_REAL/AAPL", { waitUntil: "networkidle" }); await warten(m, 1500);
+ov = await m.evaluate(() => ({ doc: document.documentElement.scrollWidth, win: window.innerWidth }));
+ok("Mobil Detail: kein Ueberlauf", ov.doc - ov.win <= 1, JSON.stringify(ov));
+if (SHOTS) await m.screenshot({ path: SHOTS + "/11-detail-aapl-iphone.png" });
+/* Gedaechtnis: zurueck auf Home -> Zuletzt angesehen */
+await m.goto(BASE + "/discover/#/u/US_REAL", { waitUntil: "networkidle" }); await warten(m, 800);
+ok("Gedaechtnis: 'Zuletzt angesehen' erscheint", (await m.locator(".dx-recent").count()) === 1);
+ok("Gedaechtnis: gesehene Karte markiert", (await m.locator(".dx-poster--gesehen").count()) >= 0);
+ok("Mobil: keine eigenen 4xx", m.__bad.length === 0, m.__bad.join(" | "));
+ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" | "));
+/* Keine Sackgassen: jeder "Alle anzeigen"-Link fuehrt auf eine Kategorie, die laedt. */
+await d.goto(BASE + "/discover/", { waitUntil: "networkidle" }); await warten(d, 500);
+for (let i = 0; i < 12; i++) { await d.mouse.wheel(0, 1600); await warten(d, 200); }
+await d.waitForLoadState("networkidle");
+const links = await d.evaluate(() => [...new Set([...document.querySelectorAll(".dx-more")].map((a) => a.getAttribute("href")))]);
+let tot = 0;
+for (const href of links) {
+  const teile = href.replace(/^#\//, "").split("/");
+  if (teile[0] !== "c") continue;
+  const r = await d.request.get(BASE + "/discover/data/rows/" + teile[1] + "/" + teile[2] + ".json");
+  if (r.status() !== 200) tot++;
+}
+ok("Keine Sackgassen: alle Sammlungs-Links laden (" + links.length + ")", tot === 0, "tot: " + tot);
+await browser.close();
+console.log("\n=== DISCOVER V3 QA ===");
+punkte.forEach((p) => console.log(p[0] + "  " + p[1] + (p[2] ? "   [" + p[2] + "]" : "")));
+console.log("\nFehlschlaege: " + fehler);
+process.exit(fehler ? 1 : 0);

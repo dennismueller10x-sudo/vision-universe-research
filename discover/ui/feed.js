@@ -68,21 +68,25 @@
       spur.appendChild(bildschirm(karte, i, karten.length, options));
     });
 
-    /* Das Ende ist ein Ende. */
-    spur.appendChild(el("section", { class: "dx-feed-screen dx-feed-screen--ende" }, [
+    /* Das Ende ist ein Ende - mit Ausgaengen, nicht mit Nachschub. */
+    var ausgaenge = (options.weiter || []).map(function (w, i) {
+      return el("a", { class: "dx-btn" + (i ? " dx-btn--ghost" : ""), href: w.href, text: w.label });
+    });
+    ausgaenge.push(el("a", { class: "dx-btn dx-btn--ghost", href: options.zurueck || "#/u/US_REAL",
+                             text: "Zurück zu Discover" }));
+    var ende = el("section", { class: "dx-feed-screen dx-feed-screen--ende", "data-index": "ende" }, [
       el("div", { class: "dx-feed-inner" }, [
         el("p", { class: "dx-kicker", text: "Das war die Auswahl" }),
         el("h2", { text: "Fertig durchgesehen." }),
         el("p", { class: "dx-feed-satz",
                   text: "Diese Auswahl umfasst " + karten.length + " Titel und lädt nicht " +
-                        "endlos nach. Weiter geht es in der Übersicht — oder in einer " +
-                        "der Sammlungen." }),
-        el("div", { class: "dx-cta" }, [
-          el("a", { class: "dx-btn", href: options.zurueck || "#/u/US_REAL",
-                    text: "Zurück zur Übersicht" })
-        ])
+                        "endlos nach. Wohin als Nächstes?" }),
+        el("div", { class: "dx-cta dx-cta--stapel" }, ausgaenge)
       ])
-    ]));
+    ]);
+    spur.appendChild(ende);
+    if (D.Analytics) D.Analytics.track("immersive_start", { universeId: options.universeId || "US_REAL",
+                                                            count: karten.length });
 
     host.appendChild(spur);
     root.appendChild(host);
@@ -94,6 +98,15 @@
       var beobachter = new global.IntersectionObserver(function (eintraege) {
         eintraege.forEach(function (e) {
           if (!e.isIntersecting) return;
+          if (e.target.dataset.index === "ende") {
+            zaehler.textContent = "Ende";
+            if (D.Analytics && !host.__fertig) {
+              host.__fertig = true;
+              D.Analytics.track("immersive_complete", { universeId: options.universeId || "US_REAL",
+                                                        count: karten.length });
+            }
+            return;
+          }
           var i = Number(e.target.dataset.index);
           if (!isNum(i)) return;
           zaehler.textContent = (i + 1) + " von " + karten.length;
@@ -137,9 +150,9 @@
           el("span", { text: text.zahl.label })
         ]) : null,
         text.story ? el("p", { class: "dx-feed-satz", text: text.story }) : null,
+        karte.was ? el("p", { class: "dx-was-line", text: karte.was }) : null,
         el("div", { class: "dx-feed-bild" }, [
-          D.Artwork.stockArtwork(karte, { width: 720, height: 260, ticker: true,
-                                          band: true, scale: "hero" })
+          D.Artwork.stockArtwork(karte, { width: 720, height: 260, ticker: true, scale: "hero" })
         ]),
         text.zusatz ? el("p", { class: "dx-feed-zusatz", text: text.zusatz }) : null,
         el("div", { class: "dx-cta" }, [

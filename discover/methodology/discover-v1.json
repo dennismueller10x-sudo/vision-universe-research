@@ -1,5 +1,5 @@
 {
-  "methodologyVersion": "discover-v1.0.0",
+  "methodologyVersion": "discover-v3.0.0",
   "note": "Regelwerk für Vision Universe DISCOVER. Jede Zahl, die auf einer Discovery Card steht, entsteht aus dieser Datei und den ausgelieferten Kennzahlen - nicht aus einer Einschätzung. Wer eine Gewichtung ändert, ändert sie hier, und der Build rechnet sie nach.",
   "boundary": "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich nach discover/data/**. Es verändert keine bestehende Engine, keine bestehende Datei und keinen bestehenden Contract.",
   "universes": {
@@ -247,7 +247,8 @@
       "filter": "nearOrAtHigh",
       "secondarySort": "leadershipScore",
       "signalFirst": "new52WeekHigh",
-      "world": "highs"
+      "world": "highs",
+      "microRange": "1J"
     },
     {
       "id": "market-leaders",
@@ -259,7 +260,8 @@
       "require": [
         "leadershipScore"
       ],
-      "world": "leadership"
+      "world": "leadership",
+      "microRange": "6M"
     },
     {
       "id": "momentum-leaders",
@@ -271,7 +273,8 @@
       "require": [
         "momentumScore"
       ],
-      "world": "momentum"
+      "world": "momentum",
+      "microRange": "6M"
     },
     {
       "id": "breakout-watch",
@@ -285,7 +288,8 @@
       ],
       "filter": "breakout",
       "signalFirst": "breakout",
-      "world": "breakout"
+      "world": "breakout",
+      "microRange": "3M"
     },
     {
       "id": "relative-strength",
@@ -298,20 +302,73 @@
         "relativeStrengthScore"
       ],
       "secondarySort": "momentumScore",
-      "world": "strength"
+      "world": "strength",
+      "microRange": "6M"
     },
     {
       "id": "trend-quality",
       "title": "STABILE AUFWÄRTSTRENDS",
-      "subtitle": "Aktien, die seit Monaten über ihrem Durchschnittskurs liegen.",
+      "subtitle": "Seit Monaten über dem Durchschnittskurs — die ruhigsten zuerst.",
+      "sort": "volatility252d",
+      "direction": "asc",
+      "limit": 30,
+      "require": [
+        "leadershipScore",
+        "volatility252d"
+      ],
+      "filter": "trendIntact",
+      "world": "quality",
+      "microRange": "6M",
+      "secondarySort": "leadershipScore"
+    },
+    {
+      "id": "bekannte-namen",
+      "title": "BEKANNTE NAMEN IN BEWEGUNG",
+      "subtitle": "Marken, die man aus dem Alltag kennt — und deren Kurs gerade etwas tut.",
+      "sort": "return3M",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "return3M"
+      ],
+      "filter": "bekannt",
+      "secondarySort": "leadershipScore",
+      "world": "leadership",
+      "microRange": "3M",
+      "rule": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)"
+    },
+    {
+      "id": "comeback",
+      "title": "COMEBACK?",
+      "subtitle": "Deutlich gefallen — und seit drei Monaten wieder klar im Plus.",
+      "sort": "return3M",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "return3M",
+        "maxDrawdown252d",
+        "distanceTo52wHigh"
+      ],
+      "filter": "comeback",
+      "secondarySort": "leadershipScore",
+      "world": "strength",
+      "microRange": "6M",
+      "rule": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch"
+    },
+    {
+      "id": "ueberraschungen",
+      "title": "ÜBERRASCHUNGEN",
+      "subtitle": "Stark, aber kaum jemandem ein Begriff — Titel ohne bekannten Namen.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 30,
       "require": [
         "leadershipScore"
       ],
-      "filter": "trendIntact",
-      "world": "quality"
+      "filter": "ueberraschung",
+      "world": "momentum",
+      "microRange": "6M",
+      "rule": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85"
     }
   ],
   "sectorRows": {
@@ -347,7 +404,7 @@
   "top10": {
     "id": "top-10",
     "title": "DIE ZEHN STÄRKSTEN AKTIEN",
-    "subtitle": "Die Gesamtwertung von Vision Universe — Platz 1 bis 10.",
+    "subtitle": "Platz 1 bis 10 nach Kursstärke über mehrere Monate — die Gesamtwertung von Vision Universe.",
     "source": "market-leaders",
     "limit": 10,
     "world": "leadership"
@@ -424,5 +481,129 @@
       },
       "boundary": "Keine Form entsteht aus Zufall, Hash oder Namen. Zwischen den Stützstellen des Renditepfades wird nichts interpoliert; das Schwankungsband ist eine Hüllkurve aus einer Kennzahl, keine Kursspanne."
     }
+  },
+  "home": {
+    "note": "Die Dramaturgie der Startseite (V3). Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; die Reihenfolge innerhalb der Auswahl bestimmt relevance.js (innerhalb qualifizierter Titel), die Verteilung ueber die Seite die Cross-Collection-Diversity. Nummerierte Ranglisten (ranking) bleiben reine Kennzahl-Reihenfolge.",
+    "chunkSizes": [
+      6,
+      7
+    ],
+    "surfaces": [
+      {
+        "type": "hero"
+      },
+      {
+        "type": "ranking",
+        "rowId": "market-leaders",
+        "id": "top-10",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "bekannte-namen",
+        "variant": "wide",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "new-52-week-highs",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "breakout-watch",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-ki",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "momentum-leaders",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "featured-card",
+        "rowId": "bekannte-namen",
+        "kicker": "IM BLICK"
+      },
+      {
+        "type": "row",
+        "rowId": "relative-strength",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-robotik",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "comeback",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "trend-quality",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-mobilitaet",
+        "show": 10
+      },
+      {
+        "type": "sectors"
+      },
+      {
+        "type": "row",
+        "rowId": "ueberraschungen",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Technology",
+        "title": "TECHNOLOGIE",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Health Care",
+        "title": "GESUNDHEIT",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Energy",
+        "title": "ENERGIE",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Financials",
+        "title": "FINANZEN",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Consumer Discretionary",
+        "title": "KONSUM",
+        "show": 10
+      },
+      {
+        "type": "immersive",
+        "title": "NOCH NICHTS GEFUNDEN?",
+        "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, endlich viele."
+      }
+    ]
   }
 }
