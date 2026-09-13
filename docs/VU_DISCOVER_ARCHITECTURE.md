@@ -4,7 +4,7 @@ Stand: 2026-09-11 · Modul `discover-1.0.0` · Methodik `discover-v1.0.0` ·
 Contract `discover-contract-1.0.0`
 
 > **Stand 13.09.2026 (Zweig `claude/vision-universe-discover-v3`):** Universum,
-> Live-Schicht und Intraday-Charts sind in `VU_DISCOVER_FULL_UNIVERSE_LIVE.md`
+> Universumsquelle seit 13.09.2026: der Company Master (`VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md`). Live-Schicht und Intraday-Charts sind in `VU_DISCOVER_FULL_UNIVERSE_LIVE.md`
 > beschrieben — kanonische Universumsquelle (`scripts/market/universe-source.mjs`),
 > Trading Session Resolver, Intraday-Snapshots, Live-Hub. Die Golden-Five-/
 > GATE_500-Grenze ist keine Produktgrenze mehr.

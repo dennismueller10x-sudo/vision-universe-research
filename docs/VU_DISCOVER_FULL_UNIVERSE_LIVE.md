@@ -1,5 +1,7 @@
 # DISCOVER V3 — Full Market Universe & Live Intraday Charts
 
+
+> **Nachtrag 13.09.2026:** Der Company Master (7 004 Titel, `us-security-master-1.1.0`, 2e22a2e) ist seit fcbcb409 übernommen; der Fallback auf 5 684 Titel ist entfernt. Die Zahlen in den Abschnitten 1.2, 3 und 5 beschreiben den Stand *vor* der Übernahme. Aktueller Stand: `VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md`.
 Zweig `claude/vision-universe-discover-v3`. **Nicht nach `main` gemergt, nicht
 veröffentlicht.** Auftrag vom 13.09.2026: die Golden-Five-/GATE_500-Grenze ist
 keine Produktgrenze mehr; jede Aktie mit echten Kursdaten hat immer einen
