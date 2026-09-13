@@ -316,10 +316,19 @@ def issuer_fundamentals(document, registry):
         }
 
     pit = document.get("quality", {}).get("summary", {}) or {}
+    # Die Zaehlung der Normalisierung: wie viele rohe XBRL-Fakten hat
+    # die SEC geliefert, wie viele davon trafen ein Konzept der Registry.
+    # Ein Emittent mit null rohen Fakten hat kein Mapping-Problem - er
+    # hat keine XBRL-Abschluesse, und das ist eine andere Ursache.
+    stats = document.get("stats") or {}
     return {
         "cik": document.get("cik"),
         "name": profile.get("name"),
         "sic": profile.get("sic"),
+        "rawFacts": stats.get("raw_facts"),
+        "mappedFacts": stats.get("mapped"),
+        "unmappedFacts": stats.get("unmapped"),
+        "calendarYears": len(((document.get("calendar") or {}).get("fiscal_years")) or []),
         "industry": industry.industry_id if industry else None,
         "industryMetrics": industry_metrics,
         "fiscalYearEnd": profile.get("fiscal_year_end"),

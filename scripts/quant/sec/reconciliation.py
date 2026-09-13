@@ -928,6 +928,7 @@ FINE_CAUSES = (
     "IFRS_REMAINING", "PERIOD_MAPPING", "UNIT_MAPPING", "CURRENCY_MAPPING",
     "ALTERNATIVE_US_GAAP_CONCEPT", "INDUSTRY_SPECIFIC_ACCOUNTING",
     "TRUE_MISSING_TAG_MAPPING", "ISSUER_MAPPING", "INSUFFICIENT_DISCLOSURE",
+    "NO_XBRL_FACTS", "NO_XBRL_FINANCIALS",
     "NOT_APPLICABLE", "REQUIRES_REVIEW", "EXTERNAL_DATA_REQUIRED",
 )
 
@@ -950,6 +951,13 @@ FINE_TO_RECOVERABILITY = {
     "TRUE_MISSING_TAG_MAPPING": "SEC_RECOVERABLE", "ISSUER_MAPPING": "SEC_RECOVERABLE",
     "INSUFFICIENT_DISCLOSURE": "REQUIRES_REVIEW", "REQUIRES_REVIEW": "REQUIRES_REVIEW",
     "EXTERNAL_DATA_REQUIRED": "EXTERNAL_PROVIDER_CANDIDATE",
+    # companyfacts ist leer oder traegt nur das Deckblatt: die SEC hat
+    # fuer diesen Emittenten keine XBRL-Abschluesse. 40-F-Einreicher
+    # sind von XBRL befreit; ein frisch notierter 20-F-Einreicher hat
+    # seinen ersten Jahresabschluss noch nicht eingereicht. Kein
+    # Mapping schliesst das - nur die Zeit oder ein Anbieter.
+    "NO_XBRL_FACTS": "EXTERNAL_PROVIDER_CANDIDATE",
+    "NO_XBRL_FINANCIALS": "EXTERNAL_PROVIDER_CANDIDATE",
 }
 
 SIC_BANK = {"6021", "6022", "6029", "6035", "6036", "6099", "6111", "6141", "6153", "6159", "6162", "6163"}
@@ -985,6 +993,18 @@ def fine_cause(record):
     # 1. Kein Factbook: der Abruf steht aus oder ist gescheitert.
     if not record.get("fundamentals"):
         return "REQUIRES_REVIEW", "kein Factbook (Fehlerschlange / Abruf ausstehend)"
+
+    # 1b. Factbook da, aber die SEC hat keine XBRL-Abschluesse geliefert.
+    #     Gemessen an den 69 Restfaellen von Lauf 16: acht Emittenten mit
+    #     null rohen Fakten, weitere mit einem einzigen Deckblatt-Fakt
+    #     (Canadian National, 40-F, 26 Jahresberichte, 6 Fakten).
+    raw = fund.get("rawFacts")
+    if raw == 0:
+        return "NO_XBRL_FACTS", f"companyfacts leer, Formular {form or '-'}"
+    if raw is not None and raw <= 12 and not fund.get("mappedFacts") \
+            and not fund.get("unmappedFacts"):
+        return "NO_XBRL_FINANCIALS", (f"{raw} Fakten, nur Deckblatt (dei), "
+                                      f"Formular {form or '-'}")
 
     # 2. Strukturen, die keinen operativen Abschluss haben - bevor
     #    irgendjemand nach einem Umsatz-Tag sucht.

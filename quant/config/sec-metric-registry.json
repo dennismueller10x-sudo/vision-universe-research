@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.3.0",
+  "mapping_version": "1.4.0",
   "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
@@ -42,6 +42,83 @@
       "note": "Blank-Check-Gesellschaften (SIC 6770) haben keinen Geschaeftsbetrieb: kein Umsatz, keine Herstellkosten, keine Investitionen. Ein Treuhandkonto ist keine Bilanzsumme und Zinsen darauf sind kein Umsatz. Diese Kennzahlen sind fuer die Struktur nicht sinnvoll - NOT_APPLICABLE, nicht MISSING. Bilanz, Eigenkapital, Kasse und Nettoergebnis bleiben zulaessig, weil ein SPAC sie tatsaechlich hat."
     }
   ],
+  "industries": {
+    "BANK": {
+      "label": "Bank / Kreditinstitut",
+      "sic_ranges": [
+        [
+          6020,
+          6036
+        ],
+        [
+          6099,
+          6099
+        ],
+        [
+          6111,
+          6111
+        ],
+        [
+          6141,
+          6141
+        ],
+        [
+          6153,
+          6153
+        ],
+        [
+          6159,
+          6163
+        ]
+      ],
+      "note": "Depository and credit institutions. Their income statement starts with interest, not revenue; the core contract stays as it is and this layer is published beside it."
+    },
+    "INSURER": {
+      "label": "Versicherer",
+      "sic_ranges": [
+        [
+          6311,
+          6399
+        ],
+        [
+          6411,
+          6411
+        ]
+      ],
+      "note": "Premiums and benefits, not revenue and cost of revenue."
+    },
+    "REIT": {
+      "label": "Real Estate Investment Trust",
+      "sic_ranges": [
+        [
+          6798,
+          6798
+        ]
+      ],
+      "note": "Rental income and property; FFO is not an XBRL concept and is not derived here."
+    }
+  },
+  "industry_metrics": {
+    "net_interest_income": {
+      "label": "Net interest income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestIncomeExpenseNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34749245361 on issuers with values but no revenue: 223 issuers, 34,830 facts. Further bank, insurer and REIT concepts are added from the per-SIC measurement (unmapped-concepts-banks/insurers/reits.json), never from memory."
+    }
+  },
   "metrics": {
     "revenue": {
       "label": "Revenue",

@@ -230,7 +230,15 @@ export async function push(driver, { facts, dryRun, log, parallel = PARALLEL_UPL
    der Vertrag verlangt. Was hier PASS sagt, ist gelesen, nicht
    angenommen. */
 const REQUIRED_TOP = ["cik", "versions", "factbook", "quality", "filing_index", "profile"];
-const REQUIRED_OBS = ["value", "unit", "filed", "accession", "period_end"];
+/* Die Akzessionsnummer steht in der Provenienz der Beobachtung, nicht
+   auf ihrer obersten Ebene - so serialisiert restatements.py sie. Die
+   erste Fassung suchte sie oben und erklaerte damit jede der 8.444
+   Beobachtungen von Apple fuer PIT-unvollstaendig, obwohl jede eine
+   trug. Ein Pruefer, der das Schema nicht kennt, prueft nichts. */
+const REQUIRED_OBS = ["value", "unit", "filed", "period_end"];
+const pitComplete = (o) =>
+  REQUIRED_OBS.every((k) => o[k] !== undefined && o[k] !== null) &&
+  !!(o.provenance && o.provenance.accession);
 
 export async function reload(driver, { ciks, localByCik, outDir, log }) {
   const budget = createBudget({ classBOperations: ciks.length + 1 });
@@ -252,7 +260,7 @@ export async function reload(driver, { ciks, localByCik, outDir, log }) {
     const obs = [];
     for (const t of (doc.factbook && doc.factbook.timelines) || []) for (const o of t.observations || []) obs.push(o);
     r.observations = obs.length;
-    r.observationsMissingPitFields = obs.filter((o) => REQUIRED_OBS.some((k) => o[k] === undefined || o[k] === null)).length;
+    r.observationsMissingPitFields = obs.filter((o) => !pitComplete(o)).length;
     r.summary = summarize(doc);
     r.hasAnnual = r.summary.annualTimelines > 0;
     r.hasQuarterly = r.summary.quarterlyTimelines > 0;
@@ -290,8 +298,15 @@ async function main() {
 
   const facts = localFacts(FACT_DIR);
   console.log(`  Lokal:    ${facts.length} Factbooks unter ${FACT_DIR}`);
+  /* Push und Reload laufen im Workflow als zwei Aufrufe. Der zweite
+     darf den Bericht des ersten nicht ueberschreiben - sonst steht nach
+     der Abnahme kein PERSISTED_* mehr im Bericht, und genau das ist
+     passiert. Was dieser Aufruf nicht selbst misst, bleibt stehen. */
+  const previous = existsSync(REPORT_PATH) ? JSON.parse(readFileSync(REPORT_PATH, "utf8")) : {};
   const report = { version: VERSION, generatedAt: new Date().toISOString(), driver: driver.kind,
                    endpointKind: fsRoot ? "fs" : "s3", prefix: PREFIX, localFactbooks: facts.length };
+  if (!doPush && previous.push) { report.push = previous.push; report.persisted = previous.persisted; }
+  if (!reloadCiks.length && previous.reload) report.reload = previous.reload;
 
   if (doPush) {
     const r = await push(driver, { facts, dryRun, log: touched });

@@ -215,6 +215,14 @@ class FiscalCalendar:
         if len(hint) != 4 or not hint.isdigit():
             return set()
         month, day = int(hint[:2]), int(hint[2:])
+
+        def registered(year):
+            try:
+                return date(year, month, day)
+            except ValueError:
+                # 0229 in a common year: the filer closes on the last day of February.
+                return date(year, month, 28)
+
         ends = set()
         for fact in raw_facts:
             if fact.start is not None or fact.taxonomy == "dei":
@@ -222,12 +230,11 @@ class FiscalCalendar:
             end = parse_date(fact.end)
             if end is None:
                 continue
-            try:
-                registered = date(end.year, month, day)
-            except ValueError:
-                # 0229 in a common year: the filer closes on the last day of February.
-                registered = date(end.year, month, 28)
-            if abs((end - registered).days) <= FY_BOUNDARY_TOLERANCE_DAYS:
+            # A registered year end of 0101 or 0103 (52/53-week retailers)
+            # sits on the far side of the calendar boundary from a balance
+            # sheet dated 31 December, so the neighbouring years count too.
+            if any(abs((end - registered(end.year + delta)).days) <= FY_BOUNDARY_TOLERANCE_DAYS
+                   for delta in (-1, 0, 1)):
                 ends.add(end)
         return ends
 

@@ -193,6 +193,36 @@ class PeriodsOutsideTheLearnedYearsTests(unittest.TestCase):
         self.assertEqual(calendar.fy_ends, [date(2008, 12, 31)])
         self.assertEqual(calendar.assign(None, "2008-09-30"), (2008, "Q3", "instant"))
 
+    def test_a_ten_q_only_filer_gets_its_year_from_the_comparative_balance_sheet(self):
+        # Measured on the store: 35 of the 69 issuers still without a value
+        # had filed nothing but 10-Qs. A Q1 10-Q carries the prior year-end
+        # balance sheet as comparative, and the SEC registration says which
+        # day the year ends -- together that is a calendar, not a guess.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2026-03-31", form="10-Q", fp="Q1", fy=2026),
+            _fact("Assets", None, "2025-12-31", form="10-Q", fp="Q1", fy=2026),
+            _fact("Revenues", "2026-01-01", "2026-03-31", form="10-Q", fp="Q1", fy=2026),
+        ], fiscal_year_end_hint="1231")
+        self.assertEqual(calendar.anchor_source, "REGISTERED_YEAR_END")
+        self.assertEqual(calendar.fy_ends, [date(2025, 12, 31)])
+        self.assertEqual(calendar.assign(None, "2025-12-31"), (2025, "FY", "instant"))
+        self.assertEqual(calendar.assign(None, "2026-03-31"), (2026, "Q1", "instant"))
+        self.assertEqual(calendar.assign("2026-01-01", "2026-03-31"), (2026, "Q1", "Q"))
+
+    def test_a_registered_year_end_across_the_calendar_boundary_still_matches(self):
+        # Registered 0101 (Elmet) or 0103 (a 52/53-week retailer): the
+        # balance sheet is dated on the far side of New Year.
+        elmet = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2025-12-31", form="10-Q", fp="Q1", fy=2026),
+        ], fiscal_year_end_hint="0101")
+        self.assertEqual(elmet.fy_ends, [date(2025, 12, 31)])
+        retailer = FiscalCalendar.from_raw_facts("2", [
+            _fact("Assets", None, "2026-01-03", form="10-Q", fp="Q1", fy=2026),
+            _fact("Assets", None, "2026-04-04", form="10-Q", fp="Q1", fy=2026),
+        ], fiscal_year_end_hint="0103")
+        self.assertEqual(retailer.fy_ends, [date(2026, 1, 3)])
+        self.assertEqual(retailer.assign(None, "2026-04-04")[1], "Q1")
+
     def test_the_anchor_source_survives_a_round_trip_through_the_store(self):
         calendar = FiscalCalendar.from_raw_facts("1", [
             _fact("Assets", None, "2008-12-31", form="20-F"),

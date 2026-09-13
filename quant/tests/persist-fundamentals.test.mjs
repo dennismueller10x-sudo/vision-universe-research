@@ -30,7 +30,7 @@ function factbook(cik, { currency = "USD", years = 3, quarterly = true, restated
   for (let y = 2021; y < 2021 + years; y++) {
     const obs = (fp, end) => [{
       value: 1000 + y, unit: currency, filed: `${y + 1}-02-15`, available_from: `${y + 1}-02-15T10:00:00`,
-      accession: `0000000000-${String(y).slice(2)}-000001`, period_end: end, period_start: `${y}-01-01`,
+      period_end: end, period_start: `${y}-01-01`,
       quality: "HIGH", flags: [], provenance: { taxonomy: "us-gaap", concept: "Revenues", filed: `${y + 1}-02-15`,
                                                 accession: `0000000000-${String(y).slice(2)}-000001` }
     }];

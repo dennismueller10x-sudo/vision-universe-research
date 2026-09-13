@@ -775,6 +775,19 @@ def cmd_verify_reload(args):
     return 0 if verdict == "PASS" else 1
 
 
+def _je_code(findings, limit):
+    """Hoechstens `limit` Befunde je Code, in Reihenfolge des Auftretens."""
+    gesehen = Counter()
+    out = []
+    for finding in findings:
+        code = finding.get("code")
+        if gesehen[code] >= limit:
+            continue
+        gesehen[code] += 1
+        out.append(finding)
+    return out
+
+
 def cmd_findings(args):
     """Die Befundtexte eines Codes fuer benannte Emittenten - WARUM, nicht nur wie oft.
 
@@ -808,9 +821,14 @@ def cmd_findings(args):
                "timelines": len((document.get("factbook") or {}).get("timelines") or []),
                "fiscalYearEnd": (document.get("profile") or {}).get("fiscal_year_end"),
                "calendarYears": len(calendar.get("fiscal_years") or []),
+               "findingCodes": dict(Counter(f.get("code") for f in treffer)),
+               # --limit je CODE, nicht je Emittent: die ersten acht Befunde
+               # eines jungen Emittenten sind alle UNKNOWN_CONCEPT, und die
+               # UNPLACEABLE_PERIOD dahinter - die eigentliche Ursache -
+               # kam nie in die Stichprobe.
                "findings": [{k: f.get(k) for k in ("code", "message", "concept", "end", "form",
                                                     "fiscal_year", "fiscal_period")}
-                            for f in treffer[:args.limit]]}
+                            for f in _je_code(treffer, args.limit)]}
         out.append(row)
         print(f"  {cik} {name:<40} {row['latestForm'] or '-':<6} roh={row['rawFacts']} "
               f"gemappt={row['mapped']} zeitreihen={row['timelines']} kal={row['calendarYears']}J "

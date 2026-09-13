@@ -88,8 +88,13 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #             jetzt der Bilanzstichtag des Jahresabschlusses (Formular
 #             10-K/20-F/40-F, fp=FY) als Jahresende, ersatzweise das
 #             bei der SEC registrierte Jahresende (MMDD) auf den
-#             tatsaechlich gemeldeten Stichtagen. Erfunden wird kein
-#             Datum; die Herkunft steht als anchor_source am Kalender.
+#             tatsaechlich gemeldeten Stichtagen - auch ueber die
+#             Kalendergrenze hinweg (0101, 0103). Gemessen an Lauf 16:
+#             ALLE 69 verbliebenen Emittenten ohne Wert hatten einen
+#             leeren Kalender; 35 davon hatten nur 10-Qs eingereicht,
+#             deren Q1-Bericht die Vorjahresbilanz als Vergleich traegt.
+#             Erfunden wird kein Datum; die Herkunft steht als
+#             anchor_source am Kalender.
 #             Die Rumpfperiode selbst bleibt UNEXPECTED_DURATION - ein
 #             Siebenmonatsumsatz ist kein Jahresumsatz.
 #
@@ -131,7 +136,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "2b1be0958e6c3bd27a46911d14a8b2da798e526a3dbd99fd07b1d29ace714cd4"
+    "03e8520646024715b0eb438cd20c68c37f717bbeb1d8d7baecf924d21906131c"
 )
 
 

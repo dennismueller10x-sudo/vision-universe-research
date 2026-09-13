@@ -364,3 +364,31 @@ class BranchenschichtTests(unittest.TestCase):
         kern = rec.core_metric_report(records)["metrics"]
         self.assertEqual(kern[rec.CORE_METRIC_LABELS["revenue"]]["COUNT"], 0)
         self.assertEqual(kern[rec.CORE_METRIC_LABELS["net_income"]]["COUNT"], 1)
+
+
+class OhneXbrlTests(unittest.TestCase):
+    """Ein leeres companyfacts ist kein Mapping-Problem."""
+
+    def test_null_rohe_fakten_sind_kein_mapping_fall(self):
+        r = titel(fundamentals=True, latestForm="40-F", cik="0000000041",
+                  _fund={"rawFacts": 0, "mappedFacts": 0, "unmappedFacts": 0, "sic": "4011"})
+        ursache, beleg = rec.fine_cause(r)
+        self.assertEqual(ursache, "NO_XBRL_FACTS")
+        self.assertEqual(rec.FINE_TO_RECOVERABILITY[ursache], "EXTERNAL_PROVIDER_CANDIDATE")
+        self.assertIn("40-F", beleg)
+
+    def test_nur_deckblatt_fakten_sind_keine_abschluesse(self):
+        r = titel(fundamentals=True, latestForm="40-F", cik="0000016868",
+                  findingCodes={"UNPLACEABLE_PERIOD": 6},
+                  _fund={"rawFacts": 6, "mappedFacts": 0, "unmappedFacts": 0, "sic": "4011",
+                         "name": "CANADIAN NATIONAL RAILWAY CO"})
+        ursache, _ = rec.fine_cause(r)
+        self.assertEqual(ursache, "NO_XBRL_FINANCIALS")
+
+    def test_ein_emittent_mit_abschluessen_faellt_nicht_darunter(self):
+        r = titel(fundamentals=True, latestForm="10-Q", cik="0000000042",
+                  findingCodes={"UNKNOWN_CONCEPT": 400},
+                  _fund={"rawFacts": 632, "mappedFacts": 0, "unmappedFacts": 442, "sic": "3572",
+                         "name": "Cerebras Systems Inc."})
+        ursache, _ = rec.fine_cause(r)
+        self.assertNotIn(ursache, ("NO_XBRL_FACTS", "NO_XBRL_FINANCIALS"))
