@@ -63,14 +63,16 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         zwischengespeicherten Emittenten als aktuell gelten, der Lauf
 #         meldete Erfolg, und von der ganzen Mapping-Arbeit kaeme nichts
 #         an.
-NORMALIZATION_LOGIC_VERSION = "1.7.0"
+NORMALIZATION_LOGIC_VERSION = "1.7.1"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
 METRIC_REGISTRY_MIN_VERSION = 1
 
 # Derived-metric formulas. Bump on any change to derived.py's arithmetic.
-FORMULA_VERSION = "1.1.0"
+# 1.2.0 — abgeleitete Groessen vermischen keine Waehrungen mehr und
+#         tragen die Waehrung ihrer Eingangsgroessen statt pauschal USD.
+FORMULA_VERSION = "1.2.0"
 
 # The SEC access adapter (endpoints, fair-access behaviour).
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
@@ -92,7 +94,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "63e2c0cac80ecfd98a9e8c7c3e0ea054bdd5d442351211d163df569bb2e72e24"
+    "c44c45b75b1fdaa4ee71f66204403968070048c03a86dc8bf211bc23fdd04d8e"
 )
 
 

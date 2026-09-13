@@ -18,7 +18,7 @@ import logging
 from .model import (
     NormalizedFact, Provenance, SOURCE_DERIVED, TRANSFORM_FORMULA,
     QUALITY_HIGH, QUALITY_MEDIUM, QUALITY_LOW,
-    MISSING_INPUT, DIVISION_BY_ZERO, NOT_APPLICABLE_FOR_SECTOR,
+    MISSING_INPUT, DIVISION_BY_ZERO, MIXED_CURRENCY, NOT_APPLICABLE_FOR_SECTOR,
 )
 from .restatements import POLICY_AS_OF_LATEST, to_instant
 from .version import FORMULA_VERSION
@@ -156,7 +156,36 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
 
     out = {}
 
-    def emit(metric, operands, compute, unit="USD"):
+    def _waehrung(unit):
+        """Die Waehrung einer Einheit, oder None wenn sie keine ist."""
+        if not unit:
+            return None
+        if len(unit) == 3 and unit.isalpha() and unit.isupper():
+            return unit
+        if unit.endswith("/shares"):
+            code = unit.split("/", 1)[0]
+            return code if len(code) == 3 and code.isalpha() and code.isupper() else None
+        return None
+
+    def emit(metric, operands, compute, unit=None):
+        """Eine abgeleitete Groesse aus ihren Eingangsgroessen.
+
+        WAEHRUNGEN WERDEN NICHT VERMISCHT.
+
+        Seit Fremdwaehrungen zugelassen sind, koennen die Operanden in
+        verschiedenen Waehrungen stehen - ein Emittent, der die Bilanz
+        in EUR und eine Einzelangabe in USD meldet, ist keine
+        Seltenheit. `operating_cash_flow` minus `capital_expenditures`
+        waere dann eine Subtraktion zweier Waehrungen: eine Zahl, die
+        entsteht, und eine Aussage, die falsch ist.
+        Umzurechnen kommt nicht in Frage - dafuer braeuchte es einen
+        Kurs zum Stichtag, und den zu schaetzen zerstoerte die
+        Point-in-Time-Eigenschaft. Also bleibt die Groesse unavailable
+        mit Grund.
+
+        Die Einheit des Ergebnisses ist die der Eingangsgroessen, nicht
+        pauschal USD.
+        """
         blocked = resolver.sector_block(metric)
         if blocked:
             out[metric] = _unavailable(cik, metric, NOT_APPLICABLE_FOR_SECTOR,
@@ -173,13 +202,22 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
                                            fiscal_year, fiscal_period)
                 return None
             facts.append(fact)
+        # Alle monetaeren Operanden muessen dieselbe Waehrung tragen.
+        waehrungen = {w for w in (_waehrung(f.unit) for f in facts) if w}
+        if len(waehrungen) > 1:
+            out[metric] = _unavailable(
+                cik, metric, MIXED_CURRENCY,
+                "MIXED:" + "+".join(sorted(waehrungen)), fiscal_year, fiscal_period)
+            return None
         try:
             value = compute(*[fact.value for fact in facts])
         except ZeroDivisionError:
             out[metric] = _unavailable(cik, metric, DIVISION_BY_ZERO, "ZERO_DENOMINATOR",
                                        fiscal_year, fiscal_period)
             return None
-        fact = _derived_fact(cik, metric, value, unit, facts, fiscal_year,
+        ergebnis_einheit = unit if unit is not None else (
+            waehrungen.pop() if waehrungen else "USD")
+        fact = _derived_fact(cik, metric, value, ergebnis_einheit, facts, fiscal_year,
                              fiscal_period, facts[0])
         out[metric] = fact
         return fact
