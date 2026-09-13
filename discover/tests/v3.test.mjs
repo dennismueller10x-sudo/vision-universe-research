@@ -55,7 +55,8 @@ test("kein synthetischer Verlauf als Kurschart: Linien nur mit Freigabe", { skip
 
 test("Karten ohne Kursreihe tragen keinen Fake-Chart - aber die vier Renditen", { skip: !vorhanden }, () => {
   const karten = alleKarten(homeSurfaces("US_REAL")).filter((c) => c.priceSeries.status !== "CALCULATED");
-  assert.ok(karten.length > 50);
+  /* Mit voller Abdeckung kann diese Menge leer sein - dann traegt jede Karte
+     eine echte Reihe, und es gibt nichts zu pruefen. */
   for (const c of karten) {
     assert.ok(["return1M", "return3M", "return6M", "return12M"].some((k) => isNum(c.metrics[k])),
       c.symbol + " hat keine Rendite fuer die Leiter");

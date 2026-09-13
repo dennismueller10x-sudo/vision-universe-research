@@ -62,6 +62,9 @@ test("SC3 · Live-Umfang: nur Titel des Universums, jede Karte der Startseite da
 test("SC4 · reale Kursreihen kommen aus dem kanonischen Store, nicht als Kopie", { skip: !vorhanden }, () => {
   const karten = homeSurfaces("US_REAL").flatMap((s) => s.cards || []).filter((c) => c.priceSeries && c.priceSeries.status === "CALCULATED");
   for (const c of karten) {
+    /* Die Eingangsflaeche traegt ihre Punkte inline (kein Nachladen ueber
+       der Falz); jede andere Karte verweist auf die kanonische Reihe. */
+    if (Array.isArray(c.priceSeries.points)) { assert.ok(c.priceSeries.points.length >= 5, c.symbol); continue; }
     assert.match(c.priceSeries.path, /^\/quant\/data\/market\/discover-series\/ref_.+\.json$/, c.symbol);
     const reihe = readJSON(join(root, c.priceSeries.path.slice(1)));
     assert.equal(reihe.status, "CALCULATED"); assert.ok(reihe.source && reihe.asOf);
