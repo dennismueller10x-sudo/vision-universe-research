@@ -1,0 +1,33 @@
+name: VU2 Shared Contract QA
+on:
+  pull_request:
+    paths:
+      - 'quant/engines/market-data-contract.js'
+      - 'api/realtime.js'
+      - 'quant/tests/market-data-contract*.test.mjs'
+      - 'quant/tests/existing-file-changes.test.mjs'
+      - 'quant/tests/helpers/existing-file-changes.mjs'
+      - 'quant/tests/preview-dataset.test.mjs'
+      - 'quant/tests/product-proof.test.mjs'
+      - '.github/workflows/vu2-shared-contract-qa.yml'
+permissions:
+  contents: read
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require comparison baseline
+        run: git merge-base origin/main HEAD
+      - name: Verify shared contract and preservation gates
+        run: >-
+          node --test quant/tests/preview-dataset.test.mjs
+          quant/tests/product-proof.test.mjs
+          quant/tests/existing-file-changes.test.mjs
+          quant/tests/market-data-contract.test.mjs
+          quant/tests/market-data-contract-boundary.test.mjs

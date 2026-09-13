@@ -222,10 +222,13 @@ module.exports = async function handler(req, res) {
     const kalender = lies("quant/config/market-calendar.json", null);
     const sitzung = Contract.marketSession(MarketHours, new Date(),
       kalender ? { calendar: kalender } : {});
+    const realtimeCapability = Contract.resolveRealtime({
+      connection: "CONNECTED", tradingOpen: sitzung.tradingOpen, updates });
     sende(res, "status", {
       state: "CONNECTED",
-      contractState: Contract.resolveRealtime({
-        connection: "CONNECTED", tradingOpen: sitzung.tradingOpen }).state,
+      contractState: realtimeCapability.state,
+      realtimeCapability,
+      isLive: false,
       marketSession: sitzung,
       at: new Date().toISOString(),
       runtime: process.version,

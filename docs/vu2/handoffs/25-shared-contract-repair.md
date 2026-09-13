@@ -1,0 +1,13 @@
+# Shared data handoff — bounded source repair
+
+Continues VU2 ledger after PR87 d0aa7de. Source lane162f04883b12389b138313f5293ce70a94d1c212, observed main d6b81779376b74ad41b38c09d03ab2fa447e3c13. Main only added analyst-ratings data since e91095c; not overwritten. No SEC or canonical data changes, second architecture, provider requests, deployment or widened entitlement.
+
+PD8/PP5 were reproduced FAIL. Both reported market-data-contract.js and ranking-hygiene.js, which Git classifies A (additions). Their explicit contract permits additions and protects existing files. Shared test helper now distinguishes Git statuses with NUL-safe parsing: A allowed; M/D/T and both R paths retained. No filename exemption added. Temporary-Git regressions prove added files, modifications, deletions, type changes and renames both directions. Public feature-gate assertions run before Git comparison, even for addition-only history. Dedicated read-only CI requires a real merge-base, preventing baseline absence from silently certifying preservation.
+
+Independent adversarial review additionally reproduced false availability: infinite/fractional/coerced counts, zero minimum; null/invalid/uncovered calendars interpreted as closed/open. Existing canonical engine hardened in place as1.0.1. Invalid counts/minima cannot grant history/technical availability and include inputValid:false. Original MarketHours remains the calendar owner; invalid/unknown/uncovered dates stay unknown. Realtime requires known open phase for transport-ready state; connected state explicitly carries TRANSPORT_ONLY, isLive:false, priceTypeConfirmed:false. Endpoint propagates this capability object, retaining prior contractState compatibility. Socket connection is not a fresh-price, trade-semantic or subscription-ack proof. Provider event folding unchanged.
+
+Validation:43 focused tests PASS including both originally red preservation tests and all16 existing market-contract tests. Counter-review caught addition-only return skipping public feature-gate assertions; repaired and rerun43 PASS. Remote gates pending. No full-universe/backfill run.
+
+This source-lane repair is not a whole-stack VU2 merge. Outstanding shared handoff: compare canonical identity/PIT payloads, backend route/configuration and existing display boundary before consumer integration. Source coverage report counts and PIT-ready labels do not certify professional backtesting. No mock fallback introduced. PR85 visual gate remains external403; no UI change or new screenshot acceptance claim here.
+
+Rollback: revert this bounded repair on its own branch; source162f048 and all VU2 PRs remain intact.

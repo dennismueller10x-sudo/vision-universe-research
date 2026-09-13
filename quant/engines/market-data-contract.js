@@ -53,7 +53,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var VERSION = "market-data-contract-1.0.0";
+  var VERSION = "market-data-contract-1.0.1";
 
   /* Die zehn Zustaende des Vertrages. Geschlossen: was hier nicht
      steht, ist kein Zustand, sondern ein Tippfehler. */
@@ -72,6 +72,9 @@
 
   /* Die Technikeignung steht bewusst DANEBEN und nicht darin. */
   var TECHNICAL_STATES = ["TECHNICAL_SUFFICIENT_HISTORY", "TECHNICAL_INSUFFICIENT_HISTORY"];
+
+  function validCount(n) { return Number.isSafeInteger(n) && n >= 0; }
+  function validMinimum(n) { return Number.isSafeInteger(n) && n > 0; }
 
   function istZustand(s) { return STATES.indexOf(s) >= 0; }
 
@@ -111,7 +114,9 @@
         "Der Historienspeicher hat nicht geantwortet. Ueber die Reihe " +
         "dieses Titels sagt das nichts.");
     }
-    var n = Number(input.barCount) || 0;
+    var n = input.barCount === undefined ? 0 : input.barCount;
+    if (!validCount(n) || !validMinimum(minBars)) return ergebnis("HISTORICAL_UNAVAILABLE",
+      "Die Anzahl der Kerzen oder die Mindesthistorie ist nicht pruefbar.", { barCount: null, inputValid: false });
     if (n >= minBars) {
       return ergebnis("HISTORICAL_AVAILABLE", null, { barCount: n });
     }
@@ -136,7 +141,9 @@
       return ergebnis("PROVIDER_UNAVAILABLE",
         "Der Anbieter hat nicht geantwortet oder den Abruf abgelehnt.");
     }
-    var n = Number(input.barCount) || 0;
+    var n = input.barCount === undefined ? 0 : input.barCount;
+    if (!validCount(n)) return ergebnis("INTRADAY_UNAVAILABLE",
+      "Die Anzahl der Intraday-Kerzen ist nicht pruefbar.", { barCount: null, inputValid: false });
     if (n > 0) return ergebnis("INTRADAY_AVAILABLE", null, { barCount: n });
 
     /* Keine Bars. Der GRUND unterscheidet sich, der Zustand nicht: es
@@ -179,9 +186,12 @@
       return ergebnis("PROVIDER_UNAVAILABLE",
         "Der Zugang zum Anbieter ist in dieser Umgebung nicht eingerichtet.");
     }
+    if (input.tradingOpen !== true) return ergebnis("REALTIME_UNAVAILABLE",
+      "Die Handelsphase ist nicht bestaetigt.", { connection: input.connection || null, isLive: false });
     if (verbunden) {
       return ergebnis("REALTIME_AVAILABLE", null,
-        { updates: Number(input.updates) || 0 });
+        { updates: validCount(input.updates) ? input.updates : null,
+          availabilityScope: "TRANSPORT_ONLY", isLive: false, priceTypeConfirmed: false });
     }
     /* Handel laeuft, Verbindung steht nicht: JETZT ist es ein Ausfall. */
     return ergebnis("REALTIME_UNAVAILABLE",
@@ -194,8 +204,12 @@
      DIE ZWEITE UNTERSCHEIDUNG. Kein Datenzustand - eine eigene Frage.
    */
   function technicalHistory(barCount, minBars) {
-    var n = Number(barCount) || 0;
+    var n = barCount === undefined ? 0 : barCount;
     var min = minBars === undefined ? 300 : minBars;
+    if (!validCount(n) || !validMinimum(min)) return {
+      state: "TECHNICAL_INSUFFICIENT_HISTORY", barCount: null, minBars: validMinimum(min) ? min : null,
+      inputValid: false, reason: "Die Historienlaenge ist nicht pruefbar; keine Technikeignung bestaetigt."
+    };
     return {
       state: n >= min ? "TECHNICAL_SUFFICIENT_HISTORY" : "TECHNICAL_INSUFFICIENT_HISTORY",
       barCount: n, minBars: min,
@@ -218,7 +232,15 @@
       return { state: null, phase: null, tradingOpen: null,
                reason: "Kein Handelskalender zur Hand - die Lage ist unbekannt." };
     }
-    var s = marketHours.sessionAt(at || new Date(), opts || {});
+    var unknown = { state: null, phase: null, tradingOpen: null, calendarCoverage: false,
+      reason: "Die Handelsphase ist nicht durch einen gueltigen Kalender bestaetigt." };
+    var instant = at === undefined ? new Date() : at;
+    var s;
+    try {
+      if (instant === null || !Number.isFinite(new Date(instant).getTime())) return unknown;
+      s = marketHours.sessionAt(instant, opts || {});
+    } catch (_) { return unknown; }
+    if (!s || s.calendarCoverage !== true || ["REGULAR", "PRE", "AFTER", "CLOSED"].indexOf(s.phase) < 0) return unknown;
     var phase = s && s.phase ? s.phase : null;
     var offen = phase === "REGULAR" || phase === "PRE" || phase === "AFTER";
     return {
@@ -246,7 +268,7 @@
       realtime: resolveRealtime(Object.assign({ tradingOpen: session.tradingOpen },
                                               input.realtime || {})),
       technical: technicalHistory(
-        (input.historical && input.historical.barCount) || 0,
+        input.historical ? input.historical.barCount : undefined,
         input.technicalMinBars)
     };
   }
