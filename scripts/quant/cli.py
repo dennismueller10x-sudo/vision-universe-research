@@ -729,7 +729,8 @@ def cmd_verify_reload(args):
 
     bestanden = sum(1 for z in ergebnisse if z.get("pass"))
     verdict = "PASS" if bestanden == len(ergebnisse) and ergebnisse else "FAIL"
-    _write(ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json", {
+    _write(Path(args.out) if getattr(args, "out", None)
+           else ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json", {
         "schema_version": 1, "generated_at_utc": _utcnow(),
         "versions": version_stamp(registry.version),
         "note": "Zurueckgeladene Objekte als eigener Faktenspeicher gelesen, kanonisch "
@@ -1149,6 +1150,7 @@ def build_parser():
     vr.add_argument("--reload-dir", default=str(ROOT / ".sec-reload" / "facts"))
     vr.add_argument("--ciks", help="Komma-Liste; Standard: alles im Reload-Verzeichnis")
     vr.add_argument("--local-dir", help="lokaler Faktenspeicher (Standard: quant/data/sec/facts)")
+    vr.add_argument("--out", help="Berichtspfad (Standard: quant/data/fundamentals/reload-verification.json)")
     vr.set_defaults(func=cmd_verify_reload)
 
     fi = subparsers.add_parser("findings", help="Befundtexte je Emittent - warum, nicht nur wie oft")

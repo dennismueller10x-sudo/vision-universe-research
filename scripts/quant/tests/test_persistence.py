@@ -52,11 +52,16 @@ class ReloadVerificationTests(unittest.TestCase):
         self.addCleanup(setattr, urllib.request, "urlopen", urllib.request.urlopen)
 
     def _run(self, ciks=None):
-        args = SimpleNamespace(reload_dir=str(self.reload), ciks=ciks, local_dir=str(self.facts))
+        # Der Bericht landet im Testverzeichnis - nicht im Repository. Ein
+        # Test, der ein Artefakt unter quant/data/ hinterlaesst, committet
+        # seine Attrappe beim naechsten `git add -A` mit.
+        pfad = Path(self.tmp.name) / "reload-verification.json"
+        args = SimpleNamespace(reload_dir=str(self.reload), ciks=ciks,
+                               local_dir=str(self.facts), out=str(pfad))
         out = io.StringIO()
         with redirect_stdout(out):
             code = cli.cmd_verify_reload(args)
-        bericht = json.load(open(cli.ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json"))
+        bericht = json.load(open(pfad))
         return code, bericht, out.getvalue()
 
     def test_ein_zurueckgeladenes_factbook_reproduziert_die_kanonischen_werte(self):

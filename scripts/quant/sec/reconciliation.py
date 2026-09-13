@@ -1204,10 +1204,23 @@ def quality_report(records, fundamentals):
     fehlquote.sort(key=lambda row: -(row["MISSING_RATE"] or 0))
 
     # Titelebene: das ist die Zahl, die eine Oberflaeche braucht.
+    #
+    # §12, strikt getrennt: MISSING heisst "sollte da sein und loest
+    # nicht auf"; NOT_APPLICABLE heisst "existiert fuer diese Struktur
+    # nicht". Ein SPAC ohne Umsatz und ein geschlossener Fonds ohne
+    # operativen Abschluss sind das zweite. Sie als MISSING zu fuehren
+    # hiesse, eine Luecke zu behaupten, die niemand schliessen kann -
+    # und die Oberflaeche zeigte "keine Daten", wo "hier gibt es keine"
+    # die Wahrheit ist.
     titel = Counter()
     for record in records:
+        folge = FINE_TO_RECOVERABILITY.get(record.get("fineCause"))
         if not record["fundamentals"]:
             titel["UNAVAILABLE"] += 1
+        elif record["resolvedValues"] == 0 and folge == "NOT_APPLICABLE":
+            titel["NOT_APPLICABLE"] += 1
+        elif record["resolvedValues"] == 0 and folge == "REQUIRES_REVIEW":
+            titel["REQUIRES_REVIEW"] += 1
         elif record["resolvedValues"] == 0:
             titel["MISSING"] += 1
         elif record["annualYears"] < 3:
@@ -1238,10 +1251,13 @@ def quality_report(records, fundamentals):
         "titles": {
             "denominator": {"PRODUCT_TITLES": len(records)},
             "byState": {state: titel.get(state, 0)
-                        for state in ("AVAILABLE", "PARTIAL", "MISSING", "UNAVAILABLE")},
-            "note": "AVAILABLE = mindestens drei Jahre aufloesbare Historie. MISSING = "
-                    "Einreichungen vorhanden, aber kein aufloesbarer Wert. UNAVAILABLE = "
-                    "kein Factbook.",
+                        for state in ("AVAILABLE", "PARTIAL", "MISSING", "NOT_APPLICABLE",
+                                      "REQUIRES_REVIEW", "UNAVAILABLE")},
+            "note": "AVAILABLE = mindestens drei Jahre aufloesbare Historie. PARTIAL = Werte, "
+                    "aber kuerzer. MISSING = Einreichungen vorhanden, kein aufloesbarer Wert, "
+                    "und die Struktur muesste welche haben. NOT_APPLICABLE = die Kennzahlen "
+                    "existieren fuer diese Struktur nicht (SPAC, geschlossener Fonds). "
+                    "REQUIRES_REVIEW = nicht belastbar einzuordnen. UNAVAILABLE = kein Factbook.",
         },
         "metricsByMissingRate": fehlquote,
         "highestMissingRate": fehlquote[0] if fehlquote else None,
