@@ -233,18 +233,19 @@ sagt, ob es sich lohnt, morgen wiederzukommen.
 
 ## 6 — WAS DIE SCHICHT HEUTE TRÄGT
 
-Gemessen gegen **7.004 Produkttitel** (Lauf 34768909559, Normalisierung
+Gemessen gegen **7.004 Produkttitel** (Lauf 34776535994, Normalisierung
 1.9.0, Registry 1.5.0; die Zahlen stammen aus `reconciliation.json`,
-`backtest-readiness.json` und `fundamental-quality.json`, der
-Abschlussbericht `docs/VU_SEC_FINAL_RECOVERY_REPORT.md` wird aus denselben
-Artefakten gerendert):
+`gap-classification.json`, `backtest-readiness.json` und
+`fundamental-quality.json`, der Abschlussbericht
+`docs/VU_SEC_FINAL_RECOVERY_REPORT.md` wird aus denselben Artefakten
+gerendert):
 
 | Universum | Titel | Anteil |
 |---|---:|---:|
 | `PRODUCT_UNIVERSE` | 7.004 | 100 % |
 | `MARKET_UNIVERSE` (R2) | 6.997 | 99,9 % |
 | `TECHNICAL_UNIVERSE` | 5.963 | 85,14 % |
-| `FUNDAMENTAL_UNIVERSE` | 5.813 | 83,00 % |
+| `FUNDAMENTAL_UNIVERSE` | 5.857 | 83,62 % |
 | `PIT_UNIVERSE` | 5.693 | 81,28 % |
 | `BACKTEST_READY_UNIVERSE` | 5.152 | 73,56 % |
 
@@ -256,21 +257,26 @@ keinem Pitch stehen.
 Backtestfähig nach Tiefe: **4.593** Titel mit fünf Jahren, **3.240** mit
 zehn, **2.350** mit fünfzehn.
 
-Titelzustände (§2.2): 5.172 `AVAILABLE`, 521 `PARTIAL`, 58 `MISSING`,
-62 `NOT_APPLICABLE`, 1.191 `UNAVAILABLE`. Von den 161 Titeln, die als
-`SEC_RECOVERABLE` geführt werden, ist **keiner** mehr durch ein Mapping
-lösbar: 62 sind strukturell ohne operativen Abschluss (SPAC, geschlossener
-Fonds), 40 sind jünger als zwei Jahre und warten auf ihren ersten
-Jahresbericht, 16 haben bei der SEC keine XBRL-Abschlüsse (40-F-Befreiung,
-leeres companyfacts), 42 stehen in der Abruf-Fehlerschlange.
+Titelzustände (§2.2): 5.172 `AVAILABLE`, 521 `PARTIAL`, 94 `MISSING`,
+70 `NOT_APPLICABLE`, 1.147 `UNAVAILABLE`. Lücken nach Lösbarkeit, **nach**
+der Feinklassifikation (§5): 1 `SEC_RECOVERABLE` (eine Bank ohne
+Kernkennzahl, Branchenschicht), 102 `EXTERNAL_PROVIDER_CANDIDATE` (ohne
+XBRL-Abschlüsse bei der SEC oder ohne CIK), 958 `RESOLVES_WITH_TIME`
+(junge Notierungen, erster Jahresbericht steht aus), 382 `BY_DESIGN`
+(SPACs, geschlossene Fonds, Vorzugs- und Sonderklassen), 389
+`REQUIRES_REVIEW` (Titel ohne CIK, den die SEC nicht führt). Kein Titel
+wartet mehr auf ein Mapping.
 
-Branchenschicht (§2.3): 330 von 362 Banken, 113 von 131 Versicherern und
+Branchenschicht (§2.3): 330 von 363 Banken, 113 von 131 Versicherern und
 174 von 175 REITs tragen mindestens eine Branchenkennzahl.
 
-Die Factbooks aller 5.437 ingestierten Emittenten liegen dauerhaft unter
+Die Factbooks aller 5.479 ingestierten Emittenten liegen dauerhaft unter
 `r2:vision-universe-history/v1/sec/fundamentals/`; der Reload ohne SEC-
 Zugriff reproduziert die kanonischen Werte byte-gleich
-(`quant/data/fundamentals/reload-verification.json`).
+(`quant/data/fundamentals/reload-verification.json`). Ein Emittent, für
+den die SEC keine XBRL-Fakten führt, trägt ein leeres Factbook mit
+`companyfacts_status = NOT_AVAILABLE_404` — die Antwort der Quelle, kein
+Abrufproblem.
 
 ---
 

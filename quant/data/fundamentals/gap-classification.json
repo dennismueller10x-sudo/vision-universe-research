@@ -241,24 +241,32 @@
     }
   ],
   "byRecoverability": {
-    "SEC_RECOVERABLE": 161,
-    "EXTERNAL_PROVIDER_CANDIDATE": 60,
-    "RESOLVES_WITH_TIME": 910,
-    "BY_DESIGN": 312,
+    "SEC_RECOVERABLE": 1,
+    "EXTERNAL_PROVIDER_CANDIDATE": 102,
+    "RESOLVES_WITH_TIME": 958,
+    "BY_DESIGN": 382,
     "REQUIRES_REVIEW": 389
   },
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
-    "SEC_RECOVERABLE": 161,
-    "EXTERNAL_PROVIDER_CANDIDATE": 60
+    "SEC_RECOVERABLE": 1,
+    "EXTERNAL_PROVIDER_CANDIDATE": 102
   },
-  "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen.",
+  "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen. byRecoverability traegt die Gruppe NACH der Feinklassifikation (\u00a75): ein SPAC ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.",
   "secTickerDirectory": {
     "present": true,
     "tickers": 10426,
     "role": "Beleg fuer IDENTITY_MAPPING_GAP: kennt das SEC-Verzeichnis das Kuerzel, ist die fehlende CIK unsere Luecke und keine der Quelle."
   },
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
+  "byRecoverabilityCoarse": {
+    "SEC_RECOVERABLE": 161,
+    "EXTERNAL_PROVIDER_CANDIDATE": 60,
+    "RESOLVES_WITH_TIME": 910,
+    "BY_DESIGN": 312,
+    "REQUIRES_REVIEW": 389
+  },
+  "regroupedByFineClassification": 160,
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.9.0",
@@ -325,8 +333,8 @@
             "count": 3
           }
         ],
-        "SEC_RECOVERABLE_COUNT": 161,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 41
+        "SEC_RECOVERABLE_COUNT": 1,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 83
       },
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
@@ -365,8 +373,8 @@
             "count": 3
           }
         ],
-        "SEC_RECOVERABLE_COUNT": 161,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 0
+        "SEC_RECOVERABLE_COUNT": 1,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 42
       },
       {
         "priority": "PRIORITY_5_EDGE_CASES",
@@ -395,10 +403,10 @@
             "count": 6
           }
         ],
-        "SEC_RECOVERABLE_COUNT": 9,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 6
+        "SEC_RECOVERABLE_COUNT": 0,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 7
       }
     ]
   },
-  "generatedAtUtc": "2026-09-13T19:42:00+00:00"
+  "generatedAtUtc": "2026-09-13T19:57:01+00:00"
 }

@@ -1,86 +1,26 @@
 {
   "note": "Wodurch entstehen die SEC_RECOVERABLE-Luecken? Die Reihenfolge hier ist die Reihenfolge der naechsten Arbeit - gemessen, nicht vermutet. NICHTS davon wurde repariert.",
   "denominator": {
-    "SEC_RECOVERABLE": 161
+    "SEC_RECOVERABLE": 1
   },
   "byCause": [
     {
       "cause": "IFRS_OR_FOREIGN_TAXONOMY",
-      "count": 29,
-      "percent": 18.0124,
+      "count": 1,
+      "percent": 100.0,
       "formTypes": {
-        "20-F": 22,
-        "40-F": 5,
-        "20-F/A": 1,
-        "40-F/A": 1
+        "20-F": 1
       },
       "examples": [
         {
-          "symbol": "AGBK",
-          "cik": "0002081206",
+          "symbol": "PICS",
+          "cik": "0001841644",
           "form": "20-F"
-        },
-        {
-          "symbol": "AGMB",
-          "cik": "0002020932",
-          "form": "20-F"
-        },
-        {
-          "symbol": "AIIR",
-          "cik": "0002097725",
-          "form": "20-F"
-        },
-        {
-          "symbol": "ALPS",
-          "cik": "0002025774",
-          "form": "20-F"
-        },
-        {
-          "symbol": "AUGO",
-          "cik": "0001468642",
-          "form": "20-F/A"
-        }
-      ]
-    },
-    {
-      "cause": "OTHER_SEC_RECOVERABLE",
-      "count": 132,
-      "percent": 81.9876,
-      "formTypes": {
-        "KEINE_EINREICHUNG": 107,
-        "10-Q": 14,
-        "10-K": 11
-      },
-      "examples": [
-        {
-          "symbol": "AIO",
-          "cik": "0001778114",
-          "form": null
-        },
-        {
-          "symbol": "ASGI",
-          "cik": "0001793855",
-          "form": null
-        },
-        {
-          "symbol": "BANX",
-          "cik": "0001578987",
-          "form": null
-        },
-        {
-          "symbol": "BCAT",
-          "cik": "0001809541",
-          "form": null
-        },
-        {
-          "symbol": "BLSM",
-          "cik": "0001839970",
-          "form": null
         }
       ]
     }
   ],
-  "largestBlock": "OTHER_SEC_RECOVERABLE",
+  "largestBlock": "IFRS_OR_FOREIGN_TAXONOMY",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.9.0",
@@ -92,5 +32,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T19:42:00+00:00"
+  "generatedAtUtc": "2026-09-13T19:57:01+00:00"
 }

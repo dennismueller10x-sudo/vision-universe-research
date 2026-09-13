@@ -170,31 +170,40 @@ Kalenderwege kamen hinzu (Rückwärtsprojektion, Bilanzstichtag des
 Jahresabschlusses, registriertes Jahresende), dazu die Branchenschicht
 mit 28 je SIC gemessenen Kennzahlen und die dauerhafte Ablage in R2.
 
-Gemessen (Baseline = Lauf 34749245361, Ergebnis = Lauf 34768909559; die
+Gemessen (Baseline = Lauf 34749245361, Ergebnis = Lauf 34776535994; die
 vollständige Tabelle steht in `docs/VU_SEC_FINAL_RECOVERY_REPORT.md`,
 gerendert aus den Artefakten):
 
 | Kennzahl | vorher | nachher | Δ |
 |---|---:|---:|---:|
-| `SEC_RECOVERABLE` | 384 | 161 | **-223** |
+| `SEC_RECOVERABLE` (nach Feinklassifikation) | 384 | 1 | **-383** |
 | davon noch durch Mapping lösbar | 72 | 0 | **-72** |
+| `BY_DESIGN` | 312 | 382 | **+70** |
+| `RESOLVES_WITH_TIME` | 821 | 958 | **+137** |
+| `EXTERNAL_PROVIDER_CANDIDATE` | 111 | 102 | **-9** |
 | `AVAILABLE` (Titel) | 4.987 | 5.172 | **+185** |
-| `MISSING` (Titel) | 343 | 58 | **-285** |
-| `NOT_APPLICABLE` (Titel, neu ausgewiesen) | – | 62 | |
+| `MISSING` (Titel) | 343 | 94 | **-249** |
+| `NOT_APPLICABLE` (Titel, neu ausgewiesen) | – | 70 | |
+| `UNAVAILABLE` (Titel) | 1.191 | 1.147 | **-44** |
 | `PIT_READY` | 5.470 | 5.693 | **+223** |
 | `BACKTEST_PIT_FUNDAMENTAL_READY` | 5.139 | 5.152 | **+13** |
 | `BACKTEST_5Y_READY` | 4.424 | 4.593 | **+169** |
 | `BACKTEST_10Y_READY` | 3.017 | 3.240 | **+223** |
 | `BACKTEST_15Y_READY` | 2.242 | 2.350 | **+108** |
-| Banken mit Branchenkennzahl | – | 330 / 362 | |
+| Banken mit Branchenkennzahl | – | 330 / 363 | |
 | Versicherer mit Branchenkennzahl | – | 113 / 131 | |
 | REITs mit Branchenkennzahl | – | 174 / 175 | |
-| `PERSISTED_ISSUERS` (R2) | – | 5.437 | |
+| `PERSISTED_ISSUERS` (R2) | – | 5.479 | |
 | `RELOAD_WITHOUT_SEC_REFETCH` | – | PASS 8/8 | |
 
-Was von den 161 übrig ist, hat je einen Grund: 62 ohne operativen
-Abschluss (14 SPACs, 48 geschlossene Fonds), 40 jünger als zwei Jahre
-(erster Jahresbericht steht aus), 16 ohne XBRL-Abschlüsse bei der SEC,
-42 in der Abruf-Fehlerschlange (im Bulk-Archiv nicht enthalten), 1 Bank
-ohne Kernkennzahl in der Branchenschicht.
+Die 161 Titel, die die Grobklassifikation zuletzt als `SEC_RECOVERABLE`
+führte, haben je einen Grund, und keiner davon ist ein Mapping: 70 ohne
+operativen Abschluss (14 SPACs, 56 geschlossene Fonds), 48 jünger als
+zwei Jahre (erster Jahresbericht steht aus), 42 ohne XBRL-Abschlüsse bei
+der SEC (companyfacts-404, 40-F-Befreiung), 1 Bank ohne Kernkennzahl in
+der Branchenschicht. Die Grobgruppe übernimmt seit Lauf 34776535994 diese
+Konsequenz; `byRecoverabilityCoarse` hält die Zählung davor fest.
 
+Die 42 Emittenten der Abruf-Fehlerschlange wurden im selben Lauf einzeln
+über die SEC-API nachgeholt (42 von 42, alle `companyfacts` 404): sie
+tragen jetzt ein leeres Factbook mit Status statt „Abruf ausstehend".

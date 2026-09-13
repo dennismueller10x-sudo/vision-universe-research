@@ -421,3 +421,43 @@ class JungeNotierungOhneXbrlTests(unittest.TestCase):
                          "sic": "2834", "name": "Obsidian Therapeutics, Inc."})
         ursache, _ = rec.fine_cause(r)
         self.assertEqual(ursache, "VERY_YOUNG_LISTING")
+
+
+class FeinkonsequenzTests(unittest.TestCase):
+    """Die Grobgruppe uebernimmt die Feinkonsequenz - SEC_RECOVERABLE heisst dann, was es sagt."""
+
+    def test_spac_wird_by_design_und_junge_notierung_loest_die_zeit(self):
+        from datetime import date
+        jung = date.today().replace(year=date.today().year - 1).isoformat()
+        spac = titel(memberId="ref_s", cik="0000000061", fundamentals=True, latestForm="10-Q",
+                     _fund={"cik": "0000000061", "rawFacts": 300, "mappedFacts": 0,
+                            "unmappedFacts": 200, "calendarYears": 0, "sic": "6770",
+                            "name": "Any Acquisition Corp"})
+        jungtitel = titel(memberId="ref_j", cik="0000000062", fundamentals=True, latestForm="20-F",
+                          firstTradeDate=jung,
+                          _fund={"cik": "0000000062", "rawFacts": 0, "mappedFacts": 0,
+                                 "unmappedFacts": 0, "sic": "2834", "name": "Fresh Bio NV"})
+        for r in (spac, jungtitel):
+            r["gapCause"] = "MISSING_CANONICAL_TAG_MAPPING"
+            r["gapRecoverability"] = rec.SEC_RECOVERABLE
+        records = [spac, jungtitel]
+        rec.fine_classification_report(records)
+        self.assertEqual(rec.apply_fine_consequences(records), 2)
+        self.assertEqual(spac["gapRecoverability"], rec.BY_DESIGN)
+        self.assertEqual(spac["coarseRecoverability"], rec.SEC_RECOVERABLE)
+        self.assertEqual(jungtitel["gapRecoverability"], rec.RESOLVES_WITH_TIME)
+        zaehlung = rec.recoverability_counts(records)
+        self.assertEqual(zaehlung[rec.SEC_RECOVERABLE], 0)
+        self.assertEqual(zaehlung[rec.BY_DESIGN], 1)
+        self.assertEqual(zaehlung[rec.RESOLVES_WITH_TIME], 1)
+
+    def test_ein_echter_mapping_fall_bleibt_sec_recoverable(self):
+        r = titel(memberId="ref_m", cik="0000000063", fundamentals=True, latestForm="10-K",
+                  findingCodes={"UNKNOWN_CONCEPT": 400},
+                  _fund={"cik": "0000000063", "rawFacts": 900, "mappedFacts": 0,
+                         "unmappedFacts": 800, "calendarYears": 5, "sic": "3572",
+                         "name": "Old Industrial Corp"})
+        r["gapCause"] = "MISSING_CANONICAL_TAG_MAPPING"; r["gapRecoverability"] = rec.SEC_RECOVERABLE
+        rec.fine_classification_report([r])
+        self.assertEqual(rec.apply_fine_consequences([r]), 0)
+        self.assertEqual(r["gapRecoverability"], rec.SEC_RECOVERABLE)

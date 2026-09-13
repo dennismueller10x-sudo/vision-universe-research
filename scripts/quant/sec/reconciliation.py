@@ -1093,6 +1093,49 @@ def fine_cause(record):
     return "REQUIRES_REVIEW", "kein eindeutiges Merkmal"
 
 
+# Was die Feinklassifikation fuer die Grobgruppe bedeutet. Ein SPAC ohne
+# Umsatz ist keine SEC-loesbare Luecke, sondern BY_DESIGN; eine junge
+# Notierung loest die Zeit; ein leeres companyfacts ist ein Anbieterfall.
+# Nur was tatsaechlich noch ein Mapping schliessen koennte - oder die
+# Branchenschicht - bleibt SEC_RECOVERABLE.
+CONSEQUENCE_TO_RECOVERABILITY = {
+    "NOT_APPLICABLE": BY_DESIGN,
+    "RESOLVES_WITH_TIME": RESOLVES_WITH_TIME,
+    "EXTERNAL_PROVIDER_CANDIDATE": EXTERNAL_PROVIDER_CANDIDATE,
+    "REQUIRES_REVIEW": REQUIRES_REVIEW,
+    "SEC_RECOVERABLE": SEC_RECOVERABLE,
+    "INDUSTRY_LAYER": SEC_RECOVERABLE,
+}
+
+
+def apply_fine_consequences(records):
+    """Nach der Feinklassifikation: die Grobgruppe uebernimmt die Konsequenz.
+
+    Lauf 34776535994 fuehrte 161 Titel als SEC_RECOVERABLE, von denen
+    kein einziger durch ein Mapping loesbar war - 70 strukturell ohne
+    Abschluss, 48 zu jung, 42 ohne XBRL bei der SEC. Eine Gruppe, deren
+    Name etwas anderes sagt als ihr Inhalt, ist im Abschlussbericht eine
+    falsche Zahl. Gibt die Zahl der umgruppierten Titel zurueck.
+    """
+    umgruppiert = 0
+    for record in records:
+        if record.get("gapRecoverability") != SEC_RECOVERABLE:
+            continue
+        folge = FINE_TO_RECOVERABILITY.get(record.get("fineCause"))
+        neu = CONSEQUENCE_TO_RECOVERABILITY.get(folge)
+        if neu and neu != SEC_RECOVERABLE:
+            record["coarseRecoverability"] = SEC_RECOVERABLE
+            record["gapRecoverability"] = neu
+            umgruppiert += 1
+    return umgruppiert
+
+
+def recoverability_counts(records):
+    zaehler = Counter(r.get("gapRecoverability") for r in records if r.get("gapCause"))
+    return {k: zaehler[k] for k in (SEC_RECOVERABLE, EXTERNAL_PROVIDER_CANDIDATE,
+                                    RESOLVES_WITH_TIME, BY_DESIGN, REQUIRES_REVIEW)}
+
+
 def fine_classification_report(records):
     """§5: jeder Fall accounted for. Keine Restgruppe ohne Grund."""
     betroffen = [r for r in records if r.get("gapRecoverability") == SEC_RECOVERABLE]
@@ -1379,6 +1422,20 @@ def build_reconciliation(root, registry=None, today=None, min_years=3):
     sec_tickers = load_sec_ticker_directory(root)
     gaps = gap_report(records, today=today, min_years=min_years,
                       sec_tickers=sec_tickers)                     # setzt gapCause
+    # Erst die Feinklassifikation (setzt fineCause auf jedem
+    # SEC_RECOVERABLE-Titel), dann uebernimmt die Grobgruppe deren
+    # Konsequenz - und erst DANACH zaehlen Anbieterprofil, Prioritaeten
+    # und Backtest, sonst zaehlten sie eine Gruppe, die es so nicht gibt.
+    fine = fine_classification_report(records)
+    gaps["byRecoverabilityCoarse"] = dict(gaps["byRecoverability"])
+    gaps["regroupedByFineClassification"] = apply_fine_consequences(records)
+    gaps["byRecoverability"] = recoverability_counts(records)
+    gaps["mainGroups"][SEC_RECOVERABLE] = gaps["byRecoverability"][SEC_RECOVERABLE]
+    gaps["mainGroups"][EXTERNAL_PROVIDER_CANDIDATE] = gaps["byRecoverability"][EXTERNAL_PROVIDER_CANDIDATE]
+    gaps["recoverabilityNote"] = (gaps.get("recoverabilityNote", "") +
+        " byRecoverability traegt die Gruppe NACH der Feinklassifikation (§5): ein SPAC "
+        "ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres "
+        "companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.")
     payloads = {
         "reconciliation.json": {
             "versions": stamp,
@@ -1395,8 +1452,7 @@ def build_reconciliation(root, registry=None, today=None, min_years=3):
         "backtest-readiness.json": dict(backtest_report(records), versions=stamp),
         "sec-recoverable-causes.json": dict(sec_recoverable_report(records),
                                             versions=stamp),
-        "sec-recoverable-fine.json": dict(fine_classification_report(records),
-                                          versions=stamp),
+        "sec-recoverable-fine.json": dict(fine, versions=stamp),
         "external-provider-candidates.json": dict(external_candidate_report(records),
                                                   versions=stamp),
         "fundamental-quality.json": dict(quality_report(records, fundamentals),

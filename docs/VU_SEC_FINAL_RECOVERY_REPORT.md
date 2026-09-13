@@ -1,15 +1,15 @@
 # SEC Fundamentals — Abschlussbericht des Recovery-Zyklus (§25 / §26)
 
-Erzeugt 2026-09-13T19:42:00+00:00 aus den Artefakten unter `quant/data/fundamentals/`. **Jede Zahl ist gelesen, keine getippt.** Vorher = `baseline-before-final-recovery.json` (Lauf 34749245361), Nachher = aktueller Stand (Normalisierung 1.9.0, Registry 1.5.0).
+Erzeugt 2026-09-13T19:57:01+00:00 aus den Artefakten unter `quant/data/fundamentals/`. **Jede Zahl ist gelesen, keine getippt.** Vorher = `baseline-before-final-recovery.json` (Lauf 34749245361), Nachher = aktueller Stand (Normalisierung 1.9.0, Registry 1.5.0).
 
 ## 1 — Luecken nach Loesbarkeit (Produktuniversum 7.004)
 
 | Kennzahl | Vorher | Nachher | Δ |
 |---|---:|---:|---:|
-| `SEC_RECOVERABLE` | 384 | 161 | -223 |
-| `EXTERNAL_PROVIDER_CANDIDATE` | 111 | 60 | -51 |
-| `RESOLVES_WITH_TIME` | 821 | 910 | +89 |
-| `BY_DESIGN` | 312 | 312 | +0 |
+| `SEC_RECOVERABLE` | 384 | 1 | -383 |
+| `EXTERNAL_PROVIDER_CANDIDATE` | 111 | 102 | -9 |
+| `RESOLVES_WITH_TIME` | 821 | 958 | +137 |
+| `BY_DESIGN` | 312 | 382 | +70 |
 | `REQUIRES_REVIEW` | 389 | 389 | +0 |
 
 ## 2 — Die SEC_RECOVERABLE-Faelle, einzeln begruendet (§5)
@@ -24,12 +24,12 @@ Nenner: 161 Faelle, 161 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"RESOL
 | `SPAC_BLANK_CHECK` | 171 | 14 | -157 |
 | `NO_XBRL_FINANCIALS` | n/a | 3 |  |
 | `BANK` | 3 | 1 | -2 |
-| `BALANCE_SHEET_ONLY` | 28 | n/a |  |
-| `REQUIRES_REVIEW` | 54 | n/a |  |
 | `IFRS_REMAINING` | 3 | n/a |  |
-| `INSUFFICIENT_DISCLOSURE` | 29 | n/a |  |
+| `BALANCE_SHEET_ONLY` | 28 | n/a |  |
 | `TRUE_MISSING_TAG_MAPPING` | 32 | n/a |  |
 | `ASSET_MANAGER` | 7 | n/a |  |
+| `INSUFFICIENT_DISCLOSURE` | 29 | n/a |  |
+| `REQUIRES_REVIEW` | 54 | n/a |  |
 | `PERIOD_MAPPING` | 9 | n/a |  |
 
 ## 3 — Titelzustaende (§12)
@@ -109,7 +109,7 @@ Look-ahead-Regel: PIT_READY verlangt Veroeffentlichungsdatum UND Akzessionsnumme
 
 ## 8 — Anbieterfrage (§22)
 
-Kandidatenprofil: 60 Titel, davon 8 auslaendische Emittenten, 52 sonstige. Entscheidung: **OFFEN (§15).** Ein Anbieter schliesst nur, was die SEC nicht fuehrt: Emittenten ohne XBRL-Abschluesse (40-F-Befreiung, leeres companyfacts) und Titel ohne CIK.
+Kandidatenprofil: 102 Titel, davon 14 auslaendische Emittenten, 88 sonstige. Entscheidung: **OFFEN (§15).** Ein Anbieter schliesst nur, was die SEC nicht fuehrt: Emittenten ohne XBRL-Abschluesse (40-F-Befreiung, leeres companyfacts) und Titel ohne CIK.
 
 ## 9 — Bestaetigungen (§26)
 
