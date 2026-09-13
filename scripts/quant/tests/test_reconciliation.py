@@ -316,3 +316,51 @@ class HistorientiefeTests(unittest.TestCase):
                                          sec_tickers={"AB"})
         self.assertIsNone(grund, "eine Bank mit 17 Jahren Historie hat keine Luecke")
         self.assertIsNone(wieder)
+
+
+class BranchenschichtTests(unittest.TestCase):
+    """§10: die Branchenschicht wird je Branche gezaehlt, nie gegen den Kern."""
+
+    def _bank(self, member, cik, nii_jahre, deposits_jahre):
+        return titel(
+            memberId=member, cik=cik, fundamentals=True, resolvedValues=40,
+            pitState="PIT_READY", annualYears=float(max(nii_jahre, deposits_jahre)),
+            metrics={m: m in ("net_income", "total_assets", "stockholders_equity")
+                     for m in rec.CORE_METRIC_LABELS},
+            _fund={"cik": cik, "industry": "BANK", "industryMetrics": {
+                "net_interest_income": {"annualPeriods": nii_jahre,
+                                        "historyYears": float(nii_jahre)},
+                "deposits": {"annualPeriods": deposits_jahre,
+                             "historyYears": float(deposits_jahre)},
+            }})
+
+    def test_der_nenner_ist_die_branche(self):
+        records = [
+            self._bank("ref_b1", "0000000021", 8, 8),
+            self._bank("ref_b2", "0000000022", 0, 3),
+            self._bank("ref_b3", "0000000023", 0, 0),
+            titel(memberId="ref_i1", cik="0000000031", fundamentals=True,
+                  _fund={"cik": "0000000031", "industry": None, "industryMetrics": {}}),
+        ]
+        bericht = rec.industry_layer_report(records)
+        self.assertEqual(list(bericht["industries"]), ["BANK"])
+        bank = bericht["industries"]["BANK"]
+        self.assertEqual(bank["ISSUERS"], 3)
+        self.assertEqual(bank["ISSUERS_WITH_ANY_INDUSTRY_METRIC"], 2)
+        self.assertEqual(bank["ISSUERS_WITHOUT_ANY_INDUSTRY_METRIC"], 1)
+        self.assertEqual(bank["metrics"]["net_interest_income"]["ISSUERS"], 1)
+        self.assertEqual(bank["metrics"]["net_interest_income"]["ISSUERS_5Y"], 1)
+        self.assertEqual(bank["metrics"]["deposits"]["ISSUERS"], 2)
+        self.assertEqual(bank["metrics"]["deposits"]["ISSUERS_5Y"], 1)
+
+    def test_zwei_titel_eines_emittenten_zaehlen_einmal(self):
+        records = [self._bank("ref_b1", "0000000021", 8, 8),
+                   self._bank("ref_b1_classB", "0000000021", 8, 8)]
+        bank = rec.industry_layer_report(records)["industries"]["BANK"]
+        self.assertEqual(bank["ISSUERS"], 1)
+
+    def test_der_kernvertrag_bleibt_unberuehrt(self):
+        records = [self._bank("ref_b1", "0000000021", 8, 8)]
+        kern = rec.core_metric_report(records)["metrics"]
+        self.assertEqual(kern[rec.CORE_METRIC_LABELS["revenue"]]["COUNT"], 0)
+        self.assertEqual(kern[rec.CORE_METRIC_LABELS["net_income"]]["COUNT"], 1)

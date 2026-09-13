@@ -558,6 +558,26 @@ def _submissions_summary(provider, cik):
     }
 
 
+def _sic_spannen(text):
+    """'6020-6036,6021' -> [(6020, 6036), (6021, 6021)]; leer -> []."""
+    spannen = []
+    for teil in (text or "").split(","):
+        teil = teil.strip()
+        if not teil:
+            continue
+        low, _, high = teil.partition("-")
+        spannen.append((int(low), int(high or low)))
+    return spannen
+
+
+def _sic_passt(sic, spannen):
+    try:
+        code = int(sic)
+    except (TypeError, ValueError):
+        return False
+    return any(low <= code <= high for low, high in spannen)
+
+
 def cmd_concepts(args):
     """Welche XBRL-Konzepte meldet der Bestand, die die Registry nicht kennt?
 
@@ -584,6 +604,11 @@ def cmd_concepts(args):
         gewollt = set(payload.get(args.ciks_key) if args.ciks_key else payload)
         ciks = [c for c in ciks if c in gewollt]
         print(f"  Eingegrenzt auf {len(ciks)} Emittenten aus {args.ciks_file}")
+    # --sic 6020-6036,6021: nur Emittenten dieser SIC-Spannen. Das ist
+    # die Messung, aus der eine Branchenschicht entsteht - das
+    # Vokabular der Banken, nicht das Vokabular derer, denen zufaellig
+    # der Umsatz-Tag fehlt.
+    sic_spannen = _sic_spannen(getattr(args, "sic", None))
 
     von_konzept = Counter()          # Fakten je Konzept
     emittenten_je_konzept = Counter()  # Emittenten je Konzept
@@ -595,6 +620,10 @@ def cmd_concepts(args):
         if document is None:
             continue
         geprueft += 1
+        if sic_spannen and not _sic_passt((document.get("profile") or {}).get("sic"),
+                                          sic_spannen):
+            document = None
+            continue
         # Ein Emittent ohne aufloesbare Werte ist der teure Fall.
         timelines = (document.get("factbook") or {}).get("timelines") or []
         leer = not timelines
@@ -647,6 +676,7 @@ def cmd_concepts(args):
             "scope": ("issuers_without_any_resolved_value" if args.only_unresolved
                       else f"issuers_with_values_but_without_{args.without_metric}"
                       if args.without_metric else "all_issuers"),
+            "sic": getattr(args, "sic", None),
             "issuers_scanned": geprueft,
             "issuers_in_scope": betroffen,
             "by_taxonomy": dict(taxonomien.most_common()),
@@ -1143,6 +1173,7 @@ def build_parser():
     con.add_argument("--out", help="Ergebnis zusaetzlich als JSON schreiben")
     con.add_argument("--ciks-file", help="JSON mit einer CIK-Liste - nur diese Emittenten")
     con.add_argument("--ciks-key", help="Schluessel in --ciks-file, unter dem die Liste steht")
+    con.add_argument("--sic", help="SIC-Spannen, z. B. 6020-6036,6021 - nur diese Emittenten")
     con.set_defaults(func=cmd_concepts)
 
     vr = subparsers.add_parser(

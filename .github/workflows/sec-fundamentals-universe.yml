@@ -414,6 +414,17 @@ jobs:
           echo "--- Emittenten mit Werten, aber ohne revenue ---"
           python3 scripts/quant/cli.py concepts --top 80 --without-metric revenue \
             --out quant/data/fundamentals/unmapped-concepts-no-revenue.json
+          # Das Vokabular JE BRANCHE, nach SIC - daraus entsteht die
+          # Branchenschicht (§10), und daran wird sie nachgemessen.
+          echo "--- Banken (SIC 6020-6036) ---"
+          python3 scripts/quant/cli.py concepts --top 80 --sic 6020-6036 \
+            --out quant/data/fundamentals/unmapped-concepts-banks.json
+          echo "--- Versicherer (SIC 6311-6399) ---"
+          python3 scripts/quant/cli.py concepts --top 80 --sic 6311-6399 \
+            --out quant/data/fundamentals/unmapped-concepts-insurers.json
+          echo "--- REITs (SIC 6798) ---"
+          python3 scripts/quant/cli.py concepts --top 80 --sic 6798 \
+            --out quant/data/fundamentals/unmapped-concepts-reits.json
 
       - name: Abgleich mit dem Marktdaten-Universum
         run: |

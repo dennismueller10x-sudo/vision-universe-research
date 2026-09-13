@@ -582,6 +582,54 @@ def core_metric_report(records):
     return out
 
 
+def industry_layer_report(records):
+    """§10. Was liefert die Branchenschicht - getrennt vom Kernvertrag?
+
+    Je Branche: wie viele Emittenten des Produktuniversums tragen sie,
+    wie viele davon liefern mindestens eine Branchenkennzahl, und wie
+    viele je Kennzahl. Der Nenner ist die Branche, nicht das Universum -
+    eine Bank ohne Zinsertrag ist eine Luecke, ein Industriewert ohne
+    Zinsertrag ist keine.
+    """
+    out = {"note": "Branchenkennzahlen stehen neben dem Kernvertrag (industrySpecificMetrics), "
+                   "nie darin. Gezaehlt je Emittent des Produktuniversums.",
+           "industries": {}}
+    gesehen = set()
+    for record in records:
+        fund = record.get("_fund") or {}
+        industry = fund.get("industry")
+        if not industry:
+            continue
+        cik = record.get("cik") or fund.get("cik")
+        if cik in gesehen:
+            continue           # mehrere Titel eines Emittenten zaehlen einmal
+        gesehen.add(cik)
+        eintrag = out["industries"].setdefault(industry, {
+            "ISSUERS": 0, "ISSUERS_WITH_ANY_INDUSTRY_METRIC": 0,
+            "ISSUERS_WITHOUT_ANY_INDUSTRY_METRIC": 0, "metrics": {}})
+        eintrag["ISSUERS"] += 1
+        metrics = fund.get("industryMetrics") or {}
+        irgendeine = False
+        for name, werte in metrics.items():
+            zelle = eintrag["metrics"].setdefault(name, {"ISSUERS": 0, "ISSUERS_5Y": 0})
+            if (werte or {}).get("annualPeriods"):
+                zelle["ISSUERS"] += 1
+                irgendeine = True
+                if float((werte or {}).get("historyYears") or 0) >= 5:
+                    zelle["ISSUERS_5Y"] += 1
+        if irgendeine:
+            eintrag["ISSUERS_WITH_ANY_INDUSTRY_METRIC"] += 1
+        else:
+            eintrag["ISSUERS_WITHOUT_ANY_INDUSTRY_METRIC"] += 1
+    for eintrag in out["industries"].values():
+        basis = eintrag["ISSUERS"]
+        eintrag["PERCENT_WITH_ANY_INDUSTRY_METRIC"] = _pct(
+            eintrag["ISSUERS_WITH_ANY_INDUSTRY_METRIC"], basis)
+        for zelle in eintrag["metrics"].values():
+            zelle["PERCENT_OF_INDUSTRY"] = _pct(zelle["ISSUERS"], basis)
+    return out
+
+
 def history_report(records):
     """§5. Wie gross ist das backtestfaehige Universum je Tiefe?"""
     technisch = [r for r in records if r["technicalState"] == "TECHNICAL_READY"]
@@ -1299,6 +1347,7 @@ def build_reconciliation(root, registry=None, today=None, min_years=3):
             "overlap": overlap_report(records, market),
             "coreMetrics": core_metric_report(records),
             "history": history_report(records),
+            "industryLayer": industry_layer_report(records),
         },
         "gap-classification.json": dict(gaps, versions=stamp,
                                         priorities=priority_report(records)),
