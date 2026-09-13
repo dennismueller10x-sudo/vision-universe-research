@@ -1,12 +1,12 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-09-12T20:16:12.459Z",
-  "asOf": "2026-09-12",
+  "generatedAt": "2026-09-13T06:50:56.887Z",
+  "asOf": "2026-09-13",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
-    "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
+    "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json, quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
     "generatedAt": "2026-09-09T16:07:59.170Z",
     "complete": false,
     "incompleteReason": "Das vollstaendige Anbieterverzeichnis liegt in der Arbeitsablage (.market-cache) und wird nicht mit dem Repository ausgeliefert. Ohne Anbieterzugang laesst es sich nicht neu ziehen. Aufgenommen ist deshalb der bereits ausgelieferte Auszug - ein echter Auszug derselben Quelle, aber nicht das Ganze. Mit gesetztem TIINGO_API_KEY holt scripts/market/build-market-universe.mjs das Verzeichnis, und derselbe Lauf hier nimmt dann alles auf.",
@@ -16,6 +16,11 @@
     },
     "providerRowsSeen": 7810,
     "provenance": [
+      {
+        "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
+        "gate": "ELIGIBLE_US_EQUITY",
+        "securities": 7004
+      },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
         "gate": "FULL_UNIVERSE",
@@ -2687,10 +2692,10 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "34716547144",
-    "commit": "0eb6257c0d583f4293ba6a9ec5b32587c3f942c4",
-    "normalizeMs": 52,
-    "syncMs": 88,
+    "runId": "34743708708",
+    "commit": "24148b698a77d6fe3fd1980a2e108e389e19b766",
+    "normalizeMs": 64,
+    "syncMs": 102,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
     "publishedBytes": 9611689
@@ -2698,7 +2703,7 @@
   "identifiers": {
     "cikMap": {
       "status": "OK",
-      "generatedAt": "2026-09-12T20:16:11.914Z",
+      "generatedAt": "2026-09-13T06:50:56.269Z",
       "entries": 10426,
       "fromConfig": 1,
       "declaredOverrides": 1,

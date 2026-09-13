@@ -1,10 +1,10 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-09-13T04:38:16.841Z",
-  "asOf": "2026-09-12",
+  "generatedAt": "2026-09-13T07:07:08.505Z",
+  "asOf": "2026-09-13",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
-    "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
+    "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json, quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
     "generatedAt": "2026-09-09T16:07:59.170Z",
     "complete": false,
     "incompleteReason": "Das vollstaendige Anbieterverzeichnis liegt in der Arbeitsablage (.market-cache) und wird nicht mit dem Repository ausgeliefert. Ohne Anbieterzugang laesst es sich nicht neu ziehen. Aufgenommen ist deshalb der bereits ausgelieferte Auszug - ein echter Auszug derselben Quelle, aber nicht das Ganze. Mit gesetztem TIINGO_API_KEY holt scripts/market/build-market-universe.mjs das Verzeichnis, und derselbe Lauf hier nimmt dann alles auf.",
@@ -14,6 +14,11 @@
     },
     "providerRowsSeen": 7810,
     "provenance": [
+      {
+        "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
+        "gate": "ELIGIBLE_US_EQUITY",
+        "securities": 7004
+      },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
         "gate": "FULL_UNIVERSE",
