@@ -34,7 +34,7 @@
 const Codec = require("./bar-codec.js");
 const Guard = require("./zero-cost-guard.js");
 
-const VERSION = "history-store-1.1.0";
+const VERSION = "history-store-1.1.1";
 const LAYOUT = "v1";
 
 /**
@@ -357,27 +357,46 @@ function createHistoryStore(options) {
      Er liegt im Eimer, weil er den Runner ueberleben muss. Ein Stand,
      der bei jedem Lauf wieder bei null anfaengt, meldet nie eine
      Ueberschreitung - er meldet jeden Lauf als den ersten des Monats. */
+  function invalidUsage() {
+    const error = new Error("History usage state is invalid; budget cannot be established");
+    error.code = "HISTORY_USAGE_INVALID";
+    throw error;
+  }
+
   function usageKeyFor(month) {
-    return usageKey.replace("MONTH", month || Guard.monthKey());
+    const m = month || Guard.monthKey();
+    if (typeof m !== "string" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(m)) invalidUsage();
+    return usageKey.replace("MONTH", m);
+  }
+
+  function validateUsage(state, month) {
+    if (typeof month !== "string" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month) ||
+        !state || state.month !== month || !Array.isArray(state.runs)) invalidUsage();
+    for (const field of ["classAOperations", "classBOperations", "storageBytes",
+                         "objectCount", "bytesUploaded", "bytesDownloaded"]) {
+      if (!Number.isSafeInteger(state[field]) || state[field] < 0) invalidUsage();
+    }
+    return state;
   }
 
   async function readUsage(month) {
     const m = month || Guard.monthKey();
+    const key = usageKeyFor(m);
     meter.consumeClassB(1, "GET usage " + m);
-    const buf = await driver.get(usageKeyFor(m));
+    const buf = await driver.get(key);
+    // Absence retains the existing new-month behavior. A present but corrupt
+    // object is different: never convert an unknown consumed budget to zero.
     if (!buf) return Guard.emptyUsage(m);
-    try {
-      const parsed = JSON.parse(buf.toString("utf8"));
-      /* Ein Stand aus einem anderen Monat ist kein Stand fuer diesen.
-         Ihn zu uebernehmen waere die bequeme und falsche Antwort. */
-      return parsed && parsed.month === m ? parsed : Guard.emptyUsage(m);
-    } catch (err) {
-      return Guard.emptyUsage(m);
-    }
+    let parsed;
+    try { parsed = JSON.parse(buf.toString("utf8")); }
+    catch { invalidUsage(); }
+    return validateUsage(parsed, m);
   }
 
   async function writeUsage(state) {
     const payload = Object.assign({}, state, { updatedAt: new Date().toISOString() });
+    usageKeyFor(payload.month);
+    validateUsage(payload, payload.month);
     const buf = Buffer.from(JSON.stringify(payload, null, 2));
     if (dryRun) return { key: usageKeyFor(payload.month), bytes: buf.length, dryRun: true };
     meter.consumeClassA(1, "PUT usage " + payload.month);
