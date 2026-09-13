@@ -688,6 +688,17 @@ def cmd_concepts(args):
     return 0
 
 
+def cmd_final_report(args):
+    """§25/§26: der Abschlussbericht, gerendert aus den Messartefakten."""
+    from quant.sec.final_report import build_final_report
+    text = build_final_report()
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8")
+    print(f"  Abschlussbericht: {out} ({len(text.splitlines())} Zeilen)")
+    return 0
+
+
 def cmd_verify_reload(args):
     """§21 J: Reload reproduziert dieselben kanonischen Werte - ohne SEC.
 
@@ -1193,6 +1204,10 @@ def build_parser():
     con.add_argument("--ciks-key", help="Schluessel in --ciks-file, unter dem die Liste steht")
     con.add_argument("--sic", help="SIC-Spannen, z. B. 6020-6036,6021 - nur diese Emittenten")
     con.set_defaults(func=cmd_concepts)
+
+    fr = subparsers.add_parser("final-report", help="Abschlussbericht §25/§26 aus den Artefakten rendern")
+    fr.add_argument("--out", default=str(ROOT / "docs" / "VU_SEC_FINAL_RECOVERY_REPORT.md"))
+    fr.set_defaults(func=cmd_final_report)
 
     vr = subparsers.add_parser(
         "verify-reload", help="zurueckgeladene Factbooks kanonisch ableiten und vergleichen")

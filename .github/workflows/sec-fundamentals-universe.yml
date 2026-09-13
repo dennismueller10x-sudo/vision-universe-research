@@ -431,6 +431,11 @@ jobs:
           node scripts/universe/build-universe-indexes.mjs
           python3 scripts/quant/cli.py reconcile
 
+      - name: Abschlussbericht aus den Artefakten rendern
+        # §25/§26: jede Zahl gelesen, keine getippt. Vorher = eingefrorene
+        # Baseline, Nachher = dieser Lauf.
+        run: python3 scripts/quant/cli.py final-report
+
       - name: Groessenkontrolle nach der Messung
         run: bash scripts/ci/pruefe-datengroesse.sh
 
