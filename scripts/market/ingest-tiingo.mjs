@@ -228,8 +228,20 @@ if (!permitted.allowed) {
 
 const runId = INITIAL ? "initial" : "incremental";
 const checkpoint = store.loadCheckpoint(runId);
+/* Der Checkpoint ist die Wiederaufnahme EINES Laufs (Budget erschoepft,
+   Runner weg) - kein Gedaechtnis ueber Tage. Ein Checkpoint von gestern
+   wuerde heute jeden Titel als "erledigt" ueberspringen, und die Kurse
+   blieben still stehen. Deshalb: neuer Tag, neue Liste; nur die
+   Ablehnungen (rejected) bleiben als Sperre bestehen. */
+const heute = new Date().toISOString().slice(0, 10);
+if (checkpoint.startedAt && checkpoint.startedAt.slice(0, 10) !== heute) {
+  console.log(`  Checkpoint vom ${checkpoint.startedAt.slice(0, 10)} verworfen (neuer Tag): ${checkpoint.done.length} erledigte Titel werden neu geprueft.`);
+  checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
+}
 if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 
+const REJECT_RETRY_DAYS = 7;
+if (!checkpoint.rejected) checkpoint.rejected = {};
 const pending = store.remaining(checkpoint, SECURITIES.map((s) => s.securityId));
 console.log(`  Ausstehend: ${pending.length} von ${SECURITIES.length}` +
             (checkpoint.done.length ? ` (${checkpoint.done.length} bereits erledigt)` : ""));
@@ -253,6 +265,17 @@ for (const security of SECURITIES) {
   const label = `  ${security.ticker.padEnd(6)}`;
 
   if (checkpoint.done.includes(id)) { skipped++; console.log(`${label} uebersprungen (erledigt)`); continue; }
+  /* Eine abgelehnte Reihe (Qualitaetspruefung) wird nicht jeden Tag erneut
+     angefragt: sieben Tage Ruhe, dann ein neuer Versuch. Der Grund steht
+     im Checkpoint - und im Statusbericht. */
+  const zuletztAbgelehnt = checkpoint.rejected && checkpoint.rejected[id];
+  if (!INITIAL && zuletztAbgelehnt && (Date.now() - Date.parse(zuletztAbgelehnt.at)) < REJECT_RETRY_DAYS * 86400000) {
+    skipped++; rejected++;
+    perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed", deferred: true,
+                        message: zuletztAbgelehnt.codes, rejectedAt: zuletztAbgelehnt.at };
+    console.log(`${label} uebersprungen (abgelehnt am ${zuletztAbgelehnt.at.slice(0, 10)}: ${zuletztAbgelehnt.codes})`);
+    continue;
+  }
 
   const from = INITIAL
     ? initialFromFor(security)
@@ -315,6 +338,7 @@ for (const security of SECURITIES) {
     const codes = validation.findings.filter((f) => f.severity === "error").map((f) => f.code);
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed",
                         message: codes.join(", "), findings: validation.findings.slice(0, 8) };
+    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: codes.join(", ") };
     /* stats ist null, wenn die Reihe schon vor der Bar-Pruefung scheitert
        (z. B. leere oder unlesbare Antwort) - dann zaehlen die Befunde. */
     console.log(`${label} ABGELEHNT — ${validation.stats ? validation.stats.errors : codes.length} Fehler (${codes[0]})`);
@@ -339,6 +363,7 @@ for (const security of SECURITIES) {
       claimed: semantik.claimedStatus, inferred: semantik.inferredStatus,
       findings: semantik.findings.slice(0, 8)
     };
+    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", ") };
     console.log(`${label} ABGELEHNT — deklariert ${semantik.claimedStatus}, ` +
                 `verhaelt sich wie ${semantik.inferredStatus}`);
     store.saveCheckpoint(checkpoint);
@@ -384,6 +409,18 @@ for (const security of SECURITIES) {
 }
 
 /* ------------------------------------------------------ Abschluss */
+
+/* Lauf vollstaendig (kein Abbruch am Kontingent): die Liste der erledigten
+   Titel wird geleert, damit der naechste Lauf wieder jeden Titel nachlaedt.
+   Bei Abbruch bleibt sie stehen - genau dafuer ist sie da. */
+const vollstaendig = !DRY_RUN && SECURITIES.every((s) => checkpoint.done.includes(s.securityId) ||
+  (perSecurity[s.securityId] && perSecurity[s.securityId].reason !== "rateLimited" && perSecurity[s.securityId].reason !== "quotaExceeded"));
+if (vollstaendig) {
+  checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
+  checkpoint.completedAt = new Date().toISOString();
+  store.saveCheckpoint(checkpoint);
+  console.log("\n  Lauf vollstaendig - Checkpoint zurueckgesetzt (Ablehnungen bleiben gemerkt).");
+}
 
 if (DRY_RUN) {
   console.log("\n  Probelauf — nichts abgerufen, nichts geschrieben.");

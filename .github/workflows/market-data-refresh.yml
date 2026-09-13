@@ -2,8 +2,8 @@ name: Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)
 
 # Eigentuemerentscheidung 2026-09-13 - siehe quant/config/development-preview.json.
 # Holt und veroeffentlicht Tiingo-Tageskurse fuer den dort freigegebenen Umfang
-# (scopeUniverse = PRODUCT_UNIVERSE: Company Master, sobald er im Branch liegt,
-# sonst universe-FULL_UNIVERSE.json - siehe scripts/market/universe-source.mjs):
+# (scopeUniverse = PRODUCT_UNIVERSE: der Company Master,
+# quant/data/market/security-master/eligibility.json - siehe scripts/market/universe-source.mjs):
 #   - Arbeitsablage (.market-cache) aus dem letzten Lauf, inkrementell nachgeladen
 #   - volle Historie fuer die fullHistory-Titel  -> quant/data/market/golden-preview/daily/
 #   - ein Jahr Tagesschluss fuer alle im Umfang  -> quant/data/market/discover-series/
@@ -83,10 +83,10 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
           node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
-            --scope-from-preview --publish-preview --commercial --request-budget=6000 --concurrency=4
+            --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
 
       - name: Faktorzeilen fuer das ganze Universum
-        run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE
+        run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE --product-universe
 
       - name: Technical Intelligence + Elliott + SEC-Quant-Panel neu bauen (frische Kurse)
         run: |
@@ -100,6 +100,9 @@ jobs:
         run: |
           node scripts/discover/build-discover-data.mjs
           node scripts/discover/verify-discover-data.mjs
+
+      - name: Capability Matrix je Instrument (Company Master x Marktdaten)
+        run: node scripts/market/build-capability-matrix.mjs
 
       - name: Kein Schluessel im Statusbericht
         env:
@@ -139,7 +142,8 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add quant/data/market/golden-preview quant/data/market/discover-series \
                   quant/data/market/factors quant/data/market/tiingo-status.json \
-                  quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data
+                  quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data \
+                  quant/data/market/capabilities
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else

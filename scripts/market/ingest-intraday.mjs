@@ -285,6 +285,15 @@ if (!DRY_RUN && existsSync(OUT_DIR)) {
 function writeIndex() {
   const sitzungen = existsSync(OUT_DIR)
     ? readdirSync(OUT_DIR).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n)).sort() : [];
+  /* Snapshots von Titeln, die nicht (mehr) im Umfang stehen (Wechsel der
+     Universumsquelle, ausgeschlossene Papiere), verschwinden - der Guard
+     wuerde sie sonst zu Recht als Leck melden. */
+  const imUmfang = new Set(resolvedScope.securities.map((s) => s.securityId + ".json"));
+  for (const date of sitzungen) {
+    for (const name of readdirSync(join(OUT_DIR, date)).filter((n) => n.endsWith(".json"))) {
+      if (!imUmfang.has(name)) { rmSync(join(OUT_DIR, date, name)); console.log(`  entfernt: ${INTRADAY_DIR}/${date}/${name} (nicht im Umfang)`); }
+    }
+  }
   const sessions = {};
   const entries = {};
   /* Der Client braucht: welche Titel haben fuer welche Sitzung einen

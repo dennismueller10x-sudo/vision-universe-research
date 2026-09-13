@@ -134,6 +134,20 @@ export function publishDiscoverSeries(opt) {
 
   const written = [], skipped = [];
   const erwartet = new Set();
+  /* --prune-only: nichts neu schreiben, nur entfernen, was nicht mehr im
+     Umfang steht (z. B. nach einem Wechsel der Universumsquelle), und das
+     Verzeichnis nachziehen. */
+  if (opt.pruneOnly) {
+    const imUmfang = new Set(resolved.securities.map((s) => s.securityId + ".json"));
+    let entfernt = 0;
+    if (existsSync(outDir)) for (const name of readdirSync(outDir)) {
+      if (name === "index.json" || !name.endsWith(".json")) continue;
+      if (imUmfang.has(name)) { erwartet.add(name); written.push(name.replace(/^ref_/, "").replace(/\.json$/, "")); continue; }
+      rmSync(join(outDir, name)); entfernt++; log(`    entfernt: ${name} (nicht mehr im Umfang)`);
+    }
+    if (!opt.dryRun) writeIndex(outDir, resolved, written, skipped);
+    return { written, skipped, unresolved: resolved.unresolved, scope: resolved, pruned: entfernt };
+  }
   for (const security of resolved.securities) {
     /* Oeffentliche Freigabe zuerst (Eigentuemerentscheidung 2026-09-13,
        grants mit publicRawDisplayAllowed); fehlt sie, gilt je Titel die
@@ -186,6 +200,13 @@ export function publishDiscoverSeries(opt) {
       if (name === "index.json" || erwartet.has(name)) continue;
       if (name.endsWith(".json")) { rmSync(join(outDir, name)); log(`    entfernt: ${name} (nicht mehr im Umfang)`); }
     }
+    writeIndex(outDir, resolved, written, skipped);
+  }
+  return { written, skipped, unresolved: resolved.unresolved, scope: resolved };
+}
+
+function writeIndex(outDir, resolved, written, skipped) {
+  {
     writeFileSync(join(outDir, "index.json"), JSON.stringify({
       schemaVersion: SERIES_SCHEMA,
       note: "Kompakte Discover-Kursreihen (1 Jahr Tagesschlusskurse, split-bereinigt) fuer den in " +
@@ -197,7 +218,6 @@ export function publishDiscoverSeries(opt) {
       skipped: skipped.map((s) => ({ ticker: s.ticker, reason: s.reason }))
     }, null, 2));
   }
-  return { written, skipped, unresolved: resolved.unresolved, scope: resolved };
 }
 
 /* ------------------------------------------------------------ als Skript */
@@ -209,6 +229,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     root: rootArg ? rootArg.slice(7) : DEFAULT_ROOT,
     fromPublished: args.has("--from-published"),
     dryRun: args.has("--dry-run"),
+    pruneOnly: args.has("--prune-only"),
     log: (m) => console.log(m)
   });
   console.log(`\n  Umfang: ${result.scope.tickers.size} Titel` +

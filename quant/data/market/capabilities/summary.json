@@ -1,0 +1,369 @@
+{
+  "version": "capability-matrix-1.0.0",
+  "generatedAt": "2026-09-13T19:04:29.545Z",
+  "master": {
+    "file": "quant/data/market/security-master/eligibility.json",
+    "version": "us-security-master-1.1.0",
+    "generatedAt": "2026-09-11T14:43:26.256Z",
+    "total": 7803,
+    "productUniverse": 7004
+  },
+  "sources": {
+    "ingestStatus": "2026-09-13T16:23:35.845Z",
+    "factors": "2026-09-13T16:23:48.052Z",
+    "intradaySession": "2026-09-11",
+    "discover": "2026-09-13T19:03:21.854Z"
+  },
+  "counts": {
+    "companyMasterTotal": 7803,
+    "productUniverse": 7004,
+    "activeEquities": 6477,
+    "tiingoResolved": 7004,
+    "tiingoUnresolved": 0,
+    "marketDataFetched": 5389,
+    "historicalAvailable": 5034,
+    "historicalQualityAccepted": 5095,
+    "intradayAvailable": 4338,
+    "liveCapable": 239,
+    "factorEligible": 5065,
+    "fundamentals": 5,
+    "discoverEligible": 5017,
+    "stockPages": 5065,
+    "namesMissing": 6499,
+    "providerMappingsMissing": 0
+  },
+  "gapReasons": {
+    "NO_FUNDAMENTALS": 6999,
+    "NAME_MISSING": 6499,
+    "NOT_IN_LIVE_SCOPE": 4099,
+    "NO_DISCOVER_CARD": 1939,
+    "NO_STOCK_PAGE": 1939,
+    "NOT_INGESTED_YET": 1615,
+    "NO_FACTOR_ROW:NO_MARKET_DATA": 1608,
+    "NO_INTRADAY_SNAPSHOT": 1607,
+    "NO_IEX_BARS": 1059,
+    "NO_FACTOR_ROW:SOURCE_MISSING": 296,
+    "QUALITY_REJECTED:adjustmentContradicted": 294,
+    "INACTIVE": 120,
+    "INSUFFICIENT_HISTORY": 61,
+    "NOT_TRADING:STALE_SERIES": 48,
+    "NO_FACTOR_ROW:FAIL": 32,
+    "NO_FACTOR_ROW": 3
+  },
+  "spotCheck": [
+    {
+      "name": "Apple",
+      "ticker": "AAPL",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": []
+    },
+    {
+      "name": "Microsoft",
+      "ticker": "MSFT",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": []
+    },
+    {
+      "name": "NVIDIA",
+      "ticker": "NVDA",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": []
+    },
+    {
+      "name": "Amazon",
+      "ticker": "AMZN",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "Alphabet",
+      "ticker": "GOOGL",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": false,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NOT_IN_LIVE_SCOPE",
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "Meta",
+      "ticker": "META",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": false,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NOT_IN_LIVE_SCOPE",
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "Tesla",
+      "ticker": "TSLA",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "AMD",
+      "ticker": "AMD",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "Palantir",
+      "ticker": "PLTR",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": false,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": false,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NOT_IN_LIVE_SCOPE",
+        "NO_FUNDAMENTALS",
+        "NAME_MISSING"
+      ]
+    },
+    {
+      "name": "Broadcom",
+      "ticker": "AVGO",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "Eli Lilly",
+      "ticker": "LLY",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "Walmart",
+      "ticker": "WMT",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    },
+    {
+      "name": "JPMorgan",
+      "ticker": "JPM",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": []
+    },
+    {
+      "name": "Visa",
+      "ticker": "V",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": false,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": false,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NOT_IN_LIVE_SCOPE",
+        "NO_FUNDAMENTALS",
+        "NAME_MISSING"
+      ]
+    },
+    {
+      "name": "Micron",
+      "ticker": "MU",
+      "found": true,
+      "inProductUniverse": true,
+      "capabilities": {
+        "HAS_PROVIDER_MAPPING": true,
+        "HAS_MARKET_DATA": true,
+        "HAS_HISTORICAL": true,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
+        "HAS_FACTORS": true,
+        "HAS_FUNDAMENTALS": false,
+        "HAS_NAME": true,
+        "DISCOVER_ELIGIBLE": true,
+        "HAS_STOCK_PAGE": true
+      },
+      "gaps": [
+        "NO_FUNDAMENTALS"
+      ]
+    }
+  ],
+  "note": "Gemessen aus den ausgelieferten Artefakten; keine Spalte ist vermutet. HAS_LIVE heisst: Snapshot-Refresh waehrend der Sitzung (Discover-Live-Umfang), kein Strom."
+}

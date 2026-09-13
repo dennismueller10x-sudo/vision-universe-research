@@ -24,9 +24,12 @@ const mdOut = args.includes("--md") ? args[args.indexOf("--md") + 1] : null;
 const meta = readJSON(join(DATA, "meta.json"));
 const scope = resolveScope(root);
 const realMeta = (meta.universes || []).find((u) => u.universeId === "US_REAL") || {};
-const gateName = (realMeta.factorCoverage && realMeta.factorCoverage.factorsGate) || "FULL_UNIVERSE";
-const gate = readJSON(join(root, "quant", "data", "market", "scale", `gate-${gateName}.json`));
+const gateName = "FULL_UNIVERSE";
 const factors = readJSON(join(root, realMeta.sourceFile || `quant/data/market/factors/factors-${gateName}.json`));
+/* Die Capability Matrix (Company Master x Marktdaten) ist die Quelle fuer
+   die Anbieter-Abdeckung; der alte Gate-Bericht beschrieb das Gate-Universum. */
+const capFile = join(root, "quant", "data", "market", "capabilities", "summary.json");
+const cap = existsSync(capFile) ? readJSON(capFile) : null;
 const factorReady = new Set(factors.securities.filter((s) => s.values && s.values.returns &&
   Number.isFinite(s.values.returns["12M"])).map((s) => s.ticker));
 const profile = readJSON(join(root, "quant", "config", "provider-profiles.json")).providers.tiingo;
@@ -95,12 +98,9 @@ for (const u of meta.universes) {
   });
 }
 out.provider = {
-  id: "tiingo", plan: gate.plan, licensingStatus: profile.licensing.status,
+  id: "tiingo", plan: profile.plan, licensingStatus: profile.licensing.status,
   findings: profile.licensing.findings,
-  gate500: { requested: gate.accounting.requested, resolved: gate.accounting.resolved,
-             historyCovered: gate.historyCoverage.covered, factorReady: gate.historyCoverage.factorReady,
-             averageBars: gate.historyCoverage.averageBars, oldest: gate.historyCoverage.oldestFirstDate,
-             newest: gate.historyCoverage.newestLastDate, storageMB: gate.accounting.storageMB }
+  capabilities: cap ? cap.counts : null
 };
 out.scope = { tickerCount: scope.tickers.size, universeFile: scope.universeFile, fullHistory: [...scope.fullHistory].sort(),
               universeSource: scope.universeSource ? { source: scope.universeSource.source, file: scope.universeSource.file,
@@ -116,7 +116,8 @@ Erzeugt von \`scripts/discover/price-coverage.mjs\`, Stand ${out.generatedAt}.
 | Frage | Antwort |
 |---|---|
 | Titel im realen Universum | ${r.securities} |
-| davon mit Historie beim Anbieter (Tiingo, ${gateName}: ${out.provider.gate500.historyCovered}/${out.provider.gate500.requested} mit ≥ 250 Bars, im Schnitt ${out.provider.gate500.averageBars} Bars ab ${out.provider.gate500.oldest}) | ${r.providerHistory} |
+| Company Master: gesamt / Produktuniversum / Tiingo aufgelöst / Jahresreihe / Faktorzeile / Intraday (Capability Matrix) | ${cap ? [cap.counts.companyMasterTotal, cap.counts.productUniverse, cap.counts.tiingoResolved, cap.counts.historicalAvailable, cap.counts.factorEligible, cap.counts.intradayAvailable].join(" / ") : "—"} |
+| davon mit Faktorzeile (Historie ≥ 250 Bars beim Anbieter) | ${r.providerHistory} |
 | davon im freigegebenen Umfang (\`development-preview.json\`: ${out.scope.universeFile ? "scopeUniverse " + out.scope.universeFile : "Tickerliste"}; Umfang gesamt ${out.scope.tickerCount} Titel) | ${r.inPreviewScope} |
 | davon mit ausgelieferter Kursreihe (\`quant/data/market/discover-series/\`) | ${r.seriesDelivered} |
 | davon mit Intraday-Snapshot (\`quant/data/market/intraday/\`, Sitzungen ${r.intraday.sessions.join(", ") || "—"}) | ${r.intraday.symbols} |

@@ -95,11 +95,14 @@ jobs:
       - name: Public-Data-Hygiene
         run: node scripts/market/assert-public-data-hygiene.mjs
 
+      - name: Capability Matrix nachziehen (Intraday-Spalten)
+        run: node scripts/market/build-capability-matrix.mjs
+
       - name: Commit und Push
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A quant/data/market/intraday
+          git add -A quant/data/market/intraday quant/data/market/capabilities
           if git diff --cached --quiet; then
             echo "Keine neuen Snapshots."
           else

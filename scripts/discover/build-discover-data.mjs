@@ -340,19 +340,17 @@ function scoreAll(metrics, values) {
 }
 
 /* ====================================================== Universum: REAL */
-/* Welche Faktordatei traegt Einzelzeilen fuer das Produktuniversum?
-   Bevorzugt FULL_UNIVERSE (alle Titel); solange deren Einzelzeilen noch
-   nicht im Repository liegen (erster Lauf des Workflows
-   market-data-refresh.yml steht aus), das groesste vorhandene Gate - und
-   der Build sagt dann in meta.universes[].factorCoverage, dass er nur
-   einen Teil des Universums rechnet. Keine Zahl ist hier fest verdrahtet. */
+/* Die Faktordatei des Produktuniversums: factors-FULL_UNIVERSE.json, gerechnet
+   von build-market-factors.mjs --gate FULL_UNIVERSE --product-universe ueber
+   den Company Master. Kein Rueckfall auf ein kleineres Gate mehr (die
+   Uebergangsloesung bis 2026-09-13): fehlt die Datei, bricht der Build ab. */
 function pickFactorsFile() {
-  const dir = join(root, "quant", "data", "market", "factors");
-  const kandidaten = ["FULL_UNIVERSE", "GATE_2000", "GATE_500", "GATE_100"]
-    .map((g) => ({ gate: g, file: join(dir, `factors-${g}.json`) }))
-    .filter((k) => existsSync(k.file));
-  if (!kandidaten.length) throw new Error("Keine Faktordatei mit Einzelzeilen unter quant/data/market/factors/.");
-  return kandidaten[0];
+  const file = join(root, "quant", "data", "market", "factors", "factors-FULL_UNIVERSE.json");
+  if (!existsSync(file)) {
+    throw new Error("factors-FULL_UNIVERSE.json fehlt - Einzelzeilen fuer das Produktuniversum werden vom " +
+                    "Workflow market-data-refresh.yml gerechnet (build-market-factors.mjs --product-universe).");
+  }
+  return { gate: "FULL_UNIVERSE", file };
 }
 
 function buildRealUniverse(nameMap, goldenBars, compactSeries) {
@@ -361,14 +359,19 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
   const factors = readJSON(faktorQuelle.file);
   const byTicker = new Map(universeSource.securities.map((s) => [s.ticker, s]));
   const factorTickers = new Set(factors.securities.map((f) => f.ticker));
+  const withFactorRows = universeSource.securities.filter((s) => factorTickers.has(s.ticker)).length;
   const factorCoverage = {
     universe: universeSource.securities.length,
-    withFactorRows: universeSource.securities.filter((s) => factorTickers.has(s.ticker)).length,
+    withFactorRows,
     factorsGate: faktorQuelle.gate,
-    partial: faktorQuelle.gate !== "FULL_UNIVERSE",
-    note: faktorQuelle.gate === "FULL_UNIVERSE"
-      ? "Faktorzeilen fuer das ganze Produktuniversum."
-      : `Nur ${faktorQuelle.gate}-Faktorzeilen im Repository; FULL_UNIVERSE-Einzelzeilen entstehen im Workflow market-data-refresh.yml.`
+    factorsUniverseSource: factors.universeSource || null,
+    /* partial heisst jetzt: die Faktordatei kennt nicht jeden Titel des
+       Produktuniversums - z. B. weil sie vor der Uebernahme des Company
+       Masters gerechnet wurde. Der naechste Workflow-Lauf schliesst das. */
+    partial: withFactorRows < universeSource.securities.length * 0.9,
+    note: withFactorRows < universeSource.securities.length * 0.9
+      ? `Faktorzeilen fuer ${withFactorRows} von ${universeSource.securities.length} Titeln des Produktuniversums; der naechste Lauf von market-data-refresh.yml rechnet den Rest.`
+      : "Faktorzeilen fuer das Produktuniversum (Company Master)."
   };
 
   const stocks = [];

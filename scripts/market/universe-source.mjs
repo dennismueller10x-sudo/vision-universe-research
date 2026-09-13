@@ -15,11 +15,10 @@
         counts.productUniverse fuehrt. Liegt die Datei im Branch, ist sie
         die Quelle. Sie wird gelesen, nie veraendert.
 
-     2. Solange sie NICHT im Branch liegt: das groesste im Repository
-        vorhandene, mit Kursdaten belegte Universum
-        (quant/data/market/scale/universe-FULL_UNIVERSE.json). Das ist
-        KEINE zweite 7.000er-Liste, sondern der bestehende Stand dieses
-        Branches - eine Liste, die es hier schon gab.
+     2. (bis 2026-09-13) Solange sie nicht im Branch lag, galt das groesste
+        belegte Gate-Universum als Uebergangsloesung. Dieser Rueckfall ist
+        mit der Uebernahme des Company Masters (Commit 2e22a2e) entfernt:
+        fehlt der Master, ist das ein Fehler.
 
    Was dieses Modul ausdruecklich NICHT tut: eine eigene Universumsliste
    erzeugen, eine Liste aus einem anderen Branch kopieren, oder Titel
@@ -50,10 +49,8 @@ export const HANDOVER = {
   rule: "Produktuniversum = alle Entscheidungen ausser EXCLUDED",
   expectedCounts: { universeMembers: 7803, productUniverse: 7004,
                     ELIGIBLE: 6477, SEPARATE_CLASS: 308, REVIEW: 219, EXCLUDED: 799 },
-  note: "Die Datei liegt nicht in diesem Branch. Sie wird nicht kopiert: der Company Master " +
-        "ist ein eigener Workstream und wird als Ganzes uebernommen (Merge/Cherry-Pick der " +
-        "Eignungsartefakte), nicht als zweite Liste. Sobald sie vorliegt, liest dieses Modul sie " +
-        "ohne Codeaenderung."
+  note: "Uebernommen am 2026-09-13 als Ganzes (Artefakte, Engine, Tests und Bauskripte des " +
+        "Workstreams aus Commit 2e22a2e) - keine zweite Liste, keine zweite Architektur."
 };
 
 function readJSON(file) { return JSON.parse(readFileSync(file, "utf8")); }
@@ -66,13 +63,14 @@ function readJSON(file) { return JSON.parse(readFileSync(file, "utf8")); }
  */
 export function resolveProductUniverse(root) {
   const master = join(root, SECURITY_MASTER_FILE);
-  if (existsSync(master)) return fromSecurityMaster(root, master);
-  const fallback = join(root, FALLBACK_UNIVERSE_FILE);
-  if (!existsSync(fallback)) {
-    throw new Error("Kein Universum vorhanden: weder " + SECURITY_MASTER_FILE + " noch " +
-                    FALLBACK_UNIVERSE_FILE + ".");
+  /* Seit der Uebernahme (2026-09-13, Commit 2e22a2e des Workstreams) ist der
+     Company Master die einzige Quelle. Fehlt er, ist das ein Fehler - kein
+     stiller Rueckfall auf das Gate-Universum von frueher. */
+  if (!existsSync(master)) {
+    throw new Error("Company Master fehlt: " + SECURITY_MASTER_FILE + " (" + HANDOVER.version + ", aus " +
+                    HANDOVER.branch + " @ " + HANDOVER.commit.slice(0, 7) + "). Ohne ihn gibt es kein Produktuniversum.");
   }
-  return fromScaleUniverse(root, fallback, "FULL_UNIVERSE");
+  return fromSecurityMaster(root, master);
 }
 
 function fromSecurityMaster(root, file) {

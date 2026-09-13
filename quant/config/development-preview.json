@@ -20,7 +20,7 @@
     "XOM"
   ],
   "scopeUniverse": "PRODUCT_UNIVERSE",
-  "scopeNote": "Der Umfang ist die Vereinigung aus `scope` (Tickerliste; hier die fullHistory-Titel) und `scopeUniverse` (PRODUCT_UNIVERSE = kanonische Universumsquelle, oder der Name eines Gate-Universums aus quant/data/market/scale/). Aufgeloest von scripts/market/preview-scope.mjs; gelesen von ingest-tiingo.mjs (--scope-from-preview), ingest-intraday.mjs, publish-discover-series.mjs, assert-public-data-hygiene.mjs und dem Discover-Build. Es gibt keine zweite Titelliste. Der Benchmark (benchmark) kommt zum Abruf-Umfang hinzu.",
+  "scopeNote": "Der Umfang ist die Vereinigung aus `scope` (Tickerliste; hier die fullHistory-Titel) und `scopeUniverse` (PRODUCT_UNIVERSE = Company Master (quant/data/market/security-master/eligibility.json, alle Entscheidungen ausser EXCLUDED), oder der Name eines Gate-Universums aus quant/data/market/scale/). Aufgeloest von scripts/market/preview-scope.mjs; gelesen von ingest-tiingo.mjs (--scope-from-preview), ingest-intraday.mjs, publish-discover-series.mjs, assert-public-data-hygiene.mjs und dem Discover-Build. Es gibt keine zweite Titelliste. Der Benchmark (benchmark) kommt zum Abruf-Umfang hinzu.",
   "discoverSeries": {
     "note": "Kompakte Kursreihen fuer Discover-Micro-Charts: ein Jahr Tagesschlusskurse je Titel des Umfangs (quant/data/market/discover-series/, ~5 KB je Titel). Die VOLLE Historie (quant/data/market/golden-preview/daily/) wird nur fuer fullHistory veroeffentlicht - sie traegt die Aktienseite mit 5J/Max und die Technical Intelligence. historyFrom: ab wann Tageskurse fuer Titel ausserhalb fullHistory geholt werden - genug fuer 252-Tage-Faktoren plus Reserve, nicht die ganze Historie ab 1990 (die liegt im Skalierungs-Workflow).",
     "range": "1Y",
@@ -45,7 +45,7 @@
       "universe": "Das ganze Produktuniversum - einmal nach Handelsschluss (letzte abgeschlossene Sitzung), damit jede Aktienseite ein 1T hat."
     },
     "retentionSessions": 2,
-    "maxRequestsPerRun": 6000
+    "maxRequestsPerRun": 7500
   },
   "grants": [
     {

@@ -52,29 +52,27 @@ test("US2 · Eine Projektion, die von der Zaehlung der Quelle abweicht, entsteht
   });
 });
 
-test("US3 · Ohne Company Master: das bestehende Universum, und der Uebergabepunkt wird benannt", () => {
+test("US3 · Ohne Company Master gibt es kein Produktuniversum - und keinen stillen Rueckfall", () => {
   withFixture((dir) => {
     writeFileSync(join(dir, "quant", "data", "market", "scale", "universe-FULL_UNIVERSE.json"), JSON.stringify({
-      method: "RULE_BASED_FROM_PROVIDER_UNIVERSE",
-      securities: [{ ticker: "ZZZ", securityId: "ref_ZZZ", exchange: "NASDAQ" }, { ticker: "AAA", securityId: "ref_AAA" }]
+      securities: [{ ticker: "ZZZ", securityId: "ref_ZZZ" }]
     }));
-    const r = resolveProductUniverse(dir);
-    assert.equal(r.source, "SCALE_UNIVERSE");
-    assert.deepEqual(r.securities.map((s) => s.ticker), ["AAA", "ZZZ"], "reproduzierbar sortiert");
-    assert.equal(r.handover.status, "PENDING");
-    assert.match(r.handover.message, /Market-Data-Layer ist fuer 2 Titel bereit/);
-    assert.match(r.handover.message, new RegExp(HANDOVER.branch.replace(/[/.]/g, "\\$&")));
-    assert.match(r.handover.message, /us-security-master-1\.1\.0/);
+    assert.throws(() => resolveProductUniverse(dir), /Company Master fehlt/);
+    /* Ein Gate-Universum bleibt ueber seinen Namen erreichbar - fuer die
+       Skalierungs-Workflows, nicht als Produktuniversum. */
+    assert.equal(resolveUniverse(dir, "FULL_UNIVERSE").securities.length, 1);
   });
 });
 
 test("US4 · Ohne beides ist es ein Fehler, keine leere Liste", () => {
-  withFixture((dir) => { assert.throws(() => resolveProductUniverse(dir), /Kein Universum vorhanden/); });
+  withFixture((dir) => { assert.throws(() => resolveProductUniverse(dir), /Company Master fehlt/); });
 });
 
 test("US5 · Das Repository loest heute auf eine echte Quelle auf - keine Zahl im Test", () => {
   const r = resolveProductUniverse(root);
-  assert.ok(["SECURITY_MASTER", "SCALE_UNIVERSE"].includes(r.source));
+  assert.equal(r.source, "SECURITY_MASTER", "seit der Uebernahme ist der Company Master die Quelle");
+  assert.equal(r.handover.status, "INTEGRATED");
+  assert.equal(r.counts.productUniverse, 7004);
   assert.ok(r.securities.length > 1000, "Produktuniversum ist keine Vorfuehrliste");
   assert.ok(r.securities.every((s) => s.securityId && s.ticker));
   assert.equal(new Set(r.securities.map((s) => s.ticker)).size, r.securities.length, "kein Ticker doppelt");

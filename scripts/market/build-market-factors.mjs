@@ -75,12 +75,25 @@ const RANK_LIMIT = parseInt(arg("--rank-limit", "50"), 10) || 50;
    Schalter fuer Sonderfaelle. */
 const DETAIL_LIMIT = parseInt(arg("--detail-limit", "1000000"), 10) || 1000000;
 
-const universeFile = join(SCALE_DIR, `universe-${GATE}.json`);
-if (!existsSync(universeFile)) {
-  console.error(`Kein Gate-Universum unter ${universeFile}.`);
-  process.exit(2);
+/* --product-universe: die Titel kommen aus der kanonischen Universumsquelle
+   (Company Master, scripts/market/universe-source.mjs) statt aus der
+   Gate-Datei - das Produktuniversum, nicht die Skalierungsstufe. Die
+   Ausgabedateien tragen weiterhin den Gate-Namen (FULL_UNIVERSE). */
+const PRODUCT_UNIVERSE = process.argv.includes("--product-universe");
+let universe;
+if (PRODUCT_UNIVERSE) {
+  const { resolveProductUniverse } = await import("./universe-source.mjs");
+  const q = resolveProductUniverse(root);
+  universe = { gate: GATE, universeSource: q.source, universeFile: q.file, securities: q.securities };
+  console.log(`  Universum: ${q.source} (${q.file}), ${q.securities.length} Titel`);
+} else {
+  const universeFile = join(SCALE_DIR, `universe-${GATE}.json`);
+  if (!existsSync(universeFile)) {
+    console.error(`Kein Gate-Universum unter ${universeFile}.`);
+    process.exit(2);
+  }
+  universe = JSON.parse(readFileSync(universeFile, "utf8"));
 }
-const universe = JSON.parse(readFileSync(universeFile, "utf8"));
 const store = MarketStore.createMarketStore({
   root, providerId: "tiingo", workingDir: WORK_DIR || undefined
 });
