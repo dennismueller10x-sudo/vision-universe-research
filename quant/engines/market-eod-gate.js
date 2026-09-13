@@ -1,7 +1,8 @@
+(function(g){
 'use strict';
 // Strict incremental safety, using the existing exchange calendar. This proves
 // session closure, not provider revision finality or durable storage entitlement.
-const Hours = require('./realtime/market-hours.js');
+const Hours = typeof module!=='undefined'&&module.exports?require('./realtime/market-hours.js'):g.VURealtime.MarketHours;
 function validDate(value) {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
     Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0,10) === value;
@@ -56,4 +57,5 @@ function reconcile(bars, plan) {
   if(plan.expectedDates.some(date=>date<=last&&!dates.has(date)))return blocked('MISSING_SESSION_BAR');
   return {state:'AVAILABLE',complete:plan.expectedDates.every(date=>dates.has(date)),providerFinality:'NOT_CERTIFIED'};
 }
-module.exports={latestClosedSession,plan,reconcile};
+const api={latestClosedSession,plan,reconcile};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUMarketEodGate=api;
+})(typeof window!=='undefined'?window:globalThis);

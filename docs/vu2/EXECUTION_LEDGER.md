@@ -158,3 +158,14 @@ Observed main6177eb9ce085216c7529968b88bbfd34dfa9c16f replaces533245e baseline. 
 PR82/83 local worktrees restored from remote after session filesystem lacked them. Earlier unpublished Phase21 local freshness commit is absent and will be reconstructed from recorded code; accepted work through PR83 remains intact. PRODUCT_BUILD=IN_PROGRESS. Remote gate pending; no release approval requested.
 
 PR84 initial Quant34699970073, SEC34699970082, Discover34699970063 SUCCESS. Browser34699970074 failed because its new link assertion queried hidden desktop navigation at390px. Selector now checks the visible mobile/desktop navigation; link assertion preserved. Refreshed browser gate pending.
+
+## Freshness implementation restored on current-main integration
+Resumed phase21 after targeted phase22 main sync. Reconstructed the unpublished freshness implementation and its review repair from execution evidence, retaining current Discover integration and existing EOD algorithm. Home/Stock coverage-only state and60s visible-page refresh; no repeated announcement of unchanged status.44 focused tests PASS on this restored tree; remote/visual gates pending. No broader data display or source changes.
+
+PR84 final head6cf950394e3de984b1d3b7d3e069c9ea173655cb: Browser34700208187, Quant34700208247, SEC34700208195, Discover34700208171 SUCCESS.45 browser checks; Research1440/390 inspected with current Discover access and preserved modules. Restored phase21 passes44 targeted tests; publishing its bounded delta next.
+
+## PR85 automated gate confirmation — 2026-09-13
+Head10bd5a7175b3a660d4881a3f7c9f7ff782b05cdb: Quant34700427288, SEC34700427300 and Browser34700427329 all completed SUCCESS. Existing browser suite45 checks; artifact10299543713 produced. No expensive provider rerun. Fetch confirms main remains6177eb9ce085216c7529968b88bbfd34dfa9c16f; no main drift.
+Transient Phase21 worktree was absent and restored exactly from remote PR85 without discarding any retained worktree or restarting foundation work.
+VISUAL_GATE=PENDING_EVIDENCE_ACCESS: authenticated GitHub artifact download succeeds, but returned ZIP URL cannot be materialized locally (HTTP403, error1010); previously available prepare_materialize tool is absent. Local Chromium is not installed. No screenshot inspection or visual PASS claimed. No browser installation or alternate deployment attempted.
+User continuation explicitly orders completion of PR85 gates before the next ledger item and prohibits new parallel product surfaces. Therefore no next phase activated. PRODUCT_BUILD=IN_PROGRESS; current execution is waiting on screenshot access, distinct from public licensing, SEC and realtime semantics. Resume: materialize existing artifact10299543713, inspect Home1440/390 and Stock390, repair and rerender only if findings require it, then record visual gate and select next dependency-correct unresolved item.
