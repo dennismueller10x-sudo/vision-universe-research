@@ -7,8 +7,8 @@
       "name": "Innovex International, Inc.",
       "sic": "3533",
       "rawFacts": 19349,
-      "mappedFacts": 7194,
-      "unmappedFacts": 12166,
+      "mappedFacts": 7197,
+      "unmappedFacts": 12163,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12835,
+        "total": 12832,
         "by_severity": {
-          "INFO": 12166,
+          "INFO": 12163,
           "WARNING": 669
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 505,
           "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 157,
-          "UNKNOWN_CONCEPT": 12166
+          "UNKNOWN_CONCEPT": 12163
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f25960b57c601fd16c368a1b59487f98b73bf99eaafd21df5b4e47d22886ea2b",
@@ -164,8 +164,8 @@
       "name": "Fidelity National Information Services, Inc.",
       "sic": "7389",
       "rawFacts": 27345,
-      "mappedFacts": 8113,
-      "unmappedFacts": 19108,
+      "mappedFacts": 8207,
+      "unmappedFacts": 19014,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +284,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20418,
+        "total": 20324,
         "by_severity": {
-          "INFO": 19108,
+          "INFO": 19014,
           "ERROR": 1,
           "WARNING": 1309
         },
@@ -295,7 +295,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 158,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 19108
+          "UNKNOWN_CONCEPT": 19014
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d523395646a6dff685af934ede806fb8b8d4753e622c71ce397ee5fe3016f4fd",
@@ -323,11 +323,75 @@
       "name": "Essent Group Ltd.",
       "sic": "6351",
       "rawFacts": 17751,
-      "mappedFacts": 3966,
-      "unmappedFacts": 13706,
+      "mappedFacts": 5658,
+      "unmappedFacts": 12344,
       "calendarYears": 14,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 5.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "claims_liability": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "total_investments": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ESNT"
@@ -443,15 +507,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13726,
+        "total": 12371,
         "by_severity": {
-          "INFO": 13706,
-          "WARNING": 20
+          "INFO": 12344,
+          "WARNING": 27
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 13706
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 12344
         }
       },
       "latestFiling": {
@@ -462,13 +527,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4d44d8ff6d1df485647e68085ea5643a381e7272e849f8fba3aef0640c5d653",
@@ -479,8 +544,8 @@
       "name": "Surrozen, Inc./DE",
       "sic": "2836",
       "rawFacts": 5175,
-      "mappedFacts": 1619,
-      "unmappedFacts": 3539,
+      "mappedFacts": 1621,
+      "unmappedFacts": 3538,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -600,9 +665,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3759,
+        "total": 3758,
         "by_severity": {
-          "INFO": 3539,
+          "INFO": 3538,
           "ERROR": 1,
           "WARNING": 219
         },
@@ -611,7 +676,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 78,
           "UNEXPECTED_DURATION": 22,
-          "UNKNOWN_CONCEPT": 3539
+          "UNKNOWN_CONCEPT": 3538
         }
       },
       "latestFiling": {
@@ -622,13 +687,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d5461f1e2cb12491c933d917e612f58716d0b69e3503d4d32f2c54c2b6e5d963",

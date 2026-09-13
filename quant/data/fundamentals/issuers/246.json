@@ -7,11 +7,75 @@
       "name": "RLI CORP",
       "sic": "6331",
       "rawFacts": 25353,
-      "mappedFacts": 5104,
-      "unmappedFacts": 20443,
+      "mappedFacts": 6737,
+      "unmappedFacts": 19143,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "total_investments": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 9.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "RLI"
@@ -126,15 +190,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20801,
+        "total": 19510,
         "by_severity": {
-          "INFO": 20443,
-          "WARNING": 358
+          "INFO": 19143,
+          "WARNING": 367
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 276,
-          "RESTATEMENT_CONFLICT": 82,
-          "UNKNOWN_CONCEPT": 20443
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 90,
+          "UNKNOWN_CONCEPT": 19143
         }
       },
       "latestFiling": {
@@ -145,13 +210,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "07e37372538145872a38b29bb285b4f42ef913dc21790fc5f1bba296f9e4ad7d",
@@ -162,8 +227,8 @@
       "name": "Pelthos Therapeutics Inc.",
       "sic": "2836",
       "rawFacts": 2604,
-      "mappedFacts": 919,
-      "unmappedFacts": 1746,
+      "mappedFacts": 930,
+      "unmappedFacts": 1738,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -282,16 +347,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1822,
+        "total": 1814,
         "by_severity": {
-          "INFO": 1746,
+          "INFO": 1738,
           "WARNING": 76
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 29,
           "RESTATEMENT_CONFLICT": 43,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 1746
+          "UNKNOWN_CONCEPT": 1738
         }
       },
       "latestFiling": {
@@ -302,13 +367,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfed4cbacfde5a53776a25aa3cd797d82e2860f1e800b45f1cbd664bec9d0e3f",

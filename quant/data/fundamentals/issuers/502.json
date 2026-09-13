@@ -7,17 +7,108 @@
       "name": "NATIONAL RURAL UTILITIES COOPERATIVE FINANCE CORP /DC/",
       "sic": "6159",
       "rawFacts": 19140,
-      "mappedFacts": 3591,
-      "unmappedFacts": 15520,
+      "mappedFacts": 4774,
+      "unmappedFacts": 14514,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2010-05-31",
+          "lastAvailablePeriod": "2020-05-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2015-05-31",
+          "lastAvailablePeriod": "2020-05-31",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-05-31",
+          "lastAvailablePeriod": "2026-05-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-05-31",
+          "lastAvailablePeriod": "2026-05-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-05-31",
+          "lastAvailablePeriod": "2026-05-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2010-05-31",
+          "lastAvailablePeriod": "2021-05-31",
+          "historyYears": 11.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "0531",
@@ -135,15 +226,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16157,
+        "total": 15180,
         "by_severity": {
-          "INFO": 15520,
-          "WARNING": 637
+          "INFO": 14514,
+          "WARNING": 666
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 600,
-          "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 15520
+          "RESTATEMENT_CONFLICT": 66,
+          "UNKNOWN_CONCEPT": 14514
         }
       },
       "latestFiling": {
@@ -154,13 +245,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b7d6f9c327fe6e9bc2c3663119df8614f3ff18a0eba46ee3d30726930f3a7f8c",
@@ -171,8 +262,8 @@
       "name": "MKS INC",
       "sic": "3823",
       "rawFacts": 25698,
-      "mappedFacts": 8101,
-      "unmappedFacts": 17761,
+      "mappedFacts": 8223,
+      "unmappedFacts": 17639,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -291,9 +382,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18171,
+        "total": 18049,
         "by_severity": {
-          "INFO": 17761,
+          "INFO": 17639,
           "ERROR": 1,
           "WARNING": 409
         },
@@ -301,7 +392,7 @@
           "CONCEPT_DISAGREEMENT": 383,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 17761
+          "UNKNOWN_CONCEPT": 17639
         }
       },
       "latestFiling": {
@@ -312,13 +403,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "212b8464783349bc46c129193b7662f73b771824b7798b6243b85f2bf423e637",
@@ -329,8 +420,8 @@
       "name": "Quoin Pharmaceuticals Ltd.",
       "sic": "2834",
       "rawFacts": 3436,
-      "mappedFacts": 1149,
-      "unmappedFacts": 2325,
+      "mappedFacts": 1186,
+      "unmappedFacts": 2302,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -449,16 +540,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2426,
+        "total": 2403,
         "by_severity": {
-          "INFO": 2325,
+          "INFO": 2302,
           "WARNING": 101
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 69,
           "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 2325
+          "UNKNOWN_CONCEPT": 2302
         }
       },
       "latestFiling": {
@@ -469,13 +560,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dde7b387e4aff04a61814df3309cad426f232c8a2afc78f5db677ed223102cca",
@@ -486,8 +577,8 @@
       "name": "Solid Biosciences Inc.",
       "sic": "2836",
       "rawFacts": 8482,
-      "mappedFacts": 2597,
-      "unmappedFacts": 5837,
+      "mappedFacts": 2707,
+      "unmappedFacts": 5769,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -606,15 +697,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5970,
+        "total": 5902,
         "by_severity": {
-          "INFO": 5837,
+          "INFO": 5769,
           "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 111,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 5837
+          "UNKNOWN_CONCEPT": 5769
         }
       },
       "latestFiling": {
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9561e0f0422793bd16da8a1ba21a870781514a157b466622f19975efd264345",
@@ -781,13 +872,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fca108a45aa60f802c155883d0cadcb2ecbb038e0e37291301adf1e9534205a7",
@@ -798,8 +889,8 @@
       "name": "OppFi Inc.",
       "sic": "6199",
       "rawFacts": 9049,
-      "mappedFacts": 1801,
-      "unmappedFacts": 7123,
+      "mappedFacts": 2117,
+      "unmappedFacts": 6825,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -918,16 +1009,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7434,
+        "total": 7136,
         "by_severity": {
-          "INFO": 7123,
+          "INFO": 6825,
           "WARNING": 311
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 226,
           "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 7123
+          "UNKNOWN_CONCEPT": 6825
         }
       },
       "latestFiling": {
@@ -938,13 +1029,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d24a5d98ec2d26fe8dddb854644ae43c43a77003ed6b958ac246b90cdc628478",
@@ -955,8 +1046,8 @@
       "name": "Archer Aviation Inc.",
       "sic": "3721",
       "rawFacts": 6514,
-      "mappedFacts": 1954,
-      "unmappedFacts": 4674,
+      "mappedFacts": 1961,
+      "unmappedFacts": 4667,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1076,16 +1167,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4840,
+        "total": 4833,
         "by_severity": {
-          "INFO": 4674,
+          "INFO": 4667,
           "WARNING": 166
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 112,
           "RESTATEMENT_CONFLICT": 40,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 4674
+          "UNKNOWN_CONCEPT": 4667
         }
       },
       "latestFiling": {
@@ -1096,13 +1187,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "70ef708ee5f3a4167fb950cdb8acce371d48fb3aa760cbfb1885e8b07baa7b4b",
@@ -1113,8 +1204,8 @@
       "name": "Taboola.com Ltd.",
       "sic": "7370",
       "rawFacts": 5155,
-      "mappedFacts": 1654,
-      "unmappedFacts": 3552,
+      "mappedFacts": 1682,
+      "unmappedFacts": 3535,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1233,15 +1324,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3636,
+        "total": 3619,
         "by_severity": {
-          "INFO": 3552,
+          "INFO": 3535,
           "WARNING": 84
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 77,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 3552
+          "UNKNOWN_CONCEPT": 3535
         }
       },
       "latestFiling": {
@@ -1252,13 +1343,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "643fb6d8f8b71abecb70e272f3bd3cf29f2fd7eab466ec8622da9bdea39c0298",
@@ -1408,13 +1499,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0bcd097eea732199c43563953d96998255895298e46c5c65e5a47cd13996a891",

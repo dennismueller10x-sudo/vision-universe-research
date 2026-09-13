@@ -7,8 +7,8 @@
       "name": "SPX Technologies, Inc.",
       "sic": "3540",
       "rawFacts": 30086,
-      "mappedFacts": 7934,
-      "unmappedFacts": 21290,
+      "mappedFacts": 7998,
+      "unmappedFacts": 21226,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23461,
+        "total": 23397,
         "by_severity": {
-          "INFO": 21290,
+          "INFO": 21226,
           "WARNING": 2171
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1808,
           "RESTATEMENT_CONFLICT": 363,
-          "UNKNOWN_CONCEPT": 21290
+          "UNKNOWN_CONCEPT": 21226
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dcd470d6fbcd637130456568ddd86b35160373b441b402fa0638230369f96a0e",
@@ -163,8 +163,8 @@
       "name": "COGNEX CORP",
       "sic": "3823",
       "rawFacts": 26386,
-      "mappedFacts": 7180,
-      "unmappedFacts": 19565,
+      "mappedFacts": 7305,
+      "unmappedFacts": 19458,
       "calendarYears": 22,
       "industry": null,
       "industryMetrics": {},
@@ -283,18 +283,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20160,
+        "total": 20064,
         "by_severity": {
-          "INFO": 19565,
+          "INFO": 19458,
           "ERROR": 4,
-          "WARNING": 591
+          "WARNING": 602
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 408,
           "FUTURE_DATA_LEAK": 4,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 180,
-          "UNKNOWN_CONCEPT": 19565
+          "RESTATEMENT_CONFLICT": 184,
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 19458
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1db36341aa7721021599948e3504ca424d10e3ec1c02d61cbcbc70947da6be19",
@@ -322,8 +323,8 @@
       "name": "CURIS INC",
       "sic": "2836",
       "rawFacts": 14857,
-      "mappedFacts": 5322,
-      "unmappedFacts": 10081,
+      "mappedFacts": 5409,
+      "unmappedFacts": 10028,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +443,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10409,
+        "total": 10356,
         "by_severity": {
-          "INFO": 10081,
+          "INFO": 10028,
           "WARNING": 328
         },
         "by_code": {
@@ -452,7 +453,7 @@
           "FISCAL_PERIOD_CONFLICT": 4,
           "RESTATEMENT_CONFLICT": 73,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 10081
+          "UNKNOWN_CONCEPT": 10028
         }
       },
       "latestFiling": {
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "323470d975ac27c344fb961615fd4143f9018446731bd71aeb3962ae6e5bf708",
@@ -480,8 +481,8 @@
       "name": "IGC Pharma, Inc.",
       "sic": "2834",
       "rawFacts": 17112,
-      "mappedFacts": 5740,
-      "unmappedFacts": 11628,
+      "mappedFacts": 5808,
+      "unmappedFacts": 11587,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -600,17 +601,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12212,
+        "total": 12173,
         "by_severity": {
-          "INFO": 11628,
-          "WARNING": 584
+          "INFO": 11587,
+          "WARNING": 586
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 440,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 142,
+          "RESTATEMENT_CONFLICT": 144,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11628
+          "UNKNOWN_CONCEPT": 11587
         }
       },
       "latestFiling": {
@@ -621,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd17b6314c53a64edb4251b72f66fa3df27c6eb6276c0dda5b83af9070a678aa",
@@ -638,8 +639,8 @@
       "name": "UR-ENERGY INC",
       "sic": "1040",
       "rawFacts": 14944,
-      "mappedFacts": 4690,
-      "unmappedFacts": 10417,
+      "mappedFacts": 4692,
+      "unmappedFacts": 10415,
       "calendarYears": 22,
       "industry": null,
       "industryMetrics": {},
@@ -758,9 +759,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10962,
+        "total": 10960,
         "by_severity": {
-          "INFO": 10417,
+          "INFO": 10415,
           "ERROR": 36,
           "WARNING": 509
         },
@@ -771,7 +772,7 @@
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 109,
           "UNEXPECTED_DURATION": 24,
-          "UNKNOWN_CONCEPT": 10417
+          "UNKNOWN_CONCEPT": 10415
         }
       },
       "latestFiling": {
@@ -782,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e75aa5df3e9d6514f2c75d62491e6d5a86e8894fab37bc9f0fcce5cfc0e9df96",
@@ -799,8 +800,8 @@
       "name": "IOVANCE BIOTHERAPEUTICS, INC.",
       "sic": "2836",
       "rawFacts": 13560,
-      "mappedFacts": 4420,
-      "unmappedFacts": 9231,
+      "mappedFacts": 4498,
+      "unmappedFacts": 9183,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -919,10 +920,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9689,
+        "total": 9641,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 9231,
+          "INFO": 9183,
           "WARNING": 455
         },
         "by_code": {
@@ -931,7 +932,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 103,
           "UNEXPECTED_DURATION": 126,
-          "UNKNOWN_CONCEPT": 9231
+          "UNKNOWN_CONCEPT": 9183
         }
       },
       "latestFiling": {
@@ -942,13 +943,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d30f0ed1b2308cf07c53b2bdcf72bdfe72479dd69be96211ef5c1fb67b0e61fe",
@@ -959,11 +960,54 @@
       "name": "Armour Residential REIT, Inc.",
       "sic": "6798",
       "rawFacts": 18052,
-      "mappedFacts": 4179,
-      "unmappedFacts": 13325,
+      "mappedFacts": 4607,
+      "unmappedFacts": 12745,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ARR",
@@ -1080,21 +1124,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14335,
+        "total": 13990,
         "by_severity": {
-          "INFO": 13325,
+          "INFO": 12745,
           "ERROR": 5,
-          "WARNING": 1005
+          "WARNING": 1240
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 484,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 6,
-          "PERIOD_MISMATCH": 276,
-          "RESTATEMENT_CONFLICT": 120,
-          "UNEXPECTED_DURATION": 117,
-          "UNKNOWN_CONCEPT": 13325
+          "PERIOD_MISMATCH": 453,
+          "RESTATEMENT_CONFLICT": 139,
+          "UNEXPECTED_DURATION": 156,
+          "UNKNOWN_CONCEPT": 12745
         }
       },
       "latestFiling": {
@@ -1105,13 +1149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6c45e06955e226321b619eb64f3696953163a97689e6d3de040846e3e4ff9b3f",

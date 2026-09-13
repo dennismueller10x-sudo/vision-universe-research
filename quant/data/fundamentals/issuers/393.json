@@ -7,8 +7,8 @@
       "name": "LyondellBasell Industries N.V.",
       "sic": "2860",
       "rawFacts": 24157,
-      "mappedFacts": 6411,
-      "unmappedFacts": 17489,
+      "mappedFacts": 6549,
+      "unmappedFacts": 17354,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18047,
+        "total": 17912,
         "by_severity": {
-          "INFO": 17489,
+          "INFO": 17354,
           "WARNING": 558
         },
         "by_code": {
@@ -137,7 +137,7 @@
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 30,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 17489
+          "UNKNOWN_CONCEPT": 17354
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe3ad777b6a9786f9564e93ea2a4ad695c2fa3cc11f2ec2ddfa433c91090e6eb",
@@ -165,11 +165,54 @@
       "name": "NexPoint Residential Trust, Inc.",
       "sic": "6798",
       "rawFacts": 12554,
-      "mappedFacts": 3262,
-      "unmappedFacts": 8934,
+      "mappedFacts": 3909,
+      "unmappedFacts": 8444,
       "calendarYears": 15,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "secured_debt": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 1.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NXRT"
@@ -285,16 +328,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9212,
+        "total": 8748,
         "by_severity": {
-          "INFO": 8934,
-          "WARNING": 278
+          "INFO": 8444,
+          "WARNING": 304
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 228,
-          "FISCAL_PERIOD_CONFLICT": 10,
+          "CONCEPT_DISAGREEMENT": 253,
+          "FISCAL_PERIOD_CONFLICT": 11,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 8934
+          "UNKNOWN_CONCEPT": 8444
         }
       },
       "latestFiling": {
@@ -305,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9de7093aabf8371ea831f27543a245066483079f8e112d0e5afa8fdcbf470b08",
@@ -462,13 +505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd5dea57eefe3655a127c8013b3c204a54a33e965ea5ed5c172c73b2565b94f8",
@@ -620,13 +663,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d8d63c9fd0002f4cf41d1b90702bd40febdab669ec61dba519cda1bb564e9579",
@@ -637,8 +680,8 @@
       "name": "GE HealthCare Technologies Inc.",
       "sic": "3844",
       "rawFacts": 6995,
-      "mappedFacts": 1359,
-      "unmappedFacts": 5597,
+      "mappedFacts": 1389,
+      "unmappedFacts": 5567,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -757,15 +800,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5760,
+        "total": 5730,
         "by_severity": {
-          "INFO": 5597,
+          "INFO": 5567,
           "WARNING": 163
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 159,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5597
+          "UNKNOWN_CONCEPT": 5567
         }
       },
       "latestFiling": {
@@ -776,13 +819,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d81305bc65bbe9a729ddf4422007ccad2ef87deac436e33d6f89cfdf5ae0a30",
@@ -793,9 +836,9 @@
       "name": "AmperCap Acquisition Co",
       "sic": "6770",
       "rawFacts": 105,
-      "mappedFacts": 0,
+      "mappedFacts": 24,
       "unmappedFacts": 71,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1130",
@@ -806,9 +849,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2025-12-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -847,7 +890,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -875,14 +918,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -904,22 +947,25 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 5,
+        "MEDIUM": 1
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 6,
+        "resolvedValues": 6
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 105,
+        "total": 73,
         "by_severity": {
           "INFO": 71,
-          "WARNING": 34
+          "WARNING": 2
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 71,
-          "UNPLACEABLE_PERIOD": 34
+          "CONCEPT_DISAGREEMENT": 2,
+          "UNKNOWN_CONCEPT": 71
         }
       },
       "latestFiling": {
@@ -930,13 +976,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f3a1fb63710a5fdb0080a69fa0f0f0b00b8fba1badf407164e1b6af1c19e515f",

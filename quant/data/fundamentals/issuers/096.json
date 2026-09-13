@@ -7,11 +7,54 @@
       "name": "Clipper Realty Inc.",
       "sic": "6798",
       "rawFacts": 9767,
-      "mappedFacts": 3128,
-      "unmappedFacts": 6391,
+      "mappedFacts": 3580,
+      "unmappedFacts": 6081,
       "calendarYears": 11,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLPR"
@@ -127,9 +170,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7029,
+        "total": 6719,
         "by_severity": {
-          "INFO": 6391,
+          "INFO": 6081,
           "ERROR": 1,
           "WARNING": 637
         },
@@ -139,7 +182,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 64,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 6391
+          "UNKNOWN_CONCEPT": 6081
         }
       },
       "latestFiling": {
@@ -150,13 +193,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a35ec49891f4b9ef63cdfad080f2c375c9918aeca6a4568b9eff5cc3a4b2f10",
@@ -167,8 +210,8 @@
       "name": "Great Elm Group, Inc.",
       "sic": "7372",
       "rawFacts": 7635,
-      "mappedFacts": 2021,
-      "unmappedFacts": 5432,
+      "mappedFacts": 2096,
+      "unmappedFacts": 5386,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -288,15 +331,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5850,
+        "total": 5804,
         "by_severity": {
-          "INFO": 5432,
+          "INFO": 5386,
           "WARNING": 418
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 335,
           "RESTATEMENT_CONFLICT": 83,
-          "UNKNOWN_CONCEPT": 5432
+          "UNKNOWN_CONCEPT": 5386
         }
       },
       "latestFiling": {
@@ -307,13 +350,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd6da5689f44a77ca34f0b1efed8dd754f9fb484d91a4549f696fbe1eff78ff9",
@@ -324,8 +367,8 @@
       "name": "Xeris Biopharma Holdings, Inc.",
       "sic": "2834",
       "rawFacts": 7098,
-      "mappedFacts": 2072,
-      "unmappedFacts": 5174,
+      "mappedFacts": 2109,
+      "unmappedFacts": 5150,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -444,15 +487,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5261,
+        "total": 5237,
         "by_severity": {
-          "INFO": 5174,
+          "INFO": 5150,
           "WARNING": 87
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 86,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 5174
+          "UNKNOWN_CONCEPT": 5150
         }
       },
       "latestFiling": {
@@ -463,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0c2a55265a2f29452ef6f40e40c6bf520008cd860a55b627a4c2ecc2e9d1e311",
@@ -618,13 +661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "228424715dc6a2717ee8eee959743468c59b38bcfc9f09009541547b96bec458",
@@ -760,13 +803,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3db6425fee041a241ee2dc744cfbdee5268dfd57105175d6e345a47055de00f3",

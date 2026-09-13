@@ -7,8 +7,8 @@
       "name": "MICROSOFT CORP",
       "sic": "7372",
       "rawFacts": 30901,
-      "mappedFacts": 8826,
-      "unmappedFacts": 22934,
+      "mappedFacts": 9357,
+      "unmappedFacts": 22419,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23278,
+        "total": 22763,
         "by_severity": {
-          "INFO": 22934,
+          "INFO": 22419,
           "WARNING": 344
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 277,
           "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 22934
+          "UNKNOWN_CONCEPT": 22419
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75bebe2eebf09fd5c1383646a761563922c8eb0f2cdb107a13e526572a5140c3",
@@ -163,8 +163,8 @@
       "name": "COFFEE HOLDING CO INC",
       "sic": "2090",
       "rawFacts": 16776,
-      "mappedFacts": 5797,
-      "unmappedFacts": 11339,
+      "mappedFacts": 5855,
+      "unmappedFacts": 11285,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -283,10 +283,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11883,
+        "total": 11829,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 11339,
+          "INFO": 11285,
           "WARNING": 542
         },
         "by_code": {
@@ -295,7 +295,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 61,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 11339
+          "UNKNOWN_CONCEPT": 11285
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2ac2881d67e92e09bf277ac3d20054986fca76f5b948ea16e3285cabd9347c4d",
@@ -323,8 +323,8 @@
       "name": "RUSH ENTERPRISES INC \\TX\\",
       "sic": "5500",
       "rawFacts": 19529,
-      "mappedFacts": 6693,
-      "unmappedFacts": 12586,
+      "mappedFacts": 6809,
+      "unmappedFacts": 12470,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -444,15 +444,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13204,
+        "total": 13094,
         "by_severity": {
-          "INFO": 12586,
-          "WARNING": 618
+          "INFO": 12470,
+          "WARNING": 624
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 545,
-          "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 12586
+          "RESTATEMENT_CONFLICT": 79,
+          "UNKNOWN_CONCEPT": 12470
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f33d9368852fb75fd701e580658e22560c4b368396c7825f91334e5157dd8281",
@@ -480,17 +480,108 @@
       "name": "Merchants Bancorp",
       "sic": "6022",
       "rawFacts": 16306,
-      "mappedFacts": 3353,
-      "unmappedFacts": 12977,
+      "mappedFacts": 5027,
+      "unmappedFacts": 11519,
       "calendarYears": 11,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 7.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 3.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 11,
           "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -611,15 +702,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13231,
+        "total": 11786,
         "by_severity": {
-          "INFO": 12977,
-          "WARNING": 254
+          "INFO": 11519,
+          "WARNING": 267
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 204,
-          "RESTATEMENT_CONFLICT": 50,
-          "UNKNOWN_CONCEPT": 12977
+          "RESTATEMENT_CONFLICT": 63,
+          "UNKNOWN_CONCEPT": 11519
         }
       },
       "latestFiling": {
@@ -630,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "533ce01368433e19fd24805f9a571cb78f9fedb76ef6d0f2e24fc9649a115411",
@@ -786,13 +877,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b46ca59eb9977bf6e8355c629fca5f9fc89058706d12e1e19a39ffbabd2ffcb2",
@@ -944,13 +1035,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "04b89e547c8a54952542b8485e2505f5b79d313f0c00c67e981f810834c1a276",

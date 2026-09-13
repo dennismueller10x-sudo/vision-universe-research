@@ -144,13 +144,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b9ea1cec8bc0159991100e165b9990465a82543b0ae80fed4936d88a4f36fdc",
@@ -161,17 +161,108 @@
       "name": "MITSUBISHI UFJ FINANCIAL GROUP INC",
       "sic": "6029",
       "rawFacts": 14304,
-      "mappedFacts": 1675,
-      "unmappedFacts": 12714,
+      "mappedFacts": 2185,
+      "unmappedFacts": 12303,
       "calendarYears": 21,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2012-03-31",
+          "historyYears": 4.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2012-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 14.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2009-03-31",
+          "lastAvailablePeriod": "2017-03-31",
+          "historyYears": 8.0
+        },
+        "deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2009-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 17.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2009-03-31",
+          "lastAvailablePeriod": "2013-03-31",
+          "historyYears": 4.0
+        },
         "net_interest_income": {
           "annualPeriods": 19,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2008-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 18.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "0331",
@@ -290,18 +381,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13036,
+        "total": 12626,
         "by_severity": {
-          "INFO": 12714,
+          "INFO": 12303,
           "ERROR": 1,
-          "WARNING": 321
+          "WARNING": 322
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 210,
           "EXTREME_VALUE": 100,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 12714
+          "RESTATEMENT_CONFLICT": 12,
+          "UNKNOWN_CONCEPT": 12303
         }
       },
       "latestFiling": {
@@ -312,13 +403,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c33e1766237c13645e3ba4b27031f400e3b733cadaf646de7723c2e697dfab47",
@@ -329,8 +420,8 @@
       "name": "EBAY INC",
       "sic": "7389",
       "rawFacts": 26619,
-      "mappedFacts": 8346,
-      "unmappedFacts": 18258,
+      "mappedFacts": 8410,
+      "unmappedFacts": 18208,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -449,16 +540,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19013,
+        "total": 18963,
         "by_severity": {
-          "INFO": 18258,
+          "INFO": 18208,
           "WARNING": 755
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 555,
           "RESTATEMENT_CONFLICT": 192,
           "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 18258
+          "UNKNOWN_CONCEPT": 18208
         }
       },
       "latestFiling": {
@@ -469,13 +560,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "31522589bc84105174939c1cb04ee190ed41f1e9d232f4b8cbe8b152df658fd7",
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "77ce8ad66f6dbc34dd6d6f8a6fe2308afc1c4b249ace7a0c2de18af0bd55d0cf",
@@ -642,8 +733,8 @@
       "name": "Roivant Sciences Ltd.",
       "sic": "2834",
       "rawFacts": 5790,
-      "mappedFacts": 1721,
-      "unmappedFacts": 3878,
+      "mappedFacts": 1723,
+      "unmappedFacts": 3876,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -762,9 +853,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4384,
+        "total": 4382,
         "by_severity": {
-          "INFO": 3878,
+          "INFO": 3876,
           "ERROR": 6,
           "WARNING": 500
         },
@@ -772,7 +863,7 @@
           "CONCEPT_DISAGREEMENT": 368,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 132,
-          "UNKNOWN_CONCEPT": 3878
+          "UNKNOWN_CONCEPT": 3876
         }
       },
       "latestFiling": {
@@ -783,13 +874,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a23915f14ba850c9a2b65de41426cded1fefd4467714e90023c7a895263d545",
@@ -800,8 +891,8 @@
       "name": "WillScot Holdings Corp",
       "sic": "7350",
       "rawFacts": 16085,
-      "mappedFacts": 4530,
-      "unmappedFacts": 11513,
+      "mappedFacts": 4543,
+      "unmappedFacts": 11500,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -920,9 +1011,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12049,
+        "total": 12036,
         "by_severity": {
-          "INFO": 11513,
+          "INFO": 11500,
           "WARNING": 536
         },
         "by_code": {
@@ -930,7 +1021,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 179,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 11513
+          "UNKNOWN_CONCEPT": 11500
         }
       },
       "latestFiling": {
@@ -941,13 +1032,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e5916c03ee00129bfda0aa3777fbcd984421233329154609d8ef634d176323f6",
@@ -958,8 +1049,8 @@
       "name": "WiMi Hologram Cloud Inc.",
       "sic": "7372",
       "rawFacts": 4134,
-      "mappedFacts": 788,
-      "unmappedFacts": 3122,
+      "mappedFacts": 814,
+      "unmappedFacts": 3096,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1078,16 +1169,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3518,
+        "total": 3501,
         "by_severity": {
-          "INFO": 3122,
-          "WARNING": 396
+          "INFO": 3096,
+          "WARNING": 405
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 377,
+          "CONCEPT_DISAGREEMENT": 386,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 3122
+          "UNKNOWN_CONCEPT": 3096
         }
       },
       "latestFiling": {
@@ -1098,13 +1189,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ddffaa13daf1a0fe1bcfd9bdbfef91c419dc5907a8815ecfe3b1c10e3bddee6c",
@@ -1115,8 +1206,8 @@
       "name": "Dream Finders Homes, Inc.",
       "sic": "1531",
       "rawFacts": 6636,
-      "mappedFacts": 1618,
-      "unmappedFacts": 4924,
+      "mappedFacts": 1638,
+      "unmappedFacts": 4907,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1235,9 +1326,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5151,
+        "total": 5134,
         "by_severity": {
-          "INFO": 4924,
+          "INFO": 4907,
           "WARNING": 227
         },
         "by_code": {
@@ -1245,7 +1336,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 12,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 4924
+          "UNKNOWN_CONCEPT": 4907
         }
       },
       "latestFiling": {
@@ -1256,13 +1347,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f40963c020b61e1bf6a60802b0e6ac9ccd787cf6a1eb6d2063212b432ea67af",
@@ -1413,13 +1504,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1106e21f7784e385e39cbcf7dbf65a08dc0435310ed391d4adda1214db2a6f3",

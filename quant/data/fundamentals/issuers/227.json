@@ -7,8 +7,8 @@
       "name": "TOMI Environmental Solutions, Inc.",
       "sic": "2860",
       "rawFacts": 16140,
-      "mappedFacts": 4969,
-      "unmappedFacts": 11342,
+      "mappedFacts": 5045,
+      "unmappedFacts": 11292,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,10 +127,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11707,
+        "total": 11657,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 11342,
+          "INFO": 11292,
           "WARNING": 364
         },
         "by_code": {
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 48,
-          "UNKNOWN_CONCEPT": 11342
+          "UNKNOWN_CONCEPT": 11292
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ccde4c57cd5fead9753b64d1719736d786b61f633e53679b2103731002d598ca",
@@ -166,8 +166,8 @@
       "name": "Tempest Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 12244,
-      "mappedFacts": 4151,
-      "unmappedFacts": 8174,
+      "mappedFacts": 4157,
+      "unmappedFacts": 8169,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +286,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8686,
+        "total": 8681,
         "by_severity": {
-          "INFO": 8174,
+          "INFO": 8169,
           "WARNING": 512
         },
         "by_code": {
@@ -296,7 +296,7 @@
           "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 202,
           "UNEXPECTED_DURATION": 99,
-          "UNKNOWN_CONCEPT": 8174
+          "UNKNOWN_CONCEPT": 8169
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "89111200587a124812241919539c710afa24c27f9021833cf4a0a8997b2b605c",
@@ -324,8 +324,8 @@
       "name": "Construction Partners, Inc.",
       "sic": "1600",
       "rawFacts": 10887,
-      "mappedFacts": 3686,
-      "unmappedFacts": 7554,
+      "mappedFacts": 3710,
+      "unmappedFacts": 7541,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -444,15 +444,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7707,
+        "total": 7695,
         "by_severity": {
-          "INFO": 7554,
-          "WARNING": 153
+          "INFO": 7541,
+          "WARNING": 154
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 143,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 7554
+          "UNKNOWN_CONCEPT": 7541
         }
       },
       "latestFiling": {
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c614b5c177952bc43814a892719e43dc40275d81b575d333fbf550a859150001",
@@ -480,8 +481,8 @@
       "name": "People Inc",
       "sic": "7370",
       "rawFacts": 12117,
-      "mappedFacts": 2738,
-      "unmappedFacts": 9241,
+      "mappedFacts": 2777,
+      "unmappedFacts": 9217,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -600,15 +601,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9793,
+        "total": 9769,
         "by_severity": {
-          "INFO": 9241,
+          "INFO": 9217,
           "WARNING": 552
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 393,
           "RESTATEMENT_CONFLICT": 159,
-          "UNKNOWN_CONCEPT": 9241
+          "UNKNOWN_CONCEPT": 9217
         }
       },
       "latestFiling": {
@@ -619,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ffc10b1df404a93ce120ff6652b62b32f6c09ad1cc90b9ffa780aa1a55587005",
@@ -774,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fb453692e81b9f74328f8f53b3dac26e207ed1dc249ec79e26fd29ab543d2b2a",
@@ -928,13 +929,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a308a793f22181ea6d54bfed4c5c7ca5c3d14e63306f166595f3a949888141c2",

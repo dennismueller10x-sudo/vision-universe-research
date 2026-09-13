@@ -7,8 +7,8 @@
       "name": "MOVADO GROUP INC",
       "sic": "3873",
       "rawFacts": 24643,
-      "mappedFacts": 6918,
-      "unmappedFacts": 17848,
+      "mappedFacts": 7080,
+      "unmappedFacts": 17661,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -128,15 +128,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18266,
+        "total": 18105,
         "by_severity": {
-          "INFO": 17848,
-          "WARNING": 418
+          "INFO": 17661,
+          "WARNING": 444
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 373,
-          "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 17848
+          "PERIOD_MISMATCH": 22,
+          "RESTATEMENT_CONFLICT": 46,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 17661
         }
       },
       "latestFiling": {
@@ -147,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "11170fc4e00a6bb7979a5ec957234d8dd4153a6f0e2a0e92e39d47b8eb0749b7",
@@ -303,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8830a0f98068c55160043054de64b9319fa9314b3a88acaa3de25b939905982e",
@@ -320,8 +322,8 @@
       "name": "Nakamoto Inc.",
       "sic": "6199",
       "rawFacts": 2305,
-      "mappedFacts": 857,
-      "unmappedFacts": 1485,
+      "mappedFacts": 862,
+      "unmappedFacts": 1481,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -441,15 +443,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1526,
+        "total": 1522,
         "by_severity": {
-          "INFO": 1485,
+          "INFO": 1481,
           "WARNING": 41
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 1485
+          "UNKNOWN_CONCEPT": 1481
         }
       },
       "latestFiling": {
@@ -460,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfa5759dbe45bada566358b07a93bab3c1f42b5ee0b935a06b13ba58e8f99b09",

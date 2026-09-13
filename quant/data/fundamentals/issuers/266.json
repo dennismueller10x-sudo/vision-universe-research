@@ -7,8 +7,8 @@
       "name": "KOPIN CORP",
       "sic": "3674",
       "rawFacts": 22399,
-      "mappedFacts": 6132,
-      "unmappedFacts": 16211,
+      "mappedFacts": 6333,
+      "unmappedFacts": 16086,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16997,
+        "total": 16875,
         "by_severity": {
-          "INFO": 16211,
+          "INFO": 16086,
           "ERROR": 2,
-          "WARNING": 784
+          "WARNING": 787
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 628,
           "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 148,
-          "UNKNOWN_CONCEPT": 16211
+          "RESTATEMENT_CONFLICT": 151,
+          "UNKNOWN_CONCEPT": 16086
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "42145c5674947508054ae7c0f1e583a8377cffd9c234340f8693280179857a71",
@@ -166,8 +166,8 @@
       "name": "KB HOME",
       "sic": "1531",
       "rawFacts": 23974,
-      "mappedFacts": 4492,
-      "unmappedFacts": 19597,
+      "mappedFacts": 5025,
+      "unmappedFacts": 19064,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19787,
+        "total": 19254,
         "by_severity": {
-          "INFO": 19597,
+          "INFO": 19064,
           "WARNING": 190
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 157,
           "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 19597
+          "UNKNOWN_CONCEPT": 19064
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c95fb7b5d9a4da37e5548e02e80a9a0588540fbec3b2240b79d7f629f77ca672",
@@ -322,8 +322,8 @@
       "name": "AGCO CORP /DE",
       "sic": "3523",
       "rawFacts": 27547,
-      "mappedFacts": 7802,
-      "unmappedFacts": 19969,
+      "mappedFacts": 7870,
+      "unmappedFacts": 19895,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20662,
+        "total": 20595,
         "by_severity": {
-          "INFO": 19969,
-          "WARNING": 693
+          "INFO": 19895,
+          "WARNING": 700
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 684,
-          "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 19969
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 10,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 19895
         }
       },
       "latestFiling": {
@@ -461,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "36159b4dc6951b9a2f4a368e3b5f0ee9d1ae8ee04690f08ef32749469548e34b",
@@ -478,8 +480,8 @@
       "name": "Voyager Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 10869,
-      "mappedFacts": 3669,
-      "unmappedFacts": 7244,
+      "mappedFacts": 3708,
+      "unmappedFacts": 7216,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -598,15 +600,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7438,
+        "total": 7412,
         "by_severity": {
-          "INFO": 7244,
-          "WARNING": 194
+          "INFO": 7216,
+          "WARNING": 196
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 184,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 7244
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 7216
         }
       },
       "latestFiling": {
@@ -617,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cef8ea0e556da8fa6660ed8d616a2f2e056375c6d36cedadeaa9af96c7bdd0b8",
@@ -634,8 +637,8 @@
       "name": "TKO Group Holdings, Inc.",
       "sic": "7900",
       "rawFacts": 4567,
-      "mappedFacts": 1214,
-      "unmappedFacts": 3308,
+      "mappedFacts": 1253,
+      "unmappedFacts": 3284,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -754,16 +757,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3592,
+        "total": 3570,
         "by_severity": {
-          "INFO": 3308,
-          "WARNING": 284
+          "INFO": 3284,
+          "WARNING": 286
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 167,
-          "RESTATEMENT_CONFLICT": 95,
+          "RESTATEMENT_CONFLICT": 97,
           "UNEXPECTED_DURATION": 22,
-          "UNKNOWN_CONCEPT": 3308
+          "UNKNOWN_CONCEPT": 3284
         }
       },
       "latestFiling": {
@@ -774,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d51231ca9b061bfa2a5185754b4eba263933dc224a2b4a5eafae022f930ab9d1",
@@ -926,13 +929,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "baa331a357d27bd2ab669ee261ca87958afb5c09592aaa8e717c423c9d84dd53",

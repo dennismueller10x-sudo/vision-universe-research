@@ -7,8 +7,8 @@
       "name": "SANFILIPPO JOHN B & SON INC",
       "sic": "2060",
       "rawFacts": 23237,
-      "mappedFacts": 7174,
-      "unmappedFacts": 16576,
+      "mappedFacts": 7658,
+      "unmappedFacts": 16185,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -126,18 +126,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16679,
+        "total": 16291,
         "by_severity": {
-          "INFO": 16576,
-          "WARNING": 103
+          "INFO": 16185,
+          "WARNING": 106
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 56,
-          "FISCAL_PERIOD_CONFLICT": 6,
-          "PERIOD_MISMATCH": 36,
+          "FISCAL_PERIOD_CONFLICT": 7,
+          "PERIOD_MISMATCH": 38,
           "RESTATEMENT_CONFLICT": 4,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 16576
+          "UNKNOWN_CONCEPT": 16185
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5e91ae1f626ff983b97a90c7b382eb3ca7e7f3d724e55e3db5f24224765c6a68",
@@ -165,8 +165,8 @@
       "name": "Ituran Location & Control Ltd.",
       "sic": "5065",
       "rawFacts": 6865,
-      "mappedFacts": 1980,
-      "unmappedFacts": 5165,
+      "mappedFacts": 2004,
+      "unmappedFacts": 5141,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +285,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5359,
+        "total": 5335,
         "by_severity": {
-          "INFO": 5165,
+          "INFO": 5141,
           "WARNING": 194
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 176,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 5165
+          "UNKNOWN_CONCEPT": 5141
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5bc69776bf1078ca57b7e3969f5be7a9108365cae1e62a4e3a20de102caa5168",
@@ -461,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b697878623ac0ea48f80e8e42f14919dba33ad8cc89c2142fb8ab94798fd1dc",
@@ -478,8 +478,8 @@
       "name": "Gossamer Bio, Inc.",
       "sic": "2834",
       "rawFacts": 8648,
-      "mappedFacts": 2545,
-      "unmappedFacts": 6167,
+      "mappedFacts": 2620,
+      "unmappedFacts": 6118,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -597,16 +597,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6249,
+        "total": 6200,
         "by_severity": {
-          "INFO": 6167,
+          "INFO": 6118,
           "WARNING": 82
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 72,
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 6167
+          "UNKNOWN_CONCEPT": 6118
         }
       },
       "latestFiling": {
@@ -617,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2beb27d304ac96fd03f437b7c879f2687ebb993592bd014005f7d655a46146a8",
@@ -634,11 +634,54 @@
       "name": "Alpine Income Property Trust, Inc.",
       "sic": "6798",
       "rawFacts": 7749,
-      "mappedFacts": 2092,
-      "unmappedFacts": 5454,
+      "mappedFacts": 2186,
+      "unmappedFacts": 5359,
       "calendarYears": 8,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "PINE",
@@ -755,18 +798,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5801,
+        "total": 5707,
         "by_severity": {
-          "INFO": 5454,
+          "INFO": 5359,
           "ERROR": 1,
-          "WARNING": 346
+          "WARNING": 347
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 259,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 31,
-          "UNEXPECTED_DURATION": 56,
-          "UNKNOWN_CONCEPT": 5454
+          "UNEXPECTED_DURATION": 57,
+          "UNKNOWN_CONCEPT": 5359
         }
       },
       "latestFiling": {
@@ -777,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae4d7bd279e635d9cdecf59e1d83d3f68328843fe4fa5c72e494e6e0c0d84d24",
@@ -794,8 +837,8 @@
       "name": "Reformation Inc.",
       "sic": "2330",
       "rawFacts": 347,
-      "mappedFacts": 113,
-      "unmappedFacts": 242,
+      "mappedFacts": 114,
+      "unmappedFacts": 241,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -914,14 +957,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 246,
+        "total": 245,
         "by_severity": {
-          "INFO": 242,
+          "INFO": 241,
           "WARNING": 4
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
-          "UNKNOWN_CONCEPT": 242
+          "UNKNOWN_CONCEPT": 241
         }
       },
       "latestFiling": {
@@ -932,13 +975,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8cd9b64d372db483301f5f3299d3e5be87172f2ced635418d600bfc858291101",
@@ -1087,13 +1130,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1fa9c4dd8116e272ea46782e2dc3969c60502c5b1c6237801ae0c9d8bc1ce9c9",

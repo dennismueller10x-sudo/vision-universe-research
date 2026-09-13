@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "612e0b7628d228434c0849ec7fbaff5226fc4db7a3c8cac180893f2462b3255d",
@@ -163,11 +163,75 @@
       "name": "HANOVER INSURANCE GROUP, INC.",
       "sic": "6331",
       "rawFacts": 30731,
-      "mappedFacts": 5648,
-      "unmappedFacts": 24642,
+      "mappedFacts": 7708,
+      "unmappedFacts": 22983,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "THG"
@@ -283,18 +347,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25350,
+        "total": 23787,
         "by_severity": {
-          "INFO": 24642,
+          "INFO": 22983,
           "ERROR": 1,
-          "WARNING": 707
+          "WARNING": 803
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 574,
+          "CONCEPT_DISAGREEMENT": 601,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 129,
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 194,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 24642
+          "UNKNOWN_CONCEPT": 22983
         }
       },
       "latestFiling": {
@@ -305,13 +370,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2bd6b9c1402ebd86084f5754bf7e67ab07cae1138f2fe19c6958a3252979b334",
@@ -322,8 +387,8 @@
       "name": "F5, INC.",
       "sic": "3576",
       "rawFacts": 23936,
-      "mappedFacts": 7840,
-      "unmappedFacts": 15994,
+      "mappedFacts": 7885,
+      "unmappedFacts": 15966,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +507,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16459,
+        "total": 16431,
         "by_severity": {
-          "INFO": 15994,
+          "INFO": 15966,
           "WARNING": 465
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 459,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 15994
+          "UNKNOWN_CONCEPT": 15966
         }
       },
       "latestFiling": {
@@ -461,13 +526,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8dac5e7c80b9e71272b5e3450b178ef9e42253b22841db39d4de24e1c410fd03",
@@ -618,13 +683,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6c342241ffb618b6ae938e296cc365f4e86257e34e99f4272d500775a2662405",
@@ -773,13 +838,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "279b6e0d2613e606fac8642178c78eaeeeea4890b1d5de88441ce9705f6c799f",

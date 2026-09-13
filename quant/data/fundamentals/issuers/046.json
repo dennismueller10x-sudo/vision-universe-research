@@ -7,8 +7,8 @@
       "name": "Oil-Dri Corp of America",
       "sic": "3990",
       "rawFacts": 16899,
-      "mappedFacts": 5628,
-      "unmappedFacts": 11869,
+      "mappedFacts": 5653,
+      "unmappedFacts": 11844,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12017,
+        "total": 11995,
         "by_severity": {
-          "INFO": 11869,
-          "WARNING": 148
+          "INFO": 11844,
+          "WARNING": 151
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 132,
-          "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 11869
+          "RESTATEMENT_CONFLICT": 19,
+          "UNKNOWN_CONCEPT": 11844
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "959f68d629ede1dfa3e763e0bee2cf0c07e5db8718f27ddd0f3f65bfdb1e0025",
@@ -163,11 +163,75 @@
       "name": "AMERICAN FINANCIAL GROUP INC",
       "sic": "6331",
       "rawFacts": 33462,
-      "mappedFacts": 5901,
-      "unmappedFacts": 27753,
+      "mappedFacts": 7124,
+      "unmappedFacts": 26739,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AFG",
@@ -287,15 +351,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28132,
+        "total": 27136,
         "by_severity": {
-          "INFO": 27753,
-          "WARNING": 379
+          "INFO": 26739,
+          "WARNING": 397
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 338,
-          "RESTATEMENT_CONFLICT": 41,
-          "UNKNOWN_CONCEPT": 27753
+          "RESTATEMENT_CONFLICT": 59,
+          "UNKNOWN_CONCEPT": 26739
         }
       },
       "latestFiling": {
@@ -306,13 +370,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "70339d659f5d2973353522faad07cc70d8d7f5da38072cb28267948c97d28e8b",
@@ -323,8 +387,8 @@
       "name": "Keysight Technologies, Inc.",
       "sic": "3823",
       "rawFacts": 22506,
-      "mappedFacts": 5174,
-      "unmappedFacts": 17335,
+      "mappedFacts": 5294,
+      "unmappedFacts": 17217,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -443,15 +507,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17837,
+        "total": 17719,
         "by_severity": {
-          "INFO": 17335,
+          "INFO": 17217,
           "WARNING": 502
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 470,
           "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 17335
+          "UNKNOWN_CONCEPT": 17217
         }
       },
       "latestFiling": {
@@ -462,13 +526,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "97997ce606151aae3c56536fd7b5aa38f790ba9008a0966944d3eb0c1170903e",
@@ -618,13 +682,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "31f67e621c0fba4ca0e2036da0cd5bb8083b2608d6b3501b0d631c33ac6ef8ff",
@@ -775,13 +839,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b4e9ed67ce6a5e3c4eeca22d6194b473eef54303b6551c4d56bc4e0a8313c3e",
@@ -792,8 +856,8 @@
       "name": "Belpointe PREP, LLC",
       "sic": "6500",
       "rawFacts": 4251,
-      "mappedFacts": 1111,
-      "unmappedFacts": 3049,
+      "mappedFacts": 1358,
+      "unmappedFacts": 2878,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -912,15 +976,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3178,
+        "total": 3020,
         "by_severity": {
-          "INFO": 3049,
-          "WARNING": 129
+          "INFO": 2878,
+          "WARNING": 142
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 126,
-          "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 3049
+          "CONCEPT_DISAGREEMENT": 132,
+          "RESTATEMENT_CONFLICT": 10,
+          "UNKNOWN_CONCEPT": 2878
         }
       },
       "latestFiling": {
@@ -931,13 +995,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7cd2be0b393f8720c9d56608174857f027304d1fa229f94cc3b2e367f9647fed",
@@ -948,8 +1012,8 @@
       "name": "Spark I Acquisition Corp",
       "sic": "3690",
       "rawFacts": 1281,
-      "mappedFacts": 543,
-      "unmappedFacts": 785,
+      "mappedFacts": 545,
+      "unmappedFacts": 784,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1069,15 +1133,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 789,
+        "total": 788,
         "by_severity": {
-          "INFO": 785,
+          "INFO": 784,
           "WARNING": 4
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 2,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 785
+          "UNKNOWN_CONCEPT": 784
         }
       },
       "latestFiling": {
@@ -1088,13 +1152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "040387afa545b113b5988a7c46ccaaaaa18d1356855d34f7c0e0758f85eb13c9",
@@ -1105,8 +1169,8 @@
       "name": "MANGOCEUTICALS, INC.",
       "sic": "8090",
       "rawFacts": 3629,
-      "mappedFacts": 1205,
-      "unmappedFacts": 2374,
+      "mappedFacts": 1210,
+      "unmappedFacts": 2369,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1225,16 +1289,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2489,
+        "total": 2484,
         "by_severity": {
-          "INFO": 2374,
+          "INFO": 2369,
           "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 52,
           "PERIOD_MISMATCH": 9,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 2374
+          "UNKNOWN_CONCEPT": 2369
         }
       },
       "latestFiling": {
@@ -1245,13 +1309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "30fd6d2b20c76aaaec4ffacc47de71960098f2bb14bbcf28a18c7616c834ffcc",

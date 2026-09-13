@@ -7,8 +7,8 @@
       "name": "VIRTUS INVESTMENT PARTNERS, INC.",
       "sic": "6282",
       "rawFacts": 21421,
-      "mappedFacts": 6029,
-      "unmappedFacts": 15302,
+      "mappedFacts": 6324,
+      "unmappedFacts": 15012,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16152,
+        "total": 15890,
         "by_severity": {
-          "INFO": 15302,
-          "WARNING": 850
+          "INFO": 15012,
+          "WARNING": 878
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 815,
-          "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 15302
+          "PERIOD_MISMATCH": 26,
+          "RESTATEMENT_CONFLICT": 37,
+          "UNKNOWN_CONCEPT": 15012
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a7c47b60c08888831f1f26403ab60801483e828664d581800520bc8cf656fb4b",
@@ -163,8 +164,8 @@
       "name": "FACTSET RESEARCH SYSTEMS INC",
       "sic": "7370",
       "rawFacts": 25806,
-      "mappedFacts": 7303,
-      "unmappedFacts": 18752,
+      "mappedFacts": 7353,
+      "unmappedFacts": 18702,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -283,10 +284,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19191,
+        "total": 19141,
         "by_severity": {
           "ERROR": 7,
-          "INFO": 18752,
+          "INFO": 18702,
           "WARNING": 432
         },
         "by_code": {
@@ -295,7 +296,7 @@
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 51,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 18752
+          "UNKNOWN_CONCEPT": 18702
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d25ea0d41025b489d61968235a3eb28fc3632c540dc860897ca87b57e86e709c",
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae9c20047d33472358954f4b3fef45e41b052f532435169f352e9283463fd5e8",

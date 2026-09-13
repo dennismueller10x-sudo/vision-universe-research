@@ -7,8 +7,8 @@
       "name": "ELI LILLY & Co",
       "sic": "2834",
       "rawFacts": 22600,
-      "mappedFacts": 7423,
-      "unmappedFacts": 15741,
+      "mappedFacts": 7568,
+      "unmappedFacts": 15609,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16250,
+        "total": 16118,
         "by_severity": {
-          "INFO": 15741,
+          "INFO": 15609,
           "ERROR": 17,
           "WARNING": 492
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 418,
           "FUTURE_DATA_LEAK": 17,
           "RESTATEMENT_CONFLICT": 74,
-          "UNKNOWN_CONCEPT": 15741
+          "UNKNOWN_CONCEPT": 15609
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4fb6083e348fcd1b27d66f15d2a178fe8de8ff4d36f5710a802bb19660b44b30",
@@ -165,8 +165,8 @@
       "name": "BEST BUY CO INC",
       "sic": "5731",
       "rawFacts": 26119,
-      "mappedFacts": 8411,
-      "unmappedFacts": 17457,
+      "mappedFacts": 8631,
+      "unmappedFacts": 17237,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +285,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18388,
+        "total": 18169,
         "by_severity": {
-          "INFO": 17457,
-          "WARNING": 931
+          "INFO": 17237,
+          "WARNING": 932
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 777,
           "FISCAL_PERIOD_CONFLICT": 28,
-          "RESTATEMENT_CONFLICT": 116,
+          "RESTATEMENT_CONFLICT": 117,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 17457
+          "UNKNOWN_CONCEPT": 17237
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b6a6ceb1688eb6a700a9628baeebe9c40a2389fd2c184bd70d10b20a6575f0a6",
@@ -328,7 +328,98 @@
       "calendarYears": 11,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "955e6d7196a258ba95fa7f2d48a7915f552b9fe279e453e7935d51a7c6f898aa",
@@ -488,8 +579,8 @@
       "name": "ROCKWELL AUTOMATION, INC",
       "sic": "3829",
       "rawFacts": 27346,
-      "mappedFacts": 8171,
-      "unmappedFacts": 18956,
+      "mappedFacts": 8464,
+      "unmappedFacts": 18697,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -608,18 +699,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20030,
+        "total": 19785,
         "by_severity": {
-          "INFO": 18956,
+          "INFO": 18697,
           "ERROR": 1,
-          "WARNING": 1073
+          "WARNING": 1087
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 986,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 86,
+          "RESTATEMENT_CONFLICT": 100,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 18956
+          "UNKNOWN_CONCEPT": 18697
         }
       },
       "latestFiling": {
@@ -630,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2fa2a8c91ebe5e18f7e0ef5c8cdd31fff3a1b2dd7a6a16e5b660b3028b202a8a",
@@ -788,13 +879,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1891ebd65352762a4360a981b0bcd08f39595270bcd7b97fc281f286c6d46c1",
@@ -805,8 +896,8 @@
       "name": "Arcos Dorados Holdings Inc.",
       "sic": "5812",
       "rawFacts": 7380,
-      "mappedFacts": 1855,
-      "unmappedFacts": 5776,
+      "mappedFacts": 1869,
+      "unmappedFacts": 5760,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -925,15 +1016,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5935,
+        "total": 5921,
         "by_severity": {
-          "INFO": 5776,
-          "WARNING": 159
+          "INFO": 5760,
+          "WARNING": 161
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 154,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 5776
+          "UNKNOWN_CONCEPT": 5760
         }
       },
       "latestFiling": {
@@ -944,13 +1036,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d287718ad858c5c608912f157582e495e3ba19f019a2fe6b0e0ded71d83ee5f8",
@@ -1100,13 +1192,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "435331af6ee4b08327b392ced4c39cb9a096e3600793dce929d20520981d71a1",
@@ -1117,8 +1209,8 @@
       "name": "Angel Oak Mortgage REIT, Inc.",
       "sic": "6500",
       "rawFacts": 4597,
-      "mappedFacts": 1463,
-      "unmappedFacts": 3075,
+      "mappedFacts": 1649,
+      "unmappedFacts": 2891,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1239,15 +1331,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3169,
+        "total": 2985,
         "by_severity": {
-          "INFO": 3075,
+          "INFO": 2891,
           "WARNING": 94
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 83,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 3075
+          "UNKNOWN_CONCEPT": 2891
         }
       },
       "latestFiling": {
@@ -1258,13 +1350,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a551807f8f4d8e323476f81590b2872b79a30a199d56146de48ebd4d76b61fae",
@@ -1413,13 +1505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "efc70bb6b4ec4396cd8bc7835323428218f258b2827cf8f404db8a16c3717a0d",
@@ -1430,8 +1522,8 @@
       "name": "Newsmax Inc.",
       "sic": "4833",
       "rawFacts": 2221,
-      "mappedFacts": 516,
-      "unmappedFacts": 1715,
+      "mappedFacts": 554,
+      "unmappedFacts": 1691,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1550,15 +1642,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1741,
+        "total": 1717,
         "by_severity": {
-          "INFO": 1715,
+          "INFO": 1691,
           "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 24,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1715
+          "UNKNOWN_CONCEPT": 1691
         }
       },
       "latestFiling": {
@@ -1569,13 +1661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3a8c3a95777b4fbb042bf22315f93e6f6cd8be59d3efe13f75587bb2f7c4e5dd",

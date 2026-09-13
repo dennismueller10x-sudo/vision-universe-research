@@ -7,8 +7,8 @@
       "name": "HAWKINS INC",
       "sic": "5160",
       "rawFacts": 17947,
-      "mappedFacts": 7157,
-      "unmappedFacts": 11318,
+      "mappedFacts": 7372,
+      "unmappedFacts": 11104,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11769,
+        "total": 11562,
         "by_severity": {
-          "INFO": 11318,
-          "WARNING": 451
+          "INFO": 11104,
+          "WARNING": 458
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 418,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 11318
+          "RESTATEMENT_CONFLICT": 39,
+          "UNKNOWN_CONCEPT": 11104
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9dc182bce22ab2f73af45360f35cc8181452ab1783d486dc8cb457f9e1ca4a2b",
@@ -164,8 +164,8 @@
       "name": "ESTEE LAUDER COMPANIES INC",
       "sic": "2844",
       "rawFacts": 25619,
-      "mappedFacts": 7061,
-      "unmappedFacts": 18956,
+      "mappedFacts": 7280,
+      "unmappedFacts": 18740,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +284,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19439,
+        "total": 19237,
         "by_severity": {
-          "INFO": 18956,
+          "INFO": 18740,
           "ERROR": 1,
-          "WARNING": 482
+          "WARNING": 496
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 414,
+          "CONCEPT_DISAGREEMENT": 417,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 67,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 77,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 18956
+          "UNKNOWN_CONCEPT": 18740
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "56840cc72f24be4a5291d9da8ff5ee82d1f894f538701197388637bc84e10761",
@@ -323,11 +324,54 @@
       "name": "Douglas Emmett Inc",
       "sic": "6798",
       "rawFacts": 22632,
-      "mappedFacts": 5480,
-      "unmappedFacts": 17120,
+      "mappedFacts": 6543,
+      "unmappedFacts": 16334,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2016-12-31",
+          "historyYears": 7.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "DEI"
@@ -443,15 +487,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17808,
+        "total": 17034,
         "by_severity": {
-          "INFO": 17120,
-          "WARNING": 688
+          "INFO": 16334,
+          "WARNING": 700
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 566,
-          "RESTATEMENT_CONFLICT": 122,
-          "UNKNOWN_CONCEPT": 17120
+          "CONCEPT_DISAGREEMENT": 570,
+          "RESTATEMENT_CONFLICT": 130,
+          "UNKNOWN_CONCEPT": 16334
         }
       },
       "latestFiling": {
@@ -462,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a8d995538e1fcc93bf5a9728be91337d8291874e9fd874a0ff9804bb8a20c622",
@@ -619,13 +663,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9d5b7725b16ad42336256b8a2a719d04434e431b9c799d190d24af19fa2142c6",
@@ -637,7 +681,7 @@
       "sic": "4210",
       "rawFacts": 5618,
       "mappedFacts": 1239,
-      "unmappedFacts": 4150,
+      "unmappedFacts": 4147,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -759,13 +803,14 @@
         "rules_version": "1.0.0",
         "total": 4694,
         "by_severity": {
-          "INFO": 4150,
-          "WARNING": 544
+          "INFO": 4147,
+          "WARNING": 547
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 543,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 4150
+          "UNKNOWN_CONCEPT": 4147
         }
       },
       "latestFiling": {
@@ -776,13 +821,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee7eeca7fcde91c18722606c3a7edf80c988e444d8a8a4c76a498b5da8558652",
@@ -793,8 +838,8 @@
       "name": "Kandi Technologies Group, Inc.",
       "sic": "3714",
       "rawFacts": 914,
-      "mappedFacts": 260,
-      "unmappedFacts": 661,
+      "mappedFacts": 261,
+      "unmappedFacts": 657,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -913,15 +958,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 715,
+        "total": 712,
         "by_severity": {
-          "INFO": 661,
-          "WARNING": 54
+          "INFO": 657,
+          "WARNING": 55
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 52,
+          "CONCEPT_DISAGREEMENT": 53,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 661
+          "UNKNOWN_CONCEPT": 657
         }
       },
       "latestFiling": {
@@ -932,13 +977,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d420fc5f44d306fe4c0a6cfedef9bed07e292ea56fb5d5a07e47feb0fafb360f",
@@ -949,8 +994,8 @@
       "name": "Sphere Entertainment Co.",
       "sic": "7900",
       "rawFacts": 11078,
-      "mappedFacts": 2574,
-      "unmappedFacts": 8386,
+      "mappedFacts": 2642,
+      "unmappedFacts": 8340,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1069,15 +1114,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8971,
+        "total": 8925,
         "by_severity": {
-          "INFO": 8386,
+          "INFO": 8340,
           "WARNING": 585
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 380,
           "RESTATEMENT_CONFLICT": 205,
-          "UNKNOWN_CONCEPT": 8386
+          "UNKNOWN_CONCEPT": 8340
         }
       },
       "latestFiling": {
@@ -1088,13 +1133,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b2d2c2a276ae7aa1631c335722ce01eb416147f388cad73608bf004d0a11c77d",

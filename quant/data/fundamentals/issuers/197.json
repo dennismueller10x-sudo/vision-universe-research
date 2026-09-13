@@ -7,8 +7,8 @@
       "name": "CECO ENVIRONMENTAL CORP",
       "sic": "3564",
       "rawFacts": 23824,
-      "mappedFacts": 7189,
-      "unmappedFacts": 17018,
+      "mappedFacts": 7224,
+      "unmappedFacts": 16972,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17550,
+        "total": 17516,
         "by_severity": {
-          "INFO": 17018,
+          "INFO": 16972,
           "ERROR": 1,
-          "WARNING": 531
+          "WARNING": 543
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 489,
+          "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 1,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 17018
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 16972
         }
       },
       "latestFiling": {
@@ -148,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "828cc0da1a9fcfaf71b764b7827ba4b09f8cb5476d52d51eb6ffb0d15829015c",
@@ -165,8 +168,8 @@
       "name": "COMTECH TELECOMMUNICATIONS CORP /DE/",
       "sic": "3663",
       "rawFacts": 26022,
-      "mappedFacts": 7878,
-      "unmappedFacts": 18775,
+      "mappedFacts": 8051,
+      "unmappedFacts": 18580,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +288,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19150,
+        "total": 18977,
         "by_severity": {
-          "INFO": 18775,
-          "WARNING": 375
+          "INFO": 18580,
+          "WARNING": 397
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 337,
+          "PERIOD_MISMATCH": 22,
           "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 18775
+          "UNKNOWN_CONCEPT": 18580
         }
       },
       "latestFiling": {
@@ -304,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ef56d942ebd89567b2c2626394e63f8d13d34ad3fbfc42525723f5c8d232bd61",
@@ -321,8 +325,8 @@
       "name": "PEDEVCO CORP",
       "sic": "1311",
       "rawFacts": 15775,
-      "mappedFacts": 4852,
-      "unmappedFacts": 10771,
+      "mappedFacts": 4857,
+      "unmappedFacts": 10767,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -441,10 +445,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11239,
+        "total": 11235,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10771,
+          "INFO": 10767,
           "WARNING": 467
         },
         "by_code": {
@@ -452,7 +456,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 165,
           "UNEXPECTED_DURATION": 45,
-          "UNKNOWN_CONCEPT": 10771
+          "UNKNOWN_CONCEPT": 10767
         }
       },
       "latestFiling": {
@@ -463,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "da747caaf09504ca91e49bc29787040a60971803f1f6302323e738a79dcab803",
@@ -480,8 +484,8 @@
       "name": "INSULET CORP",
       "sic": "3841",
       "rawFacts": 22796,
-      "mappedFacts": 7097,
-      "unmappedFacts": 16200,
+      "mappedFacts": 7169,
+      "unmappedFacts": 16139,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -600,15 +604,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16548,
+        "total": 16487,
         "by_severity": {
-          "INFO": 16200,
+          "INFO": 16139,
           "WARNING": 348
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 225,
           "RESTATEMENT_CONFLICT": 123,
-          "UNKNOWN_CONCEPT": 16200
+          "UNKNOWN_CONCEPT": 16139
         }
       },
       "latestFiling": {
@@ -619,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bc4b697b26e54316f7392b4532076c41f92ac115cdb4ff4b5846ea450ea8207e",
@@ -636,8 +640,8 @@
       "name": "Interactive Brokers Group, Inc.",
       "sic": "6211",
       "rawFacts": 20615,
-      "mappedFacts": 4679,
-      "unmappedFacts": 15871,
+      "mappedFacts": 4983,
+      "unmappedFacts": 15561,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -756,19 +760,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16661,
+        "total": 16357,
         "by_severity": {
-          "INFO": 15871,
+          "INFO": 15561,
           "ERROR": 9,
-          "WARNING": 781
+          "WARNING": 787
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 592,
           "FUTURE_DATA_LEAK": 9,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 164,
-          "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 15871
+          "UNEXPECTED_DURATION": 29,
+          "UNKNOWN_CONCEPT": 15561
         }
       },
       "latestFiling": {
@@ -779,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3fa95efc53a913e0984e95ccfe1625845e0fa34f964fbcd9293889c25d1ed80b",
@@ -939,13 +943,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5e4497ab582ceced71e140921b87e1d1792ed0380f098be622383661d699d8b8",
@@ -956,8 +960,8 @@
       "name": "Five Point Holdings, LLC",
       "sic": "6500",
       "rawFacts": 10274,
-      "mappedFacts": 2341,
-      "unmappedFacts": 7695,
+      "mappedFacts": 2485,
+      "unmappedFacts": 7623,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -1076,15 +1080,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8067,
+        "total": 7995,
         "by_severity": {
-          "INFO": 7695,
+          "INFO": 7623,
           "WARNING": 372
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 368,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 7695
+          "UNKNOWN_CONCEPT": 7623
         }
       },
       "latestFiling": {
@@ -1095,13 +1099,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c67adc6d81e64677a6816ba5d5f9e8b44ab646ddf904169371467fb6bacd4dff",
@@ -1112,8 +1116,8 @@
       "name": "Latham Group, Inc.",
       "sic": "3089",
       "rawFacts": 7747,
-      "mappedFacts": 2467,
-      "unmappedFacts": 5355,
+      "mappedFacts": 2475,
+      "unmappedFacts": 5347,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1232,9 +1236,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5450,
+        "total": 5442,
         "by_severity": {
-          "INFO": 5355,
+          "INFO": 5347,
           "ERROR": 1,
           "WARNING": 94
         },
@@ -1243,7 +1247,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5355
+          "UNKNOWN_CONCEPT": 5347
         }
       },
       "latestFiling": {
@@ -1254,13 +1258,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "58d9a34dbd9e3432ed0d59bfef82d0021776ceefe5a88c64cff9255f24c472e0",

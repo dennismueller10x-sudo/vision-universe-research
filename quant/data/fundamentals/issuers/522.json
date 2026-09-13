@@ -7,11 +7,54 @@
       "name": "ESSEX PROPERTY TRUST, INC.",
       "sic": "6798",
       "rawFacts": 23593,
-      "mappedFacts": 4931,
-      "unmappedFacts": 17971,
+      "mappedFacts": 6030,
+      "unmappedFacts": 17184,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 12.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ESS"
@@ -127,18 +170,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18963,
+        "total": 18216,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 17971,
-          "WARNING": 990
+          "INFO": 17184,
+          "WARNING": 1030
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 902,
-          "FISCAL_PERIOD_CONFLICT": 6,
+          "CONCEPT_DISAGREEMENT": 920,
+          "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 82,
-          "UNKNOWN_CONCEPT": 17971
+          "RESTATEMENT_CONFLICT": 102,
+          "UNKNOWN_CONCEPT": 17184
         }
       },
       "latestFiling": {
@@ -149,13 +192,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "982a81180538daa0e9d15aef3a463be3ac02fd78504b6ba6e4f64ae0b1a914f7",
@@ -308,13 +351,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c94b612be477a60d3eaaeb25cbdea73643b901a4ffe6fff3a750242c54bfea32",
@@ -325,8 +368,8 @@
       "name": "Freshworks Inc.",
       "sic": "7372",
       "rawFacts": 7749,
-      "mappedFacts": 2020,
-      "unmappedFacts": 5814,
+      "mappedFacts": 2027,
+      "unmappedFacts": 5810,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -445,15 +488,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5888,
+        "total": 5886,
         "by_severity": {
-          "INFO": 5814,
-          "WARNING": 74
+          "INFO": 5810,
+          "WARNING": 76
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 71,
-          "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 5814
+          "RESTATEMENT_CONFLICT": 5,
+          "UNKNOWN_CONCEPT": 5810
         }
       },
       "latestFiling": {
@@ -464,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a22cda9ef62f5b481e5cb3a00ccc800aff253d3fd352ce7e1472ddaa651192db",
@@ -481,8 +524,8 @@
       "name": "Neumora Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 2599,
-      "mappedFacts": 937,
-      "unmappedFacts": 1703,
+      "mappedFacts": 968,
+      "unmappedFacts": 1684,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -600,14 +643,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1713,
+        "total": 1694,
         "by_severity": {
-          "INFO": 1703,
+          "INFO": 1684,
           "WARNING": 10
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 10,
-          "UNKNOWN_CONCEPT": 1703
+          "UNKNOWN_CONCEPT": 1684
         }
       },
       "latestFiling": {
@@ -618,13 +661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "30e7829a0060886f4dc6026736b8cbbfbac20667243b27d1f77a93d35f6a3e4e",
@@ -774,13 +817,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0fd5ea1baaf60000a393f42be972d70c2a7e134b1fe1a2cfef1a6c5d986df4de",

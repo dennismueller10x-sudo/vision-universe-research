@@ -1,13 +1,13 @@
 {
   "note": "Wodurch entstehen die SEC_RECOVERABLE-Luecken? Die Reihenfolge hier ist die Reihenfolge der naechsten Arbeit - gemessen, nicht vermutet. NICHTS davon wurde repariert.",
   "denominator": {
-    "SEC_RECOVERABLE": 191
+    "SEC_RECOVERABLE": 161
   },
   "byCause": [
     {
       "cause": "IFRS_OR_FOREIGN_TAXONOMY",
       "count": 22,
-      "percent": 11.5183,
+      "percent": 13.6646,
       "formTypes": {
         "20-F": 19,
         "40-F": 2,
@@ -42,59 +42,9 @@
       ]
     },
     {
-      "cause": "MISSING_CANONICAL_TAG_MAPPING",
-      "count": 29,
-      "percent": 15.1832,
-      "formTypes": {
-        "10-Q": 29
-      },
-      "examples": [
-        {
-          "symbol": "ACGC",
-          "cik": "0002111542",
-          "form": "10-Q"
-        },
-        {
-          "symbol": "ALPX",
-          "cik": "0002125551",
-          "form": "10-Q"
-        },
-        {
-          "symbol": "AMAN",
-          "cik": "0002112457",
-          "form": "10-Q"
-        },
-        {
-          "symbol": "ATLQ",
-          "cik": "0002128739",
-          "form": "10-Q"
-        },
-        {
-          "symbol": "BCCQ",
-          "cik": "0002128045",
-          "form": "10-Q"
-        }
-      ]
-    },
-    {
-      "cause": "PERIOD_MAPPING",
-      "count": 1,
-      "percent": 0.5236,
-      "formTypes": {
-        "10-Q": 1
-      },
-      "examples": [
-        {
-          "symbol": "JMKE",
-          "cik": "0002127043",
-          "form": "10-Q"
-        }
-      ]
-    },
-    {
       "cause": "OTHER_SEC_RECOVERABLE",
       "count": 139,
-      "percent": 72.7749,
+      "percent": 86.3354,
       "formTypes": {
         "KEINE_EINREICHUNG": 136,
         "10-Q": 3
@@ -131,14 +81,14 @@
   "largestBlock": "OTHER_SEC_RECOVERABLE",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.8.0",
+    "normalization_logic": "1.9.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.4.0"
+      "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T16:19:59+00:00"
+  "generatedAtUtc": "2026-09-13T18:28:25+00:00"
 }

@@ -7,8 +7,8 @@
       "name": "BRC Group Holdings, Inc.",
       "sic": "6282",
       "rawFacts": 27973,
-      "mappedFacts": 6991,
-      "unmappedFacts": 20505,
+      "mappedFacts": 7074,
+      "unmappedFacts": 20451,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -133,11 +133,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21804,
+        "total": 21752,
         "by_severity": {
-          "INFO": 20505,
+          "INFO": 20451,
           "ERROR": 5,
-          "WARNING": 1294
+          "WARNING": 1296
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1060,
@@ -145,8 +145,8 @@
           "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 222,
-          "UNKNOWN_CONCEPT": 20505
+          "RESTATEMENT_CONFLICT": 224,
+          "UNKNOWN_CONCEPT": 20451
         }
       },
       "latestFiling": {
@@ -157,13 +157,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee2147e35f1f1154c4e32272dd0ae4a4786056cbc266fee917cc1a2eabf6f8e1",
@@ -174,8 +174,8 @@
       "name": "ENERGIZER HOLDINGS, INC.",
       "sic": "3690",
       "rawFacts": 18514,
-      "mappedFacts": 5168,
-      "unmappedFacts": 13586,
+      "mappedFacts": 5213,
+      "unmappedFacts": 13493,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -294,19 +294,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14058,
+        "total": 14013,
         "by_severity": {
-          "INFO": 13586,
+          "INFO": 13493,
           "ERROR": 4,
-          "WARNING": 468
+          "WARNING": 516
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 426,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 4,
-          "PERIOD_MISMATCH": 19,
+          "PERIOD_MISMATCH": 64,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 13586
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 13493
         }
       },
       "latestFiling": {
@@ -317,13 +318,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f7def2f9600177211aa0178b1ae92e56bc15c7718cbbe96fd57eec27f7f67684",
@@ -334,8 +335,8 @@
       "name": "Amcor plc",
       "sic": "3990",
       "rawFacts": 14070,
-      "mappedFacts": 3456,
-      "unmappedFacts": 10500,
+      "mappedFacts": 3549,
+      "unmappedFacts": 10407,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -455,16 +456,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10850,
+        "total": 10763,
         "by_severity": {
-          "INFO": 10500,
-          "WARNING": 350
+          "INFO": 10407,
+          "WARNING": 356
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 290,
-          "RESTATEMENT_CONFLICT": 54,
+          "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 10500
+          "UNKNOWN_CONCEPT": 10407
         }
       },
       "latestFiling": {
@@ -475,13 +476,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "385fb242af498f5f34f0bcdfec4a9149798fbff717d3e247ea05c4e4b52934a9",
@@ -492,8 +493,8 @@
       "name": "Tarsus Pharmaceuticals, Inc.",
       "sic": "2836",
       "rawFacts": 8316,
-      "mappedFacts": 2241,
-      "unmappedFacts": 6131,
+      "mappedFacts": 2311,
+      "unmappedFacts": 6079,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -612,15 +613,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6182,
+        "total": 6130,
         "by_severity": {
-          "INFO": 6131,
+          "INFO": 6079,
           "WARNING": 51
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 46,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 6131
+          "UNKNOWN_CONCEPT": 6079
         }
       },
       "latestFiling": {
@@ -631,13 +632,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a0d06303489dda88e13b8d79366a4074e1f24d88ee77aebc8ac3c25d82312f12",

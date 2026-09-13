@@ -7,8 +7,8 @@
       "name": "ADVANCE AUTO PARTS INC",
       "sic": "5531",
       "rawFacts": 23418,
-      "mappedFacts": 6937,
-      "unmappedFacts": 16049,
+      "mappedFacts": 7085,
+      "unmappedFacts": 15873,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17535,
+        "total": 17387,
         "by_severity": {
-          "INFO": 16049,
-          "WARNING": 1486
+          "INFO": 15873,
+          "WARNING": 1514
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 463,
           "RESTATEMENT_CONFLICT": 167,
-          "UNEXPECTED_DURATION": 856,
-          "UNKNOWN_CONCEPT": 16049
+          "UNEXPECTED_DURATION": 884,
+          "UNKNOWN_CONCEPT": 15873
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5026789046f31c755ce149abc2d3a0459df30bd30492cd09d724c5fba7197563",
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "59aeac784d1044c52f2cc13ab998e7e0367ba86bcb546cf5b2328b95e6d67848",
@@ -320,11 +320,75 @@
       "name": "Skyward Specialty Insurance Group, Inc.",
       "sic": "6331",
       "rawFacts": 7876,
-      "mappedFacts": 1216,
-      "unmappedFacts": 6622,
+      "mappedFacts": 1662,
+      "unmappedFacts": 6289,
       "calendarYears": 6,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "claims_liability": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "total_investments": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "SKWD"
@@ -440,15 +504,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6812,
+        "total": 6479,
         "by_severity": {
-          "INFO": 6622,
+          "INFO": 6289,
           "WARNING": 190
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 165,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 6622
+          "UNKNOWN_CONCEPT": 6289
         }
       },
       "latestFiling": {
@@ -459,13 +523,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b532f52fdea4e78a095b1b17999b7629e5e6584c23644d4edaae8aa83857f212",

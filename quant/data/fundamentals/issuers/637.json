@@ -7,8 +7,8 @@
       "name": "NEWMARKET CORP",
       "sic": "2860",
       "rawFacts": 22891,
-      "mappedFacts": 6867,
-      "unmappedFacts": 16384,
+      "mappedFacts": 7096,
+      "unmappedFacts": 16159,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16593,
+        "total": 16368,
         "by_severity": {
-          "INFO": 16384,
+          "INFO": 16159,
           "ERROR": 1,
           "WARNING": 208
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 186,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 16384
+          "UNKNOWN_CONCEPT": 16159
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9f559d251c59795931891e0e347024b9d58ba22ae4d3ad3c23ecd047d0051e83",
@@ -165,8 +165,8 @@
       "name": "ETSY INC",
       "sic": "7389",
       "rawFacts": 16876,
-      "mappedFacts": 5003,
-      "unmappedFacts": 12124,
+      "mappedFacts": 5077,
+      "unmappedFacts": 12079,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +285,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12380,
+        "total": 12341,
         "by_severity": {
-          "INFO": 12124,
-          "WARNING": 256
+          "INFO": 12079,
+          "WARNING": 262
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 225,
-          "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 12124
+          "RESTATEMENT_CONFLICT": 37,
+          "UNKNOWN_CONCEPT": 12079
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d368afc2d5fa4dba19000c85870fbdc7c0fabc7bd308cd2e5a7ebcd83e3b2fe0",
@@ -321,8 +321,8 @@
       "name": "RYTHM, Inc.",
       "sic": "0700",
       "rawFacts": 10302,
-      "mappedFacts": 2815,
-      "unmappedFacts": 7416,
+      "mappedFacts": 2846,
+      "unmappedFacts": 7393,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -441,9 +441,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7893,
+        "total": 7870,
         "by_severity": {
-          "INFO": 7416,
+          "INFO": 7393,
           "ERROR": 3,
           "WARNING": 474
         },
@@ -452,7 +452,7 @@
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 171,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7416
+          "UNKNOWN_CONCEPT": 7393
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "febce1c1c733f6d1f435cfa2d9796e303f5585c65133cd6d4b14ddd958045c87",
@@ -480,14 +480,105 @@
       "name": "USCB FINANCIAL HOLDINGS, INC.",
       "sic": "6022",
       "rawFacts": 7818,
-      "mappedFacts": 1035,
-      "unmappedFacts": 6825,
+      "mappedFacts": 1663,
+      "unmappedFacts": 6321,
       "calendarYears": 6,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
         "net_interest_income": {
           "annualPeriods": 6,
           "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
+        "time_deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -608,14 +699,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6834,
+        "total": 6330,
         "by_severity": {
-          "INFO": 6825,
+          "INFO": 6321,
           "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 9,
-          "UNKNOWN_CONCEPT": 6825
+          "UNKNOWN_CONCEPT": 6321
         }
       },
       "latestFiling": {
@@ -626,13 +717,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "207b780e67338f8a4da39725fffb65264fdfa29953edc3ab830e37b7fe2b369d",
@@ -643,8 +734,8 @@
       "name": "iOThree Ltd",
       "sic": "4899",
       "rawFacts": 937,
-      "mappedFacts": 313,
-      "unmappedFacts": 684,
+      "mappedFacts": 320,
+      "unmappedFacts": 677,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -763,15 +854,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 705,
+        "total": 702,
         "by_severity": {
-          "INFO": 684,
-          "WARNING": 21
+          "INFO": 677,
+          "WARNING": 25
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 15,
+          "CONCEPT_DISAGREEMENT": 19,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 684
+          "UNKNOWN_CONCEPT": 677
         }
       },
       "latestFiling": {
@@ -782,13 +873,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2f10b6347f4aa3a4290c3aba82da149bc06d8bcd6595fc2a40d48c42d71eb9cf",

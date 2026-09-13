@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f59e6a683517dcad28438ecbf8ecbbe2a9131eb78a526de3b531d29f9b42358",
@@ -163,8 +163,8 @@
       "name": "Huntsman CORP",
       "sic": "2800",
       "rawFacts": 29404,
-      "mappedFacts": 8076,
-      "unmappedFacts": 20297,
+      "mappedFacts": 8194,
+      "unmappedFacts": 20173,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,18 +283,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22498,
+        "total": 22380,
         "by_severity": {
-          "INFO": 20297,
+          "INFO": 20173,
           "ERROR": 1,
-          "WARNING": 2200
+          "WARNING": 2206
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1968,
           "FUTURE_DATA_LEAK": 1,
+          "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 177,
           "UNEXPECTED_DURATION": 55,
-          "UNKNOWN_CONCEPT": 20297
+          "UNKNOWN_CONCEPT": 20173
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "683b90eecaceed51c351cae2be22ce02cf499d127380f80c52c2e7674b7a08a7",
@@ -322,8 +323,8 @@
       "name": "CHEGG, INC",
       "sic": "8200",
       "rawFacts": 17790,
-      "mappedFacts": 5644,
-      "unmappedFacts": 12265,
+      "mappedFacts": 5704,
+      "unmappedFacts": 12216,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +443,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12488,
+        "total": 12439,
         "by_severity": {
-          "INFO": 12265,
+          "INFO": 12216,
           "WARNING": 223
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 220,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 12265
+          "UNKNOWN_CONCEPT": 12216
         }
       },
       "latestFiling": {
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b2c47a78c9a5b39bbdc8408af869955b6068f3b57246cba42d3c6aa7e4cbf37d",
@@ -617,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "799dff43c98ba847e08d39cb95a715479dc3da2481ce62596e4a802b20c8503d",
@@ -771,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e9219837940964c9a113cfe38025cdc39d7fcae58be29907b82d50b25964abcd",
@@ -925,13 +926,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "530a01a64a277de47be972f3c84b61e3def3fda5e781f76df1448c9c4e6e6cf3",
@@ -1081,13 +1082,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bc135fecbeca1dd47aa8bcfa5b18e7edc3345f179278f1a4afd0cae158bce32a",
@@ -1236,13 +1237,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e335d34ad57487f6ce65d69e4746ce498735935a13291667366cfe9bc51aa64c",
@@ -1395,13 +1396,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "46ce490930ccd237327be198f1808ac575237c7752bc600bc83c525cda77ee61",

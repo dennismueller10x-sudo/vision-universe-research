@@ -7,11 +7,75 @@
       "name": "CINCINNATI FINANCIAL CORP",
       "sic": "6331",
       "rawFacts": 28524,
-      "mappedFacts": 5201,
-      "unmappedFacts": 23691,
+      "mappedFacts": 7726,
+      "unmappedFacts": 21744,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CINF"
@@ -126,9 +190,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23848,
+        "total": 21901,
         "by_severity": {
-          "INFO": 23691,
+          "INFO": 21744,
           "WARNING": 157
         },
         "by_code": {
@@ -136,7 +200,7 @@
           "EXTREME_VALUE": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 23691
+          "UNKNOWN_CONCEPT": 21744
         }
       },
       "latestFiling": {
@@ -147,13 +211,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4cc4413a12b7b410f207eba5a015d4454167f809d8c434ca43bd54923883171b",
@@ -303,13 +367,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e1845c90d5baac628b287422c3aa164127fbf08bf5728bbebd5d6f2d9542c0a2",
@@ -320,8 +384,8 @@
       "name": "MARRIOTT INTERNATIONAL INC /MD/",
       "sic": "7011",
       "rawFacts": 21057,
-      "mappedFacts": 6878,
-      "unmappedFacts": 14572,
+      "mappedFacts": 7034,
+      "unmappedFacts": 14423,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -440,16 +504,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15162,
+        "total": 15022,
         "by_severity": {
-          "INFO": 14572,
-          "WARNING": 590
+          "INFO": 14423,
+          "WARNING": 599
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 420,
+          "CONCEPT_DISAGREEMENT": 428,
           "EXTREME_VALUE": 1,
-          "RESTATEMENT_CONFLICT": 169,
-          "UNKNOWN_CONCEPT": 14572
+          "RESTATEMENT_CONFLICT": 170,
+          "UNKNOWN_CONCEPT": 14423
         }
       },
       "latestFiling": {
@@ -460,13 +524,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "48d0676cd7148ae6d3f1665ff534461dfc0fed641d2fc4604a60a2ac8723dfba",
@@ -617,13 +681,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f748e6b51da3b0e0dfb0034f4fbd3cdd70bfcda6840263b00b213cbed26faeb5",
@@ -771,13 +835,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dff90635563722ff54ee46202431fc2d7795875429654742b46226a3ff7d9783",
@@ -927,13 +991,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fa44fe9c3903d3382c4b60fddeb9ab5e2ed950d345d36288f0343b5c3cd74da2",
@@ -1086,13 +1150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "64ebb52f276f7646c1e5d2c843798723e9b3ecc95729d4d9e635e01f03993121",
@@ -1241,13 +1305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dc717d21c1d8bbc86758ddc24730484a2a20a8efd273a258ffebf75aedde0354",

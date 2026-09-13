@@ -7,8 +7,8 @@
       "name": "CINTAS CORP",
       "sic": "2320",
       "rawFacts": 22990,
-      "mappedFacts": 7359,
-      "unmappedFacts": 16000,
+      "mappedFacts": 7692,
+      "unmappedFacts": 15729,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16517,
+        "total": 16255,
         "by_severity": {
-          "INFO": 16000,
-          "WARNING": 517
+          "INFO": 15729,
+          "WARNING": 526
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 444,
-          "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 16000
+          "RESTATEMENT_CONFLICT": 82,
+          "UNKNOWN_CONCEPT": 15729
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fec797982cee75f48c3c6c26c3d53f52f00c7c6f16714a4b3f7bf0f3f4eda23a",
@@ -163,11 +163,54 @@
       "name": "SAUL CENTERS, INC.",
       "sic": "6798",
       "rawFacts": 20973,
-      "mappedFacts": 4739,
-      "unmappedFacts": 15629,
+      "mappedFacts": 5856,
+      "unmappedFacts": 14776,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BFS",
@@ -285,16 +328,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16438,
+        "total": 15750,
         "by_severity": {
-          "INFO": 15629,
-          "WARNING": 809
+          "INFO": 14776,
+          "WARNING": 974
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 734,
+          "CONCEPT_DISAGREEMENT": 857,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 74,
-          "UNKNOWN_CONCEPT": 15629
+          "RESTATEMENT_CONFLICT": 102,
+          "UNEXPECTED_DURATION": 14,
+          "UNKNOWN_CONCEPT": 14776
         }
       },
       "latestFiling": {
@@ -305,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5267f91381b06347eb6d84f73821b74e95ddfe193a8f369bb7ceaaa67ee85077",
@@ -322,8 +366,8 @@
       "name": "CION Investment Corp",
       "sic": null,
       "rawFacts": 6656,
-      "mappedFacts": 1358,
-      "unmappedFacts": 5353,
+      "mappedFacts": 1578,
+      "unmappedFacts": 5132,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -443,16 +487,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5381,
+        "total": 5161,
         "by_severity": {
-          "INFO": 5353,
-          "WARNING": 28
+          "INFO": 5132,
+          "WARNING": 29
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 19,
-          "PERIOD_MISMATCH": 1,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 5353
+          "UNKNOWN_CONCEPT": 5132
         }
       },
       "latestFiling": {
@@ -463,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "daf74e99368dd3028e8ebf2f669632178d273baa1564243a4f2159042d130b23",
@@ -620,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e76681a52db336226d3be906a56a89bc77a413d8da06c514507c4669627342c8",
@@ -777,13 +821,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9554b619d0781a737bc20de2da239778eb2a21c788db8fc08ee833e135d08132",

@@ -7,8 +7,8 @@
       "name": "V F CORP",
       "sic": "2320",
       "rawFacts": 34439,
-      "mappedFacts": 7954,
-      "unmappedFacts": 26242,
+      "mappedFacts": 7986,
+      "unmappedFacts": 26210,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27609,
+        "total": 27577,
         "by_severity": {
-          "INFO": 26242,
+          "INFO": 26210,
           "WARNING": 1367
         },
         "by_code": {
@@ -137,7 +137,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 410,
           "UNIT_MISMATCH": 16,
-          "UNKNOWN_CONCEPT": 26242
+          "UNKNOWN_CONCEPT": 26210
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c7b939fb784f4d9d5d5d8e8717f0a1f3e7972f3a0b19668749a67df354bd54f3",
@@ -165,8 +165,8 @@
       "name": "HACKETT GROUP, INC.",
       "sic": "8742",
       "rawFacts": 17273,
-      "mappedFacts": 6435,
-      "unmappedFacts": 10686,
+      "mappedFacts": 6481,
+      "unmappedFacts": 10622,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +285,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11500,
+        "total": 11453,
         "by_severity": {
-          "INFO": 10686,
-          "WARNING": 814
+          "INFO": 10622,
+          "WARNING": 831
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 610,
+          "CONCEPT_DISAGREEMENT": 612,
           "FISCAL_PERIOD_CONFLICT": 8,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 196,
-          "UNKNOWN_CONCEPT": 10686
+          "UNEXPECTED_DURATION": 14,
+          "UNKNOWN_CONCEPT": 10622
         }
       },
       "latestFiling": {
@@ -305,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "acb9ea19db3f0aa560bfacef04921f7930cf6ae8d33fadc4d8f85b26bccd9954",
@@ -462,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1636972ecc5eeaff42409b56bad7f0968a7aa006ed0f7b56e8f41e0b4452b3b7",
@@ -479,8 +481,8 @@
       "name": "Caesarstone Ltd.",
       "sic": "3281",
       "rawFacts": 7108,
-      "mappedFacts": 1630,
-      "unmappedFacts": 5649,
+      "mappedFacts": 1632,
+      "unmappedFacts": 5647,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +601,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5799,
+        "total": 5797,
         "by_severity": {
-          "INFO": 5649,
+          "INFO": 5647,
           "WARNING": 150
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 146,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5649
+          "UNKNOWN_CONCEPT": 5647
         }
       },
       "latestFiling": {
@@ -618,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3632986bfbcb757aaa62e5313f88744eca1d8a397ea17b9a3e67d12dbc19c7f9",
@@ -774,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "750924d0f9c3e4d533e743fe4ee8f070c97ed71b75cfbba3f2f80fade2a7edde",

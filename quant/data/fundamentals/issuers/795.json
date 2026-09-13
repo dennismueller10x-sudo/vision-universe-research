@@ -7,8 +7,8 @@
       "name": "BECTON DICKINSON & CO",
       "sic": "3841",
       "rawFacts": 22484,
-      "mappedFacts": 7584,
-      "unmappedFacts": 15315,
+      "mappedFacts": 7802,
+      "unmappedFacts": 15097,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15991,
+        "total": 15774,
         "by_severity": {
-          "INFO": 15315,
+          "INFO": 15097,
           "ERROR": 14,
-          "WARNING": 662
+          "WARNING": 663
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 521,
-          "FISCAL_PERIOD_CONFLICT": 14,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "FUTURE_DATA_LEAK": 14,
           "RESTATEMENT_CONFLICT": 127,
-          "UNKNOWN_CONCEPT": 15315
+          "UNKNOWN_CONCEPT": 15097
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6d74df28ad50ff01f28b9e75110d3cb504da6f30128c5c1eb1b50bb767d44082",
@@ -166,11 +166,54 @@
       "name": "CTO Realty Growth, Inc.",
       "sic": "6798",
       "rawFacts": 23967,
-      "mappedFacts": 5998,
-      "unmappedFacts": 17626,
+      "mappedFacts": 6509,
+      "unmappedFacts": 17274,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2011-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CTO",
@@ -287,19 +330,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18425,
+        "total": 18101,
         "by_severity": {
-          "INFO": 17626,
-          "WARNING": 799
+          "INFO": 17274,
+          "WARNING": 827
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 573,
+          "CONCEPT_DISAGREEMENT": 599,
           "EXTREME_VALUE": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 216,
+          "RESTATEMENT_CONFLICT": 218,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 17626
+          "UNKNOWN_CONCEPT": 17274
         }
       },
       "latestFiling": {
@@ -310,13 +353,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "09772eef72bc42b49879926e8cc3d463d2beca05474af10136267269a712777b",
@@ -327,8 +370,8 @@
       "name": "HELIOS TECHNOLOGIES, INC.",
       "sic": "3490",
       "rawFacts": 20782,
-      "mappedFacts": 6601,
-      "unmappedFacts": 14710,
+      "mappedFacts": 6958,
+      "unmappedFacts": 14341,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -447,18 +490,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15080,
+        "total": 14728,
         "by_severity": {
-          "INFO": 14710,
+          "INFO": 14341,
           "ERROR": 1,
-          "WARNING": 369
+          "WARNING": 386
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 239,
-          "FISCAL_PERIOD_CONFLICT": 17,
+          "CONCEPT_DISAGREEMENT": 248,
+          "FISCAL_PERIOD_CONFLICT": 18,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 113,
-          "UNKNOWN_CONCEPT": 14710
+          "RESTATEMENT_CONFLICT": 118,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 14341
         }
       },
       "latestFiling": {
@@ -469,13 +513,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "00c4e5d8794b350129389f4af8bd50f39a754548929b25abf08fdec3a62585a3",
@@ -625,13 +669,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee550f1ddfd7e729adf6bde8875ca1e44b68af3c1bdb447f2b426f7e55f36215",
@@ -781,13 +825,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5509e64466879366e077ddb2a9924f25469441c5a679d57f6ee73586b30ea802",
@@ -798,8 +842,8 @@
       "name": "Definitive Healthcare Corp.",
       "sic": "7372",
       "rawFacts": 8437,
-      "mappedFacts": 2592,
-      "unmappedFacts": 5953,
+      "mappedFacts": 2647,
+      "unmappedFacts": 5918,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -918,9 +962,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6142,
+        "total": 6107,
         "by_severity": {
-          "INFO": 5953,
+          "INFO": 5918,
           "ERROR": 1,
           "WARNING": 188
         },
@@ -928,7 +972,7 @@
           "CONCEPT_DISAGREEMENT": 157,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 5953
+          "UNKNOWN_CONCEPT": 5918
         }
       },
       "latestFiling": {
@@ -939,13 +983,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "12870e330cf1441afd61da2209008f39d323866b6eeb5c375292f504ec680d91",
@@ -1096,13 +1140,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e1e849a0ee55fbc43ff0f9ad8425e979bad8dc9750b9a91ee9308e11466714e2",
@@ -1113,8 +1157,8 @@
       "name": "Uniti Group Inc.",
       "sic": "4813",
       "rawFacts": 1689,
-      "mappedFacts": 430,
-      "unmappedFacts": 1261,
+      "mappedFacts": 433,
+      "unmappedFacts": 1258,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1233,15 +1277,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1300,
+        "total": 1297,
         "by_severity": {
-          "INFO": 1261,
+          "INFO": 1258,
           "WARNING": 39
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 35,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 1261
+          "UNKNOWN_CONCEPT": 1258
         }
       },
       "latestFiling": {
@@ -1252,13 +1296,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a07e4f9fe99ee8c656ca3f422665f33a87fe6b9a958c6adb9fd1032eb63d62c3",

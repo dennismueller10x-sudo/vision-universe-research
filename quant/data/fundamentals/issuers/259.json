@@ -7,8 +7,8 @@
       "name": "FREEPORT-MCMORAN INC",
       "sic": "1000",
       "rawFacts": 27816,
-      "mappedFacts": 7055,
-      "unmappedFacts": 20695,
+      "mappedFacts": 7280,
+      "unmappedFacts": 20447,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22078,
+        "total": 21864,
         "by_severity": {
-          "INFO": 20695,
-          "WARNING": 1383
+          "INFO": 20447,
+          "WARNING": 1417
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1087,
+          "CONCEPT_DISAGREEMENT": 1094,
           "FISCAL_PERIOD_CONFLICT": 27,
-          "RESTATEMENT_CONFLICT": 263,
-          "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 20695
+          "PERIOD_MISMATCH": 18,
+          "RESTATEMENT_CONFLICT": 270,
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 20447
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9776aa2c09f296910ff592dca70349d3b8a1515a539d8996e68a76a1a386141f",
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6d9989bfc15b80776baab315da569da8161f9f3130be569f1c74d5d044435ff9",
@@ -321,8 +322,8 @@
       "name": "CarGurus, Inc.",
       "sic": "7374",
       "rawFacts": 11947,
-      "mappedFacts": 3742,
-      "unmappedFacts": 8246,
+      "mappedFacts": 3748,
+      "unmappedFacts": 8243,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -441,15 +442,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8526,
+        "total": 8523,
         "by_severity": {
-          "INFO": 8246,
+          "INFO": 8243,
           "WARNING": 280
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 225,
           "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 8246
+          "UNKNOWN_CONCEPT": 8243
         }
       },
       "latestFiling": {
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dab482a2e2f42b8943c7cf64c26d601ae8a65241d65f29bf91028a929c263ea3",
@@ -616,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "027760dda87dc99087e6e4c100593a5c08bf2794fba2b1e68748f3305ef4faba",
@@ -772,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "78dafe9a0ad1d49542eff1623fad672ec6be71e7e963eaa5aa27e117a59b3fb2",

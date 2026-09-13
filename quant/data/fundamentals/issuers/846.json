@@ -7,11 +7,54 @@
       "name": "BRT Apartments Corp.",
       "sic": "6798",
       "rawFacts": 18572,
-      "mappedFacts": 4597,
-      "unmappedFacts": 13639,
+      "mappedFacts": 5478,
+      "unmappedFacts": 13007,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 13.25
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.25
+        },
+        "real_estate_gross": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2013-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.25
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.25
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BRT"
@@ -127,15 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14478,
+        "total": 13886,
         "by_severity": {
-          "INFO": 13639,
-          "WARNING": 839
+          "INFO": 13007,
+          "WARNING": 879
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 640,
-          "RESTATEMENT_CONFLICT": 199,
-          "UNKNOWN_CONCEPT": 13639
+          "CONCEPT_DISAGREEMENT": 648,
+          "PERIOD_MISMATCH": 8,
+          "RESTATEMENT_CONFLICT": 223,
+          "UNKNOWN_CONCEPT": 13007
         }
       },
       "latestFiling": {
@@ -146,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c34b2cc43a8a70f3396f6cc2ae598e54349ea5ece84497dc6a35cbb6121899cc",
@@ -298,13 +342,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f1396b4909a91f3490c4ebcfc3f61cfa6f8433d1e46f6f116fd6e9849b621e1",
@@ -315,8 +359,8 @@
       "name": "Greenpro Capital Corp.",
       "sic": "8742",
       "rawFacts": 13634,
-      "mappedFacts": 4165,
-      "unmappedFacts": 9355,
+      "mappedFacts": 4444,
+      "unmappedFacts": 9189,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -435,20 +479,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9968,
+        "total": 9812,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 9355,
-          "WARNING": 612
+          "INFO": 9189,
+          "WARNING": 622
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 413,
+          "CONCEPT_DISAGREEMENT": 415,
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 159,
+          "RESTATEMENT_CONFLICT": 167,
           "UNEXPECTED_DURATION": 28,
-          "UNKNOWN_CONCEPT": 9355
+          "UNKNOWN_CONCEPT": 9189
         }
       },
       "latestFiling": {
@@ -459,13 +503,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3c664591c004cbaf3c3a0100a4c91d997e465ab0342717899c41b3a0350a60da",
@@ -616,13 +660,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8b9711372ff28a8734febce4ff657011fad9e781013ef0dca7244cdbde054508",
@@ -778,13 +822,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1f0ae54ce22992d5ed8d72fab1fbfa255f673a28b39aa5c5bc8b7d3ae1565c79",
@@ -933,13 +977,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d2aa9bbe1eab6e9fd6a4d4930ab86581ddfe5093baf1ccf253167fa679e85688",
@@ -1088,13 +1132,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "660483d38a5bcfb9e658dc4f8cf17f12aa8b8e351eca9d1e7629167a18fcd604",

@@ -7,8 +7,8 @@
       "name": "ManpowerGroup Inc.",
       "sic": "7363",
       "rawFacts": 22589,
-      "mappedFacts": 7539,
-      "unmappedFacts": 15400,
+      "mappedFacts": 7588,
+      "unmappedFacts": 15300,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,20 +127,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16018,
+        "total": 15969,
         "by_severity": {
-          "INFO": 15400,
+          "INFO": 15300,
           "ERROR": 14,
-          "WARNING": 604
+          "WARNING": 655
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 520,
           "EXTREME_VALUE": 3,
           "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 14,
-          "PERIOD_MISMATCH": 9,
+          "PERIOD_MISMATCH": 56,
           "RESTATEMENT_CONFLICT": 71,
-          "UNKNOWN_CONCEPT": 15400
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 15300
         }
       },
       "latestFiling": {
@@ -151,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "960bd9fe57e4d1e3ecbf16a4977a512044f0c43e57cafaa80276418b454c1b21",
@@ -310,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1be3255307ba2d079bcbbce43423e36f82a091a522eacf4456009e0349b01072",
@@ -467,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "53b27fe879351d9401c261d7fb925c09faf86b41f9368cdf73d6c82d6e1741a0",
@@ -484,8 +485,8 @@
       "name": "DataMeds AI, Inc.",
       "sic": "5122",
       "rawFacts": 1763,
-      "mappedFacts": 646,
-      "unmappedFacts": 1143,
+      "mappedFacts": 647,
+      "unmappedFacts": 1142,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -604,16 +605,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1250,
+        "total": 1249,
         "by_severity": {
-          "INFO": 1143,
+          "INFO": 1142,
           "WARNING": 107
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 92,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 1143
+          "UNKNOWN_CONCEPT": 1142
         }
       },
       "latestFiling": {
@@ -624,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8f47def6e16c26530db22882df0f3359bb27f3828dfaf4780ea94bb05785948d",

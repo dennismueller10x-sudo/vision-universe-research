@@ -7,8 +7,8 @@
       "name": "VAALCO ENERGY INC /DE/",
       "sic": "1311",
       "rawFacts": 21207,
-      "mappedFacts": 5556,
-      "unmappedFacts": 15496,
+      "mappedFacts": 5562,
+      "unmappedFacts": 15490,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16106,
+        "total": 16100,
         "by_severity": {
-          "INFO": 15496,
+          "INFO": 15490,
           "WARNING": 610
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 533,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 15496
+          "UNKNOWN_CONCEPT": 15490
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "17b305ebfde2708061d6c985e78acb16ee248d5efd7a28843f438cb9c63469ec",
@@ -164,8 +164,8 @@
       "name": "AXT INC",
       "sic": "3674",
       "rawFacts": 23251,
-      "mappedFacts": 6601,
-      "unmappedFacts": 16422,
+      "mappedFacts": 6797,
+      "unmappedFacts": 16303,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +284,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17024,
+        "total": 16905,
         "by_severity": {
-          "INFO": 16422,
+          "INFO": 16303,
           "ERROR": 1,
           "WARNING": 601
         },
@@ -295,7 +295,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 50,
-          "UNKNOWN_CONCEPT": 16422
+          "UNKNOWN_CONCEPT": 16303
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ec7c61446a04067395f31f0230c25b7d5a66ab57a38e49e605c0bffed8ed17ea",
@@ -323,11 +323,75 @@
       "name": "KINGSWAY Corp",
       "sic": "6331",
       "rawFacts": 32941,
-      "mappedFacts": 5413,
-      "unmappedFacts": 26815,
+      "mappedFacts": 6513,
+      "unmappedFacts": 26018,
       "calendarYears": 16,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 3.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 10.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_investments": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 6.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "KWY"
@@ -443,21 +507,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28162,
+        "total": 27411,
         "by_severity": {
-          "INFO": 26815,
+          "INFO": 26018,
           "ERROR": 16,
-          "WARNING": 1331
+          "WARNING": 1377
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1006,
-          "FISCAL_PERIOD_CONFLICT": 7,
+          "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 16,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 312,
+          "RESTATEMENT_CONFLICT": 357,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 26815
+          "UNKNOWN_CONCEPT": 26018
         }
       },
       "latestFiling": {
@@ -468,13 +532,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "21a6e591b7be4f2143507f9226fba219b36373ccd2679b23693da36c916dddfe",
@@ -485,8 +549,8 @@
       "name": "Opus Genetics, Inc.",
       "sic": "2834",
       "rawFacts": 14483,
-      "mappedFacts": 4209,
-      "unmappedFacts": 10389,
+      "mappedFacts": 4220,
+      "unmappedFacts": 10380,
       "calendarYears": 24,
       "industry": null,
       "industryMetrics": {},
@@ -604,9 +668,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10640,
+        "total": 10631,
         "by_severity": {
-          "INFO": 10389,
+          "INFO": 10380,
           "ERROR": 1,
           "WARNING": 250
         },
@@ -615,7 +679,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 93,
           "UNEXPECTED_DURATION": 119,
-          "UNKNOWN_CONCEPT": 10389
+          "UNKNOWN_CONCEPT": 10380
         }
       },
       "latestFiling": {
@@ -626,13 +690,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee5013ccfe20936f98a0d25c98af9bd8ce0694d6e0af7a79cf4a675fa722ebff",
@@ -643,8 +707,8 @@
       "name": "SOBR Safe, Inc.",
       "sic": "2721",
       "rawFacts": 11402,
-      "mappedFacts": 3986,
-      "unmappedFacts": 7368,
+      "mappedFacts": 4005,
+      "unmappedFacts": 7356,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -763,9 +827,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7880,
+        "total": 7868,
         "by_severity": {
-          "INFO": 7368,
+          "INFO": 7356,
           "WARNING": 512
         },
         "by_code": {
@@ -773,7 +837,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 107,
           "UNEXPECTED_DURATION": 102,
-          "UNKNOWN_CONCEPT": 7368
+          "UNKNOWN_CONCEPT": 7356
         }
       },
       "latestFiling": {
@@ -784,13 +848,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e44f73a3a9466eba385ef4034afb7e2c1c94a95d273c6899a952de6b057ca3e3",
@@ -801,8 +865,8 @@
       "name": "Newegg Commerce, Inc.",
       "sic": "5990",
       "rawFacts": 7212,
-      "mappedFacts": 2108,
-      "unmappedFacts": 5189,
+      "mappedFacts": 2112,
+      "unmappedFacts": 5187,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -921,15 +985,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5485,
+        "total": 5483,
         "by_severity": {
-          "INFO": 5189,
+          "INFO": 5187,
           "WARNING": 296
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 186,
           "RESTATEMENT_CONFLICT": 110,
-          "UNKNOWN_CONCEPT": 5189
+          "UNKNOWN_CONCEPT": 5187
         }
       },
       "latestFiling": {
@@ -940,13 +1004,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8e9890458b8123f9c94b8552d62231da9478c129cca61f84f9a8a74128b3573f",
@@ -957,8 +1021,8 @@
       "name": "TREACE MEDICAL CONCEPTS, INC.",
       "sic": "3841",
       "rawFacts": 6433,
-      "mappedFacts": 2320,
-      "unmappedFacts": 4201,
+      "mappedFacts": 2367,
+      "unmappedFacts": 4172,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1077,15 +1141,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4286,
+        "total": 4257,
         "by_severity": {
-          "INFO": 4201,
+          "INFO": 4172,
           "WARNING": 85
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 83,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 4201
+          "UNKNOWN_CONCEPT": 4172
         }
       },
       "latestFiling": {
@@ -1096,13 +1160,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b88821bf848bf4f0b2290fc6a5acf1a04cb1b41e952da1adf8f222b5484efb4c",
@@ -1248,13 +1312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f643bea12e86c4338950a492558a94db42f90bde0f59d942d077ade4be0e8bc3",

@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ce600d629316df6ad84684d742afa4267c013a38dca98af1b9cf3394843b373d",
@@ -165,8 +165,8 @@
       "name": "SLB LIMITED/NV",
       "sic": "1389",
       "rawFacts": 25642,
-      "mappedFacts": 7817,
-      "unmappedFacts": 17976,
+      "mappedFacts": 7843,
+      "unmappedFacts": 17950,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +285,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18766,
+        "total": 18741,
         "by_severity": {
-          "INFO": 17976,
-          "WARNING": 790
+          "INFO": 17950,
+          "WARNING": 791
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 754,
-          "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 17976
+          "RESTATEMENT_CONFLICT": 37,
+          "UNKNOWN_CONCEPT": 17950
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "23f79e90b30699ff2083af072cdc02438e722e66549533c5aea65bcba05d81b9",
@@ -321,17 +321,108 @@
       "name": "CENTRAL PACIFIC FINANCIAL CORP",
       "sic": "6022",
       "rawFacts": 32763,
-      "mappedFacts": 5768,
-      "unmappedFacts": 27321,
+      "mappedFacts": 8510,
+      "unmappedFacts": 25021,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 1.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2016-12-31",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -449,15 +540,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27475,
+        "total": 25181,
         "by_severity": {
-          "INFO": 27321,
-          "WARNING": 154
+          "INFO": 25021,
+          "WARNING": 160
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 139,
-          "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 27321
+          "RESTATEMENT_CONFLICT": 21,
+          "UNKNOWN_CONCEPT": 25021
         }
       },
       "latestFiling": {
@@ -468,13 +559,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1ca32bfa8be3fda9ace867db5cef3a06e43f8cc695f00c5cb62b593871f71601",
@@ -624,13 +715,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "76294d798480e3fc401d13581cbf2885d063f86e4040554152b50233a52a8760",
@@ -641,8 +732,8 @@
       "name": "Seaport Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 511,
-      "mappedFacts": 150,
-      "unmappedFacts": 363,
+      "mappedFacts": 158,
+      "unmappedFacts": 357,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -760,14 +851,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 370,
+        "total": 364,
         "by_severity": {
-          "INFO": 363,
+          "INFO": 357,
           "WARNING": 7
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 7,
-          "UNKNOWN_CONCEPT": 363
+          "UNKNOWN_CONCEPT": 357
         }
       },
       "latestFiling": {
@@ -778,13 +869,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2a690376e37189bfcb808ab7abb28ede88cb8d69dfe9ad94f2a0f049e105fb31",

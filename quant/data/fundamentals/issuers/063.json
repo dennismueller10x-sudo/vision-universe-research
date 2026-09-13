@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3bb3733a03ed106a23bd43354ebe7aed17c0f91065a5335ab5d85dbf7f317894",
@@ -167,8 +167,8 @@
       "name": "DICK'S SPORTING GOODS, INC.",
       "sic": "5940",
       "rawFacts": 20496,
-      "mappedFacts": 7357,
-      "unmappedFacts": 13785,
+      "mappedFacts": 7559,
+      "unmappedFacts": 13583,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +286,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13897,
+        "total": 13695,
         "by_severity": {
-          "INFO": 13785,
+          "INFO": 13583,
           "ERROR": 4,
           "WARNING": 108
         },
@@ -296,7 +296,7 @@
           "CONCEPT_DISAGREEMENT": 100,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 13785
+          "UNKNOWN_CONCEPT": 13583
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "39a90e480275950ea8589db9237355a44359a6ace07cfd233fd53c9926f617f0",
@@ -324,8 +324,8 @@
       "name": "Inspired Entertainment, Inc.",
       "sic": "7372",
       "rawFacts": 17659,
-      "mappedFacts": 4721,
-      "unmappedFacts": 13075,
+      "mappedFacts": 4743,
+      "unmappedFacts": 13064,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -444,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13755,
+        "total": 13744,
         "by_severity": {
-          "INFO": 13075,
+          "INFO": 13064,
           "WARNING": 680
         },
         "by_code": {
@@ -454,7 +454,7 @@
           "FISCAL_PERIOD_CONFLICT": 1,
           "RESTATEMENT_CONFLICT": 297,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 13075
+          "UNKNOWN_CONCEPT": 13064
         }
       },
       "latestFiling": {
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26f602fe4425f38e6bc8bb7c0ec81851a729d460b1cab62801b86397efcdc9be",
@@ -482,8 +482,8 @@
       "name": "Seritage Growth Properties",
       "sic": "6500",
       "rawFacts": 11406,
-      "mappedFacts": 3118,
-      "unmappedFacts": 7968,
+      "mappedFacts": 3714,
+      "unmappedFacts": 7487,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -603,18 +603,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8401,
+        "total": 7976,
         "by_severity": {
-          "INFO": 7968,
-          "WARNING": 433
+          "INFO": 7487,
+          "WARNING": 489
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 347,
+          "CONCEPT_DISAGREEMENT": 369,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 81,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 7968
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 89,
+          "UNEXPECTED_DURATION": 25,
+          "UNKNOWN_CONCEPT": 7487
         }
       },
       "latestFiling": {
@@ -625,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8e55c1c35f82665c02ea8831f2b039c2db1a23200d84d6228148b099af8e20a7",
@@ -642,8 +643,8 @@
       "name": "Schneider National, Inc.",
       "sic": "4213",
       "rawFacts": 14222,
-      "mappedFacts": 3971,
-      "unmappedFacts": 10749,
+      "mappedFacts": 4117,
+      "unmappedFacts": 10636,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -762,16 +763,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10862,
+        "total": 10749,
         "by_severity": {
-          "INFO": 10749,
+          "INFO": 10636,
           "WARNING": 113
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 94,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 10749
+          "UNKNOWN_CONCEPT": 10636
         }
       },
       "latestFiling": {
@@ -782,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0c1022887d624665d9fbbdb7f0d27c0f4324bcf0949b6bb83900e2d0f56d7fbc",
@@ -799,8 +800,8 @@
       "name": "Nuvation Bio Inc.",
       "sic": "2834",
       "rawFacts": 5895,
-      "mappedFacts": 1922,
-      "unmappedFacts": 4058,
+      "mappedFacts": 1999,
+      "unmappedFacts": 4008,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -918,9 +919,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4126,
+        "total": 4076,
         "by_severity": {
-          "INFO": 4058,
+          "INFO": 4008,
           "WARNING": 68
         },
         "by_code": {
@@ -929,7 +930,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 4058
+          "UNKNOWN_CONCEPT": 4008
         }
       },
       "latestFiling": {
@@ -940,13 +941,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "198a2de14cac710500801d9be9eeea941b91b38a3bbfb8232e8243a2cc8db9e1",

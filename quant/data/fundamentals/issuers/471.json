@@ -7,8 +7,8 @@
       "name": "ReposiTrak, Inc.",
       "sic": "7374",
       "rawFacts": 14202,
-      "mappedFacts": 5281,
-      "unmappedFacts": 9064,
+      "mappedFacts": 5361,
+      "unmappedFacts": 9001,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9361,
+        "total": 9298,
         "by_severity": {
-          "INFO": 9064,
+          "INFO": 9001,
           "ERROR": 4,
           "WARNING": 293
         },
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 18,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 9064
+          "UNKNOWN_CONCEPT": 9001
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1bc59f0e7b61c3b6d4b10449882e3fca2b136066e4b48ee34f1da858fcd3ed45",
@@ -166,8 +166,8 @@
       "name": "WOLVERINE WORLD WIDE INC /DE/",
       "sic": "3140",
       "rawFacts": 30000,
-      "mappedFacts": 7945,
-      "unmappedFacts": 21978,
+      "mappedFacts": 8142,
+      "unmappedFacts": 21777,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -286,18 +286,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23249,
+        "total": 23055,
         "by_severity": {
-          "INFO": 21978,
+          "INFO": 21777,
           "ERROR": 2,
-          "WARNING": 1269
+          "WARNING": 1276
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 977,
+          "CONCEPT_DISAGREEMENT": 982,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 227,
+          "RESTATEMENT_CONFLICT": 229,
           "UNEXPECTED_DURATION": 65,
-          "UNKNOWN_CONCEPT": 21978
+          "UNKNOWN_CONCEPT": 21777
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c1ca7afa4001ca736f90bc8da9282d7af02a1939ef2adb0b1194fafc6bdf027b",
@@ -325,17 +325,108 @@
       "name": "PATHWARD FINANCIAL, INC.",
       "sic": "6021",
       "rawFacts": 38300,
-      "mappedFacts": 6209,
-      "unmappedFacts": 32267,
+      "mappedFacts": 8979,
+      "unmappedFacts": 29776,
       "calendarYears": 19,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2019-09-30",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2020-09-30",
+          "historyYears": 10.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2019-09-30",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-09-30",
           "lastAvailablePeriod": "2025-09-30",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2022-09-30",
+          "historyYears": 13.0
+        },
+        "time_deposits": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2021-09-30",
+          "historyYears": 11.0
         }
       },
       "fiscalYearEnd": "0930",
@@ -453,16 +544,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32611,
+        "total": 30149,
         "by_severity": {
-          "INFO": 32267,
-          "WARNING": 344
+          "INFO": 29776,
+          "WARNING": 373
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 246,
-          "FISCAL_PERIOD_CONFLICT": 7,
-          "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 32267
+          "CONCEPT_DISAGREEMENT": 257,
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "RESTATEMENT_CONFLICT": 101,
+          "UNKNOWN_CONCEPT": 29776
         }
       },
       "latestFiling": {
@@ -473,13 +564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7ece9b24a58a7694c391af3782f079ff3f97a2c5be3ffdd41d283541ed81c1c8",
@@ -490,8 +581,8 @@
       "name": "UTSTARCOM HOLDINGS CORP.",
       "sic": "3669",
       "rawFacts": 6099,
-      "mappedFacts": 1647,
-      "unmappedFacts": 4523,
+      "mappedFacts": 1667,
+      "unmappedFacts": 4513,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -610,15 +701,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4735,
+        "total": 4725,
         "by_severity": {
-          "INFO": 4523,
+          "INFO": 4513,
           "WARNING": 212
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 158,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 4523
+          "UNKNOWN_CONCEPT": 4513
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b951f00629a1e01c73eea709fe0ddf20a593a8580ea4c05b9c79a34b7164d6d2",
@@ -786,13 +877,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4fded6da658d2cc3a231943af3dcbc7506d8ef5a9a1f33e54de592e4b2c87534",
@@ -940,13 +1031,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7aacb95b317b62d490db588168319b3da84233977bf002955f1f0de2cf9e6ede",

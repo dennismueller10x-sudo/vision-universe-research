@@ -7,11 +7,75 @@
       "name": "BERKLEY W R CORP",
       "sic": "6331",
       "rawFacts": 30271,
-      "mappedFacts": 5190,
-      "unmappedFacts": 24900,
+      "mappedFacts": 7293,
+      "unmappedFacts": 23344,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "WRB",
@@ -131,15 +195,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25378,
+        "total": 23832,
         "by_severity": {
-          "INFO": 24900,
-          "WARNING": 478
+          "INFO": 23344,
+          "WARNING": 488
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
-          "RESTATEMENT_CONFLICT": 156,
-          "UNKNOWN_CONCEPT": 24900
+          "RESTATEMENT_CONFLICT": 166,
+          "UNKNOWN_CONCEPT": 23344
         }
       },
       "latestFiling": {
@@ -150,13 +214,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b0165c1b4a33a665454fa4dc4fd6c124a5268514030f2f4931f67032a5b2b443",
@@ -167,8 +231,8 @@
       "name": "ARK RESTAURANTS CORP",
       "sic": "5812",
       "rawFacts": 16820,
-      "mappedFacts": 5761,
-      "unmappedFacts": 11218,
+      "mappedFacts": 5770,
+      "unmappedFacts": 11199,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -287,17 +351,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11845,
+        "total": 11836,
         "by_severity": {
-          "INFO": 11218,
-          "WARNING": 627
+          "INFO": 11199,
+          "WARNING": 637
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 551,
           "FISCAL_PERIOD_CONFLICT": 34,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
+          "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 11218
+          "UNKNOWN_CONCEPT": 11199
         }
       },
       "latestFiling": {
@@ -308,13 +373,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "69e5cbc0777803d19c3f0369f01a3432917994cd6855cbfc728a78e6a44763bf",
@@ -325,8 +390,8 @@
       "name": "9F Inc.",
       "sic": "6199",
       "rawFacts": 3744,
-      "mappedFacts": 649,
-      "unmappedFacts": 2950,
+      "mappedFacts": 689,
+      "unmappedFacts": 2930,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -445,16 +510,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3203,
+        "total": 3185,
         "by_severity": {
-          "INFO": 2950,
-          "WARNING": 253
+          "INFO": 2930,
+          "WARNING": 255
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 243,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 2950
+          "RESTATEMENT_CONFLICT": 11,
+          "UNKNOWN_CONCEPT": 2930
         }
       },
       "latestFiling": {
@@ -465,13 +530,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d1f25c0af158988c309198d73f7c0591baeb1c4418918b5e2f1352ac2c71a58f",
@@ -620,13 +685,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7364c64b428b30fd0bb809fe1313211c6c13881430216d1269c03ebe460ee4cb",

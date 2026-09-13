@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "486efd404731476adb2626532fcc110ce081db09a6cbd5c7c88f54f085e5e8a6",
@@ -164,8 +164,8 @@
       "name": "REPUBLIC SERVICES, INC.",
       "sic": "4953",
       "rawFacts": 32423,
-      "mappedFacts": 7531,
-      "unmappedFacts": 24817,
+      "mappedFacts": 7757,
+      "unmappedFacts": 24552,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +284,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25492,
+        "total": 25266,
         "by_severity": {
-          "INFO": 24817,
+          "INFO": 24552,
           "ERROR": 1,
-          "WARNING": 674
+          "WARNING": 713
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 618,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 24817
+          "UNEXPECTED_DURATION": 38,
+          "UNKNOWN_CONCEPT": 24552
         }
       },
       "latestFiling": {
@@ -306,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8eeeecd5de363b769588173ec11735fea3cf3acb65c2e467b3ba2e74f8582fa9",
@@ -323,8 +325,8 @@
       "name": "Mastercard Inc",
       "sic": "7389",
       "rawFacts": 27435,
-      "mappedFacts": 7569,
-      "unmappedFacts": 20350,
+      "mappedFacts": 7932,
+      "unmappedFacts": 20085,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -443,17 +445,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20855,
+        "total": 20592,
         "by_severity": {
-          "INFO": 20350,
+          "INFO": 20085,
           "ERROR": 1,
-          "WARNING": 504
+          "WARNING": 506
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 398,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 106,
-          "UNKNOWN_CONCEPT": 20350
+          "RESTATEMENT_CONFLICT": 108,
+          "UNKNOWN_CONCEPT": 20085
         }
       },
       "latestFiling": {
@@ -464,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd45d64e70e924f82dc27bedd22de1220a6f3a2ba5de36c4206baaad843c6f8e",
@@ -481,8 +483,8 @@
       "name": "WisdomTree Bitcoin Fund",
       "sic": "6221",
       "rawFacts": 734,
-      "mappedFacts": 169,
-      "unmappedFacts": 589,
+      "mappedFacts": 193,
+      "unmappedFacts": 562,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -600,16 +602,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 601,
+        "total": 575,
         "by_severity": {
-          "INFO": 589,
-          "WARNING": 12
+          "INFO": 562,
+          "WARNING": 13
         },
         "by_code": {
-          "FISCAL_PERIOD_CONFLICT": 5,
+          "FISCAL_PERIOD_CONFLICT": 6,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 589
+          "UNKNOWN_CONCEPT": 562
         }
       },
       "latestFiling": {
@@ -620,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d78435a9377c9cf3543b3730021f5d67535c8556f46734f9d2f54e1e80a74d5f",
@@ -773,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dc5abc5c8415d933d145e86ea53920f7135fa297e58a059274b03c2570944b22",

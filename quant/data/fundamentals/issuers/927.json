@@ -7,8 +7,8 @@
       "name": "BOEING CO",
       "sic": "3721",
       "rawFacts": 34447,
-      "mappedFacts": 8410,
-      "unmappedFacts": 25726,
+      "mappedFacts": 8902,
+      "unmappedFacts": 25323,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -128,19 +128,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26557,
+        "total": 26174,
         "by_severity": {
-          "INFO": 25726,
+          "INFO": 25323,
           "ERROR": 3,
-          "WARNING": 828
+          "WARNING": 848
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 722,
-          "FISCAL_PERIOD_CONFLICT": 20,
+          "FISCAL_PERIOD_CONFLICT": 21,
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
-          "RESTATEMENT_CONFLICT": 78,
-          "UNKNOWN_CONCEPT": 25726
+          "RESTATEMENT_CONFLICT": 82,
+          "UNEXPECTED_DURATION": 15,
+          "UNKNOWN_CONCEPT": 25323
         }
       },
       "latestFiling": {
@@ -151,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "366b21ee1fe21ba673bd45f9dd8103e0ff428936c9cd905fe2aafe0f1437aea4",
@@ -309,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aaeaf08b04d7dcde7ea1e9b1bb9349bbc79599e000a3e47db84349e1e040251d",
@@ -326,8 +327,8 @@
       "name": "OLD DOMINION FREIGHT LINE, INC.",
       "sic": "4213",
       "rawFacts": 15370,
-      "mappedFacts": 5880,
-      "unmappedFacts": 10056,
+      "mappedFacts": 6049,
+      "unmappedFacts": 9887,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -445,17 +446,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10191,
+        "total": 10036,
         "by_severity": {
-          "INFO": 10056,
-          "WARNING": 135
+          "INFO": 9887,
+          "WARNING": 149
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 29,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 100,
+          "RESTATEMENT_CONFLICT": 114,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 10056
+          "UNKNOWN_CONCEPT": 9887
         }
       },
       "latestFiling": {
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b639b7b603cee57632026f2fb42965d24224900eb683db4697eb11e05e0ae660",
@@ -483,17 +484,108 @@
       "name": "FIRST NORTHERN COMMUNITY BANCORP",
       "sic": "6035",
       "rawFacts": 25925,
-      "mappedFacts": 4197,
-      "unmappedFacts": 21877,
+      "mappedFacts": 6309,
+      "unmappedFacts": 20070,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 10.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 5.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 11.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -611,16 +703,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21980,
+        "total": 20173,
         "by_severity": {
-          "INFO": 21877,
+          "INFO": 20070,
           "WARNING": 103
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 97,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 21877
+          "UNKNOWN_CONCEPT": 20070
         }
       },
       "latestFiling": {
@@ -631,13 +723,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6165b9aa0cf312a095e83d2f0b9fe8390feb48057e763ed16c2d4dcd0472614e",
@@ -648,8 +740,8 @@
       "name": "Immunocore Holdings plc",
       "sic": "2836",
       "rawFacts": 4404,
-      "mappedFacts": 1351,
-      "unmappedFacts": 3163,
+      "mappedFacts": 1356,
+      "unmappedFacts": 3158,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -768,16 +860,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3229,
+        "total": 3224,
         "by_severity": {
-          "INFO": 3163,
+          "INFO": 3158,
           "WARNING": 66
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 3163
+          "UNKNOWN_CONCEPT": 3158
         }
       },
       "latestFiling": {
@@ -788,13 +880,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f22c5dc85e62c5fe9f0265cd132b3e3a6876a6a4237613a222797829046d9e53",
@@ -946,13 +1038,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e4657191e87c5646770974372406e81772f227c776ce2792cc05c1885c1fb68",
@@ -963,8 +1055,8 @@
       "name": "REVIVA PHARMACEUTICALS HOLDINGS, INC.",
       "sic": "2834",
       "rawFacts": 4668,
-      "mappedFacts": 1851,
-      "unmappedFacts": 2769,
+      "mappedFacts": 1880,
+      "unmappedFacts": 2751,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1083,10 +1175,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3010,
+        "total": 2992,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 2769,
+          "INFO": 2751,
           "WARNING": 240
         },
         "by_code": {
@@ -1096,7 +1188,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 116,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 2769
+          "UNKNOWN_CONCEPT": 2751
         }
       },
       "latestFiling": {
@@ -1107,13 +1199,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5eb27ee097600d62ca791fbe0f2a0fb6dfe48f0e0c6f57a9cc8ceccd7a1c9167",
@@ -1265,13 +1357,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "decb2249fc3172ae4e39cb3a1d68432d21c0bcec1988498369fc2fc0e7967e3b",

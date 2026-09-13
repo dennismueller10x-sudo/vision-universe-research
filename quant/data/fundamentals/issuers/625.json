@@ -7,8 +7,8 @@
       "name": "FLOWSERVE CORP",
       "sic": "3561",
       "rawFacts": 26522,
-      "mappedFacts": 8275,
-      "unmappedFacts": 18581,
+      "mappedFacts": 8505,
+      "unmappedFacts": 18325,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19353,
+        "total": 19131,
         "by_severity": {
-          "INFO": 18581,
-          "WARNING": 772
+          "INFO": 18325,
+          "WARNING": 806
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 655,
-          "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 111,
+          "PERIOD_MISMATCH": 28,
+          "RESTATEMENT_CONFLICT": 119,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 18581
+          "UNKNOWN_CONCEPT": 18325
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "48557f80c0632a1d0835f4a005ae1b331b5c6bc20ae1da7b9a51bb84e04bb101",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "df32470afb5c2260f77d13e37f07281c451863df99c1bbf68f356facc892643a",
@@ -459,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cb1eb4c978735d17e72cf118b4ab6dce891188e8054f495f430902d951df47a3",

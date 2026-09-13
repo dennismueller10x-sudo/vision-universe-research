@@ -8,7 +8,7 @@
       "sic": "3600",
       "rawFacts": 24584,
       "mappedFacts": 7562,
-      "unmappedFacts": 16711,
+      "unmappedFacts": 16705,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -129,17 +129,17 @@
         "rules_version": "1.0.0",
         "total": 18106,
         "by_severity": {
-          "INFO": 16711,
+          "INFO": 16705,
           "ERROR": 2,
-          "WARNING": 1393
+          "WARNING": 1399
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1117,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "RESTATEMENT_CONFLICT": 211,
-          "UNIT_MISMATCH": 60,
-          "UNKNOWN_CONCEPT": 16711
+          "UNIT_MISMATCH": 66,
+          "UNKNOWN_CONCEPT": 16705
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "82577e869bef2b69afa4a8dfa8e447ba546c3dfdafef382e7455e9959605e25a",
@@ -167,8 +167,8 @@
       "name": "Distribution Solutions Group, Inc.",
       "sic": "5080",
       "rawFacts": 20091,
-      "mappedFacts": 6382,
-      "unmappedFacts": 13940,
+      "mappedFacts": 6409,
+      "unmappedFacts": 13913,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,9 +287,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14682,
+        "total": 14655,
         "by_severity": {
-          "INFO": 13940,
+          "INFO": 13913,
           "ERROR": 3,
           "WARNING": 739
         },
@@ -297,7 +297,7 @@
           "CONCEPT_DISAGREEMENT": 529,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 210,
-          "UNKNOWN_CONCEPT": 13940
+          "UNKNOWN_CONCEPT": 13913
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7c8431530e3092bb64a3d357c6e1e4e4d553b14d39d7d6b6799fde35f2fe0897",
@@ -325,11 +325,54 @@
       "name": "Healthcare Realty Trust Inc",
       "sic": "6798",
       "rawFacts": 20572,
-      "mappedFacts": 4707,
-      "unmappedFacts": 15733,
+      "mappedFacts": 5644,
+      "unmappedFacts": 15010,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HR"
@@ -445,15 +488,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16405,
+        "total": 15814,
         "by_severity": {
-          "INFO": 15733,
-          "WARNING": 672
+          "INFO": 15010,
+          "WARNING": 804
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 523,
-          "RESTATEMENT_CONFLICT": 149,
-          "UNKNOWN_CONCEPT": 15733
+          "CONCEPT_DISAGREEMENT": 599,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 201,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 15010
         }
       },
       "latestFiling": {
@@ -464,13 +509,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d94c893e007db9ae6adb1b04d81ec31075debabef6dd8357798ab5ed539c045a",
@@ -481,8 +526,8 @@
       "name": "BITGO HOLDINGS, INC.",
       "sic": "6199",
       "rawFacts": 611,
-      "mappedFacts": 140,
-      "unmappedFacts": 475,
+      "mappedFacts": 146,
+      "unmappedFacts": 469,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -601,14 +646,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 483,
+        "total": 477,
         "by_severity": {
-          "INFO": 475,
+          "INFO": 469,
           "WARNING": 8
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
-          "UNKNOWN_CONCEPT": 475
+          "UNKNOWN_CONCEPT": 469
         }
       },
       "latestFiling": {
@@ -619,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9907b7645cdada9a736d33a7544caf18919d0016b6d66ced2899709c514b37d0",
@@ -774,13 +819,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "45fc568999644d522f59d5e1345715df1119c36cf4ea8f843c041299834e533d",

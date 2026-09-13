@@ -7,8 +7,8 @@
       "name": "BRINKS CO",
       "sic": "4731",
       "rawFacts": 31239,
-      "mappedFacts": 7122,
-      "unmappedFacts": 23609,
+      "mappedFacts": 7291,
+      "unmappedFacts": 23440,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24986,
+        "total": 24817,
         "by_severity": {
-          "INFO": 23609,
+          "INFO": 23440,
           "ERROR": 6,
           "WARNING": 1371
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 1236,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 135,
-          "UNKNOWN_CONCEPT": 23609
+          "UNKNOWN_CONCEPT": 23440
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b9f8c29c95ebbfc6f5aed014ff7f89fa159f2a1a81c489a2c49c6be606f742c",
@@ -165,8 +165,8 @@
       "name": "FG Nexus Inc.",
       "sic": "6199",
       "rawFacts": 16478,
-      "mappedFacts": 3276,
-      "unmappedFacts": 12941,
+      "mappedFacts": 4161,
+      "unmappedFacts": 12258,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -286,18 +286,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13610,
+        "total": 12940,
         "by_severity": {
-          "INFO": 12941,
-          "WARNING": 669
+          "INFO": 12258,
+          "WARNING": 682
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 427,
           "EXTREME_VALUE": 13,
           "NEGATIVE_WHERE_IMPOSSIBLE": 13,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 215,
-          "UNKNOWN_CONCEPT": 12941
+          "RESTATEMENT_CONFLICT": 228,
+          "UNKNOWN_CONCEPT": 12258
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d5b18ceb045e55c0cf986f3232e3aafd545fd17f316d75b8bff15fc2cfedbf12",

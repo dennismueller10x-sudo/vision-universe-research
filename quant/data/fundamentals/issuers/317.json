@@ -7,17 +7,108 @@
       "name": "Bridgewater Bancshares Inc",
       "sic": "6022",
       "rawFacts": 18886,
-      "mappedFacts": 2721,
-      "unmappedFacts": 16173,
+      "mappedFacts": 4066,
+      "unmappedFacts": 15009,
       "calendarYears": 10,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 7.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 10,
           "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 6.0
+        },
+        "time_deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -136,15 +227,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16241,
+        "total": 15080,
         "by_severity": {
-          "INFO": 16173,
-          "WARNING": 68
+          "INFO": 15009,
+          "WARNING": 71
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 63,
+          "CONCEPT_DISAGREEMENT": 65,
           "PERIOD_MISMATCH": 5,
-          "UNKNOWN_CONCEPT": 16173
+          "RESTATEMENT_CONFLICT": 1,
+          "UNKNOWN_CONCEPT": 15009
         }
       },
       "latestFiling": {
@@ -155,13 +247,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d946a5faeb99fae7fb34b68676a6df408afc234763d8f4b629b39f80884c10a5",
@@ -172,8 +264,8 @@
       "name": "VEEA INC.",
       "sic": "7373",
       "rawFacts": 3900,
-      "mappedFacts": 1373,
-      "unmappedFacts": 2564,
+      "mappedFacts": 1394,
+      "unmappedFacts": 2550,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -292,9 +384,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2710,
+        "total": 2696,
         "by_severity": {
-          "INFO": 2564,
+          "INFO": 2550,
           "ERROR": 1,
           "WARNING": 145
         },
@@ -304,7 +396,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2564
+          "UNKNOWN_CONCEPT": 2550
         }
       },
       "latestFiling": {
@@ -315,13 +407,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e4e8a3c1309dfd6de2e8fd29f267d4a1815509f4f1d3ea6be24469e8bbaf1ab2",
@@ -332,8 +424,8 @@
       "name": "Curbline Properties Corp.",
       "sic": "6500",
       "rawFacts": 1718,
-      "mappedFacts": 480,
-      "unmappedFacts": 1210,
+      "mappedFacts": 554,
+      "unmappedFacts": 1159,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -451,12 +543,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1210,
+        "total": 1159,
         "by_severity": {
-          "INFO": 1210
+          "INFO": 1159
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 1210
+          "UNKNOWN_CONCEPT": 1159
         }
       },
       "latestFiling": {
@@ -467,13 +559,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9d0d71a277322f8270c986e384933cfffe8f540e3afae4aee7a6241fa7372812",

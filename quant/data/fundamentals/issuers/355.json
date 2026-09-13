@@ -7,8 +7,8 @@
       "name": "BLOOMIA HOLDINGS, INC.",
       "sic": "0100",
       "rawFacts": 15702,
-      "mappedFacts": 5717,
-      "unmappedFacts": 9581,
+      "mappedFacts": 5739,
+      "unmappedFacts": 9551,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10426,
+        "total": 10403,
         "by_severity": {
-          "INFO": 9581,
-          "WARNING": 845
+          "INFO": 9551,
+          "WARNING": 852
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 543,
+          "CONCEPT_DISAGREEMENT": 546,
           "FISCAL_PERIOD_CONFLICT": 19,
           "RESTATEMENT_CONFLICT": 279,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 9581
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 9551
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d7816568d846f7382a9fec237aeb097e6755474e150ad5a0acd9954d8c4e45ef",
@@ -165,8 +165,8 @@
       "name": "SUI Group Holdings Ltd.",
       "sic": "6199",
       "rawFacts": 5651,
-      "mappedFacts": 1570,
-      "unmappedFacts": 4119,
+      "mappedFacts": 1636,
+      "unmappedFacts": 4052,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -285,18 +285,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4269,
+        "total": 4206,
         "by_severity": {
           "ERROR": 5,
-          "INFO": 4119,
-          "WARNING": 145
+          "INFO": 4052,
+          "WARNING": 149
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 50,
+          "PERIOD_MISMATCH": 3,
+          "RESTATEMENT_CONFLICT": 51,
           "UNEXPECTED_DURATION": 80,
-          "UNKNOWN_CONCEPT": 4119
+          "UNKNOWN_CONCEPT": 4052
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a45910fca1d5b46c1b1b21f19dd5aa5756a88561ed0e4f9d7c398e90d2f2072",
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5c1b88b54f60fb02c90b3197bbe28287cea7c860fda990f93d09c21a93e3a5aa",
@@ -479,8 +480,8 @@
       "name": "Inflection Point Acquisition Corp. V",
       "sic": "6770",
       "rawFacts": 538,
-      "mappedFacts": 228,
-      "unmappedFacts": 316,
+      "mappedFacts": 229,
+      "unmappedFacts": 315,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -600,16 +601,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 345,
+        "total": 344,
         "by_severity": {
-          "INFO": 316,
+          "INFO": 315,
           "WARNING": 29
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 316
+          "UNKNOWN_CONCEPT": 315
         }
       },
       "latestFiling": {
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b802f90c62b83fa0a0fb22e8dd75c38042153ce99a8af23f76cdc1ec7ed73acb",
@@ -780,13 +781,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2f2786508be812562d43a16546d9e27eead9efe474523f9805d96a4f4661e7cf",

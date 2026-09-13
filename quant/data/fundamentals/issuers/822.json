@@ -7,8 +7,8 @@
       "name": "MILLER INDUSTRIES INC /TN/",
       "sic": "3713",
       "rawFacts": 16887,
-      "mappedFacts": 6273,
-      "unmappedFacts": 11282,
+      "mappedFacts": 6578,
+      "unmappedFacts": 10964,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11341,
+        "total": 11036,
         "by_severity": {
-          "INFO": 11282,
-          "WARNING": 59
+          "INFO": 10964,
+          "WARNING": 72
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 29,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 11282
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 10964
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "901d1dcb7802b3e47152ea0d8372fbfd885889633f12b63d00cd206887349249",
@@ -163,8 +164,8 @@
       "name": "CARTERS INC",
       "sic": "2300",
       "rawFacts": 24802,
-      "mappedFacts": 7866,
-      "unmappedFacts": 17129,
+      "mappedFacts": 8146,
+      "unmappedFacts": 16849,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17738,
+        "total": 17458,
         "by_severity": {
-          "INFO": 17129,
+          "INFO": 16849,
           "WARNING": 609
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 482,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 125,
-          "UNKNOWN_CONCEPT": 17129
+          "UNKNOWN_CONCEPT": 16849
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "789acac95588c6485464da52919de5b675818361118616ad1ba1d364a3b7b65b",
@@ -320,8 +321,8 @@
       "name": "LEXICON PHARMACEUTICALS, INC.",
       "sic": "2834",
       "rawFacts": 15383,
-      "mappedFacts": 6189,
-      "unmappedFacts": 9783,
+      "mappedFacts": 6221,
+      "unmappedFacts": 9751,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -440,9 +441,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9977,
+        "total": 9945,
         "by_severity": {
-          "INFO": 9783,
+          "INFO": 9751,
           "ERROR": 2,
           "WARNING": 192
         },
@@ -451,7 +452,7 @@
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 9783
+          "UNKNOWN_CONCEPT": 9751
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c1328625e3ca6b51580777d78489e5491665252806e763c5a37d3149a0aefa00",
@@ -479,8 +480,8 @@
       "name": "SemiLEDs Corp",
       "sic": "3674",
       "rawFacts": 15985,
-      "mappedFacts": 6270,
-      "unmappedFacts": 9977,
+      "mappedFacts": 6276,
+      "unmappedFacts": 9973,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -599,9 +600,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10379,
+        "total": 10375,
         "by_severity": {
-          "INFO": 9977,
+          "INFO": 9973,
           "ERROR": 3,
           "WARNING": 399
         },
@@ -609,7 +610,7 @@
           "CONCEPT_DISAGREEMENT": 371,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 28,
-          "UNKNOWN_CONCEPT": 9977
+          "UNKNOWN_CONCEPT": 9973
         }
       },
       "latestFiling": {
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1aa99da7947ce547c373215d013e7cc712cbf5a97e26688865badd99ed04cc49",
@@ -774,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f4e08bd6f5ba62755efcaa7f340d529a143293fc40e2dc03ab34dbaca049fe0",

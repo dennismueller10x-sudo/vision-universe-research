@@ -7,17 +7,108 @@
       "name": "SHINHAN FINANCIAL GROUP CO LTD",
       "sic": "6021",
       "rawFacts": 8199,
-      "mappedFacts": 722,
-      "unmappedFacts": 7472,
+      "mappedFacts": 852,
+      "unmappedFacts": 7364,
       "calendarYears": 14,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 12.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 1.0
+        },
+        "deposits": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 11.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 13.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 10,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2020-12-31",
           "historyYears": 13.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "time_deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 8.0
         }
       },
       "fiscalYearEnd": null,
@@ -135,18 +226,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7722,
+        "total": 7632,
         "by_severity": {
-          "INFO": 7472,
-          "WARNING": 250
+          "INFO": 7364,
+          "WARNING": 268
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 172,
+          "CONCEPT_DISAGREEMENT": 190,
           "EXTREME_VALUE": 47,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 15,
           "UNIT_MISMATCH": 12,
-          "UNKNOWN_CONCEPT": 7472
+          "UNKNOWN_CONCEPT": 7364
         }
       },
       "latestFiling": {
@@ -157,13 +248,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1d51ea89ab6011e584e885089179de45561816dd926ca71b9c74f61533b91b0e",
@@ -174,11 +265,54 @@
       "name": "KITE REALTY GROUP TRUST",
       "sic": "6798",
       "rawFacts": 20253,
-      "mappedFacts": 5188,
-      "unmappedFacts": 14774,
+      "mappedFacts": 6104,
+      "unmappedFacts": 14085,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2009-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "KRG"
@@ -294,18 +428,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15325,
+        "total": 14691,
         "by_severity": {
-          "INFO": 14774,
+          "INFO": 14085,
           "ERROR": 2,
-          "WARNING": 549
+          "WARNING": 604
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 462,
+          "CONCEPT_DISAGREEMENT": 504,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 81,
-          "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14774
+          "RESTATEMENT_CONFLICT": 89,
+          "UNEXPECTED_DURATION": 11,
+          "UNKNOWN_CONCEPT": 14085
         }
       },
       "latestFiling": {
@@ -316,13 +450,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f59c7b6bb9bf9674a0c744c046bc60a78a5c059a0f4a65de4eb3752b71af9d07",
@@ -333,8 +467,8 @@
       "name": "Pyxis Tankers Inc.",
       "sic": "4412",
       "rawFacts": 2536,
-      "mappedFacts": 993,
-      "unmappedFacts": 1684,
+      "mappedFacts": 1007,
+      "unmappedFacts": 1677,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -453,15 +587,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1802,
+        "total": 1797,
         "by_severity": {
-          "INFO": 1684,
-          "WARNING": 118
+          "INFO": 1677,
+          "WARNING": 120
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 107,
-          "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 1684
+          "RESTATEMENT_CONFLICT": 13,
+          "UNKNOWN_CONCEPT": 1677
         }
       },
       "latestFiling": {
@@ -472,13 +606,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8acb542514ba4a53fe4f1884588f52f085a683f5ba499728826c8285f696c111",
@@ -629,13 +763,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bfcad9057698227542886ea012a6866b659e3d2329d083e82bd8d43cf8e09cb9",
@@ -646,8 +780,8 @@
       "name": "New Century Logistics (BVI) Ltd",
       "sic": "4731",
       "rawFacts": 1062,
-      "mappedFacts": 282,
-      "unmappedFacts": 790,
+      "mappedFacts": 288,
+      "unmappedFacts": 787,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -766,15 +900,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 826,
+        "total": 823,
         "by_severity": {
-          "INFO": 790,
+          "INFO": 787,
           "WARNING": 36
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 790
+          "UNKNOWN_CONCEPT": 787
         }
       },
       "latestFiling": {
@@ -785,13 +919,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "14713df3f1dec66433afacf8c532f4382b054ca90627b3f51157071fd153dd4c",
@@ -927,13 +1061,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b098a1ee52e81dae0dc1af5e2a9c8aaafe7c4059fcefa198ce56120f6099d686",
@@ -944,8 +1078,8 @@
       "name": "WEN Acquisition Corp",
       "sic": "6770",
       "rawFacts": 307,
-      "mappedFacts": 140,
-      "unmappedFacts": 173,
+      "mappedFacts": 145,
+      "unmappedFacts": 169,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1065,12 +1199,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 173,
+        "total": 169,
         "by_severity": {
-          "INFO": 173
+          "INFO": 169
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 173
+          "UNKNOWN_CONCEPT": 169
         }
       },
       "latestFiling": {
@@ -1081,13 +1215,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66352cd4892e05ed7e6e0179c63ca0b732929bf6125f61be516209ea7fbed8a2",
@@ -1237,13 +1371,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a6c55ace24b906e6f2765e72f78d1b82f790b4e11fe13af69e218f51d1d45a76",
@@ -1254,9 +1388,9 @@
       "name": "Cartesian Growth Corp IV",
       "sic": "6770",
       "rawFacts": 68,
-      "mappedFacts": 0,
-      "unmappedFacts": 46,
-      "calendarYears": 0,
+      "mappedFacts": 12,
+      "unmappedFacts": 45,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -1266,9 +1400,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-02-20",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1307,7 +1441,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1335,14 +1469,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1364,23 +1498,26 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 3,
+        "MEDIUM": 1
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 4,
+        "resolvedValues": 4
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 68,
+        "total": 55,
         "by_severity": {
-          "INFO": 46,
-          "WARNING": 22
+          "INFO": 45,
+          "WARNING": 10
         },
         "by_code": {
+          "CONCEPT_DISAGREEMENT": 2,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 46,
-          "UNPLACEABLE_PERIOD": 14
+          "UNKNOWN_CONCEPT": 45
         }
       },
       "latestFiling": {
@@ -1391,13 +1528,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd8bb0d4e675b41409485c18fb199284d736062b88dde1639490389f09bd84e7",
@@ -1408,9 +1545,9 @@
       "name": "Jersey Mike's Subs Inc.",
       "sic": "5812",
       "rawFacts": 10,
-      "mappedFacts": 0,
+      "mappedFacts": 8,
       "unmappedFacts": 0,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1228",
@@ -1419,9 +1556,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-02-24",
+      "lastPeriodEnd": "2026-06-28",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1488,14 +1625,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1517,21 +1654,19 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 4
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 4,
+        "resolvedValues": 4
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10,
-        "by_severity": {
-          "WARNING": 10
-        },
-        "by_code": {
-          "UNPLACEABLE_PERIOD": 10
-        }
+        "total": 0,
+        "by_severity": {},
+        "by_code": {}
       },
       "latestFiling": {
         "accession": "0002127043-26-000010",
@@ -1541,13 +1676,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8377beb1ab50135e546a273d4fd9c79b346554acacb4a3bc6c55e71d622c8f4e",

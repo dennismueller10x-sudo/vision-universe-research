@@ -7,8 +7,8 @@
       "name": "PARK AEROSPACE CORP",
       "sic": "3728",
       "rawFacts": 16889,
-      "mappedFacts": 6519,
-      "unmappedFacts": 10780,
+      "mappedFacts": 6747,
+      "unmappedFacts": 10584,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11073,
+        "total": 10887,
         "by_severity": {
           "ERROR": 7,
-          "INFO": 10780,
-          "WARNING": 286
+          "INFO": 10584,
+          "WARNING": 296
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 181,
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 7,
-          "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 10780
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 108,
+          "UNKNOWN_CONCEPT": 10584
         }
       },
       "latestFiling": {
@@ -149,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "789ded67fb1c26115e68bf475063ba5ee52354191b385f53a94e17e043c79338",
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b75c440269cf28283a00d2f0b0aa9a9e7c37b94679446cb8d2a14d23b1c75fc",
@@ -323,8 +324,8 @@
       "name": "INTUITIVE SURGICAL INC",
       "sic": "3842",
       "rawFacts": 27833,
-      "mappedFacts": 7777,
-      "unmappedFacts": 20065,
+      "mappedFacts": 7817,
+      "unmappedFacts": 20038,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -443,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20737,
+        "total": 20710,
         "by_severity": {
-          "INFO": 20065,
+          "INFO": 20038,
           "WARNING": 672
         },
         "by_code": {
@@ -453,7 +454,7 @@
           "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 16,
-          "UNKNOWN_CONCEPT": 20065
+          "UNKNOWN_CONCEPT": 20038
         }
       },
       "latestFiling": {
@@ -464,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26ce14854132458ef2f7bfc8d486bb75fa078091057c736423564cbad9273329",
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "603db1a95902d118f5a20addfd2000c072376bc734d6b1882e58f9bd01741c5f",
@@ -637,8 +638,8 @@
       "name": "Burning Rock Biotech Ltd",
       "sic": "8071",
       "rawFacts": 3789,
-      "mappedFacts": 640,
-      "unmappedFacts": 2999,
+      "mappedFacts": 658,
+      "unmappedFacts": 2975,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -757,15 +758,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3267,
+        "total": 3249,
         "by_severity": {
-          "INFO": 2999,
-          "WARNING": 268
+          "INFO": 2975,
+          "WARNING": 274
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 266,
+          "CONCEPT_DISAGREEMENT": 272,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 2999
+          "UNKNOWN_CONCEPT": 2975
         }
       },
       "latestFiling": {
@@ -776,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7920e76b3a9958bfc30fddd23068e98b97a35586661d8a49cd6780e0dd6a3c86",
@@ -793,8 +794,8 @@
       "name": "Cantor Equity Partners IV, Inc.",
       "sic": "6770",
       "rawFacts": 322,
-      "mappedFacts": 140,
-      "unmappedFacts": 196,
+      "mappedFacts": 146,
+      "unmappedFacts": 192,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -912,12 +913,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 196,
+        "total": 192,
         "by_severity": {
-          "INFO": 196
+          "INFO": 192
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 196
+          "UNKNOWN_CONCEPT": 192
         }
       },
       "latestFiling": {
@@ -928,13 +929,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0ed27cd4e046baf49655226638a737b9b29dd09d1a1c2d84339fcf8ec1579a11",

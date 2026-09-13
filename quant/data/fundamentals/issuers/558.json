@@ -7,11 +7,75 @@
       "name": "LINCOLN NATIONAL CORP",
       "sic": "6311",
       "rawFacts": 31554,
-      "mappedFacts": 5780,
-      "unmappedFacts": 25930,
+      "mappedFacts": 7658,
+      "unmappedFacts": 24305,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 7.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 10.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "LNC",
@@ -128,15 +192,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26235,
+        "total": 24626,
         "by_severity": {
-          "INFO": 25930,
-          "WARNING": 305
+          "INFO": 24305,
+          "WARNING": 321
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 210,
-          "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 25930
+          "RESTATEMENT_CONFLICT": 111,
+          "UNKNOWN_CONCEPT": 24305
         }
       },
       "latestFiling": {
@@ -147,13 +211,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c229200ce058529fb716dc9439d7fb1e497ffe022adffa8c353990e02dfaeba8",
@@ -303,13 +367,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2e1c2b270f2c45e30a3696fa7921d21d989a1c5b2bc12a29a43abd09982f601e",
@@ -320,8 +384,8 @@
       "name": "Ambow Education Holding Ltd.",
       "sic": "8200",
       "rawFacts": 7844,
-      "mappedFacts": 1831,
-      "unmappedFacts": 5807,
+      "mappedFacts": 1843,
+      "unmappedFacts": 5801,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -440,15 +504,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6507,
+        "total": 6501,
         "by_severity": {
-          "INFO": 5807,
+          "INFO": 5801,
           "WARNING": 700
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 557,
           "RESTATEMENT_CONFLICT": 143,
-          "UNKNOWN_CONCEPT": 5807
+          "UNKNOWN_CONCEPT": 5801
         }
       },
       "latestFiling": {
@@ -459,13 +523,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfb1e41d455c4577d1ce164078bc0322fc599997fa985a968c4ed534ba56d4a6",
@@ -476,8 +540,8 @@
       "name": "Priority Technology Holdings, Inc.",
       "sic": "7389",
       "rawFacts": 12539,
-      "mappedFacts": 3703,
-      "unmappedFacts": 8736,
+      "mappedFacts": 3711,
+      "unmappedFacts": 8732,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -597,9 +661,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9310,
+        "total": 9306,
         "by_severity": {
-          "INFO": 8736,
+          "INFO": 8732,
           "WARNING": 574
         },
         "by_code": {
@@ -607,7 +671,7 @@
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 119,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 8736
+          "UNKNOWN_CONCEPT": 8732
         }
       },
       "latestFiling": {
@@ -618,13 +682,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7c00d9c9fbcc410f20d560ece0aa851791d25d36e1076c143734cbf17d4a7073",
@@ -635,8 +699,8 @@
       "name": "Jerash Holdings (US), Inc.",
       "sic": "2300",
       "rawFacts": 10793,
-      "mappedFacts": 3233,
-      "unmappedFacts": 7434,
+      "mappedFacts": 3267,
+      "unmappedFacts": 7401,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -755,16 +819,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7929,
+        "total": 7896,
         "by_severity": {
-          "INFO": 7434,
+          "INFO": 7401,
           "WARNING": 495
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 399,
           "RESTATEMENT_CONFLICT": 94,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7434
+          "UNKNOWN_CONCEPT": 7401
         }
       },
       "latestFiling": {
@@ -775,13 +839,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e198b78563cc75aef436239220659d45e4464a07895bb64fc914801fbe4e7726",
@@ -792,8 +856,8 @@
       "name": "Nuvectis Pharma, Inc.",
       "sic": "2834",
       "rawFacts": 2112,
-      "mappedFacts": 1154,
-      "unmappedFacts": 951,
+      "mappedFacts": 1158,
+      "unmappedFacts": 947,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -912,15 +976,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 978,
+        "total": 974,
         "by_severity": {
-          "INFO": 951,
+          "INFO": 947,
           "WARNING": 27
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 23,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 951
+          "UNKNOWN_CONCEPT": 947
         }
       },
       "latestFiling": {
@@ -931,13 +995,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d402b99280a6d33ec1cbdcae1e8722462f16f4a201b42128b9062d305140e6e9",
@@ -948,8 +1012,8 @@
       "name": "Vitesse Energy, Inc.",
       "sic": "1311",
       "rawFacts": 4139,
-      "mappedFacts": 1283,
-      "unmappedFacts": 2863,
+      "mappedFacts": 1307,
+      "unmappedFacts": 2839,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1068,16 +1132,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2951,
+        "total": 2927,
         "by_severity": {
-          "INFO": 2863,
+          "INFO": 2839,
           "WARNING": 88
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 47,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 36,
-          "UNKNOWN_CONCEPT": 2863
+          "UNKNOWN_CONCEPT": 2839
         }
       },
       "latestFiling": {
@@ -1088,13 +1152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "53dc042070ce126360f47577a4313bc75b76bdb02bbc3c1fc5aee391e9275415",

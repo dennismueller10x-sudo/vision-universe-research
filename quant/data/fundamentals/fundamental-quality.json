@@ -2,38 +2,38 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1876478,
-      "ISSUERS_WITH_VALUES": 5303
+      "RESOLVED_VALUES": 1876646,
+      "ISSUERS_WITH_VALUES": 5333
     },
     "byState": {
-      "VALID": 1706925,
-      "WARNING": 169553
+      "VALID": 1707085,
+      "WARNING": 169561
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 50583010
+      "RAW_XBRL_FACTS_WITH_FINDING": 49642884
     },
     "byState": {
-      "AMBIGUOUS": 1328473,
-      "RESTATED": 304605,
-      "NON_COMPARABLE": 55196,
-      "MISSING": 48876301,
-      "WARNING": 18435
+      "AMBIGUOUS": 1335223,
+      "RESTATED": 313695,
+      "NON_COMPARABLE": 70430,
+      "MISSING": 47903799,
+      "WARNING": 19737
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 48876301,
-      "CONCEPT_DISAGREEMENT": 1320197,
-      "RESTATEMENT_CONFLICT": 304605,
-      "UNEXPECTED_DURATION": 49028,
-      "FISCAL_PERIOD_CONFLICT": 13604,
+      "UNKNOWN_CONCEPT": 47903799,
+      "CONCEPT_DISAGREEMENT": 1327731,
+      "RESTATEMENT_CONFLICT": 313695,
+      "UNEXPECTED_DURATION": 54322,
+      "FISCAL_PERIOD_CONFLICT": 14906,
+      "PERIOD_MISMATCH": 14847,
       "FUTURE_DATA_LEAK": 7477,
-      "PERIOD_MISMATCH": 5251,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2242,
-      "UNIT_MISMATCH": 917,
-      "UNPLACEABLE_PERIOD": 799
+      "UNIT_MISMATCH": 1261,
+      "UNPLACEABLE_PERIOD": 15
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
   },
@@ -43,9 +43,9 @@
     },
     "byState": {
       "AVAILABLE": 5172,
-      "PARTIAL": 491,
-      "MISSING": 125,
-      "NOT_APPLICABLE": 25,
+      "PARTIAL": 521,
+      "MISSING": 58,
+      "NOT_APPLICABLE": 62,
       "REQUIRES_REVIEW": 0,
       "UNAVAILABLE": 1191
     },
@@ -54,65 +54,65 @@
   "metricsByMissingRate": [
     {
       "metric": "total_debt",
-      "MISSING_COUNT": 2458,
-      "MISSING_RATE": 46.3511
+      "MISSING_COUNT": 2488,
+      "MISSING_RATE": 46.6529
     },
     {
       "metric": "revenue",
-      "MISSING_COUNT": 897,
-      "MISSING_RATE": 16.915
+      "MISSING_COUNT": 927,
+      "MISSING_RATE": 17.3823
     },
     {
       "metric": "free_cash_flow",
-      "MISSING_COUNT": 784,
-      "MISSING_RATE": 14.7841
+      "MISSING_COUNT": 814,
+      "MISSING_RATE": 15.2635
     },
     {
       "metric": "capital_expenditures",
-      "MISSING_COUNT": 774,
-      "MISSING_RATE": 14.5955
+      "MISSING_COUNT": 804,
+      "MISSING_RATE": 15.0759
     },
     {
       "metric": "eps_diluted",
-      "MISSING_COUNT": 537,
-      "MISSING_RATE": 10.1263
+      "MISSING_COUNT": 567,
+      "MISSING_RATE": 10.6319
     },
     {
       "metric": "operating_cash_flow",
-      "MISSING_COUNT": 265,
-      "MISSING_RATE": 4.9972
+      "MISSING_COUNT": 295,
+      "MISSING_RATE": 5.5316
     },
     {
       "metric": "net_income",
-      "MISSING_COUNT": 247,
-      "MISSING_RATE": 4.6577
+      "MISSING_COUNT": 277,
+      "MISSING_RATE": 5.1941
     },
     {
       "metric": "stockholders_equity",
-      "MISSING_COUNT": 49,
-      "MISSING_RATE": 0.924
+      "MISSING_COUNT": 79,
+      "MISSING_RATE": 1.4813
     },
     {
       "metric": "total_assets",
-      "MISSING_COUNT": 12,
-      "MISSING_RATE": 0.2263
+      "MISSING_COUNT": 42,
+      "MISSING_RATE": 0.7875
     }
   ],
   "highestMissingRate": {
     "metric": "total_debt",
-    "MISSING_COUNT": 2458,
-    "MISSING_RATE": 46.3511
+    "MISSING_COUNT": 2488,
+    "MISSING_RATE": 46.6529
   },
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.8.0",
+    "normalization_logic": "1.9.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.4.0"
+      "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T16:19:59+00:00"
+  "generatedAtUtc": "2026-09-13T18:28:25+00:00"
 }

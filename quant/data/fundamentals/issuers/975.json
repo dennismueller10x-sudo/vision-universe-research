@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb155a2fac2bd07c17bc471db577d68955484adbcaac7c555fc43bfd6e36b73b",
@@ -166,8 +166,8 @@
       "name": "LOGITECH INTERNATIONAL S.A.",
       "sic": "3577",
       "rawFacts": 26060,
-      "mappedFacts": 6832,
-      "unmappedFacts": 19817,
+      "mappedFacts": 6871,
+      "unmappedFacts": 19730,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,18 +286,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20068,
+        "total": 20029,
         "by_severity": {
-          "INFO": 19817,
+          "INFO": 19730,
           "ERROR": 1,
-          "WARNING": 250
+          "WARNING": 298
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 183,
+          "CONCEPT_DISAGREEMENT": 219,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 19817
+          "UNIT_MISMATCH": 12,
+          "UNKNOWN_CONCEPT": 19730
         }
       },
       "latestFiling": {
@@ -308,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d3ec3e4aa6e505f3d3cfbee50c64dcdd080278f2efee72f392b6111c4b6036a9",

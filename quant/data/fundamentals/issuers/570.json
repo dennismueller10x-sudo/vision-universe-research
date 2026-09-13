@@ -7,8 +7,8 @@
       "name": "Cheniere Energy, Inc.",
       "sic": "4924",
       "rawFacts": 22823,
-      "mappedFacts": 6699,
-      "unmappedFacts": 15877,
+      "mappedFacts": 6730,
+      "unmappedFacts": 15842,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17011,
+        "total": 16980,
         "by_severity": {
-          "INFO": 15877,
-          "WARNING": 1134
+          "INFO": 15842,
+          "WARNING": 1138
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 952,
           "EXTREME_VALUE": 12,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 165,
-          "UNKNOWN_CONCEPT": 15877
+          "UNKNOWN_CONCEPT": 15842
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b11e20eca7e4160d83410c3d60051c19b052cab57a02c5c98403cb447b23a798",
@@ -165,8 +166,8 @@
       "name": "GEE Group Inc.",
       "sic": "7361",
       "rawFacts": 13722,
-      "mappedFacts": 5371,
-      "unmappedFacts": 8541,
+      "mappedFacts": 5401,
+      "unmappedFacts": 8522,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +286,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8973,
+        "total": 8956,
         "by_severity": {
-          "INFO": 8541,
-          "WARNING": 432
+          "INFO": 8522,
+          "WARNING": 434
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 288,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
-          "RESTATEMENT_CONFLICT": 139,
-          "UNKNOWN_CONCEPT": 8541
+          "RESTATEMENT_CONFLICT": 141,
+          "UNKNOWN_CONCEPT": 8522
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6efebe6d13444dd1b8418cf42b0adb678935405ce0c421881c5743694a0343b2",
@@ -322,8 +323,8 @@
       "name": "MSA Safety Inc",
       "sic": "3842",
       "rawFacts": 26488,
-      "mappedFacts": 8120,
-      "unmappedFacts": 18288,
+      "mappedFacts": 8372,
+      "unmappedFacts": 18106,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19127,
+        "total": 18945,
         "by_severity": {
-          "INFO": 18288,
+          "INFO": 18106,
           "ERROR": 4,
           "WARNING": 835
         },
@@ -453,7 +454,7 @@
           "CONCEPT_DISAGREEMENT": 819,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 18288
+          "UNKNOWN_CONCEPT": 18106
         }
       },
       "latestFiling": {
@@ -464,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d5f8be12e8ddfb70a990aae10d69174ff7b65b2a864e919b7032d8e24557aaf8",
@@ -481,8 +482,8 @@
       "name": "MGM Resorts International",
       "sic": "7011",
       "rawFacts": 24354,
-      "mappedFacts": 7040,
-      "unmappedFacts": 17356,
+      "mappedFacts": 7129,
+      "unmappedFacts": 17267,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -601,9 +602,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18145,
+        "total": 18056,
         "by_severity": {
-          "INFO": 17356,
+          "INFO": 17267,
           "WARNING": 789
         },
         "by_code": {
@@ -611,7 +612,7 @@
           "FISCAL_PERIOD_CONFLICT": 16,
           "RESTATEMENT_CONFLICT": 74,
           "UNEXPECTED_DURATION": 22,
-          "UNKNOWN_CONCEPT": 17356
+          "UNKNOWN_CONCEPT": 17267
         }
       },
       "latestFiling": {
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "56c5a23436b1a978b9f30172a7e8a9c68ced829dd3a64ee98bf74564c4514186",
@@ -780,13 +781,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8465ec388aa1f3c142488d45504146804c4ae3eb85fdf112a327cf95ca6b13c8",
@@ -797,8 +798,8 @@
       "name": "Vyome Holdings, Inc",
       "sic": "2834",
       "rawFacts": 10683,
-      "mappedFacts": 3794,
-      "unmappedFacts": 6986,
+      "mappedFacts": 3803,
+      "unmappedFacts": 6980,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -917,9 +918,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7461,
+        "total": 7455,
         "by_severity": {
-          "INFO": 6986,
+          "INFO": 6980,
           "ERROR": 7,
           "WARNING": 468
         },
@@ -927,7 +928,7 @@
           "CONCEPT_DISAGREEMENT": 162,
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 306,
-          "UNKNOWN_CONCEPT": 6986
+          "UNKNOWN_CONCEPT": 6980
         }
       },
       "latestFiling": {
@@ -938,13 +939,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "845a1f865d441656470d265d1d3a4efa9debeb7ce0860fff162edbda474380c2",
@@ -1093,13 +1094,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "97a750c2084d81fbf05a1e63a0198417336ede0d5c49e1d8f9c7a82607a6db41",
@@ -1248,13 +1249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "684c3dc1376653869b271baf6dd22d561ae683b638e2f3fac66ac26a8965b0ee",

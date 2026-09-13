@@ -7,11 +7,75 @@
       "name": "CNA FINANCIAL CORP",
       "sic": "6331",
       "rawFacts": 29776,
-      "mappedFacts": 5330,
-      "unmappedFacts": 24545,
+      "mappedFacts": 7106,
+      "unmappedFacts": 23130,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 10.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CNA"
@@ -127,16 +191,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25030,
+        "total": 23622,
         "by_severity": {
-          "INFO": 24545,
-          "WARNING": 485
+          "INFO": 23130,
+          "WARNING": 492
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 427,
           "EXTREME_VALUE": 14,
-          "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 24545
+          "RESTATEMENT_CONFLICT": 51,
+          "UNKNOWN_CONCEPT": 23130
         }
       },
       "latestFiling": {
@@ -147,13 +211,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3e4a0ad83db27f2b0b5bb0c82b11feaa2640f9fb91fc44a8528092f8f6afc96c",
@@ -307,13 +371,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "81c6ad9e09eacd23b119a62e4284b2fd8699cb8f7b18665b87ad0ec700343898",
@@ -324,8 +388,8 @@
       "name": "Fortis Inc.",
       "sic": "4911",
       "rawFacts": 4978,
-      "mappedFacts": 930,
-      "unmappedFacts": 4155,
+      "mappedFacts": 950,
+      "unmappedFacts": 4135,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -450,15 +514,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4317,
+        "total": 4297,
         "by_severity": {
-          "INFO": 4155,
+          "INFO": 4135,
           "WARNING": 162
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 156,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 4155
+          "UNKNOWN_CONCEPT": 4135
         }
       },
       "latestFiling": {
@@ -469,13 +533,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8bd23576e8b476c6b85c174894f77b758504d028a208453f0d2c14747e89f6bb",
@@ -628,13 +692,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "abfd3fe91f1234c25e3ef3ecaa124b1622bdf4a6c289c695b86a31c0180b9c21",
@@ -645,8 +709,8 @@
       "name": "Contineum Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 2525,
-      "mappedFacts": 723,
-      "unmappedFacts": 1856,
+      "mappedFacts": 753,
+      "unmappedFacts": 1838,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -765,14 +829,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1862,
+        "total": 1844,
         "by_severity": {
-          "INFO": 1856,
+          "INFO": 1838,
           "WARNING": 6
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
-          "UNKNOWN_CONCEPT": 1856
+          "UNKNOWN_CONCEPT": 1838
         }
       },
       "latestFiling": {
@@ -783,13 +847,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "41ecd2f80ba41cb82bc41d72e3089657a64017c6dda0a26753dc2c9509fb73ae",
@@ -939,13 +1003,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d41c724f64397e693b789a77bfb7d56577451cd1c8915da0d9eeb8c93fea1a41",

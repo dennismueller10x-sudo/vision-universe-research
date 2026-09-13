@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "15a889afdf11dcd859c1a44ab94cdef161bc6d927a71b27b87d808e5af35e691",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6fbfb3512001bb1e6793fdf53260e76d4a0f41e05f9e46ab6799a7368dd10882",
@@ -322,8 +322,8 @@
       "name": "NETSCOUT SYSTEMS INC",
       "sic": "7373",
       "rawFacts": 26866,
-      "mappedFacts": 7299,
-      "unmappedFacts": 19644,
+      "mappedFacts": 7406,
+      "unmappedFacts": 19578,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20255,
+        "total": 20189,
         "by_severity": {
-          "INFO": 19644,
+          "INFO": 19578,
           "WARNING": 611
         },
         "by_code": {
@@ -452,7 +452,7 @@
           "FISCAL_PERIOD_CONFLICT": 15,
           "RESTATEMENT_CONFLICT": 8,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 19644
+          "UNKNOWN_CONCEPT": 19578
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd33f23c45dcd98b09617395f2add6bda6ec92fec6c8b2b4a1e9e3752a2fcabd",
@@ -480,8 +480,8 @@
       "name": "PharmaCyte Biotech, Inc.",
       "sic": "2836",
       "rawFacts": 12747,
-      "mappedFacts": 4753,
-      "unmappedFacts": 8223,
+      "mappedFacts": 4757,
+      "unmappedFacts": 8221,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -600,9 +600,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8425,
+        "total": 8423,
         "by_severity": {
-          "INFO": 8223,
+          "INFO": 8221,
           "ERROR": 2,
           "WARNING": 200
         },
@@ -611,7 +611,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 79,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 8223
+          "UNKNOWN_CONCEPT": 8221
         }
       },
       "latestFiling": {
@@ -622,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f2e1f39ea1ed77200775ddac269ebc72e2a13a62a2274320eda05189327da880",
@@ -639,8 +639,8 @@
       "name": "GRAPHIC PACKAGING HOLDING CO",
       "sic": "2650",
       "rawFacts": 25351,
-      "mappedFacts": 7522,
-      "unmappedFacts": 17830,
+      "mappedFacts": 7592,
+      "unmappedFacts": 17703,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -759,15 +759,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18564,
+        "total": 18494,
         "by_severity": {
-          "INFO": 17830,
-          "WARNING": 734
+          "INFO": 17703,
+          "WARNING": 791
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 648,
+          "PERIOD_MISMATCH": 57,
           "RESTATEMENT_CONFLICT": 86,
-          "UNKNOWN_CONCEPT": 17830
+          "UNKNOWN_CONCEPT": 17703
         }
       },
       "latestFiling": {
@@ -778,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d8b06d9253c1989fc8b1590849228356d174c9d771002a65d3a5942ad1200e11",
@@ -795,8 +796,8 @@
       "name": "SAIHEAT Ltd",
       "sic": "6199",
       "rawFacts": 1513,
-      "mappedFacts": 499,
-      "unmappedFacts": 993,
+      "mappedFacts": 501,
+      "unmappedFacts": 992,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -916,9 +917,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1115,
+        "total": 1114,
         "by_severity": {
-          "INFO": 993,
+          "INFO": 992,
           "WARNING": 122
         },
         "by_code": {
@@ -926,7 +927,7 @@
           "FISCAL_PERIOD_CONFLICT": 10,
           "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 49,
-          "UNKNOWN_CONCEPT": 993
+          "UNKNOWN_CONCEPT": 992
         }
       },
       "latestFiling": {
@@ -937,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f9562f07bdb20b85b58a76476d6c20312f9a7cbb940a217224258f99eb55b00a",

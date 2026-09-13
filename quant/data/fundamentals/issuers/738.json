@@ -7,8 +7,8 @@
       "name": "PENN Entertainment, Inc.",
       "sic": "7011",
       "rawFacts": 26378,
-      "mappedFacts": 7097,
-      "unmappedFacts": 19042,
+      "mappedFacts": 7124,
+      "unmappedFacts": 19020,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19940,
+        "total": 19919,
         "by_severity": {
-          "INFO": 19042,
+          "INFO": 19020,
           "ERROR": 4,
-          "WARNING": 894
+          "WARNING": 895
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 726,
           "FUTURE_DATA_LEAK": 4,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 168,
-          "UNKNOWN_CONCEPT": 19042
+          "UNKNOWN_CONCEPT": 19020
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "113a419f2d5d39dea4e5efb6ca27a386592840b7f7d29693b6b9d887773b210b",
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7bc8e240798754add65d76a86dca104c4499770ffbebd229cb0fe1bfce408797",

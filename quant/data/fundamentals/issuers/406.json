@@ -7,8 +7,8 @@
       "name": "JOHNSON & JOHNSON",
       "sic": "2834",
       "rawFacts": 27494,
-      "mappedFacts": 8416,
-      "unmappedFacts": 20019,
+      "mappedFacts": 8513,
+      "unmappedFacts": 19958,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20377,
+        "total": 20317,
         "by_severity": {
-          "INFO": 20019,
-          "WARNING": 358
+          "INFO": 19958,
+          "WARNING": 359
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 241,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 117,
-          "UNKNOWN_CONCEPT": 20019
+          "UNKNOWN_CONCEPT": 19958
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5d3047c0a2388e3c9a287a0b3746c49f57e3e7031e66438de9072af44df0f5eb",
@@ -163,8 +164,8 @@
       "name": "CIRRUS LOGIC, INC.",
       "sic": "3674",
       "rawFacts": 18902,
-      "mappedFacts": 6418,
-      "unmappedFacts": 12919,
+      "mappedFacts": 6539,
+      "unmappedFacts": 12840,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -282,17 +283,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13317,
+        "total": 13245,
         "by_severity": {
-          "INFO": 12919,
+          "INFO": 12840,
           "ERROR": 3,
-          "WARNING": 395
+          "WARNING": 402
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 274,
+          "CONCEPT_DISAGREEMENT": 278,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 121,
-          "UNKNOWN_CONCEPT": 12919
+          "RESTATEMENT_CONFLICT": 124,
+          "UNKNOWN_CONCEPT": 12840
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dbb170f3ae174cd97628913e82f340bf6f4214afc3797ba5aea3ac38b0fa4dcc",
@@ -444,13 +445,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1eb764c2478bcb813dcb930fb404076fbcc771b454b5a363a6bc085c9be6aa51",
@@ -601,13 +602,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "df917399339c3656ef870761e124d92cee372dba559bdbf536d4976a04c36121",
@@ -759,13 +760,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b1fed16a24d886b3ee8b9c4fa26a50b777ac264913a35376476a5399e57e3d27",
@@ -776,8 +777,8 @@
       "name": "Park Hotels & Resorts Inc.",
       "sic": "7011",
       "rawFacts": 11629,
-      "mappedFacts": 3452,
-      "unmappedFacts": 8049,
+      "mappedFacts": 3700,
+      "unmappedFacts": 7873,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -896,15 +897,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8365,
+        "total": 8190,
         "by_severity": {
-          "INFO": 8049,
-          "WARNING": 316
+          "INFO": 7873,
+          "WARNING": 317
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 304,
-          "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 8049
+          "RESTATEMENT_CONFLICT": 13,
+          "UNKNOWN_CONCEPT": 7873
         }
       },
       "latestFiling": {
@@ -915,13 +916,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "340ec05f5edf8ad5f7c6a7976996b69ee6ef9daf04092276af33a884c0ec9f45",
@@ -932,8 +933,8 @@
       "name": "NRX Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 6751,
-      "mappedFacts": 2526,
-      "unmappedFacts": 4204,
+      "mappedFacts": 2528,
+      "unmappedFacts": 4202,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1052,16 +1053,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4451,
+        "total": 4449,
         "by_severity": {
-          "INFO": 4204,
+          "INFO": 4202,
           "WARNING": 247
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 123,
           "RESTATEMENT_CONFLICT": 122,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 4204
+          "UNKNOWN_CONCEPT": 4202
         }
       },
       "latestFiling": {
@@ -1072,13 +1073,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f1f8aa8026249bfcff8e90abb5d4df2be12510a0f68331eacd2a007b62ab9e0",
@@ -1228,13 +1229,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "506b1b1464076194b69d5b15908800b53639bccab8f735cc6b5041382e4d11b0",
@@ -1386,13 +1387,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe2de3f3e59db6f8086b52dd1135f59e09a1767a6e3933af99ae17f5641afb56",

@@ -7,8 +7,8 @@
       "name": "SYNOPSYS INC",
       "sic": "7372",
       "rawFacts": 28476,
-      "mappedFacts": 7780,
-      "unmappedFacts": 21210,
+      "mappedFacts": 7857,
+      "unmappedFacts": 21158,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21410,
+        "total": 21358,
         "by_severity": {
-          "INFO": 21210,
+          "INFO": 21158,
           "WARNING": 200
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 171,
           "RESTATEMENT_CONFLICT": 24,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 21210
+          "UNKNOWN_CONCEPT": 21158
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8beef7830dc63ca0bc933d4b9f6d024ba0165a9834969c4f0c6a0d65922082fa",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b4361f9082e765b1d6eacde62f8bbb0ec0c08e2fde301bd82b8c7db02285b54c",
@@ -323,8 +323,8 @@
       "name": "Danaos Corp",
       "sic": "4412",
       "rawFacts": 4516,
-      "mappedFacts": 1523,
-      "unmappedFacts": 3276,
+      "mappedFacts": 1548,
+      "unmappedFacts": 3234,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -442,16 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3331,
+        "total": 3307,
         "by_severity": {
-          "INFO": 3276,
-          "WARNING": 55
+          "INFO": 3234,
+          "WARNING": 73
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 43,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 3276
+          "UNEXPECTED_DURATION": 18,
+          "UNKNOWN_CONCEPT": 3234
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1bc0153d8104621ff6284d5d952b6b0e961234e61726c33c1fb1a5eb6e25ca97",
@@ -479,8 +480,8 @@
       "name": "Performance Shipping Inc.",
       "sic": "4412",
       "rawFacts": 5103,
-      "mappedFacts": 1454,
-      "unmappedFacts": 3803,
+      "mappedFacts": 1460,
+      "unmappedFacts": 3800,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -599,9 +600,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3965,
+        "total": 3962,
         "by_severity": {
-          "INFO": 3803,
+          "INFO": 3800,
           "WARNING": 162
         },
         "by_code": {
@@ -609,7 +610,7 @@
           "EXTREME_VALUE": 6,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 3803
+          "UNKNOWN_CONCEPT": 3800
         }
       },
       "latestFiling": {
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe2f4cd7ae930229fd1554de5261ba4ef87ebf7019f8ad3bd7e40ec4bd8fc948",
@@ -637,8 +638,8 @@
       "name": "Allegion plc",
       "sic": "7381",
       "rawFacts": 19306,
-      "mappedFacts": 5756,
-      "unmappedFacts": 13537,
+      "mappedFacts": 5817,
+      "unmappedFacts": 13476,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -757,15 +758,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14070,
+        "total": 14011,
         "by_severity": {
-          "INFO": 13537,
-          "WARNING": 533
+          "INFO": 13476,
+          "WARNING": 535
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 501,
-          "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 13537
+          "RESTATEMENT_CONFLICT": 34,
+          "UNKNOWN_CONCEPT": 13476
         }
       },
       "latestFiling": {
@@ -776,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9755a2dd773241bf42faef315c3390470f2d9bc7534e7684f79dfd178d2aea26",
@@ -932,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "178dc268ea341c2b59acf642c2b3b3c439cdba14bd78293a66e4d4c426903885",
@@ -1087,13 +1088,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "80a25b6a2a54a19fd96d5ddb46527c91a0a7f1155cba0cf246e049e6a88bec27",
@@ -1239,13 +1240,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d19548c889579c1397fb25bb7efe924319ffc018184c7f41a01d127cf50536ff",

@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfbb204831345f4ddcba3d66e50ab9c861bf871eb27708cbfb1326386a0f7a2c",
@@ -167,8 +167,8 @@
       "name": "GRAHAM CORP",
       "sic": "3560",
       "rawFacts": 20131,
-      "mappedFacts": 6701,
-      "unmappedFacts": 13906,
+      "mappedFacts": 6860,
+      "unmappedFacts": 13742,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +287,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14374,
+        "total": 14210,
         "by_severity": {
-          "INFO": 13906,
+          "INFO": 13742,
           "WARNING": 468
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 380,
           "RESTATEMENT_CONFLICT": 88,
-          "UNKNOWN_CONCEPT": 13906
+          "UNKNOWN_CONCEPT": 13742
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "caa8ea0711b1589e6d8cb7a1d555d115da52631924b70e2eb5161b5ac3d47918",
@@ -323,8 +323,8 @@
       "name": "Clear Secure, Inc.",
       "sic": "7372",
       "rawFacts": 7002,
-      "mappedFacts": 1777,
-      "unmappedFacts": 5219,
+      "mappedFacts": 1850,
+      "unmappedFacts": 5160,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -443,17 +443,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5565,
+        "total": 5518,
         "by_severity": {
-          "INFO": 5219,
-          "WARNING": 346
+          "INFO": 5160,
+          "WARNING": 358
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 304,
           "FISCAL_PERIOD_CONFLICT": 2,
+          "PERIOD_MISMATCH": 12,
           "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 5219
+          "UNKNOWN_CONCEPT": 5160
         }
       },
       "latestFiling": {
@@ -464,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f831cd9b67370f5ec0be2b765b80bafb04b6c28c9d1c4343bc56b2f2e8fc103a",
@@ -619,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "447c3e71fd39f7e6b744a8eda686616b0a5607a312b2fec5a2fe813332901400",
@@ -763,13 +764,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "234a00aa3435e032863771aa551b9bb30cb65d4754557a2cb847b451f7bdefdf",
@@ -918,13 +919,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3f87504804fb188b18b4b0634144cf50ef7cc7ac17b5f5e91931bc89fa28d1b6",
@@ -1064,13 +1065,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5fe2bd9b7c4dbe296be944f765e05931b06272f5135dc96bcdf6d7053cd91ee2",

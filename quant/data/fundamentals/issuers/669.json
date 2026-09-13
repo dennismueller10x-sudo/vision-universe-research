@@ -7,17 +7,108 @@
       "name": "COLONY BANKCORP INC",
       "sic": "6022",
       "rawFacts": 28904,
-      "mappedFacts": 4072,
-      "unmappedFacts": 24983,
+      "mappedFacts": 6382,
+      "unmappedFacts": 23025,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 9.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,15 +226,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25131,
+        "total": 23179,
         "by_severity": {
-          "INFO": 24983,
-          "WARNING": 148
+          "INFO": 23025,
+          "WARNING": 154
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 110,
-          "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 24983
+          "RESTATEMENT_CONFLICT": 44,
+          "UNKNOWN_CONCEPT": 23025
         }
       },
       "latestFiling": {
@@ -154,13 +245,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ce0fe0758dc936f038b16a3c5ed547ea1a746b50ba446d181d01c5378e6a981d",
@@ -171,8 +262,8 @@
       "name": "Proto Labs Inc",
       "sic": "3440",
       "rawFacts": 18490,
-      "mappedFacts": 6287,
-      "unmappedFacts": 12688,
+      "mappedFacts": 6344,
+      "unmappedFacts": 12651,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -291,16 +382,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12987,
+        "total": 12950,
         "by_severity": {
-          "INFO": 12688,
+          "INFO": 12651,
           "WARNING": 299
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 254,
           "FISCAL_PERIOD_CONFLICT": 14,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 12688
+          "UNKNOWN_CONCEPT": 12651
         }
       },
       "latestFiling": {
@@ -311,13 +402,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cba6c460fefe65ce0955fbffefff0e1ce859a5aa672b578dc4d0eb8edeafa891",
@@ -328,8 +419,8 @@
       "name": "TWILIO INC",
       "sic": "7372",
       "rawFacts": 15464,
-      "mappedFacts": 4116,
-      "unmappedFacts": 11478,
+      "mappedFacts": 4226,
+      "unmappedFacts": 11410,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -448,15 +539,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11746,
+        "total": 11678,
         "by_severity": {
-          "INFO": 11478,
+          "INFO": 11410,
           "WARNING": 268
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 265,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 11478
+          "UNKNOWN_CONCEPT": 11410
         }
       },
       "latestFiling": {
@@ -467,13 +558,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0b8651870f22277cbc31c70c3773aa758a2c48b56d88bf8894388a1a592ca1f9",
@@ -484,8 +575,8 @@
       "name": "Shift4 Payments, Inc.",
       "sic": "7389",
       "rawFacts": 10451,
-      "mappedFacts": 2657,
-      "unmappedFacts": 7655,
+      "mappedFacts": 2665,
+      "unmappedFacts": 7651,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -605,16 +696,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8201,
+        "total": 8197,
         "by_severity": {
-          "INFO": 7655,
+          "INFO": 7651,
           "WARNING": 546
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 439,
           "RESTATEMENT_CONFLICT": 93,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 7655
+          "UNKNOWN_CONCEPT": 7651
         }
       },
       "latestFiling": {
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "33f9c2011a37e3652e4c93d0b1806812abd8c62f25fc9616d24173dcae5450a4",
@@ -782,13 +873,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6a4075e59902f7f0fbfa5ea0ac28acdc0de9aa38155a08080cd5f652c64e90e6",

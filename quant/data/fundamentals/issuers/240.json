@@ -7,8 +7,8 @@
       "name": "SYPRIS SOLUTIONS INC",
       "sic": "3823",
       "rawFacts": 19701,
-      "mappedFacts": 5615,
-      "unmappedFacts": 13874,
+      "mappedFacts": 5807,
+      "unmappedFacts": 13682,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,10 +127,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14254,
+        "total": 14062,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 13874,
+          "INFO": 13682,
           "WARNING": 378
         },
         "by_code": {
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 7,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 13874
+          "UNKNOWN_CONCEPT": 13682
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4630f3e23f0e9e42c1680f41f83d15863664258ae2cf4cd6db4bab41b9ff434",
@@ -166,11 +166,54 @@
       "name": "GLADSTONE LAND Corp",
       "sic": "6798",
       "rawFacts": 13647,
-      "mappedFacts": 3693,
-      "unmappedFacts": 9790,
+      "mappedFacts": 4335,
+      "unmappedFacts": 9337,
       "calendarYears": 15,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 1.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 6.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "LAND",
@@ -288,16 +331,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10180,
+        "total": 9747,
         "by_severity": {
-          "INFO": 9790,
-          "WARNING": 390
+          "INFO": 9337,
+          "WARNING": 410
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 363,
+          "CONCEPT_DISAGREEMENT": 379,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 9790
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 9337
         }
       },
       "latestFiling": {
@@ -308,13 +352,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "27606ca54b143c6b7c41586aabf4d6f4c87f0bd1f6d5b33d780f5843af799fbe",
@@ -466,13 +510,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f970f4d28dea79d9755b824f8d3578932cf13ef7b4810a179a68f860218dcd14",
@@ -623,13 +667,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2b7f3b01ccd942613881ba9853158ab8b9d1b5010c1a852f6e68abe4fd3726a1",
@@ -764,13 +808,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8bdbe3358ed37a6104a33957f1b57b233108687509db90d6e732308395968c73",

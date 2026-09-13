@@ -7,17 +7,108 @@
       "name": "CAPITAL CITY BANK GROUP INC",
       "sic": "6022",
       "rawFacts": 30718,
-      "mappedFacts": 5091,
-      "unmappedFacts": 25999,
+      "mappedFacts": 7583,
+      "unmappedFacts": 23915,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -134,16 +225,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26131,
+        "total": 24063,
         "by_severity": {
-          "INFO": 25999,
-          "WARNING": 132
+          "INFO": 23915,
+          "WARNING": 148
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 47,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
-          "RESTATEMENT_CONFLICT": 81,
-          "UNKNOWN_CONCEPT": 25999
+          "RESTATEMENT_CONFLICT": 97,
+          "UNKNOWN_CONCEPT": 23915
         }
       },
       "latestFiling": {
@@ -154,13 +245,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bda4faeb080ffdaab105a35d20db47e2a91e4663ee7dcbb836ae91bed111f74b",
@@ -315,13 +406,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3b9e90dceae07c748dcd83a8267fb9f0fcc7c782ae5dc51fdbfe4143f74942d3",
@@ -332,8 +423,8 @@
       "name": "MADRIGAL PHARMACEUTICALS, INC.",
       "sic": "2834",
       "rawFacts": 12223,
-      "mappedFacts": 4897,
-      "unmappedFacts": 7561,
+      "mappedFacts": 4912,
+      "unmappedFacts": 7548,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -452,17 +543,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7729,
+        "total": 7716,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 7561,
+          "INFO": 7548,
           "WARNING": 167
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 108,
-          "UNKNOWN_CONCEPT": 7561
+          "UNKNOWN_CONCEPT": 7548
         }
       },
       "latestFiling": {
@@ -473,13 +564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dbd21158ba9d23be9ca4346839e34ebe0571ab2130cf1f246fee3b23675f6d77",
@@ -490,8 +581,8 @@
       "name": "CROWN HOLDINGS, INC.",
       "sic": "3411",
       "rawFacts": 24747,
-      "mappedFacts": 6976,
-      "unmappedFacts": 17751,
+      "mappedFacts": 7092,
+      "unmappedFacts": 17664,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -610,20 +701,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19297,
+        "total": 19211,
         "by_severity": {
-          "INFO": 17751,
+          "INFO": 17664,
           "ERROR": 3,
-          "WARNING": 1543
+          "WARNING": 1544
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1325,
           "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 3,
-          "PERIOD_MISMATCH": 1,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 200,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 17751
+          "UNKNOWN_CONCEPT": 17664
         }
       },
       "latestFiling": {
@@ -634,13 +725,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c4d5449d874bd2f6070dd61030718ae75ced2f0afe8fc9473ce4ac51e839041f",
@@ -651,8 +742,8 @@
       "name": "Hello Group Inc.",
       "sic": "7372",
       "rawFacts": 5551,
-      "mappedFacts": 1242,
-      "unmappedFacts": 4217,
+      "mappedFacts": 1256,
+      "unmappedFacts": 4210,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -771,15 +862,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4599,
+        "total": 4592,
         "by_severity": {
-          "INFO": 4217,
+          "INFO": 4210,
           "WARNING": 382
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 4217
+          "UNKNOWN_CONCEPT": 4210
         }
       },
       "latestFiling": {
@@ -790,13 +881,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a0611bf994992f082bdb6d10bc5ead0394ec8d74400d384a9136f7210a4798c1",
@@ -944,13 +1035,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f0497cfdb90843612678a256e41b868cc8054f2343aeadd9ea8d8e62fa37e3bb",
@@ -961,8 +1052,8 @@
       "name": "Central Bancompany, Inc.",
       "sic": null,
       "rawFacts": 1499,
-      "mappedFacts": 204,
-      "unmappedFacts": 1316,
+      "mappedFacts": 294,
+      "unmappedFacts": 1242,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1080,12 +1171,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1316,
+        "total": 1242,
         "by_severity": {
-          "INFO": 1316
+          "INFO": 1242
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 1316
+          "UNKNOWN_CONCEPT": 1242
         }
       },
       "latestFiling": {
@@ -1096,13 +1187,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "443ee7f4aa755d77ac6c8f853a9efc2baace82c0431e190659fcdff76aa96482",

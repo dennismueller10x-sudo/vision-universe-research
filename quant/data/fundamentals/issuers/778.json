@@ -7,8 +7,8 @@
       "name": "ThredUp Inc.",
       "sic": "5961",
       "rawFacts": 6139,
-      "mappedFacts": 2452,
-      "unmappedFacts": 3866,
+      "mappedFacts": 2481,
+      "unmappedFacts": 3848,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4045,
+        "total": 4027,
         "by_severity": {
-          "INFO": 3866,
+          "INFO": 3848,
           "WARNING": 179
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 119,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 3866
+          "UNKNOWN_CONCEPT": 3848
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1d2164ee63e7bb056510fe71c7e004f9f582ade7a816d1333c0bc4f402fae74",
@@ -163,8 +163,8 @@
       "name": "MSC INCOME FUND, INC.",
       "sic": null,
       "rawFacts": 4275,
-      "mappedFacts": 1053,
-      "unmappedFacts": 3280,
+      "mappedFacts": 1104,
+      "unmappedFacts": 3229,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -282,15 +282,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3327,
+        "total": 3276,
         "by_severity": {
-          "INFO": 3280,
+          "INFO": 3229,
           "WARNING": 47
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 3280
+          "UNKNOWN_CONCEPT": 3229
         }
       },
       "latestFiling": {
@@ -301,13 +301,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "89f56c122eeaf0ebc1eccf96a6755250d3d85e181a1923242cd022ddbdab4def",
@@ -318,8 +318,8 @@
       "name": "Qorvo, Inc.",
       "sic": "3674",
       "rawFacts": 16706,
-      "mappedFacts": 5735,
-      "unmappedFacts": 11590,
+      "mappedFacts": 5739,
+      "unmappedFacts": 11588,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -437,15 +437,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11671,
+        "total": 11669,
         "by_severity": {
-          "INFO": 11590,
+          "INFO": 11588,
           "WARNING": 81
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
           "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 11590
+          "UNKNOWN_CONCEPT": 11588
         }
       },
       "latestFiling": {
@@ -456,13 +456,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6e7aeb60d4ebf31068cf18f8c08213a629b822e4ab519bbfc2570c0aafb6815f",
@@ -473,11 +473,54 @@
       "name": "Fermi Inc.",
       "sic": "6798",
       "rawFacts": 654,
-      "mappedFacts": 196,
-      "unmappedFacts": 439,
+      "mappedFacts": 202,
+      "unmappedFacts": 435,
       "calendarYears": 1,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FRMI"
@@ -593,16 +636,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 462,
+        "total": 458,
         "by_severity": {
-          "INFO": 439,
+          "INFO": 435,
           "WARNING": 23
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 439
+          "UNKNOWN_CONCEPT": 435
         }
       },
       "latestFiling": {
@@ -613,13 +656,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "649252aa9480a93bf92991fbd22192ab0bb6f688ff2478137fc8b2e4c26fe1aa",

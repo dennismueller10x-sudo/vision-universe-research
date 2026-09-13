@@ -7,8 +7,8 @@
       "name": "Alto Ingredients, Inc.",
       "sic": "2860",
       "rawFacts": 17102,
-      "mappedFacts": 6206,
-      "unmappedFacts": 10890,
+      "mappedFacts": 6223,
+      "unmappedFacts": 10873,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11687,
+        "total": 11670,
         "by_severity": {
-          "INFO": 10890,
+          "INFO": 10873,
           "ERROR": 2,
           "WARNING": 795
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 112,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 10890
+          "UNKNOWN_CONCEPT": 10873
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "31b873d509a0f1a0677b98985675c8bec942aa82b75605692d8b0c8f227dc04e",
@@ -166,17 +166,108 @@
       "name": "CHOICEONE FINANCIAL SERVICES INC",
       "sic": "6022",
       "rawFacts": 28162,
-      "mappedFacts": 5172,
-      "unmappedFacts": 23360,
+      "mappedFacts": 7925,
+      "unmappedFacts": 21028,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 13.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -294,15 +385,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23383,
+        "total": 21056,
         "by_severity": {
-          "INFO": 23360,
-          "WARNING": 23
+          "INFO": 21028,
+          "WARNING": 28
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 23360
+          "RESTATEMENT_CONFLICT": 10,
+          "UNKNOWN_CONCEPT": 21028
         }
       },
       "latestFiling": {
@@ -313,13 +404,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6ad684aea914d5f00262d02690a2bb178396c1e3143079ccd372bc4875588cd1",
@@ -330,8 +421,8 @@
       "name": "WILLIS LEASE FINANCE CORP",
       "sic": "5080",
       "rawFacts": 19996,
-      "mappedFacts": 6042,
-      "unmappedFacts": 13994,
+      "mappedFacts": 6248,
+      "unmappedFacts": 13866,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -450,15 +541,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14522,
+        "total": 14394,
         "by_severity": {
-          "INFO": 13994,
+          "INFO": 13866,
           "WARNING": 528
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 375,
           "RESTATEMENT_CONFLICT": 153,
-          "UNKNOWN_CONCEPT": 13994
+          "UNKNOWN_CONCEPT": 13866
         }
       },
       "latestFiling": {
@@ -469,13 +560,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d87463def71379deb99721a8e3b8bc3d760e5940c2b522e3414f39671a5fe538",
@@ -486,8 +577,8 @@
       "name": "Toast, Inc.",
       "sic": "7374",
       "rawFacts": 7929,
-      "mappedFacts": 2154,
-      "unmappedFacts": 5897,
+      "mappedFacts": 2191,
+      "unmappedFacts": 5872,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -605,15 +696,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6020,
+        "total": 5995,
         "by_severity": {
-          "INFO": 5897,
+          "INFO": 5872,
           "WARNING": 123
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 111,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 5897
+          "UNKNOWN_CONCEPT": 5872
         }
       },
       "latestFiling": {
@@ -624,13 +715,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1f8856cff62b8d3cf1aa1da0986c07c59a7ffc18c2bb581d3d4f2c4c782d3c83",
@@ -780,13 +871,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4c52e9d53574656a2e0c423365e98030c0187862393c34c53c20f49f2b64857",
@@ -797,9 +888,9 @@
       "name": "Pono Capital Four, Inc.",
       "sic": "6770",
       "rawFacts": 106,
-      "mappedFacts": 0,
+      "mappedFacts": 32,
       "unmappedFacts": 70,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -810,9 +901,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -851,14 +942,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -879,14 +970,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -908,22 +999,22 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 8
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 8,
+        "resolvedValues": 8
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 106,
+        "total": 70,
         "by_severity": {
-          "INFO": 70,
-          "WARNING": 36
+          "INFO": 70
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 70,
-          "UNPLACEABLE_PERIOD": 36
+          "UNKNOWN_CONCEPT": 70
         }
       },
       "latestFiling": {
@@ -934,13 +1025,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7bd82d46a36fa59fe8905abcdb2019086a4c6462d306190136c741b0ad15e480",

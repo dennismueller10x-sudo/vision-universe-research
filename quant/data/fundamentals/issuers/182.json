@@ -7,11 +7,54 @@
       "name": "Broadstone Net Lease, Inc.",
       "sic": "6798",
       "rawFacts": 14010,
-      "mappedFacts": 2891,
-      "unmappedFacts": 10788,
+      "mappedFacts": 3521,
+      "unmappedFacts": 10303,
       "calendarYears": 11,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "secured_debt": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BNL"
@@ -127,16 +170,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11405,
+        "total": 10982,
         "by_severity": {
-          "INFO": 10788,
-          "WARNING": 617
+          "INFO": 10303,
+          "WARNING": 679
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 588,
+          "CONCEPT_DISAGREEMENT": 598,
           "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 10788
+          "RESTATEMENT_CONFLICT": 34,
+          "UNEXPECTED_DURATION": 43,
+          "UNKNOWN_CONCEPT": 10303
         }
       },
       "latestFiling": {
@@ -147,13 +191,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3ef70b2ae7b7d659613763a9d019987a45a53a2d25c23efc13023ffe24f65305",
@@ -164,8 +208,8 @@
       "name": "Eaton Corp plc",
       "sic": "3590",
       "rawFacts": 18703,
-      "mappedFacts": 6231,
-      "unmappedFacts": 12902,
+      "mappedFacts": 6400,
+      "unmappedFacts": 12730,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +328,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13067,
+        "total": 12898,
         "by_severity": {
-          "INFO": 12902,
+          "INFO": 12730,
           "ERROR": 13,
-          "WARNING": 152
+          "WARNING": 155
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 110,
           "FUTURE_DATA_LEAK": 13,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 33,
-          "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 12902
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 12730
         }
       },
       "latestFiling": {
@@ -306,13 +351,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8a3fba3778a0a16806d9b88bf3ca5b8a6a11514754171ff554c2a167d1f11ec3",
@@ -323,8 +368,8 @@
       "name": "ALX ONCOLOGY HOLDINGS INC",
       "sic": "2834",
       "rawFacts": 7203,
-      "mappedFacts": 2134,
-      "unmappedFacts": 4965,
+      "mappedFacts": 2192,
+      "unmappedFacts": 4929,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -443,15 +488,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5128,
+        "total": 5092,
         "by_severity": {
-          "INFO": 4965,
+          "INFO": 4929,
           "WARNING": 163
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 154,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 4965
+          "UNKNOWN_CONCEPT": 4929
         }
       },
       "latestFiling": {
@@ -462,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "938eea6160de1cd7924d88308fd0428c83f9cd88242926c221f00f530bcab2ee",
@@ -616,13 +661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f536a7c6465d0f0dc97c096199efcc2f2cfd84bf6000f3533a15c16c0298d184",

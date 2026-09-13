@@ -7,17 +7,108 @@
       "name": "FIRSTSUN CAPITAL BANCORP",
       "sic": "6021",
       "rawFacts": 12501,
-      "mappedFacts": 1754,
-      "unmappedFacts": 10773,
+      "mappedFacts": 2251,
+      "unmappedFacts": 10318,
       "calendarYears": 7,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 7,
           "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 3.0
+        },
+        "time_deposits": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -134,15 +225,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10827,
+        "total": 10372,
         "by_severity": {
-          "INFO": 10773,
+          "INFO": 10318,
           "WARNING": 54
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 48,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 10773
+          "UNKNOWN_CONCEPT": 10318
         }
       },
       "latestFiling": {
@@ -153,13 +244,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "96835895c885ed7e96b43d6a777eca74f96fd29b58eda930df87b17408720b85",
@@ -170,8 +261,8 @@
       "name": "Kymera Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 7160,
-      "mappedFacts": 1916,
-      "unmappedFacts": 5203,
+      "mappedFacts": 1994,
+      "unmappedFacts": 5155,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -290,15 +381,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5265,
+        "total": 5217,
         "by_severity": {
-          "INFO": 5203,
+          "INFO": 5155,
           "WARNING": 62
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 5203
+          "UNKNOWN_CONCEPT": 5155
         }
       },
       "latestFiling": {
@@ -309,13 +400,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "214f55657e258734010e4fc2ac65fc65afe6bcb16ae58c165e2c8df74c16eeae",

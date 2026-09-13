@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ec2b74dafc53e00d16d535669966ac3345559f71c122a9b460068d01e348b86",
@@ -165,8 +165,8 @@
       "name": "Singularity Future Technology Ltd.",
       "sic": "4731",
       "rawFacts": 16141,
-      "mappedFacts": 4479,
-      "unmappedFacts": 11525,
+      "mappedFacts": 4511,
+      "unmappedFacts": 11487,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +285,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12394,
+        "total": 12380,
         "by_severity": {
-          "INFO": 11525,
-          "WARNING": 869
+          "INFO": 11487,
+          "WARNING": 893
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 676,
+          "CONCEPT_DISAGREEMENT": 695,
           "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 176,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 180,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 11525
+          "UNKNOWN_CONCEPT": 11487
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d62693b723ddb3189e082dd7444ef8927aee967d6fa8ad6aaa3b05e862d50414",

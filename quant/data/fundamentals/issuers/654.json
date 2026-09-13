@@ -7,8 +7,8 @@
       "name": "Oruka Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 11988,
-      "mappedFacts": 4192,
-      "unmappedFacts": 7623,
+      "mappedFacts": 4270,
+      "unmappedFacts": 7564,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8105,
+        "total": 8051,
         "by_severity": {
-          "INFO": 7623,
-          "WARNING": 482
+          "INFO": 7564,
+          "WARNING": 487
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 79,
+          "CONCEPT_DISAGREEMENT": 83,
           "FISCAL_PERIOD_CONFLICT": 9,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 75,
+          "RESTATEMENT_CONFLICT": 76,
           "UNEXPECTED_DURATION": 318,
-          "UNKNOWN_CONCEPT": 7623
+          "UNKNOWN_CONCEPT": 7564
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "10017070d20c0f4b3d3fb804e94d0d1b7640a09624e5f134d6437c8b76a8a681",
@@ -166,8 +166,8 @@
       "name": "COMPASS MINERALS INTERNATIONAL INC",
       "sic": "1400",
       "rawFacts": 24496,
-      "mappedFacts": 8012,
-      "unmappedFacts": 16910,
+      "mappedFacts": 8019,
+      "unmappedFacts": 16893,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -286,19 +286,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17684,
+        "total": 17677,
         "by_severity": {
-          "INFO": 16910,
+          "INFO": 16893,
           "ERROR": 2,
-          "WARNING": 772
+          "WARNING": 782
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 550,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "PERIOD_MISMATCH": 2,
+          "PERIOD_MISMATCH": 12,
           "RESTATEMENT_CONFLICT": 218,
-          "UNKNOWN_CONCEPT": 16910
+          "UNKNOWN_CONCEPT": 16893
         }
       },
       "latestFiling": {
@@ -309,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6a270f0fcbd0627cad466b822aa75d35b4da364787346899ad12b96139a0be67",
@@ -326,8 +326,8 @@
       "name": "UNIVERSAL TECHNICAL INSTITUTE INC",
       "sic": "8200",
       "rawFacts": 21051,
-      "mappedFacts": 6115,
-      "unmappedFacts": 15232,
+      "mappedFacts": 6184,
+      "unmappedFacts": 15162,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -446,18 +446,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15831,
+        "total": 15762,
         "by_severity": {
-          "INFO": 15232,
+          "INFO": 15162,
           "ERROR": 1,
-          "WARNING": 598
+          "WARNING": 599
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 560,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 27,
-          "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 15232
+          "UNEXPECTED_DURATION": 12,
+          "UNKNOWN_CONCEPT": 15162
         }
       },
       "latestFiling": {
@@ -468,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "82f9a16a76314c3d58ccd3357d4a7c0864c5ebd2a111c6aa23823987af48aa90",
@@ -626,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b58161e3d2dfc216479f04fee1151d2eb111002880f32bfa1e2909074a5dddbf",
@@ -783,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "67b8d8dc8df78a5f9e21a2bcbfcc263d1cb1d4774ca580b01dbaa393aa59781e",
@@ -800,8 +800,8 @@
       "name": "Blue Acquisition Corp/Cayman",
       "sic": "6770",
       "rawFacts": 507,
-      "mappedFacts": 116,
-      "unmappedFacts": 334,
+      "mappedFacts": 122,
+      "unmappedFacts": 329,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -922,16 +922,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 389,
+        "total": 384,
         "by_severity": {
-          "INFO": 334,
+          "INFO": 329,
           "WARNING": 55
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 7,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 47,
-          "UNKNOWN_CONCEPT": 334
+          "UNKNOWN_CONCEPT": 329
         }
       },
       "latestFiling": {
@@ -942,13 +942,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0ec08c89749e384fccc1d736e386d5399053cf75e1d39701fba710a9cb12be00",

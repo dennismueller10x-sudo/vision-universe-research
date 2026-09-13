@@ -7,11 +7,75 @@
       "name": "UNITEDHEALTH GROUP INC",
       "sic": "6324",
       "rawFacts": 28587,
-      "mappedFacts": 8253,
-      "unmappedFacts": 20821,
+      "mappedFacts": 9161,
+      "unmappedFacts": 20125,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2008-12-31",
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "UNH"
@@ -127,9 +191,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21251,
+        "total": 20555,
         "by_severity": {
-          "INFO": 20821,
+          "INFO": 20125,
           "WARNING": 430
         },
         "by_code": {
@@ -137,7 +201,7 @@
           "PERIOD_MISMATCH": 63,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 43,
-          "UNKNOWN_CONCEPT": 20821
+          "UNKNOWN_CONCEPT": 20125
         }
       },
       "latestFiling": {
@@ -148,13 +212,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "53d8ee3e60ed65ab4d2660dc528be25c7a9579a5f9716c9b49a6d90ed4488c14",
@@ -165,11 +229,75 @@
       "name": "HARTFORD INSURANCE GROUP, INC.",
       "sic": "6331",
       "rawFacts": 38337,
-      "mappedFacts": 6326,
-      "unmappedFacts": 31879,
+      "mappedFacts": 8368,
+      "unmappedFacts": 30176,
       "calendarYears": 20,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 7.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HIG",
@@ -286,22 +414,22 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32910,
+        "total": 31253,
         "by_severity": {
           "ERROR": 12,
-          "INFO": 31879,
-          "WARNING": 1019
+          "INFO": 30176,
+          "WARNING": 1065
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 809,
           "EXTREME_VALUE": 17,
-          "FISCAL_PERIOD_CONFLICT": 10,
+          "FISCAL_PERIOD_CONFLICT": 16,
           "FUTURE_DATA_LEAK": 12,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 177,
+          "RESTATEMENT_CONFLICT": 217,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 31879
+          "UNKNOWN_CONCEPT": 30176
         }
       },
       "latestFiling": {
@@ -312,13 +440,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "096b22fe2071ac5113687c9c3f9c0ce138732a0933cd42be47d1769179227096",
@@ -330,7 +458,7 @@
       "sic": "8200",
       "rawFacts": 17763,
       "mappedFacts": 3898,
-      "unmappedFacts": 13624,
+      "unmappedFacts": 13623,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -451,13 +579,14 @@
         "rules_version": "1.0.0",
         "total": 14261,
         "by_severity": {
-          "INFO": 13624,
-          "WARNING": 637
+          "INFO": 13623,
+          "WARNING": 638
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 495,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 142,
-          "UNKNOWN_CONCEPT": 13624
+          "UNKNOWN_CONCEPT": 13623
         }
       },
       "latestFiling": {
@@ -468,13 +597,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f3294ca8c5d24b51e3d6c069c8539747141e269a4244d09c98512c7427bb7a80",
@@ -485,8 +614,8 @@
       "name": "Celsius Holdings, Inc.",
       "sic": "2086",
       "rawFacts": 12510,
-      "mappedFacts": 4143,
-      "unmappedFacts": 8572,
+      "mappedFacts": 4216,
+      "unmappedFacts": 8499,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -605,15 +734,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8857,
+        "total": 8784,
         "by_severity": {
-          "INFO": 8572,
+          "INFO": 8499,
           "WARNING": 285
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 194,
           "RESTATEMENT_CONFLICT": 91,
-          "UNKNOWN_CONCEPT": 8572
+          "UNKNOWN_CONCEPT": 8499
         }
       },
       "latestFiling": {
@@ -624,13 +753,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a55f4564028cdf76f4b40b0abfdeaeff8be7cf24e194e9cd853e8d580d74dc7c",
@@ -641,8 +770,8 @@
       "name": "Streamex Corp.",
       "sic": "3845",
       "rawFacts": 13549,
-      "mappedFacts": 3717,
-      "unmappedFacts": 9672,
+      "mappedFacts": 3722,
+      "unmappedFacts": 9669,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -761,9 +890,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10109,
+        "total": 10106,
         "by_severity": {
-          "INFO": 9672,
+          "INFO": 9669,
           "ERROR": 1,
           "WARNING": 436
         },
@@ -772,7 +901,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 9672
+          "UNKNOWN_CONCEPT": 9669
         }
       },
       "latestFiling": {
@@ -783,13 +912,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d819ea6a3f1735ca33de4674d673efe656a85f193b6ed82fae3860c11ce79392",
@@ -800,8 +929,8 @@
       "name": "STEM, INC.",
       "sic": "7373",
       "rawFacts": 8989,
-      "mappedFacts": 2575,
-      "unmappedFacts": 6426,
+      "mappedFacts": 2617,
+      "unmappedFacts": 6400,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -920,15 +1049,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6617,
+        "total": 6591,
         "by_severity": {
-          "INFO": 6426,
+          "INFO": 6400,
           "WARNING": 191
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 101,
           "RESTATEMENT_CONFLICT": 90,
-          "UNKNOWN_CONCEPT": 6426
+          "UNKNOWN_CONCEPT": 6400
         }
       },
       "latestFiling": {
@@ -939,13 +1068,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "21e8c91be79244331c8136a22e75e2f2286b65b6baeb75375a9696f72e0ad981",
@@ -956,8 +1085,8 @@
       "name": "Lichen International Ltd",
       "sic": "8742",
       "rawFacts": 1243,
-      "mappedFacts": 401,
-      "unmappedFacts": 894,
+      "mappedFacts": 407,
+      "unmappedFacts": 891,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1076,15 +1205,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 925,
+        "total": 922,
         "by_severity": {
-          "INFO": 894,
+          "INFO": 891,
           "WARNING": 31
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 21,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 894
+          "UNKNOWN_CONCEPT": 891
         }
       },
       "latestFiling": {
@@ -1095,13 +1224,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b2751f797e4e80f16a0b395835ec18556e946e7011c31cd738770dc9136fa3b",
@@ -1255,13 +1384,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26446d2757aaae54928c41d6404161d1bcc92fba5be3d26325c02012359bef10",
@@ -1413,13 +1542,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8811c7020529516927f22e1fdcb65b6e816ec0120394f2759c449de744076b76",

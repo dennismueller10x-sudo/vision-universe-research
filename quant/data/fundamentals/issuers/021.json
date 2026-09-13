@@ -7,8 +7,8 @@
       "name": "SYSCO CORP",
       "sic": "5140",
       "rawFacts": 25961,
-      "mappedFacts": 7628,
-      "unmappedFacts": 18913,
+      "mappedFacts": 8042,
+      "unmappedFacts": 18535,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19330,
+        "total": 18952,
         "by_severity": {
-          "INFO": 18913,
+          "INFO": 18535,
           "WARNING": 417
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 338,
           "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 18913
+          "UNKNOWN_CONCEPT": 18535
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7912aa5b7f0372f4c284d49acb1f8e6a58c4321815d901d8bd5e494ff2285e3c",
@@ -163,8 +163,8 @@
       "name": "MARKETAXESS HOLDINGS INC",
       "sic": "6211",
       "rawFacts": 22794,
-      "mappedFacts": 5140,
-      "unmappedFacts": 17679,
+      "mappedFacts": 5603,
+      "unmappedFacts": 17216,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,15 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18052,
+        "total": 17590,
         "by_severity": {
-          "INFO": 17679,
-          "WARNING": 373
+          "INFO": 17216,
+          "WARNING": 374
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 320,
+          "FISCAL_PERIOD_CONFLICT": 1,
           "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 17679
+          "UNKNOWN_CONCEPT": 17216
         }
       },
       "latestFiling": {
@@ -302,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c7008e86eb498bf1e8df9813eda7d10f319fc9a02efb29e7f0790655aacad526",
@@ -319,8 +320,8 @@
       "name": "Compass Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 5998,
-      "mappedFacts": 2066,
-      "unmappedFacts": 3979,
+      "mappedFacts": 2115,
+      "unmappedFacts": 3948,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -439,9 +440,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4216,
+        "total": 4185,
         "by_severity": {
-          "INFO": 3979,
+          "INFO": 3948,
           "WARNING": 237
         },
         "by_code": {
@@ -449,7 +450,7 @@
           "FISCAL_PERIOD_CONFLICT": 8,
           "RESTATEMENT_CONFLICT": 92,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 3979
+          "UNKNOWN_CONCEPT": 3948
         }
       },
       "latestFiling": {
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ceae8f5e8e0aee47a9c05008897bfbd73acdf76b1c55a46aab7f74abb62d274b",
@@ -477,8 +478,8 @@
       "name": "Karat Packaging Inc.",
       "sic": "3089",
       "rawFacts": 8322,
-      "mappedFacts": 2525,
-      "unmappedFacts": 5872,
+      "mappedFacts": 2555,
+      "unmappedFacts": 5839,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -597,15 +598,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6101,
+        "total": 6071,
         "by_severity": {
-          "INFO": 5872,
-          "WARNING": 229
+          "INFO": 5839,
+          "WARNING": 232
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 221,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 5872
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 5839
         }
       },
       "latestFiling": {
@@ -616,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d333446488506eda511607d1d764585ae51dff11f152274a62f2fb4cc4fc12df",
@@ -633,8 +636,8 @@
       "name": "Boqii Holding Ltd",
       "sic": "5990",
       "rawFacts": 4371,
-      "mappedFacts": 884,
-      "unmappedFacts": 3274,
+      "mappedFacts": 916,
+      "unmappedFacts": 3258,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -753,9 +756,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3682,
+        "total": 3666,
         "by_severity": {
-          "INFO": 3274,
+          "INFO": 3258,
           "ERROR": 1,
           "WARNING": 407
         },
@@ -765,7 +768,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 22,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 3274
+          "UNKNOWN_CONCEPT": 3258
         }
       },
       "latestFiling": {
@@ -776,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "43f12e208214faf64d4f39e8e979f9eeb07bf879bf8d274d70fae5dc973ec105",
@@ -793,8 +796,8 @@
       "name": "New Horizon Aircraft Ltd.",
       "sic": "3721",
       "rawFacts": 2627,
-      "mappedFacts": 1003,
-      "unmappedFacts": 1691,
+      "mappedFacts": 1004,
+      "unmappedFacts": 1690,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -913,9 +916,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1789,
+        "total": 1788,
         "by_severity": {
-          "INFO": 1691,
+          "INFO": 1690,
           "WARNING": 98
         },
         "by_code": {
@@ -923,7 +926,7 @@
           "FISCAL_PERIOD_CONFLICT": 14,
           "RESTATEMENT_CONFLICT": 54,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 1691
+          "UNKNOWN_CONCEPT": 1690
         }
       },
       "latestFiling": {
@@ -934,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5218c33b985d8feb1936e3940524e51eefb268b0de0f20c1591ef000d6992a2c",
@@ -951,8 +954,8 @@
       "name": "Plutus Financial Group Ltd",
       "sic": "6200",
       "rawFacts": 824,
-      "mappedFacts": 182,
-      "unmappedFacts": 621,
+      "mappedFacts": 186,
+      "unmappedFacts": 618,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1071,14 +1074,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 690,
+        "total": 689,
         "by_severity": {
-          "INFO": 621,
-          "WARNING": 69
+          "INFO": 618,
+          "WARNING": 71
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 69,
-          "UNKNOWN_CONCEPT": 621
+          "CONCEPT_DISAGREEMENT": 71,
+          "UNKNOWN_CONCEPT": 618
         }
       },
       "latestFiling": {
@@ -1089,13 +1092,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "63aa530b3d5aeefe91d716666358522fecb6423817f281f45b4ceba12f22aa5a",

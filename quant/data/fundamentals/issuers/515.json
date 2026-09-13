@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b08cbdf427401f947d151f1cfd763989c8e01f41c2d9dd1239cf2a6fcbd9978",
@@ -165,8 +165,8 @@
       "name": "EXPEDITORS INTERNATIONAL OF WASHINGTON INC",
       "sic": "4731",
       "rawFacts": 21265,
-      "mappedFacts": 7004,
-      "unmappedFacts": 14218,
+      "mappedFacts": 7012,
+      "unmappedFacts": 14164,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +285,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14273,
+        "total": 14265,
         "by_severity": {
-          "INFO": 14218,
-          "WARNING": 55
+          "INFO": 14164,
+          "WARNING": 101
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 53,
+          "PERIOD_MISMATCH": 32,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 14218
+          "UNEXPECTED_DURATION": 14,
+          "UNKNOWN_CONCEPT": 14164
         }
       },
       "latestFiling": {
@@ -304,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5cd76f4856cd2ab248de267179980e5708a2f8c76d61eb049283982fbf6e43c4",
@@ -462,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e23a0903cfad702a37504560b6ba429738da3e3739938a9e8e9ea0871e2d6e71",
@@ -618,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "04f4d6473171be182e5f679d2513df250acae8365d1e9b6cc161b43f06e40037",
@@ -635,8 +637,8 @@
       "name": "ZoomInfo Technologies Inc.",
       "sic": "7372",
       "rawFacts": 10335,
-      "mappedFacts": 2878,
-      "unmappedFacts": 7499,
+      "mappedFacts": 2951,
+      "unmappedFacts": 7454,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -755,15 +757,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7738,
+        "total": 7693,
         "by_severity": {
-          "INFO": 7499,
+          "INFO": 7454,
           "WARNING": 239
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 224,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 7499
+          "UNKNOWN_CONCEPT": 7454
         }
       },
       "latestFiling": {
@@ -774,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "69d24286b4348c07fa27394513bde3d3bb31702fd9105a9a539167cbf75bd852",
@@ -791,8 +793,8 @@
       "name": "AsiaStrategy",
       "sic": "5094",
       "rawFacts": 633,
-      "mappedFacts": 208,
-      "unmappedFacts": 452,
+      "mappedFacts": 212,
+      "unmappedFacts": 450,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -911,16 +913,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 474,
+        "total": 472,
         "by_severity": {
-          "INFO": 452,
+          "INFO": 450,
           "WARNING": 22
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 19,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 452
+          "UNKNOWN_CONCEPT": 450
         }
       },
       "latestFiling": {
@@ -931,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "37e826d7dd1681592c195f2c41f1b0dd5ad342e88c028c6eae945e6d27332765",
@@ -1088,13 +1090,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe099f09129d1590d1cbcf0d7adf31230480dda528878bbf4fa9b178b8879486",
@@ -1244,13 +1246,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ef478677bfbd8a2ce65c7e48bbb3e8f5cca32eeaf621ffce590eb45bcbe65ba0",

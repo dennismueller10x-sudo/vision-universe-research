@@ -12,7 +12,98 @@
       "calendarYears": 15,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -153,13 +244,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0c662d9382c4c367febd0f50cb33ab64bdc242c2c5cc712df6bcc68f86b55a0",
@@ -170,8 +261,8 @@
       "name": "WisdomTree, Inc.",
       "sic": "6211",
       "rawFacts": 19516,
-      "mappedFacts": 5490,
-      "unmappedFacts": 14404,
+      "mappedFacts": 5659,
+      "unmappedFacts": 14236,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -290,18 +381,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14727,
+        "total": 14560,
         "by_severity": {
           "ERROR": 5,
-          "INFO": 14404,
-          "WARNING": 318
+          "INFO": 14236,
+          "WARNING": 319
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 257,
-          "FISCAL_PERIOD_CONFLICT": 16,
+          "FISCAL_PERIOD_CONFLICT": 17,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 14404
+          "UNKNOWN_CONCEPT": 14236
         }
       },
       "latestFiling": {
@@ -312,13 +403,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1749a1b49c598adcab86732d6af5e2e0c192710f03636b5c0eda8aa10f1901c4",
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "018f5554370dd5c1c622c321d8a6beb4cdca91bd36baeb25a07146e39532b663",
@@ -488,8 +579,8 @@
       "name": "Beyond Air, Inc.",
       "sic": "3841",
       "rawFacts": 9205,
-      "mappedFacts": 3004,
-      "unmappedFacts": 6274,
+      "mappedFacts": 3018,
+      "unmappedFacts": 6260,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -608,9 +699,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6662,
+        "total": 6648,
         "by_severity": {
-          "INFO": 6274,
+          "INFO": 6260,
           "ERROR": 5,
           "WARNING": 383
         },
@@ -621,7 +712,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 118,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 6274
+          "UNKNOWN_CONCEPT": 6260
         }
       },
       "latestFiling": {
@@ -632,13 +723,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd65660b151b4af877c2b07592f612b3f4af5f1cb269a81922c699946306ec28",
@@ -649,8 +740,8 @@
       "name": "Hyliion Holdings Corp.",
       "sic": "3713",
       "rawFacts": 6940,
-      "mappedFacts": 2546,
-      "unmappedFacts": 4607,
+      "mappedFacts": 2572,
+      "unmappedFacts": 4585,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -768,16 +859,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4773,
+        "total": 4751,
         "by_severity": {
-          "INFO": 4607,
+          "INFO": 4585,
           "WARNING": 166
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 101,
           "RESTATEMENT_CONFLICT": 57,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 4607
+          "UNKNOWN_CONCEPT": 4585
         }
       },
       "latestFiling": {
@@ -788,13 +879,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ab888ca9fc13ada56edb24be6ae9819c4489dc5be8d4d2be5535e913cf8d5dbf",
@@ -805,8 +896,8 @@
       "name": "loanDepot, Inc.",
       "sic": "6199",
       "rawFacts": 7010,
-      "mappedFacts": 1687,
-      "unmappedFacts": 5332,
+      "mappedFacts": 1758,
+      "unmappedFacts": 5261,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -925,16 +1016,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5535,
+        "total": 5464,
         "by_severity": {
-          "INFO": 5332,
+          "INFO": 5261,
           "WARNING": 203
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 157,
           "RESTATEMENT_CONFLICT": 32,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 5332
+          "UNKNOWN_CONCEPT": 5261
         }
       },
       "latestFiling": {
@@ -945,13 +1036,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c27a373c15c656bf982fb81c5961b6e5f414d298e29d1581e407d59e1ba1d1d7",
@@ -962,8 +1053,8 @@
       "name": "NEXTNAV INC.",
       "sic": "3812",
       "rawFacts": 5472,
-      "mappedFacts": 1867,
-      "unmappedFacts": 3554,
+      "mappedFacts": 1877,
+      "unmappedFacts": 3549,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1083,16 +1174,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3669,
+        "total": 3664,
         "by_severity": {
-          "INFO": 3554,
+          "INFO": 3549,
           "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 78,
           "RESTATEMENT_CONFLICT": 35,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 3554
+          "UNKNOWN_CONCEPT": 3549
         }
       },
       "latestFiling": {
@@ -1103,13 +1194,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5415a7e189151779eabd6d2c02bb1a2075b63b4fa6b6210279836788a021156e",
@@ -1120,8 +1211,8 @@
       "name": "Jinxin Technology Holding Co",
       "sic": "8200",
       "rawFacts": 964,
-      "mappedFacts": 226,
-      "unmappedFacts": 680,
+      "mappedFacts": 234,
+      "unmappedFacts": 674,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1240,15 +1331,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 778,
+        "total": 776,
         "by_severity": {
-          "INFO": 680,
-          "WARNING": 98
+          "INFO": 674,
+          "WARNING": 102
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 96,
+          "CONCEPT_DISAGREEMENT": 100,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 680
+          "UNKNOWN_CONCEPT": 674
         }
       },
       "latestFiling": {
@@ -1259,13 +1350,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "700debb478916681ec6d3e6f85d33c7c0b822c8128d6d989d620e7bc3725c788",

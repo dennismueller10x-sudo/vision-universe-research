@@ -7,11 +7,75 @@
       "name": "MARSH & MCLENNAN COMPANIES, INC.",
       "sic": "6411",
       "rawFacts": 32046,
-      "mappedFacts": 7206,
-      "unmappedFacts": 24685,
+      "mappedFacts": 7279,
+      "unmappedFacts": 24606,
       "calendarYears": 27,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_investments": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2012-12-31",
+          "historyYears": 3.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MRSH"
@@ -127,18 +191,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25716,
+        "total": 25649,
         "by_severity": {
-          "INFO": 24685,
+          "INFO": 24606,
           "ERROR": 40,
-          "WARNING": 991
+          "WARNING": 1003
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 887,
           "FUTURE_DATA_LEAK": 40,
           "RESTATEMENT_CONFLICT": 102,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 24685
+          "UNEXPECTED_DURATION": 14,
+          "UNKNOWN_CONCEPT": 24606
         }
       },
       "latestFiling": {
@@ -149,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "157ccc71f6babb4ee6fddb7cf4bfe390c9e79585cdd6cd038a236fbf716f2a74",
@@ -166,17 +230,108 @@
       "name": "INTERNATIONAL BANCSHARES CORP",
       "sic": "6022",
       "rawFacts": 27373,
-      "mappedFacts": 4973,
-      "unmappedFacts": 22745,
+      "mappedFacts": 7239,
+      "unmappedFacts": 20827,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 6.0
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 8.0
+        },
+        "time_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -294,9 +449,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22916,
+        "total": 20998,
         "by_severity": {
-          "INFO": 22745,
+          "INFO": 20827,
           "ERROR": 1,
           "WARNING": 170
         },
@@ -304,7 +459,7 @@
           "CONCEPT_DISAGREEMENT": 125,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 22745
+          "UNKNOWN_CONCEPT": 20827
         }
       },
       "latestFiling": {
@@ -315,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "64a5051b7776e932844841827895d79ca1f7fcfc2c21e2a056b96ef570c83fb6",
@@ -332,8 +487,8 @@
       "name": "SCHWAB CHARLES CORP",
       "sic": "6211",
       "rawFacts": 33959,
-      "mappedFacts": 6361,
-      "unmappedFacts": 27796,
+      "mappedFacts": 7905,
+      "unmappedFacts": 26531,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -454,15 +609,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28408,
+        "total": 27149,
         "by_severity": {
-          "INFO": 27796,
-          "WARNING": 612
+          "INFO": 26531,
+          "WARNING": 618
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 558,
-          "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 27796
+          "RESTATEMENT_CONFLICT": 60,
+          "UNKNOWN_CONCEPT": 26531
         }
       },
       "latestFiling": {
@@ -473,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "266253e424202c374484f1a87cce4bedaef38c0326b181ea69d396bb5ff268b4",
@@ -490,8 +645,8 @@
       "name": "NEKTAR THERAPEUTICS",
       "sic": "2834",
       "rawFacts": 16945,
-      "mappedFacts": 6321,
-      "unmappedFacts": 10965,
+      "mappedFacts": 6376,
+      "unmappedFacts": 10933,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -610,16 +765,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11291,
+        "total": 11259,
         "by_severity": {
-          "INFO": 10965,
+          "INFO": 10933,
           "WARNING": 326
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 271,
           "RESTATEMENT_CONFLICT": 53,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 10965
+          "UNKNOWN_CONCEPT": 10933
         }
       },
       "latestFiling": {
@@ -630,13 +785,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d32214a7cfd7e589b468d92580554a264598899970f6e8c376965cd62b989e77",
@@ -647,17 +802,108 @@
       "name": "Axos Financial, Inc.",
       "sic": "6035",
       "rawFacts": 29084,
-      "mappedFacts": 5059,
-      "unmappedFacts": 23971,
+      "mappedFacts": 7586,
+      "unmappedFacts": 21765,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2009-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2022-06-30",
+          "historyYears": 4.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2023-06-30",
+          "historyYears": 12.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "0630",
@@ -775,16 +1021,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24415,
+        "total": 22216,
         "by_severity": {
-          "INFO": 23971,
-          "WARNING": 444
+          "INFO": 21765,
+          "WARNING": 451
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 377,
-          "FISCAL_PERIOD_CONFLICT": 7,
-          "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 23971
+          "FISCAL_PERIOD_CONFLICT": 12,
+          "RESTATEMENT_CONFLICT": 62,
+          "UNKNOWN_CONCEPT": 21765
         }
       },
       "latestFiling": {
@@ -795,13 +1041,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3db56ca94f92a64ffad47de17ad9ca3d3a537062cb4103c69b5ef12d8dbaaef8",
@@ -947,13 +1193,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0211712c40735ef6e33d6ecf29d697c3b0b2d358af76618375356fd62eff6233",

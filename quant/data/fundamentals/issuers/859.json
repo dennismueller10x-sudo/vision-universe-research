@@ -7,8 +7,8 @@
       "name": "Scully Royalty Ltd.",
       "sic": "6795",
       "rawFacts": 3626,
-      "mappedFacts": 690,
-      "unmappedFacts": 3057,
+      "mappedFacts": 694,
+      "unmappedFacts": 3055,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3139,
+        "total": 3137,
         "by_severity": {
-          "INFO": 3057,
+          "INFO": 3055,
           "WARNING": 82
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 73,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 3057
+          "UNKNOWN_CONCEPT": 3055
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d575c8e3d3f77cabb8efbe1801d61157f8d94b82ec21ad0ef735d102bc8d148c",
@@ -164,8 +164,8 @@
       "name": "UNITED NATURAL FOODS INC",
       "sic": "5141",
       "rawFacts": 24519,
-      "mappedFacts": 7686,
-      "unmappedFacts": 17051,
+      "mappedFacts": 7689,
+      "unmappedFacts": 17048,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +284,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17768,
+        "total": 17765,
         "by_severity": {
-          "INFO": 17051,
+          "INFO": 17048,
           "ERROR": 1,
           "WARNING": 716
         },
@@ -294,7 +294,7 @@
           "CONCEPT_DISAGREEMENT": 657,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 17051
+          "UNKNOWN_CONCEPT": 17048
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e9edaa0b586a7504ca3bcfeaeef0012c82cfa0162571c337977c1788faf245ef",
@@ -322,8 +322,8 @@
       "name": "Childrens Place, Inc.",
       "sic": "5651",
       "rawFacts": 23039,
-      "mappedFacts": 7673,
-      "unmappedFacts": 15484,
+      "mappedFacts": 7679,
+      "unmappedFacts": 15478,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16044,
+        "total": 16038,
         "by_severity": {
-          "INFO": 15484,
+          "INFO": 15478,
           "ERROR": 6,
           "WARNING": 554
         },
@@ -452,7 +452,7 @@
           "CONCEPT_DISAGREEMENT": 366,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 188,
-          "UNKNOWN_CONCEPT": 15484
+          "UNKNOWN_CONCEPT": 15478
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75b783ef1b2550c227d34c3a70cc694f3f5b932b6bc13b2228c24e494086eaba",
@@ -480,8 +480,8 @@
       "name": "Cencora, Inc.",
       "sic": "5122",
       "rawFacts": 24831,
-      "mappedFacts": 8187,
-      "unmappedFacts": 16768,
+      "mappedFacts": 8384,
+      "unmappedFacts": 16564,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -600,17 +600,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17796,
+        "total": 17602,
         "by_severity": {
-          "INFO": 16768,
+          "INFO": 16564,
           "ERROR": 70,
-          "WARNING": 958
+          "WARNING": 968
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 905,
           "FUTURE_DATA_LEAK": 70,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 16768
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 16564
         }
       },
       "latestFiling": {
@@ -621,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "08a230f26f120e3e8763ec0bce46fdda3895cde8abf47dfee8c6340619eef5d8",
@@ -638,17 +640,108 @@
       "name": "Citizens Community Bancorp Inc.",
       "sic": "6035",
       "rawFacts": 32685,
-      "mappedFacts": 4293,
-      "unmappedFacts": 28720,
+      "mappedFacts": 6213,
+      "unmappedFacts": 27026,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2019-09-30",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2012-09-30",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 10.25
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.25
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2019-09-30",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.25
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.25
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.25
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2012-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.25
         }
       },
       "fiscalYearEnd": "1231",
@@ -765,15 +858,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28799,
+        "total": 27124,
         "by_severity": {
-          "INFO": 28720,
-          "WARNING": 79
+          "INFO": 27026,
+          "WARNING": 98
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 24,
-          "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 28720
+          "CONCEPT_DISAGREEMENT": 28,
+          "RESTATEMENT_CONFLICT": 70,
+          "UNKNOWN_CONCEPT": 27026
         }
       },
       "latestFiling": {
@@ -784,13 +877,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "093aaa005b73141bec6df48b2f586ed59078a4c281eda769d87796ebb8d49fde",
@@ -801,8 +894,8 @@
       "name": "WEBTOON Entertainment Inc.",
       "sic": "2741",
       "rawFacts": 3881,
-      "mappedFacts": 907,
-      "unmappedFacts": 2950,
+      "mappedFacts": 915,
+      "unmappedFacts": 2946,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -921,16 +1014,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3038,
+        "total": 3034,
         "by_severity": {
-          "INFO": 2950,
+          "INFO": 2946,
           "WARNING": 88
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 80,
           "RESTATEMENT_CONFLICT": 4,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 2950
+          "UNKNOWN_CONCEPT": 2946
         }
       },
       "latestFiling": {
@@ -941,13 +1034,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "49fdbc3d9530327ef5f17eb41fa6b408b30ccf54e6af2e461c5988b4e0a68007",

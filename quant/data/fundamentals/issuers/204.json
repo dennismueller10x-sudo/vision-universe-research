@@ -7,8 +7,8 @@
       "name": "Cineverse Corp.",
       "sic": "7841",
       "rawFacts": 18704,
-      "mappedFacts": 5649,
-      "unmappedFacts": 13149,
+      "mappedFacts": 5780,
+      "unmappedFacts": 13069,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13841,
+        "total": 13763,
         "by_severity": {
-          "INFO": 13149,
+          "INFO": 13069,
           "ERROR": 2,
-          "WARNING": 690
+          "WARNING": 692
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 542,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 145,
+          "RESTATEMENT_CONFLICT": 147,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 13149
+          "UNKNOWN_CONCEPT": 13069
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be7ab7a27ab7f977125d1ebc6518892fbe9ac8a1166b1b2c1adc1b3f560135bc",
@@ -166,11 +166,54 @@
       "name": "Phillips Edison & Company, Inc.",
       "sic": "6798",
       "rawFacts": 20871,
-      "mappedFacts": 4548,
-      "unmappedFacts": 16286,
+      "mappedFacts": 5654,
+      "unmappedFacts": 15444,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "PECO"
@@ -286,16 +329,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17088,
+        "total": 16380,
         "by_severity": {
-          "INFO": 16286,
-          "WARNING": 802
+          "INFO": 15444,
+          "WARNING": 936
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 667,
-          "RESTATEMENT_CONFLICT": 128,
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 16286
+          "CONCEPT_DISAGREEMENT": 763,
+          "RESTATEMENT_CONFLICT": 163,
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 15444
         }
       },
       "latestFiling": {
@@ -306,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5ca0c30660cc330ef751995ecf19ab63833a25f200641184c2e8ed0ac6de4dbe",
@@ -460,13 +503,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "426c89d5ae030fb0f2ecfec7627a048e91295b02e493ac9efff8de8b18d72b1c",

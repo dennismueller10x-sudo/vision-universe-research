@@ -7,17 +7,108 @@
       "name": "FNB CORP/PA/",
       "sic": "6021",
       "rawFacts": 40259,
-      "mappedFacts": 5906,
-      "unmappedFacts": 34810,
+      "mappedFacts": 8475,
+      "unmappedFacts": 32648,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 13.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 13.0
+        },
+        "time_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,19 +226,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 35187,
+        "total": 33039,
         "by_severity": {
-          "INFO": 34810,
+          "INFO": 32648,
           "ERROR": 6,
-          "WARNING": 371
+          "WARNING": 385
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 328,
-          "FISCAL_PERIOD_CONFLICT": 26,
+          "FISCAL_PERIOD_CONFLICT": 40,
           "FUTURE_DATA_LEAK": 6,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 34810
+          "UNKNOWN_CONCEPT": 32648
         }
       },
       "latestFiling": {
@@ -158,13 +249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "31724c63f1482a24a257941e9aa48a724242653cc1364ef802167abe3bafb5fd",
@@ -321,13 +412,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6f1428bdcb4c405a1a8d097bc6772d311310dac2275fe574ee92049fcb0d566f",
@@ -338,8 +429,8 @@
       "name": "A10 Networks, Inc.",
       "sic": "3576",
       "rawFacts": 17168,
-      "mappedFacts": 5420,
-      "unmappedFacts": 11804,
+      "mappedFacts": 5500,
+      "unmappedFacts": 11750,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -458,9 +549,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12131,
+        "total": 12077,
         "by_severity": {
-          "INFO": 11804,
+          "INFO": 11750,
           "ERROR": 2,
           "WARNING": 325
         },
@@ -469,7 +560,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 18,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11804
+          "UNKNOWN_CONCEPT": 11750
         }
       },
       "latestFiling": {
@@ -480,13 +571,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "56117bc941c01ab406f495b7d5a5ec5f6a45fdfb148ebf030815653bb63d81c1",
@@ -636,13 +727,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3dda272357e85af37bfba3f3f9c16850a0e5b2581493fed28aab388ff322e060",

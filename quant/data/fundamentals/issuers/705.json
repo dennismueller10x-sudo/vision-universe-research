@@ -7,8 +7,8 @@
       "name": "SunCoke Energy, Inc.",
       "sic": "3312",
       "rawFacts": 20783,
-      "mappedFacts": 6750,
-      "unmappedFacts": 14202,
+      "mappedFacts": 6774,
+      "unmappedFacts": 14177,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14910,
+        "total": 14886,
         "by_severity": {
-          "INFO": 14202,
+          "INFO": 14177,
           "ERROR": 1,
-          "WARNING": 707
+          "WARNING": 708
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 572,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 131,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 14202
+          "UNKNOWN_CONCEPT": 14177
         }
       },
       "latestFiling": {
@@ -150,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e33d62a66e8144b87f83f804c2202decdf0d90840cbeb754cd47bfa3b9407d3",
@@ -167,8 +168,8 @@
       "name": "High Templar Tech Ltd",
       "sic": "6199",
       "rawFacts": 5274,
-      "mappedFacts": 913,
-      "unmappedFacts": 4161,
+      "mappedFacts": 946,
+      "unmappedFacts": 4116,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +288,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4551,
+        "total": 4519,
         "by_severity": {
-          "INFO": 4161,
-          "WARNING": 390
+          "INFO": 4116,
+          "WARNING": 403
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 383,
-          "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 4161
+          "CONCEPT_DISAGREEMENT": 395,
+          "RESTATEMENT_CONFLICT": 8,
+          "UNKNOWN_CONCEPT": 4116
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "839cb762edb826f28d78b08445485a8ea3a588f20b3b4e5037908d2d99766a1d",
@@ -323,8 +324,8 @@
       "name": "Global Engine Group Holding Ltd",
       "sic": "7374",
       "rawFacts": 652,
-      "mappedFacts": 195,
-      "unmappedFacts": 424,
+      "mappedFacts": 199,
+      "unmappedFacts": 420,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -445,12 +446,12 @@
         "rules_version": "1.0.0",
         "total": 494,
         "by_severity": {
-          "INFO": 424,
-          "WARNING": 70
+          "INFO": 420,
+          "WARNING": 74
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 70,
-          "UNKNOWN_CONCEPT": 424
+          "CONCEPT_DISAGREEMENT": 74,
+          "UNKNOWN_CONCEPT": 420
         }
       },
       "latestFiling": {
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7859e4a8ce028ac6174506b97d2ba3f49c9744b06e0018d924f04b6b851795eb",

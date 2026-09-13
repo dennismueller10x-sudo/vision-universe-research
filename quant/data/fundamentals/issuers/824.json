@@ -7,8 +7,8 @@
       "name": "Teucrium Commodity Trust",
       "sic": "6221",
       "rawFacts": 1537,
-      "mappedFacts": 326,
-      "unmappedFacts": 1269,
+      "mappedFacts": 410,
+      "unmappedFacts": 1207,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -131,12 +131,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1269,
+        "total": 1207,
         "by_severity": {
-          "INFO": 1269
+          "INFO": 1207
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 1269
+          "UNKNOWN_CONCEPT": 1207
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "12851349137aee4e0d73df2dbc2bb829f2205aaf62f9b1231b65c7aa53915214",
@@ -164,8 +164,8 @@
       "name": "Acadian Asset Management Inc.",
       "sic": "6282",
       "rawFacts": 7502,
-      "mappedFacts": 2157,
-      "unmappedFacts": 5102,
+      "mappedFacts": 2301,
+      "unmappedFacts": 4994,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +284,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5376,
+        "total": 5272,
         "by_severity": {
-          "INFO": 5102,
-          "WARNING": 274
+          "INFO": 4994,
+          "WARNING": 278
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 221,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 5102
+          "RESTATEMENT_CONFLICT": 57,
+          "UNKNOWN_CONCEPT": 4994
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8bdf7185da63168708da0c1b92d67a8ffb0fe6a4b77827299d01af2a90167747",
@@ -320,8 +320,8 @@
       "name": "ALTA EQUIPMENT GROUP INC.",
       "sic": "5084",
       "rawFacts": 9103,
-      "mappedFacts": 2965,
-      "unmappedFacts": 6156,
+      "mappedFacts": 2969,
+      "unmappedFacts": 6151,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -441,16 +441,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6538,
+        "total": 6534,
         "by_severity": {
-          "INFO": 6156,
-          "WARNING": 382
+          "INFO": 6151,
+          "WARNING": 383
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 304,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 73,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 6156
+          "UNKNOWN_CONCEPT": 6151
         }
       },
       "latestFiling": {
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8f05e96b032584f70ad6a40c982216a6c2af9f3ed10d89149761fe06dd2379c3",

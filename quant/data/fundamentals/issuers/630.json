@@ -7,11 +7,54 @@
       "name": "BLACKSTONE MORTGAGE TRUST, INC.",
       "sic": "6798",
       "rawFacts": 17669,
-      "mappedFacts": 4332,
-      "unmappedFacts": 13046,
+      "mappedFacts": 5131,
+      "unmappedFacts": 12270,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2011-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BXMT"
@@ -127,16 +170,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13551,
+        "total": 12808,
         "by_severity": {
-          "INFO": 13046,
-          "WARNING": 505
+          "INFO": 12270,
+          "WARNING": 538
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 418,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 86,
-          "UNKNOWN_CONCEPT": 13046
+          "PERIOD_MISMATCH": 24,
+          "RESTATEMENT_CONFLICT": 95,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 12270
         }
       },
       "latestFiling": {
@@ -147,13 +191,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d17260eb14b7b72dbd29f61655e1bc117af92762ce03c03abe53a89399203136",
@@ -164,8 +208,8 @@
       "name": "National CineMedia, Inc.",
       "sic": "7310",
       "rawFacts": 21368,
-      "mappedFacts": 6422,
-      "unmappedFacts": 15232,
+      "mappedFacts": 6649,
+      "unmappedFacts": 15031,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,17 +328,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15864,
+        "total": 15665,
         "by_severity": {
-          "INFO": 15232,
+          "INFO": 15031,
           "ERROR": 9,
-          "WARNING": 623
+          "WARNING": 625
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 464,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 159,
-          "UNKNOWN_CONCEPT": 15232
+          "RESTATEMENT_CONFLICT": 161,
+          "UNKNOWN_CONCEPT": 15031
         }
       },
       "latestFiling": {
@@ -305,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f57f83ca960f2d8a82d7405e2fd09fc1d814726a11cfbcac0979e664aca96cf9",
@@ -464,13 +508,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8578d09cbe0c831474b62e05d08bab6f47b016f347657f20e07193b0ed9071f9",
@@ -621,13 +665,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2acaa4c529eba31c16b6604ba50264bd950f542e38594f40cb62893944ea9cde",

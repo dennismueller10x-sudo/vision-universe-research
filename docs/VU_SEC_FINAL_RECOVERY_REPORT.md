@@ -1,44 +1,45 @@
 # SEC Fundamentals — Abschlussbericht des Recovery-Zyklus (§25 / §26)
 
-Erzeugt 2026-09-13T16:30:25+00:00 aus den Artefakten unter `quant/data/fundamentals/`. **Jede Zahl ist gelesen, keine getippt.** Vorher = `baseline-before-final-recovery.json` (Lauf 34749245361), Nachher = aktueller Stand (Normalisierung 1.8.0, Registry 1.4.0).
+Erzeugt 2026-09-13T18:28:25+00:00 aus den Artefakten unter `quant/data/fundamentals/`. **Jede Zahl ist gelesen, keine getippt.** Vorher = `baseline-before-final-recovery.json` (Lauf 34749245361), Nachher = aktueller Stand (Normalisierung 1.9.0, Registry 1.5.0).
 
 ## 1 — Luecken nach Loesbarkeit (Produktuniversum 7.004)
 
 | Kennzahl | Vorher | Nachher | Δ |
 |---|---:|---:|---:|
-| `SEC_RECOVERABLE` | 384 | 191 | -193 |
-| `EXTERNAL_PROVIDER_CANDIDATE` | 111 | 59 | -52 |
-| `RESOLVES_WITH_TIME` | 821 | 881 | +60 |
+| `SEC_RECOVERABLE` | 384 | 161 | -223 |
+| `EXTERNAL_PROVIDER_CANDIDATE` | 111 | 60 | -51 |
+| `RESOLVES_WITH_TIME` | 821 | 910 | +89 |
 | `BY_DESIGN` | 312 | 312 | +0 |
 | `REQUIRES_REVIEW` | 389 | 389 | +0 |
 
 ## 2 — Die SEC_RECOVERABLE-Faelle, einzeln begruendet (§5)
 
-Nenner: 191 Faelle, 191 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"NOT_APPLICABLE": 25, "EXTERNAL_PROVIDER_CANDIDATE": 119, "REQUIRES_REVIEW": 42, "SEC_RECOVERABLE": 3, "INDUSTRY_LAYER": 2}; noch SEC-loesbar: **3** (vorher 72).
+Nenner: 161 Faelle, 161 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"RESOLVES_WITH_TIME": 40, "REQUIRES_REVIEW": 42, "EXTERNAL_PROVIDER_CANDIDATE": 16, "NOT_APPLICABLE": 62, "INDUSTRY_LAYER": 1}; noch SEC-loesbar: **0** (vorher 72).
 
 | Feinursache | Vorher | Nachher | Δ |
 |---|---:|---:|---:|
-| `NO_XBRL_FACTS` | n/a | 106 |  |
+| `SPECIAL_PURPOSE_ENTITY` | 48 | 48 | +0 |
 | `REQUIRES_REVIEW` | 54 | 42 | -12 |
-| `SPAC_BLANK_CHECK` | 171 | 25 | -146 |
-| `NO_XBRL_FINANCIALS` | n/a | 13 |  |
-| `BALANCE_SHEET_ONLY` | 28 | 2 | -26 |
-| `ASSET_MANAGER` | 7 | 1 | -6 |
+| `VERY_YOUNG_LISTING` | n/a | 40 |  |
+| `SPAC_BLANK_CHECK` | 171 | 14 | -157 |
+| `NO_XBRL_FACTS` | n/a | 13 |  |
+| `NO_XBRL_FINANCIALS` | n/a | 3 |  |
 | `BANK` | 3 | 1 | -2 |
-| `TRUE_MISSING_TAG_MAPPING` | 32 | 1 | -31 |
-| `SPECIAL_PURPOSE_ENTITY` | 48 | n/a |  |
-| `INSUFFICIENT_DISCLOSURE` | 29 | n/a |  |
-| `PERIOD_MAPPING` | 9 | n/a |  |
+| `ASSET_MANAGER` | 7 | n/a |  |
 | `IFRS_REMAINING` | 3 | n/a |  |
+| `PERIOD_MAPPING` | 9 | n/a |  |
+| `TRUE_MISSING_TAG_MAPPING` | 32 | n/a |  |
+| `BALANCE_SHEET_ONLY` | 28 | n/a |  |
+| `INSUFFICIENT_DISCLOSURE` | 29 | n/a |  |
 
 ## 3 — Titelzustaende (§12)
 
 | Zustand | Vorher | Nachher | Δ |
 |---|---:|---:|---:|
 | `AVAILABLE` | 4.987 | 5.172 | +185 |
-| `PARTIAL` | 483 | 491 | +8 |
-| `MISSING` | 343 | 125 | -218 |
-| `NOT_APPLICABLE` | n/a | 25 |  |
+| `PARTIAL` | 483 | 521 | +38 |
+| `MISSING` | 343 | 58 | -285 |
+| `NOT_APPLICABLE` | n/a | 62 |  |
 | `REQUIRES_REVIEW` | n/a | 0 |  |
 | `UNAVAILABLE` | 1.191 | 1.191 | +0 |
 
@@ -46,7 +47,7 @@ Nenner: 191 Faelle, 191 zugeordnet, 0 ohne Grund. Davon nach Konsequenz: {"NOT_A
 
 | Kennzahl | Vorher | Nachher | Δ |
 |---|---:|---:|---:|
-| `PIT_READY` | 5.470 | 5.663 | +193 |
+| `PIT_READY` | 5.470 | 5.693 | +223 |
 | `PIT_R2_AND_TECHNICAL` | 5.139 | 5.152 | +13 |
 | `PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS` | 4.480 | 4.480 | +0 |
 | `TECHNICAL_WITH_REVENUE` | 4.485 | 4.485 | +0 |
@@ -77,12 +78,12 @@ Look-ahead-Regel: PIT_READY verlangt Veroeffentlichungsdatum UND Akzessionsnumme
 |---|---:|
 | `PERSISTED_ISSUERS` | 5.437 |
 | `PERSISTED_ANNUAL_HISTORIES` | 5.299 |
-| `PERSISTED_QUARTERLY_HISTORIES` | 5.303 |
-| `PERSISTED_PIT_HISTORIES` | 5.303 |
+| `PERSISTED_QUARTERLY_HISTORIES` | 5.333 |
+| `PERSISTED_PIT_HISTORIES` | 5.333 |
 | `PERSISTED_METADATA` | 5.356 |
-| `PERSISTED_STORAGE_BYTES` | 611.572.488 |
+| `PERSISTED_STORAGE_BYTES` | 639.656.471 |
 | `PERSISTENCE_LOCATION` | r2:vision-universe-history/v1/sec/fundamentals/ |
-| `byNormalizationVersion` | `{"1.8.0": 5437}` |
+| `byNormalizationVersion` | `{"1.9.0": 5437}` |
 | `witness.keysOutsidePrefix` | 0 |
 | `witness.priceStoreUntouched` | True |
 | `RELOAD_WITHOUT_SEC_REFETCH` | **PASS** (8/8, networkBlocked=True) |
@@ -102,13 +103,13 @@ Look-ahead-Regel: PIT_READY verlangt Veroeffentlichungsdatum UND Akzessionsnumme
 
 | Branche | Emittenten | mit Branchenkennzahl | Anteil | Kennzahlen |
 |---|---:|---:|---:|---|
-| INSURER | 131 | 0 | 0.0 % | - |
-| REIT | 175 | 0 | 0.0 % | - |
-| BANK | 362 | 316 | 87.3 % | net_interest_income (316) |
+| INSURER | 131 | 113 | 86.3 % | available_for_sale_debt_securities (96), benefits_and_claims_incurred (91), benefits_losses_and_expenses (81), claims_liability (96), deferred_policy_acquisition_costs (92), net_investment_income (90), premiums_earned (100), total_investments (94), unearned_premiums (84) |
+| REIT | 175 | 174 | 99.4 % | dividends_declared_per_share (148), impairment_of_real_estate (112), real_estate_accumulated_depreciation (145), real_estate_gross (143), real_estate_net (131), secured_debt (111) |
+| BANK | 362 | 330 | 91.2 % | allowance_for_loan_losses (288), available_for_sale_debt_securities (294), cash_and_due_from_banks (274), deposits (305), interest_and_dividend_income (296), interest_and_fee_income_loans (279), interest_expense_deposits (260), loans_and_leases_net (285), net_interest_income (316), net_interest_income_after_provision (303), noninterest_expense (302), noninterest_income (303), provision_for_credit_losses (269), time_deposits (290) |
 
 ## 8 — Anbieterfrage (§22)
 
-Kandidatenprofil: 59 Titel, davon 8 auslaendische Emittenten, 51 sonstige. Entscheidung: **OFFEN (§15).** Ein Anbieter schliesst nur, was die SEC nicht fuehrt: Emittenten ohne XBRL-Abschluesse (40-F-Befreiung, leeres companyfacts) und Titel ohne CIK.
+Kandidatenprofil: 60 Titel, davon 8 auslaendische Emittenten, 52 sonstige. Entscheidung: **OFFEN (§15).** Ein Anbieter schliesst nur, was die SEC nicht fuehrt: Emittenten ohne XBRL-Abschluesse (40-F-Befreiung, leeres companyfacts) und Titel ohne CIK.
 
 ## 9 — Bestaetigungen (§26)
 
@@ -136,13 +137,13 @@ Kandidatenprofil: 59 Titel, davon 8 auslaendische Emittenten, 51 sonstige. Entsc
 ```json
 {
   "normalization_schema": "1.0.0",
-  "normalization_logic": "1.8.0",
+  "normalization_logic": "1.9.0",
   "formula": "1.2.0",
   "provider_adapter": "sec-edgar-1.0.0",
   "quality_rules": "1.0.0",
   "metric_registry": {
     "schema_version": 1,
-    "mapping_version": "1.4.0"
+    "mapping_version": "1.5.0"
   }
 }
 ```

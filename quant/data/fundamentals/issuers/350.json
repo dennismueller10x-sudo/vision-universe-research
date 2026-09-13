@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f84b0f3f4a38e8f86d3f76e2475504950ad91c0f5c91a5d232ee19a5ae91395e",
@@ -300,13 +300,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3146734d8ebd1425aa7a0ae3b33f598ba87c61868146a060b8a83c8891bc7135",
@@ -317,8 +317,8 @@
       "name": "Bit Digital, Inc",
       "sic": "6199",
       "rawFacts": 5036,
-      "mappedFacts": 1283,
-      "unmappedFacts": 3761,
+      "mappedFacts": 1327,
+      "unmappedFacts": 3735,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -437,9 +437,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3941,
+        "total": 3915,
         "by_severity": {
-          "INFO": 3761,
+          "INFO": 3735,
           "WARNING": 180
         },
         "by_code": {
@@ -447,7 +447,7 @@
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 32,
           "UNEXPECTED_DURATION": 17,
-          "UNKNOWN_CONCEPT": 3761
+          "UNKNOWN_CONCEPT": 3735
         }
       },
       "latestFiling": {
@@ -458,13 +458,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "32e885b1370f19ac68cd7df120a3525582ab09395bdbdbd91aee84933fe6dbc0",
@@ -476,7 +476,7 @@
       "sic": "7370",
       "rawFacts": 1990,
       "mappedFacts": 557,
-      "unmappedFacts": 1484,
+      "unmappedFacts": 1481,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -597,12 +597,13 @@
         "rules_version": "1.0.0",
         "total": 1509,
         "by_severity": {
-          "INFO": 1484,
-          "WARNING": 25
+          "INFO": 1481,
+          "WARNING": 28
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 25,
-          "UNKNOWN_CONCEPT": 1484
+          "PERIOD_MISMATCH": 3,
+          "UNKNOWN_CONCEPT": 1481
         }
       },
       "latestFiling": {
@@ -613,13 +614,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e19afc755af267b00d2b6c0720c659276bc9239b3e177c9de6fe4e9c6ebbce6",
@@ -766,13 +767,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "39fa32d9c0351959fad86a6c414d1885569d2060de20549fa7007b3c85be1c38",

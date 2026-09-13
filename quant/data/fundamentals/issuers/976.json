@@ -7,8 +7,8 @@
       "name": "JONES LANG LASALLE INC",
       "sic": "6531",
       "rawFacts": 25214,
-      "mappedFacts": 6564,
-      "unmappedFacts": 18740,
+      "mappedFacts": 6716,
+      "unmappedFacts": 18588,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19596,
+        "total": 19445,
         "by_severity": {
-          "INFO": 18740,
+          "INFO": 18588,
           "ERROR": 1,
-          "WARNING": 855
+          "WARNING": 856
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 738,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 117,
-          "UNKNOWN_CONCEPT": 18740
+          "RESTATEMENT_CONFLICT": 118,
+          "UNKNOWN_CONCEPT": 18588
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "45f5da4921053144e65a5ddc893bc0680330785492cbf7832759e19da6cb25a8",
@@ -165,8 +165,8 @@
       "name": "AVIENT CORP",
       "sic": "2821",
       "rawFacts": 19994,
-      "mappedFacts": 7236,
-      "unmappedFacts": 12811,
+      "mappedFacts": 7472,
+      "unmappedFacts": 12575,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,18 +285,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13581,
+        "total": 13348,
         "by_severity": {
-          "INFO": 12811,
+          "INFO": 12575,
           "ERROR": 6,
-          "WARNING": 764
+          "WARNING": 767
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 567,
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 196,
-          "UNKNOWN_CONCEPT": 12811
+          "RESTATEMENT_CONFLICT": 199,
+          "UNKNOWN_CONCEPT": 12575
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "20cb02de1bd98f36768348ac77057fb267f55aa1331886df31348d7267beea4c",
@@ -324,8 +324,8 @@
       "name": "CIMPRESS plc",
       "sic": "2750",
       "rawFacts": 26862,
-      "mappedFacts": 7779,
-      "unmappedFacts": 19629,
+      "mappedFacts": 7781,
+      "unmappedFacts": 19627,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -444,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20176,
+        "total": 20174,
         "by_severity": {
-          "INFO": 19629,
+          "INFO": 19627,
           "ERROR": 4,
           "WARNING": 543
         },
@@ -456,7 +456,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 19629
+          "UNKNOWN_CONCEPT": 19627
         }
       },
       "latestFiling": {
@@ -467,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c6332c8e2c9e857d797dff70255cd586ea0c6b2e7ba4931335984912d8e94672",
@@ -625,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "58e3206cd8aebd985da2cae7e1e94dd89bcad32280cf46e43d479fca2d4b8c9b",
@@ -642,11 +642,54 @@
       "name": "Net Lease Office Properties",
       "sic": "6798",
       "rawFacts": 3562,
-      "mappedFacts": 904,
-      "unmappedFacts": 2574,
+      "mappedFacts": 1089,
+      "unmappedFacts": 2430,
       "calendarYears": 5,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NLOP"
@@ -762,17 +805,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2744,
+        "total": 2638,
         "by_severity": {
-          "INFO": 2574,
-          "WARNING": 170
+          "INFO": 2430,
+          "WARNING": 208
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 134,
+          "CONCEPT_DISAGREEMENT": 158,
           "PERIOD_MISMATCH": 8,
-          "RESTATEMENT_CONFLICT": 26,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2574
+          "RESTATEMENT_CONFLICT": 39,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 2430
         }
       },
       "latestFiling": {
@@ -783,13 +826,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c2cac9a4e801cb5e99097e88b305d4470a1bdfa5ea1fec53668500f55eb8d174",
@@ -937,13 +980,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "61020a4e2954ff2f181bf95e0a8ae5a40eaf360d74fe40f5854e471fa874c528",

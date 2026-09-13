@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "85d59c7a5d51efdaad816a2748f126057a4098148e774b916016d7baae688b65",
@@ -163,11 +163,54 @@
       "name": "ACRES Commercial Realty Corp.",
       "sic": "6798",
       "rawFacts": 26355,
-      "mappedFacts": 5069,
-      "unmappedFacts": 20594,
+      "mappedFacts": 6227,
+      "unmappedFacts": 19637,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 7.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ACR",
@@ -285,18 +328,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21676,
+        "total": 20757,
         "by_severity": {
-          "INFO": 20594,
+          "INFO": 19637,
           "ERROR": 1,
-          "WARNING": 1081
+          "WARNING": 1119
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 845,
-          "FISCAL_PERIOD_CONFLICT": 5,
+          "CONCEPT_DISAGREEMENT": 855,
+          "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 231,
-          "UNKNOWN_CONCEPT": 20594
+          "RESTATEMENT_CONFLICT": 258,
+          "UNKNOWN_CONCEPT": 19637
         }
       },
       "latestFiling": {
@@ -307,13 +350,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5ab15343cbf8acf739cbc04c53a73596ca97d82834974aab45249463c657b2e6",
@@ -467,13 +510,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e22a10e37d5d8b9e17ba08cd090e52f8c62b55df9d2f257c4de0d6a7579ccc2f",
@@ -484,8 +527,8 @@
       "name": "Amylyx Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 4740,
-      "mappedFacts": 1537,
-      "unmappedFacts": 3257,
+      "mappedFacts": 1539,
+      "unmappedFacts": 3255,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -603,9 +646,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3287,
+        "total": 3285,
         "by_severity": {
-          "INFO": 3257,
+          "INFO": 3255,
           "WARNING": 30
         },
         "by_code": {
@@ -614,7 +657,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 3257
+          "UNKNOWN_CONCEPT": 3255
         }
       },
       "latestFiling": {
@@ -625,13 +668,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8194db88b8c885a3d561e4e2ad039347582994a6705512be533875ff9debc1f6",
@@ -642,9 +685,9 @@
       "name": "Alpex Acquisition Corp",
       "sic": "6770",
       "rawFacts": 79,
-      "mappedFacts": 0,
+      "mappedFacts": 25,
       "unmappedFacts": 48,
-      "calendarYears": 0,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -656,9 +699,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2025-03-15",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -697,7 +740,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -725,14 +768,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -754,22 +797,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 7
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 7,
+        "resolvedValues": 7
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 79,
+        "total": 49,
         "by_severity": {
           "INFO": 48,
-          "WARNING": 31
+          "WARNING": 1
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 48,
-          "UNPLACEABLE_PERIOD": 31
+          "CONCEPT_DISAGREEMENT": 1,
+          "UNKNOWN_CONCEPT": 48
         }
       },
       "latestFiling": {
@@ -780,13 +825,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c7378a1ce7a687899b3c0d4eff5c9687b305cefd66fa582ecd1becc1709a0a52",

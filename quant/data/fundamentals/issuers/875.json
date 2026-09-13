@@ -7,8 +7,8 @@
       "name": "CANADIAN PACIFIC KANSAS CITY LTD/CN",
       "sic": "4011",
       "rawFacts": 21239,
-      "mappedFacts": 5099,
-      "unmappedFacts": 16533,
+      "mappedFacts": 5356,
+      "unmappedFacts": 16318,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16773,
+        "total": 16565,
         "by_severity": {
-          "INFO": 16533,
-          "WARNING": 240
+          "INFO": 16318,
+          "WARNING": 247
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 186,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 48,
-          "UNKNOWN_CONCEPT": 16533
+          "RESTATEMENT_CONFLICT": 55,
+          "UNKNOWN_CONCEPT": 16318
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2a876a1c81fb58e1da4a608d731e1b426ede5fb1dec25497b5be02155c0445cd",
@@ -164,8 +164,8 @@
       "name": "WILLAMETTE VALLEY VINEYARDS INC",
       "sic": "2080",
       "rawFacts": 15051,
-      "mappedFacts": 6062,
-      "unmappedFacts": 9239,
+      "mappedFacts": 6065,
+      "unmappedFacts": 9237,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +285,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9694,
+        "total": 9692,
         "by_severity": {
-          "INFO": 9239,
+          "INFO": 9237,
           "WARNING": 455
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 382,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 69,
-          "UNKNOWN_CONCEPT": 9239
+          "UNKNOWN_CONCEPT": 9237
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "136df62f9f75af9e674aabcd7b62b27ec3ed33caafbc3926253f78b9e2be0db7",
@@ -322,11 +322,75 @@
       "name": "Fidelity National Financial, Inc.",
       "sic": "6361",
       "rawFacts": 31773,
-      "mappedFacts": 5146,
-      "unmappedFacts": 26238,
+      "mappedFacts": 6486,
+      "unmappedFacts": 25144,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 7.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FNF"
@@ -442,18 +506,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27197,
+        "total": 26131,
         "by_severity": {
-          "INFO": 26238,
+          "INFO": 25144,
           "ERROR": 8,
-          "WARNING": 951
+          "WARNING": 979
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 795,
           "FUTURE_DATA_LEAK": 8,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 155,
-          "UNKNOWN_CONCEPT": 26238
+          "RESTATEMENT_CONFLICT": 180,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 25144
         }
       },
       "latestFiling": {
@@ -464,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c71c3be5fdd491b487278d75152df64e5aa86a24775b8f7e85917f47a66461f5",
@@ -481,8 +546,8 @@
       "name": "CXApp Inc.",
       "sic": "7372",
       "rawFacts": 2804,
-      "mappedFacts": 1018,
-      "unmappedFacts": 1857,
+      "mappedFacts": 1030,
+      "unmappedFacts": 1849,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -601,18 +666,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1895,
+        "total": 1891,
         "by_severity": {
-          "INFO": 1857,
+          "INFO": 1849,
           "ERROR": 1,
-          "WARNING": 37
+          "WARNING": 41
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 27,
+          "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 1857
+          "UNKNOWN_CONCEPT": 1849
         }
       },
       "latestFiling": {
@@ -623,13 +688,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f344aac41bebc8f75d05dd3341e4978fc11b522de277655d831174f1d61f0792",
@@ -779,13 +844,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e96b82003b5de1a76a97daadf4f66530b399e6bf5b18c60d7417cabcdc7add2a",
@@ -796,8 +861,8 @@
       "name": "Hour Loop, Inc",
       "sic": "5961",
       "rawFacts": 5109,
-      "mappedFacts": 1587,
-      "unmappedFacts": 3645,
+      "mappedFacts": 1617,
+      "unmappedFacts": 3627,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -915,15 +980,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3655,
+        "total": 3639,
         "by_severity": {
-          "INFO": 3645,
-          "WARNING": 10
+          "INFO": 3627,
+          "WARNING": 12
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
-          "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 3645
+          "RESTATEMENT_CONFLICT": 6,
+          "UNKNOWN_CONCEPT": 3627
         }
       },
       "latestFiling": {
@@ -934,13 +999,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dac094ffbd833d08737bb4d7f9f4dc4e431ebfa956f5fc09f65132874ad02382",

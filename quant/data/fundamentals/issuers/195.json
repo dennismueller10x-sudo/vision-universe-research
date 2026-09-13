@@ -7,17 +7,108 @@
       "name": "BANK OF HAWAII CORP",
       "sic": "6022",
       "rawFacts": 36891,
-      "mappedFacts": 5259,
-      "unmappedFacts": 31876,
+      "mappedFacts": 7681,
+      "unmappedFacts": 29824,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 12.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 8.0
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 2.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 11.0
+        },
+        "time_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -137,17 +228,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32157,
+        "total": 30107,
         "by_severity": {
-          "INFO": 31876,
+          "INFO": 29824,
           "ERROR": 2,
-          "WARNING": 279
+          "WARNING": 281
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 268,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 31876
+          "RESTATEMENT_CONFLICT": 13,
+          "UNKNOWN_CONCEPT": 29824
         }
       },
       "latestFiling": {
@@ -158,13 +249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e01ba1792fcb9d00a82fcd7b9e30b12396d3d098aa4ac11a809d04f618845226",
@@ -175,8 +266,8 @@
       "name": "RING ENERGY, INC.",
       "sic": "1311",
       "rawFacts": 17500,
-      "mappedFacts": 5548,
-      "unmappedFacts": 11983,
+      "mappedFacts": 5551,
+      "unmappedFacts": 11981,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -294,9 +385,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12385,
+        "total": 12383,
         "by_severity": {
-          "INFO": 11983,
+          "INFO": 11981,
           "WARNING": 402
         },
         "by_code": {
@@ -304,7 +395,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "RESTATEMENT_CONFLICT": 89,
           "UNEXPECTED_DURATION": 127,
-          "UNKNOWN_CONCEPT": 11983
+          "UNKNOWN_CONCEPT": 11981
         }
       },
       "latestFiling": {
@@ -315,13 +406,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ff2ed92a95383aca83e2b95ec3d7e838ec8ca6d6b07886d524012eff99615c08",
@@ -332,8 +423,8 @@
       "name": "APPFOLIO INC",
       "sic": "7372",
       "rawFacts": 15297,
-      "mappedFacts": 4369,
-      "unmappedFacts": 11259,
+      "mappedFacts": 4473,
+      "unmappedFacts": 11195,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -451,15 +542,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11427,
+        "total": 11363,
         "by_severity": {
-          "INFO": 11259,
+          "INFO": 11195,
           "WARNING": 168
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 163,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 11259
+          "UNKNOWN_CONCEPT": 11195
         }
       },
       "latestFiling": {
@@ -470,13 +561,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "34cb31c9b51fa643da4acbd0c25c1ac009bb1f788fd5960e1307dac3a1a76818",
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "97024f31b4b1fda776460f7a10f8722dfeee5321d24ce564100c3deccc94a709",
@@ -779,13 +870,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5acd6750bf03c1e80bcf3280e75268fe55fc5ead4ad7e95cd45e3fedb35a09da",

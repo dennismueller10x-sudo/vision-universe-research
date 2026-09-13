@@ -7,8 +7,8 @@
       "name": "CME GROUP INC.",
       "sic": "6200",
       "rawFacts": 27349,
-      "mappedFacts": 6928,
-      "unmappedFacts": 21022,
+      "mappedFacts": 6994,
+      "unmappedFacts": 20966,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21278,
+        "total": 21228,
         "by_severity": {
-          "INFO": 21022,
-          "WARNING": 256
+          "INFO": 20966,
+          "WARNING": 262
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 203,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 21022
+          "RESTATEMENT_CONFLICT": 59,
+          "UNKNOWN_CONCEPT": 20966
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "27327676b2e80af8991d91c28dd866b57b479ea757d7a8d15dc6d6519c39e829",
@@ -163,8 +163,8 @@
       "name": "CODEXIS, INC.",
       "sic": "2860",
       "rawFacts": 20013,
-      "mappedFacts": 5749,
-      "unmappedFacts": 14716,
+      "mappedFacts": 5785,
+      "unmappedFacts": 14692,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15015,
+        "total": 14991,
         "by_severity": {
-          "INFO": 14716,
+          "INFO": 14692,
           "WARNING": 299
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 270,
           "RESTATEMENT_CONFLICT": 23,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14716
+          "UNKNOWN_CONCEPT": 14692
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1446fe6dff8c314d0cd84c66370f7dd6bd728ced99210d5638c93d7810d8567",
@@ -320,8 +320,8 @@
       "name": "ORION ENERGY SYSTEMS, INC.",
       "sic": "3640",
       "rawFacts": 22637,
-      "mappedFacts": 7475,
-      "unmappedFacts": 14930,
+      "mappedFacts": 7531,
+      "unmappedFacts": 14888,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -440,9 +440,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16148,
+        "total": 16106,
         "by_severity": {
-          "INFO": 14930,
+          "INFO": 14888,
           "ERROR": 1,
           "WARNING": 1217
         },
@@ -451,7 +451,7 @@
           "FISCAL_PERIOD_CONFLICT": 7,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 207,
-          "UNKNOWN_CONCEPT": 14930
+          "UNKNOWN_CONCEPT": 14888
         }
       },
       "latestFiling": {
@@ -462,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4510f5109fb8603ecd55a4570b247dd3709ac92e9b3b0bab878940f691233c4f",
@@ -479,14 +479,105 @@
       "name": "Home Federal Bancorp, Inc. of Louisiana",
       "sic": "6035",
       "rawFacts": 26120,
-      "mappedFacts": 3723,
-      "unmappedFacts": 22618,
+      "mappedFacts": 5882,
+      "unmappedFacts": 20791,
       "calendarYears": 16,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2013-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 12.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 15,
           "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 14.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2013-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2025-06-30",
           "historyYears": 14.0
@@ -607,18 +698,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22779,
+        "total": 20967,
         "by_severity": {
-          "INFO": 22618,
+          "INFO": 20791,
           "ERROR": 1,
-          "WARNING": 160
+          "WARNING": 175
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 114,
-          "FISCAL_PERIOD_CONFLICT": 7,
+          "CONCEPT_DISAGREEMENT": 116,
+          "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 22618
+          "RESTATEMENT_CONFLICT": 45,
+          "UNKNOWN_CONCEPT": 20791
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "726d5f60673206ffb0c36bb41dd1c7c7b877ebc77e31fbd1190abe2fe3b3810e",
@@ -783,13 +874,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "571594de3b068947660366374ba5a460cb309ed26665c310dd5c48208edc8b6a",
@@ -800,8 +891,8 @@
       "name": "Entrada Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 4897,
-      "mappedFacts": 1549,
-      "unmappedFacts": 3340,
+      "mappedFacts": 1551,
+      "unmappedFacts": 3338,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -919,14 +1010,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3401,
+        "total": 3399,
         "by_severity": {
-          "INFO": 3340,
+          "INFO": 3338,
           "WARNING": 61
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 61,
-          "UNKNOWN_CONCEPT": 3340
+          "UNKNOWN_CONCEPT": 3338
         }
       },
       "latestFiling": {
@@ -937,13 +1028,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b4e3611e9093cd783e77e4b996a4c4b750dfdd3594e18e0af4175382392292c9",
@@ -1093,13 +1184,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d4c0190148328d00a572fd40f7aba30671a6fc791a51e945a93bc7c9bbc57192",

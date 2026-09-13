@@ -7,8 +7,8 @@
       "name": "INTERNATIONAL PAPER CO /NEW/",
       "sic": "2621",
       "rawFacts": 30813,
-      "mappedFacts": 8076,
-      "unmappedFacts": 22664,
+      "mappedFacts": 8204,
+      "unmappedFacts": 22536,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -128,19 +128,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23765,
+        "total": 23641,
         "by_severity": {
-          "INFO": 22664,
+          "INFO": 22536,
           "ERROR": 6,
-          "WARNING": 1095
+          "WARNING": 1099
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 844,
-          "FISCAL_PERIOD_CONFLICT": 59,
+          "FISCAL_PERIOD_CONFLICT": 61,
           "FUTURE_DATA_LEAK": 6,
-          "RESTATEMENT_CONFLICT": 187,
+          "RESTATEMENT_CONFLICT": 189,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 22664
+          "UNKNOWN_CONCEPT": 22536
         }
       },
       "latestFiling": {
@@ -151,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0c8429198218cbd6ac709086226908159646999356fddf9da3952d52dae6d4fb",
@@ -168,8 +168,8 @@
       "name": "AFFILIATED MANAGERS GROUP, INC.",
       "sic": "6282",
       "rawFacts": 22815,
-      "mappedFacts": 6143,
-      "unmappedFacts": 16812,
+      "mappedFacts": 6197,
+      "unmappedFacts": 16780,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -292,15 +292,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17556,
+        "total": 17524,
         "by_severity": {
-          "INFO": 16812,
+          "INFO": 16780,
           "WARNING": 744
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 615,
           "RESTATEMENT_CONFLICT": 129,
-          "UNKNOWN_CONCEPT": 16812
+          "UNKNOWN_CONCEPT": 16780
         }
       },
       "latestFiling": {
@@ -311,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2f509f3150444321c870474178343ef2f81201a3a81eb13ac76307acb669b923",
@@ -328,8 +328,8 @@
       "name": "AUDIOCODES LTD",
       "sic": "3661",
       "rawFacts": 6675,
-      "mappedFacts": 1736,
-      "unmappedFacts": 5062,
+      "mappedFacts": 1756,
+      "unmappedFacts": 5050,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -448,15 +448,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5178,
+        "total": 5168,
         "by_severity": {
-          "INFO": 5062,
-          "WARNING": 116
+          "INFO": 5050,
+          "WARNING": 118
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 114,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 5062
+          "UNKNOWN_CONCEPT": 5050
         }
       },
       "latestFiling": {
@@ -467,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "88aaf5b1007c0d12c8a90fac0d18424f4eb0d7c79cb78252d279e1c6de19a07e",
@@ -484,8 +485,8 @@
       "name": "OCULAR THERAPEUTIX, INC",
       "sic": "2834",
       "rawFacts": 12003,
-      "mappedFacts": 4449,
-      "unmappedFacts": 7621,
+      "mappedFacts": 4488,
+      "unmappedFacts": 7597,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -604,16 +605,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7847,
+        "total": 7823,
         "by_severity": {
-          "INFO": 7621,
+          "INFO": 7597,
           "WARNING": 226
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 205,
           "FISCAL_PERIOD_CONFLICT": 9,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 7621
+          "UNKNOWN_CONCEPT": 7597
         }
       },
       "latestFiling": {
@@ -624,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26ce3a3adf1b4696f1b2f20106c2bdaf82612ff14833604274438b904267308a",
@@ -780,13 +781,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "84f3047a22db488ccb15c95e766dbe7873ba8aee7dbf969caf23a06b08bfa8ed",

@@ -7,11 +7,75 @@
       "name": "HUMANA INC",
       "sic": "6324",
       "rawFacts": 26962,
-      "mappedFacts": 7575,
-      "unmappedFacts": 19924,
+      "mappedFacts": 8725,
+      "unmappedFacts": 18967,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 8.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 4.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HUM"
@@ -127,16 +191,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20453,
+        "total": 19511,
         "by_severity": {
-          "INFO": 19924,
-          "WARNING": 529
+          "INFO": 18967,
+          "WARNING": 544
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 435,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 93,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 19924
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 18967
         }
       },
       "latestFiling": {
@@ -147,13 +212,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "41c4fdd38c9f8922007914be778523d0f78754e8f1430a96abc4af481bf505e6",
@@ -164,11 +229,54 @@
       "name": "Invesco Mortgage Capital Inc.",
       "sic": "6798",
       "rawFacts": 23493,
-      "mappedFacts": 4243,
-      "unmappedFacts": 18683,
+      "mappedFacts": 4878,
+      "unmappedFacts": 18075,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 6.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "IVR",
@@ -285,16 +393,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19497,
+        "total": 18936,
         "by_severity": {
-          "INFO": 18683,
-          "WARNING": 814
+          "INFO": 18075,
+          "WARNING": 861
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 695,
-          "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 113,
-          "UNKNOWN_CONCEPT": 18683
+          "PERIOD_MISMATCH": 46,
+          "RESTATEMENT_CONFLICT": 118,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 18075
         }
       },
       "latestFiling": {
@@ -305,13 +414,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "af7605596747fb49cbfc34e42c9e953baada4bd92bd7826b3e1dee69a4f1744f",
@@ -463,13 +572,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "499c5688fe9fa66da4583eb0e824ad7c4d7836188a852d57f435089d1f14ad76",
@@ -480,17 +589,108 @@
       "name": "Ponce Financial Group, Inc.",
       "sic": "6035",
       "rawFacts": 10436,
-      "mappedFacts": 1588,
-      "unmappedFacts": 8844,
+      "mappedFacts": 2272,
+      "unmappedFacts": 8258,
       "calendarYears": 7,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 3.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 3.0
+        },
         "net_interest_income": {
           "annualPeriods": 7,
           "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 4.0
+        },
+        "time_deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -608,17 +808,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8981,
+        "total": 8397,
         "by_severity": {
-          "INFO": 8844,
+          "INFO": 8258,
           "ERROR": 1,
-          "WARNING": 136
+          "WARNING": 138
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 132,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 8844
+          "RESTATEMENT_CONFLICT": 6,
+          "UNKNOWN_CONCEPT": 8258
         }
       },
       "latestFiling": {
@@ -629,13 +829,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "701fe7309d5ebcf08129070b733635099d38bcee759a4605863284da8e61515b",

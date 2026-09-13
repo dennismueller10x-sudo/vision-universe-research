@@ -7,8 +7,8 @@
       "name": "HALLADOR ENERGY CO",
       "sic": "4911",
       "rawFacts": 15538,
-      "mappedFacts": 5069,
-      "unmappedFacts": 10692,
+      "mappedFacts": 5115,
+      "unmappedFacts": 10660,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11211,
+        "total": 11180,
         "by_severity": {
-          "INFO": 10692,
+          "INFO": 10660,
           "ERROR": 25,
-          "WARNING": 494
+          "WARNING": 495
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 445,
+          "CONCEPT_DISAGREEMENT": 446,
           "FUTURE_DATA_LEAK": 25,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 10692
+          "UNKNOWN_CONCEPT": 10660
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "57f878f730bc0c5076715a8011d5de0efc1a0392143ad2c04d3864acd246d8fb",
@@ -309,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "72966cbd75b62f7baddf62b8e764e2b4e4b9cdb8dbb0035dccb55fef9746eefc",
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "930893f1963f13be5871ae9525a9fb7009068e85110ea755e946a9f7d2c67ddb",
@@ -621,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0071934035bd5c2978e923130f39cbcf7317ee2eef6465d5915140c45b0515a1",
@@ -638,11 +638,54 @@
       "name": "Gaming & Leisure Properties, Inc.",
       "sic": "6798",
       "rawFacts": 18767,
-      "mappedFacts": 5379,
-      "unmappedFacts": 13028,
+      "mappedFacts": 6083,
+      "unmappedFacts": 12297,
       "calendarYears": 15,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 1.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 4.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1207",
       "tickers": [
         "GLPI"
@@ -758,16 +801,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13752,
+        "total": 13250,
         "by_severity": {
-          "INFO": 13028,
-          "WARNING": 724
+          "INFO": 12297,
+          "WARNING": 953
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 383,
-          "PERIOD_MISMATCH": 238,
-          "RESTATEMENT_CONFLICT": 103,
-          "UNKNOWN_CONCEPT": 13028
+          "CONCEPT_DISAGREEMENT": 389,
+          "PERIOD_MISMATCH": 459,
+          "RESTATEMENT_CONFLICT": 104,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 12297
         }
       },
       "latestFiling": {
@@ -778,13 +822,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9d5880b264950cfcb83096c3be985139aabce3150280e867c6433e9e14c1e4bb",
@@ -934,13 +978,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "898810d9a2dca245d443a83760aa3c0a8873270b19415579de0cde2d845e9d9f",
@@ -951,8 +995,8 @@
       "name": "Kontoor Brands, Inc.",
       "sic": "2320",
       "rawFacts": 12693,
-      "mappedFacts": 3671,
-      "unmappedFacts": 9157,
+      "mappedFacts": 3707,
+      "unmappedFacts": 9121,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1071,9 +1115,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9425,
+        "total": 9389,
         "by_severity": {
-          "INFO": 9157,
+          "INFO": 9121,
           "WARNING": 268
         },
         "by_code": {
@@ -1081,7 +1125,7 @@
           "PERIOD_MISMATCH": 18,
           "RESTATEMENT_CONFLICT": 42,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 9157
+          "UNKNOWN_CONCEPT": 9121
         }
       },
       "latestFiling": {
@@ -1092,13 +1136,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0da232f8682379036ed578bc4e513851b213e3ae77d3c9717ebf65c87f797be1",
@@ -1248,13 +1292,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1930a252c45a546624e46d67878e87edd8ae38a48f0e54ef3b166b306056e59a",
@@ -1400,13 +1444,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "824ddc5556018101e71d16355813f157cc28e8d080c9c6bb10e4144f8c389ad9",
@@ -1417,9 +1461,9 @@
       "name": "TCGX Acquisition Corp.",
       "sic": "6770",
       "rawFacts": 30,
-      "mappedFacts": 0,
+      "mappedFacts": 6,
       "unmappedFacts": 13,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -1428,9 +1472,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-05-25",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1497,14 +1541,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1526,23 +1570,26 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "MEDIUM": 1,
+        "HIGH": 1
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 2,
+        "resolvedValues": 2
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30,
+        "total": 21,
         "by_severity": {
           "INFO": 13,
-          "WARNING": 17
+          "WARNING": 8
         },
         "by_code": {
+          "CONCEPT_DISAGREEMENT": 1,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 13,
-          "UNPLACEABLE_PERIOD": 10
+          "UNKNOWN_CONCEPT": 13
         }
       },
       "latestFiling": {
@@ -1553,13 +1600,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7eb0e5b9a6504c61095b166774ce1809f79ef1d1a77d214edeec85813811d4ab",

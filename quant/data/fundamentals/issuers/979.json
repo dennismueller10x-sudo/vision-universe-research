@@ -7,11 +7,75 @@
       "name": "AMERISAFE INC",
       "sic": "6331",
       "rawFacts": 23632,
-      "mappedFacts": 4516,
-      "unmappedFacts": 19108,
+      "mappedFacts": 6830,
+      "unmappedFacts": 17241,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AMSF"
@@ -127,18 +191,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19430,
+        "total": 17565,
         "by_severity": {
-          "INFO": 19108,
+          "INFO": 17241,
           "ERROR": 1,
-          "WARNING": 321
+          "WARNING": 323
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 311,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 8,
+          "RESTATEMENT_CONFLICT": 10,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 19108
+          "UNKNOWN_CONCEPT": 17241
         }
       },
       "latestFiling": {
@@ -149,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "99839985aacac4da6806d8be9eafa4e1cbe27d930da32eea4fd0871bae51f3c4",
@@ -166,8 +230,8 @@
       "name": "Honest Company, Inc.",
       "sic": "5961",
       "rawFacts": 6914,
-      "mappedFacts": 2333,
-      "unmappedFacts": 4673,
+      "mappedFacts": 2349,
+      "unmappedFacts": 4663,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +350,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4709,
+        "total": 4699,
         "by_severity": {
-          "INFO": 4673,
+          "INFO": 4663,
           "WARNING": 36
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 34,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 4673
+          "UNKNOWN_CONCEPT": 4663
         }
       },
       "latestFiling": {
@@ -305,13 +369,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "84582bc0a1d94f7d016fcb52af29a5dec89503bbbfa999a5f2ce5632959bbaf8",
@@ -464,13 +528,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "15687856c0d10ea7df836582e05220c1792e27d25403615941f3850167cbba72",
@@ -481,8 +545,8 @@
       "name": "Biohaven Ltd.",
       "sic": "2834",
       "rawFacts": 4328,
-      "mappedFacts": 1416,
-      "unmappedFacts": 2981,
+      "mappedFacts": 1466,
+      "unmappedFacts": 2950,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -600,16 +664,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3112,
+        "total": 3081,
         "by_severity": {
-          "INFO": 2981,
+          "INFO": 2950,
           "WARNING": 131
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 123,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2981
+          "UNKNOWN_CONCEPT": 2950
         }
       },
       "latestFiling": {
@@ -620,13 +684,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "87e4377a2023a0018191575d4a5750da1c273181174ae830955c8e51a99d23a5",

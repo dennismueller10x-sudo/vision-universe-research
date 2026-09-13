@@ -7,11 +7,75 @@
       "name": "MGIC INVESTMENT CORP",
       "sic": "6351",
       "rawFacts": 24050,
-      "mappedFacts": 4839,
-      "unmappedFacts": 19375,
+      "mappedFacts": 6557,
+      "unmappedFacts": 18059,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "total_investments": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MTG"
@@ -127,18 +191,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19714,
+        "total": 18401,
         "by_severity": {
-          "INFO": 19375,
-          "WARNING": 339
+          "INFO": 18059,
+          "WARNING": 342
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 313,
           "EXTREME_VALUE": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
-          "RESTATEMENT_CONFLICT": 16,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 19375
+          "RESTATEMENT_CONFLICT": 18,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 18059
         }
       },
       "latestFiling": {
@@ -149,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f0230cc6e6497f1c0f3776446df0368d306d0bc7b8ebd8c0f138554479645704",
@@ -166,8 +230,8 @@
       "name": "Anika Therapeutics, Inc.",
       "sic": "3841",
       "rawFacts": 18909,
-      "mappedFacts": 6934,
-      "unmappedFacts": 12264,
+      "mappedFacts": 6953,
+      "unmappedFacts": 12253,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +350,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12641,
+        "total": 12630,
         "by_severity": {
-          "INFO": 12264,
+          "INFO": 12253,
           "ERROR": 2,
           "WARNING": 375
         },
@@ -297,7 +361,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 77,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 12264
+          "UNKNOWN_CONCEPT": 12253
         }
       },
       "latestFiling": {
@@ -308,13 +372,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6b2f5ec46287ef6d50f092d6f7cd27253e806fa5d5fce1ccd471ca2c672f9045",
@@ -465,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "282ace144eb60ecb6d3829d3b44a8e7e885719fe974fb547e1ec5e9ef789b6b5",
@@ -626,13 +690,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9da1bdae706ba62811619328200c27339fa58a763ff57b05c2be6c8611cc6ec0",
@@ -782,13 +846,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f78605a28a472669f74d315bcba72046b6eeefc29837b515a40f7339ec529db1",
@@ -937,13 +1001,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "df5833992d0d503325691633b060a92560594de4a16b66ed9832f01181d3a2e8",

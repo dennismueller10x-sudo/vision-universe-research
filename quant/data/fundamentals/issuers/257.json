@@ -7,8 +7,8 @@
       "name": "Ingredion Inc",
       "sic": "2040",
       "rawFacts": 21628,
-      "mappedFacts": 7172,
-      "unmappedFacts": 14745,
+      "mappedFacts": 7393,
+      "unmappedFacts": 14552,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15343,
+        "total": 15150,
         "by_severity": {
-          "INFO": 14745,
+          "INFO": 14552,
           "ERROR": 2,
           "WARNING": 596
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 569,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 14745
+          "UNKNOWN_CONCEPT": 14552
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4410a8a915905b78f09fe3881ccb8033f6f08c3477e2fea9be6f59c067250319",
@@ -165,8 +165,8 @@
       "name": "Koppers Holdings Inc.",
       "sic": "2400",
       "rawFacts": 30042,
-      "mappedFacts": 7822,
-      "unmappedFacts": 22042,
+      "mappedFacts": 7974,
+      "unmappedFacts": 21887,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +285,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23368,
+        "total": 23216,
         "by_severity": {
-          "INFO": 22042,
-          "WARNING": 1326
+          "INFO": 21887,
+          "WARNING": 1329
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1173,
           "EXTREME_VALUE": 4,
-          "FISCAL_PERIOD_CONFLICT": 29,
+          "FISCAL_PERIOD_CONFLICT": 31,
           "RESTATEMENT_CONFLICT": 120,
-          "UNKNOWN_CONCEPT": 22042
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 21887
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5c59dc9aadf779a20c88dc88d76e8a3a0884177c991c0a59f707fec1ebd142ef",
@@ -323,8 +324,8 @@
       "name": "FORUM ENERGY TECHNOLOGIES, INC.",
       "sic": "3533",
       "rawFacts": 19275,
-      "mappedFacts": 6795,
-      "unmappedFacts": 12778,
+      "mappedFacts": 6797,
+      "unmappedFacts": 12776,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -443,15 +444,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13162,
+        "total": 13160,
         "by_severity": {
-          "INFO": 12778,
+          "INFO": 12776,
           "WARNING": 384
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 320,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 12778
+          "UNKNOWN_CONCEPT": 12776
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95a9a58095385ee0a963622bf371b159db411db3de2764a9607f6a83dee53140",
@@ -479,8 +480,8 @@
       "name": "HUTCHMED (China) Ltd",
       "sic": "2834",
       "rawFacts": 4628,
-      "mappedFacts": 1196,
-      "unmappedFacts": 3547,
+      "mappedFacts": 1228,
+      "unmappedFacts": 3531,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -600,15 +601,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3724,
+        "total": 3708,
         "by_severity": {
-          "INFO": 3547,
+          "INFO": 3531,
           "WARNING": 177
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 167,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 3547
+          "UNKNOWN_CONCEPT": 3531
         }
       },
       "latestFiling": {
@@ -619,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a0ab8d46140630a89506ec88c18e33f53f85b8e605afa55b42a82d2b3f640d5f",
@@ -775,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d4af916f0196b9565330db918f279f049e6981ec6a2f7aa8f8d031718a054bfd",
@@ -932,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d04f582220d70c87f73b3f8e803f19de501fb4151225c1854ce26551af05b10d",
@@ -1085,13 +1086,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5c00f717af4eb056d5edc7fe6020debd7313cd9d5c0d65018b6e0f8e7d5c63e3",

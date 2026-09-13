@@ -7,8 +7,8 @@
       "name": "PHOTRONICS INC",
       "sic": "3674",
       "rawFacts": 21789,
-      "mappedFacts": 6674,
-      "unmappedFacts": 15216,
+      "mappedFacts": 6688,
+      "unmappedFacts": 15208,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16042,
+        "total": 16034,
         "by_severity": {
-          "INFO": 15216,
+          "INFO": 15208,
           "WARNING": 826
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 745,
           "FISCAL_PERIOD_CONFLICT": 19,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 15216
+          "UNKNOWN_CONCEPT": 15208
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "374a8a61467481157ceb8a79929f12169750e6c9490c4b475b90bc6894bf4756",
@@ -164,8 +164,8 @@
       "name": "SAGA COMMUNICATIONS INC",
       "sic": "4832",
       "rawFacts": 17228,
-      "mappedFacts": 6678,
-      "unmappedFacts": 10733,
+      "mappedFacts": 6857,
+      "unmappedFacts": 10491,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,17 +284,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11227,
+        "total": 11051,
         "by_severity": {
-          "INFO": 10733,
-          "WARNING": 494
+          "INFO": 10491,
+          "WARNING": 560
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 360,
-          "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 117,
-          "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 10733
+          "PERIOD_MISMATCH": 8,
+          "RESTATEMENT_CONFLICT": 118,
+          "UNEXPECTED_DURATION": 74,
+          "UNKNOWN_CONCEPT": 10491
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "69e5671c715bee11d513db378b658bd510600481dcdd572f928f8c2b53138b7d",
@@ -322,17 +322,108 @@
       "name": "WOORI FINANCIAL GROUP INC.",
       "sic": "6029",
       "rawFacts": 8135,
-      "mappedFacts": 639,
-      "unmappedFacts": 7377,
+      "mappedFacts": 665,
+      "unmappedFacts": 7348,
       "calendarYears": 13,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 1.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 3,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2010-12-31",
           "historyYears": 2.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -450,17 +541,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7706,
+        "total": 7685,
         "by_severity": {
-          "INFO": 7377,
-          "WARNING": 329
+          "INFO": 7348,
+          "WARNING": 337
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 263,
+          "CONCEPT_DISAGREEMENT": 271,
           "EXTREME_VALUE": 44,
           "RESTATEMENT_CONFLICT": 16,
           "UNIT_MISMATCH": 6,
-          "UNKNOWN_CONCEPT": 7377
+          "UNKNOWN_CONCEPT": 7348
         }
       },
       "latestFiling": {
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9edf71e9817a54cf244557eb7ec2cb435dab14ddb0910b48836ec9681d34cca3",
@@ -488,8 +579,8 @@
       "name": "Cactus, Inc.",
       "sic": "3533",
       "rawFacts": 10091,
-      "mappedFacts": 2894,
-      "unmappedFacts": 7413,
+      "mappedFacts": 2973,
+      "unmappedFacts": 7334,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -608,15 +699,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7676,
+        "total": 7597,
         "by_severity": {
-          "INFO": 7413,
+          "INFO": 7334,
           "WARNING": 263
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 221,
           "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 7413
+          "UNKNOWN_CONCEPT": 7334
         }
       },
       "latestFiling": {
@@ -627,13 +718,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae22038919d98635a54cf75a26d4de92fe7974f600e0eac0d5a3012df4136148",
@@ -644,9 +735,9 @@
       "name": "Market Technology Acquisition Corp",
       "sic": "6770",
       "rawFacts": 22,
-      "mappedFacts": 0,
+      "mappedFacts": 8,
       "unmappedFacts": 13,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -656,9 +747,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 1,
+      "firstPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -697,7 +788,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -725,14 +816,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -754,22 +845,22 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 3
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 3,
+        "resolvedValues": 3
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22,
+        "total": 13,
         "by_severity": {
-          "INFO": 13,
-          "WARNING": 9
+          "INFO": 13
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 13,
-          "UNPLACEABLE_PERIOD": 9
+          "UNKNOWN_CONCEPT": 13
         }
       },
       "latestFiling": {
@@ -780,13 +871,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "32c116fe519fa956be7b6d78a4bc946ffcb1253e4bfdfc58480ac78393e59000",

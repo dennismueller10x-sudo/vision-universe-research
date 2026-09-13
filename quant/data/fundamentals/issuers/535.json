@@ -7,8 +7,8 @@
       "name": "COHU INC",
       "sic": "3825",
       "rawFacts": 25437,
-      "mappedFacts": 6489,
-      "unmappedFacts": 18998,
+      "mappedFacts": 6701,
+      "unmappedFacts": 18816,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19364,
+        "total": 19183,
         "by_severity": {
-          "INFO": 18998,
-          "WARNING": 366
+          "INFO": 18816,
+          "WARNING": 367
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 276,
-          "FISCAL_PERIOD_CONFLICT": 18,
+          "FISCAL_PERIOD_CONFLICT": 19,
           "RESTATEMENT_CONFLICT": 72,
-          "UNKNOWN_CONCEPT": 18998
+          "UNKNOWN_CONCEPT": 18816
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "188092fca722599d3555c9d308aafa81bd43593710456fef30e16194e5255e9a",
@@ -164,8 +164,8 @@
       "name": "ROYAL GOLD INC",
       "sic": "6795",
       "rawFacts": 16247,
-      "mappedFacts": 5777,
-      "unmappedFacts": 10498,
+      "mappedFacts": 5989,
+      "unmappedFacts": 10286,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10996,
+        "total": 10788,
         "by_severity": {
-          "INFO": 10498,
-          "WARNING": 498
+          "INFO": 10286,
+          "WARNING": 502
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 430,
+          "CONCEPT_DISAGREEMENT": 432,
           "RESTATEMENT_CONFLICT": 64,
-          "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 10498
+          "UNIT_MISMATCH": 6,
+          "UNKNOWN_CONCEPT": 10286
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0561deb18363af12900ac7daa7b6726b2b535515479396376d8de8dc0fcb84c7",
@@ -321,11 +321,54 @@
       "name": "WEYERHAEUSER CO",
       "sic": "6798",
       "rawFacts": 22634,
-      "mappedFacts": 7368,
-      "unmappedFacts": 15349,
+      "mappedFacts": 7374,
+      "unmappedFacts": 15343,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2013-12-31",
+          "historyYears": 3.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "WY"
@@ -441,9 +484,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15874,
+        "total": 15868,
         "by_severity": {
-          "INFO": 15349,
+          "INFO": 15343,
           "ERROR": 2,
           "WARNING": 523
         },
@@ -451,7 +494,7 @@
           "CONCEPT_DISAGREEMENT": 379,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 144,
-          "UNKNOWN_CONCEPT": 15349
+          "UNKNOWN_CONCEPT": 15343
         }
       },
       "latestFiling": {
@@ -462,13 +505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a90976313d97d390ecd29e748dfba5453db778815e474c292c67b05e6400b9a3",
@@ -479,8 +522,8 @@
       "name": "HUNT J B TRANSPORT SERVICES INC",
       "sic": "4213",
       "rawFacts": 15862,
-      "mappedFacts": 6344,
-      "unmappedFacts": 10004,
+      "mappedFacts": 6521,
+      "unmappedFacts": 9777,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +642,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10221,
+        "total": 10051,
         "by_severity": {
-          "INFO": 10004,
-          "WARNING": 217
+          "INFO": 9777,
+          "WARNING": 274
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 198,
-          "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 10004
+          "FISCAL_PERIOD_CONFLICT": 1,
+          "PERIOD_MISMATCH": 33,
+          "RESTATEMENT_CONFLICT": 22,
+          "UNEXPECTED_DURATION": 20,
+          "UNKNOWN_CONCEPT": 9777
         }
       },
       "latestFiling": {
@@ -618,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "497c259599b65ab2a425478ea527367dc8c3619e0fe62ec0648bff93d57f7ff1",
@@ -775,13 +821,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e6851ab867632f019a7d90af56766e54f3de5059164b191f497b3a5b25877ef6",
@@ -931,13 +977,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fdbfe4513e5badcb588813b677b2f428c86de3047c7e721ef93c0bfdd0abfc02",
@@ -948,8 +994,8 @@
       "name": "Porch Group, Inc.",
       "sic": "7372",
       "rawFacts": 10159,
-      "mappedFacts": 2915,
-      "unmappedFacts": 7264,
+      "mappedFacts": 3228,
+      "unmappedFacts": 7022,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1068,17 +1114,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7578,
+        "total": 7344,
         "by_severity": {
-          "INFO": 7264,
-          "WARNING": 314
+          "INFO": 7022,
+          "WARNING": 322
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 200,
+          "FISCAL_PERIOD_CONFLICT": 2,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 94,
+          "RESTATEMENT_CONFLICT": 100,
           "UNEXPECTED_DURATION": 17,
-          "UNKNOWN_CONCEPT": 7264
+          "UNKNOWN_CONCEPT": 7022
         }
       },
       "latestFiling": {
@@ -1089,13 +1136,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4c8521c631cc0702dad34bf68e1fce2d814cdfb4b4ee33a46fdf6f988d86515e",
@@ -1244,13 +1291,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "68dc795cb9dd3b6d21c378b2f8c822b02691f67a140e36ea29660c06bc7f0db9",

@@ -7,8 +7,8 @@
       "name": "MARTEN TRANSPORT LTD",
       "sic": "4213",
       "rawFacts": 15180,
-      "mappedFacts": 5367,
-      "unmappedFacts": 10136,
+      "mappedFacts": 5448,
+      "unmappedFacts": 10054,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -126,19 +126,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10290,
+        "total": 10209,
         "by_severity": {
-          "INFO": 10136,
+          "INFO": 10054,
           "ERROR": 1,
-          "WARNING": 153
+          "WARNING": 154
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 55,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 1,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 96,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 10136
+          "UNKNOWN_CONCEPT": 10054
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "62ca09759f4d3ad6a161156b34abc2a1a786ff4fd024e9d2e65419b7b4ec3d30",
@@ -166,8 +166,8 @@
       "name": "PROGRESS SOFTWARE CORP /MA",
       "sic": "7372",
       "rawFacts": 25366,
-      "mappedFacts": 7425,
-      "unmappedFacts": 17997,
+      "mappedFacts": 7548,
+      "unmappedFacts": 17856,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18488,
+        "total": 18366,
         "by_severity": {
-          "INFO": 17997,
-          "WARNING": 491
+          "INFO": 17856,
+          "WARNING": 510
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 375,
+          "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 17997
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 17856
         }
       },
       "latestFiling": {
@@ -305,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "188ba6d5a7fb9e6c6fb7afeeee054a88de9cb0c65d6c6375f957f4dc060e3ca8",
@@ -322,8 +324,8 @@
       "name": "Cosmos Health Inc.",
       "sic": "5122",
       "rawFacts": 15112,
-      "mappedFacts": 5204,
-      "unmappedFacts": 10212,
+      "mappedFacts": 5248,
+      "unmappedFacts": 10173,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,20 +444,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10704,
+        "total": 10672,
         "by_severity": {
-          "INFO": 10212,
+          "INFO": 10173,
           "ERROR": 2,
-          "WARNING": 490
+          "WARNING": 497
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 257,
           "EXTREME_VALUE": 2,
           "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 163,
+          "RESTATEMENT_CONFLICT": 170,
           "UNEXPECTED_DURATION": 60,
-          "UNKNOWN_CONCEPT": 10212
+          "UNKNOWN_CONCEPT": 10173
         }
       },
       "latestFiling": {
@@ -466,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eb8e79a3c72a7f43f6ec31073085fb4467fed3338080c604a5a88ff67b895dda",

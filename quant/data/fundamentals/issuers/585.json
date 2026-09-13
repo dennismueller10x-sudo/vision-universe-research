@@ -7,11 +7,75 @@
       "name": "MBIA INC",
       "sic": "6351",
       "rawFacts": 23236,
-      "mappedFacts": 4464,
-      "unmappedFacts": 18630,
+      "mappedFacts": 4843,
+      "unmappedFacts": 18270,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 7.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 1.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 6.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MBI"
@@ -127,17 +191,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19205,
+        "total": 18846,
         "by_severity": {
-          "INFO": 18630,
-          "WARNING": 575
+          "INFO": 18270,
+          "WARNING": 576
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 456,
           "EXTREME_VALUE": 20,
           "NEGATIVE_WHERE_IMPOSSIBLE": 20,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 18630
+          "UNKNOWN_CONCEPT": 18270
         }
       },
       "latestFiling": {
@@ -148,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "760b46228da714587d31c6aaebca05cc996a6586bb09c32b1a438178478036dd",
@@ -165,8 +230,8 @@
       "name": "ATN International, Inc.",
       "sic": "4813",
       "rawFacts": 23805,
-      "mappedFacts": 7098,
-      "unmappedFacts": 16705,
+      "mappedFacts": 7451,
+      "unmappedFacts": 16389,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +350,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17980,
+        "total": 17664,
         "by_severity": {
-          "INFO": 16705,
+          "INFO": 16389,
           "WARNING": 1275
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1106,
           "RESTATEMENT_CONFLICT": 169,
-          "UNKNOWN_CONCEPT": 16705
+          "UNKNOWN_CONCEPT": 16389
         }
       },
       "latestFiling": {
@@ -304,13 +369,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "82cb6aa87404a56a635773a0a001dfd87fedfae5e445df6805927c045b702f7a",
@@ -321,8 +386,8 @@
       "name": "HUNTINGTON INGALLS INDUSTRIES, INC.",
       "sic": "3730",
       "rawFacts": 19846,
-      "mappedFacts": 6875,
-      "unmappedFacts": 13111,
+      "mappedFacts": 7138,
+      "unmappedFacts": 12843,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -441,19 +506,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13649,
+        "total": 13386,
         "by_severity": {
-          "INFO": 13111,
+          "INFO": 12843,
           "ERROR": 1,
-          "WARNING": 537
+          "WARNING": 542
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 505,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 23,
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 13111
+          "UNEXPECTED_DURATION": 12,
+          "UNKNOWN_CONCEPT": 12843
         }
       },
       "latestFiling": {
@@ -464,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9b07afb86539a91bca0592e800d6986a4f4c0c972a13c06e8f7431ef78abeea5",
@@ -481,8 +546,8 @@
       "name": "Liberty Global Ltd.",
       "sic": "4841",
       "rawFacts": 25026,
-      "mappedFacts": 5562,
-      "unmappedFacts": 19134,
+      "mappedFacts": 5721,
+      "unmappedFacts": 19035,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -603,15 +668,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20139,
+        "total": 20040,
         "by_severity": {
-          "INFO": 19134,
+          "INFO": 19035,
           "WARNING": 1005
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 774,
           "RESTATEMENT_CONFLICT": 231,
-          "UNKNOWN_CONCEPT": 19134
+          "UNKNOWN_CONCEPT": 19035
         }
       },
       "latestFiling": {
@@ -622,13 +687,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c647021d03c8e17683a96e3fc4223bc1dad81481617443d0d092d76ef98d8b4",
@@ -639,8 +704,8 @@
       "name": "Dianthus Therapeutics, Inc. /DE/",
       "sic": "2834",
       "rawFacts": 8055,
-      "mappedFacts": 2548,
-      "unmappedFacts": 5528,
+      "mappedFacts": 2657,
+      "unmappedFacts": 5456,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -759,16 +824,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5759,
+        "total": 5687,
         "by_severity": {
-          "INFO": 5528,
+          "INFO": 5456,
           "WARNING": 231
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 122,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 108,
-          "UNKNOWN_CONCEPT": 5528
+          "UNKNOWN_CONCEPT": 5456
         }
       },
       "latestFiling": {
@@ -779,13 +844,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b61c2982d12639a4892e6f54f204f4117cbb142a0024d97d6d73c47a28915af5",

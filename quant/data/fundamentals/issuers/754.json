@@ -7,8 +7,8 @@
       "name": "Dine Brands Global, Inc.",
       "sic": "5812",
       "rawFacts": 25751,
-      "mappedFacts": 7121,
-      "unmappedFacts": 18647,
+      "mappedFacts": 7395,
+      "unmappedFacts": 18270,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19855,
+        "total": 19584,
         "by_severity": {
-          "INFO": 18647,
-          "WARNING": 1208
+          "INFO": 18270,
+          "WARNING": 1314
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1079,
-          "FISCAL_PERIOD_CONFLICT": 20,
-          "PERIOD_MISMATCH": 22,
-          "RESTATEMENT_CONFLICT": 86,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 18647
+          "FISCAL_PERIOD_CONFLICT": 22,
+          "PERIOD_MISMATCH": 124,
+          "RESTATEMENT_CONFLICT": 87,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 18270
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "64f9214cf8db2def293a5dad40588632fe211440c9b6049d7da93bbba6cd81d9",
@@ -166,8 +166,8 @@
       "name": "MCCORMICK & CO INC",
       "sic": "2090",
       "rawFacts": 22071,
-      "mappedFacts": 8166,
-      "unmappedFacts": 14473,
+      "mappedFacts": 8295,
+      "unmappedFacts": 14344,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,17 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14978,
+        "total": 14854,
         "by_severity": {
-          "INFO": 14473,
+          "INFO": 14344,
           "ERROR": 2,
-          "WARNING": 503
+          "WARNING": 508
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 450,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 14473
+          "RESTATEMENT_CONFLICT": 58,
+          "UNKNOWN_CONCEPT": 14344
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cf5724496bbfe8c9f643cdda5eac8b6a6f9b3478078f42242acd0a468bdb9231",
@@ -325,8 +325,8 @@
       "name": "SAFE BULKERS, INC.",
       "sic": "4412",
       "rawFacts": 5040,
-      "mappedFacts": 1402,
-      "unmappedFacts": 3878,
+      "mappedFacts": 1431,
+      "unmappedFacts": 3849,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -447,15 +447,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4046,
+        "total": 4017,
         "by_severity": {
-          "INFO": 3878,
+          "INFO": 3849,
           "WARNING": 168
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 152,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 3878
+          "UNKNOWN_CONCEPT": 3849
         }
       },
       "latestFiling": {
@@ -466,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b5f735d245961f58ee909ea1a8f718c48f33506513c371b363850c2a674d755",
@@ -483,8 +483,8 @@
       "name": "Inmune Bio, Inc.",
       "sic": "2836",
       "rawFacts": 6001,
-      "mappedFacts": 2176,
-      "unmappedFacts": 4009,
+      "mappedFacts": 2178,
+      "unmappedFacts": 4007,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -603,9 +603,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4151,
+        "total": 4149,
         "by_severity": {
-          "INFO": 4009,
+          "INFO": 4007,
           "ERROR": 12,
           "WARNING": 130
         },
@@ -615,7 +615,7 @@
           "FUTURE_DATA_LEAK": 12,
           "RESTATEMENT_CONFLICT": 77,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 4009
+          "UNKNOWN_CONCEPT": 4007
         }
       },
       "latestFiling": {
@@ -626,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aa5a7f3cec1b5eb7b0383d8926928060924fc71fa2c29085bc37debf6782f3cf",
@@ -782,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0d88b8d5fdb75dc57424e3dd65cb22baa6d941d3bd75cda6ab0e0aaf6e6a3f6e",

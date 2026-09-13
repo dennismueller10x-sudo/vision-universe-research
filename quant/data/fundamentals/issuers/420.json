@@ -7,8 +7,8 @@
       "name": "POWELL INDUSTRIES INC",
       "sic": "3613",
       "rawFacts": 20265,
-      "mappedFacts": 7085,
-      "unmappedFacts": 13686,
+      "mappedFacts": 7239,
+      "unmappedFacts": 13531,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14060,
+        "total": 13909,
         "by_severity": {
-          "INFO": 13686,
-          "WARNING": 374
+          "INFO": 13531,
+          "WARNING": 378
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 296,
-          "RESTATEMENT_CONFLICT": 78,
-          "UNKNOWN_CONCEPT": 13686
+          "RESTATEMENT_CONFLICT": 82,
+          "UNKNOWN_CONCEPT": 13531
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a67f7243fb34652c1ce036b761b89c4fb3df56ee7ba9e9f0559f8b1c54e83f0c",
@@ -163,8 +163,8 @@
       "name": "KFORCE INC",
       "sic": "7363",
       "rawFacts": 19360,
-      "mappedFacts": 6467,
-      "unmappedFacts": 13099,
+      "mappedFacts": 6642,
+      "unmappedFacts": 12923,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13563,
+        "total": 13388,
         "by_severity": {
-          "INFO": 13099,
-          "WARNING": 464
+          "INFO": 12923,
+          "WARNING": 465
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 348,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 103,
-          "UNKNOWN_CONCEPT": 13099
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 12923
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5dbbcf2e0caaa944118015cbda7c256b4a61fe4e14c9da433bc3e8662f7795fd",
@@ -320,8 +321,8 @@
       "name": "NOVAGOLD RESOURCES INC",
       "sic": "1040",
       "rawFacts": 14094,
-      "mappedFacts": 3856,
-      "unmappedFacts": 10375,
+      "mappedFacts": 3866,
+      "unmappedFacts": 10369,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -440,18 +441,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10506,
+        "total": 10502,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10375,
-          "WARNING": 130
+          "INFO": 10369,
+          "WARNING": 132
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 58,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 33,
+          "RESTATEMENT_CONFLICT": 35,
           "UNEXPECTED_DURATION": 39,
-          "UNKNOWN_CONCEPT": 10375
+          "UNKNOWN_CONCEPT": 10369
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1ceca026d244f0e32412e95c570102b467a84a555c69a0ddc3ffa28612dc4063",
@@ -618,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "85a9a7b949117090a648ce22a63d60671d45ebcbaf1e55766f73eb3c2b5bebe8",

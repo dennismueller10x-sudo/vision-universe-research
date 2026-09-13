@@ -7,8 +7,8 @@
       "name": "STARBUCKS CORP",
       "sic": "5810",
       "rawFacts": 27175,
-      "mappedFacts": 8384,
-      "unmappedFacts": 18875,
+      "mappedFacts": 8589,
+      "unmappedFacts": 18669,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19560,
+        "total": 19365,
         "by_severity": {
-          "INFO": 18875,
+          "INFO": 18669,
           "ERROR": 4,
-          "WARNING": 681
+          "WARNING": 692
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 594,
-          "FISCAL_PERIOD_CONFLICT": 28,
+          "FISCAL_PERIOD_CONFLICT": 30,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 51,
-          "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 18875
+          "RESTATEMENT_CONFLICT": 59,
+          "UNIT_MISMATCH": 9,
+          "UNKNOWN_CONCEPT": 18669
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6e998e00c8e47a44abf787afc0e117af503fe36698d6680210a8ccabd5ab94e0",
@@ -167,8 +167,8 @@
       "name": "PPL Corp",
       "sic": "4911",
       "rawFacts": 33262,
-      "mappedFacts": 7429,
-      "unmappedFacts": 25754,
+      "mappedFacts": 7743,
+      "unmappedFacts": 25391,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -288,18 +288,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26795,
+        "total": 26488,
         "by_severity": {
-          "INFO": 25754,
+          "INFO": 25391,
           "ERROR": 14,
-          "WARNING": 1027
+          "WARNING": 1083
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 872,
-          "FISCAL_PERIOD_CONFLICT": 8,
+          "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 14,
-          "RESTATEMENT_CONFLICT": 147,
-          "UNKNOWN_CONCEPT": 25754
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 149,
+          "UNEXPECTED_DURATION": 50,
+          "UNKNOWN_CONCEPT": 25391
         }
       },
       "latestFiling": {
@@ -310,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c9d52d2cd402d031e6165c085cb9cb15d67622337c981cb58188a430c90c2e36",
@@ -327,8 +329,8 @@
       "name": "Dolphin Entertainment, Inc.",
       "sic": "7200",
       "rawFacts": 15611,
-      "mappedFacts": 5259,
-      "unmappedFacts": 10453,
+      "mappedFacts": 5273,
+      "unmappedFacts": 10444,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -447,15 +449,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11099,
+        "total": 11090,
         "by_severity": {
-          "INFO": 10453,
+          "INFO": 10444,
           "WARNING": 646
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 381,
           "RESTATEMENT_CONFLICT": 265,
-          "UNKNOWN_CONCEPT": 10453
+          "UNKNOWN_CONCEPT": 10444
         }
       },
       "latestFiling": {
@@ -466,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "188539498774e9c0b69e2163d2de782c859bca0a26725088c7e820448be2c0aa",
@@ -483,8 +485,8 @@
       "name": "BT Brands, Inc.",
       "sic": "5812",
       "rawFacts": 6511,
-      "mappedFacts": 2270,
-      "unmappedFacts": 4311,
+      "mappedFacts": 2316,
+      "unmappedFacts": 4278,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -604,20 +606,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4708,
+        "total": 4682,
         "by_severity": {
-          "INFO": 4311,
+          "INFO": 4278,
           "ERROR": 3,
-          "WARNING": 394
+          "WARNING": 401
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 239,
+          "CONCEPT_DISAGREEMENT": 241,
           "FISCAL_PERIOD_CONFLICT": 7,
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 138,
+          "RESTATEMENT_CONFLICT": 143,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 4311
+          "UNKNOWN_CONCEPT": 4278
         }
       },
       "latestFiling": {
@@ -628,13 +630,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "14113373370b669755d98e89aa3a051bd4ffee72b5def800de00829efa7bef13",
@@ -784,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d71bb53e4a41a075e18639f44ed08667b033d191ec0b9eddc5e920607746284b",
@@ -943,13 +945,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "37398252f7e88582436701d81c6707e6839044f797495b1bdf16d06ce80d4679",
@@ -1099,13 +1101,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "12600e624f4ba7719a25f25351bf2211840fda19e9b843f31e30edd649199346",

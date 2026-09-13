@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b7705f14f3600cb97d91f209bfc444dd9fc1e992991dd124d517aabe2e48ecb",
@@ -163,8 +163,8 @@
       "name": "TransDigm Group INC",
       "sic": "3728",
       "rawFacts": 21775,
-      "mappedFacts": 6976,
-      "unmappedFacts": 15206,
+      "mappedFacts": 6999,
+      "unmappedFacts": 15175,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15769,
+        "total": 15746,
         "by_severity": {
-          "INFO": 15206,
-          "WARNING": 563
+          "INFO": 15175,
+          "WARNING": 571
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 524,
           "FISCAL_PERIOD_CONFLICT": 9,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 15206
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 15175
         }
       },
       "latestFiling": {
@@ -303,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7a28f701eec3c511b00c4bff5b80a65209df537ddf24264ea7ae41f8685f3966",
@@ -320,8 +322,8 @@
       "name": "Quanex Building Products CORP",
       "sic": "3350",
       "rawFacts": 29402,
-      "mappedFacts": 7083,
-      "unmappedFacts": 22017,
+      "mappedFacts": 7084,
+      "unmappedFacts": 22016,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -440,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22863,
+        "total": 22862,
         "by_severity": {
-          "INFO": 22017,
+          "INFO": 22016,
           "ERROR": 1,
           "WARNING": 845
         },
@@ -451,7 +453,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 22017
+          "UNKNOWN_CONCEPT": 22016
         }
       },
       "latestFiling": {
@@ -462,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5496871575299f1a631d6ffb9925d1d432d8411fe25cce241fa5d7c06a2617f1",
@@ -479,8 +481,8 @@
       "name": "Bristow Group Inc.",
       "sic": "4522",
       "rawFacts": 19394,
-      "mappedFacts": 5431,
-      "unmappedFacts": 13704,
+      "mappedFacts": 5506,
+      "unmappedFacts": 13620,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -599,18 +601,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14681,
+        "total": 14611,
         "by_severity": {
-          "INFO": 13704,
-          "WARNING": 977
+          "INFO": 13620,
+          "WARNING": 991
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 626,
+          "CONCEPT_DISAGREEMENT": 629,
           "FISCAL_PERIOD_CONFLICT": 18,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 168,
-          "UNEXPECTED_DURATION": 162,
-          "UNKNOWN_CONCEPT": 13704
+          "RESTATEMENT_CONFLICT": 172,
+          "UNEXPECTED_DURATION": 169,
+          "UNKNOWN_CONCEPT": 13620
         }
       },
       "latestFiling": {
@@ -621,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95c87d8bd5d11df65696058d919f71bf824238e136f0682adcaa6b43c9090cc1",
@@ -778,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4e505d2182e465ed3149ff32882db404e630a581b341c46bbeb4aff848533dcf",
@@ -795,8 +797,8 @@
       "name": "ARTELO BIOSCIENCES, INC.",
       "sic": "2834",
       "rawFacts": 7041,
-      "mappedFacts": 2897,
-      "unmappedFacts": 4368,
+      "mappedFacts": 2914,
+      "unmappedFacts": 4357,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -915,19 +917,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4591,
+        "total": 4582,
         "by_severity": {
-          "INFO": 4368,
+          "INFO": 4357,
           "ERROR": 2,
-          "WARNING": 221
+          "WARNING": 223
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 112,
+          "CONCEPT_DISAGREEMENT": 114,
           "FISCAL_PERIOD_CONFLICT": 3,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 95,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 4368
+          "UNKNOWN_CONCEPT": 4357
         }
       },
       "latestFiling": {
@@ -938,13 +940,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8867481424d0e5ca37ed38cc5710f62941ac39fbdec9b4847ee9be6c95915744",
@@ -955,8 +957,8 @@
       "name": "Foresight Autonomous Holdings Ltd.",
       "sic": "7372",
       "rawFacts": 2049,
-      "mappedFacts": 765,
-      "unmappedFacts": 1381,
+      "mappedFacts": 777,
+      "unmappedFacts": 1375,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -1075,15 +1077,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1448,
+        "total": 1442,
         "by_severity": {
-          "INFO": 1381,
+          "INFO": 1375,
           "WARNING": 67
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 51,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 1381
+          "UNKNOWN_CONCEPT": 1375
         }
       },
       "latestFiling": {
@@ -1094,13 +1096,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b33571225102bd8aa8d38d6353e6263d896a01068b931663f27f92caf3afd35",
@@ -1250,13 +1252,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d7288a460c5cd2d6af5b72e69caa353e3b715d0c4ab43f05f4755fe855f3607d",
@@ -1408,13 +1410,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b53d083b6ff26c04a10ee0ad88ec6fc3c2c59b3d708ae1aa853129d1d87549fc",

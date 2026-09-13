@@ -7,8 +7,8 @@
       "name": "INGLES MARKETS INC",
       "sic": "5411",
       "rawFacts": 12905,
-      "mappedFacts": 5545,
-      "unmappedFacts": 8155,
+      "mappedFacts": 5547,
+      "unmappedFacts": 8154,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8257,
+        "total": 8256,
         "by_severity": {
-          "INFO": 8155,
+          "INFO": 8154,
           "WARNING": 102
         },
         "by_code": {
@@ -137,7 +137,7 @@
           "FISCAL_PERIOD_CONFLICT": 14,
           "RESTATEMENT_CONFLICT": 27,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 8155
+          "UNKNOWN_CONCEPT": 8154
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fa2395c3b5745486ff6a81764b8cf56b4eeff6ffeef5f3781303c060118e61de",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d50b58d990531e4c1eda5f24acd4b0a8dc87ae5d037611dd15e6df1da9ebf8e4",
@@ -321,8 +321,8 @@
       "name": "Hyperscale Data, Inc.",
       "sic": "3533",
       "rawFacts": 20810,
-      "mappedFacts": 6904,
-      "unmappedFacts": 13949,
+      "mappedFacts": 6923,
+      "unmappedFacts": 13933,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14817,
+        "total": 14801,
         "by_severity": {
-          "INFO": 13949,
+          "INFO": 13933,
           "ERROR": 4,
           "WARNING": 864
         },
@@ -454,7 +454,7 @@
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "RESTATEMENT_CONFLICT": 262,
-          "UNKNOWN_CONCEPT": 13949
+          "UNKNOWN_CONCEPT": 13933
         }
       },
       "latestFiling": {
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d89939d9a95f28bae63f07c8b5b7ba1820a76ee5f0211f3379ff137adacf3814",
@@ -482,11 +482,75 @@
       "name": "eHealth, Inc.",
       "sic": "6411",
       "rawFacts": 19148,
-      "mappedFacts": 5877,
-      "unmappedFacts": 13538,
+      "mappedFacts": 5883,
+      "unmappedFacts": 13533,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EHTH"
@@ -602,16 +666,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14052,
+        "total": 14047,
         "by_severity": {
-          "INFO": 13538,
+          "INFO": 13533,
           "WARNING": 514
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 408,
           "NEGATIVE_WHERE_IMPOSSIBLE": 7,
           "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 13538
+          "UNKNOWN_CONCEPT": 13533
         }
       },
       "latestFiling": {
@@ -622,13 +686,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "206bc26b0358b0535923a648a3c7f137305f8dd3642c2c9bc1f685c72a84bf26",
@@ -639,11 +703,54 @@
       "name": "CHIMERA INVESTMENT CORP",
       "sic": "6798",
       "rawFacts": 18888,
-      "mappedFacts": 5073,
-      "unmappedFacts": 13841,
+      "mappedFacts": 5311,
+      "unmappedFacts": 13624,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 1.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CIM",
@@ -766,16 +873,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14232,
+        "total": 14028,
         "by_severity": {
-          "INFO": 13841,
-          "WARNING": 391
+          "INFO": 13624,
+          "WARNING": 404
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 250,
           "FISCAL_PERIOD_CONFLICT": 6,
-          "RESTATEMENT_CONFLICT": 135,
-          "UNKNOWN_CONCEPT": 13841
+          "RESTATEMENT_CONFLICT": 148,
+          "UNKNOWN_CONCEPT": 13624
         }
       },
       "latestFiling": {
@@ -786,13 +893,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f5a1beac3268e4ff4628571fc004c09b0920be039a59dc57653e4f5986a857f",
@@ -942,13 +1049,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9507fe58e53f6eaf8d815669915eea329463a8adab41a549751d45877a944a13",
@@ -959,8 +1066,8 @@
       "name": "Xos, Inc.",
       "sic": "3714",
       "rawFacts": 9506,
-      "mappedFacts": 2429,
-      "unmappedFacts": 7161,
+      "mappedFacts": 2432,
+      "unmappedFacts": 7159,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1079,16 +1186,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7362,
+        "total": 7360,
         "by_severity": {
-          "INFO": 7161,
+          "INFO": 7159,
           "WARNING": 201
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 85,
           "RESTATEMENT_CONFLICT": 93,
           "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 7161
+          "UNKNOWN_CONCEPT": 7159
         }
       },
       "latestFiling": {
@@ -1099,13 +1206,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "903399e351f115c0abf16c906c5b7ddd5a3a3554acc880d97169ed54d0a741fb",
@@ -1116,8 +1223,8 @@
       "name": "QTREX Quantum Ltd.",
       "sic": "3841",
       "rawFacts": 2048,
-      "mappedFacts": 541,
-      "unmappedFacts": 1583,
+      "mappedFacts": 547,
+      "unmappedFacts": 1579,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1235,15 +1342,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1639,
+        "total": 1635,
         "by_severity": {
-          "INFO": 1583,
+          "INFO": 1579,
           "WARNING": 56
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 37,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 1583
+          "UNKNOWN_CONCEPT": 1579
         }
       },
       "latestFiling": {
@@ -1254,13 +1361,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8b621131325f0769447e58eca4771123bd76c86d32320267b2b8a3b180118b93",
@@ -1411,13 +1518,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b3902161e5f1deb582db6b07181570da28a6c05371b644760edea5b275d8248",
@@ -1567,13 +1674,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "28870392c7619a11d87918206008ea317517604aa5cb434ea6c7a34e288bb3ad",

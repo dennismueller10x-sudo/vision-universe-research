@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b6b712eb04efb91545ede4fc930e06ee945f7b0d33a72a4c113506cddb7c2063",
@@ -302,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9d3ff283bb5d7bad287f6b27b01ad1d797fc3894d9e65751b28862c2564cf011",
@@ -457,13 +457,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3a6ca27d288f5a040b2b28e010dee0709aebc920aba5dc6322d67e612c2f178e",
@@ -615,13 +615,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8e3c9d02e5c97a29794142cf688d8a46c2a76666d0f69f5410c2dc711922decf",
@@ -772,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c67d5a540ff395d9368683f004fb93962b1153e45747c8fa1e9d1e7d42b56755",
@@ -930,13 +930,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cf54d4b844f61ed982b0786d81f93f78734f59bef6bbb8befd96c03dd804a6d4",
@@ -947,8 +947,8 @@
       "name": "AN2 Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 3559,
-      "mappedFacts": 1252,
-      "unmappedFacts": 2285,
+      "mappedFacts": 1315,
+      "unmappedFacts": 2244,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1067,15 +1067,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2309,
+        "total": 2268,
         "by_severity": {
-          "INFO": 2285,
+          "INFO": 2244,
           "WARNING": 24
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 2285
+          "UNKNOWN_CONCEPT": 2244
         }
       },
       "latestFiling": {
@@ -1086,13 +1086,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "980789cc8c09c03149e085f83c55a8b1602d7419958078b8998f9de45cca2225",
@@ -1103,8 +1103,8 @@
       "name": "Franklin XRP Trust",
       "sic": "6221",
       "rawFacts": 183,
-      "mappedFacts": 34,
-      "unmappedFacts": 148,
+      "mappedFacts": 35,
+      "unmappedFacts": 145,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1222,15 +1222,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 157,
+        "total": 156,
         "by_severity": {
-          "INFO": 148,
-          "WARNING": 9
+          "INFO": 145,
+          "WARNING": 11
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
-          "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 148
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 145
         }
       },
       "latestFiling": {
@@ -1241,13 +1241,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b2098540ef74daca46686e09c3c1141503563b354c09af1b335148cd55beadfe",
@@ -1394,13 +1394,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f88002e60a0866a763af3e3750eaaa74544bb3dc8f89044d40d1b975e318356a",

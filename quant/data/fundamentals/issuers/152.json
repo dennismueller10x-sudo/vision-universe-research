@@ -7,8 +7,8 @@
       "name": "JACK HENRY & ASSOCIATES INC",
       "sic": "7373",
       "rawFacts": 22592,
-      "mappedFacts": 8298,
-      "unmappedFacts": 14230,
+      "mappedFacts": 8441,
+      "unmappedFacts": 14084,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14968,
+        "total": 14826,
         "by_severity": {
-          "INFO": 14230,
+          "INFO": 14084,
           "ERROR": 5,
-          "WARNING": 733
+          "WARNING": 737
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 567,
-          "FISCAL_PERIOD_CONFLICT": 15,
+          "CONCEPT_DISAGREEMENT": 570,
+          "FISCAL_PERIOD_CONFLICT": 16,
           "FUTURE_DATA_LEAK": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 149,
-          "UNKNOWN_CONCEPT": 14230
+          "UNKNOWN_CONCEPT": 14084
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f44c74ea5b6413e7e90a435e873a1878905b7a6a15cb3ba14aa558246f25d06f",
@@ -167,8 +167,8 @@
       "name": "James Hardie Industries plc",
       "sic": "3272",
       "rawFacts": 8000,
-      "mappedFacts": 2024,
-      "unmappedFacts": 6209,
+      "mappedFacts": 2028,
+      "unmappedFacts": 6203,
       "calendarYears": 22,
       "industry": null,
       "industryMetrics": {},
@@ -288,19 +288,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6425,
+        "total": 6423,
         "by_severity": {
-          "INFO": 6209,
+          "INFO": 6203,
           "ERROR": 1,
-          "WARNING": 215
+          "WARNING": 219
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 183,
+          "CONCEPT_DISAGREEMENT": 186,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 27,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 6209
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 6203
         }
       },
       "latestFiling": {
@@ -311,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b0678a59b08e602fdb4f363ff1ad2d228e2dda15eba68c9a8b7fb16f3f6488e9",
@@ -469,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f8031b02dcb928024584eb286c70820d06d94071d3e9a597b44981d43eb400a4",
@@ -486,8 +486,8 @@
       "name": "AbbVie Inc.",
       "sic": "2834",
       "rawFacts": 20620,
-      "mappedFacts": 6098,
-      "unmappedFacts": 14727,
+      "mappedFacts": 6291,
+      "unmappedFacts": 14381,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -606,16 +606,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15083,
+        "total": 14890,
         "by_severity": {
-          "INFO": 14727,
-          "WARNING": 356
+          "INFO": 14381,
+          "WARNING": 509
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 343,
+          "PERIOD_MISMATCH": 152,
           "RESTATEMENT_CONFLICT": 8,
-          "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 14727
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 14381
         }
       },
       "latestFiling": {
@@ -626,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd55c039b8642d1e964755c91dc5197c12a3578abd8e6fe596d70a35dea478ae",

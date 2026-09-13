@@ -7,11 +7,75 @@
       "name": "OLD REPUBLIC INTERNATIONAL CORP",
       "sic": "6351",
       "rawFacts": 24415,
-      "mappedFacts": 4779,
-      "unmappedFacts": 19870,
+      "mappedFacts": 6999,
+      "unmappedFacts": 18138,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ORI"
@@ -127,15 +191,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19889,
+        "total": 18157,
         "by_severity": {
-          "INFO": 19870,
+          "INFO": 18138,
           "WARNING": 19
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 17,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 19870
+          "UNKNOWN_CONCEPT": 18138
         }
       },
       "latestFiling": {
@@ -146,13 +210,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b1ec2d4bb6946e3a80c464a2e6578079136d32d1715b389790a92f539c20f481",
@@ -163,11 +227,54 @@
       "name": "Ventas, Inc.",
       "sic": "6798",
       "rawFacts": 29795,
-      "mappedFacts": 6412,
-      "unmappedFacts": 22817,
+      "mappedFacts": 7544,
+      "unmappedFacts": 21954,
       "calendarYears": 20,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "secured_debt": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "VTR"
@@ -283,18 +390,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23938,
+        "total": 23169,
         "by_severity": {
-          "INFO": 22817,
+          "INFO": 21954,
           "ERROR": 4,
-          "WARNING": 1117
+          "WARNING": 1211
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1041,
+          "CONCEPT_DISAGREEMENT": 1113,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 75,
+          "RESTATEMENT_CONFLICT": 97,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 22817
+          "UNKNOWN_CONCEPT": 21954
         }
       },
       "latestFiling": {
@@ -305,13 +412,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7553c3715ec57f972159bf74481c8eadbcaa939fc7ebf64df5a8f60cb9239ad8",
@@ -322,8 +429,8 @@
       "name": "Fortress Biotech, Inc.",
       "sic": "2834",
       "rawFacts": 19740,
-      "mappedFacts": 5372,
-      "unmappedFacts": 14256,
+      "mappedFacts": 5373,
+      "unmappedFacts": 14255,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -443,9 +550,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15174,
+        "total": 15173,
         "by_severity": {
-          "INFO": 14256,
+          "INFO": 14255,
           "ERROR": 1,
           "WARNING": 917
         },
@@ -456,7 +563,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 162,
           "UNEXPECTED_DURATION": 124,
-          "UNKNOWN_CONCEPT": 14256
+          "UNKNOWN_CONCEPT": 14255
         }
       },
       "latestFiling": {
@@ -467,13 +574,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eb4e5805818c0f21d6d9ba827a143c693a2f1cc8b5995f2dcc4053d922bd0c6d",
@@ -622,13 +729,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9fa26c2e8b4c7234350ff93cb725de4749cfcaa7ce79ecbbff0f673b1cdf692b",
@@ -776,13 +883,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4d34c6daa8fb7ef7a4b74f95c91b564551b4ac9d58ac656486a5a97db799828b",

@@ -7,11 +7,54 @@
       "name": "EQUITY LIFESTYLE PROPERTIES INC",
       "sic": "6798",
       "rawFacts": 26627,
-      "mappedFacts": 6046,
-      "unmappedFacts": 20197,
+      "mappedFacts": 7174,
+      "unmappedFacts": 19409,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ELS"
@@ -127,17 +170,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21082,
+        "total": 20309,
         "by_severity": {
-          "INFO": 20197,
-          "WARNING": 885
+          "INFO": 19409,
+          "WARNING": 900
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 692,
+          "CONCEPT_DISAGREEMENT": 696,
           "FISCAL_PERIOD_CONFLICT": 1,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 186,
-          "UNKNOWN_CONCEPT": 20197
+          "RESTATEMENT_CONFLICT": 197,
+          "UNKNOWN_CONCEPT": 19409
         }
       },
       "latestFiling": {
@@ -148,13 +191,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2443a7057ef86b9f3fbcf05f35e8c6c336b7b7e600999f76c1de556677bae38e",
@@ -165,8 +208,8 @@
       "name": "NEXSTAR MEDIA GROUP, INC.",
       "sic": "4833",
       "rawFacts": 20410,
-      "mappedFacts": 6897,
-      "unmappedFacts": 13823,
+      "mappedFacts": 7060,
+      "unmappedFacts": 13660,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +328,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14441,
+        "total": 14278,
         "by_severity": {
-          "INFO": 13823,
+          "INFO": 13660,
           "WARNING": 618
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 545,
           "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 13823
+          "UNKNOWN_CONCEPT": 13660
         }
       },
       "latestFiling": {
@@ -305,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f14493afa947f67cc5fd537932f5f49e29b0ac9987274f03f6776ec62aa58282",
@@ -322,8 +365,8 @@
       "name": "Bloomin' Brands, Inc.",
       "sic": "5812",
       "rawFacts": 23498,
-      "mappedFacts": 6145,
-      "unmappedFacts": 17260,
+      "mappedFacts": 6277,
+      "unmappedFacts": 17127,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -442,16 +485,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18125,
+        "total": 17993,
         "by_severity": {
-          "INFO": 17260,
-          "WARNING": 865
+          "INFO": 17127,
+          "WARNING": 866
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 764,
           "RESTATEMENT_CONFLICT": 97,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 17260
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 17127
         }
       },
       "latestFiling": {
@@ -462,13 +505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bf89835ed617a09e0f4b269e8417842f63ab430c6b9a8049a7397554f38fe708",
@@ -618,13 +661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f334a7299eba524444b910e85f70b03d2bf28e6476f644991bb4d2a658f0a248",
@@ -635,8 +678,8 @@
       "name": "Estrella Immunopharma, Inc.",
       "sic": "2836",
       "rawFacts": 2989,
-      "mappedFacts": 1130,
-      "unmappedFacts": 1873,
+      "mappedFacts": 1141,
+      "unmappedFacts": 1864,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -756,9 +799,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2073,
+        "total": 2064,
         "by_severity": {
-          "INFO": 1873,
+          "INFO": 1864,
           "ERROR": 1,
           "WARNING": 199
         },
@@ -769,7 +812,7 @@
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 103,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 1873
+          "UNKNOWN_CONCEPT": 1864
         }
       },
       "latestFiling": {
@@ -780,13 +823,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "300628d485361dc611372edf4593a00090439b4b2ad9010a978173c0f848853a",

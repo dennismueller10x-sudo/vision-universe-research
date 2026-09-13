@@ -7,8 +7,8 @@
       "name": "Meritage Homes CORP",
       "sic": "1531",
       "rawFacts": 18836,
-      "mappedFacts": 5149,
-      "unmappedFacts": 13940,
+      "mappedFacts": 5249,
+      "unmappedFacts": 13840,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -126,17 +126,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14028,
+        "total": 13939,
         "by_severity": {
-          "INFO": 13940,
+          "INFO": 13840,
           "ERROR": 2,
-          "WARNING": 86
+          "WARNING": 97
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 48,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 13940
+          "RESTATEMENT_CONFLICT": 49,
+          "UNKNOWN_CONCEPT": 13840
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2e4d33dc8d1b14089ad29b0d5d20af132ebad75c729a8949b5e3d370686ce2c8",
@@ -164,8 +164,8 @@
       "name": "QUEST DIAGNOSTICS INC",
       "sic": "8071",
       "rawFacts": 27604,
-      "mappedFacts": 8108,
-      "unmappedFacts": 19366,
+      "mappedFacts": 8718,
+      "unmappedFacts": 18780,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +284,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20493,
+        "total": 19907,
         "by_severity": {
-          "INFO": 19366,
+          "INFO": 18780,
           "ERROR": 1,
           "WARNING": 1126
         },
@@ -294,7 +294,7 @@
           "CONCEPT_DISAGREEMENT": 1053,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 19366
+          "UNKNOWN_CONCEPT": 18780
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5394b872e4ec43d3b3c8478e5ec6a0dab157589458136d1542b89a80f108f10e",
@@ -461,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a08929185f041cc407c13b98fd7e8a8a5ba99910f8deacdb5b88af6f4d4180e7",
@@ -478,11 +478,54 @@
       "name": "Empire State Realty OP, L.P.",
       "sic": "6798",
       "rawFacts": 17327,
-      "mappedFacts": 4141,
-      "unmappedFacts": 12817,
+      "mappedFacts": 4850,
+      "unmappedFacts": 12298,
       "calendarYears": 15,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "secured_debt": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 1.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ESBA",
@@ -600,16 +643,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13371,
+        "total": 12854,
         "by_severity": {
-          "INFO": 12817,
-          "WARNING": 554
+          "INFO": 12298,
+          "WARNING": 556
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 537,
           "FISCAL_PERIOD_CONFLICT": 2,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 12817
+          "UNKNOWN_CONCEPT": 12298
         }
       },
       "latestFiling": {
@@ -620,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe2b02d30a2325227798c06a920fe7fa71e3b20d427aebfe7f639398cce37fdf",
@@ -637,8 +681,8 @@
       "name": "Bally's Corp",
       "sic": "7011",
       "rawFacts": 16800,
-      "mappedFacts": 4183,
-      "unmappedFacts": 12173,
+      "mappedFacts": 4201,
+      "unmappedFacts": 12154,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -757,16 +801,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13039,
+        "total": 13022,
         "by_severity": {
-          "INFO": 12173,
-          "WARNING": 866
+          "INFO": 12154,
+          "WARNING": 868
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 460,
-          "RESTATEMENT_CONFLICT": 51,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 52,
           "UNEXPECTED_DURATION": 355,
-          "UNKNOWN_CONCEPT": 12173
+          "UNKNOWN_CONCEPT": 12154
         }
       },
       "latestFiling": {
@@ -777,13 +822,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6ff51390faa6dea4b05939667bebf0c873d07347147f8517ca1a4017c1708ac5",
@@ -794,8 +839,8 @@
       "name": "Velo3D, Inc.",
       "sic": "3559",
       "rawFacts": 7525,
-      "mappedFacts": 2253,
-      "unmappedFacts": 5309,
+      "mappedFacts": 2309,
+      "unmappedFacts": 5275,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -915,16 +960,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5566,
+        "total": 5532,
         "by_severity": {
-          "INFO": 5309,
+          "INFO": 5275,
           "WARNING": 257
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 117,
           "RESTATEMENT_CONFLICT": 120,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 5309
+          "UNKNOWN_CONCEPT": 5275
         }
       },
       "latestFiling": {
@@ -935,13 +980,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c31ce7577480069ad8dad9fc6e238f60262a155e925f72d5689e7efd28434a02",

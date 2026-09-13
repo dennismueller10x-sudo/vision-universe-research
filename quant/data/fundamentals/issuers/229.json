@@ -7,8 +7,8 @@
       "name": "COLUMBUS MCKINNON CORP",
       "sic": "3531",
       "rawFacts": 25818,
-      "mappedFacts": 7257,
-      "unmappedFacts": 19084,
+      "mappedFacts": 7450,
+      "unmappedFacts": 18906,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19542,
+        "total": 19370,
         "by_severity": {
-          "INFO": 19084,
+          "INFO": 18906,
           "ERROR": 27,
-          "WARNING": 431
+          "WARNING": 437
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 364,
           "FUTURE_DATA_LEAK": 27,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
-          "RESTATEMENT_CONFLICT": 63,
-          "UNKNOWN_CONCEPT": 19084
+          "PERIOD_MISMATCH": 5,
+          "RESTATEMENT_CONFLICT": 64,
+          "UNKNOWN_CONCEPT": 18906
         }
       },
       "latestFiling": {
@@ -149,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "09b4639f751ca944ebb1475fa67b00662e5339421d1a3a3ee6667b72eadf8adb",
@@ -166,8 +167,8 @@
       "name": "BTCS Inc.",
       "sic": "6199",
       "rawFacts": 13276,
-      "mappedFacts": 5234,
-      "unmappedFacts": 8398,
+      "mappedFacts": 5281,
+      "unmappedFacts": 8369,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +287,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8905,
+        "total": 8876,
         "by_severity": {
-          "INFO": 8398,
+          "INFO": 8369,
           "WARNING": 507
         },
         "by_code": {
@@ -297,7 +298,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 229,
           "UNEXPECTED_DURATION": 21,
-          "UNKNOWN_CONCEPT": 8398
+          "UNKNOWN_CONCEPT": 8369
         }
       },
       "latestFiling": {
@@ -308,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "00d84d6d491d0d437637de08ca7bd9ea7bec0c2959e99ff91f9e3b58fc1b5fcc",
@@ -325,8 +326,8 @@
       "name": "Cogent Biosciences, Inc.",
       "sic": "2834",
       "rawFacts": 7428,
-      "mappedFacts": 2558,
-      "unmappedFacts": 4833,
+      "mappedFacts": 2598,
+      "unmappedFacts": 4809,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -445,15 +446,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4967,
+        "total": 4943,
         "by_severity": {
-          "INFO": 4833,
+          "INFO": 4809,
           "WARNING": 134
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 101,
           "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 4833
+          "UNKNOWN_CONCEPT": 4809
         }
       },
       "latestFiling": {
@@ -464,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a9dd356584f5ca280c3c8685533a8b838cd46fddffab973bd74ec1171f696a6",
@@ -481,8 +482,8 @@
       "name": "Invitation Homes Inc.",
       "sic": "6510",
       "rawFacts": 16747,
-      "mappedFacts": 2974,
-      "unmappedFacts": 13511,
+      "mappedFacts": 3781,
+      "unmappedFacts": 12753,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -601,16 +602,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13900,
+        "total": 13284,
         "by_severity": {
-          "INFO": 13511,
-          "WARNING": 389
+          "INFO": 12753,
+          "WARNING": 531
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 284,
-          "RESTATEMENT_CONFLICT": 59,
-          "UNEXPECTED_DURATION": 46,
-          "UNKNOWN_CONCEPT": 13511
+          "FISCAL_PERIOD_CONFLICT": 1,
+          "PERIOD_MISMATCH": 136,
+          "RESTATEMENT_CONFLICT": 61,
+          "UNEXPECTED_DURATION": 49,
+          "UNKNOWN_CONCEPT": 12753
         }
       },
       "latestFiling": {
@@ -621,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "db5fd2129bf5b0b706db9f3733d1316a8f2c785d93e66103cc9483f725628543",
@@ -777,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "76d68db4eea1d3e22744b635482e68871b491d0b8acb862bf385bb45d14cbf0f",
@@ -794,8 +797,8 @@
       "name": "Vor Biopharma Inc.",
       "sic": "2836",
       "rawFacts": 4969,
-      "mappedFacts": 1576,
-      "unmappedFacts": 3401,
+      "mappedFacts": 1638,
+      "unmappedFacts": 3362,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -914,15 +917,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3476,
+        "total": 3437,
         "by_severity": {
-          "INFO": 3401,
+          "INFO": 3362,
           "WARNING": 75
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 45,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 3401
+          "UNKNOWN_CONCEPT": 3362
         }
       },
       "latestFiling": {
@@ -933,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bbe21d6fc8d8c9f6715170f3023eacb0f74038eff799f7b444651a33fc198263",
@@ -1088,13 +1091,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1a7203f8b8698127612ec3a0677b1ba75a7c84a626202ad67157ebd82bebd216",
@@ -1105,8 +1108,8 @@
       "name": "Reitar Logtech Holdings Ltd",
       "sic": "6510",
       "rawFacts": 1484,
-      "mappedFacts": 315,
-      "unmappedFacts": 1064,
+      "mappedFacts": 321,
+      "unmappedFacts": 1058,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1227,13 +1230,13 @@
         "rules_version": "1.0.0",
         "total": 1206,
         "by_severity": {
-          "INFO": 1064,
-          "WARNING": 142
+          "INFO": 1058,
+          "WARNING": 148
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 132,
+          "CONCEPT_DISAGREEMENT": 138,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 1064
+          "UNKNOWN_CONCEPT": 1058
         }
       },
       "latestFiling": {
@@ -1244,13 +1247,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3d74fe2ce918b684ed6fcb6215b49c5b5effbe58b749955ba7a65851143df6b0",
@@ -1386,13 +1389,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "082592a48370a11d957f6624271f5e3f33aaf3d0face51225c38482ba00f3dae",

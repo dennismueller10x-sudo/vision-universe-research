@@ -7,8 +7,8 @@
       "name": "JACK IN THE BOX INC",
       "sic": "5812",
       "rawFacts": 28498,
-      "mappedFacts": 6297,
-      "unmappedFacts": 21590,
+      "mappedFacts": 6457,
+      "unmappedFacts": 21384,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23213,
+        "total": 23056,
         "by_severity": {
-          "INFO": 21590,
+          "INFO": 21384,
           "ERROR": 33,
-          "WARNING": 1590
+          "WARNING": 1639
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 574,
+          "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 33,
-          "RESTATEMENT_CONFLICT": 176,
-          "UNEXPECTED_DURATION": 840,
-          "UNKNOWN_CONCEPT": 21590
+          "PERIOD_MISMATCH": 5,
+          "RESTATEMENT_CONFLICT": 178,
+          "UNEXPECTED_DURATION": 881,
+          "UNKNOWN_CONCEPT": 21384
         }
       },
       "latestFiling": {
@@ -149,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "155b9873a7628eb5511d19a3524ef00c9ef7f458ddd1310d4a9201847841812a",
@@ -166,11 +168,75 @@
       "name": "Root, Inc.",
       "sic": "6331",
       "rawFacts": 9820,
-      "mappedFacts": 2058,
-      "unmappedFacts": 7828,
+      "mappedFacts": 2611,
+      "unmappedFacts": 7421,
       "calendarYears": 8,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 4.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "total_investments": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ROOT"
@@ -286,15 +352,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7917,
+        "total": 7514,
         "by_severity": {
-          "INFO": 7828,
-          "WARNING": 89
+          "INFO": 7421,
+          "WARNING": 93
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 57,
-          "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 7828
+          "RESTATEMENT_CONFLICT": 36,
+          "UNKNOWN_CONCEPT": 7421
         }
       },
       "latestFiling": {
@@ -305,13 +371,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b6f0b1b3ca1a192dbeba33c9981448ec38192440d5dac0bcf939b4412df2c8f1",
@@ -461,13 +527,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0da54a00b744b23b91076ef50da981db3037a7cd8844923f4e1537b2e869be79",

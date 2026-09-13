@@ -7,8 +7,8 @@
       "name": "CAPITAL SOUTHWEST CORP",
       "sic": null,
       "rawFacts": 8079,
-      "mappedFacts": 1615,
-      "unmappedFacts": 6388,
+      "mappedFacts": 1718,
+      "unmappedFacts": 6278,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6670,
+        "total": 6563,
         "by_severity": {
-          "INFO": 6388,
-          "WARNING": 282
+          "INFO": 6278,
+          "WARNING": 285
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 241,
+          "CONCEPT_DISAGREEMENT": 244,
           "FISCAL_PERIOD_CONFLICT": 9,
           "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 6388
+          "UNKNOWN_CONCEPT": 6278
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6d4d6e3ac444a6e58e668e957b9b61a624d09344514636e5e49194439ebabc08",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35c3143fa50512cbc8589ac52fe3b155869abe67dd4de8a2f50df56289749272",
@@ -323,8 +323,8 @@
       "name": "AMPHENOL CORP /DE/",
       "sic": "3678",
       "rawFacts": 23544,
-      "mappedFacts": 8109,
-      "unmappedFacts": 15580,
+      "mappedFacts": 8469,
+      "unmappedFacts": 15171,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -443,16 +443,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16346,
+        "total": 16012,
         "by_severity": {
-          "INFO": 15580,
-          "WARNING": 766
+          "INFO": 15171,
+          "WARNING": 841
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 661,
-          "RESTATEMENT_CONFLICT": 102,
-          "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 15580
+          "PERIOD_MISMATCH": 41,
+          "RESTATEMENT_CONFLICT": 128,
+          "UNEXPECTED_DURATION": 11,
+          "UNKNOWN_CONCEPT": 15171
         }
       },
       "latestFiling": {
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd9364fdb26dba2c0f89923fde3484e80fc6aad884adf863910b6ac18beee155",
@@ -617,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eba107d918b3f86d97514a16c8c2427a29d275f4ca4b97c098ea245360049e1f",
@@ -634,8 +635,8 @@
       "name": "FORRESTER RESEARCH, INC.",
       "sic": "8700",
       "rawFacts": 21574,
-      "mappedFacts": 6525,
-      "unmappedFacts": 15199,
+      "mappedFacts": 6675,
+      "unmappedFacts": 15072,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -754,9 +755,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15774,
+        "total": 15647,
         "by_severity": {
-          "INFO": 15199,
+          "INFO": 15072,
           "ERROR": 2,
           "WARNING": 573
         },
@@ -764,7 +765,7 @@
           "CONCEPT_DISAGREEMENT": 547,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 15199
+          "UNKNOWN_CONCEPT": 15072
         }
       },
       "latestFiling": {
@@ -775,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3d0a26ba33e12c3ccf475f82c5109e64681c42dc252f6b07b45f73c36e74cf1d",
@@ -938,13 +939,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fc1e590ff58462dd5edcfa4819a15152e6bcd7aeec53031ab3fd479ee784d1b0",
@@ -955,8 +956,8 @@
       "name": "Xenon Pharmaceuticals Inc.",
       "sic": "2834",
       "rawFacts": 11659,
-      "mappedFacts": 4129,
-      "unmappedFacts": 7752,
+      "mappedFacts": 4177,
+      "unmappedFacts": 7722,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -1075,15 +1076,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7853,
+        "total": 7823,
         "by_severity": {
-          "INFO": 7752,
+          "INFO": 7722,
           "WARNING": 101
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 85,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 7752
+          "UNKNOWN_CONCEPT": 7722
         }
       },
       "latestFiling": {
@@ -1094,13 +1095,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ba3396eb16bda7d153962068d7d3573e78900b0093b166e1e92e351c6ec73589",
@@ -1249,13 +1250,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ceb2eb00fb60a89eae6407a8ce56901c40b33cbb3d1855f4b9a52b08e5dee5b1",
@@ -1266,8 +1267,8 @@
       "name": "Zedge, Inc.",
       "sic": "7372",
       "rawFacts": 9968,
-      "mappedFacts": 3573,
-      "unmappedFacts": 6678,
+      "mappedFacts": 3578,
+      "unmappedFacts": 6673,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -1386,20 +1387,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6770,
+        "total": 6766,
         "by_severity": {
-          "INFO": 6678,
+          "INFO": 6673,
           "ERROR": 1,
-          "WARNING": 91
+          "WARNING": 92
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
           "FISCAL_PERIOD_CONFLICT": 13,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 18,
+          "RESTATEMENT_CONFLICT": 19,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 6678
+          "UNKNOWN_CONCEPT": 6673
         }
       },
       "latestFiling": {
@@ -1410,13 +1411,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b4eb1a471be3c2f2906429859320e3bef4da6bbce15a97bf75d64c3d1bd53c88",
@@ -1566,13 +1567,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "17bd6bd0dc7a694d7103cfff02caf934519142947f0f7f597d0eccd9470398be",
@@ -1583,8 +1584,8 @@
       "name": "Savers Value Village, Inc.",
       "sic": "5900",
       "rawFacts": 4348,
-      "mappedFacts": 1403,
-      "unmappedFacts": 3012,
+      "mappedFacts": 1413,
+      "unmappedFacts": 3001,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1703,16 +1704,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3115,
+        "total": 3105,
         "by_severity": {
-          "INFO": 3012,
-          "WARNING": 103
+          "INFO": 3001,
+          "WARNING": 104
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 85,
+          "CONCEPT_DISAGREEMENT": 86,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 3012
+          "UNKNOWN_CONCEPT": 3001
         }
       },
       "latestFiling": {
@@ -1723,13 +1724,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb13340141fbc4049f44bb4ae96c9352022f1b5322d1a938a157db7541a5ea69",
@@ -1740,8 +1741,8 @@
       "name": "SBC Medical Group Holdings Inc",
       "sic": "8011",
       "rawFacts": 4286,
-      "mappedFacts": 1089,
-      "unmappedFacts": 3211,
+      "mappedFacts": 1100,
+      "unmappedFacts": 3204,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -1861,16 +1862,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3365,
+        "total": 3358,
         "by_severity": {
-          "INFO": 3211,
+          "INFO": 3204,
           "WARNING": 154
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 60,
           "RESTATEMENT_CONFLICT": 63,
           "UNEXPECTED_DURATION": 31,
-          "UNKNOWN_CONCEPT": 3211
+          "UNKNOWN_CONCEPT": 3204
         }
       },
       "latestFiling": {
@@ -1881,13 +1882,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4b1f264c1a040e084dac666303fdd6dc74d663c980423b35769155c0acc50a69",
@@ -2038,13 +2039,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b0896e54c98bcf5543f9f42c638da5d28dce235918b178919f535a2dc13498fa",

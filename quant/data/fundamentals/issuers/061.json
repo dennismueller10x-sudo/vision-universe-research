@@ -7,8 +7,8 @@
       "name": "NATURAL HEALTH TRENDS CORP",
       "sic": "5190",
       "rawFacts": 15490,
-      "mappedFacts": 5247,
-      "unmappedFacts": 10373,
+      "mappedFacts": 5512,
+      "unmappedFacts": 10121,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10660,
+        "total": 10423,
         "by_severity": {
-          "INFO": 10373,
+          "INFO": 10121,
           "ERROR": 8,
-          "WARNING": 279
+          "WARNING": 294
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 249,
           "FUTURE_DATA_LEAK": 8,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
+          "PERIOD_MISMATCH": 12,
           "RESTATEMENT_CONFLICT": 22,
-          "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 10373
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 10121
         }
       },
       "latestFiling": {
@@ -150,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5d1d255136c0605f39c518bd49b796089c11321220a6a5ba044e2d8eeeaf758b",
@@ -167,8 +168,8 @@
       "name": "YUM BRANDS INC",
       "sic": "5812",
       "rawFacts": 24053,
-      "mappedFacts": 7394,
-      "unmappedFacts": 17015,
+      "mappedFacts": 7680,
+      "unmappedFacts": 16706,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -287,20 +288,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17897,
+        "total": 17620,
         "by_severity": {
-          "INFO": 17015,
-          "WARNING": 882
+          "INFO": 16706,
+          "WARNING": 914
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 567,
           "EXTREME_VALUE": 1,
-          "FISCAL_PERIOD_CONFLICT": 85,
+          "FISCAL_PERIOD_CONFLICT": 92,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 128,
-          "UNEXPECTED_DURATION": 77,
-          "UNIT_MISMATCH": 22,
-          "UNKNOWN_CONCEPT": 17015
+          "RESTATEMENT_CONFLICT": 130,
+          "UNEXPECTED_DURATION": 89,
+          "UNIT_MISMATCH": 33,
+          "UNKNOWN_CONCEPT": 16706
         }
       },
       "latestFiling": {
@@ -311,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d46f8959b99386b3e9017d311884fb5b34959010c614470bf1f2ea955edf7111",
@@ -328,8 +329,8 @@
       "name": "Gyrodyne, LLC",
       "sic": "6512",
       "rawFacts": 1634,
-      "mappedFacts": 253,
-      "unmappedFacts": 1373,
+      "mappedFacts": 257,
+      "unmappedFacts": 1371,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -447,10 +448,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1435,
+        "total": 1433,
         "by_severity": {
           "ERROR": 5,
-          "INFO": 1373,
+          "INFO": 1371,
           "WARNING": 57
         },
         "by_code": {
@@ -458,7 +459,7 @@
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 7,
           "UNEXPECTED_DURATION": 42,
-          "UNKNOWN_CONCEPT": 1373
+          "UNKNOWN_CONCEPT": 1371
         }
       },
       "latestFiling": {
@@ -469,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "40f788eaf9600dc0640ee685a9b138fa701b46ae260598e3881ca8aed77ea548",
@@ -623,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4aff043111ed61f56bc909155e7fd03691bca6710492eca313ecbfab5883afdf",
@@ -640,8 +641,8 @@
       "name": "Star Fashion Culture Holdings Ltd",
       "sic": "7310",
       "rawFacts": 288,
-      "mappedFacts": 93,
-      "unmappedFacts": 188,
+      "mappedFacts": 97,
+      "unmappedFacts": 186,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -760,14 +761,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 222,
+        "total": 220,
         "by_severity": {
-          "INFO": 188,
+          "INFO": 186,
           "WARNING": 34
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 34,
-          "UNKNOWN_CONCEPT": 188
+          "UNKNOWN_CONCEPT": 186
         }
       },
       "latestFiling": {
@@ -778,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "136a9b0ae2689fb1b33ce317a0cfab63fe514999ccef520acfd981e87152d8e9",
@@ -795,8 +796,8 @@
       "name": "South Bow Corp",
       "sic": "4610",
       "rawFacts": 723,
-      "mappedFacts": 156,
-      "unmappedFacts": 597,
+      "mappedFacts": 158,
+      "unmappedFacts": 595,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -914,14 +915,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 599,
+        "total": 597,
         "by_severity": {
-          "INFO": 597,
+          "INFO": 595,
           "WARNING": 2
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 2,
-          "UNKNOWN_CONCEPT": 597
+          "UNKNOWN_CONCEPT": 595
         }
       },
       "latestFiling": {
@@ -932,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "33be075b5de88b788be0c944a37da723e3a92d44a962acad4c3e2f988e839071",

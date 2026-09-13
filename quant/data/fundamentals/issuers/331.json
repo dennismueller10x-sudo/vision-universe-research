@@ -7,8 +7,8 @@
       "name": "NORDSON CORP",
       "sic": "3569",
       "rawFacts": 21904,
-      "mappedFacts": 7524,
-      "unmappedFacts": 14934,
+      "mappedFacts": 7756,
+      "unmappedFacts": 14698,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15386,
+        "total": 15158,
         "by_severity": {
-          "INFO": 14934,
-          "WARNING": 452
+          "INFO": 14698,
+          "WARNING": 460
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 420,
-          "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 14934
+          "RESTATEMENT_CONFLICT": 36,
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 14698
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "704e71ffb286f7f116fda8409d597465af0a4505ebb6095519495abd9fbefcbb",
@@ -163,8 +164,8 @@
       "name": "LITTELFUSE INC /DE",
       "sic": "3613",
       "rawFacts": 24921,
-      "mappedFacts": 7522,
-      "unmappedFacts": 17420,
+      "mappedFacts": 7557,
+      "unmappedFacts": 17398,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,18 +284,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18163,
+        "total": 18145,
         "by_severity": {
-          "INFO": 17420,
+          "INFO": 17398,
           "ERROR": 1,
-          "WARNING": 742
+          "WARNING": 746
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 641,
+          "CONCEPT_DISAGREEMENT": 643,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 17420
+          "RESTATEMENT_CONFLICT": 97,
+          "UNKNOWN_CONCEPT": 17398
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "651d32ed8f70a266b4a95175876a40dcd9e465c62d9e2c1a0cd8bd6d69b0c097",
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a6f98fa25728c1c1f23e72e7c1705262b7a1bb35c20f78434322311a0ec678ce",

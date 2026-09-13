@@ -7,8 +7,8 @@
       "name": "TUTOR PERINI CORP",
       "sic": "1540",
       "rawFacts": 22931,
-      "mappedFacts": 7036,
-      "unmappedFacts": 16075,
+      "mappedFacts": 7040,
+      "unmappedFacts": 16071,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16729,
+        "total": 16725,
         "by_severity": {
-          "INFO": 16075,
+          "INFO": 16071,
           "WARNING": 654
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 620,
           "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 16075
+          "UNKNOWN_CONCEPT": 16071
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "297205efe8a600ea78d60d9c70bbbeb015dfb6a075bff7ec0b62a7fc9b872cd8",
@@ -163,8 +163,8 @@
       "name": "NOAH HOLDINGS LTD",
       "sic": "6282",
       "rawFacts": 9355,
-      "mappedFacts": 1467,
-      "unmappedFacts": 7615,
+      "mappedFacts": 1580,
+      "unmappedFacts": 7499,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,17 +283,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8203,
+        "total": 8176,
         "by_severity": {
-          "INFO": 7615,
-          "WARNING": 588
+          "INFO": 7499,
+          "WARNING": 677
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 508,
-          "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 74,
-          "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 7615
+          "CONCEPT_DISAGREEMENT": 584,
+          "PERIOD_MISMATCH": 6,
+          "RESTATEMENT_CONFLICT": 81,
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 7499
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3078e2ee718ae76b4aaead37daae8a1812fc23f19920c10a830f672d2807211c",
@@ -321,8 +321,8 @@
       "name": "Senseonics Holdings, Inc.",
       "sic": "3823",
       "rawFacts": 11882,
-      "mappedFacts": 4091,
-      "unmappedFacts": 7862,
+      "mappedFacts": 4115,
+      "unmappedFacts": 7842,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -441,9 +441,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8198,
+        "total": 8178,
         "by_severity": {
-          "INFO": 7862,
+          "INFO": 7842,
           "WARNING": 336
         },
         "by_code": {
@@ -452,7 +452,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 112,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 7862
+          "UNKNOWN_CONCEPT": 7842
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "edecb17f5f01341cc2cd28efb5813eb8147dc0302ae8f21501a60139c69b4dbd",
@@ -480,8 +480,8 @@
       "name": "Cadre Holdings, Inc.",
       "sic": "3842",
       "rawFacts": 7484,
-      "mappedFacts": 2289,
-      "unmappedFacts": 5281,
+      "mappedFacts": 2356,
+      "unmappedFacts": 5218,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -600,17 +600,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5398,
+        "total": 5341,
         "by_severity": {
-          "INFO": 5281,
+          "INFO": 5218,
           "ERROR": 4,
-          "WARNING": 113
+          "WARNING": 119
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 110,
           "FUTURE_DATA_LEAK": 4,
-          "PERIOD_MISMATCH": 3,
-          "UNKNOWN_CONCEPT": 5281
+          "PERIOD_MISMATCH": 6,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 5218
         }
       },
       "latestFiling": {
@@ -621,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6b60f3bc15e3eeb155cb2deeeb36e242794dcaca1480180cc8edf76c68f55e74",

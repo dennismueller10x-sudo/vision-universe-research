@@ -7,8 +7,8 @@
       "name": "M/I HOMES, INC.",
       "sic": "1531",
       "rawFacts": 19736,
-      "mappedFacts": 5117,
-      "unmappedFacts": 14494,
+      "mappedFacts": 5241,
+      "unmappedFacts": 14391,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14794,
+        "total": 14692,
         "by_severity": {
-          "INFO": 14494,
+          "INFO": 14391,
           "ERROR": 23,
-          "WARNING": 277
+          "WARNING": 278
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 239,
           "FUTURE_DATA_LEAK": 23,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 14494
+          "RESTATEMENT_CONFLICT": 37,
+          "UNKNOWN_CONCEPT": 14391
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4400bacde3562bff1794f250e286ff4089a9ab6f809ead6088de5e5a1d1d10c7",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4051447a1f4534fc6f59f08ceee71c5a2d9de2f1f9527911394481cefd30db4",
@@ -323,11 +323,75 @@
       "name": "Presurance Holdings, Inc.",
       "sic": "6331",
       "rawFacts": 19170,
-      "mappedFacts": 3458,
-      "unmappedFacts": 15683,
+      "mappedFacts": 5153,
+      "unmappedFacts": 14394,
       "calendarYears": 13,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "claims_liability": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "total_investments": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "PRHI",
@@ -444,16 +508,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15823,
+        "total": 14539,
         "by_severity": {
-          "INFO": 15683,
-          "WARNING": 140
+          "INFO": 14394,
+          "WARNING": 145
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 107,
-          "RESTATEMENT_CONFLICT": 32,
+          "RESTATEMENT_CONFLICT": 37,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 15683
+          "UNKNOWN_CONCEPT": 14394
         }
       },
       "latestFiling": {
@@ -464,13 +528,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d93062f297b6e21cf86c110e022d4e5f48efcd6e3450d2d5e9128507264b11a6",
@@ -481,8 +545,8 @@
       "name": "Zai Lab Ltd",
       "sic": "2834",
       "rawFacts": 7957,
-      "mappedFacts": 2604,
-      "unmappedFacts": 5436,
+      "mappedFacts": 2649,
+      "unmappedFacts": 5410,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -601,15 +665,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5555,
+        "total": 5529,
         "by_severity": {
-          "INFO": 5436,
+          "INFO": 5410,
           "WARNING": 119
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 108,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 5436
+          "UNKNOWN_CONCEPT": 5410
         }
       },
       "latestFiling": {
@@ -620,13 +684,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e1d4c8666a57e738dc802a3cc505e4c1636d917b680f5c02ab159d62abd30d76",
@@ -637,8 +701,8 @@
       "name": "Maison Solutions Inc.",
       "sic": "5411",
       "rawFacts": 4949,
-      "mappedFacts": 1198,
-      "unmappedFacts": 3732,
+      "mappedFacts": 1207,
+      "unmappedFacts": 3726,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -757,9 +821,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3939,
+        "total": 3933,
         "by_severity": {
-          "INFO": 3732,
+          "INFO": 3726,
           "ERROR": 9,
           "WARNING": 198
         },
@@ -768,7 +832,7 @@
           "FUTURE_DATA_LEAK": 9,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 3732
+          "UNKNOWN_CONCEPT": 3726
         }
       },
       "latestFiling": {
@@ -779,13 +843,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "84400a45d37e0e89610731f46e3931dd91f5c2344867f65748287f827bf420ff",
@@ -934,13 +998,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "99f22e6710e2017792a0fc44f94e315ee9ad0300db160caa77271be9ae3ba946",
@@ -1090,13 +1154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fb897e18f9d966d3e0f2b8c7dd80dbe91185265454b4e9d09e1fa0c6276d642e",
@@ -1244,13 +1308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "07084916f7125dac782c759c034c3a76ea8b854bec179922361ee5d4c647f7ef",
@@ -1391,13 +1455,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d310df5c7577e05fe6459d9bb73f18ba0ee1d012599a9013f5d3ae679e894938",

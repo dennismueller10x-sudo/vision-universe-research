@@ -7,8 +7,8 @@
       "name": "GYRE THERAPEUTICS, INC.",
       "sic": "2834",
       "rawFacts": 14120,
-      "mappedFacts": 4941,
-      "unmappedFacts": 9399,
+      "mappedFacts": 4982,
+      "unmappedFacts": 9373,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9824,
+        "total": 9800,
         "by_severity": {
-          "INFO": 9399,
-          "WARNING": 425
+          "INFO": 9373,
+          "WARNING": 427
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 170,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 249,
-          "UNKNOWN_CONCEPT": 9399
+          "RESTATEMENT_CONFLICT": 251,
+          "UNKNOWN_CONCEPT": 9373
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "894ac0dafff640f8e4ef2cc84cb2f950351264eb99daf6164b0a071f1b808ff6",
@@ -164,8 +164,8 @@
       "name": "SPORTSMAN'S WAREHOUSE HOLDINGS, INC.",
       "sic": "5940",
       "rawFacts": 13100,
-      "mappedFacts": 4961,
-      "unmappedFacts": 8356,
+      "mappedFacts": 5007,
+      "unmappedFacts": 8332,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8635,
+        "total": 8613,
         "by_severity": {
-          "INFO": 8356,
-          "WARNING": 279
+          "INFO": 8332,
+          "WARNING": 281
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 212,
+          "CONCEPT_DISAGREEMENT": 214,
           "RESTATEMENT_CONFLICT": 56,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 8356
+          "UNKNOWN_CONCEPT": 8332
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f6c77413c30c19d8be77c6e999943b553655748ba0d5699d1671cdcd8ce4ac16",
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2749058df3ac290781f3b2a3096ae9b13355abc2bcc2f9e1469204fd7fc4b150",
@@ -618,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1a9b796a5125a19269657ec7502e9b2a43c8af063c6db0df7197dd1cc8a67d83",
@@ -635,11 +635,75 @@
       "name": "Hippo Holdings Inc.",
       "sic": "6331",
       "rawFacts": 8593,
-      "mappedFacts": 1626,
-      "unmappedFacts": 6882,
+      "mappedFacts": 2098,
+      "unmappedFacts": 6519,
       "calendarYears": 6,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "claims_liability": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HIPO"
@@ -755,15 +819,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7135,
+        "total": 6772,
         "by_severity": {
-          "INFO": 6882,
+          "INFO": 6519,
           "WARNING": 253
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 184,
           "RESTATEMENT_CONFLICT": 69,
-          "UNKNOWN_CONCEPT": 6882
+          "UNKNOWN_CONCEPT": 6519
         }
       },
       "latestFiling": {
@@ -774,13 +838,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b554733389bee9a1707666cb4b39437946f28bbb85e7bc061d3d47727f6cc3bf",
@@ -929,13 +993,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cb261b51812c4da7fa5db72972766c69e425f3310e81bccc74758c1c82ab4996",
@@ -1085,13 +1149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c7cd98b6775f139b892f767b2e9dbe6654cca5a9bf4854b5ea9fedf20d8e11d0",
@@ -1242,13 +1306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c161c2b18217a6b4c0808f4739eae510140239bc1085a59dd8492cf02296bcaa",

@@ -7,8 +7,8 @@
       "name": "RELIANCE, INC.",
       "sic": "5051",
       "rawFacts": 21542,
-      "mappedFacts": 7446,
-      "unmappedFacts": 14423,
+      "mappedFacts": 7591,
+      "unmappedFacts": 14205,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14746,
+        "total": 14601,
         "by_severity": {
-          "INFO": 14423,
+          "INFO": 14205,
           "ERROR": 12,
-          "WARNING": 311
+          "WARNING": 384
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 309,
           "FUTURE_DATA_LEAK": 12,
+          "PERIOD_MISMATCH": 15,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 14423
+          "UNEXPECTED_DURATION": 58,
+          "UNKNOWN_CONCEPT": 14205
         }
       },
       "latestFiling": {
@@ -148,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3d75ab2fdea021a2cf390585681bc49cfcc14bd6932307f87b8a05d8985ad479",
@@ -294,13 +296,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c41c5af40f7a177ab160a96888110674037f549ea8c79de36d832ae44af930f0",

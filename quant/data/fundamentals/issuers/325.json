@@ -7,8 +7,8 @@
       "name": "WEC ENERGY GROUP, INC.",
       "sic": "4931",
       "rawFacts": 27857,
-      "mappedFacts": 6759,
-      "unmappedFacts": 21383,
+      "mappedFacts": 7007,
+      "unmappedFacts": 21126,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21823,
+        "total": 21582,
         "by_severity": {
-          "INFO": 21383,
+          "INFO": 21126,
           "ERROR": 3,
-          "WARNING": 437
+          "WARNING": 453
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 348,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 88,
+          "PERIOD_MISMATCH": 9,
+          "RESTATEMENT_CONFLICT": 95,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 21383
+          "UNKNOWN_CONCEPT": 21126
         }
       },
       "latestFiling": {
@@ -149,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "764a10e6e8849e165e22c22ade2b3931163579054ec68f431e4e18be8d123f4f",
@@ -166,8 +167,8 @@
       "name": "Coda Octopus Group, Inc.",
       "sic": "3812",
       "rawFacts": 9996,
-      "mappedFacts": 3989,
-      "unmappedFacts": 6304,
+      "mappedFacts": 4002,
+      "unmappedFacts": 6296,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +287,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6474,
+        "total": 6466,
         "by_severity": {
-          "INFO": 6304,
+          "INFO": 6296,
           "WARNING": 170
         },
         "by_code": {
@@ -296,7 +297,7 @@
           "FISCAL_PERIOD_CONFLICT": 29,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 80,
-          "UNKNOWN_CONCEPT": 6304
+          "UNKNOWN_CONCEPT": 6296
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ec8e4428e9ba52b2aebfafb9422d9eee40f3cd6a4736e2668e64babf7caddb3a",
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f7eb7058fc8632afc57fa16360c8d734580c316cac18cb29ba21d7186aa0b642",
@@ -617,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1906ef2fdbdf2d0383a3f0f2dc90d5efdd14c73e29e73a48e66d71b86827b188",

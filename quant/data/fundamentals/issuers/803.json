@@ -7,8 +7,8 @@
       "name": "CVS HEALTH Corp",
       "sic": "5912",
       "rawFacts": 28164,
-      "mappedFacts": 8200,
-      "unmappedFacts": 19773,
+      "mappedFacts": 9066,
+      "unmappedFacts": 19024,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20483,
+        "total": 19735,
         "by_severity": {
-          "INFO": 19773,
-          "WARNING": 710
+          "INFO": 19024,
+          "WARNING": 711
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 675,
           "RESTATEMENT_CONFLICT": 31,
-          "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 19773
+          "UNIT_MISMATCH": 5,
+          "UNKNOWN_CONCEPT": 19024
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f00c3ac6600d2aacd13fae2a86b6632a68ebe46639ef7fbdcfe8c5450f5e7d8f",
@@ -164,8 +164,8 @@
       "name": "PRICESMART INC",
       "sic": "5331",
       "rawFacts": 24520,
-      "mappedFacts": 7483,
-      "unmappedFacts": 16963,
+      "mappedFacts": 7631,
+      "unmappedFacts": 16773,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18018,
+        "total": 17870,
         "by_severity": {
-          "INFO": 16963,
-          "WARNING": 1055
+          "INFO": 16773,
+          "WARNING": 1097
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1000,
+          "PERIOD_MISMATCH": 13,
           "RESTATEMENT_CONFLICT": 48,
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 16963
+          "UNEXPECTED_DURATION": 36,
+          "UNKNOWN_CONCEPT": 16773
         }
       },
       "latestFiling": {
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f38d078a8778c7bbf49509bb4809d1693b6e3e013e724ec0c49f84b08a7f18d",
@@ -321,8 +322,8 @@
       "name": "ILLUMINA, INC.",
       "sic": "3826",
       "rawFacts": 23704,
-      "mappedFacts": 7409,
-      "unmappedFacts": 16282,
+      "mappedFacts": 7523,
+      "unmappedFacts": 16207,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -441,17 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17136,
+        "total": 17064,
         "by_severity": {
-          "INFO": 16282,
+          "INFO": 16207,
           "ERROR": 2,
-          "WARNING": 852
+          "WARNING": 855
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 728,
+          "CONCEPT_DISAGREEMENT": 730,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 124,
-          "UNKNOWN_CONCEPT": 16282
+          "RESTATEMENT_CONFLICT": 125,
+          "UNKNOWN_CONCEPT": 16207
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f567bb9430c7edacb81135d0132dab1db7cae5b1f393089c94654253e70e93ca",
@@ -619,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9eb5522e3fc33c1f40d7691346942b742cb76198e8d0ed9b4306046feb8fd2b1",

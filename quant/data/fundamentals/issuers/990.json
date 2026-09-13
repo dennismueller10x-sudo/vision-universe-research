@@ -7,8 +7,8 @@
       "name": "PLAINS GP HOLDINGS LP",
       "sic": "4610",
       "rawFacts": 14841,
-      "mappedFacts": 3932,
-      "unmappedFacts": 11063,
+      "mappedFacts": 3935,
+      "unmappedFacts": 11061,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11475,
+        "total": 11473,
         "by_severity": {
-          "INFO": 11063,
+          "INFO": 11061,
           "WARNING": 412
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 349,
           "RESTATEMENT_CONFLICT": 62,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11063
+          "UNKNOWN_CONCEPT": 11061
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9f33dea978dbe65bbec209fa168eb379281035ce0fb46c530f3c292255bcaeb",
@@ -164,8 +164,8 @@
       "name": "Magnolia Oil & Gas Corp",
       "sic": "1311",
       "rawFacts": 9573,
-      "mappedFacts": 2485,
-      "unmappedFacts": 6848,
+      "mappedFacts": 2539,
+      "unmappedFacts": 6788,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7208,
+        "total": 7154,
         "by_severity": {
-          "INFO": 6848,
-          "WARNING": 360
+          "INFO": 6788,
+          "WARNING": 366
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 115,
+          "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 34,
           "UNEXPECTED_DURATION": 211,
-          "UNKNOWN_CONCEPT": 6848
+          "UNKNOWN_CONCEPT": 6788
         }
       },
       "latestFiling": {
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb9c5c4b5c74911f617ad84979a977705982174c52044fcdfbf00fffc61527aa",
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5d1dc2fbf06b8cd22cc5b206d543b8cf638f313ea7842365c26e2ddc881287b6",

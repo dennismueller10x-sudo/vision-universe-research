@@ -7,11 +7,54 @@
       "name": "Elme Communities",
       "sic": "6798",
       "rawFacts": 20658,
-      "mappedFacts": 5336,
-      "unmappedFacts": 14219,
+      "mappedFacts": 6466,
+      "unmappedFacts": 13385,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ELME"
@@ -127,16 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15204,
+        "total": 14487,
         "by_severity": {
-          "INFO": 14219,
-          "WARNING": 985
+          "INFO": 13385,
+          "WARNING": 1102
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 854,
-          "RESTATEMENT_CONFLICT": 107,
-          "UNEXPECTED_DURATION": 24,
-          "UNKNOWN_CONCEPT": 14219
+          "CONCEPT_DISAGREEMENT": 944,
+          "RESTATEMENT_CONFLICT": 132,
+          "UNEXPECTED_DURATION": 26,
+          "UNKNOWN_CONCEPT": 13385
         }
       },
       "latestFiling": {
@@ -147,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5c4c672aeb798c4f6595fb31f5adfd9bc4d08c793c2401301e36b53da603e78c",
@@ -164,8 +207,8 @@
       "name": "SEI INVESTMENTS CO",
       "sic": "6211",
       "rawFacts": 27557,
-      "mappedFacts": 6253,
-      "unmappedFacts": 21736,
+      "mappedFacts": 6576,
+      "unmappedFacts": 21425,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +327,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21846,
+        "total": 21580,
         "by_severity": {
-          "INFO": 21736,
-          "WARNING": 110
+          "INFO": 21425,
+          "WARNING": 155
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 105,
+          "PERIOD_MISMATCH": 33,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 21736
+          "UNEXPECTED_DURATION": 12,
+          "UNKNOWN_CONCEPT": 21425
         }
       },
       "latestFiling": {
@@ -303,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b8079eca5f777c9382d6f9e117fc92299081af0e724cd79f9866b980198e05b",
@@ -459,13 +504,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "169e05626dbabffb8ea3b8b23f2fcd2bd14e56fbf7a2539f39200d1470edf5df",
@@ -476,8 +521,8 @@
       "name": "VERU INC.",
       "sic": "2834",
       "rawFacts": 18587,
-      "mappedFacts": 5859,
-      "unmappedFacts": 12924,
+      "mappedFacts": 5889,
+      "unmappedFacts": 12888,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -596,19 +641,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13499,
+        "total": 13468,
         "by_severity": {
-          "INFO": 12924,
+          "INFO": 12888,
           "ERROR": 6,
-          "WARNING": 569
+          "WARNING": 574
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 444,
           "FISCAL_PERIOD_CONFLICT": 12,
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 111,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 12924
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 12888
         }
       },
       "latestFiling": {
@@ -619,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d3c68055bb8fe644d36d178566b4bbb628fe96444e50eec525a2d4036ed3fab3",
@@ -774,13 +819,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8460753b801f1c6732f1dc80cefb50172ae64f59d02012840e51339da1e3cd87",
@@ -929,13 +974,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0eaa59f308faf0a9c3080ffcbfee137ce8ebc56cf5a9f19b371bc3e595e3eb86",
@@ -946,8 +991,8 @@
       "name": "HA Sustainable Infrastructure Capital, Inc.",
       "sic": "6799",
       "rawFacts": 17702,
-      "mappedFacts": 4250,
-      "unmappedFacts": 13185,
+      "mappedFacts": 4924,
+      "unmappedFacts": 12548,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -1066,19 +1111,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13828,
+        "total": 13321,
         "by_severity": {
-          "INFO": 13185,
-          "WARNING": 643
+          "INFO": 12548,
+          "WARNING": 773
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 540,
           "EXTREME_VALUE": 2,
-          "FISCAL_PERIOD_CONFLICT": 10,
+          "FISCAL_PERIOD_CONFLICT": 11,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
-          "RESTATEMENT_CONFLICT": 85,
+          "PERIOD_MISMATCH": 127,
+          "RESTATEMENT_CONFLICT": 87,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 13185
+          "UNKNOWN_CONCEPT": 12548
         }
       },
       "latestFiling": {
@@ -1089,13 +1135,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35bec509a861560ff65aa744998d67ad459cde938c543b62bf55b3a4ea5f5944",
@@ -1245,13 +1291,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e162d82c138d5996eb605fe8ac96344251128664e3fcb5396787eb93377ecae3",
@@ -1401,13 +1447,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9a6561d22418fc3e9e24474386c59b759329431c983bb5ebf9d60a3e96ce5d10",

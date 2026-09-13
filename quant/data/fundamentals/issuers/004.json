@@ -7,8 +7,8 @@
       "name": "LGL GROUP INC",
       "sic": "3679",
       "rawFacts": 14350,
-      "mappedFacts": 5418,
-      "unmappedFacts": 9138,
+      "mappedFacts": 5428,
+      "unmappedFacts": 9128,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9693,
+        "total": 9683,
         "by_severity": {
-          "INFO": 9138,
+          "INFO": 9128,
           "WARNING": 555
         },
         "by_code": {
@@ -137,7 +137,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 70,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 9138
+          "UNKNOWN_CONCEPT": 9128
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "063e01aa3678a8a9ed8523263156bb235fb9fbb08db221b30d6dca000ec8c714",
@@ -165,8 +165,8 @@
       "name": "MIDDLESEX WATER CO",
       "sic": "4941",
       "rawFacts": 19796,
-      "mappedFacts": 5964,
-      "unmappedFacts": 13976,
+      "mappedFacts": 6014,
+      "unmappedFacts": 13926,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -286,10 +286,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14541,
+        "total": 14491,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 13976,
+          "INFO": 13926,
           "WARNING": 564
         },
         "by_code": {
@@ -297,7 +297,7 @@
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 85,
-          "UNKNOWN_CONCEPT": 13976
+          "UNKNOWN_CONCEPT": 13926
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "46367a9bb98479ec3c8a82d93b1cc6cbc42017b2176cb2e904bec3235bd63be0",
@@ -326,7 +326,7 @@
       "sic": "3823",
       "rawFacts": 18189,
       "mappedFacts": 7068,
-      "unmappedFacts": 11556,
+      "unmappedFacts": 11555,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -447,15 +447,16 @@
         "rules_version": "1.0.0",
         "total": 11741,
         "by_severity": {
-          "INFO": 11556,
+          "INFO": 11555,
           "ERROR": 1,
-          "WARNING": 184
+          "WARNING": 185
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 115,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 69,
-          "UNKNOWN_CONCEPT": 11556
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 11555
         }
       },
       "latestFiling": {
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "290f6e0d5f67c367ee88490b4cb0cdbf0d61adcc005bdc8938567e8beac518c5",
@@ -483,8 +484,8 @@
       "name": "ICF International, Inc.",
       "sic": "8742",
       "rawFacts": 20383,
-      "mappedFacts": 7024,
-      "unmappedFacts": 13553,
+      "mappedFacts": 7145,
+      "unmappedFacts": 13432,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -603,9 +604,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14273,
+        "total": 14152,
         "by_severity": {
-          "INFO": 13553,
+          "INFO": 13432,
           "ERROR": 2,
           "WARNING": 718
         },
@@ -614,7 +615,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 52,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 13553
+          "UNKNOWN_CONCEPT": 13432
         }
       },
       "latestFiling": {
@@ -625,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e9dbe508a610ea0c2ffd70039ba54944459c6a53c8e43884350fd83f1b795356",
@@ -783,13 +784,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aaf3a031b6676aca2374eccb27f0def7a4a8f5f494381a682c439ec03e431101",
@@ -800,8 +801,8 @@
       "name": "NorthWestern Energy Group, Inc.",
       "sic": "4931",
       "rawFacts": 4416,
-      "mappedFacts": 1255,
-      "unmappedFacts": 3232,
+      "mappedFacts": 1294,
+      "unmappedFacts": 3193,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -920,15 +921,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3392,
+        "total": 3353,
         "by_severity": {
-          "INFO": 3232,
+          "INFO": 3193,
           "WARNING": 160
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 155,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 3232
+          "UNKNOWN_CONCEPT": 3193
         }
       },
       "latestFiling": {
@@ -939,13 +940,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "52638ea70bc372367a0600530f9976493ddb05c63c1b332117225108ded8e8b1",

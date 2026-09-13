@@ -7,11 +7,75 @@
       "name": "Arthur J. Gallagher & Co.",
       "sic": "6411",
       "rawFacts": 26474,
-      "mappedFacts": 6578,
-      "unmappedFacts": 20084,
+      "mappedFacts": 6934,
+      "unmappedFacts": 19720,
       "calendarYears": 20,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 11.0
+        },
+        "claims_liability": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 6.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AJG"
@@ -127,17 +191,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20815,
+        "total": 20469,
         "by_severity": {
-          "INFO": 20084,
-          "WARNING": 731
+          "INFO": 19720,
+          "WARNING": 749
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 606,
+          "CONCEPT_DISAGREEMENT": 608,
           "EXTREME_VALUE": 3,
-          "FISCAL_PERIOD_CONFLICT": 10,
-          "RESTATEMENT_CONFLICT": 112,
-          "UNKNOWN_CONCEPT": 20084
+          "FISCAL_PERIOD_CONFLICT": 11,
+          "RESTATEMENT_CONFLICT": 123,
+          "UNIT_MISMATCH": 4,
+          "UNKNOWN_CONCEPT": 19720
         }
       },
       "latestFiling": {
@@ -148,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bbac8574353122872df035e0e032da474f2d51b352e1547abf9ff6f22c7999be",
@@ -165,8 +230,8 @@
       "name": "Altimmune, Inc.",
       "sic": "2834",
       "rawFacts": 14645,
-      "mappedFacts": 5144,
-      "unmappedFacts": 9678,
+      "mappedFacts": 5219,
+      "unmappedFacts": 9627,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -285,9 +350,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10017,
+        "total": 9966,
         "by_severity": {
-          "INFO": 9678,
+          "INFO": 9627,
           "WARNING": 339
         },
         "by_code": {
@@ -295,7 +360,7 @@
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 9678
+          "UNKNOWN_CONCEPT": 9627
         }
       },
       "latestFiling": {
@@ -306,13 +371,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fbdf13db3da2b3f9b169a3dfb6d030224233036fa2a19dcaea8d725fc5f83fd9",
@@ -323,8 +388,8 @@
       "name": "IT TECH PACKAGING, INC.",
       "sic": "2670",
       "rawFacts": 17147,
-      "mappedFacts": 5610,
-      "unmappedFacts": 11573,
+      "mappedFacts": 5645,
+      "unmappedFacts": 11522,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -443,19 +508,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11933,
+        "total": 11912,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 11573,
-          "WARNING": 357
+          "INFO": 11522,
+          "WARNING": 387
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 277,
           "FUTURE_DATA_LEAK": 3,
           "PERIOD_MISMATCH": 11,
-          "RESTATEMENT_CONFLICT": 68,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11573
+          "RESTATEMENT_CONFLICT": 70,
+          "UNEXPECTED_DURATION": 29,
+          "UNKNOWN_CONCEPT": 11522
         }
       },
       "latestFiling": {
@@ -466,13 +531,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4c13960c256336ab90078f9a2513c66dff46078ae8eb35aa7db74d993c351a73",
@@ -483,8 +548,8 @@
       "name": "AUDIOEYE INC",
       "sic": "7372",
       "rawFacts": 13298,
-      "mappedFacts": 5119,
-      "unmappedFacts": 8380,
+      "mappedFacts": 5123,
+      "unmappedFacts": 8376,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -603,9 +668,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8724,
+        "total": 8720,
         "by_severity": {
-          "INFO": 8380,
+          "INFO": 8376,
           "ERROR": 3,
           "WARNING": 341
         },
@@ -614,7 +679,7 @@
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 132,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 8380
+          "UNKNOWN_CONCEPT": 8376
         }
       },
       "latestFiling": {
@@ -625,13 +690,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "576a37713c41a17311396e0c58e4111cae3c4bfbc5e0905f020f81c71ea9f666",
@@ -781,13 +846,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7ad2b37a64a54cc678e0c1414837df80297dbcd9e69413161f317f5a89ec2e9b",
@@ -798,8 +863,8 @@
       "name": "HUYA Inc.",
       "sic": "7370",
       "rawFacts": 4132,
-      "mappedFacts": 853,
-      "unmappedFacts": 3114,
+      "mappedFacts": 903,
+      "unmappedFacts": 3088,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -918,15 +983,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3441,
+        "total": 3415,
         "by_severity": {
-          "INFO": 3114,
+          "INFO": 3088,
           "WARNING": 327
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 316,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 3114
+          "UNKNOWN_CONCEPT": 3088
         }
       },
       "latestFiling": {
@@ -937,13 +1002,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d4b891f4e60539ec37bd85eb8a27cf7bd58290f20989a827ad0d91ab8a869409",
@@ -954,8 +1019,8 @@
       "name": "Scilex Holding Co",
       "sic": "2836",
       "rawFacts": 6571,
-      "mappedFacts": 2081,
-      "unmappedFacts": 4423,
+      "mappedFacts": 2111,
+      "unmappedFacts": 4403,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1075,9 +1140,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4757,
+        "total": 4737,
         "by_severity": {
-          "INFO": 4423,
+          "INFO": 4403,
           "ERROR": 1,
           "WARNING": 333
         },
@@ -1086,7 +1151,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 142,
           "UNEXPECTED_DURATION": 48,
-          "UNKNOWN_CONCEPT": 4423
+          "UNKNOWN_CONCEPT": 4403
         }
       },
       "latestFiling": {
@@ -1097,13 +1162,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7a19bd3aa7899f85299ccdf20f2bf647e87706dd75331200a737f3cb685adf5e",
@@ -1251,13 +1316,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "031966196b05c6aad0c26b862ee070991ad6160f50319d0c97050a595ca4edcf",
@@ -1406,13 +1471,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2ec6f83d6a7697892126fa3226128631fa2bce018ac249b5e60848b5c0e86af6",

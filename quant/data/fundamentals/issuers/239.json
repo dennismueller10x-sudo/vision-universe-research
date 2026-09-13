@@ -7,8 +7,8 @@
       "name": "Dominari Holdings Inc.",
       "sic": "6211",
       "rawFacts": 12183,
-      "mappedFacts": 4044,
-      "unmappedFacts": 8370,
+      "mappedFacts": 4129,
+      "unmappedFacts": 8315,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8789,
+        "total": 8736,
         "by_severity": {
-          "INFO": 8370,
+          "INFO": 8315,
           "ERROR": 2,
-          "WARNING": 417
+          "WARNING": 419
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 224,
           "FISCAL_PERIOD_CONFLICT": 17,
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 174,
-          "UNKNOWN_CONCEPT": 8370
+          "RESTATEMENT_CONFLICT": 176,
+          "UNKNOWN_CONCEPT": 8315
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "051ab841d5b741e985f35b115c81bb0af42af0a21412ca7e87f5253c7bdbc186",
@@ -167,8 +167,8 @@
       "name": "PVH CORP. /DE/",
       "sic": "2320",
       "rawFacts": 26167,
-      "mappedFacts": 7244,
-      "unmappedFacts": 19046,
+      "mappedFacts": 7391,
+      "unmappedFacts": 18879,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -287,18 +287,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19922,
+        "total": 19775,
         "by_severity": {
-          "INFO": 19046,
+          "INFO": 18879,
           "ERROR": 6,
-          "WARNING": 870
+          "WARNING": 890
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 755,
           "FUTURE_DATA_LEAK": 6,
-          "RESTATEMENT_CONFLICT": 113,
+          "PERIOD_MISMATCH": 19,
+          "RESTATEMENT_CONFLICT": 114,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 19046
+          "UNKNOWN_CONCEPT": 18879
         }
       },
       "latestFiling": {
@@ -309,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e0ee30a04fd66a9e7a5ba9ce810d5eaf89a07bc247be9f3f88c768aee77e7163",
@@ -326,11 +327,54 @@
       "name": "EQUINIX INC",
       "sic": "6798",
       "rawFacts": 31454,
-      "mappedFacts": 7320,
-      "unmappedFacts": 23911,
+      "mappedFacts": 7573,
+      "unmappedFacts": 23711,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EQIX"
@@ -446,17 +490,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24451,
+        "total": 24292,
         "by_severity": {
-          "INFO": 23911,
+          "INFO": 23711,
           "ERROR": 2,
-          "WARNING": 538
+          "WARNING": 579
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 508,
           "FUTURE_DATA_LEAK": 2,
+          "PERIOD_MISMATCH": 41,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 23911
+          "UNKNOWN_CONCEPT": 23711
         }
       },
       "latestFiling": {
@@ -467,13 +512,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f8c80915302a73611349ccb8ac919eb83eb682fd7112fe1fa6e8381283016839",
@@ -623,13 +668,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4444ece47defe84a83e65f6c2143de948cb11c0f65ae1c66be6fe6e4b04b047",
@@ -781,13 +826,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b155328766954bfee9e9298c779fd6ecd46d5ae3dca1e11c43e0f7b65b9ac43b",
@@ -936,13 +981,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f5448eb763e8eac5f3bd21d8acee4444c2b0662c71116a34c1f68cc1a35f2640",
@@ -1078,13 +1123,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c674eaaceb07ae1f563e0f92c33f6daeab8eb80d32dc7c20ed6e6be1610d5400",

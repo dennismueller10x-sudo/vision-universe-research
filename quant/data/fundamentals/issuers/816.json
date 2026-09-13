@@ -7,11 +7,54 @@
       "name": "BRANDYWINE REALTY TRUST",
       "sic": "6798",
       "rawFacts": 26962,
-      "mappedFacts": 5410,
-      "unmappedFacts": 20870,
+      "mappedFacts": 6495,
+      "unmappedFacts": 20054,
       "calendarYears": 21,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BDN"
@@ -127,15 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21800,
+        "total": 21030,
         "by_severity": {
-          "INFO": 20870,
-          "WARNING": 930
+          "INFO": 20054,
+          "WARNING": 976
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 877,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 20870
+          "CONCEPT_DISAGREEMENT": 907,
+          "PERIOD_MISMATCH": 10,
+          "RESTATEMENT_CONFLICT": 59,
+          "UNKNOWN_CONCEPT": 20054
         }
       },
       "latestFiling": {
@@ -146,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7369b88953cbcc12fe6b70eb444b0ea920d047f9aa7376eb7f1fbdeae7a36a33",
@@ -163,8 +207,8 @@
       "name": "LANDSTAR SYSTEM INC",
       "sic": "4213",
       "rawFacts": 21625,
-      "mappedFacts": 6412,
-      "unmappedFacts": 15543,
+      "mappedFacts": 6838,
+      "unmappedFacts": 15191,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,18 +327,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15747,
+        "total": 15396,
         "by_severity": {
-          "INFO": 15543,
+          "INFO": 15191,
           "ERROR": 1,
-          "WARNING": 203
+          "WARNING": 204
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 155,
-          "FISCAL_PERIOD_CONFLICT": 7,
+          "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 41,
-          "UNKNOWN_CONCEPT": 15543
+          "UNKNOWN_CONCEPT": 15191
         }
       },
       "latestFiling": {
@@ -305,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5c76637b5c43a267966bfedb9b32d1fcc36660b1c29b50d0e029d8332e520cff",
@@ -322,11 +366,75 @@
       "name": "AXIS CAPITAL HOLDINGS LTD",
       "sic": "6331",
       "rawFacts": 30997,
-      "mappedFacts": 5087,
-      "unmappedFacts": 25890,
+      "mappedFacts": 7117,
+      "unmappedFacts": 24316,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 13.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AXS",
@@ -443,15 +551,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26638,
+        "total": 25066,
         "by_severity": {
-          "INFO": 25890,
-          "WARNING": 748
+          "INFO": 24316,
+          "WARNING": 750
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 652,
-          "RESTATEMENT_CONFLICT": 96,
-          "UNKNOWN_CONCEPT": 25890
+          "RESTATEMENT_CONFLICT": 98,
+          "UNKNOWN_CONCEPT": 24316
         }
       },
       "latestFiling": {
@@ -462,13 +570,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eafcfb1644dbd7b2d9896854d29c4177a5925341c4c89b29a17f26e8c334da3e",
@@ -617,13 +725,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5aa2f51ea8900331b77c85bd9d99b78b2010fbd45acc29b3f39c017ef18882d",
@@ -775,13 +883,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4e9c8cd48d90c4459aa48f4c929390c72775e61f0b87e5c4cfe03034f1be37d3",
@@ -792,8 +900,8 @@
       "name": "GigaCloud Technology Inc",
       "sic": "5961",
       "rawFacts": 4428,
-      "mappedFacts": 1264,
-      "unmappedFacts": 3279,
+      "mappedFacts": 1265,
+      "unmappedFacts": 3278,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -912,16 +1020,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3305,
+        "total": 3304,
         "by_severity": {
-          "INFO": 3279,
+          "INFO": 3278,
           "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 23,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 3279
+          "UNKNOWN_CONCEPT": 3278
         }
       },
       "latestFiling": {
@@ -932,13 +1040,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "17b4c0e058ad59b828dc9063ea87f78ea2d2900929cf642609bfa33a8fa84346",
@@ -1093,13 +1201,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "16480c7ad53ca812ad3a8f3c8a894647175059880709024122045f038df4c37c",
@@ -1251,13 +1359,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3e4e386c5b639f4578ff69ca8f0c126f5cfc8a8b4b4a9098df6d4b3f9fe72f59",
@@ -1404,13 +1512,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e54d80266f79b05c87cf113c72134a7b2e8ad6c90ae89afa4e2e5d8104b51fc0",

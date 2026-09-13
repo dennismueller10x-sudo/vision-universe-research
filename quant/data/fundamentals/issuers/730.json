@@ -7,8 +7,8 @@
       "name": "VISHAY INTERTECHNOLOGY INC",
       "sic": "3670",
       "rawFacts": 25940,
-      "mappedFacts": 7550,
-      "unmappedFacts": 18570,
+      "mappedFacts": 7571,
+      "unmappedFacts": 18549,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18906,
+        "total": 18885,
         "by_severity": {
-          "INFO": 18570,
+          "INFO": 18549,
           "ERROR": 1,
           "WARNING": 335
         },
@@ -139,7 +139,7 @@
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 18570
+          "UNKNOWN_CONCEPT": 18549
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "df2d5acc72d446d7f16ec4ef2e4540ca2c1e3274ec8cabecb181cc56aedb69d9",
@@ -167,8 +167,8 @@
       "name": "HCA Healthcare, Inc.",
       "sic": "8062",
       "rawFacts": 23000,
-      "mappedFacts": 6211,
-      "unmappedFacts": 17011,
+      "mappedFacts": 6508,
+      "unmappedFacts": 16768,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,16 +287,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17782,
+        "total": 17539,
         "by_severity": {
-          "INFO": 17011,
+          "INFO": 16768,
           "WARNING": 771
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 694,
           "RESTATEMENT_CONFLICT": 73,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 17011
+          "UNKNOWN_CONCEPT": 16768
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "60cc2fd0482505ecf0129554825a434232b07fb1132bd0754421397023cb5ba8",
@@ -324,17 +324,108 @@
       "name": "MIZUHO FINANCIAL GROUP INC",
       "sic": "6021",
       "rawFacts": 14722,
-      "mappedFacts": 1846,
-      "unmappedFacts": 13022,
+      "mappedFacts": 2584,
+      "unmappedFacts": 12488,
       "calendarYears": 20,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2024-03-31",
+          "historyYears": 16.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2011-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 15.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 20,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2007-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 19.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2009-03-31",
+          "lastAvailablePeriod": "2024-03-31",
+          "historyYears": 15.0
+        },
         "net_interest_income": {
           "annualPeriods": 19,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2008-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 18.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2008-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 18.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2011-03-31",
+          "lastAvailablePeriod": "2026-03-31",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": null,
@@ -453,16 +544,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13385,
+        "total": 12853,
         "by_severity": {
-          "INFO": 13022,
-          "WARNING": 363
+          "INFO": 12488,
+          "WARNING": 365
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 239,
           "EXTREME_VALUE": 100,
-          "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 13022
+          "RESTATEMENT_CONFLICT": 26,
+          "UNKNOWN_CONCEPT": 12488
         }
       },
       "latestFiling": {
@@ -473,13 +564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b2d350760f314dbeb6e6b93ebf6c91dd9e69c9d768935f1ae8e85fcdb65b4cc",
@@ -490,8 +581,8 @@
       "name": "Camp4 Therapeutics Corp",
       "sic": "2834",
       "rawFacts": 2173,
-      "mappedFacts": 627,
-      "unmappedFacts": 1535,
+      "mappedFacts": 632,
+      "unmappedFacts": 1530,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -609,15 +700,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1584,
+        "total": 1579,
         "by_severity": {
-          "INFO": 1535,
+          "INFO": 1530,
           "WARNING": 49
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 48,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 1535
+          "UNKNOWN_CONCEPT": 1530
         }
       },
       "latestFiling": {
@@ -628,13 +719,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f0e13fc40ec5b30cc2e7894ed4268fd767490d612e8689bdf2b526b099759501",
@@ -645,8 +736,8 @@
       "name": "Tradeweb Markets Inc.",
       "sic": "6200",
       "rawFacts": 10513,
-      "mappedFacts": 2517,
-      "unmappedFacts": 7866,
+      "mappedFacts": 2639,
+      "unmappedFacts": 7756,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -765,15 +856,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8172,
+        "total": 8062,
         "by_severity": {
-          "INFO": 7866,
+          "INFO": 7756,
           "WARNING": 306
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 253,
           "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 7866
+          "UNKNOWN_CONCEPT": 7756
         }
       },
       "latestFiling": {
@@ -784,13 +875,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8dd4795a6f04736f50b69e14cd0dab22296a330437d85fb196f85aecef34bef4",
@@ -801,17 +892,108 @@
       "name": "Third Coast Bancshares, Inc.",
       "sic": "6036",
       "rawFacts": 10552,
-      "mappedFacts": 1523,
-      "unmappedFacts": 8941,
+      "mappedFacts": 2219,
+      "unmappedFacts": 8348,
       "calendarYears": 7,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 3.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 3.0
+        },
         "net_interest_income": {
           "annualPeriods": 7,
           "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 3.0
+        },
+        "time_deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -929,15 +1111,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9129,
+        "total": 8536,
         "by_severity": {
-          "INFO": 8941,
+          "INFO": 8348,
           "WARNING": 188
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 181,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 8941
+          "UNKNOWN_CONCEPT": 8348
         }
       },
       "latestFiling": {
@@ -948,13 +1130,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "77e2396eed91ebed4291d4549629629364d0e68a450e1ae8d6c7590ad49d398d",
@@ -1106,13 +1288,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f5d3d637a793ab171941c31e52ff346e9a02711d3d8f000452b8d791cc2b1698",

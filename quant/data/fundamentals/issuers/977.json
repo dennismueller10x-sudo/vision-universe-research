@@ -7,11 +7,75 @@
       "name": "AFLAC INC",
       "sic": "6321",
       "rawFacts": 35723,
-      "mappedFacts": 5835,
-      "unmappedFacts": 30173,
+      "mappedFacts": 7877,
+      "unmappedFacts": 28432,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 10.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AFL"
@@ -126,19 +190,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30529,
+        "total": 28800,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 30173,
-          "WARNING": 354
+          "INFO": 28432,
+          "WARNING": 366
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 239,
-          "FISCAL_PERIOD_CONFLICT": 18,
+          "FISCAL_PERIOD_CONFLICT": 27,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 96,
+          "RESTATEMENT_CONFLICT": 99,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 30173
+          "UNKNOWN_CONCEPT": 28432
         }
       },
       "latestFiling": {
@@ -149,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "34c5148c7c3ffc364e9aafda409fc407fcc1e16681ce528b85f1db761ae91de3",
@@ -166,8 +230,8 @@
       "name": "PORTLAND GENERAL ELECTRIC CO /OR/",
       "sic": "4911",
       "rawFacts": 26717,
-      "mappedFacts": 6142,
-      "unmappedFacts": 20793,
+      "mappedFacts": 6404,
+      "unmappedFacts": 20549,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,19 +350,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21196,
+        "total": 20953,
         "by_severity": {
-          "INFO": 20793,
+          "INFO": 20549,
           "ERROR": 23,
-          "WARNING": 380
+          "WARNING": 381
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 330,
           "FUTURE_DATA_LEAK": 23,
           "PERIOD_MISMATCH": 22,
-          "RESTATEMENT_CONFLICT": 17,
+          "RESTATEMENT_CONFLICT": 18,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 20793
+          "UNKNOWN_CONCEPT": 20549
         }
       },
       "latestFiling": {
@@ -309,13 +373,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "57d86b61739cf18a8a534e8cb936da782a31d7d16f50744fe08b0608700ea8fa",
@@ -465,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "44b774495ab4d893a12a7fc363478c6d49c7e63453f979272993776ba5242105",
@@ -621,13 +685,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f10ddf9833ef41db5b8620e07914eeceec77324138255b64ac4e8eab000b2f1b",

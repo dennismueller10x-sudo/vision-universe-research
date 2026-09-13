@@ -7,11 +7,54 @@
       "name": "SITE Centers Corp.",
       "sic": "6798",
       "rawFacts": 25539,
-      "mappedFacts": 5192,
-      "unmappedFacts": 19688,
+      "mappedFacts": 6147,
+      "unmappedFacts": 18994,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 9.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "SITC"
@@ -127,15 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20642,
+        "total": 19985,
         "by_severity": {
-          "INFO": 19688,
-          "WARNING": 954
+          "INFO": 18994,
+          "WARNING": 991
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 814,
-          "RESTATEMENT_CONFLICT": 140,
-          "UNKNOWN_CONCEPT": 19688
+          "CONCEPT_DISAGREEMENT": 830,
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 159,
+          "UNKNOWN_CONCEPT": 18994
         }
       },
       "latestFiling": {
@@ -146,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "decac5551a12def3000617d1fe163f45bf432314e4ecb507ee5987ad872eb280",
@@ -163,8 +207,8 @@
       "name": "WINMARK CORP",
       "sic": "5900",
       "rawFacts": 17275,
-      "mappedFacts": 6144,
-      "unmappedFacts": 11519,
+      "mappedFacts": 6402,
+      "unmappedFacts": 11199,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +327,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11771,
+        "total": 11524,
         "by_severity": {
-          "INFO": 11519,
-          "WARNING": 252
+          "INFO": 11199,
+          "WARNING": 325
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 207,
-          "FISCAL_PERIOD_CONFLICT": 13,
+          "FISCAL_PERIOD_CONFLICT": 14,
+          "PERIOD_MISMATCH": 60,
           "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 11519
+          "UNEXPECTED_DURATION": 12,
+          "UNKNOWN_CONCEPT": 11199
         }
       },
       "latestFiling": {
@@ -303,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fb2ff6838c5b70dd185c1ca73cdaf6261f6e1b0758639ac619ce141807e5b3d8",
@@ -464,13 +510,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6c9f903fdf06a243d7219644f5bbca8d7c4bb9d56ef6839d440325de7b23ea90",
@@ -481,8 +527,8 @@
       "name": "Damora Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 5352,
-      "mappedFacts": 1702,
-      "unmappedFacts": 3650,
+      "mappedFacts": 1722,
+      "unmappedFacts": 3634,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -601,15 +647,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3709,
+        "total": 3693,
         "by_severity": {
-          "INFO": 3650,
+          "INFO": 3634,
           "WARNING": 59
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 3650
+          "UNKNOWN_CONCEPT": 3634
         }
       },
       "latestFiling": {
@@ -620,13 +666,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4b815adbcd04c9e3c255eb43c5081534a5a62b9717158b43775626900c854d8",
@@ -777,13 +823,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "97659db996259c48fb2e42f936d8f4e683252935c776618286c5083822f5300e",

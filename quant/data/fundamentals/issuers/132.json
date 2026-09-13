@@ -7,8 +7,8 @@
       "name": "WD 40 CO",
       "sic": "2890",
       "rawFacts": 18918,
-      "mappedFacts": 6944,
-      "unmappedFacts": 12302,
+      "mappedFacts": 7018,
+      "unmappedFacts": 12223,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12758,
+        "total": 12683,
         "by_severity": {
-          "INFO": 12302,
-          "WARNING": 456
+          "INFO": 12223,
+          "WARNING": 460
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 408,
+          "CONCEPT_DISAGREEMENT": 409,
           "FISCAL_PERIOD_CONFLICT": 1,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 39,
-          "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 12302
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 12223
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "61c15cd3bdc6768a7d87687e334be268ccd24ba5ba7023286153999ab3b44d75",
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8bbbf3976091c85ab1011912d3cb0ad9b83216ced7207894c1fa52efb2792494",
@@ -321,8 +322,8 @@
       "name": "TAPESTRY, INC.",
       "sic": "3100",
       "rawFacts": 25306,
-      "mappedFacts": 8877,
-      "unmappedFacts": 17085,
+      "mappedFacts": 9301,
+      "unmappedFacts": 16751,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -441,17 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17577,
+        "total": 17244,
         "by_severity": {
-          "INFO": 17085,
-          "WARNING": 492
+          "INFO": 16751,
+          "WARNING": 493
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 462,
-          "FISCAL_PERIOD_CONFLICT": 15,
+          "FISCAL_PERIOD_CONFLICT": 16,
           "RESTATEMENT_CONFLICT": 9,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 17085
+          "UNKNOWN_CONCEPT": 16751
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f9072fbb91c66bc09fecf6a51dc1169d1cc310f87369b9d104633d9244289883",
@@ -479,11 +480,54 @@
       "name": "Four Corners Property Trust, Inc.",
       "sic": "6798",
       "rawFacts": 15789,
-      "mappedFacts": 3736,
-      "unmappedFacts": 11868,
+      "mappedFacts": 4388,
+      "unmappedFacts": 11299,
       "calendarYears": 13,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "secured_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 2.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FCPT"
@@ -599,15 +643,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12097,
+        "total": 11601,
         "by_severity": {
-          "INFO": 11868,
-          "WARNING": 229
+          "INFO": 11299,
+          "WARNING": 302
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 211,
-          "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 11868
+          "CONCEPT_DISAGREEMENT": 215,
+          "PERIOD_MISMATCH": 32,
+          "RESTATEMENT_CONFLICT": 26,
+          "UNEXPECTED_DURATION": 29,
+          "UNKNOWN_CONCEPT": 11299
         }
       },
       "latestFiling": {
@@ -618,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "379a37c2383e622bba10bebe1c72301b131384cedf6de8940bb39e08562907a2",
@@ -774,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5673a021476a6723cd71c398ddad806786589e2499fe1bc89a8ac2f03e511ac7",

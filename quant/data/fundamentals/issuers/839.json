@@ -8,7 +8,7 @@
       "sic": "7340",
       "rawFacts": 19895,
       "mappedFacts": 6819,
-      "unmappedFacts": 13702,
+      "unmappedFacts": 13692,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -128,15 +128,17 @@
         "rules_version": "1.0.0",
         "total": 13955,
         "by_severity": {
-          "INFO": 13702,
+          "INFO": 13692,
           "ERROR": 13,
-          "WARNING": 240
+          "WARNING": 250
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 135,
           "FUTURE_DATA_LEAK": 13,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 105,
-          "UNKNOWN_CONCEPT": 13702
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 13692
         }
       },
       "latestFiling": {
@@ -147,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ab07d6f63a183f2fe6a9334935f62db1c2c19b733f3192301f6f0d79f2cf49f",
@@ -164,8 +166,8 @@
       "name": "INTELLIGENT PROTECTION MANAGEMENT CORP.",
       "sic": "7370",
       "rawFacts": 14287,
-      "mappedFacts": 5385,
-      "unmappedFacts": 8993,
+      "mappedFacts": 5387,
+      "unmappedFacts": 8991,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -284,19 +286,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9541,
+        "total": 9540,
         "by_severity": {
           "ERROR": 10,
-          "INFO": 8993,
-          "WARNING": 538
+          "INFO": 8991,
+          "WARNING": 539
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 281,
           "FUTURE_DATA_LEAK": 10,
           "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 229,
-          "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 8993
+          "UNEXPECTED_DURATION": 24,
+          "UNKNOWN_CONCEPT": 8991
         }
       },
       "latestFiling": {
@@ -307,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "353881f501920f1b738c4608c9d6cf63b54bbcb7adb378ef5c6df13e13514b52",
@@ -324,8 +326,8 @@
       "name": "SI-BONE, Inc.",
       "sic": "3841",
       "rawFacts": 9838,
-      "mappedFacts": 3154,
-      "unmappedFacts": 6807,
+      "mappedFacts": 3174,
+      "unmappedFacts": 6792,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -444,15 +446,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6896,
+        "total": 6881,
         "by_severity": {
-          "INFO": 6807,
+          "INFO": 6792,
           "WARNING": 89
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 87,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 6807
+          "UNKNOWN_CONCEPT": 6792
         }
       },
       "latestFiling": {
@@ -463,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3e4d16283197cc1ea6c32e6920ea321ffd9b695c8c228dde15336e8651357885",
@@ -619,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2642cfc5bd29f1e0c966fbef066af7879ca12a598fc62b1b394cfc150ff124fe",
@@ -773,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a639b3675b47d48d3719f72e7e86ec29636ac9b038139cff9c3c482e99e61b0c",

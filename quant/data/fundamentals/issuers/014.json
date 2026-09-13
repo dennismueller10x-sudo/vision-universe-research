@@ -7,8 +7,8 @@
       "name": "MINERALS TECHNOLOGIES INC",
       "sic": "2810",
       "rawFacts": 23787,
-      "mappedFacts": 8206,
-      "unmappedFacts": 15668,
+      "mappedFacts": 8371,
+      "unmappedFacts": 15503,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16742,
+        "total": 16577,
         "by_severity": {
-          "INFO": 15668,
+          "INFO": 15503,
           "WARNING": 1074
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1011,
           "FISCAL_PERIOD_CONFLICT": 6,
           "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 15668
+          "UNKNOWN_CONCEPT": 15503
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d2c3dbee7f9fc4f80222364410012de84a1880f1efdd397b97e5db771d6bf6fe",
@@ -164,8 +164,8 @@
       "name": "Innoviva, Inc.",
       "sic": "2834",
       "rawFacts": 18088,
-      "mappedFacts": 5900,
-      "unmappedFacts": 12466,
+      "mappedFacts": 6126,
+      "unmappedFacts": 12267,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +284,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12701,
+        "total": 12518,
         "by_severity": {
-          "INFO": 12466,
-          "WARNING": 235
+          "INFO": 12267,
+          "WARNING": 251
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 192,
           "EXTREME_VALUE": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
+          "PERIOD_MISMATCH": 16,
           "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12466
+          "UNKNOWN_CONCEPT": 12267
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "075c2f8cb25ad63cde2316ed4fb84fe96eeb3c4943377d2f0a6cc465d749a581",
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f06c6f8ef9f09ba1c36eac7b12de08d8897a97267698dde9850a10fb110ba540",
@@ -480,8 +481,8 @@
       "name": "SmartRent, Inc.",
       "sic": "7373",
       "rawFacts": 6756,
-      "mappedFacts": 2118,
-      "unmappedFacts": 4704,
+      "mappedFacts": 2155,
+      "unmappedFacts": 4673,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +600,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4795,
+        "total": 4764,
         "by_severity": {
-          "INFO": 4704,
+          "INFO": 4673,
           "WARNING": 91
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 38,
           "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 4704
+          "UNKNOWN_CONCEPT": 4673
         }
       },
       "latestFiling": {
@@ -618,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5c2d7f1439f2bcf591f74a259f28761d5f68241a4e9decadda0ad013ca0c4782",
@@ -772,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0a1b00ef87531183536ad5e941f14e9226f732ed9e893aff3927dfe5bd27d4f6",

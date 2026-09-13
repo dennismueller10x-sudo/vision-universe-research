@@ -7,11 +7,54 @@
       "name": "REALTY INCOME CORP",
       "sic": "6798",
       "rawFacts": 20994,
-      "mappedFacts": 4813,
-      "unmappedFacts": 15816,
+      "mappedFacts": 5855,
+      "unmappedFacts": 15055,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "O"
@@ -127,18 +170,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16285,
+        "total": 15545,
         "by_severity": {
-          "INFO": 15816,
+          "INFO": 15055,
           "ERROR": 1,
-          "WARNING": 468
+          "WARNING": 489
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 435,
+          "CONCEPT_DISAGREEMENT": 455,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 31,
+          "RESTATEMENT_CONFLICT": 32,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 15816
+          "UNKNOWN_CONCEPT": 15055
         }
       },
       "latestFiling": {
@@ -149,13 +192,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "01ff42453179e3c33d7a1af55b5dc1f593d42c4996add5901fdab849918c1073",
@@ -166,8 +209,8 @@
       "name": "ENBRIDGE INC",
       "sic": "4610",
       "rawFacts": 17856,
-      "mappedFacts": 4510,
-      "unmappedFacts": 13176,
+      "mappedFacts": 4523,
+      "unmappedFacts": 13148,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -301,17 +344,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13928,
+        "total": 13918,
         "by_severity": {
-          "INFO": 13176,
-          "WARNING": 752
+          "INFO": 13148,
+          "WARNING": 770
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 614,
+          "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 61,
-          "UNEXPECTED_DURATION": 3,
+          "UNEXPECTED_DURATION": 11,
           "UNIT_MISMATCH": 74,
-          "UNKNOWN_CONCEPT": 13176
+          "UNKNOWN_CONCEPT": 13148
         }
       },
       "latestFiling": {
@@ -322,13 +366,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "25db5b6650a8f002f2a9f73fecde59b7a5a23ac61ab89432ff91f4bcd2e731a5",
@@ -339,8 +383,8 @@
       "name": "FORWARD AIR CORP",
       "sic": "4731",
       "rawFacts": 20906,
-      "mappedFacts": 6781,
-      "unmappedFacts": 14357,
+      "mappedFacts": 7039,
+      "unmappedFacts": 14099,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -459,9 +503,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14878,
+        "total": 14620,
         "by_severity": {
-          "INFO": 14357,
+          "INFO": 14099,
           "ERROR": 2,
           "WARNING": 519
         },
@@ -469,7 +513,7 @@
           "CONCEPT_DISAGREEMENT": 412,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 107,
-          "UNKNOWN_CONCEPT": 14357
+          "UNKNOWN_CONCEPT": 14099
         }
       },
       "latestFiling": {
@@ -480,13 +524,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "24269044eadf1305863624bd3759580024d476d406dc91d2a297a72bebc40f5b",
@@ -497,8 +541,8 @@
       "name": "PEABODY ENERGY CORP",
       "sic": "1221",
       "rawFacts": 27920,
-      "mappedFacts": 6407,
-      "unmappedFacts": 20879,
+      "mappedFacts": 6549,
+      "unmappedFacts": 20735,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -617,21 +661,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22241,
+        "total": 22103,
         "by_severity": {
-          "INFO": 20879,
+          "INFO": 20735,
           "ERROR": 31,
-          "WARNING": 1331
+          "WARNING": 1337
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1139,
           "FISCAL_PERIOD_CONFLICT": 47,
           "FUTURE_DATA_LEAK": 31,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 137,
-          "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 20879
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 141,
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 20735
         }
       },
       "latestFiling": {
@@ -642,13 +686,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e6c748453febb8d70fd39ed860de1dc2ab5946461c42fd1e4dd24f368db9ae4f",
@@ -659,8 +703,8 @@
       "name": "MGE ENERGY INC",
       "sic": "4900",
       "rawFacts": 21197,
-      "mappedFacts": 4633,
-      "unmappedFacts": 17027,
+      "mappedFacts": 4832,
+      "unmappedFacts": 16905,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -779,9 +823,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17221,
+        "total": 17099,
         "by_severity": {
-          "INFO": 17027,
+          "INFO": 16905,
           "ERROR": 5,
           "WARNING": 189
         },
@@ -790,7 +834,7 @@
           "FUTURE_DATA_LEAK": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 17027
+          "UNKNOWN_CONCEPT": 16905
         }
       },
       "latestFiling": {
@@ -801,13 +845,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b7700997599b8f99c42f4bb4fa4d451f3a9fba042c0e746a51a0abe21e8dba6",
@@ -818,8 +862,8 @@
       "name": "Global Water Resources, Inc.",
       "sic": "4941",
       "rawFacts": 14278,
-      "mappedFacts": 4337,
-      "unmappedFacts": 10268,
+      "mappedFacts": 4513,
+      "unmappedFacts": 10090,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -938,15 +982,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10622,
+        "total": 10446,
         "by_severity": {
-          "INFO": 10268,
-          "WARNING": 354
+          "INFO": 10090,
+          "WARNING": 356
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 300,
+          "CONCEPT_DISAGREEMENT": 302,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 10268
+          "UNKNOWN_CONCEPT": 10090
         }
       },
       "latestFiling": {
@@ -957,13 +1001,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2719200bdd4d03cda89406ad06946c93e44a61bf97b63093869fc083482979fd",
@@ -1118,13 +1162,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "297c2ffe478aecefc685acf83404463bd98d1e5574600110ad7dc796e940f23e",
@@ -1273,13 +1317,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f28d603930200fa0d5bb40c41df5be8edf621aadbdd4418de16bc0cfe71b76da",
@@ -1427,13 +1471,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bba688f4643bac159031c64fa4de7e495342220766fd75640e9add7ec52d5b6e",

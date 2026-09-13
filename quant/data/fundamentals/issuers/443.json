@@ -7,11 +7,54 @@
       "name": "ALEXANDRIA REAL ESTATE EQUITIES, INC.",
       "sic": "6798",
       "rawFacts": 25870,
-      "mappedFacts": 3972,
-      "unmappedFacts": 21529,
+      "mappedFacts": 5029,
+      "unmappedFacts": 20753,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ARE"
@@ -127,16 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22293,
+        "total": 21537,
         "by_severity": {
-          "INFO": 21529,
-          "WARNING": 764
+          "INFO": 20753,
+          "WARNING": 784
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 675,
-          "RESTATEMENT_CONFLICT": 87,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 21529
+          "CONCEPT_DISAGREEMENT": 681,
+          "RESTATEMENT_CONFLICT": 96,
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 20753
         }
       },
       "latestFiling": {
@@ -147,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "021790fd0519f7cdad558775d25915b23a9bd4f408d6494690ed70bc565b3b17",
@@ -302,13 +345,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3425299c751bc1cba8bfeb8d0bd6555c8ff318fdba19a0a183e6121e4c1b908f",
@@ -319,8 +362,8 @@
       "name": "Arcadia Biosciences, Inc.",
       "sic": "1311",
       "rawFacts": 12554,
-      "mappedFacts": 4077,
-      "unmappedFacts": 8653,
+      "mappedFacts": 4109,
+      "unmappedFacts": 8633,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -439,15 +482,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8992,
+        "total": 8972,
         "by_severity": {
-          "INFO": 8653,
+          "INFO": 8633,
           "WARNING": 339
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 240,
           "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 8653
+          "UNKNOWN_CONCEPT": 8633
         }
       },
       "latestFiling": {
@@ -458,13 +501,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6d90427cf208fb4f5bfadd580e7f9693377c05db1748fe738554357a4b836af9",
@@ -475,8 +518,8 @@
       "name": "Paysign, Inc.",
       "sic": "7389",
       "rawFacts": 12264,
-      "mappedFacts": 5528,
-      "unmappedFacts": 6790,
+      "mappedFacts": 5531,
+      "unmappedFacts": 6788,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -595,9 +638,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7259,
+        "total": 7257,
         "by_severity": {
-          "INFO": 6790,
+          "INFO": 6788,
           "WARNING": 469
         },
         "by_code": {
@@ -605,7 +648,7 @@
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 6790
+          "UNKNOWN_CONCEPT": 6788
         }
       },
       "latestFiling": {
@@ -616,13 +659,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2c3f2c2567c719f87e5955a63cb5b1e55d4dec03ac4ebf9f44f81c6dfb37f288",
@@ -772,13 +815,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a028232f65467e1200259e47e08a6f39e939bc8b9df5097f11f1a5f2b541fc8c",
@@ -924,13 +967,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6fee9cac6143ec5e2b1d7c484719bb1dd19333733b580b735b0461741beea4c7",
@@ -1066,13 +1109,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ab654fcd00a60a568f8a9ba377d2dc7479020266028d3ba6db911f6c06aa3218",

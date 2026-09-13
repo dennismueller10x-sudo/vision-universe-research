@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8a0a4e39d456aa4356819728083152f79129b89576602ea08aae6753de022f57",
@@ -167,8 +167,8 @@
       "name": "AMERICAN REALTY INVESTORS INC",
       "sic": "6510",
       "rawFacts": 19000,
-      "mappedFacts": 5236,
-      "unmappedFacts": 12943,
+      "mappedFacts": 5917,
+      "unmappedFacts": 12436,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,16 +287,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14590,
+        "total": 14161,
         "by_severity": {
-          "INFO": 12943,
-          "WARNING": 1647
+          "INFO": 12436,
+          "WARNING": 1725
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1198,
+          "CONCEPT_DISAGREEMENT": 1256,
           "NEGATIVE_WHERE_IMPOSSIBLE": 31,
-          "RESTATEMENT_CONFLICT": 418,
-          "UNKNOWN_CONCEPT": 12943
+          "RESTATEMENT_CONFLICT": 438,
+          "UNKNOWN_CONCEPT": 12436
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3048be69ef9c1b6475593513eee86beeadbae4db2d094297f6bdd4027d39c7b7",
@@ -324,11 +324,75 @@
       "name": "ASSURANT, INC.",
       "sic": "6399",
       "rawFacts": 32704,
-      "mappedFacts": 6347,
-      "unmappedFacts": 26516,
+      "mappedFacts": 8700,
+      "unmappedFacts": 24676,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AIZ",
@@ -445,18 +509,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26902,
+        "total": 25092,
         "by_severity": {
-          "INFO": 26516,
+          "INFO": 24676,
           "ERROR": 3,
-          "WARNING": 383
+          "WARNING": 413
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 350,
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 26516
+          "RESTATEMENT_CONFLICT": 53,
+          "UNKNOWN_CONCEPT": 24676
         }
       },
       "latestFiling": {
@@ -467,13 +531,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "10b710ce134d7444adb9b7f39fec21e7e88e909d11fe3219d5c7c1b6063935d7",
@@ -484,8 +548,8 @@
       "name": "Trip.com Group Ltd",
       "sic": "7389",
       "rawFacts": 9381,
-      "mappedFacts": 1871,
-      "unmappedFacts": 7258,
+      "mappedFacts": 1903,
+      "unmappedFacts": 7242,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -605,15 +669,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8041,
+        "total": 8025,
         "by_severity": {
-          "INFO": 7258,
+          "INFO": 7242,
           "WARNING": 783
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 764,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 7258
+          "UNKNOWN_CONCEPT": 7242
         }
       },
       "latestFiling": {
@@ -624,13 +688,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d8028823d33bc35d90e8d7aaaea7e34fc346b32bd9d0bb8cd8ce753ddffef4f",
@@ -641,8 +705,8 @@
       "name": "JOYY Inc.",
       "sic": "7374",
       "rawFacts": 7737,
-      "mappedFacts": 1673,
-      "unmappedFacts": 5905,
+      "mappedFacts": 1676,
+      "unmappedFacts": 5898,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -761,15 +825,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6530,
+        "total": 6527,
         "by_severity": {
-          "INFO": 5905,
-          "WARNING": 625
+          "INFO": 5898,
+          "WARNING": 629
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 522,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 103,
-          "UNKNOWN_CONCEPT": 5905
+          "UNIT_MISMATCH": 3,
+          "UNKNOWN_CONCEPT": 5898
         }
       },
       "latestFiling": {
@@ -780,13 +846,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e96eacae795868128a3c5a69d48df222ca023c6bea757c1fed054d6f8c975dba",
@@ -797,8 +863,8 @@
       "name": "Braze, Inc.",
       "sic": "7372",
       "rawFacts": 8626,
-      "mappedFacts": 1936,
-      "unmappedFacts": 6742,
+      "mappedFacts": 1949,
+      "unmappedFacts": 6734,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -917,15 +983,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6926,
+        "total": 6918,
         "by_severity": {
-          "INFO": 6742,
+          "INFO": 6734,
           "WARNING": 184
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 182,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 6742
+          "UNKNOWN_CONCEPT": 6734
         }
       },
       "latestFiling": {
@@ -936,13 +1002,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a45e50635190829c8629c14e34f5f86df26f56cad24ed8ca75dc179abdfca6c",
@@ -1092,13 +1158,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1567d9b44511d469d42ab78d71e17d11e983713d2561c4ddd1c95c4c6d34beca",

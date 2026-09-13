@@ -7,8 +7,8 @@
       "name": "EDUCATIONAL DEVELOPMENT CORP",
       "sic": "5190",
       "rawFacts": 15353,
-      "mappedFacts": 6211,
-      "unmappedFacts": 9267,
+      "mappedFacts": 6315,
+      "unmappedFacts": 9162,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9897,
+        "total": 9793,
         "by_severity": {
-          "INFO": 9267,
+          "INFO": 9162,
           "ERROR": 1,
-          "WARNING": 629
+          "WARNING": 630
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 566,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 5,
+          "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 58,
-          "UNKNOWN_CONCEPT": 9267
+          "UNKNOWN_CONCEPT": 9162
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2346f72e7770d5746c73939d32a18b000a2b07ec3c11e080ece30aadb9b0a61d",
@@ -166,8 +166,8 @@
       "name": "LOWES COMPANIES INC",
       "sic": "5211",
       "rawFacts": 25142,
-      "mappedFacts": 7852,
-      "unmappedFacts": 17564,
+      "mappedFacts": 8035,
+      "unmappedFacts": 17381,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17770,
+        "total": 17587,
         "by_severity": {
-          "INFO": 17564,
+          "INFO": 17381,
           "WARNING": 206
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 203,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 17564
+          "UNKNOWN_CONCEPT": 17381
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8fd5931301a1099601b55664f418713463bdd38d8027883c17106e68e182f0a9",
@@ -322,8 +322,8 @@
       "name": "CHARTER COMMUNICATIONS, INC. /MO/",
       "sic": "4841",
       "rawFacts": 21313,
-      "mappedFacts": 6144,
-      "unmappedFacts": 15352,
+      "mappedFacts": 6184,
+      "unmappedFacts": 15332,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -443,9 +443,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15942,
+        "total": 15922,
         "by_severity": {
-          "INFO": 15352,
+          "INFO": 15332,
           "ERROR": 2,
           "WARNING": 588
         },
@@ -453,7 +453,7 @@
           "CONCEPT_DISAGREEMENT": 511,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 15352
+          "UNKNOWN_CONCEPT": 15332
         }
       },
       "latestFiling": {
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "575079c59b007961595740b5b81b60f5c8082c5212779383f2adf503824c5bc3",
@@ -481,8 +481,8 @@
       "name": "PUMA BIOTECHNOLOGY, INC.",
       "sic": "2834",
       "rawFacts": 16671,
-      "mappedFacts": 5043,
-      "unmappedFacts": 11613,
+      "mappedFacts": 5079,
+      "unmappedFacts": 11591,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -601,9 +601,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11989,
+        "total": 11967,
         "by_severity": {
-          "INFO": 11613,
+          "INFO": 11591,
           "WARNING": 376
         },
         "by_code": {
@@ -611,7 +611,7 @@
           "EXTREME_VALUE": 3,
           "RESTATEMENT_CONFLICT": 49,
           "UNEXPECTED_DURATION": 175,
-          "UNKNOWN_CONCEPT": 11613
+          "UNKNOWN_CONCEPT": 11591
         }
       },
       "latestFiling": {
@@ -622,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0fe6ba87387ceaae5f007a657550bea01d44c80f22b0ea507c4cecb76eb772b1",
@@ -639,8 +639,8 @@
       "name": "JFrog Ltd",
       "sic": "7372",
       "rawFacts": 8837,
-      "mappedFacts": 2460,
-      "unmappedFacts": 6472,
+      "mappedFacts": 2519,
+      "unmappedFacts": 6433,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -759,9 +759,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6608,
+        "total": 6569,
         "by_severity": {
-          "INFO": 6472,
+          "INFO": 6433,
           "WARNING": 136
         },
         "by_code": {
@@ -769,7 +769,7 @@
           "FISCAL_PERIOD_CONFLICT": 11,
           "RESTATEMENT_CONFLICT": 30,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 6472
+          "UNKNOWN_CONCEPT": 6433
         }
       },
       "latestFiling": {
@@ -780,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75c6a9b63041c816d7ce28cadf5fc938c144787388f9421b3c494acba5f105b6",
@@ -938,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5fbf869f859c4c64b68849183363adc7f0605f70be0ea5048950c0fa07988a3",
@@ -1094,13 +1094,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d1ec5c2654ebf5435560896d2df9a29adf41ab3a627f3462d1997803023c317",
@@ -1250,13 +1250,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5dd864d36da76e0c84731a4565e90f36ffbee7dafc2d9905de723371abb2c6ae",

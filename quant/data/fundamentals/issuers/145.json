@@ -7,8 +7,8 @@
       "name": "NATIONAL FUEL GAS CO",
       "sic": "4924",
       "rawFacts": 26848,
-      "mappedFacts": 6429,
-      "unmappedFacts": 20658,
+      "mappedFacts": 6640,
+      "unmappedFacts": 20447,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21123,
+        "total": 20912,
         "by_severity": {
-          "INFO": 20658,
+          "INFO": 20447,
           "WARNING": 465
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 441,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 20658
+          "UNKNOWN_CONCEPT": 20447
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c5f708367d0df5e27d96c2c3c5280501e5e4df7b775afafa48cb186a6b65afe2",
@@ -163,8 +163,8 @@
       "name": "VEECO INSTRUMENTS INC",
       "sic": "3559",
       "rawFacts": 23479,
-      "mappedFacts": 7766,
-      "unmappedFacts": 15944,
+      "mappedFacts": 7880,
+      "unmappedFacts": 15874,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,9 +283,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16360,
+        "total": 16290,
         "by_severity": {
-          "INFO": 15944,
+          "INFO": 15874,
           "ERROR": 2,
           "WARNING": 414
         },
@@ -294,7 +294,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 15944
+          "UNKNOWN_CONCEPT": 15874
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "44b8de797aba1e60bb5c7e33ec4d6a9638cc0bf838024d5b400a47740d05b3a7",
@@ -322,8 +322,8 @@
       "name": "Heritage Global Inc.",
       "sic": "7389",
       "rawFacts": 16089,
-      "mappedFacts": 5410,
-      "unmappedFacts": 11022,
+      "mappedFacts": 5429,
+      "unmappedFacts": 11010,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -442,17 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11395,
+        "total": 11383,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 11022,
+          "INFO": 11010,
           "WARNING": 371
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 318,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 53,
-          "UNKNOWN_CONCEPT": 11022
+          "UNKNOWN_CONCEPT": 11010
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c47239dc49960c2eb9fbe1366df71b034da19d9934ffe4d52117660989294a20",
@@ -480,8 +480,8 @@
       "name": "Verisk Analytics, Inc.",
       "sic": "7374",
       "rawFacts": 30680,
-      "mappedFacts": 6719,
-      "unmappedFacts": 24101,
+      "mappedFacts": 6749,
+      "unmappedFacts": 24017,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -600,17 +600,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24740,
+        "total": 24711,
         "by_severity": {
-          "INFO": 24101,
-          "WARNING": 639
+          "INFO": 24017,
+          "WARNING": 694
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 405,
           "FISCAL_PERIOD_CONFLICT": 55,
-          "PERIOD_MISMATCH": 29,
+          "PERIOD_MISMATCH": 84,
           "RESTATEMENT_CONFLICT": 150,
-          "UNKNOWN_CONCEPT": 24101
+          "UNKNOWN_CONCEPT": 24017
         }
       },
       "latestFiling": {
@@ -621,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c083f72b81989478d96b9702a70d36fd758954cbfdeb0c45f450d5c35605f13d",
@@ -777,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a7a889f375f394a545ce8600a4167b7f4852df71eba440f65e6ef5099ed22f55",
@@ -794,14 +794,105 @@
       "name": "GBank Financial Holdings Inc.",
       "sic": "6022",
       "rawFacts": 2328,
-      "mappedFacts": 396,
-      "unmappedFacts": 1938,
+      "mappedFacts": 543,
+      "unmappedFacts": 1812,
       "calendarYears": 2,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 2,
           "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -921,14 +1012,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1941,
+        "total": 1815,
         "by_severity": {
-          "INFO": 1938,
+          "INFO": 1812,
           "WARNING": 3
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
-          "UNKNOWN_CONCEPT": 1938
+          "UNKNOWN_CONCEPT": 1812
         }
       },
       "latestFiling": {
@@ -939,13 +1030,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "03e11af14c4608a92c0f068c96be20d6e15fd4342f7b7bf4167162bf31a526aa",
@@ -1095,13 +1186,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "38a600985a4a9776ecf02b1421680413619b7545ef43ff60181483190637dd05",
@@ -1253,13 +1344,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "15be2d3cd436238b5963bfe726dade98bdd2c259fc93e6c49e50aed6c4515d6e",
@@ -1411,13 +1502,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95797831246848b8c38c89163071abc01bfec177cdbad0737e86e9a3bf2ba874",

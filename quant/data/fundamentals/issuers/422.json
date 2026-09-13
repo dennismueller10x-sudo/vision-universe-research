@@ -7,8 +7,8 @@
       "name": "INTERGROUP CORP",
       "sic": "6513",
       "rawFacts": 15399,
-      "mappedFacts": 4312,
-      "unmappedFacts": 10639,
+      "mappedFacts": 4725,
+      "unmappedFacts": 10327,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11624,
+        "total": 11398,
         "by_severity": {
-          "INFO": 10639,
+          "INFO": 10327,
           "ERROR": 19,
-          "WARNING": 966
+          "WARNING": 1052
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 854,
+          "CONCEPT_DISAGREEMENT": 938,
           "FUTURE_DATA_LEAK": 19,
-          "RESTATEMENT_CONFLICT": 106,
+          "RESTATEMENT_CONFLICT": 108,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 10639
+          "UNKNOWN_CONCEPT": 10327
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ea0489dc81d4581f322b57024d3c8e0ab22f3007b80e6e474089dd643c5f8c5b",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ca12b5db8ba86ab212d061b280c045abe4aedc0936ed435cc8a0168648217c96",
@@ -322,17 +322,108 @@
       "name": "RBB Bancorp",
       "sic": "6022",
       "rawFacts": 22114,
-      "mappedFacts": 3339,
-      "unmappedFacts": 18746,
+      "mappedFacts": 5003,
+      "unmappedFacts": 17326,
       "calendarYears": 12,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 8.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 11,
           "quarterlyPeriods": 41,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -450,16 +541,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18866,
+        "total": 17459,
         "by_severity": {
-          "INFO": 18746,
-          "WARNING": 120
+          "INFO": 17326,
+          "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 93,
-          "FISCAL_PERIOD_CONFLICT": 9,
-          "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 18746
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "RESTATEMENT_CONFLICT": 25,
+          "UNKNOWN_CONCEPT": 17326
         }
       },
       "latestFiling": {
@@ -470,13 +561,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3eae259a9001670b45b116167bf8f77a8379144035fefa6f77133833c1d5d0af",
@@ -487,8 +578,8 @@
       "name": "Health Catalyst, Inc.",
       "sic": "7370",
       "rawFacts": 11300,
-      "mappedFacts": 2872,
-      "unmappedFacts": 8455,
+      "mappedFacts": 2898,
+      "unmappedFacts": 8439,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -607,15 +698,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8621,
+        "total": 8605,
         "by_severity": {
-          "INFO": 8455,
+          "INFO": 8439,
           "WARNING": 166
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 160,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 8455
+          "UNKNOWN_CONCEPT": 8439
         }
       },
       "latestFiling": {
@@ -626,13 +717,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a0b5b9c404e541cfa2142c19e6c8589fd27787a22bdc43ae0badde0b1bbf331",

@@ -7,8 +7,8 @@
       "name": "ABUNDIA GLOBAL IMPACT GROUP, INC.",
       "sic": "1311",
       "rawFacts": 13757,
-      "mappedFacts": 4631,
-      "unmappedFacts": 9379,
+      "mappedFacts": 4667,
+      "unmappedFacts": 9350,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,10 +127,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9650,
+        "total": 9621,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 9379,
+          "INFO": 9350,
           "WARNING": 270
         },
         "by_code": {
@@ -140,7 +140,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 155,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 9379
+          "UNKNOWN_CONCEPT": 9350
         }
       },
       "latestFiling": {
@@ -151,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "09971e47f16fa3f135681366ee8ba745735054c47b1b2adccc82906cb50a07e3",
@@ -168,11 +168,75 @@
       "name": "Employers Holdings, Inc.",
       "sic": "6331",
       "rawFacts": 29134,
-      "mappedFacts": 5505,
-      "unmappedFacts": 23830,
+      "mappedFacts": 7690,
+      "unmappedFacts": 22080,
       "calendarYears": 25,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EIG"
@@ -288,20 +352,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24457,
+        "total": 22805,
         "by_severity": {
-          "INFO": 23830,
+          "INFO": 22080,
           "ERROR": 11,
-          "WARNING": 616
+          "WARNING": 714
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 461,
-          "FISCAL_PERIOD_CONFLICT": 45,
+          "CONCEPT_DISAGREEMENT": 526,
+          "FISCAL_PERIOD_CONFLICT": 65,
           "FUTURE_DATA_LEAK": 11,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 99,
-          "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 23830
+          "RESTATEMENT_CONFLICT": 108,
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 22080
         }
       },
       "latestFiling": {
@@ -312,13 +376,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4293b6ba4a9603656c2bcd09fb9474cfd98344fbda02ab9e7676682bc7b36d1",
@@ -329,8 +393,8 @@
       "name": "Greenland Technologies Holding Corp.",
       "sic": "3560",
       "rawFacts": 9300,
-      "mappedFacts": 2866,
-      "unmappedFacts": 6379,
+      "mappedFacts": 2867,
+      "unmappedFacts": 6378,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -449,10 +513,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7010,
+        "total": 7009,
         "by_severity": {
           "ERROR": 18,
-          "INFO": 6379,
+          "INFO": 6378,
           "WARNING": 613
         },
         "by_code": {
@@ -461,7 +525,7 @@
           "FUTURE_DATA_LEAK": 18,
           "RESTATEMENT_CONFLICT": 108,
           "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 6379
+          "UNKNOWN_CONCEPT": 6378
         }
       },
       "latestFiling": {
@@ -472,13 +536,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "882772ccb5c72a1a67913707eb1d1c4c2a2a171220438b20fa0a3609401ca6e5",
@@ -626,13 +690,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f4406226a1fa4c42542546ff39212047744797ac0a631577b24decd842825d05",

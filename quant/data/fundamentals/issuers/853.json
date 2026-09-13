@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b8bd8a3445c7158aba03fcf3f900ed1344d8faf5d4cb900ce7e1dc3f07632fed",
@@ -166,8 +166,8 @@
       "name": "HERTZ GLOBAL HOLDINGS, INC",
       "sic": "7510",
       "rawFacts": 13623,
-      "mappedFacts": 3340,
-      "unmappedFacts": 10018,
+      "mappedFacts": 3384,
+      "unmappedFacts": 9992,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -287,16 +287,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10645,
+        "total": 10619,
         "by_severity": {
-          "INFO": 10018,
+          "INFO": 9992,
           "WARNING": 627
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 537,
           "RESTATEMENT_CONFLICT": 88,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 10018
+          "UNKNOWN_CONCEPT": 9992
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "de42797a9244f062380590fa1ffc9a87ea152f9b6ecb1827cdb1ca7b290feaf3",
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3b4eb7437daa0d436f27bfac38b73c880bc4027dc41292a56809388c908217f4",
@@ -619,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "27a19cff8fb408b6630f35892aa9c17c115fb1f7a9aff0cec943b7051a9e16e3",
@@ -775,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be9d31fb4829f64bda702d537ba705d199d774df43453c1fb80403d8cbe5eeaf",
@@ -792,9 +792,9 @@
       "name": "FutureCorp Space Acquisition 1",
       "sic": "6770",
       "rawFacts": 56,
-      "mappedFacts": 0,
+      "mappedFacts": 12,
       "unmappedFacts": 34,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -805,9 +805,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -846,7 +846,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -874,14 +874,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -903,23 +903,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 4
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 4,
+        "resolvedValues": 4
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 56,
+        "total": 42,
         "by_severity": {
           "INFO": 34,
-          "WARNING": 22
+          "WARNING": 8
         },
         "by_code": {
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 34,
-          "UNPLACEABLE_PERIOD": 14
+          "UNKNOWN_CONCEPT": 34
         }
       },
       "latestFiling": {
@@ -930,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb4a5800f03a8685467c59ff30bf32ca76bb5f35405438c7144ae5c8f5952153",

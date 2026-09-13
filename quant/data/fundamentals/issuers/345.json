@@ -7,11 +7,54 @@
       "name": "CAMDEN PROPERTY TRUST",
       "sic": "6798",
       "rawFacts": 25065,
-      "mappedFacts": 4734,
-      "unmappedFacts": 19651,
+      "mappedFacts": 5581,
+      "unmappedFacts": 19023,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CPT"
@@ -127,19 +170,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20576,
+        "total": 19956,
         "by_severity": {
-          "INFO": 19651,
+          "INFO": 19023,
           "ERROR": 7,
-          "WARNING": 918
+          "WARNING": 926
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 862,
           "FUTURE_DATA_LEAK": 7,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 50,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 19651
+          "RESTATEMENT_CONFLICT": 57,
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 19023
         }
       },
       "latestFiling": {
@@ -150,13 +193,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c2ce05e68763cfac6b5cf444ed2e6ef503c34cc0fcce92eb14f5465bbd423f20",
@@ -167,8 +210,8 @@
       "name": "NOVA LTD.",
       "sic": "3827",
       "rawFacts": 5694,
-      "mappedFacts": 1790,
-      "unmappedFacts": 4090,
+      "mappedFacts": 1798,
+      "unmappedFacts": 4086,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +330,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4160,
+        "total": 4156,
         "by_severity": {
-          "INFO": 4090,
+          "INFO": 4086,
           "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 58,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 4090
+          "UNKNOWN_CONCEPT": 4086
         }
       },
       "latestFiling": {
@@ -306,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1e4100e78ab32d6372d296516db11e5c2b61607c5fe9b739ef8e05a46d79d5a4",
@@ -323,8 +366,8 @@
       "name": "MACROGENICS INC",
       "sic": "2834",
       "rawFacts": 12701,
-      "mappedFacts": 4457,
-      "unmappedFacts": 8529,
+      "mappedFacts": 4709,
+      "unmappedFacts": 8371,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,15 +486,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8598,
+        "total": 8440,
         "by_severity": {
-          "INFO": 8529,
+          "INFO": 8371,
           "WARNING": 69
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 57,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 8529
+          "UNKNOWN_CONCEPT": 8371
         }
       },
       "latestFiling": {
@@ -462,13 +505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "02f1f81959a9156a0bdea8356aa4f3cb93358553dfba3ed3c0c6b2e994ee12a4",
@@ -479,8 +522,8 @@
       "name": "Sprinklr, Inc.",
       "sic": "7372",
       "rawFacts": 8211,
-      "mappedFacts": 1941,
-      "unmappedFacts": 6321,
+      "mappedFacts": 2009,
+      "unmappedFacts": 6279,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -599,16 +642,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6378,
+        "total": 6336,
         "by_severity": {
-          "INFO": 6321,
+          "INFO": 6279,
           "WARNING": 57
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 51,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 6321
+          "UNKNOWN_CONCEPT": 6279
         }
       },
       "latestFiling": {
@@ -619,13 +662,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c4948498bf94eae36be4b633f7a76ff6be4b178d4818a3c3e9abe9885c6bf134",
@@ -636,8 +679,8 @@
       "name": "TriplePoint Venture Growth BDC Corp.",
       "sic": null,
       "rawFacts": 5894,
-      "mappedFacts": 948,
-      "unmappedFacts": 5044,
+      "mappedFacts": 1103,
+      "unmappedFacts": 4887,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -755,15 +798,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5124,
+        "total": 4970,
         "by_severity": {
-          "INFO": 5044,
-          "WARNING": 80
+          "INFO": 4887,
+          "WARNING": 83
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 66,
-          "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 5044
+          "RESTATEMENT_CONFLICT": 15,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 4887
         }
       },
       "latestFiling": {
@@ -774,13 +818,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "00a48ae673c8048f4d7bf18ea9ba11c6950034c154ab4d0fe70ed33683d1721c",
@@ -791,8 +835,8 @@
       "name": "Polar Power, Inc.",
       "sic": "3690",
       "rawFacts": 7810,
-      "mappedFacts": 3151,
-      "unmappedFacts": 4825,
+      "mappedFacts": 3232,
+      "unmappedFacts": 4775,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -910,15 +954,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5012,
+        "total": 4962,
         "by_severity": {
-          "INFO": 4825,
+          "INFO": 4775,
           "WARNING": 187
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 152,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 4825
+          "UNKNOWN_CONCEPT": 4775
         }
       },
       "latestFiling": {
@@ -929,13 +973,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "049f3de2f427ba5125411b15bc2811d051a8ffc3eaa17b02895540b3a26a428a",
@@ -1086,13 +1130,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c8f1a97a8ea2612030b206b6e61e4cd6f9bebbce36b378b8de3ce69fa26c454c",

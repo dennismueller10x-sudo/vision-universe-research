@@ -7,17 +7,108 @@
       "name": "BOK FINANCIAL CORP",
       "sic": "6021",
       "rawFacts": 40936,
-      "mappedFacts": 5479,
-      "unmappedFacts": 35234,
+      "mappedFacts": 8241,
+      "unmappedFacts": 32945,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
+        "time_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,16 +226,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 35874,
+        "total": 33593,
         "by_severity": {
-          "INFO": 35234,
-          "WARNING": 640
+          "INFO": 32945,
+          "WARNING": 648
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 593,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 35234
+          "RESTATEMENT_CONFLICT": 49,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 32945
         }
       },
       "latestFiling": {
@@ -155,13 +247,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d04f4ba26ffe208e6a1e677d1d494c2ea92f3dc0e68067312f027afa9b022137",
@@ -172,8 +264,8 @@
       "name": "EXELON CORP",
       "sic": "4931",
       "rawFacts": 34632,
-      "mappedFacts": 6874,
-      "unmappedFacts": 27982,
+      "mappedFacts": 6987,
+      "unmappedFacts": 27869,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -292,9 +384,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28902,
+        "total": 28789,
         "by_severity": {
-          "INFO": 27982,
+          "INFO": 27869,
           "ERROR": 4,
           "WARNING": 916
         },
@@ -305,7 +397,7 @@
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 6,
           "RESTATEMENT_CONFLICT": 126,
-          "UNKNOWN_CONCEPT": 27982
+          "UNKNOWN_CONCEPT": 27869
         }
       },
       "latestFiling": {
@@ -316,13 +408,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "326b74564849880c4dca0f0445a4389ca7597b17e7dbfd83702e3698cb22d350",

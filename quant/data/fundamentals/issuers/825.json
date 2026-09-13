@@ -7,8 +7,8 @@
       "name": "FOSTER L B CO",
       "sic": "5051",
       "rawFacts": 24622,
-      "mappedFacts": 6603,
-      "unmappedFacts": 18002,
+      "mappedFacts": 6622,
+      "unmappedFacts": 17981,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18754,
+        "total": 18735,
         "by_severity": {
-          "INFO": 18002,
-          "WARNING": 752
+          "INFO": 17981,
+          "WARNING": 754
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 652,
           "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 18002
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 17981
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd583fb0273e6e97d0adac4c12eea6275f377fe7004c5b4619155fba7ec5ea6e",
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "47a924714f24a26f0b8bb67d02ad5013ba1c37218f976133d52197ff4f50e8b6",
@@ -321,11 +322,54 @@
       "name": "FIRST INDUSTRIAL REALTY TRUST INC",
       "sic": "6798",
       "rawFacts": 22496,
-      "mappedFacts": 4480,
-      "unmappedFacts": 17510,
+      "mappedFacts": 5523,
+      "unmappedFacts": 16731,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FR"
@@ -441,15 +485,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18281,
+        "total": 17525,
         "by_severity": {
-          "INFO": 17510,
-          "WARNING": 771
+          "INFO": 16731,
+          "WARNING": 794
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 720,
-          "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 17510
+          "CONCEPT_DISAGREEMENT": 738,
+          "RESTATEMENT_CONFLICT": 56,
+          "UNKNOWN_CONCEPT": 16731
         }
       },
       "latestFiling": {
@@ -460,13 +504,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f7a8c50d5c6911ddd84d0a019010660d92ad602287da78f449fefc557435a391",
@@ -477,8 +521,8 @@
       "name": "PELOTON INTERACTIVE, INC.",
       "sic": "3949",
       "rawFacts": 10098,
-      "mappedFacts": 3141,
-      "unmappedFacts": 7100,
+      "mappedFacts": 3156,
+      "unmappedFacts": 7089,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -597,15 +641,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7293,
+        "total": 7282,
         "by_severity": {
-          "INFO": 7100,
+          "INFO": 7089,
           "WARNING": 193
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 189,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 7100
+          "UNKNOWN_CONCEPT": 7089
         }
       },
       "latestFiling": {
@@ -616,13 +660,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f41ff7781c246a22062055d11749ee2da52490be3f5514efb777efd2d14cffb8",
@@ -773,13 +817,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a11a4aecaecc3a4e2da3782f1378b501d128bab2e661472274818e195af18496",
@@ -790,8 +834,8 @@
       "name": "Organon & Co.",
       "sic": "2834",
       "rawFacts": 8784,
-      "mappedFacts": 2516,
-      "unmappedFacts": 6360,
+      "mappedFacts": 2570,
+      "unmappedFacts": 6306,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -910,16 +954,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6473,
+        "total": 6419,
         "by_severity": {
-          "INFO": 6360,
+          "INFO": 6306,
           "WARNING": 113
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 105,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 6360
+          "UNKNOWN_CONCEPT": 6306
         }
       },
       "latestFiling": {
@@ -930,13 +974,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9ff839ec962bd097331e1d2d15e0516b576ff63fa906be63f61e2e2c7d9eba32",
@@ -1090,13 +1134,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95251bc8f5a5c3f32a2730ebad964cc2e97b85b66bd7739594b03b7f8267b102",
@@ -1107,8 +1151,8 @@
       "name": "Infleqtion, Inc.",
       "sic": "7374",
       "rawFacts": 1007,
-      "mappedFacts": 420,
-      "unmappedFacts": 623,
+      "mappedFacts": 426,
+      "unmappedFacts": 619,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1227,15 +1271,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 682,
+        "total": 678,
         "by_severity": {
-          "INFO": 623,
+          "INFO": 619,
           "WARNING": 59
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
           "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 623
+          "UNKNOWN_CONCEPT": 619
         }
       },
       "latestFiling": {
@@ -1246,13 +1290,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e74544573c86b6396fc691e6741374e06c2cfd80c3fab064ab25b9c824bf3ba1",

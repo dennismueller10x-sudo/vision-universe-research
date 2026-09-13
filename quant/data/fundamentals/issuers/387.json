@@ -7,8 +7,8 @@
       "name": "Perspective Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 16183,
-      "mappedFacts": 5146,
-      "unmappedFacts": 11180,
+      "mappedFacts": 5156,
+      "unmappedFacts": 11174,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11615,
+        "total": 11609,
         "by_severity": {
-          "INFO": 11180,
+          "INFO": 11174,
           "ERROR": 1,
           "WARNING": 434
         },
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 7,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 154,
-          "UNKNOWN_CONCEPT": 11180
+          "UNKNOWN_CONCEPT": 11174
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2a5a57290cc674a4ff411961118dcaf3d2163fad6afa66bbe4a861c0f63fe27d",
@@ -166,14 +166,105 @@
       "name": "BV Financial, Inc.",
       "sic": "6035",
       "rawFacts": 6982,
-      "mappedFacts": 936,
-      "unmappedFacts": 6057,
+      "mappedFacts": 1281,
+      "unmappedFacts": 5763,
       "calendarYears": 4,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 4,
           "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -293,15 +384,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6118,
+        "total": 5824,
         "by_severity": {
-          "INFO": 6057,
+          "INFO": 5763,
           "WARNING": 61
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 6057
+          "UNKNOWN_CONCEPT": 5763
         }
       },
       "latestFiling": {
@@ -312,13 +403,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "555c86e9aa47f4b3b8a5a0700f6d53fa1c6b00b6614ff842d6a399ca8e624b1a",
@@ -467,13 +558,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "524207f65ab0ed420cef7ea5d78ef81676229bfd9e8d569462e7b5486003968f",
@@ -624,13 +715,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "705b7e0b7a5d9b2cf581d62a932e8fe3b4fb004a9d3f3d61b893b06f1fcb5468",
@@ -780,13 +871,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "692063e0d4acff953e99e1f18cc7e13d642c9bc7e15c7c8ce81ccbb4727aebe4",
@@ -921,13 +1012,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ba69cd86ea39e95830672fd3c65b8d61a8a263a94e14d4daaa0f3307d5cc988",

@@ -7,11 +7,54 @@
       "name": "VORNADO REALTY TRUST",
       "sic": "6798",
       "rawFacts": 29040,
-      "mappedFacts": 5990,
-      "unmappedFacts": 22373,
+      "mappedFacts": 7134,
+      "unmappedFacts": 21519,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "VNO",
@@ -132,15 +175,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23539,
+        "total": 22717,
         "by_severity": {
-          "INFO": 22373,
-          "WARNING": 1166
+          "INFO": 21519,
+          "WARNING": 1198
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1053,
-          "RESTATEMENT_CONFLICT": 113,
-          "UNKNOWN_CONCEPT": 22373
+          "RESTATEMENT_CONFLICT": 145,
+          "UNKNOWN_CONCEPT": 21519
         }
       },
       "latestFiling": {
@@ -151,13 +194,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "79c8c9b1e5824ccbc7e9783a9353b31fd9821d962a818c2ae5bed36c3167e08f",
@@ -168,11 +211,54 @@
       "name": "AGNC Investment Corp.",
       "sic": "6798",
       "rawFacts": 15670,
-      "mappedFacts": 4184,
-      "unmappedFacts": 11475,
+      "mappedFacts": 4647,
+      "unmappedFacts": 11016,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2011-12-31",
+          "historyYears": 1.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AGNC",
@@ -294,17 +380,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11910,
+        "total": 11452,
         "by_severity": {
-          "INFO": 11475,
+          "INFO": 11016,
           "ERROR": 7,
-          "WARNING": 428
+          "WARNING": 429
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 367,
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 61,
-          "UNKNOWN_CONCEPT": 11475
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 11016
         }
       },
       "latestFiling": {
@@ -315,13 +402,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3dc8dab9fd5f8eb879c71492c1d330c5f8e5f8ffe13fab6e4eae06514514a838",
@@ -332,8 +419,8 @@
       "name": "Hilton Worldwide Holdings Inc.",
       "sic": "7011",
       "rawFacts": 19372,
-      "mappedFacts": 5057,
-      "unmappedFacts": 14232,
+      "mappedFacts": 5195,
+      "unmappedFacts": 14094,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -452,15 +539,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14938,
+        "total": 14806,
         "by_severity": {
-          "INFO": 14232,
-          "WARNING": 706
+          "INFO": 14094,
+          "WARNING": 712
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 506,
-          "RESTATEMENT_CONFLICT": 200,
-          "UNKNOWN_CONCEPT": 14232
+          "RESTATEMENT_CONFLICT": 206,
+          "UNKNOWN_CONCEPT": 14094
         }
       },
       "latestFiling": {
@@ -471,13 +558,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "db7de116e5228bd4fee567bfca38de21ea9873f4476bad58c22052eac22f5127",
@@ -629,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f0e148da1d4bac4bb4ed63efa62e9f88b685113eb3817eb77c7fe93ad455bfa",
@@ -785,13 +872,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "602e2290e5e124f5121ccb7a1902ec376332656c141b4ff841b61793b419cc11",

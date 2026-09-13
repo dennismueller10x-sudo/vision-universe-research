@@ -7,17 +7,108 @@
       "name": "SOUTHERN FIRST BANCSHARES INC",
       "sic": "6021",
       "rawFacts": 24016,
-      "mappedFacts": 4740,
-      "unmappedFacts": 19336,
+      "mappedFacts": 7124,
+      "unmappedFacts": 17359,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,16 +226,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19490,
+        "total": 17520,
         "by_severity": {
-          "INFO": 19336,
-          "WARNING": 154
+          "INFO": 17359,
+          "WARNING": 161
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
-          "FISCAL_PERIOD_CONFLICT": 9,
-          "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 19336
+          "FISCAL_PERIOD_CONFLICT": 12,
+          "RESTATEMENT_CONFLICT": 25,
+          "UNKNOWN_CONCEPT": 17359
         }
       },
       "latestFiling": {
@@ -155,13 +246,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "349508a17aa14193098fd6c89b7950644d8adfbc3dad930434f16d535bb4a829",
@@ -172,8 +263,8 @@
       "name": "Vulcan Materials CO",
       "sic": "1400",
       "rawFacts": 34150,
-      "mappedFacts": 8822,
-      "unmappedFacts": 24928,
+      "mappedFacts": 8955,
+      "unmappedFacts": 24796,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -292,9 +383,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26197,
+        "total": 26065,
         "by_severity": {
-          "INFO": 24928,
+          "INFO": 24796,
           "ERROR": 12,
           "WARNING": 1257
         },
@@ -304,7 +395,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 18,
-          "UNKNOWN_CONCEPT": 24928
+          "UNKNOWN_CONCEPT": 24796
         }
       },
       "latestFiling": {
@@ -315,13 +406,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "192540f2042b73cd17a4edcb511e5b6ad2b2ceac32ba1087cb7b5e4429ae82cf",
@@ -472,13 +563,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5dfef9fab7868a53f996cf67816405452a00f56db4c8b934d6dfef74e926a97f",
@@ -489,8 +580,8 @@
       "name": "Quantum Computing Inc.",
       "sic": "7372",
       "rawFacts": 7467,
-      "mappedFacts": 2690,
-      "unmappedFacts": 4827,
+      "mappedFacts": 2705,
+      "unmappedFacts": 4813,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -609,16 +700,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5054,
+        "total": 5040,
         "by_severity": {
-          "INFO": 4827,
+          "INFO": 4813,
           "WARNING": 227
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 112,
           "RESTATEMENT_CONFLICT": 103,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 4827
+          "UNKNOWN_CONCEPT": 4813
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6da1ecc3852ce8ba5c09467f7f0465962b649fed2a3f03b9f16f669917255905",
@@ -784,13 +875,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95db278ed921116ac0b6539211ae260a1de8e148177a4e0cf6bbef48ddb72fd1",
@@ -938,13 +1029,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "054e72547c49535a02611368f00e49e562f9ea4d665aa7a0014f861e627fd459",

@@ -7,11 +7,75 @@
       "name": "Unum Group",
       "sic": "6321",
       "rawFacts": 34421,
-      "mappedFacts": 5886,
-      "unmappedFacts": 28968,
+      "mappedFacts": 8151,
+      "unmappedFacts": 27145,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "UNM",
@@ -128,17 +192,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29408,
+        "total": 27595,
         "by_severity": {
-          "INFO": 28968,
+          "INFO": 27145,
           "ERROR": 4,
-          "WARNING": 436
+          "WARNING": 446
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 317,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 119,
-          "UNKNOWN_CONCEPT": 28968
+          "RESTATEMENT_CONFLICT": 129,
+          "UNKNOWN_CONCEPT": 27145
         }
       },
       "latestFiling": {
@@ -149,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f54671188b857e8aafeb17da678f121b3a4992d7f73e18635fa24234320b778",
@@ -166,8 +230,8 @@
       "name": "GLADSTONE CAPITAL CORP",
       "sic": null,
       "rawFacts": 5355,
-      "mappedFacts": 855,
-      "unmappedFacts": 4459,
+      "mappedFacts": 903,
+      "unmappedFacts": 4410,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +350,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4691,
+        "total": 4644,
         "by_severity": {
-          "INFO": 4459,
-          "WARNING": 232
+          "INFO": 4410,
+          "WARNING": 234
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 165,
-          "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 4459
+          "CONCEPT_DISAGREEMENT": 166,
+          "RESTATEMENT_CONFLICT": 68,
+          "UNKNOWN_CONCEPT": 4410
         }
       },
       "latestFiling": {
@@ -305,13 +369,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e09bf1f8834ea03a83e5a1807f06a56de8215e38d88f28a8e893c28f81974a8f",
@@ -322,8 +386,8 @@
       "name": "JinkoSolar Holding Co., Ltd.",
       "sic": "3674",
       "rawFacts": 11081,
-      "mappedFacts": 1833,
-      "unmappedFacts": 8847,
+      "mappedFacts": 1847,
+      "unmappedFacts": 8839,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,18 +506,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9667,
+        "total": 9661,
         "by_severity": {
-          "INFO": 8847,
+          "INFO": 8839,
           "ERROR": 1,
-          "WARNING": 819
+          "WARNING": 821
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 761,
+          "CONCEPT_DISAGREEMENT": 763,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 51,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 8847
+          "UNKNOWN_CONCEPT": 8839
         }
       },
       "latestFiling": {
@@ -464,13 +528,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6445458639e2fb70d3eff83ab508c7ac32903ca833d9910774846aa6240efa38",
@@ -620,13 +684,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "83714c9f78385419fb9e2b7724ca720024b2156d275b906cd150ade456dcb6d9",

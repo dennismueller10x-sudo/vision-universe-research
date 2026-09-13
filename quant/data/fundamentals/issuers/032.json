@@ -7,8 +7,8 @@
       "name": "PROSPECT CAPITAL CORP",
       "sic": null,
       "rawFacts": 6478,
-      "mappedFacts": 1027,
-      "unmappedFacts": 5482,
+      "mappedFacts": 1113,
+      "unmappedFacts": 5373,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -128,15 +128,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5632,
+        "total": 5549,
         "by_severity": {
-          "INFO": 5482,
-          "WARNING": 150
+          "INFO": 5373,
+          "WARNING": 176
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 119,
-          "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 5482
+          "CONCEPT_DISAGREEMENT": 136,
+          "RESTATEMENT_CONFLICT": 34,
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 5373
         }
       },
       "latestFiling": {
@@ -147,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4fcfae0d325d420ede714e8b8a739beb67fa1a42235a8e06a2fe11434f0d00d6",
@@ -164,11 +165,54 @@
       "name": "National Healthcare Properties, Inc.",
       "sic": "6798",
       "rawFacts": 18574,
-      "mappedFacts": 4229,
-      "unmappedFacts": 14061,
+      "mappedFacts": 5233,
+      "unmappedFacts": 13216,
       "calendarYears": 14,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "secured_debt": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NHP",
@@ -287,18 +331,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14680,
+        "total": 14074,
         "by_severity": {
-          "INFO": 14061,
-          "WARNING": 619
+          "INFO": 13216,
+          "WARNING": 858
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 491,
+          "CONCEPT_DISAGREEMENT": 591,
           "FISCAL_PERIOD_CONFLICT": 8,
-          "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 104,
-          "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 14061
+          "PERIOD_MISMATCH": 60,
+          "RESTATEMENT_CONFLICT": 159,
+          "UNEXPECTED_DURATION": 40,
+          "UNKNOWN_CONCEPT": 13216
         }
       },
       "latestFiling": {
@@ -309,13 +353,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b2f3b5fef6266033ee25215b8bcd35924281a1979a88110f59cbca3a62180bc",
@@ -326,9 +370,9 @@
       "name": "Research Alliance Corp III",
       "sic": "2834",
       "rawFacts": 93,
-      "mappedFacts": 0,
-      "unmappedFacts": 48,
-      "calendarYears": 0,
+      "mappedFacts": 19,
+      "unmappedFacts": 47,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -337,9 +381,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2026-02-18",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -378,7 +422,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -406,14 +450,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -435,23 +479,26 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 4,
+        "MEDIUM": 1
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 5,
+        "resolvedValues": 5
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 93,
+        "total": 70,
         "by_severity": {
-          "INFO": 48,
-          "WARNING": 45
+          "INFO": 47,
+          "WARNING": 23
         },
         "by_code": {
+          "CONCEPT_DISAGREEMENT": 3,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 48,
-          "UNPLACEABLE_PERIOD": 25
+          "UNKNOWN_CONCEPT": 47
         }
       },
       "latestFiling": {
@@ -462,13 +509,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c056e50e8dc7834a438595add5cebacf78ed2638b0a7ceb0d79177bfc1a6084",

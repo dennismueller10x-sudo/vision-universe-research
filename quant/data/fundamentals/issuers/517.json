@@ -7,8 +7,8 @@
       "name": "United Airlines Holdings, Inc.",
       "sic": "4512",
       "rawFacts": 22895,
-      "mappedFacts": 6800,
-      "unmappedFacts": 16759,
+      "mappedFacts": 6806,
+      "unmappedFacts": 16756,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16982,
+        "total": 16979,
         "by_severity": {
-          "INFO": 16759,
+          "INFO": 16756,
           "ERROR": 1,
           "WARNING": 222
         },
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 16759
+          "UNKNOWN_CONCEPT": 16756
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8656394087f3ca0ca7feaa588c5d9cc9d778ba2e670a2e2e66e5661239cf8dfe",
@@ -166,17 +166,108 @@
       "name": "ISABELLA BANK CORP",
       "sic": "6022",
       "rawFacts": 27772,
-      "mappedFacts": 4529,
-      "unmappedFacts": 23633,
+      "mappedFacts": 6666,
+      "unmappedFacts": 21857,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -293,17 +384,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23654,
+        "total": 21880,
         "by_severity": {
-          "INFO": 23633,
+          "INFO": 21857,
           "ERROR": 3,
-          "WARNING": 18
+          "WARNING": 20
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 10,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 23633
+          "RESTATEMENT_CONFLICT": 10,
+          "UNKNOWN_CONCEPT": 21857
         }
       },
       "latestFiling": {
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dc8a99c197d661ed821fff5bcc73394c6167cb5394cef66e0e738990576ebcc9",
@@ -331,8 +422,8 @@
       "name": "TOYOTA MOTOR CORP/",
       "sic": "3711",
       "rawFacts": 10836,
-      "mappedFacts": 1725,
-      "unmappedFacts": 9128,
+      "mappedFacts": 1813,
+      "unmappedFacts": 9056,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -452,16 +543,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9566,
+        "total": 9498,
         "by_severity": {
-          "INFO": 9128,
-          "WARNING": 438
+          "INFO": 9056,
+          "WARNING": 442
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 388,
+          "CONCEPT_DISAGREEMENT": 392,
           "EXTREME_VALUE": 38,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 9128
+          "UNKNOWN_CONCEPT": 9056
         }
       },
       "latestFiling": {
@@ -472,13 +563,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f7801daab825a74fe9895019eb0e729d0109d2eca5270ab840b52edef3fda36",
@@ -489,8 +580,8 @@
       "name": "Energy Recovery, Inc.",
       "sic": "3559",
       "rawFacts": 21743,
-      "mappedFacts": 6997,
-      "unmappedFacts": 15209,
+      "mappedFacts": 7069,
+      "unmappedFacts": 15162,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -609,17 +700,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15654,
+        "total": 15609,
         "by_severity": {
-          "INFO": 15209,
+          "INFO": 15162,
           "ERROR": 1,
-          "WARNING": 444
+          "WARNING": 446
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 334,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 110,
-          "UNKNOWN_CONCEPT": 15209
+          "RESTATEMENT_CONFLICT": 112,
+          "UNKNOWN_CONCEPT": 15162
         }
       },
       "latestFiling": {
@@ -630,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cbef08a2d17951f7d3758d0149d8edce60913afb77204667b86d94cb3746ca8d",

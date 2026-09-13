@@ -7,8 +7,8 @@
       "name": "GREENBRIER COMPANIES INC",
       "sic": "3743",
       "rawFacts": 20588,
-      "mappedFacts": 6096,
-      "unmappedFacts": 14250,
+      "mappedFacts": 6166,
+      "unmappedFacts": 14180,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15080,
+        "total": 15010,
         "by_severity": {
-          "INFO": 14250,
+          "INFO": 14180,
           "WARNING": 830
         },
         "by_code": {
@@ -137,7 +137,7 @@
           "FISCAL_PERIOD_CONFLICT": 20,
           "RESTATEMENT_CONFLICT": 34,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 14250
+          "UNKNOWN_CONCEPT": 14180
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1827b8b8441cd5b98d1693ad94c880bcb4818f2270c2653f4436273c655726b2",
@@ -165,17 +165,108 @@
       "name": "Live Oak Bancshares, Inc.",
       "sic": "6022",
       "rawFacts": 23596,
-      "mappedFacts": 3312,
-      "unmappedFacts": 20315,
+      "mappedFacts": 5025,
+      "unmappedFacts": 18878,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 6.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deposits": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 7.0
+        },
         "net_interest_income": {
           "annualPeriods": 13,
           "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 8.0
+        },
+        "time_deposits": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -294,17 +385,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20434,
+        "total": 19058,
         "by_severity": {
-          "INFO": 20315,
-          "WARNING": 119
+          "INFO": 18878,
+          "WARNING": 180
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 49,
-          "FISCAL_PERIOD_CONFLICT": 10,
-          "RESTATEMENT_CONFLICT": 59,
+          "CONCEPT_DISAGREEMENT": 63,
+          "FISCAL_PERIOD_CONFLICT": 19,
+          "RESTATEMENT_CONFLICT": 97,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 20315
+          "UNKNOWN_CONCEPT": 18878
         }
       },
       "latestFiling": {
@@ -315,13 +406,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e1848bdd6c9e461d6b6f230a3c44875a47740dececd5138292c3666522e54421",
@@ -332,8 +423,8 @@
       "name": "Avalo Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 10586,
-      "mappedFacts": 3682,
-      "unmappedFacts": 7094,
+      "mappedFacts": 3696,
+      "unmappedFacts": 7087,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -452,9 +543,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7374,
+        "total": 7367,
         "by_severity": {
-          "INFO": 7094,
+          "INFO": 7087,
           "WARNING": 280
         },
         "by_code": {
@@ -462,7 +553,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
           "RESTATEMENT_CONFLICT": 83,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 7094
+          "UNKNOWN_CONCEPT": 7087
         }
       },
       "latestFiling": {
@@ -473,13 +564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "687ef79cf4990e83d895e46a0f1791dffeeb4ddd45e24abc72f0c1926f5dc35a",
@@ -627,13 +718,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b4171d65c5deddddf17e0ec9a9c5f5198519ab806b3d29ab81839f3a249770c7",

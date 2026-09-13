@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d3d29eabe72cc6d1f5b21f31f8ef0e13bd83934542813ba1dada0a2b967b636",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4507f488998025547772be738e513c0e1e5ae555218d536dce292e8ec413777a",
@@ -461,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4afb42bba7e64c30ff0cc526f82a48937e7bfb66716fb20e2eb4ea3e9712394f",
@@ -478,11 +478,54 @@
       "name": "GENERATION INCOME PROPERTIES, INC.",
       "sic": "6798",
       "rawFacts": 5350,
-      "mappedFacts": 1409,
-      "unmappedFacts": 3854,
+      "mappedFacts": 1654,
+      "unmappedFacts": 3691,
       "calendarYears": 6,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 3.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "secured_debt": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "GIPR",
@@ -599,15 +642,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4109,
+        "total": 3946,
         "by_severity": {
-          "INFO": 3854,
+          "INFO": 3691,
           "WARNING": 255
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 232,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 3854
+          "UNKNOWN_CONCEPT": 3691
         }
       },
       "latestFiling": {
@@ -618,13 +661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f0203d1084c5656aeabdea8bfe68a861e7bdf635a945e367a15364407114c49",
@@ -775,13 +818,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e7e3d7cbc1a16cd271029ca8a6e69fe225364ec3d53e7690fe2d1460bd1f2f65",

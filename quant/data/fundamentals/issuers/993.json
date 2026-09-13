@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d0b97fb201bfb5ac1df3e090155a73d1c7661f1234d3fd53ee3193b6647fb0ec",
@@ -164,7 +164,7 @@
       "sic": "4412",
       "rawFacts": 12007,
       "mappedFacts": 4694,
-      "unmappedFacts": 7379,
+      "unmappedFacts": 7349,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -285,14 +285,14 @@
         "rules_version": "1.0.0",
         "total": 7876,
         "by_severity": {
-          "INFO": 7379,
-          "WARNING": 497
+          "INFO": 7349,
+          "WARNING": 527
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 417,
-          "PERIOD_MISMATCH": 39,
+          "PERIOD_MISMATCH": 69,
           "RESTATEMENT_CONFLICT": 41,
-          "UNKNOWN_CONCEPT": 7379
+          "UNKNOWN_CONCEPT": 7349
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "12dafbfc68ef6e208ac87ee56b24d9bf071b97a0bc65e477d57837dd15c2959f",
@@ -320,8 +320,8 @@
       "name": "AIOS Tech Inc.",
       "sic": "3490",
       "rawFacts": 3598,
-      "mappedFacts": 1205,
-      "unmappedFacts": 2520,
+      "mappedFacts": 1222,
+      "unmappedFacts": 2506,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -440,16 +440,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2684,
+        "total": 2670,
         "by_severity": {
-          "INFO": 2520,
+          "INFO": 2506,
           "WARNING": 164
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 103,
           "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 2520
+          "UNKNOWN_CONCEPT": 2506
         }
       },
       "latestFiling": {
@@ -460,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1bfb902a6f1a756f5019e1a8ecb35d792eea67c37ee7c47670deca50b1286be4",
@@ -477,11 +477,75 @@
       "name": "Jackson Financial Inc.",
       "sic": "6311",
       "rawFacts": 13086,
-      "mappedFacts": 1745,
-      "unmappedFacts": 11207,
+      "mappedFacts": 2208,
+      "unmappedFacts": 10818,
       "calendarYears": 7,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "claims_liability": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "total_investments": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "JXN",
@@ -598,18 +662,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11470,
+        "total": 11098,
         "by_severity": {
-          "INFO": 11207,
-          "WARNING": 263
+          "INFO": 10818,
+          "WARNING": 280
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 161,
           "EXTREME_VALUE": 10,
           "NEGATIVE_WHERE_IMPOSSIBLE": 10,
-          "PERIOD_MISMATCH": 32,
-          "RESTATEMENT_CONFLICT": 50,
-          "UNKNOWN_CONCEPT": 11207
+          "PERIOD_MISMATCH": 37,
+          "RESTATEMENT_CONFLICT": 62,
+          "UNKNOWN_CONCEPT": 10818
         }
       },
       "latestFiling": {
@@ -620,13 +684,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bdba0c3d3caff283faed1eace48df3c156c16dd98091405734d7fe92a1255170",
@@ -637,8 +701,8 @@
       "name": "Cadrenal Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 3063,
-      "mappedFacts": 948,
-      "unmappedFacts": 2096,
+      "mappedFacts": 953,
+      "unmappedFacts": 2091,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -756,9 +820,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2207,
+        "total": 2202,
         "by_severity": {
-          "INFO": 2096,
+          "INFO": 2091,
           "ERROR": 1,
           "WARNING": 110
         },
@@ -768,7 +832,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 45,
           "UNEXPECTED_DURATION": 39,
-          "UNKNOWN_CONCEPT": 2096
+          "UNKNOWN_CONCEPT": 2091
         }
       },
       "latestFiling": {
@@ -779,13 +843,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9ce08a6fc764554a8b2f1e3b774c510c69a8f2fc751b2afb846b5b996c83d70d",

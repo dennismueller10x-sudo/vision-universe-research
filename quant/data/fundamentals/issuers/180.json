@@ -7,8 +7,8 @@
       "name": "ALTRIA GROUP, INC.",
       "sic": "2111",
       "rawFacts": 24949,
-      "mappedFacts": 7667,
-      "unmappedFacts": 17416,
+      "mappedFacts": 8066,
+      "unmappedFacts": 17036,
       "calendarYears": 23,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18508,
+        "total": 18155,
         "by_severity": {
-          "INFO": 17416,
+          "INFO": 17036,
           "ERROR": 5,
-          "WARNING": 1087
+          "WARNING": 1114
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 870,
-          "FISCAL_PERIOD_CONFLICT": 18,
+          "CONCEPT_DISAGREEMENT": 883,
+          "FISCAL_PERIOD_CONFLICT": 20,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 196,
-          "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 17416
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 203,
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 17036
         }
       },
       "latestFiling": {
@@ -150,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "adb5cbd8696e3ffb0ec6715604f035b86aeda857e335627732e8979f858dce0e",
@@ -172,7 +173,98 @@
       "calendarYears": 11,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -316,13 +408,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "76800ef522fd288971356a7dd0cd2badb2985aba16d3de6ed9b5d02cb465fa35",
@@ -473,13 +565,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a32ce0e2ad44b866a7627ac6ca5eaa7283286c5c282b931bde832ff75db7184c",
@@ -631,13 +723,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3e450524b6ed01f1621d0f54aa32f15becbbb86f3dab4894093dbfd16a5a082e",
@@ -648,8 +740,8 @@
       "name": "CARRIER GLOBAL Corp",
       "sic": "3585",
       "rawFacts": 11248,
-      "mappedFacts": 2878,
-      "unmappedFacts": 8355,
+      "mappedFacts": 2915,
+      "unmappedFacts": 8318,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -768,15 +860,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8756,
+        "total": 8719,
         "by_severity": {
-          "INFO": 8355,
+          "INFO": 8318,
           "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 339,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 8355
+          "UNKNOWN_CONCEPT": 8318
         }
       },
       "latestFiling": {
@@ -787,13 +879,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e25a9fac4e6893ba84da451f864ec01d10d67d10353c206e52b97dcbaf016285",

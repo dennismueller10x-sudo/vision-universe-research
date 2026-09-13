@@ -7,8 +7,8 @@
       "name": "GRANITE CONSTRUCTION INC",
       "sic": "1600",
       "rawFacts": 26364,
-      "mappedFacts": 8148,
-      "unmappedFacts": 17653,
+      "mappedFacts": 8355,
+      "unmappedFacts": 17439,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19045,
+        "total": 18834,
         "by_severity": {
-          "INFO": 17653,
-          "WARNING": 1392
+          "INFO": 17439,
+          "WARNING": 1395
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1102,
-          "FISCAL_PERIOD_CONFLICT": 22,
-          "RESTATEMENT_CONFLICT": 268,
-          "UNKNOWN_CONCEPT": 17653
+          "FISCAL_PERIOD_CONFLICT": 23,
+          "RESTATEMENT_CONFLICT": 270,
+          "UNKNOWN_CONCEPT": 17439
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dfb93f00a22624905da85ee129c48ec9c6a36050f578e7917372b88cce142b6b",
@@ -164,8 +164,8 @@
       "name": "Simulations Plus, Inc.",
       "sic": "7373",
       "rawFacts": 17607,
-      "mappedFacts": 6287,
-      "unmappedFacts": 11532,
+      "mappedFacts": 6314,
+      "unmappedFacts": 11472,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +284,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11901,
+        "total": 11874,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 11532,
-          "WARNING": 368
+          "INFO": 11472,
+          "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 298,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 26,
+          "PERIOD_MISMATCH": 59,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 11532
+          "UNKNOWN_CONCEPT": 11472
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66f9379b0b7eeb938fa162e097e2b602884443ebc52bb9c74f30ec070861f887",
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e332a8b13c13a32643c1ad3561b40f3732e6d9b0b2084e08f6a835ff7c7d78e7",
@@ -480,8 +480,8 @@
       "name": "Natural Grocers by Vitamin Cottage, Inc.",
       "sic": "5411",
       "rawFacts": 15803,
-      "mappedFacts": 6236,
-      "unmappedFacts": 9739,
+      "mappedFacts": 6247,
+      "unmappedFacts": 9727,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -600,9 +600,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10030,
+        "total": 10018,
         "by_severity": {
-          "INFO": 9739,
+          "INFO": 9727,
           "ERROR": 1,
           "WARNING": 290
         },
@@ -610,7 +610,7 @@
           "CONCEPT_DISAGREEMENT": 211,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 9739
+          "UNKNOWN_CONCEPT": 9727
         }
       },
       "latestFiling": {
@@ -621,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "23ed8d8bd8792151da1edc8ee8b7a6d72e9478ad60eed64a32f76b8045303483",
@@ -638,11 +638,75 @@
       "name": "James River Group Holdings, Inc.",
       "sic": "6331",
       "rawFacts": 20979,
-      "mappedFacts": 4126,
-      "unmappedFacts": 17009,
+      "mappedFacts": 5599,
+      "unmappedFacts": 15690,
       "calendarYears": 13,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "claims_liability": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "total_investments": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "JRVR"
@@ -758,15 +822,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17315,
+        "total": 16198,
         "by_severity": {
-          "INFO": 17009,
-          "WARNING": 306
+          "INFO": 15690,
+          "WARNING": 508
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 252,
-          "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 17009
+          "PERIOD_MISMATCH": 161,
+          "RESTATEMENT_CONFLICT": 95,
+          "UNKNOWN_CONCEPT": 15690
         }
       },
       "latestFiling": {
@@ -777,13 +842,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "00ce6d88f42b6d6ee341d5e65a3977e228888368cab74cedc4be144cda144d71",
@@ -794,8 +859,8 @@
       "name": "Kraft Heinz Co",
       "sic": "2030",
       "rawFacts": 21136,
-      "mappedFacts": 5595,
-      "unmappedFacts": 15442,
+      "mappedFacts": 5771,
+      "unmappedFacts": 15269,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -914,15 +979,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15865,
+        "total": 15693,
         "by_severity": {
-          "INFO": 15442,
-          "WARNING": 423
+          "INFO": 15269,
+          "WARNING": 424
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 378,
-          "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 15442
+          "RESTATEMENT_CONFLICT": 46,
+          "UNKNOWN_CONCEPT": 15269
         }
       },
       "latestFiling": {
@@ -933,13 +998,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0ff5641db393ec511f392149fd3bd44edb07c0295eb6034348cd17aa3e427006",
@@ -950,8 +1015,8 @@
       "name": "TechnipFMC plc",
       "sic": "3533",
       "rawFacts": 19022,
-      "mappedFacts": 4276,
-      "unmappedFacts": 14700,
+      "mappedFacts": 4342,
+      "unmappedFacts": 14631,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -1070,18 +1135,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15361,
+        "total": 15297,
         "by_severity": {
-          "INFO": 14700,
-          "WARNING": 661
+          "INFO": 14631,
+          "WARNING": 666
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 510,
           "EXTREME_VALUE": 1,
           "FISCAL_PERIOD_CONFLICT": 13,
-          "RESTATEMENT_CONFLICT": 125,
+          "RESTATEMENT_CONFLICT": 127,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 14700
+          "UNIT_MISMATCH": 3,
+          "UNKNOWN_CONCEPT": 14631
         }
       },
       "latestFiling": {
@@ -1092,13 +1158,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f5b3fecd93913445721de800891bb7c17f383759b53c009eca9931f31346d071",
@@ -1249,13 +1315,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "545066942816daa7a3c417eea0cc4b48bf35d188edf319ff16f39a7e79f48fec",
@@ -1405,13 +1471,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "474a679d778aadd5707bfec97e15e49019d9f07c09bbcd4c5b07d1b8d7800f46",

@@ -7,8 +7,8 @@
       "name": "AUTOMATIC DATA PROCESSING INC",
       "sic": "7374",
       "rawFacts": 32642,
-      "mappedFacts": 7337,
-      "unmappedFacts": 25102,
+      "mappedFacts": 7898,
+      "unmappedFacts": 24657,
       "calendarYears": 38,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26793,
+        "total": 26421,
         "by_severity": {
-          "INFO": 25102,
+          "INFO": 24657,
           "ERROR": 2,
-          "WARNING": 1689
+          "WARNING": 1762
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1134,
-          "FISCAL_PERIOD_CONFLICT": 157,
+          "CONCEPT_DISAGREEMENT": 1182,
+          "FISCAL_PERIOD_CONFLICT": 169,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 376,
+          "RESTATEMENT_CONFLICT": 389,
           "UNIT_MISMATCH": 22,
-          "UNKNOWN_CONCEPT": 25102
+          "UNKNOWN_CONCEPT": 24657
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5400898c970d3d2c2dc68f4352ea58521163469fa19e5e30a1cbf1add3c4b537",
@@ -167,8 +167,8 @@
       "name": "AUTOLIV INC",
       "sic": "3714",
       "rawFacts": 23973,
-      "mappedFacts": 7532,
-      "unmappedFacts": 16518,
+      "mappedFacts": 7733,
+      "unmappedFacts": 16316,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,18 +287,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17232,
+        "total": 17031,
         "by_severity": {
-          "INFO": 16518,
+          "INFO": 16316,
           "ERROR": 3,
-          "WARNING": 711
+          "WARNING": 712
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 626,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 3,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 16518
+          "UNKNOWN_CONCEPT": 16316
         }
       },
       "latestFiling": {
@@ -309,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd5e610e9a8f6e5828b1de29e642be58c787c614af385b5395bd8af679ec194b",
@@ -326,8 +327,8 @@
       "name": "ALNYLAM PHARMACEUTICALS, INC.",
       "sic": "2834",
       "rawFacts": 16778,
-      "mappedFacts": 5427,
-      "unmappedFacts": 11674,
+      "mappedFacts": 5589,
+      "unmappedFacts": 11574,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -446,16 +447,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11887,
+        "total": 11789,
         "by_severity": {
-          "INFO": 11674,
-          "WARNING": 213
+          "INFO": 11574,
+          "WARNING": 215
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 144,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 11674
+          "RESTATEMENT_CONFLICT": 69,
+          "UNKNOWN_CONCEPT": 11574
         }
       },
       "latestFiling": {
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd6f857c9d39820248a8f18e674d7af7c0ea6a1ea0de5539432201d0f4301e58",
@@ -483,17 +484,108 @@
       "name": "Primis Financial Corp.",
       "sic": "6022",
       "rawFacts": 29308,
-      "mappedFacts": 5257,
-      "unmappedFacts": 24145,
+      "mappedFacts": 7662,
+      "unmappedFacts": 22084,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 4.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 11.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -611,16 +703,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24340,
+        "total": 22307,
         "by_severity": {
-          "INFO": 24145,
-          "WARNING": 195
+          "INFO": 22084,
+          "WARNING": 223
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 66,
-          "RESTATEMENT_CONFLICT": 128,
+          "RESTATEMENT_CONFLICT": 156,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 24145
+          "UNKNOWN_CONCEPT": 22084
         }
       },
       "latestFiling": {
@@ -631,13 +723,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "87ab0f7c7a34dfecec8f86721f23a2d48f0207426e0bc731954617ed222f9806",
@@ -648,8 +740,8 @@
       "name": "Green Brick Partners, Inc.",
       "sic": "1531",
       "rawFacts": 22193,
-      "mappedFacts": 5940,
-      "unmappedFacts": 16143,
+      "mappedFacts": 5977,
+      "unmappedFacts": 16113,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -769,16 +861,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17229,
+        "total": 17199,
         "by_severity": {
-          "INFO": 16143,
+          "INFO": 16113,
           "WARNING": 1086
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 864,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 220,
-          "UNKNOWN_CONCEPT": 16143
+          "UNKNOWN_CONCEPT": 16113
         }
       },
       "latestFiling": {
@@ -789,13 +881,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2b4c690fdecd41aa396a4551d9c592bc6a1a81faa53d15a4bb0c818855a8f952",
@@ -806,8 +898,8 @@
       "name": "Taoping Inc.",
       "sic": "7372",
       "rawFacts": 6109,
-      "mappedFacts": 1791,
-      "unmappedFacts": 4310,
+      "mappedFacts": 1839,
+      "unmappedFacts": 4286,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -926,16 +1018,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4694,
+        "total": 4670,
         "by_severity": {
-          "INFO": 4310,
+          "INFO": 4286,
           "WARNING": 384
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 289,
           "RESTATEMENT_CONFLICT": 89,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 4310
+          "UNKNOWN_CONCEPT": 4286
         }
       },
       "latestFiling": {
@@ -946,13 +1038,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a204b8842b397c83a6a6d078b1274babe7addb750f75ab3e17a63e0b2e81ceb6",
@@ -963,11 +1055,54 @@
       "name": "Ladder Capital Corp",
       "sic": "6798",
       "rawFacts": 25254,
-      "mappedFacts": 3853,
-      "unmappedFacts": 21117,
+      "mappedFacts": 5234,
+      "unmappedFacts": 19967,
       "calendarYears": 14,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 3.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "secured_debt": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 1.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "LADR"
@@ -1083,17 +1218,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21661,
+        "total": 20521,
         "by_severity": {
-          "INFO": 21117,
-          "WARNING": 544
+          "INFO": 19967,
+          "WARNING": 554
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 442,
-          "PERIOD_MISMATCH": 8,
-          "RESTATEMENT_CONFLICT": 82,
+          "CONCEPT_DISAGREEMENT": 446,
+          "PERIOD_MISMATCH": 9,
+          "RESTATEMENT_CONFLICT": 87,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 21117
+          "UNKNOWN_CONCEPT": 19967
         }
       },
       "latestFiling": {
@@ -1104,13 +1239,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3549d135345dcd7ca84a8746ca441450ffab39b2f98b1dd8392cfd808440d2ce",
@@ -1121,8 +1256,8 @@
       "name": "LGI Homes, Inc.",
       "sic": "1531",
       "rawFacts": 14631,
-      "mappedFacts": 4731,
-      "unmappedFacts": 10076,
+      "mappedFacts": 4773,
+      "unmappedFacts": 10034,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -1241,16 +1376,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10362,
+        "total": 10320,
         "by_severity": {
-          "INFO": 10076,
+          "INFO": 10034,
           "WARNING": 286
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 238,
           "RESTATEMENT_CONFLICT": 28,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 10076
+          "UNKNOWN_CONCEPT": 10034
         }
       },
       "latestFiling": {
@@ -1261,13 +1396,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1cea486c7d9e68de6b8bdffa88486f6722a9600b1a207471e6fb67ef8c2d66f0",
@@ -1278,11 +1413,54 @@
       "name": "Farmland Partners Inc.",
       "sic": "6798",
       "rawFacts": 16483,
-      "mappedFacts": 4085,
-      "unmappedFacts": 12257,
+      "mappedFacts": 4966,
+      "unmappedFacts": 11363,
       "calendarYears": 14,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "secured_debt": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FPI"
@@ -1398,17 +1576,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12551,
+        "total": 11926,
         "by_severity": {
-          "INFO": 12257,
+          "INFO": 11363,
           "ERROR": 5,
-          "WARNING": 289
+          "WARNING": 558
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 254,
+          "CONCEPT_DISAGREEMENT": 282,
+          "FISCAL_PERIOD_CONFLICT": 3,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 12257
+          "PERIOD_MISMATCH": 230,
+          "RESTATEMENT_CONFLICT": 38,
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 11363
         }
       },
       "latestFiling": {
@@ -1419,13 +1600,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c8fcbae59ebc175d1e184c84165872a802c7f4c425e30f7789816b00d50903a1",

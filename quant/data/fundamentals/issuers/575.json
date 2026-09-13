@@ -7,17 +7,108 @@
       "name": "Avidbank Holdings, Inc.",
       "sic": "6022",
       "rawFacts": 2363,
-      "mappedFacts": 339,
-      "unmappedFacts": 2040,
+      "mappedFacts": 479,
+      "unmappedFacts": 1915,
       "calendarYears": 2,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 2,
           "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,14 +226,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2049,
+        "total": 1924,
         "by_severity": {
-          "INFO": 2040,
+          "INFO": 1915,
           "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 9,
-          "UNKNOWN_CONCEPT": 2040
+          "UNKNOWN_CONCEPT": 1915
         }
       },
       "latestFiling": {
@@ -153,13 +244,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "edfaa6143e092457a91b045f8d5037c758ea9d7f9be20b32a33fe17056b98561",
@@ -305,13 +396,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0a5a145814036272eec360c639983556cca716bf7776c3f2cda0534b86bb5386",

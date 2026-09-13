@@ -7,8 +7,8 @@
       "name": "BAXTER INTERNATIONAL INC",
       "sic": "3841",
       "rawFacts": 29635,
-      "mappedFacts": 8362,
-      "unmappedFacts": 21152,
+      "mappedFacts": 8673,
+      "unmappedFacts": 20784,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22156,
+        "total": 21847,
         "by_severity": {
-          "INFO": 21152,
-          "WARNING": 1004
+          "INFO": 20784,
+          "WARNING": 1063
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 762,
           "RESTATEMENT_CONFLICT": 242,
-          "UNKNOWN_CONCEPT": 21152
+          "UNEXPECTED_DURATION": 59,
+          "UNKNOWN_CONCEPT": 20784
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5be02b298cf9fd2b6b97d7036746bcdea3964198c010d65439c62e9dd8307d59",
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0a9afff1ede00581c77f98abe97103b5ef11059e2d8788dc3f0f3f0f030b8e2",

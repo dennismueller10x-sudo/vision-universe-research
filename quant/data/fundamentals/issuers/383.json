@@ -7,8 +7,8 @@
       "name": "Genasys Inc.",
       "sic": "3651",
       "rawFacts": 19192,
-      "mappedFacts": 6040,
-      "unmappedFacts": 13108,
+      "mappedFacts": 6113,
+      "unmappedFacts": 13024,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13592,
+        "total": 13519,
         "by_severity": {
-          "INFO": 13108,
+          "INFO": 13024,
           "ERROR": 6,
-          "WARNING": 478
+          "WARNING": 489
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 443,
           "FUTURE_DATA_LEAK": 6,
+          "PERIOD_MISMATCH": 11,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 13108
+          "UNKNOWN_CONCEPT": 13024
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e96f9659945de97fe7cba037ed908318f8511ff0741069bb9fae72a8778175b9",
@@ -165,8 +166,8 @@
       "name": "Outdoor Holding Co",
       "sic": "7389",
       "rawFacts": 12484,
-      "mappedFacts": 3873,
-      "unmappedFacts": 8546,
+      "mappedFacts": 3884,
+      "unmappedFacts": 8532,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -286,18 +287,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9113,
+        "total": 9102,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 8546,
-          "WARNING": 566
+          "INFO": 8532,
+          "WARNING": 569
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 323,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 200,
-          "UNEXPECTED_DURATION": 43,
-          "UNKNOWN_CONCEPT": 8546
+          "UNEXPECTED_DURATION": 46,
+          "UNKNOWN_CONCEPT": 8532
         }
       },
       "latestFiling": {
@@ -308,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a99a534d6f8205810df54e4ae8593171742edfa6fe56e339ef8782bc0da43c29",
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6440f139e38c07d34c52b04fe9e2c0bae75bf7a2a5db7868a4bf68c7602bd6c1",
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9c303c9ccae8db1028bcb5e4e18eb11e32ff380acf2d9a2d3c59e2a036a1b81e",
@@ -639,8 +640,8 @@
       "name": "Dynatrace, Inc.",
       "sic": "7372",
       "rawFacts": 9944,
-      "mappedFacts": 3098,
-      "unmappedFacts": 7002,
+      "mappedFacts": 3114,
+      "unmappedFacts": 6991,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -758,15 +759,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7007,
+        "total": 6996,
         "by_severity": {
-          "INFO": 7002,
+          "INFO": 6991,
           "WARNING": 5
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 7002
+          "UNKNOWN_CONCEPT": 6991
         }
       },
       "latestFiling": {
@@ -777,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a3414fd64c0199e092e2e47f7729a2751715e877eb065f4e3575aa9f1f69d130",
@@ -935,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6914844b254941d9078655259a53f3c6b22df589a2d5f9e0b268cc1c3702f091",
@@ -952,8 +953,8 @@
       "name": "BlackRock, Inc.",
       "sic": "6211",
       "rawFacts": 3348,
-      "mappedFacts": 716,
-      "unmappedFacts": 2616,
+      "mappedFacts": 768,
+      "unmappedFacts": 2574,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1072,15 +1073,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2694,
+        "total": 2652,
         "by_severity": {
-          "INFO": 2616,
+          "INFO": 2574,
           "WARNING": 78
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 75,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 2616
+          "UNKNOWN_CONCEPT": 2574
         }
       },
       "latestFiling": {
@@ -1091,13 +1092,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d90df2f71256bc15af7cbea6aff6f1c863e0bfd4de4fa06b2631d1836abfc828",
@@ -1108,8 +1109,8 @@
       "name": "Fusemachines Inc.",
       "sic": "7373",
       "rawFacts": 1154,
-      "mappedFacts": 345,
-      "unmappedFacts": 821,
+      "mappedFacts": 350,
+      "unmappedFacts": 816,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1229,15 +1230,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 865,
+        "total": 860,
         "by_severity": {
-          "INFO": 821,
+          "INFO": 816,
           "WARNING": 44
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 24,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 821
+          "UNKNOWN_CONCEPT": 816
         }
       },
       "latestFiling": {
@@ -1248,13 +1249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b19426aad482906a6291208829e5920cbfc74640eda764dab47afe95b3956b21",
@@ -1389,13 +1390,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ddeed95790a91ced85d6427815436ed4e4b1338a3692b421c46a4e8b68badc19",

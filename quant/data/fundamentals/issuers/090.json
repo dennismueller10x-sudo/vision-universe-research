@@ -7,11 +7,75 @@
       "name": "CITIZENS, INC.",
       "sic": "6311",
       "rawFacts": 22914,
-      "mappedFacts": 3608,
-      "unmappedFacts": 19698,
+      "mappedFacts": 5917,
+      "unmappedFacts": 17934,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CIA"
@@ -127,15 +191,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19780,
+        "total": 18039,
         "by_severity": {
-          "INFO": 19698,
-          "WARNING": 82
+          "INFO": 17934,
+          "WARNING": 105
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 20,
-          "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 19698
+          "RESTATEMENT_CONFLICT": 85,
+          "UNKNOWN_CONCEPT": 17934
         }
       },
       "latestFiling": {
@@ -146,13 +210,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7cc6872e499c2adc2802279ea2e2eb5fb35d005d3c50988f4162004b57ad0a02",
@@ -301,13 +365,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3224c2ce592687e3fd9c5a922e4cbdf12508f53e2bc971b67626d1d542b5c5f6",
@@ -318,8 +382,8 @@
       "name": "PRECIGEN, INC.",
       "sic": "2834",
       "rawFacts": 20546,
-      "mappedFacts": 5574,
-      "unmappedFacts": 14848,
+      "mappedFacts": 5738,
+      "unmappedFacts": 14747,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -438,15 +502,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15632,
+        "total": 15531,
         "by_severity": {
-          "INFO": 14848,
+          "INFO": 14747,
           "WARNING": 784
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 701,
           "RESTATEMENT_CONFLICT": 83,
-          "UNKNOWN_CONCEPT": 14848
+          "UNKNOWN_CONCEPT": 14747
         }
       },
       "latestFiling": {
@@ -457,13 +521,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "23032a2210328318992772dc654a3d1b07940e8e7bf87e1c8aad2607f08b6951",
@@ -613,13 +677,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "39a807c1c5b47c6e4e9d3f8e55e9081466dd3ad5cbf670d0cecfa78ac8e5323c",
@@ -630,8 +694,8 @@
       "name": "YXT.COM GROUP HOLDING Ltd",
       "sic": "7372",
       "rawFacts": 1129,
-      "mappedFacts": 241,
-      "unmappedFacts": 839,
+      "mappedFacts": 245,
+      "unmappedFacts": 837,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -750,16 +814,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 940,
+        "total": 938,
         "by_severity": {
-          "INFO": 839,
+          "INFO": 837,
           "ERROR": 8,
           "WARNING": 93
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 93,
           "FUTURE_DATA_LEAK": 8,
-          "UNKNOWN_CONCEPT": 839
+          "UNKNOWN_CONCEPT": 837
         }
       },
       "latestFiling": {
@@ -770,13 +834,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "23d49fea812350170e27e73151c10682c11ea07e331119f944ecfd136dd82aa0",

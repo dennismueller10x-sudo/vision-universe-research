@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "98fae657363739682d495f52f26faee54b641611bdb126df08785320f0263a4d",
@@ -163,8 +163,8 @@
       "name": "MPLX LP",
       "sic": "4610",
       "rawFacts": 17671,
-      "mappedFacts": 3828,
-      "unmappedFacts": 13999,
+      "mappedFacts": 3835,
+      "unmappedFacts": 13992,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14514,
+        "total": 14507,
         "by_severity": {
-          "INFO": 13999,
+          "INFO": 13992,
           "WARNING": 515
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 354,
           "RESTATEMENT_CONFLICT": 160,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 13999
+          "UNKNOWN_CONCEPT": 13992
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d0d55e96bd0a6694c769f9b9b3ef6d1a8a6d7d10b48a73a298f14fcbddae8541",
@@ -321,8 +321,8 @@
       "name": "Xenia Hotels & Resorts, Inc.",
       "sic": "7011",
       "rawFacts": 15794,
-      "mappedFacts": 4018,
-      "unmappedFacts": 11477,
+      "mappedFacts": 4732,
+      "unmappedFacts": 10949,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -441,15 +441,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12040,
+        "total": 11526,
         "by_severity": {
-          "INFO": 11477,
-          "WARNING": 563
+          "INFO": 10949,
+          "WARNING": 577
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 533,
-          "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 11477
+          "CONCEPT_DISAGREEMENT": 541,
+          "PERIOD_MISMATCH": 3,
+          "RESTATEMENT_CONFLICT": 33,
+          "UNKNOWN_CONCEPT": 10949
         }
       },
       "latestFiling": {
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a17c0d7db6b98b713b21cadfff354e75bc262cf6febb6a115c30b3a7cc9d1b74",

@@ -7,8 +7,8 @@
       "name": "HNI CORP",
       "sic": "2522",
       "rawFacts": 25443,
-      "mappedFacts": 8072,
-      "unmappedFacts": 17427,
+      "mappedFacts": 8259,
+      "unmappedFacts": 17236,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18110,
+        "total": 17927,
         "by_severity": {
-          "INFO": 17427,
-          "WARNING": 683
+          "INFO": 17236,
+          "WARNING": 691
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 543,
-          "FISCAL_PERIOD_CONFLICT": 21,
+          "CONCEPT_DISAGREEMENT": 550,
+          "FISCAL_PERIOD_CONFLICT": 22,
           "RESTATEMENT_CONFLICT": 117,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 17427
+          "UNKNOWN_CONCEPT": 17236
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0b454ffa5106490fc9a09836e6ac80bc05cd3fb1b2b8b84ec69e45c032f87f97",
@@ -165,8 +165,8 @@
       "name": "PAMT CORP",
       "sic": "4213",
       "rawFacts": 20731,
-      "mappedFacts": 6843,
-      "unmappedFacts": 14451,
+      "mappedFacts": 6916,
+      "unmappedFacts": 14398,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +285,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14803,
+        "total": 14757,
         "by_severity": {
-          "INFO": 14451,
+          "INFO": 14398,
           "ERROR": 1,
-          "WARNING": 351
+          "WARNING": 358
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 267,
+          "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 14451
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 14398
         }
       },
       "latestFiling": {
@@ -306,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c219ca41b717708f0c8ec9f3ceb3107064307ce6940befc1d0266b48fc2b05e8",
@@ -323,8 +325,8 @@
       "name": "Workhorse Group Inc.",
       "sic": "3711",
       "rawFacts": 14605,
-      "mappedFacts": 5563,
-      "unmappedFacts": 9051,
+      "mappedFacts": 5573,
+      "unmappedFacts": 9043,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -443,9 +445,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9879,
+        "total": 9871,
         "by_severity": {
-          "INFO": 9051,
+          "INFO": 9043,
           "ERROR": 2,
           "WARNING": 826
         },
@@ -456,7 +458,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 206,
           "UNEXPECTED_DURATION": 278,
-          "UNKNOWN_CONCEPT": 9051
+          "UNKNOWN_CONCEPT": 9043
         }
       },
       "latestFiling": {
@@ -467,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a073dfaf2c9655f07d1d41fde05f155d190ca6b694f7614348756756ebcd2a60",
@@ -484,8 +486,8 @@
       "name": "NeuroPace Inc",
       "sic": "3841",
       "rawFacts": 6624,
-      "mappedFacts": 2234,
-      "unmappedFacts": 4480,
+      "mappedFacts": 2276,
+      "unmappedFacts": 4449,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -604,15 +606,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4595,
+        "total": 4564,
         "by_severity": {
-          "INFO": 4480,
+          "INFO": 4449,
           "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 97,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 4480
+          "UNKNOWN_CONCEPT": 4449
         }
       },
       "latestFiling": {
@@ -623,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7d5d854ecc4dec01e0fa4d254b55eaa03887700e240bacb8a1858e44fa83c989",
@@ -783,13 +785,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e95f07563bdc01917fabff9bac582e947c84c09599b4634c9fafc131405aa9d2",
@@ -801,7 +803,7 @@
       "sic": "3841",
       "rawFacts": 4095,
       "mappedFacts": 1452,
-      "unmappedFacts": 2687,
+      "unmappedFacts": 2686,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -922,14 +924,14 @@
         "rules_version": "1.0.0",
         "total": 2818,
         "by_severity": {
-          "INFO": 2687,
-          "WARNING": 131
+          "INFO": 2686,
+          "WARNING": 132
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 102,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 2687
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 2686
         }
       },
       "latestFiling": {
@@ -940,13 +942,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd4e9689279162b7f507867aa313c0b3d311ced22507b8888eb5b88cdb5afc70",
@@ -957,8 +959,8 @@
       "name": "Allogene Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 9433,
-      "mappedFacts": 2751,
-      "unmappedFacts": 6681,
+      "mappedFacts": 2825,
+      "unmappedFacts": 6631,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1076,16 +1078,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6876,
+        "total": 6826,
         "by_severity": {
-          "INFO": 6681,
+          "INFO": 6631,
           "WARNING": 195
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 122,
           "RESTATEMENT_CONFLICT": 38,
           "UNEXPECTED_DURATION": 35,
-          "UNKNOWN_CONCEPT": 6681
+          "UNKNOWN_CONCEPT": 6631
         }
       },
       "latestFiling": {
@@ -1096,13 +1098,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "deb27b78c767dd0877c83616364fe38ad25e1e8b73a546196c281ed1d40083da",
@@ -1113,8 +1115,8 @@
       "name": "Abacus Global Management, Inc.",
       "sic": "6282",
       "rawFacts": 7536,
-      "mappedFacts": 1704,
-      "unmappedFacts": 5742,
+      "mappedFacts": 1752,
+      "unmappedFacts": 5713,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1234,16 +1236,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6044,
+        "total": 6017,
         "by_severity": {
-          "INFO": 5742,
-          "WARNING": 302
+          "INFO": 5713,
+          "WARNING": 304
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 137,
-          "RESTATEMENT_CONFLICT": 105,
+          "RESTATEMENT_CONFLICT": 107,
           "UNEXPECTED_DURATION": 60,
-          "UNKNOWN_CONCEPT": 5742
+          "UNKNOWN_CONCEPT": 5713
         }
       },
       "latestFiling": {
@@ -1254,13 +1256,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb78f2390f751cf80f5f10084491075a1b9bf9619c7f06972754d4bca3501430",
@@ -1412,13 +1414,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5db3245bdf24d6104a2b768210d7e83139df894acf382b3e3741b280fb28a5d5",
@@ -1570,13 +1572,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9abfde8711eb833392a7640f4718317742c257f8956fe87d448a08d980b1156",

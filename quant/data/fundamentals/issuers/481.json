@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eec2a7e3562fdd33b63d91b705cbf5cedc5421b651cc4cf1a0c59370ef0d7ecc",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b320512c2542ca48deb5c05f6cfc5a212e429f3e5c09b52673a666cbe393402",
@@ -321,8 +321,8 @@
       "name": "Sports Entertainment Gaming Global Corp",
       "sic": "7372",
       "rawFacts": 7357,
-      "mappedFacts": 2739,
-      "unmappedFacts": 4646,
+      "mappedFacts": 2809,
+      "unmappedFacts": 4603,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -442,16 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5072,
+        "total": 5030,
         "by_severity": {
-          "INFO": 4646,
-          "WARNING": 426
+          "INFO": 4603,
+          "WARNING": 427
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 243,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 182,
-          "UNKNOWN_CONCEPT": 4646
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 4603
         }
       },
       "latestFiling": {
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "61a369137395a4e877af6ccda14b0138ca8c7ce9f169c845456b06fde208ca71",
@@ -619,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cc4601f277d2ee69a18b62bc0225e6b747d63ddfb6258c17584682fbc3b75872",
@@ -636,8 +637,8 @@
       "name": "BranchOut Food Inc.",
       "sic": "2000",
       "rawFacts": 3710,
-      "mappedFacts": 1140,
-      "unmappedFacts": 2601,
+      "mappedFacts": 1161,
+      "unmappedFacts": 2576,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -756,15 +757,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2698,
+        "total": 2673,
         "by_severity": {
-          "INFO": 2601,
+          "INFO": 2576,
           "WARNING": 97
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 71,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 2601
+          "UNKNOWN_CONCEPT": 2576
         }
       },
       "latestFiling": {
@@ -775,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "104631774c4d0d3dab7e9fbad94661def165caf6df9030cad33f1aaac4a8769f",

@@ -7,17 +7,108 @@
       "name": "FIRST FINANCIAL CORP /IN/",
       "sic": "6022",
       "rawFacts": 27357,
-      "mappedFacts": 4693,
-      "unmappedFacts": 23134,
+      "mappedFacts": 7013,
+      "unmappedFacts": 21132,
       "calendarYears": 21,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.5
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.5
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 11.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 13.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,18 +226,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23437,
+        "total": 21449,
         "by_severity": {
-          "INFO": 23134,
+          "INFO": 21132,
           "ERROR": 7,
-          "WARNING": 296
+          "WARNING": 310
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 252,
-          "FISCAL_PERIOD_CONFLICT": 14,
+          "FISCAL_PERIOD_CONFLICT": 26,
           "FUTURE_DATA_LEAK": 7,
-          "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 23134
+          "RESTATEMENT_CONFLICT": 32,
+          "UNKNOWN_CONCEPT": 21132
         }
       },
       "latestFiling": {
@@ -157,13 +248,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5d0801bbfdce99fb44acc64913774ea2b857e69c5c08b237ce44aecc44b2146d",
@@ -174,8 +265,8 @@
       "name": "GIBRALTAR INDUSTRIES, INC.",
       "sic": "3310",
       "rawFacts": 23685,
-      "mappedFacts": 7735,
-      "unmappedFacts": 16065,
+      "mappedFacts": 7797,
+      "unmappedFacts": 16027,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -294,16 +385,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16770,
+        "total": 16732,
         "by_severity": {
-          "INFO": 16065,
+          "INFO": 16027,
           "WARNING": 705
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 510,
           "FISCAL_PERIOD_CONFLICT": 12,
           "RESTATEMENT_CONFLICT": 183,
-          "UNKNOWN_CONCEPT": 16065
+          "UNKNOWN_CONCEPT": 16027
         }
       },
       "latestFiling": {
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d3c03add87103662ce303fef40b2e20f684b528dc662cfc2e67d0edb6440a2c8",
@@ -470,13 +561,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bbbba8dbe19eadd5e78750fb4927f695224aef4ee4a1bf3e2adaca08e78e99bf",
@@ -487,8 +578,8 @@
       "name": "Coursera, Inc.",
       "sic": "7372",
       "rawFacts": 7568,
-      "mappedFacts": 2160,
-      "unmappedFacts": 5351,
+      "mappedFacts": 2212,
+      "unmappedFacts": 5319,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -606,15 +697,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5440,
+        "total": 5410,
         "by_severity": {
-          "INFO": 5351,
-          "WARNING": 89
+          "INFO": 5319,
+          "WARNING": 91
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 88,
-          "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 5351
+          "RESTATEMENT_CONFLICT": 3,
+          "UNKNOWN_CONCEPT": 5319
         }
       },
       "latestFiling": {
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1cc7a7a15b7bbc6ba98792fbc893141a5b843bf421fe31cfe5b484025ae91996",
@@ -642,8 +733,8 @@
       "name": "GameSquare Holdings, Inc.",
       "sic": "7900",
       "rawFacts": 4549,
-      "mappedFacts": 1293,
-      "unmappedFacts": 3290,
+      "mappedFacts": 1327,
+      "unmappedFacts": 3269,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -762,16 +853,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3515,
+        "total": 3494,
         "by_severity": {
-          "INFO": 3290,
+          "INFO": 3269,
           "WARNING": 225
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 111,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 113,
-          "UNKNOWN_CONCEPT": 3290
+          "UNKNOWN_CONCEPT": 3269
         }
       },
       "latestFiling": {
@@ -782,13 +873,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a083d653605eb1a0238b49833180190d3d6b3ba26920263201280378700efa1",
@@ -799,8 +890,8 @@
       "name": "TMC the metals Co Inc.",
       "sic": "1000",
       "rawFacts": 3992,
-      "mappedFacts": 1703,
-      "unmappedFacts": 2398,
+      "mappedFacts": 1710,
+      "unmappedFacts": 2393,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -919,9 +1010,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2528,
+        "total": 2523,
         "by_severity": {
-          "INFO": 2398,
+          "INFO": 2393,
           "ERROR": 1,
           "WARNING": 129
         },
@@ -930,7 +1021,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 2398
+          "UNKNOWN_CONCEPT": 2393
         }
       },
       "latestFiling": {
@@ -941,13 +1032,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4a028eed86957c67bb8ddc23fd0ebf1d08c8114b1f506bc0076584c6dc7625ee",
@@ -958,8 +1049,8 @@
       "name": "Prime Medicine, Inc.",
       "sic": "2836",
       "rawFacts": 3921,
-      "mappedFacts": 1252,
-      "unmappedFacts": 2662,
+      "mappedFacts": 1285,
+      "unmappedFacts": 2640,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1078,15 +1169,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2745,
+        "total": 2723,
         "by_severity": {
-          "INFO": 2662,
+          "INFO": 2640,
           "WARNING": 83
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 79,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2662
+          "UNKNOWN_CONCEPT": 2640
         }
       },
       "latestFiling": {
@@ -1097,13 +1188,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "acbdbf1ebc28a7f84b14c6ca01bc62142026709b897882d20e4820548ce454ab",
@@ -1251,13 +1342,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a12f96916be79dfe771250a793a8c448f737919fa14dda9443c3baf8827bdb3",

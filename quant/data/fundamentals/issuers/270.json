@@ -7,17 +7,108 @@
       "name": "M&T BANK CORP",
       "sic": "6022",
       "rawFacts": 40420,
-      "mappedFacts": 5918,
-      "unmappedFacts": 35033,
+      "mappedFacts": 8911,
+      "unmappedFacts": 32630,
       "calendarYears": 19,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 16.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
         "net_interest_income": {
           "annualPeriods": 19,
           "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
+        "time_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -139,15 +230,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 35361,
+        "total": 32958,
         "by_severity": {
-          "INFO": 35033,
+          "INFO": 32630,
           "WARNING": 328
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 298,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 35033
+          "UNKNOWN_CONCEPT": 32630
         }
       },
       "latestFiling": {
@@ -158,13 +249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe92557826282337075d48e7d4ad08e1409cc4c6e1c4ae5c3ff7e22d3a12fdab",
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4cd34d70f730a95d9cb4ab299e0af1d9e5c9c5ea98d8b4f1379aabf8d96946f1",
@@ -475,13 +566,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "93e7954492a82f84753b889a0420d74675ae839a02fa14a5d0f0ffe418c7494b",
@@ -492,8 +583,8 @@
       "name": "PROKIDNEY CORP.",
       "sic": "2836",
       "rawFacts": 4412,
-      "mappedFacts": 1256,
-      "unmappedFacts": 3138,
+      "mappedFacts": 1273,
+      "unmappedFacts": 3124,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -612,9 +703,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3290,
+        "total": 3276,
         "by_severity": {
-          "INFO": 3138,
+          "INFO": 3124,
           "WARNING": 152
         },
         "by_code": {
@@ -623,7 +714,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 31,
-          "UNKNOWN_CONCEPT": 3138
+          "UNKNOWN_CONCEPT": 3124
         }
       },
       "latestFiling": {
@@ -634,13 +725,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "198874d4bdb85b62f41b66d55e2d44dff879d5d690dc810b331a092471190601",
@@ -651,8 +742,8 @@
       "name": "Senti Biosciences Holdings, Inc.",
       "sic": "2836",
       "rawFacts": 5322,
-      "mappedFacts": 1450,
-      "unmappedFacts": 3788,
+      "mappedFacts": 1469,
+      "unmappedFacts": 3776,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -771,16 +862,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4035,
+        "total": 4023,
         "by_severity": {
-          "INFO": 3788,
+          "INFO": 3776,
           "WARNING": 247
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 135,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 37,
-          "UNKNOWN_CONCEPT": 3788
+          "UNKNOWN_CONCEPT": 3776
         }
       },
       "latestFiling": {
@@ -791,13 +882,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f3927f2957a50b30d8bd514eeb9e324206627c0d634dcb8bb924d3c1b5ac132c",

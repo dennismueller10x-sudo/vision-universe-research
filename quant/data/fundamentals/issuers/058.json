@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "258c118c5637be65a5e2ebbd2d5dea7df947c95b3dbf65bb62b9a90d211a43fc",
@@ -165,8 +165,8 @@
       "name": "CTS CORP",
       "sic": "3672",
       "rawFacts": 22573,
-      "mappedFacts": 7081,
-      "unmappedFacts": 16094,
+      "mappedFacts": 7321,
+      "unmappedFacts": 15855,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +285,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16492,
+        "total": 16254,
         "by_severity": {
-          "INFO": 16094,
-          "WARNING": 398
+          "INFO": 15855,
+          "WARNING": 399
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 298,
-          "FISCAL_PERIOD_CONFLICT": 24,
+          "FISCAL_PERIOD_CONFLICT": 25,
           "RESTATEMENT_CONFLICT": 76,
-          "UNKNOWN_CONCEPT": 16094
+          "UNKNOWN_CONCEPT": 15855
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9deb7821bb9cc040db280ab1f5916560333372c76bda8973dee2e153622fed72",
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "542e97d47816f4d1ae1eb619edc261a8fbdce76e14928f82558103bb7af4ecd0",
@@ -621,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "03d87cf836e114479eea08bd83474e2cf98d4af2d94868d5ed5ff6008a02ab17",
@@ -638,8 +638,8 @@
       "name": "ATIF Holdings Ltd",
       "sic": "8742",
       "rawFacts": 3637,
-      "mappedFacts": 1179,
-      "unmappedFacts": 2486,
+      "mappedFacts": 1188,
+      "unmappedFacts": 2478,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -758,16 +758,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2614,
+        "total": 2606,
         "by_severity": {
-          "INFO": 2486,
+          "INFO": 2478,
           "WARNING": 128
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 93,
           "RESTATEMENT_CONFLICT": 34,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 2486
+          "UNKNOWN_CONCEPT": 2478
         }
       },
       "latestFiling": {
@@ -778,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b3e36b015c2277dcbefd45e341c29403b7a135dc5a953318a484d03dad8f81d",
@@ -796,7 +796,7 @@
       "sic": "6770",
       "rawFacts": 454,
       "mappedFacts": 198,
-      "unmappedFacts": 262,
+      "unmappedFacts": 260,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -918,12 +918,12 @@
         "rules_version": "1.0.0",
         "total": 281,
         "by_severity": {
-          "INFO": 262,
-          "WARNING": 19
+          "INFO": 260,
+          "WARNING": 21
         },
         "by_code": {
-          "UNEXPECTED_DURATION": 19,
-          "UNKNOWN_CONCEPT": 262
+          "UNEXPECTED_DURATION": 21,
+          "UNKNOWN_CONCEPT": 260
         }
       },
       "latestFiling": {
@@ -934,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b269d838a602c15ed34d1dbedbf8e779e70f1713b6a4bef91d02d92c81f8c4c",

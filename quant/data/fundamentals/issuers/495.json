@@ -145,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "560893d82cf6f482247c2a29205b8d1ead993600724204c5dc8b0f6b35a68ca9",
@@ -162,8 +162,8 @@
       "name": "InterDigital, Inc.",
       "sic": "6794",
       "rawFacts": 23678,
-      "mappedFacts": 6982,
-      "unmappedFacts": 16953,
+      "mappedFacts": 7461,
+      "unmappedFacts": 16480,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -282,16 +282,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17717,
+        "total": 17258,
         "by_severity": {
-          "INFO": 16953,
-          "WARNING": 764
+          "INFO": 16480,
+          "WARNING": 778
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 722,
+          "CONCEPT_DISAGREEMENT": 723,
           "PERIOD_MISMATCH": 8,
-          "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 16953
+          "RESTATEMENT_CONFLICT": 38,
+          "UNEXPECTED_DURATION": 7,
+          "UNIT_MISMATCH": 2,
+          "UNKNOWN_CONCEPT": 16480
         }
       },
       "latestFiling": {
@@ -302,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3074a1f0c932a4ad0c89461f530026d129f24de5c1387c5585af8203f4f6d2e0",

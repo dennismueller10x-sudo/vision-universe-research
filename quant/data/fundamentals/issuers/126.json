@@ -7,8 +7,8 @@
       "name": "EXPAND ENERGY Corp",
       "sic": "1311",
       "rawFacts": 30300,
-      "mappedFacts": 6555,
-      "unmappedFacts": 23168,
+      "mappedFacts": 6685,
+      "unmappedFacts": 23021,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,21 +127,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24501,
+        "total": 24371,
         "by_severity": {
-          "INFO": 23168,
+          "INFO": 23021,
           "ERROR": 4,
-          "WARNING": 1329
+          "WARNING": 1346
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 757,
           "EXTREME_VALUE": 1,
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "PERIOD_MISMATCH": 10,
+          "PERIOD_MISMATCH": 26,
           "RESTATEMENT_CONFLICT": 178,
-          "UNEXPECTED_DURATION": 382,
-          "UNKNOWN_CONCEPT": 23168
+          "UNEXPECTED_DURATION": 383,
+          "UNKNOWN_CONCEPT": 23021
         }
       },
       "latestFiling": {
@@ -152,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b9412c0b162a83bc74694ac7a11e2f11677307064011a9f312899e5e0dfdf397",
@@ -169,8 +169,8 @@
       "name": "Compass Diversified Holdings",
       "sic": "2510",
       "rawFacts": 28297,
-      "mappedFacts": 7064,
-      "unmappedFacts": 20763,
+      "mappedFacts": 7313,
+      "unmappedFacts": 20514,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -292,18 +292,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22850,
+        "total": 22603,
         "by_severity": {
-          "INFO": 20763,
+          "INFO": 20514,
           "ERROR": 1,
-          "WARNING": 2086
+          "WARNING": 2088
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1369,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 712,
+          "RESTATEMENT_CONFLICT": 714,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 20763
+          "UNKNOWN_CONCEPT": 20514
         }
       },
       "latestFiling": {
@@ -314,13 +314,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7c6ec6b93478259258ebed0fd71a47292c11d34a45ae48f62ac56ed13ad83fc9",
@@ -471,13 +471,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "78b23262a854caaa0367a6dd37a4707788816e14e745a6a2e2bb49dac8e6a4f7",
@@ -628,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f4a2e42e37642ac264c987fadc5e3a46a0d34fea39ecce0afd884bfc0b863cc2",
@@ -646,7 +646,7 @@
       "sic": "1311",
       "rawFacts": 9493,
       "mappedFacts": 2486,
-      "unmappedFacts": 7106,
+      "unmappedFacts": 7097,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -766,15 +766,16 @@
         "rules_version": "1.0.0",
         "total": 7237,
         "by_severity": {
-          "INFO": 7106,
+          "INFO": 7097,
           "ERROR": 2,
-          "WARNING": 129
+          "WARNING": 138
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 122,
           "FUTURE_DATA_LEAK": 2,
+          "PERIOD_MISMATCH": 9,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 7106
+          "UNKNOWN_CONCEPT": 7097
         }
       },
       "latestFiling": {
@@ -785,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f983ea4ce5f715e76d7db1c3c7bb56b9d3c935e9036abcb9028d72f97562d54",
@@ -942,13 +943,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "12b143960f10747c945d79cd981fad4fa61306be6d81dec056eff6b2929b5c51",

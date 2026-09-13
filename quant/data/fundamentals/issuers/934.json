@@ -7,8 +7,8 @@
       "name": "Strategic Education, Inc.",
       "sic": "8200",
       "rawFacts": 20555,
-      "mappedFacts": 6858,
-      "unmappedFacts": 14291,
+      "mappedFacts": 7069,
+      "unmappedFacts": 14107,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14473,
+        "total": 14300,
         "by_severity": {
-          "INFO": 14291,
-          "WARNING": 182
+          "INFO": 14107,
+          "WARNING": 193
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 142,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 14291
+          "UNEXPECTED_DURATION": 11,
+          "UNKNOWN_CONCEPT": 14107
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3285bd845872200a3a7a3f7ec7fab68e4d01b2c4ffae664449be658443f921ab",
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c38382c01cfd9b6eb7d8a1a8242511dafcd607fa70c79dd7f3262aa57192ec4d",
@@ -458,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c70c24bc5c7d5e77b28025d99757462b54df09a54994fcaf8441458fd460a204",
@@ -615,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bcbbc97e30cccc64184e4d0aa485f666aaa05c7ce0666b505b3273c4db6668f9",
@@ -767,13 +768,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "23c6a12173583f203a6b2530306a3b9a86899fa315518187ea17d7e5ab0b81a3",

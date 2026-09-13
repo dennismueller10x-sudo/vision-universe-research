@@ -7,8 +7,8 @@
       "name": "STANLEY BLACK & DECKER, INC.",
       "sic": "3420",
       "rawFacts": 32170,
-      "mappedFacts": 8124,
-      "unmappedFacts": 23550,
+      "mappedFacts": 8366,
+      "unmappedFacts": 23301,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,21 +127,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25178,
+        "total": 24941,
         "by_severity": {
-          "INFO": 23550,
+          "INFO": 23301,
           "ERROR": 4,
-          "WARNING": 1624
+          "WARNING": 1636
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1208,
+          "CONCEPT_DISAGREEMENT": 1215,
           "EXTREME_VALUE": 12,
-          "FISCAL_PERIOD_CONFLICT": 20,
+          "FISCAL_PERIOD_CONFLICT": 21,
           "FUTURE_DATA_LEAK": 4,
           "PERIOD_MISMATCH": 18,
-          "RESTATEMENT_CONFLICT": 297,
+          "RESTATEMENT_CONFLICT": 301,
           "UNEXPECTED_DURATION": 69,
-          "UNKNOWN_CONCEPT": 23550
+          "UNKNOWN_CONCEPT": 23301
         }
       },
       "latestFiling": {
@@ -152,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5fe92ddf9bb09db59382313401f752cb3ab97f30c27fdde260f4efd8e5a3376",
@@ -169,8 +169,8 @@
       "name": "FASTENAL CO",
       "sic": "5200",
       "rawFacts": 18178,
-      "mappedFacts": 7561,
-      "unmappedFacts": 11151,
+      "mappedFacts": 7568,
+      "unmappedFacts": 11140,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -289,17 +289,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11403,
+        "total": 11396,
         "by_severity": {
-          "INFO": 11151,
+          "INFO": 11140,
           "ERROR": 1,
-          "WARNING": 251
+          "WARNING": 255
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 146,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 105,
-          "UNKNOWN_CONCEPT": 11151
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 11140
         }
       },
       "latestFiling": {
@@ -310,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3388b9c82e7e6fb5192ecf19dcf559288796c2679a85ee016b1640722df0675c",
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "20598b0725d735bc1baf4506240ae2b1fdccaa82a96d6774fac0e46f807ef8be",
@@ -483,8 +484,8 @@
       "name": "MOODYS CORP /DE/",
       "sic": "7320",
       "rawFacts": 35276,
-      "mappedFacts": 7825,
-      "unmappedFacts": 28040,
+      "mappedFacts": 8178,
+      "unmappedFacts": 27686,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -603,15 +604,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28583,
+        "total": 28235,
         "by_severity": {
-          "INFO": 28040,
-          "WARNING": 543
+          "INFO": 27686,
+          "WARNING": 549
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 483,
-          "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 28040
+          "RESTATEMENT_CONFLICT": 65,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 27686
         }
       },
       "latestFiling": {
@@ -622,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "891f7a8bf777541f561ae2d973258d2c0a722d21ef5cc35f79d7b0c2acf83acc",
@@ -777,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8615b517b82e48111c311f4c6a7ef8b52702c50e1853c4f53746456e0fb56c5b",
@@ -794,8 +796,8 @@
       "name": "SANGRIX INC.",
       "sic": "6199",
       "rawFacts": 2289,
-      "mappedFacts": 657,
-      "unmappedFacts": 1630,
+      "mappedFacts": 664,
+      "unmappedFacts": 1625,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -915,15 +917,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1763,
+        "total": 1758,
         "by_severity": {
-          "INFO": 1630,
+          "INFO": 1625,
           "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 73,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 1630
+          "UNKNOWN_CONCEPT": 1625
         }
       },
       "latestFiling": {
@@ -934,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4063536870c1f4b53dc8da6125ad46e045789a08950bde0b015984adb724c304",
@@ -951,8 +953,8 @@
       "name": "EON Resources Inc.",
       "sic": "1311",
       "rawFacts": 3647,
-      "mappedFacts": 1029,
-      "unmappedFacts": 2596,
+      "mappedFacts": 1059,
+      "unmappedFacts": 2574,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1072,17 +1074,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2827,
+        "total": 2806,
         "by_severity": {
-          "INFO": 2596,
-          "WARNING": 231
+          "INFO": 2574,
+          "WARNING": 232
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 87,
-          "PERIOD_MISMATCH": 8,
+          "PERIOD_MISMATCH": 9,
           "RESTATEMENT_CONFLICT": 85,
           "UNEXPECTED_DURATION": 51,
-          "UNKNOWN_CONCEPT": 2596
+          "UNKNOWN_CONCEPT": 2574
         }
       },
       "latestFiling": {
@@ -1093,13 +1095,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fbb4a9d89b4b81c1d0329958fc10f63992d1039b7920f63e5e27c369132d14cd",

@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "55482d53fc07477a9694a1693d7d8109478912481204a37a5359373adf836b6b",
@@ -318,13 +318,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "80b9f368ad614ce87eb722807ce9c985f5603c42bba4894efa7608030693ee30",
@@ -473,13 +473,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4bb592982cc3c6fbc0dc5055db072d14e5f55c4b21b83e2362bd6f9726645ee3",
@@ -490,11 +490,54 @@
       "name": "INDEPENDENCE REALTY TRUST, INC.",
       "sic": "6798",
       "rawFacts": 17804,
-      "mappedFacts": 5179,
-      "unmappedFacts": 12301,
+      "mappedFacts": 6087,
+      "unmappedFacts": 11610,
       "calendarYears": 16,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "secured_debt": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "IRT"
@@ -610,18 +653,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13163,
+        "total": 12520,
         "by_severity": {
-          "INFO": 12301,
+          "INFO": 11610,
           "ERROR": 2,
-          "WARNING": 860
+          "WARNING": 908
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 769,
+          "CONCEPT_DISAGREEMENT": 813,
           "FISCAL_PERIOD_CONFLICT": 42,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 12301
+          "RESTATEMENT_CONFLICT": 53,
+          "UNKNOWN_CONCEPT": 11610
         }
       },
       "latestFiling": {
@@ -632,13 +675,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f84c986bb10007c0789d84ce80ff1b6a7831a26840376bb789078f99baf47ae2",
@@ -649,11 +692,54 @@
       "name": "Braemar Hotels & Resorts Inc.",
       "sic": "6798",
       "rawFacts": 19481,
-      "mappedFacts": 5070,
-      "unmappedFacts": 14105,
+      "mappedFacts": 5615,
+      "unmappedFacts": 13703,
       "calendarYears": 15,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BHR",
@@ -771,16 +857,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14860,
+        "total": 14459,
         "by_severity": {
-          "INFO": 14105,
-          "WARNING": 755
+          "INFO": 13703,
+          "WARNING": 756
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 719,
-          "RESTATEMENT_CONFLICT": 30,
+          "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14105
+          "UNKNOWN_CONCEPT": 13703
         }
       },
       "latestFiling": {
@@ -791,13 +877,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "20bb2d8fa19961873094a8ccb519a102b17d534389964e6f657f70fcbc6da440",
@@ -808,8 +894,8 @@
       "name": "Pagaya Technologies Ltd.",
       "sic": "6199",
       "rawFacts": 6615,
-      "mappedFacts": 1262,
-      "unmappedFacts": 5286,
+      "mappedFacts": 1346,
+      "unmappedFacts": 5218,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -929,15 +1015,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5527,
+        "total": 5459,
         "by_severity": {
-          "INFO": 5286,
+          "INFO": 5218,
           "WARNING": 241
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 208,
           "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 5286
+          "UNKNOWN_CONCEPT": 5218
         }
       },
       "latestFiling": {
@@ -948,13 +1034,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ff40c795c29898eb736e4cf3570f0799a2c95f412ec0651f18d88db6e2d8d347",
@@ -965,8 +1051,8 @@
       "name": "Oddity Tech Ltd",
       "sic": "2844",
       "rawFacts": 1134,
-      "mappedFacts": 324,
-      "unmappedFacts": 842,
+      "mappedFacts": 336,
+      "unmappedFacts": 836,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1084,14 +1170,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 869,
+        "total": 863,
         "by_severity": {
-          "INFO": 842,
+          "INFO": 836,
           "WARNING": 27
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
-          "UNKNOWN_CONCEPT": 842
+          "UNKNOWN_CONCEPT": 836
         }
       },
       "latestFiling": {
@@ -1102,13 +1188,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "01bc3a260e4fafe2f4f9cb51f74b6929022e43080830effc2828a4ba2349d87e",

@@ -7,8 +7,8 @@
       "name": "FRP HOLDINGS, INC.",
       "sic": "6500",
       "rawFacts": 20810,
-      "mappedFacts": 5207,
-      "unmappedFacts": 15304,
+      "mappedFacts": 5551,
+      "unmappedFacts": 15104,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16277,
+        "total": 16091,
         "by_severity": {
-          "INFO": 15304,
+          "INFO": 15104,
           "ERROR": 19,
-          "WARNING": 954
+          "WARNING": 968
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 764,
+          "CONCEPT_DISAGREEMENT": 766,
           "FUTURE_DATA_LEAK": 19,
-          "RESTATEMENT_CONFLICT": 190,
-          "UNKNOWN_CONCEPT": 15304
+          "RESTATEMENT_CONFLICT": 202,
+          "UNKNOWN_CONCEPT": 15104
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "afdf2d3a52d5d9c8e92bb0478f575a60cc9267c59fbbdbe9ea17975451f72b61",
@@ -170,7 +170,98 @@
       "calendarYears": 11,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -312,13 +403,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b439601146b37b744a188f12bdfd165c1a46c505a6a6fcc13c2f5af465919946",
@@ -473,13 +564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9b949493b80ddfa98d839fec937aaa3d4788bedf0ab8d3b1c7156c5690cb9902",
@@ -490,8 +581,8 @@
       "name": "NextCure, Inc.",
       "sic": "2834",
       "rawFacts": 6069,
-      "mappedFacts": 2264,
-      "unmappedFacts": 3860,
+      "mappedFacts": 2295,
+      "unmappedFacts": 3838,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -610,15 +701,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3937,
+        "total": 3915,
         "by_severity": {
-          "INFO": 3860,
+          "INFO": 3838,
           "WARNING": 77
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 44,
           "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 3860
+          "UNKNOWN_CONCEPT": 3838
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a884db58b06abca5ab6cfed01353fb723b6e6a5f98428587cc3443c41f337e9d",
@@ -770,13 +861,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4a1e1e5aff0ea19b185df10349cbbc270c2390b9a38f9f5b2c6f8a227f8db6d5",
@@ -787,8 +878,8 @@
       "name": "Flag Ship Acquisition Corp",
       "sic": "6770",
       "rawFacts": 943,
-      "mappedFacts": 475,
-      "unmappedFacts": 459,
+      "mappedFacts": 490,
+      "unmappedFacts": 442,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -908,15 +999,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 473,
+        "total": 459,
         "by_severity": {
-          "INFO": 459,
-          "WARNING": 14
+          "INFO": 442,
+          "WARNING": 17
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 9,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 459
+          "CONCEPT_DISAGREEMENT": 11,
+          "RESTATEMENT_CONFLICT": 6,
+          "UNKNOWN_CONCEPT": 442
         }
       },
       "latestFiling": {
@@ -927,13 +1018,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1dbf2a3a63b20b9deed87601082e7408429c3134b3e0e5ebc330a1281ad71b4b",

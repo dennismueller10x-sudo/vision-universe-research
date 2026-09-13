@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-13T16:13:10+00:00",
+  "generated_at_utc": "2026-09-13T18:21:09+00:00",
   "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert nach betroffenen EMITTENTEN - ein Konzept, das ein einziger Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
   "scope": "all_issuers",
   "sic": "6020-6036",
   "issuers_scanned": 5437,
   "issuers_in_scope": 329,
   "by_taxonomy": {
-    "us-gaap": 6803917,
+    "us-gaap": 6295953,
     "ifrs-full": 141667,
     "dei": 4259,
     "invest": 2164,
@@ -21,29 +21,9 @@
       "facts": 44534
     },
     {
-      "concept": "us-gaap:NoninterestExpense",
-      "issuers": 296,
-      "facts": 56528
-    },
-    {
-      "concept": "us-gaap:InterestIncomeExpenseAfterProvisionForLoanLoss",
-      "issuers": 296,
-      "facts": 52145
-    },
-    {
       "concept": "us-gaap:PropertyPlantAndEquipmentNet",
       "issuers": 296,
       "facts": 28979
-    },
-    {
-      "concept": "us-gaap:Deposits",
-      "issuers": 296,
-      "facts": 29903
-    },
-    {
-      "concept": "us-gaap:NoninterestIncome",
-      "issuers": 295,
-      "facts": 55536
     },
     {
       "concept": "us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax",
@@ -61,11 +41,6 @@
       "facts": 4118
     },
     {
-      "concept": "us-gaap:CommonStockSharesAuthorized",
-      "issuers": 288,
-      "facts": 29107
-    },
-    {
       "concept": "us-gaap:DeferredIncomeTaxExpenseBenefit",
       "issuers": 288,
       "facts": 19946
@@ -76,14 +51,9 @@
       "facts": 10288
     },
     {
-      "concept": "us-gaap:InterestAndDividendIncomeOperating",
-      "issuers": 287,
-      "facts": 56031
-    },
-    {
-      "concept": "us-gaap:TimeDeposits",
-      "issuers": 286,
-      "facts": 13785
+      "concept": "us-gaap:CommonStockSharesAuthorized",
+      "issuers": 288,
+      "facts": 29107
     },
     {
       "concept": "us-gaap:AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
@@ -101,24 +71,19 @@
       "facts": 8428
     },
     {
-      "concept": "us-gaap:OtherNoninterestExpense",
-      "issuers": 283,
-      "facts": 44943
-    },
-    {
       "concept": "us-gaap:InterestPaidNet",
       "issuers": 283,
       "facts": 19646
     },
     {
+      "concept": "us-gaap:OtherNoninterestExpense",
+      "issuers": 283,
+      "facts": 44943
+    },
+    {
       "concept": "us-gaap:AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedLossBeforeTax",
       "issuers": 282,
       "facts": 15370
-    },
-    {
-      "concept": "us-gaap:AvailableForSaleSecuritiesDebtSecurities",
-      "issuers": 281,
-      "facts": 14562
     },
     {
       "concept": "us-gaap:LaborAndRelatedExpense",
@@ -151,24 +116,14 @@
       "facts": 7736
     },
     {
-      "concept": "us-gaap:CommonStockValue",
-      "issuers": 278,
-      "facts": 26923
-    },
-    {
-      "concept": "us-gaap:ProceedsFromMaturitiesPrepaymentsAndCallsOfAvailableForSaleSecurities",
-      "issuers": 278,
-      "facts": 27847
-    },
-    {
-      "concept": "us-gaap:DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLongerAccumulatedLoss",
-      "issuers": 278,
-      "facts": 13550
-    },
-    {
       "concept": "us-gaap:ProceedsFromSaleOfAvailableForSaleSecuritiesDebt",
       "issuers": 278,
       "facts": 14471
+    },
+    {
+      "concept": "us-gaap:CommonStockValue",
+      "issuers": 278,
+      "facts": 26923
     },
     {
       "concept": "us-gaap:DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12MonthsAccumulatedLoss",
@@ -176,19 +131,29 @@
       "facts": 13545
     },
     {
+      "concept": "us-gaap:DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLongerAccumulatedLoss",
+      "issuers": 278,
+      "facts": 13550
+    },
+    {
+      "concept": "us-gaap:ProceedsFromMaturitiesPrepaymentsAndCallsOfAvailableForSaleSecurities",
+      "issuers": 278,
+      "facts": 27847
+    },
+    {
       "concept": "us-gaap:DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLonger",
       "issuers": 277,
       "facts": 13225
     },
     {
-      "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
-      "issuers": 277,
-      "facts": 9812
-    },
-    {
       "concept": "us-gaap:AvailableForSaleDebtSecuritiesAmortizedCostBasis",
       "issuers": 277,
       "facts": 13517
+    },
+    {
+      "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
+      "issuers": 277,
+      "facts": 9812
     },
     {
       "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDue",
@@ -201,24 +166,14 @@
       "facts": 6772
     },
     {
-      "concept": "us-gaap:DeferredTaxAssetsOther",
-      "issuers": 274,
-      "facts": 7096
-    },
-    {
       "concept": "us-gaap:FinancingReceivableIndividuallyEvaluatedForImpairment",
       "issuers": 274,
       "facts": 18511
     },
     {
-      "concept": "us-gaap:LoansAndLeasesReceivableAllowance",
-      "issuers": 273,
-      "facts": 33989
-    },
-    {
-      "concept": "us-gaap:OtherAssets",
-      "issuers": 271,
-      "facts": 26374
+      "concept": "us-gaap:DeferredTaxAssetsOther",
+      "issuers": 274,
+      "facts": 7096
     },
     {
       "concept": "us-gaap:FinancingReceivableAllowanceForCreditLossesIndividuallyEvaluatedForImpairment1",
@@ -226,9 +181,9 @@
       "facts": 17346
     },
     {
-      "concept": "us-gaap:LoansAndLeasesReceivableNetReportedAmount",
-      "issuers": 270,
-      "facts": 19083
+      "concept": "us-gaap:OtherAssets",
+      "issuers": 271,
+      "facts": 26374
     },
     {
       "concept": "us-gaap:FinancingReceivableCollectivelyEvaluatedForImpairment",
@@ -241,29 +196,19 @@
       "facts": 7760
     },
     {
-      "concept": "us-gaap:FinancingReceivableRecordedInvestmentNonaccrualStatus",
-      "issuers": 269,
-      "facts": 19604
-    },
-    {
       "concept": "us-gaap:FinancingReceivableAllowanceForCreditLossesCollectivelyEvaluatedForImpairment",
       "issuers": 269,
       "facts": 17838
     },
     {
+      "concept": "us-gaap:FinancingReceivableRecordedInvestmentNonaccrualStatus",
+      "issuers": 269,
+      "facts": 19604
+    },
+    {
       "concept": "us-gaap:TimeDepositMaturitiesYearTwo",
       "issuers": 269,
       "facts": 4252
-    },
-    {
-      "concept": "us-gaap:CashAndDueFromBanks",
-      "issuers": 269,
-      "facts": 27852
-    },
-    {
-      "concept": "us-gaap:TimeDepositMaturitiesYearOne",
-      "issuers": 268,
-      "facts": 4256
     },
     {
       "concept": "us-gaap:OccupancyNet",
@@ -276,19 +221,14 @@
       "facts": 7203
     },
     {
+      "concept": "us-gaap:TimeDepositMaturitiesYearOne",
+      "issuers": 268,
+      "facts": 4256
+    },
+    {
       "concept": "us-gaap:EffectiveIncomeTaxRateReconciliationStateAndLocalIncomeTaxes",
       "issuers": 267,
       "facts": 5243
-    },
-    {
-      "concept": "us-gaap:IncomeTaxesPaidNet",
-      "issuers": 267,
-      "facts": 13420
-    },
-    {
-      "concept": "us-gaap:InterestAndFeeIncomeLoansAndLeases",
-      "issuers": 267,
-      "facts": 40269
     },
     {
       "concept": "us-gaap:LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
@@ -299,6 +239,11 @@
       "concept": "us-gaap:TimeDepositMaturitiesYearThree",
       "issuers": 267,
       "facts": 4247
+    },
+    {
+      "concept": "us-gaap:IncomeTaxesPaidNet",
+      "issuers": 267,
+      "facts": 13420
     },
     {
       "concept": "us-gaap:DeferredIncomeTaxLiabilities",
@@ -321,9 +266,9 @@
       "facts": 15076
     },
     {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
       "issuers": 264,
-      "facts": 4240
+      "facts": 4262
     },
     {
       "concept": "us-gaap:DebtSecuritiesAvailableForSaleUnrealizedLossPosition",
@@ -331,19 +276,14 @@
       "facts": 12585
     },
     {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
       "issuers": 264,
-      "facts": 4262
+      "facts": 4240
     },
     {
       "concept": "us-gaap:DeferredFederalIncomeTaxExpenseBenefit",
       "issuers": 263,
       "facts": 8235
-    },
-    {
-      "concept": "us-gaap:ProvisionForLoanAndLeaseLosses",
-      "issuers": 263,
-      "facts": 32945
     },
     {
       "concept": "us-gaap:DebtSecuritiesAvailableForSaleUnrealizedLossPositionAccumulatedLoss",
@@ -366,11 +306,6 @@
       "facts": 8304
     },
     {
-      "concept": "us-gaap:InterestExpenseDeposits",
-      "issuers": 260,
-      "facts": 39807
-    },
-    {
       "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearFive",
       "issuers": 260,
       "facts": 2720
@@ -386,24 +321,14 @@
       "facts": 2757
     },
     {
-      "concept": "us-gaap:InterestBearingDepositsInBanks",
-      "issuers": 255,
-      "facts": 22106
-    },
-    {
       "concept": "us-gaap:AvailableForSaleSecuritiesDebtMaturitiesAfterOneThroughFiveYearsFairValue",
       "issuers": 255,
       "facts": 10493
     },
     {
-      "concept": "us-gaap:DeferredTaxAssetsGross",
-      "issuers": 254,
-      "facts": 6731
-    },
-    {
-      "concept": "us-gaap:NumberOfReportableSegments",
-      "issuers": 254,
-      "facts": 3656
+      "concept": "us-gaap:InterestBearingDepositsInBanks",
+      "issuers": 255,
+      "facts": 22106
     },
     {
       "concept": "us-gaap:CommonStockParOrStatedValuePerShare",
@@ -411,9 +336,84 @@
       "facts": 23900
     },
     {
+      "concept": "us-gaap:NumberOfReportableSegments",
+      "issuers": 254,
+      "facts": 3656
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsGross",
+      "issuers": 254,
+      "facts": 6731
+    },
+    {
+      "concept": "us-gaap:TimeDepositMaturitiesYearFive",
+      "issuers": 253,
+      "facts": 3565
+    },
+    {
+      "concept": "us-gaap:CurrentStateAndLocalTaxExpenseBenefit",
+      "issuers": 253,
+      "facts": 8174
+    },
+    {
+      "concept": "us-gaap:ImpairedFinancingReceivableRecordedInvestment",
+      "issuers": 253,
+      "facts": 14860
+    },
+    {
       "concept": "us-gaap:FinancingReceivableAllowanceForCreditLossesWriteOffs",
       "issuers": 253,
       "facts": 20127
+    },
+    {
+      "concept": "us-gaap:AvailableForSaleSecuritiesDebtMaturitiesWithinOneYearFairValue",
+      "issuers": 252,
+      "facts": 10021
+    },
+    {
+      "concept": "us-gaap:DeferredTaxLiabilitiesOther",
+      "issuers": 250,
+      "facts": 5860
+    },
+    {
+      "concept": "us-gaap:FinancingReceivableModificationsNumberOfContracts2",
+      "issuers": 250,
+      "facts": 15257
+    },
+    {
+      "concept": "us-gaap:AvailableForSaleSecuritiesDebtMaturitiesAfterFiveThroughTenYearsFairValue",
+      "issuers": 250,
+      "facts": 10358
+    },
+    {
+      "concept": "us-gaap:FinancingReceivableAllowanceForCreditLosses",
+      "issuers": 248,
+      "facts": 25872
+    },
+    {
+      "concept": "us-gaap:CashAndCashEquivalentsPeriodIncreaseDecrease",
+      "issuers": 247,
+      "facts": 14879
+    },
+    {
+      "concept": "us-gaap:ProvisionForLoanLeaseAndOtherLosses",
+      "issuers": 247,
+      "facts": 21438
+    },
+    {
+      "concept": "us-gaap:PreferredStockSharesAuthorized",
+      "issuers": 246,
+      "facts": 19135
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInDeposits",
+      "issuers": 245,
+      "facts": 25487
+    },
+    {
+      "concept": "us-gaap:HeldToMaturitySecuritiesFairValue",
+      "issuers": 245,
+      "facts": 18827
     }
   ]
 }

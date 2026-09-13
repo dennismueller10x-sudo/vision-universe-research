@@ -7,11 +7,54 @@
       "name": "COUSINS PROPERTIES INC",
       "sic": "6798",
       "rawFacts": 19855,
-      "mappedFacts": 4722,
-      "unmappedFacts": 14925,
+      "mappedFacts": 5497,
+      "unmappedFacts": 14355,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CUZ"
@@ -127,16 +170,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15545,
+        "total": 15015,
         "by_severity": {
-          "INFO": 14925,
-          "WARNING": 620
+          "INFO": 14355,
+          "WARNING": 660
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 483,
-          "RESTATEMENT_CONFLICT": 136,
+          "CONCEPT_DISAGREEMENT": 509,
+          "PERIOD_MISMATCH": 5,
+          "RESTATEMENT_CONFLICT": 145,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 14925
+          "UNKNOWN_CONCEPT": 14355
         }
       },
       "latestFiling": {
@@ -147,13 +191,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "87934afb646110da52c2c547e0c665ce5e89a0c2e1428eca5c4270d629e92ba8",
@@ -305,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "146e4080797ce4e052e49fce74222222571a9b9d584448fbf3f6e1369e5d1bbb",
@@ -465,13 +509,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f011275ceb94632dd626ef000658e0819881fcd4598e5c7b53759b0bb0ddb6b7",
@@ -619,13 +663,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "760fda44cd2040756cf318134ac3d51ca29f2020b6f462b577468fc218e52de2",
@@ -776,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1257c99e3a7e0a924330c5154a42fd262ac0ff6633b6ac9e12138fad4a54392f",
@@ -934,13 +978,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "63d204ced36ac55b4d6bab642ff9a2f62188b8c416460c600ca24fef70c4be5c",

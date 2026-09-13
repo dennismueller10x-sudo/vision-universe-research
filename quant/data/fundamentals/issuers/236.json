@@ -7,11 +7,54 @@
       "name": "REDWOOD TRUST INC",
       "sic": "6798",
       "rawFacts": 30447,
-      "mappedFacts": 5759,
-      "unmappedFacts": 24642,
+      "mappedFacts": 7006,
+      "unmappedFacts": 23534,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "RWT",
@@ -133,15 +176,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25143,
+        "total": 24036,
         "by_severity": {
-          "INFO": 24642,
-          "WARNING": 501
+          "INFO": 23534,
+          "WARNING": 502
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 443,
-          "RESTATEMENT_CONFLICT": 58,
-          "UNKNOWN_CONCEPT": 24642
+          "RESTATEMENT_CONFLICT": 59,
+          "UNKNOWN_CONCEPT": 23534
         }
       },
       "latestFiling": {
@@ -152,13 +195,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0a9b33059dd09bf25ea6f8e57cb79ab3cd827ef22bea5a99a0501b1fb213d9e8",
@@ -169,17 +212,108 @@
       "name": "RED RIVER BANCSHARES INC",
       "sic": "6022",
       "rawFacts": 13334,
-      "mappedFacts": 2490,
-      "unmappedFacts": 10838,
+      "mappedFacts": 3609,
+      "unmappedFacts": 9838,
       "calendarYears": 8,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 2.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 8,
           "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 4.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 4.0
+        },
+        "time_deposits": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -296,15 +430,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10852,
+        "total": 9852,
         "by_severity": {
-          "INFO": 10838,
+          "INFO": 9838,
           "WARNING": 14
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 2,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 10838
+          "UNKNOWN_CONCEPT": 9838
         }
       },
       "latestFiling": {
@@ -315,13 +449,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ea603d968f2d29e6fdac6b091c56a167be58aa14794b04897ba2234fc0580422",
@@ -473,13 +607,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "093c105f1ee29dfca7a1fa084d4813c74650c1a6d506fe3c61085527a1d6fe08",
@@ -633,13 +767,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bce206eb00de0d3bacbd2fceb62cd95ed68dddf04e108d3f706ed7759a4660a1",
@@ -789,13 +923,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d7020463cfcd22a0bb0ad1f15d54d9ce650cec7ed4cc5634da46626aecfbe2a",
@@ -806,8 +940,8 @@
       "name": "SPRINGVIEW HOLDINGS LTD",
       "sic": "1520",
       "rawFacts": 931,
-      "mappedFacts": 202,
-      "unmappedFacts": 674,
+      "mappedFacts": 206,
+      "unmappedFacts": 671,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -926,15 +1060,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 759,
+        "total": 758,
         "by_severity": {
-          "INFO": 674,
-          "WARNING": 85
+          "INFO": 671,
+          "WARNING": 87
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 83,
+          "CONCEPT_DISAGREEMENT": 85,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 674
+          "UNKNOWN_CONCEPT": 671
         }
       },
       "latestFiling": {
@@ -945,13 +1079,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "19ffcdfbfe3dcf3ddfe87bdf4383c4861dfbb9e1e223f44d7379b641f7098083",

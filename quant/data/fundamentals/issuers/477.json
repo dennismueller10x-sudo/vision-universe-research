@@ -7,8 +7,8 @@
       "name": "BIOMARIN PHARMACEUTICAL INC",
       "sic": "2834",
       "rawFacts": 23746,
-      "mappedFacts": 6889,
-      "unmappedFacts": 17082,
+      "mappedFacts": 7084,
+      "unmappedFacts": 16962,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17393,
+        "total": 17275,
         "by_severity": {
-          "INFO": 17082,
-          "WARNING": 311
+          "INFO": 16962,
+          "WARNING": 313
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 290,
-          "RESTATEMENT_CONFLICT": 19,
+          "RESTATEMENT_CONFLICT": 21,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 17082
+          "UNKNOWN_CONCEPT": 16962
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1d60b38cf5eb10579cf2bee9bbdd257974001d68eb565b77d3f66ff2a05c626e",
@@ -164,11 +164,54 @@
       "name": "Seven Hills Realty Trust",
       "sic": "6798",
       "rawFacts": 4060,
-      "mappedFacts": 1346,
-      "unmappedFacts": 2719,
+      "mappedFacts": 1421,
+      "unmappedFacts": 2623,
       "calendarYears": 6,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "SEVN"
@@ -284,15 +327,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2771,
+        "total": 2696,
         "by_severity": {
-          "INFO": 2719,
-          "WARNING": 52
+          "INFO": 2623,
+          "WARNING": 73
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 50,
+          "PERIOD_MISMATCH": 21,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 2719
+          "UNKNOWN_CONCEPT": 2623
         }
       },
       "latestFiling": {
@@ -303,13 +347,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0b47843c497fb6baf2d7154a87ec8e9872b9a50356252b67ea084dd763ed58d",
@@ -320,8 +364,8 @@
       "name": "Ingevity Corp",
       "sic": "2800",
       "rawFacts": 19630,
-      "mappedFacts": 4905,
-      "unmappedFacts": 14916,
+      "mappedFacts": 4957,
+      "unmappedFacts": 14883,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -440,15 +484,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15364,
+        "total": 15331,
         "by_severity": {
-          "INFO": 14916,
+          "INFO": 14883,
           "WARNING": 448
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 378,
           "RESTATEMENT_CONFLICT": 70,
-          "UNKNOWN_CONCEPT": 14916
+          "UNKNOWN_CONCEPT": 14883
         }
       },
       "latestFiling": {
@@ -459,13 +503,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8899a2b3211055f80b5d41f59c9cd4cb84c0851f897302b119a447d96d95517b",
@@ -617,13 +661,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ffc2848da9479dbff93dac51cf8eaea02b9732ce774f71b4b5910529276476fe",

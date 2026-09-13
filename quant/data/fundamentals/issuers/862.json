@@ -7,8 +7,8 @@
       "name": "CONSOLIDATED EDISON INC",
       "sic": "4931",
       "rawFacts": 27493,
-      "mappedFacts": 5788,
-      "unmappedFacts": 21844,
+      "mappedFacts": 5896,
+      "unmappedFacts": 21736,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22446,
+        "total": 22338,
         "by_severity": {
-          "INFO": 21844,
+          "INFO": 21736,
           "ERROR": 1,
           "WARNING": 601
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 44,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 21844
+          "UNKNOWN_CONCEPT": 21736
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "45c268abb12e9d79471826e2908b2001570460f7ed5a1c6135c61dea2e4144bf",
@@ -166,8 +166,8 @@
       "name": "Axalta Coating Systems Ltd.",
       "sic": "2851",
       "rawFacts": 20671,
-      "mappedFacts": 5220,
-      "unmappedFacts": 15096,
+      "mappedFacts": 5253,
+      "unmappedFacts": 15063,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15999,
+        "total": 15966,
         "by_severity": {
-          "INFO": 15096,
+          "INFO": 15063,
           "WARNING": 903
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 867,
           "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 15096
+          "UNKNOWN_CONCEPT": 15063
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f6fefa8f59e33688d63fe79b4a70785eb9edadda39d26ec61cfb2652f543e7de",
@@ -322,8 +322,8 @@
       "name": "ASHLAND INC.",
       "sic": "5160",
       "rawFacts": 18401,
-      "mappedFacts": 4400,
-      "unmappedFacts": 13891,
+      "mappedFacts": 4649,
+      "unmappedFacts": 13656,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +442,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14786,
+        "total": 14568,
         "by_severity": {
-          "INFO": 13891,
-          "WARNING": 895
+          "INFO": 13656,
+          "WARNING": 912
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 633,
-          "RESTATEMENT_CONFLICT": 262,
-          "UNKNOWN_CONCEPT": 13891
+          "PERIOD_MISMATCH": 3,
+          "RESTATEMENT_CONFLICT": 275,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 13656
         }
       },
       "latestFiling": {
@@ -461,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be25f1094f193c75213e4ec180c5e20bbfaa35a24c4afbf183882eb3cc8e232e",
@@ -617,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c05d2458c119da9add46f0f31f8e37831cfc868c06a5624a1ebf1ee095ee1e49",
@@ -777,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5967acb657798cba6d6fbf2725c2b0d965f400c31eff20f846b9ed02e3843ef7",
@@ -794,8 +796,8 @@
       "name": "Bunge Global SA",
       "sic": "2070",
       "rawFacts": 4817,
-      "mappedFacts": 1300,
-      "unmappedFacts": 3474,
+      "mappedFacts": 1343,
+      "unmappedFacts": 3430,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -914,16 +916,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3752,
+        "total": 3714,
         "by_severity": {
-          "INFO": 3474,
-          "WARNING": 278
+          "INFO": 3430,
+          "WARNING": 284
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 227,
-          "FISCAL_PERIOD_CONFLICT": 13,
-          "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 3474
+          "FISCAL_PERIOD_CONFLICT": 14,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 42,
+          "UNKNOWN_CONCEPT": 3430
         }
       },
       "latestFiling": {
@@ -934,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "badede2efc5ef1e8dbebdcee3b1e66f38c7478baacb487ab9d2d5ba955866343",

@@ -7,8 +7,8 @@
       "name": "Jefferies Financial Group Inc.",
       "sic": "6211",
       "rawFacts": 38340,
-      "mappedFacts": 6816,
-      "unmappedFacts": 30889,
+      "mappedFacts": 7037,
+      "unmappedFacts": 30680,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32191,
+        "total": 31986,
         "by_severity": {
-          "INFO": 30889,
+          "INFO": 30680,
           "ERROR": 11,
-          "WARNING": 1291
+          "WARNING": 1295
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1121,
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 11,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 157,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 30889
+          "UNKNOWN_CONCEPT": 30680
         }
       },
       "latestFiling": {
@@ -150,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "52e1acc4ed7d1f8b61723c5e38524f357389696e59ebeb66935dc813bbcf042f",
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e4feb8b9ab53fce9f48ad3b5fbd0c2c1074a54d69442a6eab391dd0595d7dcd",
@@ -323,8 +324,8 @@
       "name": "Nixxy, Inc.",
       "sic": "7371",
       "rawFacts": 13846,
-      "mappedFacts": 4516,
-      "unmappedFacts": 9249,
+      "mappedFacts": 4574,
+      "unmappedFacts": 9206,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -443,19 +444,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10088,
+        "total": 10047,
         "by_severity": {
           "ERROR": 10,
-          "INFO": 9249,
-          "WARNING": 829
+          "INFO": 9206,
+          "WARNING": 831
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 404,
           "FISCAL_PERIOD_CONFLICT": 19,
           "FUTURE_DATA_LEAK": 10,
-          "RESTATEMENT_CONFLICT": 298,
+          "RESTATEMENT_CONFLICT": 300,
           "UNEXPECTED_DURATION": 108,
-          "UNKNOWN_CONCEPT": 9249
+          "UNKNOWN_CONCEPT": 9206
         }
       },
       "latestFiling": {
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "676c752fe289976c1ffe5499d4db48505f1920467fe61fdbd0bd0bbd8ffc9752",
@@ -483,8 +484,8 @@
       "name": "Chemours Co",
       "sic": "2800",
       "rawFacts": 21448,
-      "mappedFacts": 5681,
-      "unmappedFacts": 15571,
+      "mappedFacts": 5776,
+      "unmappedFacts": 15476,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -603,15 +604,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16321,
+        "total": 16226,
         "by_severity": {
-          "INFO": 15571,
+          "INFO": 15476,
           "WARNING": 750
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 704,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 15571
+          "UNKNOWN_CONCEPT": 15476
         }
       },
       "latestFiling": {
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd60c4a6da4297dd72c870fa55710c70fa6c6afc6845a06fcb1a7e86a6d8f086",
@@ -639,8 +640,8 @@
       "name": "Pyxis Oncology, Inc.",
       "sic": "2834",
       "rawFacts": 5126,
-      "mappedFacts": 1450,
-      "unmappedFacts": 3687,
+      "mappedFacts": 1470,
+      "unmappedFacts": 3674,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -758,15 +759,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3787,
+        "total": 3774,
         "by_severity": {
-          "INFO": 3687,
+          "INFO": 3674,
           "WARNING": 100
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 96,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 3687
+          "UNKNOWN_CONCEPT": 3674
         }
       },
       "latestFiling": {
@@ -777,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "079e6e278dbe92bddf578470e11180f969dad5dba6f6c0790def962eea4410f1",
@@ -794,8 +795,8 @@
       "name": "Greenland Mines Ltd",
       "sic": "2836",
       "rawFacts": 3550,
-      "mappedFacts": 1234,
-      "unmappedFacts": 2377,
+      "mappedFacts": 1249,
+      "unmappedFacts": 2363,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -914,9 +915,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2482,
+        "total": 2468,
         "by_severity": {
-          "INFO": 2377,
+          "INFO": 2363,
           "ERROR": 1,
           "WARNING": 104
         },
@@ -925,7 +926,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 70,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 2377
+          "UNKNOWN_CONCEPT": 2363
         }
       },
       "latestFiling": {
@@ -936,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c280c9ee4fbfc7c5226fe543a9ef8197725e0f310b685573080186144c2840fc",
@@ -1090,13 +1091,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fafacac45e9ee7b8e4200470178520bf8d2ae9e0bdc94c60784d7be54d2c859b",

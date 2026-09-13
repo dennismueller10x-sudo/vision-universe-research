@@ -7,8 +7,8 @@
       "name": "CARLISLE COMPANIES INC",
       "sic": "3060",
       "rawFacts": 25866,
-      "mappedFacts": 7406,
-      "unmappedFacts": 18319,
+      "mappedFacts": 7498,
+      "unmappedFacts": 18249,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19182,
+        "total": 19112,
         "by_severity": {
-          "INFO": 18319,
+          "INFO": 18249,
           "WARNING": 863
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 713,
           "RESTATEMENT_CONFLICT": 150,
-          "UNKNOWN_CONCEPT": 18319
+          "UNKNOWN_CONCEPT": 18249
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1996c8b64d5b8c2da095df98f373a2d5225733e65a1c7e5229ee782a5011636a",
@@ -163,11 +163,75 @@
       "name": "ALLSTATE CORP",
       "sic": "6331",
       "rawFacts": 37458,
-      "mappedFacts": 6046,
-      "unmappedFacts": 31427,
+      "mappedFacts": 7659,
+      "unmappedFacts": 30083,
       "calendarYears": 20,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "total_investments": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALL",
@@ -287,16 +351,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32006,
+        "total": 30680,
         "by_severity": {
-          "INFO": 31427,
-          "WARNING": 579
+          "INFO": 30083,
+          "WARNING": 597
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 534,
           "FISCAL_PERIOD_CONFLICT": 8,
-          "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 31427
+          "RESTATEMENT_CONFLICT": 55,
+          "UNKNOWN_CONCEPT": 30083
         }
       },
       "latestFiling": {
@@ -307,13 +371,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a2664b3375faa5529d28ea727d5410265ebd98bb19e73aafc505b30d7cff8187",

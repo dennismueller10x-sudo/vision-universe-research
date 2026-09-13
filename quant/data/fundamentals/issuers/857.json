@@ -7,8 +7,8 @@
       "name": "AECOM",
       "sic": "8711",
       "rawFacts": 27599,
-      "mappedFacts": 8187,
-      "unmappedFacts": 19063,
+      "mappedFacts": 8194,
+      "unmappedFacts": 19056,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,10 +127,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20323,
+        "total": 20316,
         "by_severity": {
           "ERROR": 12,
-          "INFO": 19063,
+          "INFO": 19056,
           "WARNING": 1248
         },
         "by_code": {
@@ -139,7 +139,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 119,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 19063
+          "UNKNOWN_CONCEPT": 19056
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eda6bf87bd54c9aaae91b6e107d9af0909c1ce52494e5f6cb9c77e3ba12def7b",
@@ -167,8 +167,8 @@
       "name": "PEGASYSTEMS INC",
       "sic": "7374",
       "rawFacts": 22536,
-      "mappedFacts": 7083,
-      "unmappedFacts": 16029,
+      "mappedFacts": 7346,
+      "unmappedFacts": 15780,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -286,16 +286,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16279,
+        "total": 16034,
         "by_severity": {
-          "INFO": 16029,
-          "WARNING": 250
+          "INFO": 15780,
+          "WARNING": 254
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
           "FISCAL_PERIOD_CONFLICT": 7,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 139,
-          "UNKNOWN_CONCEPT": 16029
+          "UNKNOWN_CONCEPT": 15780
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "003603426ca2aaef2829a18794054b59193e9e8b9b199bd598e48a0a1a1778e9",
@@ -323,8 +324,8 @@
       "name": "Aardvark Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 1316,
-      "mappedFacts": 439,
-      "unmappedFacts": 898,
+      "mappedFacts": 476,
+      "unmappedFacts": 868,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -442,12 +443,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 898,
+        "total": 868,
         "by_severity": {
-          "INFO": 898
+          "INFO": 868
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 898
+          "UNKNOWN_CONCEPT": 868
         }
       },
       "latestFiling": {
@@ -458,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1995f67daa8335d936fffb4d11d3f4dbdd33beaa2dc039c6539100d4b50c22ae",

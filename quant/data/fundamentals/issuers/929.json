@@ -7,11 +7,75 @@
       "name": "MOLINA HEALTHCARE, INC.",
       "sic": "6324",
       "rawFacts": 23839,
-      "mappedFacts": 6567,
-      "unmappedFacts": 17589,
+      "mappedFacts": 7294,
+      "unmappedFacts": 17011,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 2.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MOH"
@@ -127,15 +191,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18084,
+        "total": 17519,
         "by_severity": {
-          "INFO": 17589,
-          "WARNING": 495
+          "INFO": 17011,
+          "WARNING": 508
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 449,
-          "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 17589
+          "RESTATEMENT_CONFLICT": 59,
+          "UNKNOWN_CONCEPT": 17011
         }
       },
       "latestFiling": {
@@ -146,13 +210,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfb0020e95e45001327c4859cb23ad3f8f0fd326124ade4951b61d6dad28b2b3",
@@ -303,13 +367,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f5957bb59424e959b21c887e2eed06edc9caafd39bf7a84cc7d21fe5bdfc3f5",
@@ -320,8 +384,8 @@
       "name": "NEXGEL, INC.",
       "sic": "3841",
       "rawFacts": 7644,
-      "mappedFacts": 2848,
-      "unmappedFacts": 4832,
+      "mappedFacts": 2856,
+      "unmappedFacts": 4827,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -441,16 +505,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5052,
+        "total": 5047,
         "by_severity": {
-          "INFO": 4832,
+          "INFO": 4827,
           "WARNING": 220
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 153,
           "RESTATEMENT_CONFLICT": 66,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 4832
+          "UNKNOWN_CONCEPT": 4827
         }
       },
       "latestFiling": {
@@ -461,13 +525,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7a5f9f1a546303ed1c9c642745e415c6fc5ef469923a34d143270f3ef22af515",
@@ -478,11 +542,75 @@
       "name": "Voya Financial, Inc.",
       "sic": "6311",
       "rawFacts": 37974,
-      "mappedFacts": 4485,
-      "unmappedFacts": 32605,
+      "mappedFacts": 6019,
+      "unmappedFacts": 31251,
       "calendarYears": 15,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 6.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "claims_liability": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 13.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "total_investments": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 9.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "VOYA",
@@ -599,16 +727,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 33915,
+        "total": 32657,
         "by_severity": {
-          "INFO": 32605,
-          "WARNING": 1310
+          "INFO": 31251,
+          "WARNING": 1406
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1099,
-          "FISCAL_PERIOD_CONFLICT": 11,
-          "RESTATEMENT_CONFLICT": 200,
-          "UNKNOWN_CONCEPT": 32605
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 281,
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 31251
         }
       },
       "latestFiling": {
@@ -619,13 +749,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9d305e7e213024082817bd89f15f4fab65cd443e90fdaabb53866f63d4acd799",

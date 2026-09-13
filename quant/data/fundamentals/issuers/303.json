@@ -7,8 +7,8 @@
       "name": "OLIN Corp",
       "sic": "2800",
       "rawFacts": 35491,
-      "mappedFacts": 8368,
-      "unmappedFacts": 27314,
+      "mappedFacts": 8566,
+      "unmappedFacts": 27110,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28040,
+        "total": 27837,
         "by_severity": {
-          "INFO": 27314,
+          "INFO": 27110,
           "ERROR": 2,
-          "WARNING": 724
+          "WARNING": 725
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 603,
-          "FISCAL_PERIOD_CONFLICT": 13,
+          "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 108,
-          "UNKNOWN_CONCEPT": 27314
+          "UNKNOWN_CONCEPT": 27110
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cb974bf4ccb3d39b2bffbd3ebbbefa6f1593143942f3c0d76adae40045f6e290",
@@ -166,8 +166,8 @@
       "name": "Sarepta Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 19841,
-      "mappedFacts": 5976,
-      "unmappedFacts": 13729,
+      "mappedFacts": 6005,
+      "unmappedFacts": 13691,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -286,18 +286,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14203,
+        "total": 14177,
         "by_severity": {
-          "INFO": 13729,
-          "WARNING": 474
+          "INFO": 13691,
+          "WARNING": 486
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 254,
           "FISCAL_PERIOD_CONFLICT": 6,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 72,
-          "UNEXPECTED_DURATION": 141,
-          "UNKNOWN_CONCEPT": 13729
+          "UNEXPECTED_DURATION": 153,
+          "UNKNOWN_CONCEPT": 13691
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "51a2bee551d0485d841d032705a3eedbe024d32d1a7db1de67cec3c7156eb9a1",
@@ -325,8 +325,8 @@
       "name": "TRANSACT TECHNOLOGIES INC",
       "sic": "3577",
       "rawFacts": 18413,
-      "mappedFacts": 7078,
-      "unmappedFacts": 11977,
+      "mappedFacts": 7115,
+      "unmappedFacts": 11939,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -444,17 +444,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12317,
+        "total": 12280,
         "by_severity": {
-          "INFO": 11977,
+          "INFO": 11939,
           "ERROR": 29,
-          "WARNING": 311
+          "WARNING": 312
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 249,
           "FUTURE_DATA_LEAK": 29,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 11977
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 11939
         }
       },
       "latestFiling": {
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5ebc6d6a814aa3fd473d213df5425213b0bf873737dd853922203083f526f5d4",
@@ -482,8 +483,8 @@
       "name": "Nano Dimension Ltd.",
       "sic": "3672",
       "rawFacts": 3585,
-      "mappedFacts": 840,
-      "unmappedFacts": 2831,
+      "mappedFacts": 842,
+      "unmappedFacts": 2829,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -602,9 +603,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2879,
+        "total": 2877,
         "by_severity": {
-          "INFO": 2831,
+          "INFO": 2829,
           "ERROR": 1,
           "WARNING": 47
         },
@@ -612,7 +613,7 @@
           "CONCEPT_DISAGREEMENT": 32,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 2831
+          "UNKNOWN_CONCEPT": 2829
         }
       },
       "latestFiling": {
@@ -623,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "27c711a2006844d11452cb6b53996f453ff92e1d8b74bbf5af6dd5633e943c57",
@@ -640,8 +641,8 @@
       "name": "WARRIOR MET COAL, INC.",
       "sic": "1220",
       "rawFacts": 10513,
-      "mappedFacts": 3690,
-      "unmappedFacts": 7017,
+      "mappedFacts": 3713,
+      "unmappedFacts": 6957,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -760,17 +761,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7200,
+        "total": 7177,
         "by_severity": {
-          "INFO": 7017,
-          "WARNING": 183
+          "INFO": 6957,
+          "WARNING": 220
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 168,
-          "PERIOD_MISMATCH": 12,
+          "PERIOD_MISMATCH": 49,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7017
+          "UNKNOWN_CONCEPT": 6957
         }
       },
       "latestFiling": {
@@ -781,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "351c16785c8d0907e9f62b57cb3d086c2bd5aacd856902e060866372380b0a44",
@@ -798,8 +799,8 @@
       "name": "Dogness (International) Corp",
       "sic": "3990",
       "rawFacts": 3529,
-      "mappedFacts": 1080,
-      "unmappedFacts": 2531,
+      "mappedFacts": 1090,
+      "unmappedFacts": 2521,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -918,16 +919,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2674,
+        "total": 2664,
         "by_severity": {
-          "INFO": 2531,
+          "INFO": 2521,
           "WARNING": 143
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 2531
+          "UNKNOWN_CONCEPT": 2521
         }
       },
       "latestFiling": {
@@ -938,13 +939,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0eb7f5879e49b86dcf4168c0723937f2cc5d2095474c59c39259689a9c3303ca",
@@ -955,8 +956,8 @@
       "name": "AVITA Medical, Inc.",
       "sic": "3841",
       "rawFacts": 8652,
-      "mappedFacts": 2782,
-      "unmappedFacts": 5889,
+      "mappedFacts": 2812,
+      "unmappedFacts": 5859,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -1076,15 +1077,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6221,
+        "total": 6193,
         "by_severity": {
-          "INFO": 5889,
-          "WARNING": 332
+          "INFO": 5859,
+          "WARNING": 334
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 179,
-          "RESTATEMENT_CONFLICT": 153,
-          "UNKNOWN_CONCEPT": 5889
+          "RESTATEMENT_CONFLICT": 155,
+          "UNKNOWN_CONCEPT": 5859
         }
       },
       "latestFiling": {
@@ -1095,13 +1096,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "40edf450b80cefa5334ffce7041e36e37e00f876c6b144ef12ad3d84b705bd77",

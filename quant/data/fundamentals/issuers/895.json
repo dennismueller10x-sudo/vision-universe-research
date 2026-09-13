@@ -7,8 +7,8 @@
       "name": "CROWN CRAFTS INC",
       "sic": "2211",
       "rawFacts": 17144,
-      "mappedFacts": 5710,
-      "unmappedFacts": 12056,
+      "mappedFacts": 5878,
+      "unmappedFacts": 11888,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12195,
+        "total": 12031,
         "by_severity": {
-          "INFO": 12056,
+          "INFO": 11888,
           "ERROR": 1,
-          "WARNING": 138
+          "WARNING": 142
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 86,
-          "FISCAL_PERIOD_CONFLICT": 13,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 12056
+          "RESTATEMENT_CONFLICT": 41,
+          "UNKNOWN_CONCEPT": 11888
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "18ee510127ee789283407f19bddad1cbf7a9cefea9f322acce41103a7f875215",
@@ -166,8 +166,8 @@
       "name": "LEMAITRE VASCULAR INC",
       "sic": "3841",
       "rawFacts": 20830,
-      "mappedFacts": 7042,
-      "unmappedFacts": 14323,
+      "mappedFacts": 7257,
+      "unmappedFacts": 14097,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,18 +285,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14521,
+        "total": 14310,
         "by_severity": {
-          "INFO": 14323,
+          "INFO": 14097,
           "ERROR": 30,
-          "WARNING": 168
+          "WARNING": 183
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
-          "FISCAL_PERIOD_CONFLICT": 39,
+          "FISCAL_PERIOD_CONFLICT": 41,
           "FUTURE_DATA_LEAK": 30,
+          "PERIOD_MISMATCH": 13,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 14323
+          "UNKNOWN_CONCEPT": 14097
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1786a1b180751b65bdddafc79b246c1aa1a17516c44d5295c01493983925ce04",
@@ -324,8 +325,8 @@
       "name": "ROCKET PHARMACEUTICALS, INC.",
       "sic": "2834",
       "rawFacts": 11169,
-      "mappedFacts": 3727,
-      "unmappedFacts": 7591,
+      "mappedFacts": 3729,
+      "unmappedFacts": 7590,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -445,15 +446,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7840,
+        "total": 7839,
         "by_severity": {
-          "INFO": 7591,
+          "INFO": 7590,
           "WARNING": 249
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 147,
           "RESTATEMENT_CONFLICT": 102,
-          "UNKNOWN_CONCEPT": 7591
+          "UNKNOWN_CONCEPT": 7590
         }
       },
       "latestFiling": {
@@ -464,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "60ca6798a459bd1e3c6e898cb89788197a91ddbde429a9b60f515d71199f5b5a",
@@ -623,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b41f7f34c3d3a197a280b47165093b4565f51416ae5e4ed39622eec42857f445",
@@ -779,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bfa97202e071022b2e4379df9725eb2a61e2c9abb249b3f6df2cf8b434757d1b",

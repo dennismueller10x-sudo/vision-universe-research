@@ -7,8 +7,8 @@
       "name": "AGNICO EAGLE MINES LTD",
       "sic": "1040",
       "rawFacts": 4375,
-      "mappedFacts": 1050,
-      "unmappedFacts": 3547,
+      "mappedFacts": 1063,
+      "unmappedFacts": 3533,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3575,
+        "total": 3562,
         "by_severity": {
-          "INFO": 3547,
+          "INFO": 3533,
           "ERROR": 1,
-          "WARNING": 27
+          "WARNING": 28
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 20,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 3547
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 3533
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b394bc6d9037c19639e2c2be4723ed118ee1e01daaad62c1253e70bd5eec8579",
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2142ac72c348e900c54e703e670d8d1db06cdc4006d2d1908cf6204bacb75197",
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c19b09d81af71bd167a3a49a901659a30d5d562e7f69de743cfb17a41e02ac58",
@@ -621,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "09b5ae0f6bfc5bafe1fe72710b8011e7d6df33d756069fefd2d862cc269bbf0e",
@@ -777,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dc8508e7e521f7006a59df46aefad0ef8122103dfc41e55967909bfaad1342ae",
@@ -933,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe683e2d37f8576553c82ca6176f4806150ddbfa098905d03026b16399e1257c",
@@ -950,8 +951,8 @@
       "name": "Seres Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 12364,
-      "mappedFacts": 3814,
-      "unmappedFacts": 8596,
+      "mappedFacts": 3873,
+      "unmappedFacts": 8560,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -1070,9 +1071,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8837,
+        "total": 8801,
         "by_severity": {
-          "INFO": 8596,
+          "INFO": 8560,
           "WARNING": 241
         },
         "by_code": {
@@ -1080,7 +1081,7 @@
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 8596
+          "UNKNOWN_CONCEPT": 8560
         }
       },
       "latestFiling": {
@@ -1091,13 +1092,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0ef03021317ab82db4a6c2dcb20b3c68d1ae26dea64c9ebce63a1248a93af4dd",

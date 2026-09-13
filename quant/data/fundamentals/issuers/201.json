@@ -7,8 +7,8 @@
       "name": "American Airlines Group Inc.",
       "sic": "4512",
       "rawFacts": 22123,
-      "mappedFacts": 6809,
-      "unmappedFacts": 15863,
+      "mappedFacts": 6981,
+      "unmappedFacts": 15680,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,20 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16303,
+        "total": 16131,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 15863,
-          "WARNING": 437
+          "INFO": 15680,
+          "WARNING": 448
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 311,
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
-          "PERIOD_MISMATCH": 4,
+          "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 117,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 15863
+          "UNEXPECTED_DURATION": 11,
+          "UNKNOWN_CONCEPT": 15680
         }
       },
       "latestFiling": {
@@ -151,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cb8b1450b43e8140e27b061786181000273f4f4f02a4a0869ab59c7098a1df44",
@@ -168,8 +168,8 @@
       "name": "KLA CORP",
       "sic": "3827",
       "rawFacts": 32939,
-      "mappedFacts": 7626,
-      "unmappedFacts": 25380,
+      "mappedFacts": 7900,
+      "unmappedFacts": 25117,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -288,18 +288,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26114,
+        "total": 25860,
         "by_severity": {
-          "INFO": 25380,
+          "INFO": 25117,
           "ERROR": 1,
-          "WARNING": 733
+          "WARNING": 742
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 673,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 56,
+          "PERIOD_MISMATCH": 5,
+          "RESTATEMENT_CONFLICT": 58,
+          "UNEXPECTED_DURATION": 2,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 25380
+          "UNKNOWN_CONCEPT": 25117
         }
       },
       "latestFiling": {
@@ -310,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd46b713934fc76721512a1ec4080741f76aa8a4edbe1d588f572152303202f4",
@@ -327,8 +329,8 @@
       "name": "CALIFORNIA WATER SERVICE GROUP",
       "sic": "4941",
       "rawFacts": 20444,
-      "mappedFacts": 6206,
-      "unmappedFacts": 14699,
+      "mappedFacts": 6294,
+      "unmappedFacts": 14611,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -447,15 +449,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15239,
+        "total": 15156,
         "by_severity": {
-          "INFO": 14699,
-          "WARNING": 540
+          "INFO": 14611,
+          "WARNING": 545
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 467,
-          "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 14699
+          "RESTATEMENT_CONFLICT": 78,
+          "UNKNOWN_CONCEPT": 14611
         }
       },
       "latestFiling": {
@@ -466,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8910e036511f12859ae81b872f438d0abd0fb01a8b2e758861504f16b77f982e",
@@ -483,8 +485,8 @@
       "name": "SINOVAC BIOTECH LTD",
       "sic": "2834",
       "rawFacts": 7220,
-      "mappedFacts": 1899,
-      "unmappedFacts": 5410,
+      "mappedFacts": 1907,
+      "unmappedFacts": 5404,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -603,9 +605,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5702,
+        "total": 5696,
         "by_severity": {
-          "INFO": 5410,
+          "INFO": 5404,
           "WARNING": 292
         },
         "by_code": {
@@ -613,7 +615,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 97,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 5410
+          "UNKNOWN_CONCEPT": 5404
         }
       },
       "latestFiling": {
@@ -624,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd156c475e0da4fe7d87368c145bc55365d237d1978e12b764604b63867e47c3",
@@ -780,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a01cc64636ee1e31987c286ec9c63e8570ede9b89e8fe7280e45b97db2089106",
@@ -797,8 +799,8 @@
       "name": "Lulu's Fashion Lounge Holdings, Inc.",
       "sic": "5961",
       "rawFacts": 5653,
-      "mappedFacts": 1949,
-      "unmappedFacts": 3645,
+      "mappedFacts": 1969,
+      "unmappedFacts": 3625,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -917,15 +919,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4021,
+        "total": 4001,
         "by_severity": {
-          "INFO": 3645,
+          "INFO": 3625,
           "WARNING": 376
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 237,
           "RESTATEMENT_CONFLICT": 139,
-          "UNKNOWN_CONCEPT": 3645
+          "UNKNOWN_CONCEPT": 3625
         }
       },
       "latestFiling": {
@@ -936,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e35b1bfb2aef1ddb1168cf97f9f507175ba26c45bd0f5d9ac2fc8b3147c618b5",
@@ -1094,13 +1096,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ebc2707ce92cfd3a2a88dbada72dfc7cb88c2fa4b7015fd993e493b7b26516eb",
@@ -1250,13 +1252,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2be39609fa8bc1dad7d46fb4577774f39399cdaac42efbed1bcd18007ecb8abd",
@@ -1410,13 +1412,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "088213afdc9e2f62c33842d351b4ac503649f85b3403b72c95697c0d6ebd802c",

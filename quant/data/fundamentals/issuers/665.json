@@ -7,8 +7,8 @@
       "name": "COLGATE PALMOLIVE CO",
       "sic": "2844",
       "rawFacts": 23892,
-      "mappedFacts": 7937,
-      "unmappedFacts": 16186,
+      "mappedFacts": 8132,
+      "unmappedFacts": 15991,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16912,
+        "total": 16721,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 16186,
-          "WARNING": 725
+          "INFO": 15991,
+          "WARNING": 729
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 657,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 66,
-          "UNKNOWN_CONCEPT": 16186
+          "RESTATEMENT_CONFLICT": 70,
+          "UNKNOWN_CONCEPT": 15991
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5fc4ff127ac599c22d02a9c84140a34a8a70cc6ed77117b0dddcb1c8a9983cca",
@@ -166,11 +166,75 @@
       "name": "Heritage Insurance Holdings, Inc.",
       "sic": "6331",
       "rawFacts": 25612,
-      "mappedFacts": 4768,
-      "unmappedFacts": 20689,
+      "mappedFacts": 6672,
+      "unmappedFacts": 19196,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 4.0
+        },
+        "claims_liability": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "total_investments": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        }
+      },
       "fiscalYearEnd": null,
       "tickers": [
         "HRTG"
@@ -286,17 +350,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21228,
+        "total": 19815,
         "by_severity": {
-          "INFO": 20689,
-          "WARNING": 539
+          "INFO": 19196,
+          "WARNING": 619
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 421,
-          "FISCAL_PERIOD_CONFLICT": 23,
-          "RESTATEMENT_CONFLICT": 78,
-          "UNEXPECTED_DURATION": 17,
-          "UNKNOWN_CONCEPT": 20689
+          "CONCEPT_DISAGREEMENT": 460,
+          "FISCAL_PERIOD_CONFLICT": 29,
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 105,
+          "UNEXPECTED_DURATION": 21,
+          "UNKNOWN_CONCEPT": 19196
         }
       },
       "latestFiling": {
@@ -307,13 +372,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c2a5ed2bbaa62f5f2539eb688f4747e7f47c6a0dc28691b6d708f1a80e87cb9",
@@ -465,13 +530,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "718adfdfa074465fd7c8926c86502927a468ac3ab2028916a7da2234b7773342",
@@ -622,13 +687,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "13aaff3d32ab0c75d9bbf062f80af18b5c13a9281b8d82f7b7cb8e3fa0246c04",

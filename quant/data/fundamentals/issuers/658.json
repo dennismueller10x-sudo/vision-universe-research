@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aec398449ae05c19f784e0393704464e25f81bf33f13fa5dd4867d03862a072b",
@@ -164,8 +164,8 @@
       "name": "COVENANT LOGISTICS GROUP, INC.",
       "sic": "4213",
       "rawFacts": 22928,
-      "mappedFacts": 6079,
-      "unmappedFacts": 17417,
+      "mappedFacts": 6136,
+      "unmappedFacts": 17325,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +284,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17739,
+        "total": 17684,
         "by_severity": {
-          "INFO": 17417,
+          "INFO": 17325,
           "ERROR": 6,
-          "WARNING": 316
+          "WARNING": 353
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 192,
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 6,
+          "PERIOD_MISMATCH": 37,
           "RESTATEMENT_CONFLICT": 114,
-          "UNKNOWN_CONCEPT": 17417
+          "UNKNOWN_CONCEPT": 17325
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6e89abfe008c5b50ddfc6dee32c4a55dca0681395eb05dd210eb37a49228c0b3",
@@ -323,8 +324,8 @@
       "name": "Travel & Leisure Co.",
       "sic": "7011",
       "rawFacts": 32354,
-      "mappedFacts": 7618,
-      "unmappedFacts": 24517,
+      "mappedFacts": 8173,
+      "unmappedFacts": 24063,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,16 +444,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25380,
+        "total": 24930,
         "by_severity": {
-          "INFO": 24517,
-          "WARNING": 863
+          "INFO": 24063,
+          "WARNING": 867
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 647,
           "NEGATIVE_WHERE_IMPOSSIBLE": 10,
           "RESTATEMENT_CONFLICT": 206,
-          "UNKNOWN_CONCEPT": 24517
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 24063
         }
       },
       "latestFiling": {
@@ -463,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "877d35e7bdb91ee542591bc0e456e76a09268766ab5ac332fb250e7bd79ddf32",
@@ -480,8 +482,8 @@
       "name": "iRhythm Holdings, Inc.",
       "sic": "3841",
       "rawFacts": 13574,
-      "mappedFacts": 4535,
-      "unmappedFacts": 9263,
+      "mappedFacts": 4642,
+      "unmappedFacts": 9197,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +601,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9357,
+        "total": 9293,
         "by_severity": {
-          "INFO": 9263,
-          "WARNING": 94
+          "INFO": 9197,
+          "WARNING": 96
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 84,
-          "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 9263
+          "RESTATEMENT_CONFLICT": 12,
+          "UNKNOWN_CONCEPT": 9197
         }
       },
       "latestFiling": {
@@ -618,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e2ce932c5462f8adb7ff7671e10680498286d692b1d2ce79a717c62742553d96",
@@ -635,17 +637,108 @@
       "name": "Investar Holding Corp",
       "sic": "6022",
       "rawFacts": 28496,
-      "mappedFacts": 3983,
-      "unmappedFacts": 24626,
+      "mappedFacts": 6115,
+      "unmappedFacts": 22787,
       "calendarYears": 14,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 7.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 11.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 7.0
+        },
         "net_interest_income": {
           "annualPeriods": 14,
           "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 6.0
+        },
+        "time_deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -763,15 +856,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24693,
+        "total": 22859,
         "by_severity": {
-          "INFO": 24626,
-          "WARNING": 67
+          "INFO": 22787,
+          "WARNING": 72
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 65,
-          "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 24626
+          "RESTATEMENT_CONFLICT": 7,
+          "UNKNOWN_CONCEPT": 22787
         }
       },
       "latestFiling": {
@@ -782,13 +875,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4110106b865129054a4840024705144519b0c8b225b97b6ce3adc46015a95764",
@@ -799,8 +892,8 @@
       "name": "Bicara Therapeutics Inc.",
       "sic": "2834",
       "rawFacts": 1731,
-      "mappedFacts": 625,
-      "unmappedFacts": 1135,
+      "mappedFacts": 634,
+      "unmappedFacts": 1129,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -918,15 +1011,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1143,
+        "total": 1137,
         "by_severity": {
-          "INFO": 1135,
+          "INFO": 1129,
           "WARNING": 8
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1135
+          "UNKNOWN_CONCEPT": 1129
         }
       },
       "latestFiling": {
@@ -937,13 +1030,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1a551367311dc817fe0778927cca84a4e9ef377c0572a6e5d3dda2b561a8203a",
@@ -1096,13 +1189,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "746e31cfaaa5ad2114e7df11032e84da8d3079291b4d0368e4ce1968a0058e06",

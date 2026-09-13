@@ -7,8 +7,8 @@
       "name": "Essential Utilities, Inc.",
       "sic": "4941",
       "rawFacts": 23582,
-      "mappedFacts": 7161,
-      "unmappedFacts": 16485,
+      "mappedFacts": 7541,
+      "unmappedFacts": 16148,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17122,
+        "total": 16790,
         "by_severity": {
-          "INFO": 16485,
-          "WARNING": 637
+          "INFO": 16148,
+          "WARNING": 642
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 575,
-          "RESTATEMENT_CONFLICT": 55,
+          "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 16485
+          "UNKNOWN_CONCEPT": 16148
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e943ade3605ee1019f0ae83b2fff791733daf618a9f5dcc56f9a5d655e123d78",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d36b995792347b45bc20eb74052e97b8fe03b3705b0b2c2905619bf85c3793e8",
@@ -323,8 +323,8 @@
       "name": "LITHIA MOTORS INC",
       "sic": "5500",
       "rawFacts": 21001,
-      "mappedFacts": 6658,
-      "unmappedFacts": 14698,
+      "mappedFacts": 6848,
+      "unmappedFacts": 14525,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,18 +443,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15047,
+        "total": 14875,
         "by_severity": {
-          "INFO": 14698,
+          "INFO": 14525,
           "ERROR": 2,
-          "WARNING": 347
+          "WARNING": 348
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 279,
+          "CONCEPT_DISAGREEMENT": 280,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 62,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14698
+          "UNKNOWN_CONCEPT": 14525
         }
       },
       "latestFiling": {
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "af00275c03961a8caf157139733fb237f3aa27d8909c1a59ce699ef6a5ae05e4",
@@ -482,11 +482,54 @@
       "name": "STARWOOD PROPERTY TRUST, INC.",
       "sic": "6798",
       "rawFacts": 31257,
-      "mappedFacts": 5367,
-      "unmappedFacts": 25687,
+      "mappedFacts": 6750,
+      "unmappedFacts": 24510,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2013-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "STWD"
@@ -602,18 +645,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26587,
+        "total": 25610,
         "by_severity": {
-          "INFO": 25687,
+          "INFO": 24510,
           "ERROR": 15,
-          "WARNING": 885
+          "WARNING": 1085
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 805,
+          "CONCEPT_DISAGREEMENT": 813,
           "FUTURE_DATA_LEAK": 15,
-          "RESTATEMENT_CONFLICT": 67,
-          "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 25687
+          "PERIOD_MISMATCH": 175,
+          "RESTATEMENT_CONFLICT": 77,
+          "UNEXPECTED_DURATION": 20,
+          "UNKNOWN_CONCEPT": 24510
         }
       },
       "latestFiling": {
@@ -624,13 +668,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9064b63fcb5e7d121e40aaf58e3fa94d2d0a986653c29f4783e2fefeda8d8a5c",
@@ -782,13 +826,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fb51a77c17f369751467d7591fb286da1453eca7b4f12a1e9ef1316a41028e6d",
@@ -799,8 +843,8 @@
       "name": "Strata Critical Medical, Inc.",
       "sic": "8000",
       "rawFacts": 6893,
-      "mappedFacts": 2212,
-      "unmappedFacts": 4778,
+      "mappedFacts": 2216,
+      "unmappedFacts": 4776,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -919,9 +963,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5146,
+        "total": 5144,
         "by_severity": {
-          "INFO": 4778,
+          "INFO": 4776,
           "ERROR": 1,
           "WARNING": 367
         },
@@ -931,7 +975,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 137,
           "UNEXPECTED_DURATION": 54,
-          "UNKNOWN_CONCEPT": 4778
+          "UNKNOWN_CONCEPT": 4776
         }
       },
       "latestFiling": {
@@ -942,13 +986,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "87bfe9c37992c8a5a9e085e4fc320d022343ec30694939a6825e8ca3678f9035",

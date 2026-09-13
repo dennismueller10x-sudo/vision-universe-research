@@ -7,8 +7,8 @@
       "name": "NATIONAL BEVERAGE CORP",
       "sic": "2086",
       "rawFacts": 15596,
-      "mappedFacts": 6259,
-      "unmappedFacts": 9862,
+      "mappedFacts": 6260,
+      "unmappedFacts": 9852,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10263,
+        "total": 10262,
         "by_severity": {
-          "INFO": 9862,
+          "INFO": 9852,
           "ERROR": 1,
-          "WARNING": 400
+          "WARNING": 409
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 237,
           "FISCAL_PERIOD_CONFLICT": 47,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 23,
+          "PERIOD_MISMATCH": 30,
           "RESTATEMENT_CONFLICT": 93,
-          "UNKNOWN_CONCEPT": 9862
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 9852
         }
       },
       "latestFiling": {
@@ -150,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be403e00579ff1ba26260139114d176374981ff5afc519ad3421bd5f6133f244",
@@ -167,8 +168,8 @@
       "name": "AIR INDUSTRIES GROUP",
       "sic": "3728",
       "rawFacts": 16590,
-      "mappedFacts": 5261,
-      "unmappedFacts": 11767,
+      "mappedFacts": 5265,
+      "unmappedFacts": 11764,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -287,9 +288,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12008,
+        "total": 12005,
         "by_severity": {
-          "INFO": 11767,
+          "INFO": 11764,
           "ERROR": 2,
           "WARNING": 239
         },
@@ -298,7 +299,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 85,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 11767
+          "UNKNOWN_CONCEPT": 11764
         }
       },
       "latestFiling": {
@@ -309,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ef07e8a2306936231fd8e0d123041f037fcf74836c7a591d4713599431b2830e",
@@ -326,8 +327,8 @@
       "name": "iHeartMedia, Inc.",
       "sic": "4832",
       "rawFacts": 25736,
-      "mappedFacts": 6667,
-      "unmappedFacts": 18743,
+      "mappedFacts": 6798,
+      "unmappedFacts": 18671,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -448,16 +449,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19797,
+        "total": 19725,
         "by_severity": {
-          "INFO": 18743,
+          "INFO": 18671,
           "WARNING": 1054
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 440,
           "RESTATEMENT_CONFLICT": 168,
           "UNEXPECTED_DURATION": 446,
-          "UNKNOWN_CONCEPT": 18743
+          "UNKNOWN_CONCEPT": 18671
         }
       },
       "latestFiling": {
@@ -468,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ed319b9ab349cc2e695ec4f6fcb6967d7852e91c309b978317b189590e2f76d7",
@@ -485,8 +486,8 @@
       "name": "Sensus Healthcare, Inc.",
       "sic": "3841",
       "rawFacts": 10228,
-      "mappedFacts": 3721,
-      "unmappedFacts": 6704,
+      "mappedFacts": 3722,
+      "unmappedFacts": 6703,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -605,9 +606,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6895,
+        "total": 6894,
         "by_severity": {
-          "INFO": 6704,
+          "INFO": 6703,
           "ERROR": 6,
           "WARNING": 185
         },
@@ -616,7 +617,7 @@
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 6704
+          "UNKNOWN_CONCEPT": 6703
         }
       },
       "latestFiling": {
@@ -627,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b51e55d6816d05302c2da799728bccb022e07f8a6e6ba941678a53edbf91956b",
@@ -782,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "86e0eaf35ef93a4989825a58a3d515f077e45b9408a04fca95ae523e816a2462",
@@ -799,8 +800,8 @@
       "name": "Nano Nuclear Energy Inc.",
       "sic": "4911",
       "rawFacts": 2196,
-      "mappedFacts": 654,
-      "unmappedFacts": 1595,
+      "mappedFacts": 659,
+      "unmappedFacts": 1591,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -919,9 +920,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1626,
+        "total": 1622,
         "by_severity": {
-          "INFO": 1595,
+          "INFO": 1591,
           "WARNING": 31
         },
         "by_code": {
@@ -929,7 +930,7 @@
           "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 11,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 1595
+          "UNKNOWN_CONCEPT": 1591
         }
       },
       "latestFiling": {
@@ -940,13 +941,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a7eab403e31be74920f2cce7f2a2f5417b9010174b69e3ec79d0bb5be307e1e2",
@@ -1095,13 +1096,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "92ddd2e5ba325114b91fc6a6273533ecb613726f34e6d405382afa356fb2717e",

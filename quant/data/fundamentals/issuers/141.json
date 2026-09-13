@@ -7,11 +7,75 @@
       "name": "HORACE MANN EDUCATORS CORP /DE/",
       "sic": "6331",
       "rawFacts": 26503,
-      "mappedFacts": 5401,
-      "unmappedFacts": 21597,
+      "mappedFacts": 7028,
+      "unmappedFacts": 20333,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HMN"
@@ -126,15 +190,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21968,
+        "total": 20710,
         "by_severity": {
-          "INFO": 21597,
-          "WARNING": 371
+          "INFO": 20333,
+          "WARNING": 377
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 212,
-          "RESTATEMENT_CONFLICT": 159,
-          "UNKNOWN_CONCEPT": 21597
+          "RESTATEMENT_CONFLICT": 165,
+          "UNKNOWN_CONCEPT": 20333
         }
       },
       "latestFiling": {
@@ -145,13 +209,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "79958b7888495834e471db355cb3ca8f3960e174498582850ca934c7de574ed5",
@@ -162,8 +226,8 @@
       "name": "Fresenius Medical Care AG",
       "sic": "8090",
       "rawFacts": 10145,
-      "mappedFacts": 1709,
-      "unmappedFacts": 8655,
+      "mappedFacts": 1731,
+      "unmappedFacts": 8636,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +347,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8881,
+        "total": 8868,
         "by_severity": {
-          "INFO": 8655,
-          "WARNING": 226
+          "INFO": 8636,
+          "WARNING": 232
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 197,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 8655
+          "UNIT_MISMATCH": 6,
+          "UNKNOWN_CONCEPT": 8636
         }
       },
       "latestFiling": {
@@ -303,13 +368,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9f333f10f02de1d95fc102906984f085a42591cc2344a5a4ca7f7e57377fbe74",
@@ -457,13 +522,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2b8eec7c3d15cc8c16ed973a8c3c44d6da62736679ea72b375cddf6101aa95db",

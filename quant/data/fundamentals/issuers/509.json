@@ -7,8 +7,8 @@
       "name": "FEDERAL SIGNAL CORP /DE/",
       "sic": "3711",
       "rawFacts": 23080,
-      "mappedFacts": 6981,
-      "unmappedFacts": 16127,
+      "mappedFacts": 7160,
+      "unmappedFacts": 15927,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16788,
+        "total": 16609,
         "by_severity": {
-          "INFO": 16127,
-          "WARNING": 661
+          "INFO": 15927,
+          "WARNING": 682
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 494,
-          "PERIOD_MISMATCH": 14,
+          "PERIOD_MISMATCH": 32,
           "RESTATEMENT_CONFLICT": 149,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 16127
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 15927
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2c5ce0d8cf5807bc30526736b865e60089b0b6194e6f2069cf687ef45fd53a01",
@@ -165,8 +165,8 @@
       "name": "SONIC AUTOMOTIVE INC",
       "sic": "5500",
       "rawFacts": 21767,
-      "mappedFacts": 7304,
-      "unmappedFacts": 14506,
+      "mappedFacts": 7405,
+      "unmappedFacts": 14405,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,9 +285,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15222,
+        "total": 15121,
         "by_severity": {
-          "INFO": 14506,
+          "INFO": 14405,
           "ERROR": 5,
           "WARNING": 711
         },
@@ -298,7 +298,7 @@
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 22,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 14506
+          "UNKNOWN_CONCEPT": 14405
         }
       },
       "latestFiling": {
@@ -309,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2008f22c28ae26916fcd40817cc7fb689a828483fb6aa759d4b43d51187b4b3c",
@@ -326,8 +326,8 @@
       "name": "Aramark",
       "sic": "5812",
       "rawFacts": 18398,
-      "mappedFacts": 5352,
-      "unmappedFacts": 13103,
+      "mappedFacts": 5426,
+      "unmappedFacts": 13028,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -446,15 +446,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13562,
+        "total": 13488,
         "by_severity": {
-          "INFO": 13103,
-          "WARNING": 459
+          "INFO": 13028,
+          "WARNING": 460
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 375,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 13103
+          "UNKNOWN_CONCEPT": 13028
         }
       },
       "latestFiling": {
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6e034651ef62e6a4b486f60a458ffb4867f0ff627fce5b60309567512889bee4",
@@ -482,8 +483,8 @@
       "name": "Lyft, Inc.",
       "sic": "7389",
       "rawFacts": 11814,
-      "mappedFacts": 3256,
-      "unmappedFacts": 8744,
+      "mappedFacts": 3310,
+      "unmappedFacts": 8706,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -602,16 +603,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9073,
+        "total": 9037,
         "by_severity": {
-          "INFO": 8744,
-          "WARNING": 329
+          "INFO": 8706,
+          "WARNING": 331
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 305,
           "PERIOD_MISMATCH": 7,
-          "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 8744
+          "RESTATEMENT_CONFLICT": 19,
+          "UNKNOWN_CONCEPT": 8706
         }
       },
       "latestFiling": {
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e948055b9bde83cfd5897338472bb54a41fd09ce9bb32e00a06ea789f6859401",
@@ -781,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d96492d93d6d1bb848a71404b65c5b5425804f6bc84f957481f2e73a39d39fb8",
@@ -938,13 +939,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9d2d0f01befb97241b808f9e8c5d771b04557e1f02390c3e23d092da3c95dd07",

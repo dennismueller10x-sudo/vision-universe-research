@@ -7,8 +7,8 @@
       "name": "SOUTHWEST AIRLINES CO",
       "sic": "4512",
       "rawFacts": 27059,
-      "mappedFacts": 7415,
-      "unmappedFacts": 20392,
+      "mappedFacts": 7571,
+      "unmappedFacts": 20239,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20716,
+        "total": 20563,
         "by_severity": {
-          "INFO": 20392,
+          "INFO": 20239,
           "WARNING": 324
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
           "NEGATIVE_WHERE_IMPOSSIBLE": 27,
           "RESTATEMENT_CONFLICT": 221,
-          "UNKNOWN_CONCEPT": 20392
+          "UNKNOWN_CONCEPT": 20239
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8ef4ff197c9fa6996439e68e1b37b0372f113736f38f30fb8feef7e770966ced",
@@ -164,17 +164,108 @@
       "name": "ZIONS BANCORPORATION, NATIONAL ASSOCIATION /UT/",
       "sic": "6021",
       "rawFacts": 43004,
-      "mappedFacts": 5802,
-      "unmappedFacts": 36929,
+      "mappedFacts": 8779,
+      "unmappedFacts": 34302,
       "calendarYears": 32,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 9.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 11.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -293,20 +384,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 37761,
+        "total": 35369,
         "by_severity": {
-          "INFO": 36929,
+          "INFO": 34302,
           "ERROR": 15,
-          "WARNING": 817
+          "WARNING": 1052
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 585,
-          "FISCAL_PERIOD_CONFLICT": 81,
+          "CONCEPT_DISAGREEMENT": 734,
+          "FISCAL_PERIOD_CONFLICT": 117,
           "FUTURE_DATA_LEAK": 15,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 148,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 36929
+          "RESTATEMENT_CONFLICT": 197,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 34302
         }
       },
       "latestFiling": {
@@ -317,13 +408,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "767d719a027c952d8d9d875d20332d036dbaefe6c1d353b42d2419704f00d484",
@@ -334,8 +425,8 @@
       "name": "GameStop Corp.",
       "sic": "5734",
       "rawFacts": 23601,
-      "mappedFacts": 8800,
-      "unmappedFacts": 15046,
+      "mappedFacts": 8957,
+      "unmappedFacts": 14889,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -455,16 +546,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15564,
+        "total": 15415,
         "by_severity": {
-          "INFO": 15046,
-          "WARNING": 518
+          "INFO": 14889,
+          "WARNING": 526
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 380,
+          "CONCEPT_DISAGREEMENT": 382,
           "FISCAL_PERIOD_CONFLICT": 6,
-          "RESTATEMENT_CONFLICT": 132,
-          "UNKNOWN_CONCEPT": 15046
+          "PERIOD_MISMATCH": 3,
+          "RESTATEMENT_CONFLICT": 135,
+          "UNKNOWN_CONCEPT": 14889
         }
       },
       "latestFiling": {
@@ -475,13 +567,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "005f5ae2bd39fe33a7b00d923fc9eeb5ccdd0a7e111713fea9a0d3d84fc4587b",
@@ -492,8 +584,8 @@
       "name": "Gevo, Inc.",
       "sic": "2860",
       "rawFacts": 17514,
-      "mappedFacts": 5514,
-      "unmappedFacts": 11843,
+      "mappedFacts": 5563,
+      "unmappedFacts": 11813,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -612,17 +704,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12460,
+        "total": 12432,
         "by_severity": {
-          "INFO": 11843,
-          "WARNING": 617
+          "INFO": 11813,
+          "WARNING": 619
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 297,
           "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 86,
+          "RESTATEMENT_CONFLICT": 88,
           "UNEXPECTED_DURATION": 220,
-          "UNKNOWN_CONCEPT": 11843
+          "UNKNOWN_CONCEPT": 11813
         }
       },
       "latestFiling": {
@@ -633,13 +725,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aaa79375ea93f41896a927ea79d2c3dfccc5bb0acc86134eca33af4bd2197b5e",
@@ -792,13 +884,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d26c0ab92343bc6271a58f85bbeb7edbab13685fbbbbd50316e8d0218c27961a",
@@ -950,13 +1042,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b99caa7d77da4e844f961f6fb6d1602ed56b0ab2d6e6aafb59c8403ba627196",
@@ -1106,13 +1198,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b262445fcbb6370c329edb3561517c8bea40f3bd713e3b353026f6a066df83bd",
@@ -1123,8 +1215,8 @@
       "name": "Fidelity Solana Fund",
       "sic": "6221",
       "rawFacts": 300,
-      "mappedFacts": 61,
-      "unmappedFacts": 238,
+      "mappedFacts": 64,
+      "unmappedFacts": 233,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1242,16 +1334,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 251,
+        "total": 248,
         "by_severity": {
-          "INFO": 238,
-          "WARNING": 13
+          "INFO": 233,
+          "WARNING": 15
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
           "RESTATEMENT_CONFLICT": 2,
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 238
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 233
         }
       },
       "latestFiling": {
@@ -1262,13 +1354,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c78fdd7fdf9d46a3dcbc71a759d2e4262b4fa4e2cf6c50e3c76939a458637c0b",

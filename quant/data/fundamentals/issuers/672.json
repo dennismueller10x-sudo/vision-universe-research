@@ -7,8 +7,8 @@
       "name": "STIFEL FINANCIAL CORP",
       "sic": "6211",
       "rawFacts": 37103,
-      "mappedFacts": 5581,
-      "unmappedFacts": 31293,
+      "mappedFacts": 7635,
+      "unmappedFacts": 29651,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -131,17 +131,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32059,
+        "total": 30458,
         "by_severity": {
-          "INFO": 31293,
+          "INFO": 29651,
           "ERROR": 2,
-          "WARNING": 764
+          "WARNING": 805
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 619,
+          "CONCEPT_DISAGREEMENT": 628,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 145,
-          "UNKNOWN_CONCEPT": 31293
+          "RESTATEMENT_CONFLICT": 177,
+          "UNKNOWN_CONCEPT": 29651
         }
       },
       "latestFiling": {
@@ -152,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c506f20724a5ac44acbeca71401370cd32abf53c972aedaec0055364925ea43a",
@@ -169,8 +169,8 @@
       "name": "CADENCE DESIGN SYSTEMS INC",
       "sic": "7372",
       "rawFacts": 23998,
-      "mappedFacts": 6077,
-      "unmappedFacts": 18419,
+      "mappedFacts": 6130,
+      "unmappedFacts": 18382,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -289,15 +289,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18832,
+        "total": 18795,
         "by_severity": {
-          "INFO": 18419,
+          "INFO": 18382,
           "WARNING": 413
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 323,
           "RESTATEMENT_CONFLICT": 90,
-          "UNKNOWN_CONCEPT": 18419
+          "UNKNOWN_CONCEPT": 18382
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "432312dde8cb6a70dfd0012b1f637a1fd81c4da36a5cde858727e81d74392d15",
@@ -325,8 +325,8 @@
       "name": "ELTEK LTD",
       "sic": "3672",
       "rawFacts": 5477,
-      "mappedFacts": 1781,
-      "unmappedFacts": 3878,
+      "mappedFacts": 1793,
+      "unmappedFacts": 3866,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -445,15 +445,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3977,
+        "total": 3967,
         "by_severity": {
-          "INFO": 3878,
-          "WARNING": 99
+          "INFO": 3866,
+          "WARNING": 101
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 93,
-          "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 3878
+          "RESTATEMENT_CONFLICT": 8,
+          "UNKNOWN_CONCEPT": 3866
         }
       },
       "latestFiling": {
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e89be95405d964f9a1dd64487000e721a9fdcbf090f3bb32fb27880754240809",
@@ -481,17 +481,108 @@
       "name": "PEOPLES BANCORP OF NORTH CAROLINA INC",
       "sic": "6022",
       "rawFacts": 27024,
-      "mappedFacts": 4744,
-      "unmappedFacts": 22151,
+      "mappedFacts": 7450,
+      "unmappedFacts": 19816,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -609,17 +700,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22321,
+        "total": 20020,
         "by_severity": {
-          "INFO": 22151,
+          "INFO": 19816,
           "ERROR": 9,
-          "WARNING": 161
+          "WARNING": 195
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 115,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 22151
+          "RESTATEMENT_CONFLICT": 80,
+          "UNKNOWN_CONCEPT": 19816
         }
       },
       "latestFiling": {
@@ -630,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bdf86499a35ce7bf9de949dcfd6aa6fd5056e7f75f30482c1bf96bc17b861c6d",
@@ -647,11 +738,54 @@
       "name": "Ellington Credit Co",
       "sic": "6798",
       "rawFacts": 10838,
-      "mappedFacts": 2859,
-      "unmappedFacts": 8214,
+      "mappedFacts": 3072,
+      "unmappedFacts": 7995,
       "calendarYears": 13,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "0331",
       "tickers": [
         "EARN",
@@ -768,17 +902,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8291,
+        "total": 8078,
         "by_severity": {
-          "INFO": 8214,
-          "WARNING": 77
+          "INFO": 7995,
+          "WARNING": 83
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 43,
-          "FISCAL_PERIOD_CONFLICT": 3,
-          "RESTATEMENT_CONFLICT": 19,
-          "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 8214
+          "CONCEPT_DISAGREEMENT": 45,
+          "FISCAL_PERIOD_CONFLICT": 4,
+          "RESTATEMENT_CONFLICT": 20,
+          "UNEXPECTED_DURATION": 14,
+          "UNKNOWN_CONCEPT": 7995
         }
       },
       "latestFiling": {
@@ -789,13 +923,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f649b88432c9a7c93194d87e6f6bd8c197daa4f04fc53d7292dbc902f2062710",
@@ -806,8 +940,8 @@
       "name": "RAYONIER ADVANCED MATERIALS INC.",
       "sic": "2611",
       "rawFacts": 18795,
-      "mappedFacts": 5407,
-      "unmappedFacts": 13255,
+      "mappedFacts": 5486,
+      "unmappedFacts": 13176,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -926,15 +1060,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13740,
+        "total": 13662,
         "by_severity": {
-          "INFO": 13255,
-          "WARNING": 485
+          "INFO": 13176,
+          "WARNING": 486
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 397,
-          "RESTATEMENT_CONFLICT": 88,
-          "UNKNOWN_CONCEPT": 13255
+          "RESTATEMENT_CONFLICT": 89,
+          "UNKNOWN_CONCEPT": 13176
         }
       },
       "latestFiling": {
@@ -945,13 +1079,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b92dccfb54b742a914c77f427e09d0c5d77b3bd6c44590f0c0c93d79c3680955",
@@ -1102,13 +1236,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2060d3930667927cdb26b2300d1a2a65883ac7f852f7a149ffb290ff4594aa71",
@@ -1119,8 +1253,8 @@
       "name": "Corteva, Inc.",
       "sic": "0100",
       "rawFacts": 14486,
-      "mappedFacts": 3462,
-      "unmappedFacts": 10511,
+      "mappedFacts": 3554,
+      "unmappedFacts": 10418,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1239,18 +1373,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11321,
+        "total": 11229,
         "by_severity": {
-          "INFO": 10511,
+          "INFO": 10418,
           "ERROR": 5,
-          "WARNING": 805
+          "WARNING": 806
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 700,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 57,
-          "UNEXPECTED_DURATION": 48,
-          "UNKNOWN_CONCEPT": 10511
+          "UNEXPECTED_DURATION": 49,
+          "UNKNOWN_CONCEPT": 10418
         }
       },
       "latestFiling": {
@@ -1261,13 +1395,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "21353bc1781dbd5df3d1ea8e7bffe6672234712b635cd6702f69e1b01c60040d",

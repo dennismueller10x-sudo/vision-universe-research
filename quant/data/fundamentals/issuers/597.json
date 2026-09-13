@@ -7,17 +7,108 @@
       "name": "Itau Unibanco Holding S.A.",
       "sic": "6022",
       "rawFacts": 5277,
-      "mappedFacts": 599,
-      "unmappedFacts": 4748,
+      "mappedFacts": 692,
+      "unmappedFacts": 4679,
       "calendarYears": 15,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "deposits": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
         "net_interest_income": {
           "annualPeriods": 4,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2010-12-31",
           "historyYears": 3.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "time_deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 1.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,9 +226,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4847,
+        "total": 4778,
         "by_severity": {
-          "INFO": 4748,
+          "INFO": 4679,
           "ERROR": 1,
           "WARNING": 98
         },
@@ -146,7 +237,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 14,
           "UNIT_MISMATCH": 12,
-          "UNKNOWN_CONCEPT": 4748
+          "UNKNOWN_CONCEPT": 4679
         }
       },
       "latestFiling": {
@@ -157,13 +248,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d5b98c88584758f7ba7c4ab537e5f7ef798590b3f27acb81dd7ddc7a14201c74",
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "30061275396204a5df4a87967fa0169f9119c5b2aa660699523f3cf7fe4c459a",
@@ -331,8 +422,8 @@
       "name": "PepGen Inc.",
       "sic": "2834",
       "rawFacts": 4055,
-      "mappedFacts": 1419,
-      "unmappedFacts": 2720,
+      "mappedFacts": 1455,
+      "unmappedFacts": 2698,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -450,15 +541,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2762,
+        "total": 2740,
         "by_severity": {
-          "INFO": 2720,
+          "INFO": 2698,
           "WARNING": 42
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 39,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 2720
+          "UNKNOWN_CONCEPT": 2698
         }
       },
       "latestFiling": {
@@ -469,13 +560,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ad7a56790274018d82c8f4334d7649e120470e56c6f0b9cbab21359fa5148dc9",
@@ -626,13 +717,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f519a78c41cf01c79b67a442a71b62c01d4dd016d0891b9d129b9077be70d5b8",

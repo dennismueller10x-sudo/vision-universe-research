@@ -7,8 +7,8 @@
       "name": "CONAGRA BRANDS INC.",
       "sic": "2000",
       "rawFacts": 32144,
-      "mappedFacts": 7952,
-      "unmappedFacts": 23955,
+      "mappedFacts": 8242,
+      "unmappedFacts": 23683,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25291,
+        "total": 25026,
         "by_severity": {
-          "INFO": 23955,
-          "WARNING": 1336
+          "INFO": 23683,
+          "WARNING": 1343
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1050,
-          "FISCAL_PERIOD_CONFLICT": 27,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 258,
-          "UNKNOWN_CONCEPT": 23955
+          "FISCAL_PERIOD_CONFLICT": 31,
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 259,
+          "UNIT_MISMATCH": 1,
+          "UNKNOWN_CONCEPT": 23683
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4b190a5262526e7bb19eb3f1e0a3f8d63ae483a5cc06572f2db9f19e0b949fe8",
@@ -165,8 +166,8 @@
       "name": "HP INC",
       "sic": "3570",
       "rawFacts": 32516,
-      "mappedFacts": 7820,
-      "unmappedFacts": 24844,
+      "mappedFacts": 8047,
+      "unmappedFacts": 24635,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25529,
+        "total": 25322,
         "by_severity": {
-          "INFO": 24844,
-          "WARNING": 685
+          "INFO": 24635,
+          "WARNING": 687
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 586,
-          "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 24844
+          "RESTATEMENT_CONFLICT": 101,
+          "UNKNOWN_CONCEPT": 24635
         }
       },
       "latestFiling": {
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "172836635d36d0697869224ede799c6b8396865862883d0e54300a412f12aa8b",
@@ -321,11 +322,54 @@
       "name": "American Assets Trust, Inc.",
       "sic": "6798",
       "rawFacts": 23724,
-      "mappedFacts": 5159,
-      "unmappedFacts": 17855,
+      "mappedFacts": 6227,
+      "unmappedFacts": 17095,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2011-12-31",
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AAT"
@@ -441,18 +485,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18738,
+        "total": 18002,
         "by_severity": {
-          "INFO": 17855,
+          "INFO": 17095,
           "ERROR": 2,
-          "WARNING": 881
+          "WARNING": 905
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 791,
+          "CONCEPT_DISAGREEMENT": 803,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 81,
+          "RESTATEMENT_CONFLICT": 93,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 17855
+          "UNKNOWN_CONCEPT": 17095
         }
       },
       "latestFiling": {
@@ -463,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "82d1762445af1f8ea7e9b0fb1d581115f02d5ed127ef0e025d30c2552d0a5ece",
@@ -620,13 +664,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8348e3816fd40eb677016edd9bcbc90e8315219a96e78ca8fbc2180a82a577bb",
@@ -776,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "492d338261bd4a17f1f2240e634a2f147f40e2d5f00ff004c65a3c578d017354",

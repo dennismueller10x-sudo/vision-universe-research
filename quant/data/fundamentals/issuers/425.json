@@ -7,11 +7,54 @@
       "name": "LAMAR ADVERTISING CO/NEW",
       "sic": "6798",
       "rawFacts": 22066,
-      "mappedFacts": 6821,
-      "unmappedFacts": 15758,
+      "mappedFacts": 7175,
+      "unmappedFacts": 15495,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "LAMR"
@@ -127,16 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16004,
+        "total": 15747,
         "by_severity": {
-          "INFO": 15758,
-          "WARNING": 246
+          "INFO": 15495,
+          "WARNING": 252
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 192,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 15758
+          "RESTATEMENT_CONFLICT": 58,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 15495
         }
       },
       "latestFiling": {
@@ -147,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b79347edb28bc3479f993efeff27d3e1b5a88bb06a7982a40f8c0948d5b44438",
@@ -164,17 +207,108 @@
       "name": "HOME BANCORP, INC.",
       "sic": "6036",
       "rawFacts": 27958,
-      "mappedFacts": 5502,
-      "unmappedFacts": 22815,
+      "mappedFacts": 8031,
+      "unmappedFacts": 20492,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 6.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2012-12-31",
+          "historyYears": 2.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2016-12-31",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -292,16 +426,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22924,
+        "total": 20614,
         "by_severity": {
-          "INFO": 22815,
-          "WARNING": 109
+          "INFO": 20492,
+          "WARNING": 122
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 79,
-          "FISCAL_PERIOD_CONFLICT": 8,
-          "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 22815
+          "CONCEPT_DISAGREEMENT": 83,
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "RESTATEMENT_CONFLICT": 24,
+          "UNKNOWN_CONCEPT": 20492
         }
       },
       "latestFiling": {
@@ -312,13 +446,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c28de423a782a3615c927cc869c514e3a5be7b801603cb7b30ca9d94fb0e64fe",
@@ -329,8 +463,8 @@
       "name": "TDH Holdings, Inc.",
       "sic": "6531",
       "rawFacts": 3537,
-      "mappedFacts": 958,
-      "unmappedFacts": 2612,
+      "mappedFacts": 966,
+      "unmappedFacts": 2608,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -449,9 +583,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2798,
+        "total": 2794,
         "by_severity": {
-          "INFO": 2612,
+          "INFO": 2608,
           "ERROR": 7,
           "WARNING": 179
         },
@@ -459,7 +593,7 @@
           "CONCEPT_DISAGREEMENT": 115,
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 2612
+          "UNKNOWN_CONCEPT": 2608
         }
       },
       "latestFiling": {
@@ -470,13 +604,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c619d83b8264cb9cc77c10146dad88b651249ea79246420297b11db11e56f2b",
@@ -487,8 +621,8 @@
       "name": "Mirum Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 7862,
-      "mappedFacts": 2358,
-      "unmappedFacts": 5522,
+      "mappedFacts": 2374,
+      "unmappedFacts": 5511,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -606,16 +740,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5602,
+        "total": 5591,
         "by_severity": {
-          "INFO": 5522,
+          "INFO": 5511,
           "WARNING": 80
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 48,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 5522
+          "UNKNOWN_CONCEPT": 5511
         }
       },
       "latestFiling": {
@@ -626,13 +760,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ec46fad87357d91c0519e7e091b498efaca1c93b0c022e7b10ce7e041c307a83",
@@ -782,13 +916,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5fe94a33b08263ab124f979293010b9bebd408987e48c315f3c5dd55d910ae5d",
@@ -799,8 +933,8 @@
       "name": "Verde Clean Fuels, Inc.",
       "sic": "2860",
       "rawFacts": 3253,
-      "mappedFacts": 1251,
-      "unmappedFacts": 2081,
+      "mappedFacts": 1253,
+      "unmappedFacts": 2080,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -920,9 +1054,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2239,
+        "total": 2238,
         "by_severity": {
-          "INFO": 2081,
+          "INFO": 2080,
           "WARNING": 158
         },
         "by_code": {
@@ -931,7 +1065,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 84,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 2081
+          "UNKNOWN_CONCEPT": 2080
         }
       },
       "latestFiling": {
@@ -942,13 +1076,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ad32920022802e1c58edd1a794d0da8db57ad977c6092db6a309f1346e43cb97",
@@ -959,8 +1093,8 @@
       "name": "Li Bang International Corp Inc.",
       "sic": "3580",
       "rawFacts": 730,
-      "mappedFacts": 221,
-      "unmappedFacts": 528,
+      "mappedFacts": 227,
+      "unmappedFacts": 525,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1079,16 +1213,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 555,
+        "total": 552,
         "by_severity": {
-          "INFO": 528,
+          "INFO": 525,
           "ERROR": 1,
           "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 26,
           "FUTURE_DATA_LEAK": 1,
-          "UNKNOWN_CONCEPT": 528
+          "UNKNOWN_CONCEPT": 525
         }
       },
       "latestFiling": {
@@ -1099,13 +1233,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b574c7a5d2ebdbf186a15843ec4092decfba62c4d0679e2d870cbfd6700cb967",

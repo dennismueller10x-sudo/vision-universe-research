@@ -7,8 +7,8 @@
       "name": "EMERA INC",
       "sic": "4911",
       "rawFacts": 5690,
-      "mappedFacts": 990,
-      "unmappedFacts": 4827,
+      "mappedFacts": 1012,
+      "unmappedFacts": 4805,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -130,15 +130,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4960,
+        "total": 4938,
         "by_severity": {
-          "INFO": 4827,
+          "INFO": 4805,
           "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
           "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 4827
+          "UNKNOWN_CONCEPT": 4805
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "16f29bb8617449d1dcd2cd0b88abbe2ecb74c78c3aba07f3986cc088c9c2ce9e",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9faaa4706eb25c65e1eba3a7e875664dea1ddb4cac87c770164863f97e80a43f",
@@ -462,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb7d1898a9ec8f2db87050e74cce7a1eb7eca9d7bb2e13f0fd5fe3646e2e4232",
@@ -479,11 +479,54 @@
       "name": "NexPoint Real Estate Finance, Inc.",
       "sic": "6798",
       "rawFacts": 6552,
-      "mappedFacts": 1483,
-      "unmappedFacts": 5066,
+      "mappedFacts": 1790,
+      "unmappedFacts": 4831,
       "calendarYears": 6,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "secured_debt": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NREF",
@@ -600,15 +643,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5220,
+        "total": 4992,
         "by_severity": {
-          "INFO": 5066,
-          "WARNING": 154
+          "INFO": 4831,
+          "WARNING": 161
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 134,
+          "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 5066
+          "UNKNOWN_CONCEPT": 4831
         }
       },
       "latestFiling": {
@@ -619,13 +663,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cab6203d1e3873ab50d7ff464dc1ccff22180a3da8a26f1a95dda728567bccdb",
@@ -775,13 +819,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "725e33270364d993396f2b1a4ebac4608d521913b5221ee00662e9fb70d48638",
@@ -792,8 +836,8 @@
       "name": "Lakeshore Acquisition III Corp.",
       "sic": "6770",
       "rawFacts": 567,
-      "mappedFacts": 290,
-      "unmappedFacts": 285,
+      "mappedFacts": 297,
+      "unmappedFacts": 277,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -913,16 +957,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 309,
+        "total": 303,
         "by_severity": {
-          "INFO": 285,
-          "WARNING": 24
+          "INFO": 277,
+          "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 7,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 285
+          "RESTATEMENT_CONFLICT": 6,
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 277
         }
       },
       "latestFiling": {
@@ -933,13 +977,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ac8d422c6a7cbe50d00161f306e65c335646002ee05554329fcb336d7ec810f8",

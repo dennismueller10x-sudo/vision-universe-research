@@ -7,8 +7,8 @@
       "name": "UNIVERSAL HEALTH SERVICES INC",
       "sic": "8062",
       "rawFacts": 23191,
-      "mappedFacts": 6256,
-      "unmappedFacts": 16820,
+      "mappedFacts": 6466,
+      "unmappedFacts": 16679,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17671,
+        "total": 17531,
         "by_severity": {
-          "INFO": 16820,
-          "WARNING": 851
+          "INFO": 16679,
+          "WARNING": 852
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 823,
           "RESTATEMENT_CONFLICT": 28,
-          "UNKNOWN_CONCEPT": 16820
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 16679
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b19e58fd03e3619a8fdc0c768b0b114d1fa2b33c25a2ed00678b26783a440300",
@@ -163,8 +164,8 @@
       "name": "QUANTA SERVICES, INC.",
       "sic": "1731",
       "rawFacts": 30935,
-      "mappedFacts": 8195,
-      "unmappedFacts": 22879,
+      "mappedFacts": 8375,
+      "unmappedFacts": 22534,
       "calendarYears": 42,
       "industry": null,
       "industryMetrics": {},
@@ -283,18 +284,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24330,
+        "total": 24148,
         "by_severity": {
-          "INFO": 22879,
+          "INFO": 22534,
           "ERROR": 2,
-          "WARNING": 1449
+          "WARNING": 1612
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 996,
-          "FISCAL_PERIOD_CONFLICT": 119,
+          "CONCEPT_DISAGREEMENT": 1007,
+          "FISCAL_PERIOD_CONFLICT": 123,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 334,
-          "UNKNOWN_CONCEPT": 22879
+          "PERIOD_MISMATCH": 146,
+          "RESTATEMENT_CONFLICT": 336,
+          "UNKNOWN_CONCEPT": 22534
         }
       },
       "latestFiling": {
@@ -305,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "91606536c37cad07502c1ebe0c235ed9dd47f164c539c91d84c84ebe5736c9a2",
@@ -322,8 +324,8 @@
       "name": "Cytek Biosciences, Inc.",
       "sic": "3826",
       "rawFacts": 9032,
-      "mappedFacts": 2355,
-      "unmappedFacts": 6484,
+      "mappedFacts": 2382,
+      "unmappedFacts": 6468,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -442,16 +444,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6649,
+        "total": 6633,
         "by_severity": {
-          "INFO": 6484,
+          "INFO": 6468,
           "WARNING": 165
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 156,
           "RESTATEMENT_CONFLICT": 8,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 6484
+          "UNKNOWN_CONCEPT": 6468
         }
       },
       "latestFiling": {
@@ -462,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f44762cb4d5e29389462e6626b01b0c95aea1158f4c3c609a99f846ac485d40",
@@ -479,8 +481,8 @@
       "name": "PHINIA INC.",
       "sic": "3714",
       "rawFacts": 5410,
-      "mappedFacts": 1533,
-      "unmappedFacts": 3951,
+      "mappedFacts": 1562,
+      "unmappedFacts": 3922,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -599,16 +601,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4078,
+        "total": 4049,
         "by_severity": {
-          "INFO": 3951,
+          "INFO": 3922,
           "WARNING": 127
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 109,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 3951
+          "UNKNOWN_CONCEPT": 3922
         }
       },
       "latestFiling": {
@@ -619,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4164fcfa39e7ab4fadbf7536055b95b4a6fde5a6e2cde12fa3ab657751bc2deb",

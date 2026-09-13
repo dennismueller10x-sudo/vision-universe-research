@@ -7,8 +7,8 @@
       "name": "CLEVELAND-CLIFFS INC.",
       "sic": "1000",
       "rawFacts": 31995,
-      "mappedFacts": 7542,
-      "unmappedFacts": 23874,
+      "mappedFacts": 7614,
+      "unmappedFacts": 23802,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25203,
+        "total": 25131,
         "by_severity": {
-          "INFO": 23874,
+          "INFO": 23802,
           "ERROR": 3,
           "WARNING": 1326
         },
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 162,
-          "UNKNOWN_CONCEPT": 23874
+          "UNKNOWN_CONCEPT": 23802
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cbf1a4bf569129f4548371fc3e8adbd451e77ee5fe1648805bbd01b99fbab4b3",
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0816c9ed11d92bad719b9e931e436782fb018863f1ce6da5aa8bfbce3b9a7afe",
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cecaf4fe9865de63c27cb8856d9067875fc71eb13cb6775ebb10990497feeb7f",
@@ -481,17 +481,108 @@
       "name": "Pathfinder Bancorp, Inc.",
       "sic": "6022",
       "rawFacts": 24083,
-      "mappedFacts": 3629,
-      "unmappedFacts": 20506,
+      "mappedFacts": 5321,
+      "unmappedFacts": 19034,
       "calendarYears": 15,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 13,
           "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 52,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -609,17 +700,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20851,
+        "total": 19381,
         "by_severity": {
-          "INFO": 20506,
+          "INFO": 19034,
           "ERROR": 3,
-          "WARNING": 342
+          "WARNING": 344
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 329,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 20506
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 14,
+          "UNKNOWN_CONCEPT": 19034
         }
       },
       "latestFiling": {
@@ -630,13 +722,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7893e437ba35630f3d23357774e34b0ba80802761632bb9127a5020c02b593ec",

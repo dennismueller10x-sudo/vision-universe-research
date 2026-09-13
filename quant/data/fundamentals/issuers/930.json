@@ -7,8 +7,8 @@
       "name": "BRUNSWICK CORP",
       "sic": "3510",
       "rawFacts": 31578,
-      "mappedFacts": 8223,
-      "unmappedFacts": 23067,
+      "mappedFacts": 8495,
+      "unmappedFacts": 22804,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -128,16 +128,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24308,
+        "total": 24046,
         "by_severity": {
-          "INFO": 23067,
-          "WARNING": 1241
+          "INFO": 22804,
+          "WARNING": 1242
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1091,
           "PERIOD_MISMATCH": 14,
-          "RESTATEMENT_CONFLICT": 136,
-          "UNKNOWN_CONCEPT": 23067
+          "RESTATEMENT_CONFLICT": 137,
+          "UNKNOWN_CONCEPT": 22804
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "82fb848bf810dba7fd6ad81d04b290e87049cb22d76907e68c89ee78722e1508",
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7b0fccc91bd7157a9b5af1e9407e2f42e8441e8f3ac9285af02370a73a317e2c",
@@ -324,8 +324,8 @@
       "name": "PubMatic, Inc.",
       "sic": "7370",
       "rawFacts": 7715,
-      "mappedFacts": 2293,
-      "unmappedFacts": 5626,
+      "mappedFacts": 2296,
+      "unmappedFacts": 5624,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -444,15 +444,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5633,
+        "total": 5631,
         "by_severity": {
-          "INFO": 5626,
+          "INFO": 5624,
           "WARNING": 7
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 5626
+          "UNKNOWN_CONCEPT": 5624
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b0a774993b854ac2e99eda0406173652d2dbe503c2b5ee261c7d398375ffcd6c",
@@ -480,17 +480,108 @@
       "name": "KB Financial Group Inc.",
       "sic": "6029",
       "rawFacts": 9232,
-      "mappedFacts": 790,
-      "unmappedFacts": 8288,
+      "mappedFacts": 866,
+      "unmappedFacts": 8212,
       "calendarYears": 14,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 4.0
+        },
+        "deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 1.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 2.0
+        },
         "net_interest_income": {
           "annualPeriods": 4,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2010-12-31",
           "historyYears": 3.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 3.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2010-12-31",
+          "historyYears": 1.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -608,17 +699,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8689,
+        "total": 8641,
         "by_severity": {
-          "INFO": 8288,
-          "WARNING": 401
+          "INFO": 8212,
+          "WARNING": 429
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 315,
+          "CONCEPT_DISAGREEMENT": 343,
           "EXTREME_VALUE": 63,
           "RESTATEMENT_CONFLICT": 11,
           "UNIT_MISMATCH": 12,
-          "UNKNOWN_CONCEPT": 8288
+          "UNKNOWN_CONCEPT": 8212
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f2cc710285a8b3efe6093004ebc84c1a05f21553100a9bd8b3ecf03b12b94180",
@@ -646,8 +737,8 @@
       "name": "Fulgent Genetics, Inc.",
       "sic": "8071",
       "rawFacts": 13960,
-      "mappedFacts": 4557,
-      "unmappedFacts": 9347,
+      "mappedFacts": 4586,
+      "unmappedFacts": 9329,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -766,15 +857,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9580,
+        "total": 9562,
         "by_severity": {
-          "INFO": 9347,
+          "INFO": 9329,
           "WARNING": 233
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 215,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 9347
+          "UNKNOWN_CONCEPT": 9329
         }
       },
       "latestFiling": {
@@ -785,13 +876,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f643442a970f9296abe83e9647fb90a3fc20c53ae7e10185464530b5b1514c5b",
@@ -941,13 +1032,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1c634400a6f5d1d9f87830496043b684c8a8041271025c2e40b0ba5e73b8e0c",
@@ -1097,13 +1188,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aaa509dc0e8dfb62784381f0f46159b2b5a00b32d5956aec69a1d4bb917313c3",

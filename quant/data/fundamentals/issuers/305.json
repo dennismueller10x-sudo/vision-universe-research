@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7200f14273b3439fdd78dd89cf3042b90e77f2430f66497af3a998bb2b8bdd96",
@@ -163,8 +163,8 @@
       "name": "COTY INC.",
       "sic": "2844",
       "rawFacts": 26922,
-      "mappedFacts": 5947,
-      "unmappedFacts": 20870,
+      "mappedFacts": 6022,
+      "unmappedFacts": 20710,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22038,
+        "total": 21963,
         "by_severity": {
-          "INFO": 20870,
-          "WARNING": 1168
+          "INFO": 20710,
+          "WARNING": 1253
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 999,
-          "PERIOD_MISMATCH": 71,
+          "PERIOD_MISMATCH": 149,
           "RESTATEMENT_CONFLICT": 98,
-          "UNKNOWN_CONCEPT": 20870
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 20710
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0304afd366aa9271d7f44a3f6b4505a025d6a81daf9e14fe470e1dc14be8ac7f",
@@ -320,8 +321,8 @@
       "name": "WORKIVA INC",
       "sic": "7372",
       "rawFacts": 18795,
-      "mappedFacts": 5489,
-      "unmappedFacts": 13590,
+      "mappedFacts": 5556,
+      "unmappedFacts": 13548,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -440,16 +441,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13742,
+        "total": 13700,
         "by_severity": {
-          "INFO": 13590,
+          "INFO": 13548,
           "WARNING": 152
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 135,
           "RESTATEMENT_CONFLICT": 14,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 13590
+          "UNKNOWN_CONCEPT": 13548
         }
       },
       "latestFiling": {
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7341aa96cec5791410aeeffd1ee0f5390fde99ccf34966685ef597ab1c229c0b",

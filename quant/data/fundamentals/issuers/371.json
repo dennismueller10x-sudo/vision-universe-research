@@ -7,8 +7,8 @@
       "name": "CARDINAL HEALTH INC",
       "sic": "5122",
       "rawFacts": 23887,
-      "mappedFacts": 7728,
-      "unmappedFacts": 16187,
+      "mappedFacts": 7887,
+      "unmappedFacts": 16029,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16791,
+        "total": 16633,
         "by_severity": {
-          "INFO": 16187,
+          "INFO": 16029,
           "ERROR": 7,
           "WARNING": 597
         },
@@ -139,7 +139,7 @@
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 62,
           "UNIT_MISMATCH": 12,
-          "UNKNOWN_CONCEPT": 16187
+          "UNKNOWN_CONCEPT": 16029
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75df9fa9423b5443f03073a9564acde2af8006e5e2c4f262e0c9cee423fe6fa6",
@@ -167,8 +167,8 @@
       "name": "Simpson Manufacturing Co., Inc.",
       "sic": "3420",
       "rawFacts": 25777,
-      "mappedFacts": 8204,
-      "unmappedFacts": 18056,
+      "mappedFacts": 8507,
+      "unmappedFacts": 17745,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +287,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18392,
+        "total": 18092,
         "by_severity": {
-          "INFO": 18056,
-          "WARNING": 336
+          "INFO": 17745,
+          "WARNING": 347
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 314,
-          "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 18056
+          "CONCEPT_DISAGREEMENT": 318,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 28,
+          "UNKNOWN_CONCEPT": 17745
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a6ab7172b70d09c0031b873db9314e4118b1df9c9ae628512404b75beae6046f",
@@ -323,17 +324,108 @@
       "name": "Community West Bancshares",
       "sic": "6022",
       "rawFacts": 31822,
-      "mappedFacts": 4879,
-      "unmappedFacts": 27052,
+      "mappedFacts": 7017,
+      "unmappedFacts": 25267,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -451,17 +543,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27151,
+        "total": 25370,
         "by_severity": {
-          "INFO": 27052,
+          "INFO": 25267,
           "ERROR": 1,
-          "WARNING": 98
+          "WARNING": 102
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 79,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 27052
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 25267
         }
       },
       "latestFiling": {
@@ -472,13 +565,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "52ff33d4010985e3f560dfe39b72c38f8cac59e74ccd9ffb2fb3f1eedf213598",
@@ -489,8 +582,8 @@
       "name": "IceCure Medical Ltd.",
       "sic": "3841",
       "rawFacts": 1924,
-      "mappedFacts": 646,
-      "unmappedFacts": 1357,
+      "mappedFacts": 654,
+      "unmappedFacts": 1349,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -610,14 +703,14 @@
         "rules_version": "1.0.0",
         "total": 1385,
         "by_severity": {
-          "INFO": 1357,
-          "WARNING": 28
+          "INFO": 1349,
+          "WARNING": 36
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 20,
+          "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 7,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 1357
+          "UNKNOWN_CONCEPT": 1349
         }
       },
       "latestFiling": {
@@ -628,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5ed0972a0c896668e2d0a6a0760c0ad0364f74a6fcc0295b16335cd95058cb1",

@@ -7,8 +7,8 @@
       "name": "Apple Inc.",
       "sic": "3571",
       "rawFacts": 24017,
-      "mappedFacts": 8452,
-      "unmappedFacts": 16124,
+      "mappedFacts": 8769,
+      "unmappedFacts": 15818,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16568,
+        "total": 16282,
         "by_severity": {
-          "INFO": 16124,
-          "WARNING": 444
+          "INFO": 15818,
+          "WARNING": 464
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 318,
-          "RESTATEMENT_CONFLICT": 126,
-          "UNKNOWN_CONCEPT": 16124
+          "RESTATEMENT_CONFLICT": 146,
+          "UNKNOWN_CONCEPT": 15818
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d1974cf68b105aa4ae1a9da58bc95488993216dde40f8470bcf17eef4c8a472",
@@ -163,8 +163,8 @@
       "name": "NASDAQ, INC.",
       "sic": "6200",
       "rawFacts": 28273,
-      "mappedFacts": 7429,
-      "unmappedFacts": 20854,
+      "mappedFacts": 7649,
+      "unmappedFacts": 20616,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,18 +283,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21749,
+        "total": 21546,
         "by_severity": {
-          "INFO": 20854,
+          "INFO": 20616,
           "ERROR": 3,
-          "WARNING": 892
+          "WARNING": 927
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 797,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 89,
-          "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 20854
+          "PERIOD_MISMATCH": 25,
+          "RESTATEMENT_CONFLICT": 96,
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 20616
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "19f620fc837c5ff420288bee2848949b012eb015102a7a42e817486418f45984",
@@ -322,16 +323,107 @@
       "name": "First Carolina Financial Services, Inc.",
       "sic": "6022",
       "rawFacts": 507,
-      "mappedFacts": 85,
-      "unmappedFacts": 426,
+      "mappedFacts": 114,
+      "unmappedFacts": 400,
       "calendarYears": 1,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 0,
           "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         }
       },
@@ -449,12 +541,12 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 426,
+        "total": 400,
         "by_severity": {
-          "INFO": 426
+          "INFO": 400
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 426
+          "UNKNOWN_CONCEPT": 400
         }
       },
       "latestFiling": {
@@ -465,13 +557,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "33b82ca5031e3a4a388a3d4fa7a1eb237c3ddd3533551bf518a07ac5cbf27e19",

@@ -7,8 +7,8 @@
       "name": "Parker-Hannifin Corp",
       "sic": "3490",
       "rawFacts": 26330,
-      "mappedFacts": 8251,
-      "unmappedFacts": 18561,
+      "mappedFacts": 8302,
+      "unmappedFacts": 18510,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18962,
+        "total": 18911,
         "by_severity": {
-          "INFO": 18561,
+          "INFO": 18510,
           "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 340,
           "RESTATEMENT_CONFLICT": 61,
-          "UNKNOWN_CONCEPT": 18561
+          "UNKNOWN_CONCEPT": 18510
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5ee46d84582bc047924374b16640fd6edced3cbc559830fa742bb87ea377665e",
@@ -163,8 +163,8 @@
       "name": "MARTIN MIDSTREAM PARTNERS L.P.",
       "sic": "5171",
       "rawFacts": 20186,
-      "mappedFacts": 4901,
-      "unmappedFacts": 15103,
+      "mappedFacts": 4902,
+      "unmappedFacts": 15102,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15815,
+        "total": 15814,
         "by_severity": {
-          "INFO": 15103,
+          "INFO": 15102,
           "WARNING": 712
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 482,
           "FISCAL_PERIOD_CONFLICT": 17,
           "RESTATEMENT_CONFLICT": 213,
-          "UNKNOWN_CONCEPT": 15103
+          "UNKNOWN_CONCEPT": 15102
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7edf2b2d1337482082853d7dbadf8a681b7b425e6d30b91b63abbead99c3eb83",
@@ -320,8 +320,8 @@
       "name": "XMax Inc.",
       "sic": "2510",
       "rawFacts": 19366,
-      "mappedFacts": 5909,
-      "unmappedFacts": 13704,
+      "mappedFacts": 5918,
+      "unmappedFacts": 13698,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -440,16 +440,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14112,
+        "total": 14106,
         "by_severity": {
-          "INFO": 13704,
+          "INFO": 13698,
           "WARNING": 408
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 253,
           "RESTATEMENT_CONFLICT": 154,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 13704
+          "UNKNOWN_CONCEPT": 13698
         }
       },
       "latestFiling": {
@@ -460,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f0c2b693c013ea01409997905d89e521c902244eb26aa514250a3263db8cd139",
@@ -477,14 +477,105 @@
       "name": "Virginia National Bankshares Corp",
       "sic": "6021",
       "rawFacts": 19187,
-      "mappedFacts": 3262,
-      "unmappedFacts": 16182,
+      "mappedFacts": 4941,
+      "unmappedFacts": 14832,
       "calendarYears": 15,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 13,
           "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 8.0
+        },
+        "time_deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -605,16 +696,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16234,
+        "total": 14899,
         "by_severity": {
-          "INFO": 16182,
-          "WARNING": 52
+          "INFO": 14832,
+          "WARNING": 67
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 29,
-          "FISCAL_PERIOD_CONFLICT": 8,
-          "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 16182
+          "FISCAL_PERIOD_CONFLICT": 13,
+          "RESTATEMENT_CONFLICT": 25,
+          "UNKNOWN_CONCEPT": 14832
         }
       },
       "latestFiling": {
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4888292c67e7495b9247afc931ca9b1795586e5ccd133c36e034841a2977926c",
@@ -642,8 +733,8 @@
       "name": "Verrica Pharmaceuticals Inc.",
       "sic": "2834",
       "rawFacts": 7773,
-      "mappedFacts": 2586,
-      "unmappedFacts": 5349,
+      "mappedFacts": 2640,
+      "unmappedFacts": 5316,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -762,9 +853,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5423,
+        "total": 5390,
         "by_severity": {
-          "INFO": 5349,
+          "INFO": 5316,
           "ERROR": 1,
           "WARNING": 73
         },
@@ -775,7 +866,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 5349
+          "UNKNOWN_CONCEPT": 5316
         }
       },
       "latestFiling": {
@@ -786,13 +877,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5a544b1b9820c4c71f5fbb64d738baedaa5ba2b4569cc63454f7fa20188eb1b0",
@@ -803,8 +894,8 @@
       "name": "SEACOR Marine Holdings Inc.",
       "sic": "4412",
       "rawFacts": 14956,
-      "mappedFacts": 3750,
-      "unmappedFacts": 11371,
+      "mappedFacts": 3757,
+      "unmappedFacts": 11366,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -923,16 +1014,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11757,
+        "total": 11752,
         "by_severity": {
-          "INFO": 11371,
+          "INFO": 11366,
           "WARNING": 386
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 262,
           "EXTREME_VALUE": 2,
           "RESTATEMENT_CONFLICT": 122,
-          "UNKNOWN_CONCEPT": 11371
+          "UNKNOWN_CONCEPT": 11366
         }
       },
       "latestFiling": {
@@ -943,13 +1034,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f938be3999894de287623093df8b411ea75967ce6588f4dbbdcf3eff2c5f09cf",
@@ -1098,13 +1189,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "883626471142d2fb60fd5e1c5bf0d0139e7da4ed579f9943b0acfbf83583b1dd",

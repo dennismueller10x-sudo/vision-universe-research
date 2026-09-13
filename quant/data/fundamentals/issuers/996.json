@@ -7,8 +7,8 @@
       "name": "DELUXE CORP",
       "sic": "2780",
       "rawFacts": 29844,
-      "mappedFacts": 7804,
-      "unmappedFacts": 22179,
+      "mappedFacts": 7947,
+      "unmappedFacts": 22092,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22796,
+        "total": 22709,
         "by_severity": {
-          "INFO": 22179,
+          "INFO": 22092,
           "WARNING": 617
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 546,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 70,
-          "UNKNOWN_CONCEPT": 22179
+          "UNKNOWN_CONCEPT": 22092
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "327fdf725f133f4a0bc703383005c61ae8d015e80819af05640a5abfd11325db",
@@ -164,8 +164,8 @@
       "name": "FORD MOTOR CO",
       "sic": "3711",
       "rawFacts": 23872,
-      "mappedFacts": 6617,
-      "unmappedFacts": 17237,
+      "mappedFacts": 6803,
+      "unmappedFacts": 17045,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -287,16 +287,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17657,
+        "total": 17471,
         "by_severity": {
-          "INFO": 17237,
-          "WARNING": 420
+          "INFO": 17045,
+          "WARNING": 426
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 340,
+          "CONCEPT_DISAGREEMENT": 341,
           "RESTATEMENT_CONFLICT": 76,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 17237
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 17045
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "50db572f842510ce42984a832a924ba35103627bd6db797fd10ed1cd14f39826",
@@ -324,8 +324,8 @@
       "name": "MASCO CORP /DE/",
       "sic": "3430",
       "rawFacts": 27934,
-      "mappedFacts": 8396,
-      "unmappedFacts": 19204,
+      "mappedFacts": 8603,
+      "unmappedFacts": 19010,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -444,18 +444,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20673,
+        "total": 20490,
         "by_severity": {
-          "INFO": 19204,
+          "INFO": 19010,
           "ERROR": 3,
-          "WARNING": 1466
+          "WARNING": 1477
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1180,
           "FUTURE_DATA_LEAK": 3,
           "PERIOD_MISMATCH": 22,
-          "RESTATEMENT_CONFLICT": 264,
-          "UNKNOWN_CONCEPT": 19204
+          "RESTATEMENT_CONFLICT": 275,
+          "UNKNOWN_CONCEPT": 19010
         }
       },
       "latestFiling": {
@@ -466,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d5f82f4c6fbc3185d25d5fa5833c9f67cbd278fd063184f9c88c81062039242a",
@@ -483,11 +483,75 @@
       "name": "MERCURY GENERAL CORP",
       "sic": "6331",
       "rawFacts": 22893,
-      "mappedFacts": 5453,
-      "unmappedFacts": 17554,
+      "mappedFacts": 7457,
+      "unmappedFacts": 15904,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MCY"
@@ -603,18 +667,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17798,
+        "total": 16151,
         "by_severity": {
-          "INFO": 17554,
+          "INFO": 15904,
           "ERROR": 2,
-          "WARNING": 242
+          "WARNING": 245
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 210,
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 17554
+          "RESTATEMENT_CONFLICT": 32,
+          "UNKNOWN_CONCEPT": 15904
         }
       },
       "latestFiling": {
@@ -625,13 +689,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1d2544ee8b0a134d4dcc138535423c3c24a64cfb1dba72def1e337e9b51ce8d2",
@@ -642,11 +706,54 @@
       "name": "KILROY REALTY CORP",
       "sic": "6798",
       "rawFacts": 22819,
-      "mappedFacts": 4862,
-      "unmappedFacts": 17050,
+      "mappedFacts": 6081,
+      "unmappedFacts": 16174,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 68,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "KRC"
@@ -762,17 +869,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18216,
+        "total": 17356,
         "by_severity": {
-          "INFO": 17050,
-          "WARNING": 1166
+          "INFO": 16174,
+          "WARNING": 1182
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1122,
           "FISCAL_PERIOD_CONFLICT": 7,
-          "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 17050
+          "PERIOD_MISMATCH": 10,
+          "RESTATEMENT_CONFLICT": 41,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 16174
         }
       },
       "latestFiling": {
@@ -783,13 +891,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fc089f0df1b485cdcbcd179a53e107a0ad1c2e1d27169c86f9fa8ad33ddb86f8",
@@ -800,11 +908,54 @@
       "name": "DIGITAL REALTY TRUST, INC.",
       "sic": "6798",
       "rawFacts": 24615,
-      "mappedFacts": 4924,
-      "unmappedFacts": 19263,
+      "mappedFacts": 5885,
+      "unmappedFacts": 18618,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "DLR",
@@ -923,9 +1074,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19904,
+        "total": 19259,
         "by_severity": {
-          "INFO": 19263,
+          "INFO": 18618,
           "ERROR": 1,
           "WARNING": 640
         },
@@ -933,7 +1084,7 @@
           "CONCEPT_DISAGREEMENT": 602,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 38,
-          "UNKNOWN_CONCEPT": 19263
+          "UNKNOWN_CONCEPT": 18618
         }
       },
       "latestFiling": {
@@ -944,13 +1095,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2e9ea085e670b7c4a438796b88a4907d6bc0e1adb3160548cd93344dcc700b03",
@@ -961,8 +1112,8 @@
       "name": "Dell Technologies Inc.",
       "sic": "3571",
       "rawFacts": 22991,
-      "mappedFacts": 4940,
-      "unmappedFacts": 18000,
+      "mappedFacts": 5186,
+      "unmappedFacts": 17785,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -1081,16 +1232,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18975,
+        "total": 18792,
         "by_severity": {
-          "INFO": 18000,
-          "WARNING": 975
+          "INFO": 17785,
+          "WARNING": 1007
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 796,
           "EXTREME_VALUE": 16,
+          "PERIOD_MISMATCH": 32,
           "RESTATEMENT_CONFLICT": 163,
-          "UNKNOWN_CONCEPT": 18000
+          "UNKNOWN_CONCEPT": 17785
         }
       },
       "latestFiling": {
@@ -1101,13 +1253,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "39160c8ee5342b67e98dcbbf4ee8ca60822f266d69baa21f6e473de559f9c52b",

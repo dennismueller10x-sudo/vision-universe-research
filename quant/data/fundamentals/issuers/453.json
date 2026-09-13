@@ -7,8 +7,8 @@
       "name": "Matson, Inc.",
       "sic": "4400",
       "rawFacts": 19500,
-      "mappedFacts": 6960,
-      "unmappedFacts": 12727,
+      "mappedFacts": 7012,
+      "unmappedFacts": 12660,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13312,
+        "total": 13261,
         "by_severity": {
-          "INFO": 12727,
+          "INFO": 12660,
           "ERROR": 2,
-          "WARNING": 583
+          "WARNING": 599
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 460,
           "FUTURE_DATA_LEAK": 2,
+          "PERIOD_MISMATCH": 16,
           "RESTATEMENT_CONFLICT": 123,
-          "UNKNOWN_CONCEPT": 12727
+          "UNKNOWN_CONCEPT": 12660
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cc6503c64123c61e262f45e219fb6316f4d4291addd32fc1c96062c19ac6053b",
@@ -165,8 +166,8 @@
       "name": "NEWELL BRANDS INC.",
       "sic": "3089",
       "rawFacts": 25702,
-      "mappedFacts": 7484,
-      "unmappedFacts": 18625,
+      "mappedFacts": 7558,
+      "unmappedFacts": 18551,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -285,9 +286,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19415,
+        "total": 19341,
         "by_severity": {
-          "INFO": 18625,
+          "INFO": 18551,
           "ERROR": 9,
           "WARNING": 781
         },
@@ -297,7 +298,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 156,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 18625
+          "UNKNOWN_CONCEPT": 18551
         }
       },
       "latestFiling": {
@@ -308,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "260eb4658d415333f355c8cfd2d5964973c1594761a8ae9a669ddf44f194a814",
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2c137bbb5bc0a117490fde3a15d0bf0fb66381a76629655a3be6dc054f9f8078",

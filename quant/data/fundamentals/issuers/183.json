@@ -7,8 +7,8 @@
       "name": "AXON ENTERPRISE, INC.",
       "sic": "3480",
       "rawFacts": 22863,
-      "mappedFacts": 7249,
-      "unmappedFacts": 15766,
+      "mappedFacts": 7309,
+      "unmappedFacts": 15730,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16403,
+        "total": 16367,
         "by_severity": {
-          "INFO": 15766,
+          "INFO": 15730,
           "ERROR": 2,
           "WARNING": 635
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 13,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 15766
+          "UNKNOWN_CONCEPT": 15730
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9f12bc191eb37dc646f77bd544157b1158fb190288044d97a841e7341b62cf2",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5289fcffbe7dbf626ce3466a9e4b070130e92563377a1b36e2eb093cf35dd0b",
@@ -322,8 +322,8 @@
       "name": "Iveda Solutions, Inc.",
       "sic": "7372",
       "rawFacts": 9867,
-      "mappedFacts": 3732,
-      "unmappedFacts": 6326,
+      "mappedFacts": 3745,
+      "unmappedFacts": 6319,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -443,16 +443,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6638,
+        "total": 6633,
         "by_severity": {
-          "INFO": 6326,
-          "WARNING": 312
+          "INFO": 6319,
+          "WARNING": 314
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 216,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 6326
+          "RESTATEMENT_CONFLICT": 96,
+          "UNKNOWN_CONCEPT": 6319
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b689e0731196cf745b4222e0f65b6d98cd01934e328c6cb7ad5c5fda6679e6c7",
@@ -480,8 +480,8 @@
       "name": "FS KKR Capital Corp",
       "sic": null,
       "rawFacts": 5657,
-      "mappedFacts": 1193,
-      "unmappedFacts": 4561,
+      "mappedFacts": 1259,
+      "unmappedFacts": 4493,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +599,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4569,
+        "total": 4503,
         "by_severity": {
-          "INFO": 4561,
-          "WARNING": 8
+          "INFO": 4493,
+          "WARNING": 10
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 4561
+          "UNKNOWN_CONCEPT": 4493
         }
       },
       "latestFiling": {
@@ -618,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ce25f77bedeac9d2597fc5668f911c68ef1f57f9bd75bf6c9f7f37933670b48",
@@ -635,8 +636,8 @@
       "name": "Silo Pharma, Inc.",
       "sic": "2834",
       "rawFacts": 8132,
-      "mappedFacts": 2916,
-      "unmappedFacts": 5290,
+      "mappedFacts": 2924,
+      "unmappedFacts": 5281,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -755,11 +756,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5533,
+        "total": 5525,
         "by_severity": {
-          "INFO": 5290,
+          "INFO": 5281,
           "ERROR": 2,
-          "WARNING": 241
+          "WARNING": 242
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 79,
@@ -767,8 +768,8 @@
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 11,
           "RESTATEMENT_CONFLICT": 79,
-          "UNEXPECTED_DURATION": 61,
-          "UNKNOWN_CONCEPT": 5290
+          "UNEXPECTED_DURATION": 62,
+          "UNKNOWN_CONCEPT": 5281
         }
       },
       "latestFiling": {
@@ -779,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a3dc0b82ef9e677d93f6850251736d39ddfe6d566e87b4259a8ae81225383b06",
@@ -935,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bc477a3dfdede1e253bbeb83d3c2fc1044a58e29add046989ab634150d7eba30",
@@ -1091,13 +1092,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "20c98c98a871bfeb6920368245f2272e6d212204453cff7d08ee2045b34992c1",
@@ -1247,13 +1248,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3fa422e407a8af7e30be2ef46623d0d95f13a5e31c5efb2a418c60007c64047c",

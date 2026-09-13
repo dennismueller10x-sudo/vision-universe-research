@@ -7,8 +7,8 @@
       "name": "FRANKLIN ELECTRIC CO INC",
       "sic": "3621",
       "rawFacts": 25747,
-      "mappedFacts": 7185,
-      "unmappedFacts": 18550,
+      "mappedFacts": 7233,
+      "unmappedFacts": 18495,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19244,
+        "total": 19200,
         "by_severity": {
-          "INFO": 18550,
+          "INFO": 18495,
           "ERROR": 1,
-          "WARNING": 693
+          "WARNING": 704
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 541,
+          "CONCEPT_DISAGREEMENT": 548,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 149,
+          "RESTATEMENT_CONFLICT": 153,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 18550
+          "UNKNOWN_CONCEPT": 18495
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "65d151571afc5303ae972f0904c18c6809d1999bfd11db4a8c30bad3356464fd",
@@ -166,8 +166,8 @@
       "name": "GRIFFON CORP",
       "sic": "3442",
       "rawFacts": 29370,
-      "mappedFacts": 7616,
-      "unmappedFacts": 21883,
+      "mappedFacts": 7628,
+      "unmappedFacts": 21867,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22699,
+        "total": 22687,
         "by_severity": {
-          "INFO": 21883,
-          "WARNING": 816
+          "INFO": 21867,
+          "WARNING": 820
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 540,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 276,
-          "UNKNOWN_CONCEPT": 21883
+          "UNKNOWN_CONCEPT": 21867
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd513315668fadd26aa7dd9841ee90e54d9c20950b0448cbb6f05f9c0643f234",
@@ -322,8 +323,8 @@
       "name": "BOSTON SCIENTIFIC CORP",
       "sic": "3841",
       "rawFacts": 31477,
-      "mappedFacts": 7297,
-      "unmappedFacts": 24597,
+      "mappedFacts": 7476,
+      "unmappedFacts": 24487,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +443,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25312,
+        "total": 25202,
         "by_severity": {
-          "INFO": 24597,
+          "INFO": 24487,
           "ERROR": 2,
           "WARNING": 713
         },
@@ -454,7 +455,7 @@
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 24597
+          "UNKNOWN_CONCEPT": 24487
         }
       },
       "latestFiling": {
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "14a4c56dc4dbebd916666735b3d385ab67fa827b9c27824e0a9c3ee7fdb0ae16",
@@ -482,8 +483,8 @@
       "name": "Global Ship Lease, Inc.",
       "sic": "4412",
       "rawFacts": 3825,
-      "mappedFacts": 1379,
-      "unmappedFacts": 2682,
+      "mappedFacts": 1397,
+      "unmappedFacts": 2670,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -603,15 +604,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2805,
+        "total": 2793,
         "by_severity": {
-          "INFO": 2682,
+          "INFO": 2670,
           "WARNING": 123
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 107,
           "RESTATEMENT_CONFLICT": 16,
-          "UNKNOWN_CONCEPT": 2682
+          "UNKNOWN_CONCEPT": 2670
         }
       },
       "latestFiling": {
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cc674ba2aebc86313a5cf9bb0eafc17c0d3edcd508690bdf186827bd4faeba7f",
@@ -779,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7a00e1c1ed3d435be59f7ee8c1a7e5b6a64b3dd2457e7eeaae7b547536e458e2",
@@ -796,8 +797,8 @@
       "name": "IDEAYA Biosciences, Inc.",
       "sic": "2834",
       "rawFacts": 7923,
-      "mappedFacts": 2365,
-      "unmappedFacts": 5542,
+      "mappedFacts": 2458,
+      "unmappedFacts": 5484,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -915,15 +916,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5650,
+        "total": 5592,
         "by_severity": {
-          "INFO": 5542,
+          "INFO": 5484,
           "WARNING": 108
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 105,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 5542
+          "UNKNOWN_CONCEPT": 5484
         }
       },
       "latestFiling": {
@@ -934,13 +935,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5e4b73cc1d96f840f8b968ded3e18c4e3d658cf097a0ca5abb48f4b354a435f3",
@@ -1093,13 +1094,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "27d5ae02c9e89d6a7194ca30b647a56c4d872e037f38d011dc06dcb8e4c03f55",
@@ -1110,8 +1111,8 @@
       "name": "Huadi International Group Co., Ltd.",
       "sic": "3317",
       "rawFacts": 2731,
-      "mappedFacts": 899,
-      "unmappedFacts": 1906,
+      "mappedFacts": 913,
+      "unmappedFacts": 1898,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1230,15 +1231,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2035,
+        "total": 2029,
         "by_severity": {
-          "INFO": 1906,
-          "WARNING": 129
+          "INFO": 1898,
+          "WARNING": 131
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 117,
+          "CONCEPT_DISAGREEMENT": 119,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 1906
+          "UNKNOWN_CONCEPT": 1898
         }
       },
       "latestFiling": {
@@ -1249,13 +1250,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "20c40a6bac1100480b4865505b04317a2b03dba0be1a7b138656ec8044fe5c47",
@@ -1266,8 +1267,8 @@
       "name": "Rani Therapeutics Holdings, Inc.",
       "sic": "2834",
       "rawFacts": 4965,
-      "mappedFacts": 1634,
-      "unmappedFacts": 3342,
+      "mappedFacts": 1678,
+      "unmappedFacts": 3315,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1386,15 +1387,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3591,
+        "total": 3564,
         "by_severity": {
-          "INFO": 3342,
+          "INFO": 3315,
           "WARNING": 249
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 201,
           "RESTATEMENT_CONFLICT": 48,
-          "UNKNOWN_CONCEPT": 3342
+          "UNKNOWN_CONCEPT": 3315
         }
       },
       "latestFiling": {
@@ -1405,13 +1406,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "86e4392de2994fe534586a2dd294a238dc7ee54b780c983ba508c049a9f15fc7",
@@ -1422,8 +1423,8 @@
       "name": "Evommune, Inc.",
       "sic": "2834",
       "rawFacts": 1158,
-      "mappedFacts": 318,
-      "unmappedFacts": 826,
+      "mappedFacts": 326,
+      "unmappedFacts": 821,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1542,9 +1543,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 854,
+        "total": 849,
         "by_severity": {
-          "INFO": 826,
+          "INFO": 821,
           "ERROR": 1,
           "WARNING": 27
         },
@@ -1552,7 +1553,7 @@
           "CONCEPT_DISAGREEMENT": 25,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 826
+          "UNKNOWN_CONCEPT": 821
         }
       },
       "latestFiling": {
@@ -1563,13 +1564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95e83fefeb64f4be469862f7003231ff154a4cc54d3c85e110b37c106e2790b0",
@@ -1709,13 +1710,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3ab73d8095b8b433addb69651dd996e110f5faecfedad5c762fccf373495bbd7",

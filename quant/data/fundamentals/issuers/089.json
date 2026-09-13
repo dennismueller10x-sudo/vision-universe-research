@@ -7,8 +7,8 @@
       "name": "SERVICE CORP INTERNATIONAL",
       "sic": "7200",
       "rawFacts": 28581,
-      "mappedFacts": 8041,
-      "unmappedFacts": 20064,
+      "mappedFacts": 8412,
+      "unmappedFacts": 19740,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21132,
+        "total": 20838,
         "by_severity": {
-          "INFO": 20064,
+          "INFO": 19740,
           "ERROR": 24,
-          "WARNING": 1044
+          "WARNING": 1074
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 964,
           "FUTURE_DATA_LEAK": 24,
-          "RESTATEMENT_CONFLICT": 71,
-          "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 20064
+          "RESTATEMENT_CONFLICT": 93,
+          "UNEXPECTED_DURATION": 17,
+          "UNKNOWN_CONCEPT": 19740
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5d20b5052c4d38b92b2c3d91ede433daae6909e1b113317ed90f7afa710c37ce",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b43d8e03ef7d28c24fb0e5852a29444977d6e95b63da87432b69101c36142c3c",

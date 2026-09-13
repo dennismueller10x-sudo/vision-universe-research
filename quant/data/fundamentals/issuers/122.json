@@ -153,13 +153,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4d94ad13a9a85feb9ea20ea0793edb369c6eb01ce18e5f9ce8805b0a02227a03",
@@ -170,8 +170,8 @@
       "name": "Perma-Pipe International Holdings, Inc.",
       "sic": "3564",
       "rawFacts": 22572,
-      "mappedFacts": 5802,
-      "unmappedFacts": 16832,
+      "mappedFacts": 5836,
+      "unmappedFacts": 16814,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -290,18 +290,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17674,
+        "total": 17660,
         "by_severity": {
-          "INFO": 16832,
+          "INFO": 16814,
           "ERROR": 42,
-          "WARNING": 800
+          "WARNING": 804
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 518,
+          "CONCEPT_DISAGREEMENT": 520,
           "FUTURE_DATA_LEAK": 42,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
-          "RESTATEMENT_CONFLICT": 278,
-          "UNKNOWN_CONCEPT": 16832
+          "RESTATEMENT_CONFLICT": 280,
+          "UNKNOWN_CONCEPT": 16814
         }
       },
       "latestFiling": {
@@ -312,13 +312,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cc3e4c655951998387b26bb022adfe1c6a20b57a717f4249b3a7eb6a3ce69213",

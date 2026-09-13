@@ -7,8 +7,8 @@
       "name": "UNIVERSAL CORP /VA/",
       "sic": "5150",
       "rawFacts": 26468,
-      "mappedFacts": 7543,
-      "unmappedFacts": 18780,
+      "mappedFacts": 7820,
+      "unmappedFacts": 18503,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19680,
+        "total": 19403,
         "by_severity": {
-          "INFO": 18780,
+          "INFO": 18503,
           "WARNING": 900
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 888,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 18780
+          "UNKNOWN_CONCEPT": 18503
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "53fe171b070d04a138e93bb018733208260f39ef30cc7d9a15331b838f98456b",
@@ -164,8 +164,8 @@
       "name": "CSP INC /MA/",
       "sic": "7373",
       "rawFacts": 20308,
-      "mappedFacts": 5926,
-      "unmappedFacts": 14287,
+      "mappedFacts": 5998,
+      "unmappedFacts": 14153,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14793,
+        "total": 14723,
         "by_severity": {
-          "INFO": 14287,
-          "WARNING": 506
+          "INFO": 14153,
+          "WARNING": 570
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 394,
-          "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 98,
-          "UNKNOWN_CONCEPT": 14287
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "PERIOD_MISMATCH": 34,
+          "RESTATEMENT_CONFLICT": 99,
+          "UNEXPECTED_DURATION": 28,
+          "UNKNOWN_CONCEPT": 14153
         }
       },
       "latestFiling": {
@@ -304,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "74f610f88a290ea9b7e0ccb7dff8b4775694ea4caddd42bea5f749c7df41a4dd",
@@ -462,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8c1321219b235aff9e7ee7fd3882647f9fe91c77f7b282e280914c8a5a167de6",
@@ -479,8 +481,8 @@
       "name": "Cardiff Oncology, Inc.",
       "sic": "2836",
       "rawFacts": 14048,
-      "mappedFacts": 4919,
-      "unmappedFacts": 9125,
+      "mappedFacts": 4984,
+      "unmappedFacts": 9083,
       "calendarYears": 26,
       "industry": null,
       "industryMetrics": {},
@@ -599,16 +601,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9517,
+        "total": 9475,
         "by_severity": {
-          "INFO": 9125,
+          "INFO": 9083,
           "WARNING": 392
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 199,
           "RESTATEMENT_CONFLICT": 76,
           "UNEXPECTED_DURATION": 117,
-          "UNKNOWN_CONCEPT": 9125
+          "UNKNOWN_CONCEPT": 9083
         }
       },
       "latestFiling": {
@@ -619,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aacc1effc9a3fdf59a0f5ed60980290e4c6946587f6630418ba5e1641ec39f56",
@@ -775,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8d926b24a4440374e8d61f9a8e3ce2b4944f614b707ade2c8e23765299bfcb1d",

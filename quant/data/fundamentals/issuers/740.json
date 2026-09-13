@@ -7,8 +7,8 @@
       "name": "3M CO",
       "sic": "3841",
       "rawFacts": 30328,
-      "mappedFacts": 8133,
-      "unmappedFacts": 22442,
+      "mappedFacts": 8407,
+      "unmappedFacts": 22165,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23336,
+        "total": 23062,
         "by_severity": {
-          "INFO": 22442,
-          "WARNING": 894
+          "INFO": 22165,
+          "WARNING": 897
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 789,
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 22442
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 22165
         }
       },
       "latestFiling": {
@@ -147,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "78f3367aa0c2417dba7a210893a928c77ec3e8146b548a6cf19b527bf8e97c39",
@@ -164,11 +165,54 @@
       "name": "TWO HARBORS INVESTMENT CORP.",
       "sic": "6798",
       "rawFacts": 35282,
-      "mappedFacts": 4727,
-      "unmappedFacts": 30114,
+      "mappedFacts": 5543,
+      "unmappedFacts": 29362,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "TWO-PC",
@@ -287,17 +331,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30602,
+        "total": 29873,
         "by_severity": {
-          "INFO": 30114,
+          "INFO": 29362,
           "ERROR": 2,
-          "WARNING": 486
+          "WARNING": 509
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 365,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 121,
-          "UNKNOWN_CONCEPT": 30114
+          "RESTATEMENT_CONFLICT": 144,
+          "UNKNOWN_CONCEPT": 29362
         }
       },
       "latestFiling": {
@@ -308,13 +352,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "901060936ed14de9cf9f9a83e8a78c117098cbcdb75a66830066ff925e9e6ada",
@@ -465,13 +509,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "38190b88d7ba92b348c8f627c9f401b911d45cc77b83d1b1cb4de7f3af36aa66",
@@ -621,13 +665,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b0bf8e88889a5b9e309d11546b4d0dc1b011f748bfa4d5137291e3c49832ad3a",

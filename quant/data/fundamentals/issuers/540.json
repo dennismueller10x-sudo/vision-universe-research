@@ -7,8 +7,8 @@
       "name": "Coca-Cola Consolidated, Inc.",
       "sic": "2086",
       "rawFacts": 24666,
-      "mappedFacts": 6006,
-      "unmappedFacts": 18738,
+      "mappedFacts": 6022,
+      "unmappedFacts": 18727,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19478,
+        "total": 19467,
         "by_severity": {
-          "INFO": 18738,
+          "INFO": 18727,
           "WARNING": 740
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 634,
           "FISCAL_PERIOD_CONFLICT": 22,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 18738
+          "UNKNOWN_CONCEPT": 18727
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0ed42b842ac07a53cb25b0bd94d70d598e8d74ca3a89a621ff3f297c9ab454c",
@@ -164,8 +164,8 @@
       "name": "DARLING INGREDIENTS INC.",
       "sic": "2070",
       "rawFacts": 28996,
-      "mappedFacts": 7087,
-      "unmappedFacts": 21940,
+      "mappedFacts": 7137,
+      "unmappedFacts": 21914,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22879,
+        "total": 22857,
         "by_severity": {
-          "INFO": 21940,
-          "WARNING": 939
+          "INFO": 21914,
+          "WARNING": 943
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 724,
-          "RESTATEMENT_CONFLICT": 213,
+          "CONCEPT_DISAGREEMENT": 726,
+          "RESTATEMENT_CONFLICT": 215,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 21940
+          "UNKNOWN_CONCEPT": 21914
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3dcbc02f67e5a46079f2a80cc96e34d289da6e836f345f84c98d2704a0f5c89e",
@@ -321,11 +321,54 @@
       "name": "BXP, Inc.",
       "sic": "6798",
       "rawFacts": 29045,
-      "mappedFacts": 5455,
-      "unmappedFacts": 22847,
+      "mappedFacts": 6526,
+      "unmappedFacts": 22109,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 3.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 71,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "secured_debt": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BXP"
@@ -441,17 +484,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23872,
+        "total": 23163,
         "by_severity": {
-          "INFO": 22847,
-          "WARNING": 1025
+          "INFO": 22109,
+          "WARNING": 1054
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 904,
+          "CONCEPT_DISAGREEMENT": 924,
           "FISCAL_PERIOD_CONFLICT": 15,
-          "RESTATEMENT_CONFLICT": 102,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 108,
+          "UNEXPECTED_DURATION": 2,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 22847
+          "UNKNOWN_CONCEPT": 22109
         }
       },
       "latestFiling": {
@@ -462,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0493793c1f99d0c3f375cbf5bdc49548716a5e1911299ad67864b67d9a3b367e",
@@ -479,8 +524,8 @@
       "name": "Marqeta, Inc.",
       "sic": "7372",
       "rawFacts": 7835,
-      "mappedFacts": 2060,
-      "unmappedFacts": 5920,
+      "mappedFacts": 2128,
+      "unmappedFacts": 5878,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +644,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6035,
+        "total": 5993,
         "by_severity": {
-          "INFO": 5920,
+          "INFO": 5878,
           "WARNING": 115
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 102,
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 5920
+          "UNKNOWN_CONCEPT": 5878
         }
       },
       "latestFiling": {
@@ -618,13 +663,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9a46d057c33001f3be0858f338467d576eba02a12f3d0e4e91c19b0e39ec86cf",

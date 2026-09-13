@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "387bd3f8973f15af7177346967a08641b10c6389d0da8b2b449ada6503b0e1b9",
@@ -167,11 +167,54 @@
       "name": "CBL & ASSOCIATES PROPERTIES INC",
       "sic": "6798",
       "rawFacts": 23687,
-      "mappedFacts": 4980,
-      "unmappedFacts": 17661,
+      "mappedFacts": 6077,
+      "unmappedFacts": 16836,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 8.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CBL"
@@ -287,19 +330,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18786,
+        "total": 18008,
         "by_severity": {
-          "INFO": 17661,
+          "INFO": 16836,
           "ERROR": 8,
-          "WARNING": 1117
+          "WARNING": 1164
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 880,
+          "CONCEPT_DISAGREEMENT": 902,
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 8,
-          "RESTATEMENT_CONFLICT": 104,
-          "UNEXPECTED_DURATION": 123,
-          "UNKNOWN_CONCEPT": 17661
+          "RESTATEMENT_CONFLICT": 121,
+          "UNEXPECTED_DURATION": 131,
+          "UNKNOWN_CONCEPT": 16836
         }
       },
       "latestFiling": {
@@ -310,13 +353,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d2e12f9bc0237ff604907b0ac58d84c032c0a5b3096875bdcb8ee7ddb18e85a5",
@@ -468,13 +511,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f6419f6f1fa29b1417c84e52380fa5bef26aff6f8cb3ef937571955aca897250",
@@ -485,8 +528,8 @@
       "name": "SOLAREDGE TECHNOLOGIES, INC.",
       "sic": "3674",
       "rawFacts": 17821,
-      "mappedFacts": 4801,
-      "unmappedFacts": 13072,
+      "mappedFacts": 4913,
+      "unmappedFacts": 13005,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -605,16 +648,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13341,
+        "total": 13276,
         "by_severity": {
-          "INFO": 13072,
-          "WARNING": 269
+          "INFO": 13005,
+          "WARNING": 271
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 189,
+          "CONCEPT_DISAGREEMENT": 191,
           "RESTATEMENT_CONFLICT": 68,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 13072
+          "UNKNOWN_CONCEPT": 13005
         }
       },
       "latestFiling": {
@@ -625,13 +668,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "61947ee067469170727c6786a5a44e4bebf72ac2821e190af471265aeb77bd96",
@@ -642,8 +685,8 @@
       "name": "Outset Medical, Inc.",
       "sic": "3845",
       "rawFacts": 6811,
-      "mappedFacts": 2554,
-      "unmappedFacts": 4390,
+      "mappedFacts": 2562,
+      "unmappedFacts": 4382,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -762,15 +805,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4535,
+        "total": 4527,
         "by_severity": {
-          "INFO": 4390,
+          "INFO": 4382,
           "WARNING": 145
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 106,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 4390
+          "UNKNOWN_CONCEPT": 4382
         }
       },
       "latestFiling": {
@@ -781,13 +824,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f8bcbd006e64e9596f6b35f16324afae75866245c84d39a9018740c5e9969bc",
@@ -798,8 +841,8 @@
       "name": "BICYCLE THERAPEUTICS PLC",
       "sic": "2834",
       "rawFacts": 7873,
-      "mappedFacts": 2728,
-      "unmappedFacts": 5014,
+      "mappedFacts": 2762,
+      "unmappedFacts": 4980,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -918,16 +961,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5113,
+        "total": 5079,
         "by_severity": {
-          "INFO": 5014,
+          "INFO": 4980,
           "WARNING": 99
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 83,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 5014
+          "UNKNOWN_CONCEPT": 4980
         }
       },
       "latestFiling": {
@@ -938,13 +981,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cdd0229088e36b5de06946da934b042ca4434ae7ec3751eb7e18322f44bc5814",
@@ -1097,13 +1140,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "564893aae87e6639598ae85ba0d1f12abdba05556bb70db5bd95e205f11f4930",
@@ -1114,9 +1157,9 @@
       "name": "Morgan Stanley Bitcoin Trust",
       "sic": "6221",
       "rawFacts": 58,
-      "mappedFacts": 0,
-      "unmappedFacts": 45,
-      "calendarYears": 0,
+      "mappedFacts": 12,
+      "unmappedFacts": 44,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -1125,9 +1168,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 1,
+      "firstPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1166,14 +1209,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1201,7 +1244,7 @@
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1223,22 +1266,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 3
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 3,
+        "resolvedValues": 3
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 58,
+        "total": 45,
         "by_severity": {
-          "INFO": 45,
-          "WARNING": 13
+          "INFO": 44,
+          "WARNING": 1
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 45,
-          "UNPLACEABLE_PERIOD": 13
+          "CONCEPT_DISAGREEMENT": 1,
+          "UNKNOWN_CONCEPT": 44
         }
       },
       "latestFiling": {
@@ -1249,13 +1294,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2e476aacc5a20f1d8d7fdf20e860ae66c545920153525dbd742a272780377190",

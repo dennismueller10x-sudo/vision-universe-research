@@ -7,11 +7,54 @@
       "name": "Extra Space Storage Inc.",
       "sic": "6798",
       "rawFacts": 22820,
-      "mappedFacts": 5688,
-      "unmappedFacts": 16590,
+      "mappedFacts": 6300,
+      "unmappedFacts": 16197,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EXR"
@@ -127,17 +170,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17554,
+        "total": 17174,
         "by_severity": {
-          "INFO": 16590,
-          "WARNING": 964
+          "INFO": 16197,
+          "WARNING": 977
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 858,
+          "CONCEPT_DISAGREEMENT": 864,
           "FISCAL_PERIOD_CONFLICT": 18,
-          "RESTATEMENT_CONFLICT": 86,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 92,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16590
+          "UNKNOWN_CONCEPT": 16197
         }
       },
       "latestFiling": {
@@ -148,13 +192,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "821676f2ffd58c6fba1ff3471d2c6c44cbc2660dff6fa6b33d04ec5f3421bad2",

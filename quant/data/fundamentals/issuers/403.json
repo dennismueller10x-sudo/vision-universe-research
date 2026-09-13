@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "94e71919950dd80b57fe38519dfc6e724ed61adbc778ab65103b29f2b81896d5",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e0b195ca5a6612db828cf1024f8ede3076b24a7b84e0ad5ee02aefaf231f42f5",
@@ -323,8 +323,8 @@
       "name": "W&T OFFSHORE INC",
       "sic": "1311",
       "rawFacts": 18742,
-      "mappedFacts": 4895,
-      "unmappedFacts": 13647,
+      "mappedFacts": 4949,
+      "unmappedFacts": 13590,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,17 +443,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14461,
+        "total": 14407,
         "by_severity": {
-          "INFO": 13647,
-          "WARNING": 814
+          "INFO": 13590,
+          "WARNING": 817
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 704,
           "FISCAL_PERIOD_CONFLICT": 13,
-          "PERIOD_MISMATCH": 2,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 13647
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 13590
         }
       },
       "latestFiling": {
@@ -464,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8ecc50d8dabae135b1e7379ffae2594c7dc00470e97f5a624f642f43ced67c5f",
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "781153c2e6cc0308857957a5ca25801d3b0a9203d722b1ebb76af240e3f967bf",
@@ -779,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9544e5634d8d9a05b4b01e736d127e76a52d33d2e1b1c08b7c0235ca2c328b95",
@@ -937,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e8781f7160be61a0803ccbc9647ec5eb4a7c9e1d912d773e102e7769363c9397",
@@ -1092,13 +1093,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "198369407602aeed3cc7ecb21334fd2762fef621cbaffaf47987706452fd6748",
@@ -1233,13 +1234,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f7f21c1484d014063799b65f9b07f9f25b3bad1c987d2a588b24fe6956e93da",

@@ -7,8 +7,8 @@
       "name": "Grand Canyon Education, Inc.",
       "sic": "8200",
       "rawFacts": 19070,
-      "mappedFacts": 6703,
-      "unmappedFacts": 12838,
+      "mappedFacts": 6766,
+      "unmappedFacts": 12795,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -126,16 +126,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13116,
+        "total": 13073,
         "by_severity": {
-          "INFO": 12838,
+          "INFO": 12795,
           "WARNING": 278
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 215,
           "RESTATEMENT_CONFLICT": 62,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12838
+          "UNKNOWN_CONCEPT": 12795
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1d913102c48b1cf8bc3076747ad6d9e1f67c77b5cd98e1c66a3ff765429b7a05",
@@ -163,17 +163,108 @@
       "name": "Hanover Bancorp, Inc. /MD",
       "sic": "6022",
       "rawFacts": 10711,
-      "mappedFacts": 1566,
-      "unmappedFacts": 9161,
+      "mappedFacts": 2072,
+      "unmappedFacts": 8724,
       "calendarYears": 6,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2019-09-30",
+          "lastAvailablePeriod": "2020-09-30",
+          "historyYears": 1.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2023-09-30",
+          "historyYears": 3.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.25
+        },
+        "deposits": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.25
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.25
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2020-09-30",
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 6,
           "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.25
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.25
+        },
+        "noninterest_expense": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.25
+        },
+        "noninterest_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2020-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.25
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-09-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.25
         }
       },
       "fiscalYearEnd": "1231",
@@ -291,15 +382,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9253,
+        "total": 8821,
         "by_severity": {
-          "INFO": 9161,
-          "WARNING": 92
+          "INFO": 8724,
+          "WARNING": 97
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 69,
-          "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 9161
+          "RESTATEMENT_CONFLICT": 28,
+          "UNKNOWN_CONCEPT": 8724
         }
       },
       "latestFiling": {
@@ -310,13 +401,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0969c96c6567d99dcf0396342862a558cb6f322f14813054fb0c02d5281c70b",

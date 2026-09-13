@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-13T16:19:58+00:00",
+  "generated_at_utc": "2026-09-13T18:28:23+00:00",
   "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert nach betroffenen EMITTENTEN - ein Konzept, das ein einziger Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
   "scope": "all_issuers",
   "sic": "6798",
   "issuers_scanned": 5437,
   "issuers_in_scope": 175,
   "by_taxonomy": {
-    "us-gaap": 2443785,
+    "us-gaap": 2346225,
     "srt": 5158,
     "dei": 2934,
     "invest": 814,
@@ -48,11 +48,6 @@
       "concept": "us-gaap:ProceedsFromIssuanceOfCommonStock",
       "issuers": 164,
       "facts": 11541
-    },
-    {
-      "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
-      "issuers": 161,
-      "facts": 24706
     },
     {
       "concept": "us-gaap:ComprehensiveIncomeNetOfTax",
@@ -100,9 +95,9 @@
       "facts": 3822
     },
     {
-      "concept": "us-gaap:PreferredStockParOrStatedValuePerShare",
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour",
       "issuers": 141,
-      "facts": 10553
+      "facts": 3773
     },
     {
       "concept": "us-gaap:OperatingLeaseLiability",
@@ -110,9 +105,9 @@
       "facts": 5638
     },
     {
-      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour",
+      "concept": "us-gaap:PreferredStockParOrStatedValuePerShare",
       "issuers": 141,
-      "facts": 3773
+      "facts": 10553
     },
     {
       "concept": "us-gaap:GainsLossesOnExtinguishmentOfDebt",
@@ -123,11 +118,6 @@
       "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
       "issuers": 139,
       "facts": 5957
-    },
-    {
-      "concept": "us-gaap:RealEstateGrossAtCarryingValue",
-      "issuers": 139,
-      "facts": 5921
     },
     {
       "concept": "us-gaap:PreferredStockSharesOutstanding",
@@ -145,11 +135,6 @@
       "facts": 2540
     },
     {
-      "concept": "us-gaap:RealEstateAccumulatedDepreciation",
-      "issuers": 137,
-      "facts": 6132
-    },
-    {
       "concept": "us-gaap:PreferredStockSharesIssued",
       "issuers": 137,
       "facts": 8424
@@ -160,14 +145,14 @@
       "facts": 16919
     },
     {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearTwo",
-      "issuers": 135,
-      "facts": 2243
-    },
-    {
       "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDue",
       "issuers": 135,
       "facts": 2274
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearTwo",
+      "issuers": 135,
+      "facts": 2243
     },
     {
       "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
@@ -175,14 +160,19 @@
       "facts": 2215
     },
     {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
+      "issuers": 133,
+      "facts": 2194
+    },
+    {
       "concept": "us-gaap:RestrictedCashAndCashEquivalents",
       "issuers": 133,
       "facts": 12203
     },
     {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
-      "issuers": 133,
-      "facts": 2194
+      "concept": "us-gaap:MinorityInterest",
+      "issuers": 132,
+      "facts": 11355
     },
     {
       "concept": "us-gaap:DeferredFinanceCostsNet",
@@ -195,19 +185,9 @@
       "facts": 7691
     },
     {
-      "concept": "us-gaap:MinorityInterest",
-      "issuers": 132,
-      "facts": 11355
-    },
-    {
       "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths",
       "issuers": 131,
       "facts": 1871
-    },
-    {
-      "concept": "us-gaap:RealEstateInvestmentPropertyNet",
-      "issuers": 131,
-      "facts": 12265
     },
     {
       "concept": "us-gaap:DividendsPayableCurrentAndNoncurrent",
@@ -260,9 +240,9 @@
       "facts": 1218
     },
     {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
+      "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceivedNextTwelveMonths",
       "issuers": 122,
-      "facts": 2074
+      "facts": 1683
     },
     {
       "concept": "us-gaap:RealEstateAndAccumulatedDepreciationInitialCostOfLand",
@@ -275,14 +255,14 @@
       "facts": 1936
     },
     {
+      "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceivedFourYears",
+      "issuers": 122,
+      "facts": 1919
+    },
+    {
       "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceivedTwoYears",
       "issuers": 122,
       "facts": 1948
-    },
-    {
-      "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceivedNextTwelveMonths",
-      "issuers": 122,
-      "facts": 1683
     },
     {
       "concept": "us-gaap:CommonStockDividendsPerShareCashPaid",
@@ -290,9 +270,9 @@
       "facts": 10647
     },
     {
-      "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceivedFourYears",
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
       "issuers": 122,
-      "facts": 1919
+      "facts": 2074
     },
     {
       "concept": "us-gaap:IncomeLossFromEquityMethodInvestments",
@@ -315,19 +295,9 @@
       "facts": 2871
     },
     {
-      "concept": "us-gaap:RealEstateInvestmentPropertyAccumulatedDepreciation",
-      "issuers": 119,
-      "facts": 11184
-    },
-    {
       "concept": "us-gaap:OperatingLeasesFutureMinimumPaymentsDueInThreeYears",
       "issuers": 119,
       "facts": 1296
-    },
-    {
-      "concept": "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShareAmount",
-      "issuers": 119,
-      "facts": 7274
     },
     {
       "concept": "us-gaap:OperatingLeasesFutureMinimumPaymentsDueInTwoYears",
@@ -335,14 +305,14 @@
       "facts": 1319
     },
     {
+      "concept": "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShareAmount",
+      "issuers": 119,
+      "facts": 7274
+    },
+    {
       "concept": "us-gaap:DebtInstrumentCarryingAmount",
       "issuers": 119,
       "facts": 4553
-    },
-    {
-      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear",
-      "issuers": 118,
-      "facts": 1315
     },
     {
       "concept": "us-gaap:RealEstateAndAccumulatedDepreciationCarryingAmountOfLand",
@@ -355,14 +325,14 @@
       "facts": 1078
     },
     {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear",
+      "issuers": 118,
+      "facts": 1315
+    },
+    {
       "concept": "us-gaap:StockRepurchasedDuringPeriodValue",
       "issuers": 118,
       "facts": 4046
-    },
-    {
-      "concept": "us-gaap:OperatingLeasesFutureMinimumPaymentsDueInFiveYears",
-      "issuers": 117,
-      "facts": 1227
     },
     {
       "concept": "us-gaap:OperatingLeasesFutureMinimumPaymentsDueInFourYears",
@@ -370,14 +340,14 @@
       "facts": 1277
     },
     {
+      "concept": "us-gaap:OperatingLeasesFutureMinimumPaymentsDueInFiveYears",
+      "issuers": 117,
+      "facts": 1227
+    },
+    {
       "concept": "us-gaap:RealEstateAndAccumulatedDepreciationCarryingAmountOfBuildingsAndImprovements",
       "issuers": 116,
       "facts": 1379
-    },
-    {
-      "concept": "us-gaap:ImpairmentOfRealEstate",
-      "issuers": 116,
-      "facts": 5997
     },
     {
       "concept": "us-gaap:LessorOperatingLeasePaymentsToBeReceived",
@@ -385,19 +355,14 @@
       "facts": 1929
     },
     {
-      "concept": "us-gaap:AccountsPayableAndAccruedLiabilitiesCurrentAndNoncurrent",
-      "issuers": 115,
-      "facts": 10421
-    },
-    {
       "concept": "us-gaap:OperatingLeasesFutureMinimumPaymentsDueThereafter",
       "issuers": 115,
       "facts": 1223
     },
     {
-      "concept": "us-gaap:SecuredDebt",
-      "issuers": 114,
-      "facts": 7793
+      "concept": "us-gaap:AccountsPayableAndAccruedLiabilitiesCurrentAndNoncurrent",
+      "issuers": 115,
+      "facts": 10421
     },
     {
       "concept": "us-gaap:OperatingLeaseWeightedAverageDiscountRatePercent",
@@ -405,14 +370,49 @@
       "facts": 2677
     },
     {
-      "concept": "us-gaap:RealEstateInvestmentPropertyAtCost",
-      "issuers": 112,
-      "facts": 10059
-    },
-    {
       "concept": "us-gaap:PaymentsOfFinancingCosts",
       "issuers": 112,
       "facts": 9370
+    },
+    {
+      "concept": "us-gaap:MinorityInterestDecreaseFromDistributionsToNoncontrollingInterestHolders",
+      "issuers": 111,
+      "facts": 8763
+    },
+    {
+      "concept": "us-gaap:PaymentsToAcquireRealEstate",
+      "issuers": 111,
+      "facts": 6803
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInAccountsPayableAndAccruedLiabilities",
+      "issuers": 110,
+      "facts": 10866
+    },
+    {
+      "concept": "us-gaap:Land",
+      "issuers": 110,
+      "facts": 8393
+    },
+    {
+      "concept": "us-gaap:RealEstateCostOfRealEstateSold",
+      "issuers": 110,
+      "facts": 3401
+    },
+    {
+      "concept": "us-gaap:RepaymentsOfSecuredDebt",
+      "issuers": 110,
+      "facts": 7601
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue",
+      "issuers": 110,
+      "facts": 8600
+    },
+    {
+      "concept": "srt:RealEstateAndAccumulatedDepreciationAmountOfEncumbrances",
+      "issuers": 109,
+      "facts": 732
     }
   ]
 }

@@ -7,8 +7,8 @@
       "name": "ACME UNITED CORP",
       "sic": "3420",
       "rawFacts": 16931,
-      "mappedFacts": 6688,
-      "unmappedFacts": 10869,
+      "mappedFacts": 6922,
+      "unmappedFacts": 10635,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -126,9 +126,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11139,
+        "total": 10905,
         "by_severity": {
-          "INFO": 10869,
+          "INFO": 10635,
           "ERROR": 24,
           "WARNING": 246
         },
@@ -136,7 +136,7 @@
           "CONCEPT_DISAGREEMENT": 202,
           "FUTURE_DATA_LEAK": 24,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 10869
+          "UNKNOWN_CONCEPT": 10635
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d596a329d01880462ae5ce3a1fc4e5d7f5c815bb357bf0c048fcfcb680b625a1",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "92220638ebb48488347e0f9de28bd75f9c2892bb4c4282c9b160d8d24f7fdc0f",
@@ -321,8 +321,8 @@
       "name": "TRINET GROUP, INC.",
       "sic": "7389",
       "rawFacts": 19250,
-      "mappedFacts": 5343,
-      "unmappedFacts": 14060,
+      "mappedFacts": 5422,
+      "unmappedFacts": 14007,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -441,15 +441,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14403,
+        "total": 14352,
         "by_severity": {
-          "INFO": 14060,
-          "WARNING": 343
+          "INFO": 14007,
+          "WARNING": 345
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 269,
           "RESTATEMENT_CONFLICT": 74,
-          "UNKNOWN_CONCEPT": 14060
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 14007
         }
       },
       "latestFiling": {
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b1fb5ec23cc08682a7e7ec128ca528f818b207eb350afad8ad5d2a7c2686a0fd",
@@ -477,8 +478,8 @@
       "name": "MAXCYTE, INC.",
       "sic": "8731",
       "rawFacts": 5811,
-      "mappedFacts": 2019,
-      "unmappedFacts": 3753,
+      "mappedFacts": 2032,
+      "unmappedFacts": 3745,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -597,15 +598,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3879,
+        "total": 3871,
         "by_severity": {
-          "INFO": 3753,
+          "INFO": 3745,
           "WARNING": 126
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 3753
+          "UNKNOWN_CONCEPT": 3745
         }
       },
       "latestFiling": {
@@ -616,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c325b1648daec9b2a1174a1042dc25827ae35617d382942b703a7ca4d68c7762",
@@ -633,8 +634,8 @@
       "name": "Roblox Corp",
       "sic": "7372",
       "rawFacts": 8346,
-      "mappedFacts": 2357,
-      "unmappedFacts": 5969,
+      "mappedFacts": 2391,
+      "unmappedFacts": 5947,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -753,15 +754,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6225,
+        "total": 6203,
         "by_severity": {
-          "INFO": 5969,
+          "INFO": 5947,
           "WARNING": 256
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 251,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 5969
+          "UNKNOWN_CONCEPT": 5947
         }
       },
       "latestFiling": {
@@ -772,13 +773,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35c53e387ed773ce3c57b6eaf9104b2eeabb7a7f946c566670b59fcf6a82f865",
@@ -789,8 +790,8 @@
       "name": "CorMedix Inc.",
       "sic": "2834",
       "rawFacts": 17031,
-      "mappedFacts": 5422,
-      "unmappedFacts": 11724,
+      "mappedFacts": 5460,
+      "unmappedFacts": 11701,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -909,9 +910,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12311,
+        "total": 12288,
         "by_severity": {
-          "INFO": 11724,
+          "INFO": 11701,
           "WARNING": 587
         },
         "by_code": {
@@ -919,7 +920,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 41,
           "RESTATEMENT_CONFLICT": 102,
           "UNEXPECTED_DURATION": 274,
-          "UNKNOWN_CONCEPT": 11724
+          "UNKNOWN_CONCEPT": 11701
         }
       },
       "latestFiling": {
@@ -930,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a132260aeff8790e35ecccb91fc8ad43c83a2837e08d6bb25e03b243c4e64b49",
@@ -947,11 +948,54 @@
       "name": "Pebblebrook Hotel Trust",
       "sic": "6798",
       "rawFacts": 20469,
-      "mappedFacts": 5184,
-      "unmappedFacts": 14843,
+      "mappedFacts": 6106,
+      "unmappedFacts": 14179,
       "calendarYears": 16,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 7.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "PEB",
@@ -1071,15 +1115,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15401,
+        "total": 14768,
         "by_severity": {
-          "INFO": 14843,
-          "WARNING": 558
+          "INFO": 14179,
+          "WARNING": 589
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 518,
+          "CONCEPT_DISAGREEMENT": 548,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 14843
+          "UNKNOWN_CONCEPT": 14179
         }
       },
       "latestFiling": {
@@ -1090,13 +1135,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b76258fbada366d9aa878e27d9401b334bcfac402c0573f9720e683a0f8ed36e",
@@ -1247,13 +1292,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8c8c490986a15d1dd57174b6a606081d2b70b82de5e793da244a2fed355bd1e4",

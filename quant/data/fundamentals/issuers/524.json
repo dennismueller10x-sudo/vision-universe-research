@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "39d7505888eb8cd721e0ad909ea7b9a7bde8c791864992dfaf17a08c7f3dff1c",
@@ -164,17 +164,108 @@
       "name": "GREENE COUNTY BANCORP INC",
       "sic": "6036",
       "rawFacts": 27514,
-      "mappedFacts": 3658,
-      "unmappedFacts": 24029,
+      "mappedFacts": 5839,
+      "unmappedFacts": 22148,
       "calendarYears": 16,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 13.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 16,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2020-06-30",
+          "historyYears": 9.0
+        },
+        "time_deposits": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2016-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0
         }
       },
       "fiscalYearEnd": "0630",
@@ -291,17 +382,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24306,
+        "total": 22439,
         "by_severity": {
-          "INFO": 24029,
+          "INFO": 22148,
           "ERROR": 30,
-          "WARNING": 247
+          "WARNING": 261
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 197,
           "FUTURE_DATA_LEAK": 30,
-          "RESTATEMENT_CONFLICT": 50,
-          "UNKNOWN_CONCEPT": 24029
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 58,
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 22148
         }
       },
       "latestFiling": {
@@ -312,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2cad0958c93b7e26d3e4f4bf98dce6808835b199b9a46f4f44e3eccd1e828a16",
@@ -329,8 +422,8 @@
       "name": "Salesforce, Inc.",
       "sic": "7372",
       "rawFacts": 30704,
-      "mappedFacts": 8520,
-      "unmappedFacts": 22701,
+      "mappedFacts": 8663,
+      "unmappedFacts": 22599,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -449,19 +542,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23188,
+        "total": 23087,
         "by_severity": {
-          "INFO": 22701,
+          "INFO": 22599,
           "ERROR": 1,
-          "WARNING": 486
+          "WARNING": 487
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 385,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 92,
-          "UNEXPECTED_DURATION": 3,
+          "UNEXPECTED_DURATION": 4,
           "UNIT_MISMATCH": 6,
-          "UNKNOWN_CONCEPT": 22701
+          "UNKNOWN_CONCEPT": 22599
         }
       },
       "latestFiling": {
@@ -472,13 +565,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c095055e906b649cdd3095bccf1cd652d19df2b633002d758e65c303aaf0f4ad",
@@ -489,8 +582,8 @@
       "name": "Cryoport, Inc.",
       "sic": "2834",
       "rawFacts": 18940,
-      "mappedFacts": 6157,
-      "unmappedFacts": 12867,
+      "mappedFacts": 6193,
+      "unmappedFacts": 12845,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -609,17 +702,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13582,
+        "total": 13564,
         "by_severity": {
-          "INFO": 12867,
+          "INFO": 12845,
           "ERROR": 14,
-          "WARNING": 701
+          "WARNING": 705
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 428,
           "FUTURE_DATA_LEAK": 14,
-          "RESTATEMENT_CONFLICT": 273,
-          "UNKNOWN_CONCEPT": 12867
+          "RESTATEMENT_CONFLICT": 277,
+          "UNKNOWN_CONCEPT": 12845
         }
       },
       "latestFiling": {
@@ -630,13 +723,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ba516c192fa2d3cdbbfa84ec3ee7570fe1b82391f5eea4cc46fb640f0365bee5",
@@ -647,8 +740,8 @@
       "name": "Jazz Pharmaceuticals plc",
       "sic": "2834",
       "rawFacts": 22606,
-      "mappedFacts": 6431,
-      "unmappedFacts": 16413,
+      "mappedFacts": 6665,
+      "unmappedFacts": 16269,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -767,15 +860,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16873,
+        "total": 16729,
         "by_severity": {
-          "INFO": 16413,
+          "INFO": 16269,
           "WARNING": 460
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 424,
           "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 16413
+          "UNKNOWN_CONCEPT": 16269
         }
       },
       "latestFiling": {
@@ -786,13 +879,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c663de7ae352769017ee3ab8e51ce38548a99147869b9f9cb4e9f29801c0e6e",
@@ -803,8 +896,8 @@
       "name": "ClearSign Technologies Corp",
       "sic": "3823",
       "rawFacts": 12706,
-      "mappedFacts": 4733,
-      "unmappedFacts": 8034,
+      "mappedFacts": 4735,
+      "unmappedFacts": 8032,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -922,10 +1015,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8359,
+        "total": 8357,
         "by_severity": {
           "ERROR": 9,
-          "INFO": 8034,
+          "INFO": 8032,
           "WARNING": 316
         },
         "by_code": {
@@ -935,7 +1028,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 64,
           "UNEXPECTED_DURATION": 150,
-          "UNKNOWN_CONCEPT": 8034
+          "UNKNOWN_CONCEPT": 8032
         }
       },
       "latestFiling": {
@@ -946,13 +1039,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6994fffe0ee29cee49d59a41bf49708b185bf1a01afd19b87e2a2e9a6b290f0d",
@@ -963,8 +1056,8 @@
       "name": "Morgan Stanley Direct Lending Fund",
       "sic": null,
       "rawFacts": 4160,
-      "mappedFacts": 931,
-      "unmappedFacts": 3306,
+      "mappedFacts": 986,
+      "unmappedFacts": 3225,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1082,15 +1175,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3320,
+        "total": 3265,
         "by_severity": {
-          "INFO": 3306,
-          "WARNING": 14
+          "INFO": 3225,
+          "WARNING": 40
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 10,
+          "PERIOD_MISMATCH": 26,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 3306
+          "UNKNOWN_CONCEPT": 3225
         }
       },
       "latestFiling": {
@@ -1101,13 +1195,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cf6c354cca1087fa05ae495be0631b03a7d63d6d9f81d6b290b10eae474cf065",
@@ -1118,8 +1212,8 @@
       "name": "Lion Group Holding Ltd",
       "sic": "6211",
       "rawFacts": 2996,
-      "mappedFacts": 674,
-      "unmappedFacts": 2352,
+      "mappedFacts": 675,
+      "unmappedFacts": 2351,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1238,9 +1332,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2501,
+        "total": 2500,
         "by_severity": {
-          "INFO": 2352,
+          "INFO": 2351,
           "ERROR": 1,
           "WARNING": 148
         },
@@ -1249,7 +1343,7 @@
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 2352
+          "UNKNOWN_CONCEPT": 2351
         }
       },
       "latestFiling": {
@@ -1260,13 +1354,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d11fc948f7f6cf8f19478cd89834c04a323ffa31c6e1d4278016e5b8b10a11d3",
@@ -1416,13 +1510,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "495dd487b918f3f3013692e071ea20f0be438007a11657cd0db7e17dd65db721",
@@ -1569,13 +1663,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f56ca76ef6778f85d83d497b7354299eab99dca31e3c843469a962b3df051a46",
@@ -1724,13 +1818,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "755bb9ab0e540039236316babeea0f7dc18c6231abed9276b335adafc7a01b2a",

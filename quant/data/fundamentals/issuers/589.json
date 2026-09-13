@@ -7,17 +7,108 @@
       "name": "FIRST BANCORP /NC/",
       "sic": "6022",
       "rawFacts": 31603,
-      "mappedFacts": 5225,
-      "unmappedFacts": 26497,
+      "mappedFacts": 6908,
+      "unmappedFacts": 25038,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 3.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 3.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2011-12-31",
+          "historyYears": 1.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,17 +226,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26731,
+        "total": 25275,
         "by_severity": {
-          "INFO": 26497,
+          "INFO": 25038,
           "ERROR": 5,
-          "WARNING": 229
+          "WARNING": 232
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 205,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 26497
+          "RESTATEMENT_CONFLICT": 27,
+          "UNKNOWN_CONCEPT": 25038
         }
       },
       "latestFiling": {
@@ -156,13 +247,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0d362f66f0fa3909c948e7d5b875f89d39de0b795e1263846806fe0d7ae7331b",
@@ -173,8 +264,8 @@
       "name": "REGENERON PHARMACEUTICALS, INC.",
       "sic": "2834",
       "rawFacts": 19426,
-      "mappedFacts": 6595,
-      "unmappedFacts": 13471,
+      "mappedFacts": 6801,
+      "unmappedFacts": 13339,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -293,9 +384,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13708,
+        "total": 13576,
         "by_severity": {
-          "INFO": 13471,
+          "INFO": 13339,
           "ERROR": 2,
           "WARNING": 235
         },
@@ -303,7 +394,7 @@
           "CONCEPT_DISAGREEMENT": 190,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 13471
+          "UNKNOWN_CONCEPT": 13339
         }
       },
       "latestFiling": {
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9300f8fe248b7767498abd1987690d17d452a6d1e88b622ca9559fdb2b1e8875",
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ef3b34e15221acef215eb4b983a9252036d4fcb615e105a11f58efe69d95c27e",

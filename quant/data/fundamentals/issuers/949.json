@@ -7,8 +7,8 @@
       "name": "Pediatrix Medical Group, Inc.",
       "sic": "8060",
       "rawFacts": 21744,
-      "mappedFacts": 7040,
-      "unmappedFacts": 14683,
+      "mappedFacts": 7102,
+      "unmappedFacts": 14645,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15237,
+        "total": 15201,
         "by_severity": {
-          "INFO": 14683,
-          "WARNING": 554
+          "INFO": 14645,
+          "WARNING": 556
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 371,
           "FISCAL_PERIOD_CONFLICT": 16,
-          "RESTATEMENT_CONFLICT": 163,
+          "RESTATEMENT_CONFLICT": 165,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 14683
+          "UNKNOWN_CONCEPT": 14645
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "30a1d0c6d21b3f5f6b369fcce6d9b8ab805e7384d7bc338e988d4f59ea26620c",
@@ -165,8 +165,8 @@
       "name": "Intercontinental Exchange, Inc.",
       "sic": "6200",
       "rawFacts": 24156,
-      "mappedFacts": 6058,
-      "unmappedFacts": 18130,
+      "mappedFacts": 6224,
+      "unmappedFacts": 17964,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +285,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19018,
+        "total": 18854,
         "by_severity": {
-          "INFO": 18130,
-          "WARNING": 888
+          "INFO": 17964,
+          "WARNING": 890
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 667,
           "EXTREME_VALUE": 70,
-          "RESTATEMENT_CONFLICT": 148,
+          "RESTATEMENT_CONFLICT": 150,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 18130
+          "UNKNOWN_CONCEPT": 17964
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dad39ca094a0ab58a40c625a67b9dee0000dfa76dc9cab68c2a38161e59aed18",
@@ -323,11 +323,54 @@
       "name": "Chicago Atlantic Real Estate Finance, Inc.",
       "sic": "6798",
       "rawFacts": 4700,
-      "mappedFacts": 1236,
-      "unmappedFacts": 3435,
+      "mappedFacts": 1334,
+      "unmappedFacts": 3339,
       "calendarYears": 5,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "REFI"
@@ -443,16 +486,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3506,
+        "total": 3413,
         "by_severity": {
-          "INFO": 3435,
-          "WARNING": 71
+          "INFO": 3339,
+          "WARNING": 74
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 58,
-          "RESTATEMENT_CONFLICT": 10,
+          "RESTATEMENT_CONFLICT": 13,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 3435
+          "UNKNOWN_CONCEPT": 3339
         }
       },
       "latestFiling": {
@@ -463,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a679ffe037b1f7bc5c462f4efc55bc91f57861d7fde737a176639fe5a4bd05ce",

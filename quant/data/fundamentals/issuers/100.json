@@ -7,11 +7,75 @@
       "name": "Maiden Holdings, Ltd.",
       "sic": "6331",
       "rawFacts": 23135,
-      "mappedFacts": 4241,
-      "unmappedFacts": 18671,
+      "mappedFacts": 5891,
+      "unmappedFacts": 17397,
       "calendarYears": 16,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "total_investments": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MHLA",
@@ -128,15 +192,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19257,
+        "total": 18038,
         "by_severity": {
-          "INFO": 18671,
-          "WARNING": 586
+          "INFO": 17397,
+          "WARNING": 641
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 501,
-          "RESTATEMENT_CONFLICT": 85,
-          "UNKNOWN_CONCEPT": 18671
+          "PERIOD_MISMATCH": 14,
+          "RESTATEMENT_CONFLICT": 123,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 17397
         }
       },
       "latestFiling": {
@@ -147,13 +213,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c2ccfbb49ad3c1a42da1eec45c452ed68e8d9d989a81e7cb063ee15736c36251",
@@ -164,8 +230,8 @@
       "name": "PagerDuty, Inc.",
       "sic": "7372",
       "rawFacts": 12235,
-      "mappedFacts": 3195,
-      "unmappedFacts": 9076,
+      "mappedFacts": 3214,
+      "unmappedFacts": 9064,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -284,14 +350,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9297,
+        "total": 9285,
         "by_severity": {
-          "INFO": 9076,
+          "INFO": 9064,
           "WARNING": 221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 221,
-          "UNKNOWN_CONCEPT": 9076
+          "UNKNOWN_CONCEPT": 9064
         }
       },
       "latestFiling": {
@@ -302,13 +368,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "120eb7369bae4f79740d2c488fd39d2ee7c643cde03b827fcc4ad4a80100c61e",
@@ -319,11 +385,54 @@
       "name": "NETSTREIT Corp.",
       "sic": "6798",
       "rawFacts": 9527,
-      "mappedFacts": 2008,
-      "unmappedFacts": 7328,
+      "mappedFacts": 2435,
+      "unmappedFacts": 6945,
       "calendarYears": 7,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "secured_debt": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "NTST"
@@ -439,17 +548,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7601,
+        "total": 7287,
         "by_severity": {
-          "INFO": 7328,
-          "WARNING": 273
+          "INFO": 6945,
+          "WARNING": 342
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 215,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 7,
-          "UNEXPECTED_DURATION": 50,
-          "UNKNOWN_CONCEPT": 7328
+          "CONCEPT_DISAGREEMENT": 221,
+          "PERIOD_MISMATCH": 55,
+          "RESTATEMENT_CONFLICT": 15,
+          "UNEXPECTED_DURATION": 51,
+          "UNKNOWN_CONCEPT": 6945
         }
       },
       "latestFiling": {
@@ -460,13 +569,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d189e8ea00c518bb9fb32ad08f2644a7aa177f144f9e1265a3da03348835bf5c",

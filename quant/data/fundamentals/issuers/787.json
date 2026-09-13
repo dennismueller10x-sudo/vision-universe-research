@@ -7,8 +7,8 @@
       "name": "INTERFACE INC",
       "sic": "2273",
       "rawFacts": 20028,
-      "mappedFacts": 6618,
-      "unmappedFacts": 13611,
+      "mappedFacts": 6705,
+      "unmappedFacts": 13524,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14148,
+        "total": 14061,
         "by_severity": {
-          "INFO": 13611,
+          "INFO": 13524,
           "WARNING": 537
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 397,
           "RESTATEMENT_CONFLICT": 140,
-          "UNKNOWN_CONCEPT": 13611
+          "UNKNOWN_CONCEPT": 13524
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "48f3f70abeab6d85e0c82c33d457cfcec61ad95a4d3d1e6d9e2358aa697847fd",
@@ -163,8 +163,8 @@
       "name": "AUTOZONE INC",
       "sic": "5531",
       "rawFacts": 22589,
-      "mappedFacts": 7023,
-      "unmappedFacts": 15946,
+      "mappedFacts": 7103,
+      "unmappedFacts": 15896,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,9 +283,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16303,
+        "total": 16253,
         "by_severity": {
-          "INFO": 15946,
+          "INFO": 15896,
           "ERROR": 5,
           "WARNING": 352
         },
@@ -294,7 +294,7 @@
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 179,
-          "UNKNOWN_CONCEPT": 15946
+          "UNKNOWN_CONCEPT": 15896
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d36cf04d941cf3b2033c9d8c306a0bbabae998e700c18c3b3095aa0b02db4eb9",
@@ -322,8 +322,8 @@
       "name": "STMicroelectronics N.V.",
       "sic": "3674",
       "rawFacts": 11573,
-      "mappedFacts": 2375,
-      "unmappedFacts": 9412,
+      "mappedFacts": 2555,
+      "unmappedFacts": 9206,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -443,20 +443,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9750,
+        "total": 9574,
         "by_severity": {
-          "INFO": 9412,
+          "INFO": 9206,
           "ERROR": 3,
-          "WARNING": 335
+          "WARNING": 365
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 317,
           "FUTURE_DATA_LEAK": 3,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 9,
+          "PERIOD_MISMATCH": 30,
+          "RESTATEMENT_CONFLICT": 10,
           "UNEXPECTED_DURATION": 2,
           "UNIT_MISMATCH": 6,
-          "UNKNOWN_CONCEPT": 9412
+          "UNKNOWN_CONCEPT": 9206
         }
       },
       "latestFiling": {
@@ -467,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4aaed9d5d9240d7835e3a4a42f6a03d8e8688dbd69e28d96b41d6740f2f5d045",
@@ -623,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bc4659ff638ba2800cfb389a4174fc422817cd111ceda835a5f3d826f6bd4dc3",
@@ -640,11 +640,75 @@
       "name": "First American Financial Corp",
       "sic": "6361",
       "rawFacts": 31316,
-      "mappedFacts": 5890,
-      "unmappedFacts": 25236,
+      "mappedFacts": 7436,
+      "unmappedFacts": 24133,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 6.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FAF"
@@ -760,16 +824,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25613,
+        "total": 24513,
         "by_severity": {
-          "INFO": 25236,
-          "WARNING": 377
+          "INFO": 24133,
+          "WARNING": 380
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 356,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 25236
+          "RESTATEMENT_CONFLICT": 14,
+          "UNIT_MISMATCH": 10,
+          "UNKNOWN_CONCEPT": 24133
         }
       },
       "latestFiling": {
@@ -780,13 +844,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95290c7168a72ee85b30e49e3ce6689ea8f39c0c42702720d274726e2fb8ed9d",
@@ -797,8 +861,8 @@
       "name": "Kinetik Holdings Inc.",
       "sic": "4922",
       "rawFacts": 11051,
-      "mappedFacts": 3368,
-      "unmappedFacts": 7767,
+      "mappedFacts": 3373,
+      "unmappedFacts": 7762,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -917,9 +981,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8226,
+        "total": 8221,
         "by_severity": {
-          "INFO": 7767,
+          "INFO": 7762,
           "WARNING": 459
         },
         "by_code": {
@@ -927,7 +991,7 @@
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 257,
           "UNEXPECTED_DURATION": 29,
-          "UNKNOWN_CONCEPT": 7767
+          "UNKNOWN_CONCEPT": 7762
         }
       },
       "latestFiling": {
@@ -938,13 +1002,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "af98440565eb4e8b7c288da7b54e32504b15f1c6954f779eff80d85a1076b6d7",
@@ -955,8 +1019,8 @@
       "name": "10x Genomics, Inc.",
       "sic": "3826",
       "rawFacts": 9504,
-      "mappedFacts": 2964,
-      "unmappedFacts": 6836,
+      "mappedFacts": 2976,
+      "unmappedFacts": 6826,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1075,15 +1139,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6906,
+        "total": 6896,
         "by_severity": {
-          "INFO": 6836,
+          "INFO": 6826,
           "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 67,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 6836
+          "UNKNOWN_CONCEPT": 6826
         }
       },
       "latestFiling": {
@@ -1094,13 +1158,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5931348bf75513382cb7a273bf9668814432f179c2627f3f874fb7e3fb5e58fc",
@@ -1251,13 +1315,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2fe87f9742492956618e1740ad2ff8e2cf86e9d9002043e7c45cfd15c65f93d0",
@@ -1405,13 +1469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f5538d905b82481b122bb1dcaf17a3c1436d487d4cba9736e3d1140dd56d2bb",

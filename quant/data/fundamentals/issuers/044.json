@@ -7,8 +7,8 @@
       "name": "Identiv, Inc.",
       "sic": "3577",
       "rawFacts": 20500,
-      "mappedFacts": 5936,
-      "unmappedFacts": 14690,
+      "mappedFacts": 5957,
+      "unmappedFacts": 14678,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15512,
+        "total": 15502,
         "by_severity": {
-          "INFO": 14690,
-          "WARNING": 822
+          "INFO": 14678,
+          "WARNING": 824
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 631,
           "FISCAL_PERIOD_CONFLICT": 11,
-          "RESTATEMENT_CONFLICT": 180,
-          "UNKNOWN_CONCEPT": 14690
+          "RESTATEMENT_CONFLICT": 182,
+          "UNKNOWN_CONCEPT": 14678
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "daa6d0327e752f142991de9995a74d3dfb70846e4212f8369f6d26e6a8f77ffd",
@@ -164,8 +164,8 @@
       "name": "Yarrow Bioscience, Inc.",
       "sic": "2834",
       "rawFacts": 8410,
-      "mappedFacts": 2801,
-      "unmappedFacts": 5593,
+      "mappedFacts": 2866,
+      "unmappedFacts": 5553,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -284,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5909,
+        "total": 5871,
         "by_severity": {
-          "INFO": 5593,
-          "WARNING": 316
+          "INFO": 5553,
+          "WARNING": 318
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 145,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 168,
-          "UNKNOWN_CONCEPT": 5593
+          "RESTATEMENT_CONFLICT": 170,
+          "UNKNOWN_CONCEPT": 5553
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "684d965f0aa34a1e36485f6f5998248d65062153d31521bf3fb40b6cbe829f24",
@@ -321,8 +321,8 @@
       "name": "Alphabet Inc.",
       "sic": "7370",
       "rawFacts": 20178,
-      "mappedFacts": 4556,
-      "unmappedFacts": 15975,
+      "mappedFacts": 4642,
+      "unmappedFacts": 15903,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -444,15 +444,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16179,
+        "total": 16107,
         "by_severity": {
-          "INFO": 15975,
+          "INFO": 15903,
           "WARNING": 204
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 177,
           "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 15975
+          "UNKNOWN_CONCEPT": 15903
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "67e9eb51a09725a55b786cc0a569efcfb9906ad170e445e4775bc2126e22ae7d",
@@ -480,8 +480,8 @@
       "name": "Viatris Inc",
       "sic": "2834",
       "rawFacts": 10617,
-      "mappedFacts": 2821,
-      "unmappedFacts": 7860,
+      "mappedFacts": 2851,
+      "unmappedFacts": 7839,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -600,17 +600,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8233,
+        "total": 8214,
         "by_severity": {
-          "INFO": 7860,
-          "WARNING": 373
+          "INFO": 7839,
+          "WARNING": 375
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 252,
           "FISCAL_PERIOD_CONFLICT": 19,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 66,
           "UNEXPECTED_DURATION": 36,
-          "UNKNOWN_CONCEPT": 7860
+          "UNKNOWN_CONCEPT": 7839
         }
       },
       "latestFiling": {
@@ -621,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3a9871093cdd1b7cb7537720a1afe432e1535e6907723f46f606c7c6b73ac94e",
@@ -781,13 +782,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9627faca25ac9aa49dc61f67515cb25ac587058740d34bf749b289b27329a242",
@@ -798,8 +799,8 @@
       "name": "Indaptus Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 3620,
-      "mappedFacts": 1332,
-      "unmappedFacts": 2394,
+      "mappedFacts": 1336,
+      "unmappedFacts": 2392,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -917,15 +918,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2475,
+        "total": 2473,
         "by_severity": {
-          "INFO": 2394,
+          "INFO": 2392,
           "WARNING": 81
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
           "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 2394
+          "UNKNOWN_CONCEPT": 2392
         }
       },
       "latestFiling": {
@@ -936,13 +937,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7afbf0923a86cb67efc1dea609e18d76da2d9a701883772f17042e5a00130c18",
@@ -953,8 +954,8 @@
       "name": "ZKH Group Ltd",
       "sic": "5200",
       "rawFacts": 1427,
-      "mappedFacts": 381,
-      "unmappedFacts": 1079,
+      "mappedFacts": 383,
+      "unmappedFacts": 1077,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1073,15 +1074,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1127,
+        "total": 1125,
         "by_severity": {
-          "INFO": 1079,
+          "INFO": 1077,
           "WARNING": 48
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 45,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 1079
+          "UNKNOWN_CONCEPT": 1077
         }
       },
       "latestFiling": {
@@ -1092,13 +1093,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7ac643c1ffa36397baff654e4911fa2bf7de8b8dd90b2cfe6a841bf146709f8d",
@@ -1248,13 +1249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "506bed862e0a06ff9c10cfffb7ebda9415ab01852af2e1853977d3c7fe3ca6e4",
@@ -1265,8 +1266,8 @@
       "name": "Hemab Therapeutics Holdings, Inc.",
       "sic": "2836",
       "rawFacts": 392,
-      "mappedFacts": 140,
-      "unmappedFacts": 258,
+      "mappedFacts": 146,
+      "unmappedFacts": 254,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1385,14 +1386,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 259,
+        "total": 255,
         "by_severity": {
-          "INFO": 258,
+          "INFO": 254,
           "WARNING": 1
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 258
+          "UNKNOWN_CONCEPT": 254
         }
       },
       "latestFiling": {
@@ -1403,13 +1404,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c61c6b29a2c454cfadb902f477552e8eab44e4cb68cafb57a7e7d4c87dbb2697",

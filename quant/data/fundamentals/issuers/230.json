@@ -7,8 +7,8 @@
       "name": "CATERPILLAR INC",
       "sic": "3531",
       "rawFacts": 37642,
-      "mappedFacts": 7972,
-      "unmappedFacts": 30008,
+      "mappedFacts": 8248,
+      "unmappedFacts": 29767,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30680,
+        "total": 30439,
         "by_severity": {
-          "INFO": 30008,
+          "INFO": 29767,
           "WARNING": 672
         },
         "by_code": {
@@ -138,7 +138,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 8,
           "RESTATEMENT_CONFLICT": 115,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 30008
+          "UNKNOWN_CONCEPT": 29767
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ff12ca34c0b88d51c13e2ecce17403ffb2d716d03287311f483936f3ed5425cf",
@@ -166,17 +166,108 @@
       "name": "TRUIST FINANCIAL CORP",
       "sic": "6021",
       "rawFacts": 38515,
-      "mappedFacts": 6048,
-      "unmappedFacts": 33090,
+      "mappedFacts": 8626,
+      "unmappedFacts": 30903,
       "calendarYears": 23,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 15.75
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2024-09-30",
+          "historyYears": 15.75
+        },
         "net_interest_income": {
           "annualPeriods": 19,
           "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 72,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -297,20 +388,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 33487,
+        "total": 31326,
         "by_severity": {
-          "INFO": 33090,
+          "INFO": 30903,
           "ERROR": 3,
-          "WARNING": 394
+          "WARNING": 420
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 310,
           "EXTREME_VALUE": 1,
-          "FISCAL_PERIOD_CONFLICT": 8,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 33090
+          "RESTATEMENT_CONFLICT": 90,
+          "UNIT_MISMATCH": 2,
+          "UNKNOWN_CONCEPT": 30903
         }
       },
       "latestFiling": {
@@ -321,13 +413,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d3954f9cf9908e62fea9b8b4123341caec49e15e7f849fd6680a47d4fe061bd8",
@@ -338,8 +430,8 @@
       "name": "OPTICAL CABLE CORP",
       "sic": "3357",
       "rawFacts": 16821,
-      "mappedFacts": 6525,
-      "unmappedFacts": 10694,
+      "mappedFacts": 6651,
+      "unmappedFacts": 10539,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -458,17 +550,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11014,
+        "total": 10888,
         "by_severity": {
-          "INFO": 10694,
+          "INFO": 10539,
           "ERROR": 1,
-          "WARNING": 319
+          "WARNING": 348
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 305,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 10694
+          "UNEXPECTED_DURATION": 29,
+          "UNKNOWN_CONCEPT": 10539
         }
       },
       "latestFiling": {
@@ -479,13 +572,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0627443527be046c4ca766829694c19f51f0177aa8f6f157537e246d160c581",
@@ -496,8 +589,8 @@
       "name": "IP STRATEGY HOLDINGS, INC.",
       "sic": "2080",
       "rawFacts": 2534,
-      "mappedFacts": 698,
-      "unmappedFacts": 1845,
+      "mappedFacts": 703,
+      "unmappedFacts": 1840,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -616,15 +709,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1903,
+        "total": 1898,
         "by_severity": {
-          "INFO": 1845,
+          "INFO": 1840,
           "WARNING": 58
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 33,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 1845
+          "UNKNOWN_CONCEPT": 1840
         }
       },
       "latestFiling": {
@@ -635,13 +728,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "79e2a238701a39871812afc965e51af7fc3855aef50c442bb11c0d9cc483b7c4",
@@ -787,13 +880,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b3ea7f9c40f66f2750c524f71d6f3eda229c78f9dc648e7c2857db87d1659986",
@@ -944,13 +1037,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "40a98912d44543d2ae65939bb3f13852c8cdd0f0d88d5fe179e343b53c0fd734",

@@ -7,8 +7,8 @@
       "name": "Walmart Inc.",
       "sic": "5331",
       "rawFacts": 25099,
-      "mappedFacts": 8481,
-      "unmappedFacts": 15986,
+      "mappedFacts": 8716,
+      "unmappedFacts": 15737,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17480,
+        "total": 17250,
         "by_severity": {
-          "INFO": 15986,
+          "INFO": 15737,
           "ERROR": 9,
-          "WARNING": 1485
+          "WARNING": 1504
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1439,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 36,
-          "UNIT_MISMATCH": 10,
-          "UNKNOWN_CONCEPT": 15986
+          "PERIOD_MISMATCH": 9,
+          "RESTATEMENT_CONFLICT": 41,
+          "UNEXPECTED_DURATION": 3,
+          "UNIT_MISMATCH": 12,
+          "UNKNOWN_CONCEPT": 15737
         }
       },
       "latestFiling": {
@@ -149,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fcfc210b8a75734e57d20f2fc750aa8509752d015c4ddf251bf633dabccdc3be",
@@ -306,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8f9f4a507ad0e22b334de0414d23ee0c97b51dbd375bca86d32439c2022ac4a5",
@@ -323,8 +325,8 @@
       "name": "PRICE T ROWE GROUP INC",
       "sic": "6282",
       "rawFacts": 19676,
-      "mappedFacts": 5148,
-      "unmappedFacts": 14419,
+      "mappedFacts": 5592,
+      "unmappedFacts": 14060,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -443,17 +445,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14838,
+        "total": 14492,
         "by_severity": {
-          "INFO": 14419,
-          "WARNING": 419
+          "INFO": 14060,
+          "WARNING": 432
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 370,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 4,
-          "UNIT_MISMATCH": 42,
-          "UNKNOWN_CONCEPT": 14419
+          "UNIT_MISMATCH": 55,
+          "UNKNOWN_CONCEPT": 14060
         }
       },
       "latestFiling": {
@@ -464,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "811466811fbc142e3db737c739bd4a033cfbd09a330c2d0c99130da3cd7e7597",
@@ -481,8 +483,8 @@
       "name": "ALGONQUIN POWER & UTILITIES CORP.",
       "sic": "4911",
       "rawFacts": 8219,
-      "mappedFacts": 1512,
-      "unmappedFacts": 6792,
+      "mappedFacts": 1546,
+      "unmappedFacts": 6757,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -603,16 +605,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7138,
+        "total": 7107,
         "by_severity": {
-          "INFO": 6792,
-          "WARNING": 346
+          "INFO": 6757,
+          "WARNING": 350
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 238,
-          "RESTATEMENT_CONFLICT": 88,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 89,
+          "UNEXPECTED_DURATION": 2,
           "UNIT_MISMATCH": 20,
-          "UNKNOWN_CONCEPT": 6792
+          "UNKNOWN_CONCEPT": 6757
         }
       },
       "latestFiling": {
@@ -623,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8582653ccc6c62945da0caf767674d1e2ce89acd53ef7d6e627e5fa1cdfbec04",
@@ -640,8 +644,8 @@
       "name": "ZeroStack Corp.",
       "sic": "6199",
       "rawFacts": 5802,
-      "mappedFacts": 1720,
-      "unmappedFacts": 4022,
+      "mappedFacts": 1727,
+      "unmappedFacts": 4018,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -760,16 +764,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4321,
+        "total": 4317,
         "by_severity": {
-          "INFO": 4022,
+          "INFO": 4018,
           "WARNING": 299
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 190,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 107,
-          "UNKNOWN_CONCEPT": 4022
+          "UNKNOWN_CONCEPT": 4018
         }
       },
       "latestFiling": {
@@ -780,13 +784,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b47ce7f321d2c1a93e348879494eb7d5be156beb35f6a404f8812523d52f6374",
@@ -797,8 +801,8 @@
       "name": "Opendoor Technologies Inc.",
       "sic": "6531",
       "rawFacts": 8638,
-      "mappedFacts": 2530,
-      "unmappedFacts": 6103,
+      "mappedFacts": 2548,
+      "unmappedFacts": 6089,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -920,15 +924,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6355,
+        "total": 6341,
         "by_severity": {
-          "INFO": 6103,
+          "INFO": 6089,
           "WARNING": 252
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 187,
           "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 6103
+          "UNKNOWN_CONCEPT": 6089
         }
       },
       "latestFiling": {
@@ -939,13 +943,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3cf01ac6ad83c25d099221dcf91be61b640b81206f002e82d9635d528ef0d4de",

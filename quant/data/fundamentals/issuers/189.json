@@ -7,8 +7,8 @@
       "name": "DEERE & CO",
       "sic": "3523",
       "rawFacts": 35543,
-      "mappedFacts": 8193,
-      "unmappedFacts": 27224,
+      "mappedFacts": 9197,
+      "unmappedFacts": 26383,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27844,
+        "total": 27013,
         "by_severity": {
-          "INFO": 27224,
-          "WARNING": 620
+          "INFO": 26383,
+          "WARNING": 630
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 549,
-          "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 27224
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "RESTATEMENT_CONFLICT": 66,
+          "UNKNOWN_CONCEPT": 26383
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "80a8a35b1fbedc0543e606dc3a17f4da7505c632fbb5a7df8fb0af836cc772c1",
@@ -164,8 +164,8 @@
       "name": "EOG RESOURCES INC",
       "sic": "1311",
       "rawFacts": 23348,
-      "mappedFacts": 6849,
-      "unmappedFacts": 16891,
+      "mappedFacts": 7074,
+      "unmappedFacts": 16634,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,19 +284,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17304,
+        "total": 17085,
         "by_severity": {
-          "INFO": 16891,
+          "INFO": 16634,
           "ERROR": 3,
-          "WARNING": 410
+          "WARNING": 448
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 262,
+          "CONCEPT_DISAGREEMENT": 269,
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 144,
-          "UNKNOWN_CONCEPT": 16891
+          "PERIOD_MISMATCH": 27,
+          "RESTATEMENT_CONFLICT": 150,
+          "UNKNOWN_CONCEPT": 16634
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "151c695b202ed21c1efc1899573ff0a2a428dbdc09387f4e11ddda07aefbf719",
@@ -324,8 +324,8 @@
       "name": "Target Hospitality Corp.",
       "sic": "7000",
       "rawFacts": 11460,
-      "mappedFacts": 3477,
-      "unmappedFacts": 7994,
+      "mappedFacts": 3539,
+      "unmappedFacts": 7958,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -444,16 +444,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8517,
+        "total": 8481,
         "by_severity": {
-          "INFO": 7994,
+          "INFO": 7958,
           "WARNING": 523
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 392,
           "RESTATEMENT_CONFLICT": 109,
           "UNEXPECTED_DURATION": 22,
-          "UNKNOWN_CONCEPT": 7994
+          "UNKNOWN_CONCEPT": 7958
         }
       },
       "latestFiling": {
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fc8043180d55a9c1b90919e6421c96bcb288a2c48fa6f030dd35964b986202fd",

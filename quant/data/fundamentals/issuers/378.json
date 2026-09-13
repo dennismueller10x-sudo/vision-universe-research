@@ -7,8 +7,8 @@
       "name": "TWIN DISC INC",
       "sic": "3560",
       "rawFacts": 21785,
-      "mappedFacts": 6472,
-      "unmappedFacts": 15551,
+      "mappedFacts": 6559,
+      "unmappedFacts": 15464,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16315,
+        "total": 16228,
         "by_severity": {
-          "INFO": 15551,
+          "INFO": 15464,
           "ERROR": 1,
           "WARNING": 763
         },
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 135,
-          "UNKNOWN_CONCEPT": 15551
+          "UNKNOWN_CONCEPT": 15464
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3d4d0c3a77babd26d7df0ca0cdd3c22cbd0c5ffc170c489d2fc412fc183e4c7a",
@@ -166,11 +166,54 @@
       "name": "W. P. Carey Inc.",
       "sic": "6798",
       "rawFacts": 30754,
-      "mappedFacts": 5661,
-      "unmappedFacts": 24416,
+      "mappedFacts": 6810,
+      "unmappedFacts": 23515,
       "calendarYears": 20,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 9.0
+        },
+        "secured_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "WPC"
@@ -286,20 +329,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25339,
+        "total": 24457,
         "by_severity": {
-          "INFO": 24416,
+          "INFO": 23515,
           "ERROR": 1,
-          "WARNING": 922
+          "WARNING": 941
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 803,
-          "FISCAL_PERIOD_CONFLICT": 4,
+          "CONCEPT_DISAGREEMENT": 807,
+          "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 89,
+          "RESTATEMENT_CONFLICT": 103,
           "UNEXPECTED_DURATION": 25,
-          "UNKNOWN_CONCEPT": 24416
+          "UNKNOWN_CONCEPT": 23515
         }
       },
       "latestFiling": {
@@ -310,13 +353,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f9a3d01a63738bca6610eae3d5f611a585700cc11bd0f2e6c1e9631ec0ea2b2b",
@@ -468,13 +511,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dc74516f2868332d1836e2dde6c951b4feb2a6673d947ca27c283b6c287e7f0e",
@@ -485,8 +528,8 @@
       "name": "RMR GROUP INC.",
       "sic": "8742",
       "rawFacts": 11888,
-      "mappedFacts": 3916,
-      "unmappedFacts": 7768,
+      "mappedFacts": 3998,
+      "unmappedFacts": 7691,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -605,16 +648,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8296,
+        "total": 8219,
         "by_severity": {
-          "INFO": 7768,
+          "INFO": 7691,
           "WARNING": 528
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 443,
           "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 7768
+          "UNKNOWN_CONCEPT": 7691
         }
       },
       "latestFiling": {
@@ -625,13 +668,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eb9927aa3b27e9fb8a7f8ab8a7770b7497dee3fb8bddde97cd84d8629d0cf40b",
@@ -781,13 +824,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2c41c1b05f45bc3aaa7d113e23df0aac3897a2b1009fe5fa366b3f366f30af8b",
@@ -922,13 +965,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2b9b320a1adbb297c87c0270cd8acab8926260874831fa57a0565610285c5003",

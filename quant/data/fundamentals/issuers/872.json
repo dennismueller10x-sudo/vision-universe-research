@@ -7,8 +7,8 @@
       "name": "GAIA, INC",
       "sic": "7812",
       "rawFacts": 13199,
-      "mappedFacts": 5583,
-      "unmappedFacts": 7774,
+      "mappedFacts": 5595,
+      "unmappedFacts": 7766,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8382,
+        "total": 8376,
         "by_severity": {
-          "INFO": 7774,
-          "WARNING": 608
+          "INFO": 7766,
+          "WARNING": 610
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 384,
           "FISCAL_PERIOD_CONFLICT": 15,
           "RESTATEMENT_CONFLICT": 209,
-          "UNKNOWN_CONCEPT": 7774
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 7766
         }
       },
       "latestFiling": {
@@ -147,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bcc8dea6f569e361dbe6978d57b1b0d575f587c548b333a24b351121f660ecf0",
@@ -164,8 +165,8 @@
       "name": "AGILENT TECHNOLOGIES, INC.",
       "sic": "3826",
       "rawFacts": 31739,
-      "mappedFacts": 7777,
-      "unmappedFacts": 24109,
+      "mappedFacts": 8013,
+      "unmappedFacts": 23869,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +285,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24930,
+        "total": 24694,
         "by_severity": {
-          "INFO": 24109,
+          "INFO": 23869,
           "ERROR": 4,
-          "WARNING": 817
+          "WARNING": 821
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 688,
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 127,
-          "UNKNOWN_CONCEPT": 24109
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 23869
         }
       },
       "latestFiling": {
@@ -306,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3881b46dda8c4a886db4e459799ebd4df81c5cc5e8ae6f36e0ba4b05672a0bbf",
@@ -462,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7ca509d3529b253128cb4314b9660e888bff8875111f398ea78d0e194fd6c725",
@@ -620,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d84c9d729058ab95792d3d057ca0fe3c95e6e97c2753ded4bff4a221560ebed4",

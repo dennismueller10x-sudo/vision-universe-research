@@ -131,13 +131,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4cbe83bf48ca748887922c98bc48887da57da9be08e945f4e22407ab6a0e46ae",
@@ -148,8 +148,8 @@
       "name": "TXNM ENERGY INC",
       "sic": "4911",
       "rawFacts": 27882,
-      "mappedFacts": 7090,
-      "unmappedFacts": 20545,
+      "mappedFacts": 7311,
+      "unmappedFacts": 20270,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -268,18 +268,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21532,
+        "total": 21313,
         "by_severity": {
-          "INFO": 20545,
-          "WARNING": 987
+          "INFO": 20270,
+          "WARNING": 1043
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 891,
-          "FISCAL_PERIOD_CONFLICT": 17,
+          "FISCAL_PERIOD_CONFLICT": 19,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 66,
-          "UNEXPECTED_DURATION": 3,
+          "UNEXPECTED_DURATION": 56,
           "UNIT_MISMATCH": 10,
-          "UNKNOWN_CONCEPT": 20545
+          "UNKNOWN_CONCEPT": 20270
         }
       },
       "latestFiling": {
@@ -290,13 +291,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eadcdda7754f91b4708de0d060993c5c4365480c624a271cc5d866d94acfbe7e",
@@ -312,7 +313,98 @@
       "calendarYears": 9,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -454,13 +546,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "16efbd1c01e9c7b9629d8063c494ffe432e60b728c2703d13636c5b82e89c835",
@@ -471,8 +563,8 @@
       "name": "Delek US Holdings, Inc.",
       "sic": "2911",
       "rawFacts": 19194,
-      "mappedFacts": 4372,
-      "unmappedFacts": 14654,
+      "mappedFacts": 4459,
+      "unmappedFacts": 14523,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -591,15 +683,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15369,
+        "total": 15282,
         "by_severity": {
-          "INFO": 14654,
-          "WARNING": 715
+          "INFO": 14523,
+          "WARNING": 759
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 620,
+          "PERIOD_MISMATCH": 44,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 14654
+          "UNKNOWN_CONCEPT": 14523
         }
       },
       "latestFiling": {
@@ -610,13 +703,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d9e38bd748c8cc7ae1993514234aa3e005520f02586f40d604ff026796032f4b",

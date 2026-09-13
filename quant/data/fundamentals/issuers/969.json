@@ -7,8 +7,8 @@
       "name": "Air Products & Chemicals, Inc.",
       "sic": "2810",
       "rawFacts": 33665,
-      "mappedFacts": 8574,
-      "unmappedFacts": 24796,
+      "mappedFacts": 8889,
+      "unmappedFacts": 24479,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26326,
+        "total": 26015,
         "by_severity": {
-          "INFO": 24796,
+          "INFO": 24479,
           "ERROR": 1,
-          "WARNING": 1529
+          "WARNING": 1535
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1367,
+          "CONCEPT_DISAGREEMENT": 1369,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 162,
-          "UNKNOWN_CONCEPT": 24796
+          "UNIT_MISMATCH": 4,
+          "UNKNOWN_CONCEPT": 24479
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "47c3d1a828494fe4e34057b49392a551d36c3e72e0a732a26bb8ca8b8b126817",
@@ -165,8 +166,8 @@
       "name": "Comstock Holding Companies, Inc.",
       "sic": "6500",
       "rawFacts": 16035,
-      "mappedFacts": 5238,
-      "unmappedFacts": 10701,
+      "mappedFacts": 5403,
+      "unmappedFacts": 10581,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +286,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11415,
+        "total": 11298,
         "by_severity": {
-          "INFO": 10701,
-          "WARNING": 714
+          "INFO": 10581,
+          "WARNING": 717
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 469,
           "FISCAL_PERIOD_CONFLICT": 10,
-          "RESTATEMENT_CONFLICT": 234,
+          "RESTATEMENT_CONFLICT": 237,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 10701
+          "UNKNOWN_CONCEPT": 10581
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d0e6a5edc62c0b1f91ff968d3e95a01f908be8c08ad93b4e76ddd23fbd2bf1bd",
@@ -323,8 +324,8 @@
       "name": "SERA PROGNOSTICS, INC.",
       "sic": "8071",
       "rawFacts": 6237,
-      "mappedFacts": 1775,
-      "unmappedFacts": 4570,
+      "mappedFacts": 1806,
+      "unmappedFacts": 4547,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -442,14 +443,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4587,
+        "total": 4564,
         "by_severity": {
-          "INFO": 4570,
+          "INFO": 4547,
           "WARNING": 17
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 17,
-          "UNKNOWN_CONCEPT": 4570
+          "UNKNOWN_CONCEPT": 4547
         }
       },
       "latestFiling": {
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "877cf8698e209fb96206aed66d5c3f17277bbef6fc22d923333f31297b78b393",
@@ -477,9 +478,9 @@
       "name": "RRE Ventures Acquisition Corp.",
       "sic": "6770",
       "rawFacts": 76,
-      "mappedFacts": 0,
+      "mappedFacts": 17,
       "unmappedFacts": 42,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -490,9 +491,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -531,7 +532,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -559,14 +560,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -588,23 +589,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 5
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 5,
+        "resolvedValues": 5
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 76,
+        "total": 54,
         "by_severity": {
           "INFO": 42,
-          "WARNING": 34
+          "WARNING": 12
         },
         "by_code": {
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 42,
-          "UNPLACEABLE_PERIOD": 22
+          "UNKNOWN_CONCEPT": 42
         }
       },
       "latestFiling": {
@@ -615,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b747690602603ad4c6a0a1c4187446327b67f5e9a49bc84cc952caf3af0a6984",

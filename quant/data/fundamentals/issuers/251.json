@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "436070aea85efbc49fdb239f22c960dd8b65f24dc05461b823fa52dd5afcd453",
@@ -164,11 +164,54 @@
       "name": "AGREE REALTY CORP",
       "sic": "6798",
       "rawFacts": 21891,
-      "mappedFacts": 4742,
-      "unmappedFacts": 16585,
+      "mappedFacts": 5594,
+      "unmappedFacts": 15993,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ADC",
@@ -285,15 +328,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17240,
+        "total": 16662,
         "by_severity": {
-          "INFO": 16585,
-          "WARNING": 655
+          "INFO": 15993,
+          "WARNING": 669
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 567,
-          "RESTATEMENT_CONFLICT": 88,
-          "UNKNOWN_CONCEPT": 16585
+          "CONCEPT_DISAGREEMENT": 579,
+          "RESTATEMENT_CONFLICT": 89,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 15993
         }
       },
       "latestFiling": {
@@ -304,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1047afd7b6e5a1fc5c5a0e13434dca96103c02bb2fdfac6d8ba05bc7bdfc64ce",
@@ -462,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95ac0ada130eddfdd548c0061071481be7089ca434d760a7a23b8772f00fecf1",
@@ -479,8 +523,8 @@
       "name": "Citius Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 10410,
-      "mappedFacts": 4129,
-      "unmappedFacts": 6317,
+      "mappedFacts": 4130,
+      "unmappedFacts": 6316,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -599,9 +643,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6739,
+        "total": 6738,
         "by_severity": {
-          "INFO": 6317,
+          "INFO": 6316,
           "ERROR": 9,
           "WARNING": 413
         },
@@ -613,7 +657,7 @@
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 122,
           "UNEXPECTED_DURATION": 128,
-          "UNKNOWN_CONCEPT": 6317
+          "UNKNOWN_CONCEPT": 6316
         }
       },
       "latestFiling": {
@@ -624,13 +668,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5762e4dcd001d9d2d66b7561823a915603864369088665163c324c21eabd747e",
@@ -641,8 +685,8 @@
       "name": "Nano-X Imaging Ltd.",
       "sic": "3844",
       "rawFacts": 2196,
-      "mappedFacts": 617,
-      "unmappedFacts": 1678,
+      "mappedFacts": 623,
+      "unmappedFacts": 1675,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -761,15 +805,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1699,
+        "total": 1696,
         "by_severity": {
-          "INFO": 1678,
+          "INFO": 1675,
           "WARNING": 21
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 14,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 1678
+          "UNKNOWN_CONCEPT": 1675
         }
       },
       "latestFiling": {
@@ -780,13 +824,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e0d5f5d0ce8d836ca8cbc1285c20edff27f7d9595c3feae4864166fab37ab903",
@@ -797,8 +841,8 @@
       "name": "Wellchange Holdings Co Ltd",
       "sic": "7372",
       "rawFacts": 666,
-      "mappedFacts": 216,
-      "unmappedFacts": 484,
+      "mappedFacts": 217,
+      "unmappedFacts": 482,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -916,15 +960,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 501,
+        "total": 500,
         "by_severity": {
-          "INFO": 484,
-          "WARNING": 17
+          "INFO": 482,
+          "WARNING": 18
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 9,
+          "CONCEPT_DISAGREEMENT": 10,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 484
+          "UNKNOWN_CONCEPT": 482
         }
       },
       "latestFiling": {
@@ -935,13 +979,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4e89e1ffce7d7fbc7e3a9695eacc3e155bf47ed7f66704d7453c0511ff3cbdec",

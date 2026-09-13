@@ -7,8 +7,8 @@
       "name": "MUELLER INDUSTRIES INC",
       "sic": "3350",
       "rawFacts": 22348,
-      "mappedFacts": 7606,
-      "unmappedFacts": 14868,
+      "mappedFacts": 7924,
+      "unmappedFacts": 14544,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16007,
+        "total": 15703,
         "by_severity": {
-          "INFO": 14868,
+          "INFO": 14544,
           "ERROR": 5,
-          "WARNING": 1134
+          "WARNING": 1154
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 999,
+          "CONCEPT_DISAGREEMENT": 1003,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 135,
-          "UNKNOWN_CONCEPT": 14868
+          "RESTATEMENT_CONFLICT": 151,
+          "UNKNOWN_CONCEPT": 14544
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c099a389046cb6b97e8d332c49a5db28752a682cd5f1d73ee5b01755071ea71a",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "76b5a0ff7ed7e03d720573a44913704e1c21302dcefd9096e3f99a898ceafe8b",
@@ -323,8 +323,8 @@
       "name": "ORACLE CORP",
       "sic": "7372",
       "rawFacts": 26320,
-      "mappedFacts": 7024,
-      "unmappedFacts": 19834,
+      "mappedFacts": 7110,
+      "unmappedFacts": 19778,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -444,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20294,
+        "total": 20238,
         "by_severity": {
-          "INFO": 19834,
+          "INFO": 19778,
           "ERROR": 16,
           "WARNING": 444
         },
@@ -455,7 +455,7 @@
           "EXTREME_VALUE": 1,
           "FUTURE_DATA_LEAK": 16,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 19834
+          "UNKNOWN_CONCEPT": 19778
         }
       },
       "latestFiling": {
@@ -466,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3b579097552eea358093144afad807e7289dda02815353045a637adcbd094f7f",
@@ -483,8 +483,8 @@
       "name": "ROKU, INC",
       "sic": "4841",
       "rawFacts": 12940,
-      "mappedFacts": 3926,
-      "unmappedFacts": 9279,
+      "mappedFacts": 3987,
+      "unmappedFacts": 9241,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -602,14 +602,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9380,
+        "total": 9344,
         "by_severity": {
-          "INFO": 9279,
-          "WARNING": 101
+          "INFO": 9241,
+          "WARNING": 103
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 101,
-          "UNKNOWN_CONCEPT": 9279
+          "RESTATEMENT_CONFLICT": 2,
+          "UNKNOWN_CONCEPT": 9241
         }
       },
       "latestFiling": {
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3b56defee911db06fccd14740539e181b0125328006e5aceaddc012d9477eaca",
@@ -637,8 +638,8 @@
       "name": "Biomea Fusion, Inc.",
       "sic": "2834",
       "rawFacts": 5311,
-      "mappedFacts": 1885,
-      "unmappedFacts": 3479,
+      "mappedFacts": 1972,
+      "unmappedFacts": 3425,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -756,15 +757,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3513,
+        "total": 3459,
         "by_severity": {
-          "INFO": 3479,
+          "INFO": 3425,
           "WARNING": 34
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 31,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 3479
+          "UNKNOWN_CONCEPT": 3425
         }
       },
       "latestFiling": {
@@ -775,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fc02b896b12d1aef443be6c9f9af897f64218d997e719d5e131c4819de5236ba",
@@ -929,13 +930,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0af8fc2d94a21de89a3e1a91760e756b527f45251260ee92fb5bccc53056fc0e",
@@ -1083,13 +1084,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c58ee1ec99decb1da4218fcc88bbd14ec87c4003791f701e27f8dcd56a353e3e",
@@ -1100,8 +1101,8 @@
       "name": "VisionWave Holdings, Inc.",
       "sic": "7372",
       "rawFacts": 1589,
-      "mappedFacts": 427,
-      "unmappedFacts": 1142,
+      "mappedFacts": 446,
+      "unmappedFacts": 1130,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -1221,9 +1222,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1246,
+        "total": 1234,
         "by_severity": {
-          "INFO": 1142,
+          "INFO": 1130,
           "ERROR": 1,
           "WARNING": 103
         },
@@ -1233,7 +1234,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 52,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 1142
+          "UNKNOWN_CONCEPT": 1130
         }
       },
       "latestFiling": {
@@ -1244,13 +1245,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "83566e7ad111f35be7cc6e7fed92d3c2032c891f63fe5b374ff0cdfee7813ffe",

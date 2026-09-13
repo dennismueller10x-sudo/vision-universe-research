@@ -7,8 +7,8 @@
       "name": "Virtu Financial, Inc.",
       "sic": "6211",
       "rawFacts": 19777,
-      "mappedFacts": 3936,
-      "unmappedFacts": 15755,
+      "mappedFacts": 4176,
+      "unmappedFacts": 15522,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16371,
+        "total": 16138,
         "by_severity": {
-          "INFO": 15755,
+          "INFO": 15522,
           "WARNING": 616
         },
         "by_code": {
@@ -138,7 +138,7 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 107,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 15755
+          "UNKNOWN_CONCEPT": 15522
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "349a6ab73f9a5ad0eb2e6867c513b574b4a5ad18cc396cf6ad427283e5097aca",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ff129e9d75362a93133bf05c2f06c04450426409fe797fc599beacb6b9462f21",
@@ -323,9 +323,9 @@
       "name": "Yorkville International Capital Corp.",
       "sic": "6770",
       "rawFacts": 66,
-      "mappedFacts": 0,
+      "mappedFacts": 18,
       "unmappedFacts": 42,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -336,9 +336,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -377,14 +377,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -405,14 +405,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -434,22 +434,22 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 5
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 5,
+        "resolvedValues": 5
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 66,
+        "total": 42,
         "by_severity": {
-          "INFO": 42,
-          "WARNING": 24
+          "INFO": 42
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 42,
-          "UNPLACEABLE_PERIOD": 24
+          "UNKNOWN_CONCEPT": 42
         }
       },
       "latestFiling": {
@@ -460,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c6e9a3ddabc8cd2a35334c7f8e4f4ae3883f6051e1e219ea229134e0101b71fb",

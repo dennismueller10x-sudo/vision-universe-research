@@ -7,8 +7,8 @@
       "name": "BENCHMARK ELECTRONICS INC",
       "sic": "3672",
       "rawFacts": 26858,
-      "mappedFacts": 7716,
-      "unmappedFacts": 19278,
+      "mappedFacts": 7733,
+      "unmappedFacts": 19220,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19778,
+        "total": 19761,
         "by_severity": {
-          "INFO": 19278,
-          "WARNING": 500
+          "INFO": 19220,
+          "WARNING": 541
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 475,
-          "PERIOD_MISMATCH": 3,
+          "PERIOD_MISMATCH": 43,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 19278
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 19220
         }
       },
       "latestFiling": {
@@ -147,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eb343b3e524b11304c7a4c20ca917f86cfa175c4736d44c10dfdf743cdff99ab",
@@ -164,8 +165,8 @@
       "name": "Cohen & Co Inc.",
       "sic": "6211",
       "rawFacts": 22987,
-      "mappedFacts": 5247,
-      "unmappedFacts": 17617,
+      "mappedFacts": 5477,
+      "unmappedFacts": 17388,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,19 +285,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18389,
+        "total": 18174,
         "by_severity": {
-          "INFO": 17617,
-          "WARNING": 772
+          "INFO": 17388,
+          "WARNING": 786
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 539,
           "EXTREME_VALUE": 2,
-          "FISCAL_PERIOD_CONFLICT": 10,
+          "FISCAL_PERIOD_CONFLICT": 11,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 123,
+          "RESTATEMENT_CONFLICT": 136,
           "UNEXPECTED_DURATION": 96,
-          "UNKNOWN_CONCEPT": 17617
+          "UNKNOWN_CONCEPT": 17388
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "384a8bfa98a3766520bd412b1788900fe5ceb112aabc7d104f8ed972210454b2",
@@ -324,8 +325,8 @@
       "name": "SANDRIDGE ENERGY INC",
       "sic": "1311",
       "rawFacts": 24440,
-      "mappedFacts": 6553,
-      "unmappedFacts": 17950,
+      "mappedFacts": 6568,
+      "unmappedFacts": 17927,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -444,17 +445,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18446,
+        "total": 18431,
         "by_severity": {
-          "INFO": 17950,
-          "WARNING": 496
+          "INFO": 17927,
+          "WARNING": 504
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 436,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "PERIOD_MISMATCH": 1,
+          "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 17950
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 17927
         }
       },
       "latestFiling": {
@@ -465,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2969e1464661fb2cdf62714ad5b1d637d7f1fa0bd5a0116700db3f10c2670dad",
@@ -482,8 +484,8 @@
       "name": "SS&C Technologies Holdings Inc",
       "sic": "7372",
       "rawFacts": 22761,
-      "mappedFacts": 7424,
-      "unmappedFacts": 15649,
+      "mappedFacts": 7563,
+      "unmappedFacts": 15510,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -602,16 +604,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16261,
+        "total": 16123,
         "by_severity": {
-          "INFO": 15649,
-          "WARNING": 612
+          "INFO": 15510,
+          "WARNING": 613
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 555,
           "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 15649
+          "RESTATEMENT_CONFLICT": 44,
+          "UNKNOWN_CONCEPT": 15510
         }
       },
       "latestFiling": {
@@ -622,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "872cd919e84ba57b746deccca2a044d0409800d6fe406fc8a1d74632deeea0f6",
@@ -639,8 +641,8 @@
       "name": "J-Long Group Ltd",
       "sic": "5600",
       "rawFacts": 1577,
-      "mappedFacts": 443,
-      "unmappedFacts": 1206,
+      "mappedFacts": 459,
+      "unmappedFacts": 1198,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -759,16 +761,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1232,
+        "total": 1224,
         "by_severity": {
-          "INFO": 1206,
+          "INFO": 1198,
           "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 10,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 1206
+          "UNKNOWN_CONCEPT": 1198
         }
       },
       "latestFiling": {
@@ -779,13 +781,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c5b449cd52cbb97b28279b4b5ab5c7d289e26fa7853f001b787a79d0ceab86e7",
@@ -933,13 +935,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9a373c415d5f6c11d11e3cbda6dfebbbbec5a299222c8bf1aea88746d35cec7",

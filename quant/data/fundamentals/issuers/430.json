@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f44f5c70b0f2868cbc8e8428e0b33da7151b1501c9e0ba1bc2c8b194f9c00233",
@@ -165,8 +165,8 @@
       "name": "Kiniksa Pharmaceuticals International, plc",
       "sic": "2834",
       "rawFacts": 7508,
-      "mappedFacts": 2781,
-      "unmappedFacts": 4848,
+      "mappedFacts": 2803,
+      "unmappedFacts": 4834,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +284,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4903,
+        "total": 4889,
         "by_severity": {
-          "INFO": 4848,
+          "INFO": 4834,
           "WARNING": 55
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 53,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 4848
+          "UNKNOWN_CONCEPT": 4834
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1ca7cb59c682fd7d8a7b4969c4655dc4d55250b0e9c010ca624f6325885602f9",
@@ -320,11 +320,54 @@
       "name": "Strawberry Fields REIT, Inc.",
       "sic": "6798",
       "rawFacts": 4447,
-      "mappedFacts": 1225,
-      "unmappedFacts": 3114,
+      "mappedFacts": 1417,
+      "unmappedFacts": 2980,
       "calendarYears": 7,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "STRW"
@@ -440,19 +483,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3452,
+        "total": 3322,
         "by_severity": {
-          "INFO": 3114,
+          "INFO": 2980,
           "ERROR": 1,
-          "WARNING": 337
+          "WARNING": 341
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 239,
           "FISCAL_PERIOD_CONFLICT": 18,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 46,
+          "RESTATEMENT_CONFLICT": 50,
           "UNEXPECTED_DURATION": 34,
-          "UNKNOWN_CONCEPT": 3114
+          "UNKNOWN_CONCEPT": 2980
         }
       },
       "latestFiling": {
@@ -463,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "46cfe7053edde8e3c7d2c19816c474aeb42a2bfebb5f26b936792f654e60bde9",
@@ -619,13 +662,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5d73e49b632f5027ba885435087c7ce1dc21a6131c039976c861a128de38e37",

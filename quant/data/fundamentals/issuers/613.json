@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7c54bdc24f3d286060dd97495a34e409535406642a85341e4437e2b93d79f859",
@@ -164,8 +164,8 @@
       "name": "LINCOLN EDUCATIONAL SERVICES CORP",
       "sic": "8200",
       "rawFacts": 22093,
-      "mappedFacts": 6777,
-      "unmappedFacts": 15635,
+      "mappedFacts": 6812,
+      "unmappedFacts": 15599,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,17 +284,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16288,
+        "total": 16253,
         "by_severity": {
           "ERROR": 4,
-          "INFO": 15635,
-          "WARNING": 649
+          "INFO": 15599,
+          "WARNING": 650
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 440,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 209,
-          "UNKNOWN_CONCEPT": 15635
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 15599
         }
       },
       "latestFiling": {
@@ -305,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fc2e95a5de31598f33de9d9be34832a8c53437c00da4c5048927c4f285026f60",
@@ -322,11 +323,75 @@
       "name": "GREENLIGHT CAPITAL RE, LTD.",
       "sic": "6331",
       "rawFacts": 22292,
-      "mappedFacts": 4550,
-      "unmappedFacts": 17747,
+      "mappedFacts": 6268,
+      "unmappedFacts": 16363,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "GLRE"
@@ -442,9 +507,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18197,
+        "total": 16813,
         "by_severity": {
-          "INFO": 17747,
+          "INFO": 16363,
           "ERROR": 4,
           "WARNING": 446
         },
@@ -454,7 +519,7 @@
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 17747
+          "UNKNOWN_CONCEPT": 16363
         }
       },
       "latestFiling": {
@@ -465,13 +530,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c2900fbac0972feceeaf56f4bd35d67bfae89f9d1474d2a910360802aac6cce4",
@@ -621,13 +686,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3ef51672355dc8708881743652adb0978da40c3ff29cf8551bf75ba1e6176fcf",
@@ -773,13 +838,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1be541b6c77e7a43881f38b3ec6318df0a5febae5a687967190464775bf36917",
@@ -790,8 +855,8 @@
       "name": "Kardigan, Inc.",
       "sic": "2834",
       "rawFacts": 410,
-      "mappedFacts": 97,
-      "unmappedFacts": 305,
+      "mappedFacts": 100,
+      "unmappedFacts": 303,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -909,14 +974,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 309,
+        "total": 307,
         "by_severity": {
-          "INFO": 305,
+          "INFO": 303,
           "WARNING": 4
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
-          "UNKNOWN_CONCEPT": 305
+          "UNKNOWN_CONCEPT": 303
         }
       },
       "latestFiling": {
@@ -927,13 +992,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "55c15133f3962c0a6196e9baceb8a3b6f8d52eff7d76e7875d104482f93a3281",

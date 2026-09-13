@@ -7,17 +7,108 @@
       "name": "SouthState Bank Corp",
       "sic": "6022",
       "rawFacts": 37216,
-      "mappedFacts": 5024,
-      "unmappedFacts": 32233,
+      "mappedFacts": 7225,
+      "unmappedFacts": 30311,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 6.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,15 +226,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32338,
+        "total": 30428,
         "by_severity": {
-          "INFO": 32233,
-          "WARNING": 105
+          "INFO": 30311,
+          "WARNING": 117
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 72,
-          "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 32233
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 43,
+          "UNKNOWN_CONCEPT": 30311
         }
       },
       "latestFiling": {
@@ -154,13 +246,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f1095cf86d78ec222642da53172c69e5f6b3304a2fe870a38b085dc5638e5f46",
@@ -171,8 +263,8 @@
       "name": "RALPH LAUREN CORP",
       "sic": "2320",
       "rawFacts": 27367,
-      "mappedFacts": 7710,
-      "unmappedFacts": 20310,
+      "mappedFacts": 7997,
+      "unmappedFacts": 20015,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -291,17 +383,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20747,
+        "total": 20478,
         "by_severity": {
-          "INFO": 20310,
+          "INFO": 20015,
           "ERROR": 2,
-          "WARNING": 435
+          "WARNING": 461
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 430,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 20310
+          "RESTATEMENT_CONFLICT": 6,
+          "UNEXPECTED_DURATION": 25,
+          "UNKNOWN_CONCEPT": 20015
         }
       },
       "latestFiling": {
@@ -312,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eff1c8b59f14e1ee243210dfceb3b69f1db31eb2d767f4fcbb3202dff2e8bdbd",
@@ -329,8 +422,8 @@
       "name": "Marker Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 11084,
-      "mappedFacts": 3685,
-      "unmappedFacts": 7367,
+      "mappedFacts": 3689,
+      "unmappedFacts": 7361,
       "calendarYears": 26,
       "industry": null,
       "industryMetrics": {},
@@ -449,18 +542,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7767,
+        "total": 7763,
         "by_severity": {
-          "INFO": 7367,
+          "INFO": 7361,
           "ERROR": 1,
-          "WARNING": 399
+          "WARNING": 401
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 127,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 141,
-          "UNEXPECTED_DURATION": 131,
-          "UNKNOWN_CONCEPT": 7367
+          "UNEXPECTED_DURATION": 133,
+          "UNKNOWN_CONCEPT": 7361
         }
       },
       "latestFiling": {
@@ -471,13 +564,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "90ec6deaed7afb39f4ebb0340982ac376a49676c9bab30e1257e1485b75f1808",
@@ -488,8 +581,8 @@
       "name": "VerifyMe, Inc.",
       "sic": "6199",
       "rawFacts": 13172,
-      "mappedFacts": 5445,
-      "unmappedFacts": 8064,
+      "mappedFacts": 5454,
+      "unmappedFacts": 8055,
       "calendarYears": 28,
       "industry": null,
       "industryMetrics": {},
@@ -608,9 +701,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8687,
+        "total": 8678,
         "by_severity": {
-          "INFO": 8064,
+          "INFO": 8055,
           "ERROR": 4,
           "WARNING": 619
         },
@@ -621,7 +714,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 151,
           "UNEXPECTED_DURATION": 191,
-          "UNKNOWN_CONCEPT": 8064
+          "UNKNOWN_CONCEPT": 8055
         }
       },
       "latestFiling": {
@@ -632,13 +725,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "18365dc8ced3543fd8a33dc23c27d8921ceb123f03324d3e532a69c2f1503769",
@@ -790,13 +883,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2a1fa6b888c947879d8c2df2cc9f816a84372250f439de7f097eb60c98218595",
@@ -807,9 +900,9 @@
       "name": "DISCIPLINED GROWTH ACQUISITION Corp",
       "sic": "6770",
       "rawFacts": 126,
-      "mappedFacts": 0,
+      "mappedFacts": 29,
       "unmappedFacts": 75,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -820,9 +913,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2026-01-18",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -861,7 +954,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -889,14 +982,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -918,23 +1011,26 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 4,
+        "MEDIUM": 1
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 5,
+        "resolvedValues": 5
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 126,
+        "total": 87,
         "by_severity": {
           "INFO": 75,
-          "WARNING": 51
+          "WARNING": 12
         },
         "by_code": {
+          "CONCEPT_DISAGREEMENT": 2,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 75,
-          "UNPLACEABLE_PERIOD": 41
+          "UNKNOWN_CONCEPT": 75
         }
       },
       "latestFiling": {
@@ -945,13 +1041,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a3d2c630bf2bc723397df9bfc086c94b6090b5d9344d015a9daab2b6db3001c7",

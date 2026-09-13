@@ -7,11 +7,54 @@
       "name": "HIGHWOODS PROPERTIES, INC.",
       "sic": "6798",
       "rawFacts": 25472,
-      "mappedFacts": 5240,
-      "unmappedFacts": 19524,
+      "mappedFacts": 6138,
+      "unmappedFacts": 18836,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 6.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HIW"
@@ -127,15 +170,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20498,
+        "total": 19926,
         "by_severity": {
-          "INFO": 19524,
-          "WARNING": 974
+          "INFO": 18836,
+          "WARNING": 1090
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 932,
-          "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 19524
+          "CONCEPT_DISAGREEMENT": 1042,
+          "RESTATEMENT_CONFLICT": 48,
+          "UNKNOWN_CONCEPT": 18836
         }
       },
       "latestFiling": {
@@ -146,13 +189,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b8365e7162349a33b558abfb6a75998ab9c58ff1b2a8f6d78bde0a5ac3ec6acb",
@@ -163,8 +206,8 @@
       "name": "LB PHARMACEUTICALS INC",
       "sic": "2834",
       "rawFacts": 1159,
-      "mappedFacts": 297,
-      "unmappedFacts": 869,
+      "mappedFacts": 300,
+      "unmappedFacts": 867,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -283,15 +326,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 883,
+        "total": 881,
         "by_severity": {
-          "INFO": 869,
+          "INFO": 867,
           "WARNING": 14
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 869
+          "UNKNOWN_CONCEPT": 867
         }
       },
       "latestFiling": {
@@ -302,13 +345,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "850da355ae542c4cdf6cfdf17fe929650f247d8a1592b60fc7de022eefd8f3f6",
@@ -459,13 +502,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "55be33daa487f884e5fa08301d78451b2413a9c7fa987e1b6184b9cdcd49c89f",

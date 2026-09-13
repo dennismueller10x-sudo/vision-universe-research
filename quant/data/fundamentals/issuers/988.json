@@ -7,8 +7,8 @@
       "name": "JACOBS SOLUTIONS INC.",
       "sic": "1600",
       "rawFacts": 28867,
-      "mappedFacts": 7619,
-      "unmappedFacts": 21103,
+      "mappedFacts": 7730,
+      "unmappedFacts": 20869,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21897,
+        "total": 21808,
         "by_severity": {
-          "INFO": 21103,
+          "INFO": 20869,
           "ERROR": 2,
-          "WARNING": 792
+          "WARNING": 937
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 645,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 141,
-          "UNKNOWN_CONCEPT": 21103
+          "PERIOD_MISMATCH": 143,
+          "RESTATEMENT_CONFLICT": 143,
+          "UNKNOWN_CONCEPT": 20869
         }
       },
       "latestFiling": {
@@ -149,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aa76cfa727fc12f73ff905c33a37c81d880b6fbcfb8a14756fae5993f2d256ab",
@@ -166,8 +167,8 @@
       "name": "SIGNET JEWELERS LTD",
       "sic": "5944",
       "rawFacts": 33067,
-      "mappedFacts": 8039,
-      "unmappedFacts": 25228,
+      "mappedFacts": 8422,
+      "unmappedFacts": 24867,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -286,18 +287,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25978,
+        "total": 25635,
         "by_severity": {
-          "INFO": 25228,
-          "WARNING": 750
+          "INFO": 24867,
+          "WARNING": 768
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 599,
+          "CONCEPT_DISAGREEMENT": 612,
+          "FISCAL_PERIOD_CONFLICT": 1,
           "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 137,
+          "RESTATEMENT_CONFLICT": 141,
           "UNEXPECTED_DURATION": 6,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 25228
+          "UNKNOWN_CONCEPT": 24867
         }
       },
       "latestFiling": {
@@ -308,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0f46a7e241d8d47bc33d3adf2aefc32b197e199a295f85c019fdf0ea6d22da5",
@@ -466,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3adf2872b103833744c9f0c3ce2da9b39ce6db633beb8dddc41b512454982ad4",

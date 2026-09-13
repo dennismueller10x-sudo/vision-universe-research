@@ -7,8 +7,8 @@
       "name": "Soluna Holdings, Inc",
       "sic": "6199",
       "rawFacts": 13133,
-      "mappedFacts": 4294,
-      "unmappedFacts": 8852,
+      "mappedFacts": 4304,
+      "unmappedFacts": 8845,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -128,10 +128,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9497,
+        "total": 9490,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 8852,
+          "INFO": 8845,
           "WARNING": 642
         },
         "by_code": {
@@ -139,7 +139,7 @@
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 235,
-          "UNKNOWN_CONCEPT": 8852
+          "UNKNOWN_CONCEPT": 8845
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2d33d6d7a41aa25324fd789e5873ab52bee75f61f73ca2f0d35bd7b6861401fb",
@@ -167,8 +167,8 @@
       "name": "ORASURE TECHNOLOGIES INC",
       "sic": "3841",
       "rawFacts": 19791,
-      "mappedFacts": 6840,
-      "unmappedFacts": 13392,
+      "mappedFacts": 6888,
+      "unmappedFacts": 13363,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +287,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13593,
+        "total": 13564,
         "by_severity": {
-          "INFO": 13392,
+          "INFO": 13363,
           "WARNING": 201
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 187,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 13392
+          "UNKNOWN_CONCEPT": 13363
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bc71094dd2cd7a677f9cfc7bceece52d992c34e0c18af07f075186c21a3cb666",
@@ -323,8 +323,8 @@
       "name": "JETBLUE AIRWAYS CORP",
       "sic": "4512",
       "rawFacts": 24077,
-      "mappedFacts": 6444,
-      "unmappedFacts": 18040,
+      "mappedFacts": 6551,
+      "unmappedFacts": 17974,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,19 +442,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18609,
+        "total": 18545,
         "by_severity": {
-          "INFO": 18040,
+          "INFO": 17974,
           "ERROR": 6,
-          "WARNING": 563
+          "WARNING": 565
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 495,
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 57,
+          "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 18040
+          "UNKNOWN_CONCEPT": 17974
         }
       },
       "latestFiling": {
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6857c1509372a27404952f0bfe7e8363f78716d27367f78fb03dfb70297fd50f",
@@ -482,17 +482,108 @@
       "name": "First Internet Bancorp",
       "sic": "6022",
       "rawFacts": 26018,
-      "mappedFacts": 4411,
-      "unmappedFacts": 22013,
+      "mappedFacts": 6846,
+      "unmappedFacts": 19915,
       "calendarYears": 14,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 14,
           "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 7.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -610,15 +701,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22051,
+        "total": 19960,
         "by_severity": {
-          "INFO": 22013,
-          "WARNING": 38
+          "INFO": 19915,
+          "WARNING": 45
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
-          "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 22013
+          "RESTATEMENT_CONFLICT": 39,
+          "UNKNOWN_CONCEPT": 19915
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "37b9f11a282e6a2978d7158346648e8b437b64faf387dd682fc6388c29458869",
@@ -784,13 +875,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "79203fbf81dfc3519f1d4d41520f96aa69689ab71899dab0df9a0d11c509715c",
@@ -942,13 +1033,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c3480bb0e35a43cd4b9ec5e8b574e91204d6d41d614f250d40736964270c450b",
@@ -959,8 +1050,8 @@
       "name": "Autolus Therapeutics plc",
       "sic": "2836",
       "rawFacts": 6033,
-      "mappedFacts": 1801,
-      "unmappedFacts": 4344,
+      "mappedFacts": 1825,
+      "unmappedFacts": 4330,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -1078,16 +1169,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4411,
+        "total": 4397,
         "by_severity": {
-          "INFO": 4344,
+          "INFO": 4330,
           "WARNING": 67
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 49,
           "RESTATEMENT_CONFLICT": 17,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 4344
+          "UNKNOWN_CONCEPT": 4330
         }
       },
       "latestFiling": {
@@ -1098,13 +1189,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2a4f404b2173bb6b1fe04cad0a779cad27782ba08539a20b9e895ee8808d6543",
@@ -1115,8 +1206,8 @@
       "name": "ALPHA MODUS HOLDINGS, INC.",
       "sic": "6794",
       "rawFacts": 2854,
-      "mappedFacts": 1109,
-      "unmappedFacts": 1790,
+      "mappedFacts": 1111,
+      "unmappedFacts": 1787,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1235,9 +1326,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1924,
+        "total": 1921,
         "by_severity": {
-          "INFO": 1790,
+          "INFO": 1787,
           "ERROR": 2,
           "WARNING": 132
         },
@@ -1247,7 +1338,7 @@
           "PERIOD_MISMATCH": 28,
           "RESTATEMENT_CONFLICT": 66,
           "UNEXPECTED_DURATION": 15,
-          "UNKNOWN_CONCEPT": 1790
+          "UNKNOWN_CONCEPT": 1787
         }
       },
       "latestFiling": {
@@ -1258,13 +1349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b16eca3789d9a67ad9b32861043a44945cbd013c60b8c3d398eb6b3d8cf4e915",
@@ -1414,13 +1505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ebe55d12bb13a9b3b6c84c2ecad80ab9aa4016cb94fa9aa6677ca124b9281567",
@@ -1568,13 +1659,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be5a2b66f7c8d2943020106f3924cd2910557ce88414e693e2591add2fb22180",
@@ -1725,13 +1816,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b48f767e016dc3cf2491dcff247d911c0224c5311484753b78e673c0752d52e1",

@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d7012f24d4c988884be96f403b2c6693e1d4afafb0ab47984675981e4d5f91e2",
@@ -164,8 +164,8 @@
       "name": "Dolby Laboratories, Inc.",
       "sic": "6794",
       "rawFacts": 32429,
-      "mappedFacts": 8008,
-      "unmappedFacts": 23972,
+      "mappedFacts": 8321,
+      "unmappedFacts": 23656,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,19 +284,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24759,
+        "total": 24504,
         "by_severity": {
-          "INFO": 23972,
+          "INFO": 23656,
           "ERROR": 1,
-          "WARNING": 786
+          "WARNING": 847
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 709,
           "FISCAL_PERIOD_CONFLICT": 9,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 23972
+          "PERIOD_MISMATCH": 59,
+          "RESTATEMENT_CONFLICT": 69,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 23656
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfe3df8691f61402139bc70d6a857519e41deb2b83ef512e8833cdcbd4306dd4",
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "59c652874c045ba2e9c461083314450ebd58b812e7c90905f6e14d2b401717a8",
@@ -478,8 +479,8 @@
       "name": "Urban Edge Properties",
       "sic": "6500",
       "rawFacts": 17013,
-      "mappedFacts": 3976,
-      "unmappedFacts": 12794,
+      "mappedFacts": 4672,
+      "unmappedFacts": 12266,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -598,15 +599,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13298,
+        "total": 12773,
         "by_severity": {
-          "INFO": 12794,
-          "WARNING": 504
+          "INFO": 12266,
+          "WARNING": 507
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 496,
-          "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 12794
+          "RESTATEMENT_CONFLICT": 11,
+          "UNKNOWN_CONCEPT": 12266
         }
       },
       "latestFiling": {
@@ -617,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9b6689ef73342d51f7f9655a072b8eb76a3007ce5a9b2aaf90d5d63d79feb2cd",
@@ -634,11 +635,54 @@
       "name": "BrightSpire Capital, Inc.",
       "sic": "6798",
       "rawFacts": 16065,
-      "mappedFacts": 2745,
-      "unmappedFacts": 13015,
+      "mappedFacts": 3360,
+      "unmappedFacts": 12449,
       "calendarYears": 10,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "secured_debt": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BRSP"
@@ -754,17 +798,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13518,
+        "total": 13061,
         "by_severity": {
-          "INFO": 13015,
-          "WARNING": 503
+          "INFO": 12449,
+          "WARNING": 612
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 473,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 13015
+          "PERIOD_MISMATCH": 108,
+          "RESTATEMENT_CONFLICT": 27,
+          "UNKNOWN_CONCEPT": 12449
         }
       },
       "latestFiling": {
@@ -775,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bc24a998916baeb3a5b4cc18691dc7a49d532716008bb7fa052a0cbc51e1db7b",
@@ -931,13 +976,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b09a215af9264b7799aceff9854bcce352bb0c64b5cf3db0b87c9c03df5d0fe3",
@@ -1088,13 +1133,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9b3657a53dc26c0f6d10e35377498b2af023524330ce9795551cf2fe347de45f",

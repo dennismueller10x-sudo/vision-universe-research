@@ -7,8 +7,8 @@
       "name": "BRINKER INTERNATIONAL, INC",
       "sic": "5812",
       "rawFacts": 24052,
-      "mappedFacts": 7004,
-      "unmappedFacts": 17495,
+      "mappedFacts": 7183,
+      "unmappedFacts": 17313,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17920,
+        "total": 17741,
         "by_severity": {
-          "INFO": 17495,
-          "WARNING": 425
+          "INFO": 17313,
+          "WARNING": 428
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 410,
-          "PERIOD_MISMATCH": 7,
+          "PERIOD_MISMATCH": 10,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 17495
+          "UNKNOWN_CONCEPT": 17313
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8243e648528366f0087405d4f448a667511d5cf454fef9ea576d60721725ccf1",
@@ -302,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5e98d915bbe2c6320cc94a6c29ed1eaeff4c665bc0b1896909238d4c2dc33f84",

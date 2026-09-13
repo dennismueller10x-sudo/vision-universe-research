@@ -7,14 +7,105 @@
       "name": "First Western Financial Inc",
       "sic": "6022",
       "rawFacts": 15499,
-      "mappedFacts": 2540,
-      "unmappedFacts": 12837,
+      "mappedFacts": 3638,
+      "unmappedFacts": 11930,
       "calendarYears": 9,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 4.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 9,
           "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -135,16 +226,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12954,
+        "total": 12047,
         "by_severity": {
-          "INFO": 12837,
+          "INFO": 11930,
           "WARNING": 117
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 94,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 12837
+          "UNKNOWN_CONCEPT": 11930
         }
       },
       "latestFiling": {
@@ -155,13 +246,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f0b387a2c33e8ff3dfeafb78d3251274d3edb3c912c5d91dd797621cb7182f3",
@@ -313,13 +404,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "668772d0018171e5c958203ec4b2de59f7aeb48bfefef7d0b5db9c6eadf622a1",
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95d6ea445750bc848942731ed1a5f9f0d7ade82dcefdbc5b07ea588756627c13",
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "523924d10eb60f5f016464fd799d6f47d59b9a975f3176a9faaa1fd6ebb201cc",

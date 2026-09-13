@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c274624f4a02b7870b6c3f49ddc490a3b948ddacdbabea6d95637753220a73f2",
@@ -165,11 +165,54 @@
       "name": "MID AMERICA APARTMENT COMMUNITIES INC.",
       "sic": "6798",
       "rawFacts": 14893,
-      "mappedFacts": 3403,
-      "unmappedFacts": 10922,
+      "mappedFacts": 4172,
+      "unmappedFacts": 10399,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MAA",
@@ -286,19 +329,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11533,
+        "total": 11022,
         "by_severity": {
-          "INFO": 10922,
+          "INFO": 10399,
           "ERROR": 2,
-          "WARNING": 609
+          "WARNING": 621
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 559,
-          "FISCAL_PERIOD_CONFLICT": 12,
+          "CONCEPT_DISAGREEMENT": 567,
+          "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 37,
+          "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 10922
+          "UNKNOWN_CONCEPT": 10399
         }
       },
       "latestFiling": {
@@ -309,13 +352,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e92dbd7b0d3fadbaf78fa66119ab79becb4e097e9dac91a111f3f1f22acb6228",
@@ -326,8 +369,8 @@
       "name": "Nurix Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 5980,
-      "mappedFacts": 1970,
-      "unmappedFacts": 4135,
+      "mappedFacts": 1992,
+      "unmappedFacts": 4113,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -445,15 +488,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4165,
+        "total": 4143,
         "by_severity": {
-          "INFO": 4135,
+          "INFO": 4113,
           "WARNING": 30
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 4135
+          "UNKNOWN_CONCEPT": 4113
         }
       },
       "latestFiling": {
@@ -464,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b6730cef1d6672095a7333bad194e291531aeea63ef95af146484b0b276a5975",
@@ -481,11 +524,54 @@
       "name": "Medalist Diversified, Inc.",
       "sic": "6798",
       "rawFacts": 7901,
-      "mappedFacts": 2256,
-      "unmappedFacts": 5405,
+      "mappedFacts": 2650,
+      "unmappedFacts": 5126,
       "calendarYears": 9,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 1.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "secured_debt": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MDRR"
@@ -601,17 +687,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5967,
+        "total": 5732,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 5405,
-          "WARNING": 560
+          "INFO": 5126,
+          "WARNING": 604
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 461,
+          "CONCEPT_DISAGREEMENT": 489,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 5405
+          "RESTATEMENT_CONFLICT": 115,
+          "UNKNOWN_CONCEPT": 5126
         }
       },
       "latestFiling": {
@@ -622,13 +708,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6856cae9e1eccf183c07d3319cd23f1066b1528520a599a3788834b1736534a2",

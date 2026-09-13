@@ -7,11 +7,54 @@
       "name": "UMH PROPERTIES, INC.",
       "sic": "6798",
       "rawFacts": 20250,
-      "mappedFacts": 4324,
-      "unmappedFacts": 15596,
+      "mappedFacts": 5260,
+      "unmappedFacts": 14971,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "UMH",
@@ -128,18 +171,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16278,
+        "total": 15779,
         "by_severity": {
-          "INFO": 15596,
-          "WARNING": 682
+          "INFO": 14971,
+          "WARNING": 808
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 577,
+          "CONCEPT_DISAGREEMENT": 690,
           "FISCAL_PERIOD_CONFLICT": 29,
           "PERIOD_MISMATCH": 7,
-          "RESTATEMENT_CONFLICT": 59,
-          "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 15596
+          "RESTATEMENT_CONFLICT": 69,
+          "UNEXPECTED_DURATION": 13,
+          "UNKNOWN_CONCEPT": 14971
         }
       },
       "latestFiling": {
@@ -150,13 +193,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "329c014c3124f80e51bdaab320f02e5c2e9165696c8894a8c910113e7081206d",
@@ -305,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "988ae175815a9d1e205d7306091f1b15244b3146b911573e8baf7b0628f97e27",
@@ -322,8 +365,8 @@
       "name": "Hamilton Lane INC",
       "sic": "6282",
       "rawFacts": 10242,
-      "mappedFacts": 2177,
-      "unmappedFacts": 7963,
+      "mappedFacts": 2181,
+      "unmappedFacts": 7961,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -442,16 +485,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8360,
+        "total": 8358,
         "by_severity": {
-          "INFO": 7963,
+          "INFO": 7961,
           "WARNING": 397
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 352,
           "RESTATEMENT_CONFLICT": 43,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7963
+          "UNKNOWN_CONCEPT": 7961
         }
       },
       "latestFiling": {
@@ -462,13 +505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b60c778b2de69dd04d369b939a4acaf4c831b0c4b0bbfbed50b83badc34a7f0",
@@ -612,13 +655,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "99bac98594d17254e4e3f76322aac8b25b899258d3cd79f072244445d689efce",
@@ -629,8 +672,8 @@
       "name": "MDB Capital Holdings, LLC",
       "sic": "6199",
       "rawFacts": 3094,
-      "mappedFacts": 671,
-      "unmappedFacts": 2399,
+      "mappedFacts": 705,
+      "unmappedFacts": 2377,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -749,9 +792,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2496,
+        "total": 2474,
         "by_severity": {
-          "INFO": 2399,
+          "INFO": 2377,
           "WARNING": 97
         },
         "by_code": {
@@ -759,7 +802,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 2399
+          "UNKNOWN_CONCEPT": 2377
         }
       },
       "latestFiling": {
@@ -770,13 +813,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6dd8ff73f352d804150cd893087f210740a2548b3c727a83e7448dad38dd3c00",

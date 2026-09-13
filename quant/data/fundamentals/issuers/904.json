@@ -7,8 +7,8 @@
       "name": "AMERICAN ELECTRIC POWER CO INC",
       "sic": "4911",
       "rawFacts": 35070,
-      "mappedFacts": 7183,
-      "unmappedFacts": 27760,
+      "mappedFacts": 7580,
+      "unmappedFacts": 27429,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28743,
+        "total": 28415,
         "by_severity": {
-          "INFO": 27760,
-          "WARNING": 983
+          "INFO": 27429,
+          "WARNING": 986
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 923,
           "EXTREME_VALUE": 3,
           "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 27760
+          "UNIT_MISMATCH": 3,
+          "UNKNOWN_CONCEPT": 27429
         }
       },
       "latestFiling": {
@@ -147,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eaa8020a3cdc4131ef3acb06d99f37eef590f30e6f73e0b050d100725ccd2aff",
@@ -164,8 +165,8 @@
       "name": "DELTA AIR LINES, INC.",
       "sic": "4512",
       "rawFacts": 22077,
-      "mappedFacts": 6896,
-      "unmappedFacts": 15985,
+      "mappedFacts": 7069,
+      "unmappedFacts": 15820,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +285,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16408,
+        "total": 16243,
         "by_severity": {
-          "INFO": 15985,
+          "INFO": 15820,
           "ERROR": 2,
           "WARNING": 421
         },
@@ -295,7 +296,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 57,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 15985
+          "UNKNOWN_CONCEPT": 15820
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e9f3657b014c9da994ab48ce2e94aabe4b4a1bf75f6b7df8e132435911f67b4e",
@@ -323,8 +324,8 @@
       "name": "NETGEAR, INC.",
       "sic": "3576",
       "rawFacts": 25117,
-      "mappedFacts": 6963,
-      "unmappedFacts": 18302,
+      "mappedFacts": 7044,
+      "unmappedFacts": 18252,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -443,16 +444,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18675,
+        "total": 18625,
         "by_severity": {
-          "INFO": 18302,
+          "INFO": 18252,
           "WARNING": 373
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 269,
           "FISCAL_PERIOD_CONFLICT": 12,
           "RESTATEMENT_CONFLICT": 92,
-          "UNKNOWN_CONCEPT": 18302
+          "UNKNOWN_CONCEPT": 18252
         }
       },
       "latestFiling": {
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "385ea63a066269e8db68e06cc56d683c9d36f1db0292bec7cccefe29fb7704a3",
@@ -480,11 +481,75 @@
       "name": "Global Indemnity Group, LLC",
       "sic": "6331",
       "rawFacts": 26405,
-      "mappedFacts": 4706,
-      "unmappedFacts": 22081,
+      "mappedFacts": 6249,
+      "unmappedFacts": 20868,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "GBLI"
@@ -600,18 +665,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22277,
+        "total": 21075,
         "by_severity": {
-          "INFO": 22081,
-          "WARNING": 196
+          "INFO": 20868,
+          "WARNING": 207
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 143,
-          "FISCAL_PERIOD_CONFLICT": 9,
+          "CONCEPT_DISAGREEMENT": 149,
+          "FISCAL_PERIOD_CONFLICT": 12,
           "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 29,
+          "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 22081
+          "UNKNOWN_CONCEPT": 20868
         }
       },
       "latestFiling": {
@@ -622,13 +687,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5b9d684be480c86c944636522b1109d027a806474f8bbd4bddfdcb66d826ddb",
@@ -639,8 +704,8 @@
       "name": "RHYTHM PHARMACEUTICALS, INC.",
       "sic": "2834",
       "rawFacts": 8389,
-      "mappedFacts": 3018,
-      "unmappedFacts": 5532,
+      "mappedFacts": 3128,
+      "unmappedFacts": 5464,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -759,15 +824,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5633,
+        "total": 5565,
         "by_severity": {
-          "INFO": 5532,
+          "INFO": 5464,
           "WARNING": 101
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 98,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 5532
+          "UNKNOWN_CONCEPT": 5464
         }
       },
       "latestFiling": {
@@ -778,13 +843,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f995ea42b25726e5570766931db080aee6c08b1a960de8d01eaefaf60e3a835c",
@@ -795,8 +860,8 @@
       "name": "EZGO Technologies Ltd.",
       "sic": "3751",
       "rawFacts": 3311,
-      "mappedFacts": 780,
-      "unmappedFacts": 2511,
+      "mappedFacts": 788,
+      "unmappedFacts": 2507,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -915,15 +980,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2710,
+        "total": 2706,
         "by_severity": {
-          "INFO": 2511,
+          "INFO": 2507,
           "WARNING": 199
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 153,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 2511
+          "UNKNOWN_CONCEPT": 2507
         }
       },
       "latestFiling": {
@@ -934,13 +999,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "127ab978dad9fa555904fe2a4786a51084f91c67ea2761d00834da794f5258ab",

@@ -7,8 +7,8 @@
       "name": "LUXFER HOLDINGS PLC",
       "sic": "2810",
       "rawFacts": 14689,
-      "mappedFacts": 4131,
-      "unmappedFacts": 10292,
+      "mappedFacts": 4142,
+      "unmappedFacts": 10281,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11048,
+        "total": 11037,
         "by_severity": {
-          "INFO": 10292,
+          "INFO": 10281,
           "WARNING": 756
         },
         "by_code": {
@@ -137,7 +137,7 @@
           "FISCAL_PERIOD_CONFLICT": 6,
           "PERIOD_MISMATCH": 155,
           "RESTATEMENT_CONFLICT": 92,
-          "UNKNOWN_CONCEPT": 10292
+          "UNKNOWN_CONCEPT": 10281
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "773dc589df7ed040638db33a4a30b9b3bb0f633f39f397e98b3816bf093faa8a",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9ecc44defa8f59dd19f4376195b0e91d50125a5edff2c20fa9af35e16b0f221",
@@ -459,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66cbfdf1fb8b49f520c33b35276aabd16158eb3b82045581402f21eb5537f6b6",
@@ -476,8 +476,8 @@
       "name": "ADT Inc.",
       "sic": "7381",
       "rawFacts": 13158,
-      "mappedFacts": 3423,
-      "unmappedFacts": 10045,
+      "mappedFacts": 3593,
+      "unmappedFacts": 9884,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -596,17 +596,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10493,
+        "total": 10358,
         "by_severity": {
-          "INFO": 10045,
+          "INFO": 9884,
           "ERROR": 1,
-          "WARNING": 447
+          "WARNING": 473
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 361,
           "FUTURE_DATA_LEAK": 1,
+          "PERIOD_MISMATCH": 26,
           "RESTATEMENT_CONFLICT": 86,
-          "UNKNOWN_CONCEPT": 10045
+          "UNKNOWN_CONCEPT": 9884
         }
       },
       "latestFiling": {
@@ -617,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "816f3cdf72e0c3d9d46b1f7e46c51cce353f0606c27a56e1cf4d2ece0b2dc06f",
@@ -777,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e5bf9d745b465dc4eeecd9efd0db01d3b2c582839dde38b5a0ace6740d3e3fde",
@@ -794,8 +795,8 @@
       "name": "Oklo Inc.",
       "sic": "4911",
       "rawFacts": 3724,
-      "mappedFacts": 1225,
-      "unmappedFacts": 2496,
+      "mappedFacts": 1226,
+      "unmappedFacts": 2495,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -913,16 +914,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2627,
+        "total": 2626,
         "by_severity": {
-          "INFO": 2496,
+          "INFO": 2495,
           "WARNING": 131
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 41,
           "RESTATEMENT_CONFLICT": 57,
           "UNEXPECTED_DURATION": 33,
-          "UNKNOWN_CONCEPT": 2496
+          "UNKNOWN_CONCEPT": 2495
         }
       },
       "latestFiling": {
@@ -933,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "40b23b0120dd07095333899bccbd5bc9af526517ce4e4e21e3fe9d8712de0e4e",
@@ -950,8 +951,8 @@
       "name": "Premium Catering (Holdings) Ltd",
       "sic": "5812",
       "rawFacts": 946,
-      "mappedFacts": 317,
-      "unmappedFacts": 600,
+      "mappedFacts": 329,
+      "unmappedFacts": 594,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1070,15 +1071,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 722,
+        "total": 716,
         "by_severity": {
-          "INFO": 600,
+          "INFO": 594,
           "WARNING": 122
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 120,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 600
+          "UNKNOWN_CONCEPT": 594
         }
       },
       "latestFiling": {
@@ -1089,13 +1090,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0d024b6652af3b52bdfac50bf19b47aef92850db85c70b299fc9e5ee39b6c147",
@@ -1242,13 +1243,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "38a7cea8d46538232fd03aeb1444203382082638ec55c1a632e7871fb8e1df18",

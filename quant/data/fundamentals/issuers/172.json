@@ -7,8 +7,8 @@
       "name": "CUMMINS INC",
       "sic": "3510",
       "rawFacts": 32570,
-      "mappedFacts": 8176,
-      "unmappedFacts": 24974,
+      "mappedFacts": 8484,
+      "unmappedFacts": 24713,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25768,
+        "total": 25509,
         "by_severity": {
-          "INFO": 24974,
+          "INFO": 24713,
           "ERROR": 1,
-          "WARNING": 793
+          "WARNING": 795
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 690,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 10,
-          "RESTATEMENT_CONFLICT": 92,
+          "RESTATEMENT_CONFLICT": 94,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 24974
+          "UNKNOWN_CONCEPT": 24713
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1400d37d4d44ce0331d59cc3e2a07d4524632bf0fdb8d5955f5b680a9c9b4e84",
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ed1e1b023c820b9b10b1de90645a9da16a11aa08eaa1d07d450974b5cac6b1ae",
@@ -324,8 +324,8 @@
       "name": "NATIONAL PRESTO INDUSTRIES INC",
       "sic": "3480",
       "rawFacts": 16905,
-      "mappedFacts": 6318,
-      "unmappedFacts": 11100,
+      "mappedFacts": 6399,
+      "unmappedFacts": 11050,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -444,16 +444,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11430,
+        "total": 11382,
         "by_severity": {
-          "INFO": 11100,
-          "WARNING": 330
+          "INFO": 11050,
+          "WARNING": 332
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 244,
           "FISCAL_PERIOD_CONFLICT": 25,
-          "RESTATEMENT_CONFLICT": 61,
-          "UNKNOWN_CONCEPT": 11100
+          "RESTATEMENT_CONFLICT": 63,
+          "UNKNOWN_CONCEPT": 11050
         }
       },
       "latestFiling": {
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7dcba6bbe7f60496e25f2fba2ff231b8cc2f22aee19e2ea6f60815a8dbf86a2c",
@@ -622,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "37fc6f61c093268b1701cfba2deb26a951b0724c90328fcc8eae9af3bf67b66d",
@@ -779,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5513d2ccccc8c56c1f1702174087f81c54ec22d0710e7715430920b85c457763",
@@ -796,8 +796,8 @@
       "name": "Kayne Anderson BDC, Inc.",
       "sic": null,
       "rawFacts": 4240,
-      "mappedFacts": 922,
-      "unmappedFacts": 3258,
+      "mappedFacts": 1042,
+      "unmappedFacts": 3158,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -916,15 +916,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3367,
+        "total": 3267,
         "by_severity": {
-          "INFO": 3258,
+          "INFO": 3158,
           "WARNING": 109
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 99,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 3258
+          "UNKNOWN_CONCEPT": 3158
         }
       },
       "latestFiling": {
@@ -935,13 +935,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2ba316be35834faed0a83674b1167ef1145e0ebfe293e71e061da37117729485",
@@ -952,8 +952,8 @@
       "name": "Jiuzi Holdings, Inc.",
       "sic": "5500",
       "rawFacts": 2540,
-      "mappedFacts": 737,
-      "unmappedFacts": 1844,
+      "mappedFacts": 767,
+      "unmappedFacts": 1822,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1072,15 +1072,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1964,
+        "total": 1942,
         "by_severity": {
-          "INFO": 1844,
+          "INFO": 1822,
           "WARNING": 120
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 86,
           "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 1844
+          "UNKNOWN_CONCEPT": 1822
         }
       },
       "latestFiling": {
@@ -1091,13 +1091,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be1fc4658e3b68901dd279d953b8e7e0635f52df73e0f631fbcb7faade59662c",
@@ -1247,13 +1247,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7186fcc9b522af07a7e0b40187f984a561eb1c32451283f2ab600b98790ea986",

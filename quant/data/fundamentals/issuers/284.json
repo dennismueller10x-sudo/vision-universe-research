@@ -7,8 +7,8 @@
       "name": "UNIVERSAL DISPLAY CORP \\PA\\",
       "sic": "3670",
       "rawFacts": 21569,
-      "mappedFacts": 6744,
-      "unmappedFacts": 15188,
+      "mappedFacts": 6990,
+      "unmappedFacts": 14993,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15630,
+        "total": 15435,
         "by_severity": {
-          "INFO": 15188,
+          "INFO": 14993,
           "ERROR": 64,
           "WARNING": 378
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 64,
           "NEGATIVE_WHERE_IMPOSSIBLE": 6,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 15188
+          "UNKNOWN_CONCEPT": 14993
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b25e9afd680b1d9b2b6b88b7f5806cf8daa80774b0f43e562f290b723883990c",
@@ -166,8 +166,8 @@
       "name": "ACTELIS NETWORKS INC",
       "sic": "3669",
       "rawFacts": 5270,
-      "mappedFacts": 1686,
-      "unmappedFacts": 3685,
+      "mappedFacts": 1687,
+      "unmappedFacts": 3684,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -286,16 +286,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3869,
+        "total": 3868,
         "by_severity": {
-          "INFO": 3685,
+          "INFO": 3684,
           "WARNING": 184
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 116,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 66,
-          "UNKNOWN_CONCEPT": 3685
+          "UNKNOWN_CONCEPT": 3684
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8a3262bb08ab393543a3282935a33fec62f3047e481c2d59b3e0ae00e3653b08",
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b04763b53fb17e77a6fc4c66d9d6a2861c50ff9e3cbb80d63a097720df20c11",
@@ -480,8 +480,8 @@
       "name": "Olema Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 5360,
-      "mappedFacts": 1594,
-      "unmappedFacts": 3808,
+      "mappedFacts": 1643,
+      "unmappedFacts": 3775,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -600,14 +600,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3854,
+        "total": 3821,
         "by_severity": {
-          "INFO": 3808,
+          "INFO": 3775,
           "WARNING": 46
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 46,
-          "UNKNOWN_CONCEPT": 3808
+          "UNKNOWN_CONCEPT": 3775
         }
       },
       "latestFiling": {
@@ -618,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dffb33b6778a720180b436c3a51603acfdc03384d8a76881f5377b9a8f5db9e5",
@@ -635,17 +635,108 @@
       "name": "Rocket Companies, Inc.",
       "sic": "6162",
       "rawFacts": 8411,
-      "mappedFacts": 1886,
-      "unmappedFacts": 6417,
+      "mappedFacts": 2044,
+      "unmappedFacts": 6290,
       "calendarYears": 8,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 8,
           "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -763,15 +854,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6675,
+        "total": 6550,
         "by_severity": {
-          "INFO": 6417,
-          "WARNING": 258
+          "INFO": 6290,
+          "WARNING": 260
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 229,
-          "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 6417
+          "RESTATEMENT_CONFLICT": 31,
+          "UNKNOWN_CONCEPT": 6290
         }
       },
       "latestFiling": {
@@ -782,13 +873,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "193e23a1f74bc27d4898ee711cc9bea86ce08fd7ebec91e4dd43cdf9742a5036",

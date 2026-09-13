@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9688203c3da60a6ae8325673605effb7c37571592ca5fb0ce6a7bc4538744341",
@@ -311,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5487e26d65b2a6cc643109c24918004a10bb00312fef2989659409e63c424191",
@@ -328,8 +328,8 @@
       "name": "KINDER MORGAN, INC.",
       "sic": "4922",
       "rawFacts": 24917,
-      "mappedFacts": 6193,
-      "unmappedFacts": 18794,
+      "mappedFacts": 6377,
+      "unmappedFacts": 18611,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -449,18 +449,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19675,
+        "total": 19493,
         "by_severity": {
-          "INFO": 18794,
+          "INFO": 18611,
           "ERROR": 8,
-          "WARNING": 873
+          "WARNING": 874
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 824,
           "FUTURE_DATA_LEAK": 8,
           "RESTATEMENT_CONFLICT": 44,
-          "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 18794
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 18611
         }
       },
       "latestFiling": {
@@ -471,13 +471,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1a44066d0add02adfbc81f773c18e0e90e3dfed53da82d56e8245ed8152de81d",
@@ -488,11 +488,54 @@
       "name": "Industrial Logistics Properties Trust",
       "sic": "6798",
       "rawFacts": 9772,
-      "mappedFacts": 2714,
-      "unmappedFacts": 6980,
+      "mappedFacts": 3240,
+      "unmappedFacts": 6602,
       "calendarYears": 10,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 1.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "secured_debt": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ILPT"
@@ -608,15 +651,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7275,
+        "total": 6899,
         "by_severity": {
-          "INFO": 6980,
-          "WARNING": 295
+          "INFO": 6602,
+          "WARNING": 297
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 259,
-          "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 6980
+          "RESTATEMENT_CONFLICT": 38,
+          "UNKNOWN_CONCEPT": 6602
         }
       },
       "latestFiling": {
@@ -627,13 +670,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d14c06a1b0fea6b428144d8ab8d5ea9c5f4f6e802b4a552ecbe122a0b009f1d9",
@@ -785,13 +828,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3320b4cc161c4d3840d67faf56581b2328027cb97824f56dad59827489b8c356",

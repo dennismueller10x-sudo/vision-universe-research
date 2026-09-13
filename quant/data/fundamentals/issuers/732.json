@@ -7,8 +7,8 @@
       "name": "CAMPBELL'S Co",
       "sic": "2000",
       "rawFacts": 30185,
-      "mappedFacts": 7993,
-      "unmappedFacts": 22335,
+      "mappedFacts": 8311,
+      "unmappedFacts": 22027,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23207,
+        "total": 22899,
         "by_severity": {
-          "INFO": 22335,
+          "INFO": 22027,
           "ERROR": 1,
           "WARNING": 871
         },
@@ -139,7 +139,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 134,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 22335
+          "UNKNOWN_CONCEPT": 22027
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c09e81c7b19ff4fd92adab8c7b48c90cd260c0186de012459573016c9638ddcb",
@@ -167,8 +167,8 @@
       "name": "ROSS STORES, INC.",
       "sic": "5651",
       "rawFacts": 20979,
-      "mappedFacts": 7892,
-      "unmappedFacts": 13531,
+      "mappedFacts": 8263,
+      "unmappedFacts": 12798,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,18 +287,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13873,
+        "total": 13537,
         "by_severity": {
-          "INFO": 13531,
+          "INFO": 12798,
           "ERROR": 5,
-          "WARNING": 337
+          "WARNING": 734
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 258,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 75,
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 93,
+          "UNEXPECTED_DURATION": 375,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 13531
+          "UNKNOWN_CONCEPT": 12798
         }
       },
       "latestFiling": {
@@ -309,13 +311,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e4feb03fb296e4602e3f3a9c888cf4d6669e1a7b7e864e8d2d98f02ed7f4b4ae",
@@ -467,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c09d44440d499046823956dffb06bdc9f4c836d1f5538e505a8f685179fbfa0c",
@@ -484,8 +486,8 @@
       "name": "Xencor Inc",
       "sic": "2834",
       "rawFacts": 15520,
-      "mappedFacts": 5269,
-      "unmappedFacts": 10348,
+      "mappedFacts": 5465,
+      "unmappedFacts": 10217,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -604,15 +606,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10588,
+        "total": 10457,
         "by_severity": {
-          "INFO": 10348,
+          "INFO": 10217,
           "WARNING": 240
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 162,
           "RESTATEMENT_CONFLICT": 78,
-          "UNKNOWN_CONCEPT": 10348
+          "UNKNOWN_CONCEPT": 10217
         }
       },
       "latestFiling": {
@@ -623,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b5867a58322cfb1f92698fcd212fb5b0bdc158376e22778294ad3f3fe49a8cc3",
@@ -640,17 +642,108 @@
       "name": "Bankwell Financial Group, Inc.",
       "sic": "6022",
       "rawFacts": 25570,
-      "mappedFacts": 4272,
-      "unmappedFacts": 21551,
+      "mappedFacts": 6236,
+      "unmappedFacts": 19833,
       "calendarYears": 15,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 6.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "deposits": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 6.0
+        },
         "net_interest_income": {
           "annualPeriods": 14,
           "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 33,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 6.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -768,14 +861,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21693,
+        "total": 19975,
         "by_severity": {
-          "INFO": 21551,
+          "INFO": 19833,
           "WARNING": 142
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 142,
-          "UNKNOWN_CONCEPT": 21551
+          "UNKNOWN_CONCEPT": 19833
         }
       },
       "latestFiling": {
@@ -786,13 +879,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "34464ff99a099a776dc51e112e489ebf9bece92c4475bdd67ca52c7eb4c986d6",
@@ -803,8 +896,8 @@
       "name": "Marcus & Millichap, Inc.",
       "sic": "6531",
       "rawFacts": 21182,
-      "mappedFacts": 5257,
-      "unmappedFacts": 16090,
+      "mappedFacts": 5408,
+      "unmappedFacts": 15995,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -922,9 +1015,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16232,
+        "total": 16137,
         "by_severity": {
-          "INFO": 16090,
+          "INFO": 15995,
           "ERROR": 1,
           "WARNING": 141
         },
@@ -934,7 +1027,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 16090
+          "UNKNOWN_CONCEPT": 15995
         }
       },
       "latestFiling": {
@@ -945,13 +1038,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "182b682fc0cf453292dc9c9e9c5d2145643cc16cdd20fa884d2178346dfca858",
@@ -962,8 +1055,8 @@
       "name": "ONE Gas, Inc.",
       "sic": "4924",
       "rawFacts": 16359,
-      "mappedFacts": 4948,
-      "unmappedFacts": 11848,
+      "mappedFacts": 5019,
+      "unmappedFacts": 11777,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -1082,9 +1175,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12092,
+        "total": 12021,
         "by_severity": {
-          "INFO": 11848,
+          "INFO": 11777,
           "ERROR": 1,
           "WARNING": 243
         },
@@ -1092,7 +1185,7 @@
           "CONCEPT_DISAGREEMENT": 208,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 11848
+          "UNKNOWN_CONCEPT": 11777
         }
       },
       "latestFiling": {
@@ -1103,13 +1196,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b596dfcc960f4d92650429b3aab267beaa62d3bc046fcabd1157762098b28ddc",
@@ -1259,13 +1352,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a3b27b499ce89c0540844ddfb443b6968e1e6a81d0e5bd69d4b0c159b3d59d98",

@@ -7,8 +7,8 @@
       "name": "ENTERGY CORP /DE/",
       "sic": "4911",
       "rawFacts": 32318,
-      "mappedFacts": 6800,
-      "unmappedFacts": 25313,
+      "mappedFacts": 7213,
+      "unmappedFacts": 24968,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26676,
+        "total": 26344,
         "by_severity": {
-          "INFO": 25313,
+          "INFO": 24968,
           "ERROR": 1,
-          "WARNING": 1362
+          "WARNING": 1375
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1253,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 106,
-          "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 25313
+          "RESTATEMENT_CONFLICT": 113,
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 24968
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3e191c8438b6940ac2384bc8eb0b8a6e19dd4d6017c5b7c8703cce0f1a47f2ad",
@@ -166,8 +166,8 @@
       "name": "UNIVERSAL ELECTRONICS INC",
       "sic": "3651",
       "rawFacts": 24666,
-      "mappedFacts": 6940,
-      "unmappedFacts": 18140,
+      "mappedFacts": 6943,
+      "unmappedFacts": 18137,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18465,
+        "total": 18462,
         "by_severity": {
-          "INFO": 18140,
+          "INFO": 18137,
           "WARNING": 325
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 280,
           "RESTATEMENT_CONFLICT": 45,
-          "UNKNOWN_CONCEPT": 18140
+          "UNKNOWN_CONCEPT": 18137
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "621babfee4101405cbbdbca374bb3d467cd11e0b8827b707734904d1da18efa2",
@@ -322,8 +322,8 @@
       "name": "ICU MEDICAL INC/DE",
       "sic": "3841",
       "rawFacts": 28501,
-      "mappedFacts": 8062,
-      "unmappedFacts": 20708,
+      "mappedFacts": 8117,
+      "unmappedFacts": 20673,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21105,
+        "total": 21070,
         "by_severity": {
-          "INFO": 20708,
+          "INFO": 20673,
           "ERROR": 22,
           "WARNING": 375
         },
@@ -452,7 +452,7 @@
           "CONCEPT_DISAGREEMENT": 341,
           "FUTURE_DATA_LEAK": 22,
           "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 20708
+          "UNKNOWN_CONCEPT": 20673
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "04bbb7d5488e2231c373054196798c27e8433c34218a7d8343e5d1192e26428f",
@@ -617,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5365ca1e91d8d1de06947d5776c39322e46f08fcec88ecc15b3e7db8d006992e",
@@ -634,17 +634,108 @@
       "name": "BayCom Corp",
       "sic": "6022",
       "rawFacts": 20352,
-      "mappedFacts": 3132,
-      "unmappedFacts": 17380,
+      "mappedFacts": 4700,
+      "unmappedFacts": 16057,
       "calendarYears": 10,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 7.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 10,
           "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 6.0
+        },
+        "time_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
         }
       },
       "fiscalYearEnd": null,
@@ -761,18 +852,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17498,
+        "total": 16189,
         "by_severity": {
-          "INFO": 17380,
+          "INFO": 16057,
           "ERROR": 8,
-          "WARNING": 110
+          "WARNING": 124
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 59,
           "FUTURE_DATA_LEAK": 8,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 17380
+          "RESTATEMENT_CONFLICT": 63,
+          "UNKNOWN_CONCEPT": 16057
         }
       },
       "latestFiling": {
@@ -783,13 +874,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "075f06409f2bf05f435c2428ba30bc570abef7c103d5dfe3fd0baf335ef37b08",
@@ -940,13 +1031,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "31624fe4c053341c3af23494fee5fb01de266ebe696a3d55ba51f97832400bfe",

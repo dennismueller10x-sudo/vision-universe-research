@@ -7,8 +7,8 @@
       "name": "CAVCO INDUSTRIES, INC.",
       "sic": "2451",
       "rawFacts": 27369,
-      "mappedFacts": 6405,
-      "unmappedFacts": 21118,
+      "mappedFacts": 7129,
+      "unmappedFacts": 20637,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21517,
+        "total": 21040,
         "by_severity": {
-          "INFO": 21118,
+          "INFO": 20637,
           "ERROR": 1,
-          "WARNING": 398
+          "WARNING": 402
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 385,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 21118
+          "RESTATEMENT_CONFLICT": 17,
+          "UNKNOWN_CONCEPT": 20637
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "32988172b0901e9f4136d9b21e7b90161808e68d69eb45f8e916138388fc0c2a",
@@ -165,11 +165,75 @@
       "name": "UNIVERSAL INSURANCE HOLDINGS, INC.",
       "sic": "6331",
       "rawFacts": 29362,
-      "mappedFacts": 5500,
-      "unmappedFacts": 23868,
+      "mappedFacts": 8694,
+      "unmappedFacts": 21205,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "UVE"
@@ -285,15 +349,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24293,
+        "total": 21670,
         "by_severity": {
-          "INFO": 23868,
-          "WARNING": 425
+          "INFO": 21205,
+          "WARNING": 465
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 412,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 23868
+          "PERIOD_MISMATCH": 14,
+          "RESTATEMENT_CONFLICT": 15,
+          "UNEXPECTED_DURATION": 24,
+          "UNKNOWN_CONCEPT": 21205
         }
       },
       "latestFiling": {
@@ -304,13 +370,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9f95d48262ca8e88a7fc998026d3d9e72b788892229005afbca0e432fe0048d0",
@@ -465,13 +531,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fcb861fffddfa7b9f0dd5ac86b1cd02107853da14f11b8753d97e509e2b2eb84",
@@ -482,8 +548,8 @@
       "name": "Carlyle Group Inc.",
       "sic": "6282",
       "rawFacts": 23257,
-      "mappedFacts": 5086,
-      "unmappedFacts": 17796,
+      "mappedFacts": 5674,
+      "unmappedFacts": 17282,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -603,18 +669,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18333,
+        "total": 17821,
         "by_severity": {
-          "INFO": 17796,
-          "WARNING": 537
+          "INFO": 17282,
+          "WARNING": 539
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 457,
           "EXTREME_VALUE": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
-          "RESTATEMENT_CONFLICT": 30,
+          "RESTATEMENT_CONFLICT": 32,
           "UNEXPECTED_DURATION": 40,
-          "UNKNOWN_CONCEPT": 17796
+          "UNKNOWN_CONCEPT": 17282
         }
       },
       "latestFiling": {
@@ -625,13 +691,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f8a103dceb8e837efe0e2b2675a2bd20019947ccc9f955bcd9ea2630ed6f45d",
@@ -783,13 +849,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4a51c7b732586c851a0d04ed8fa10fbc07340f1d02c85f79cdda7f9ebe99f438",
@@ -940,13 +1006,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f61a368ea519cbd44a83f03aa092ec8d2838b042b91aebc0c760a7ae83f58b8b",
@@ -1098,13 +1164,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c51877ec14b3b5e7407b7b0a16bc2a9d899784bba331270f036812f8092f32fa",
@@ -1253,13 +1319,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f0089ae1d9850ff2bf9763a73205ea2d7b4ab431835d48d4614102afabd861b9",

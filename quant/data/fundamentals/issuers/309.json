@@ -7,8 +7,8 @@
       "name": "NUCOR CORP",
       "sic": "3312",
       "rawFacts": 26458,
-      "mappedFacts": 7983,
-      "unmappedFacts": 18848,
+      "mappedFacts": 8225,
+      "unmappedFacts": 18606,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19665,
+        "total": 19425,
         "by_severity": {
-          "INFO": 18848,
+          "INFO": 18606,
           "ERROR": 1,
-          "WARNING": 816
+          "WARNING": 818
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 721,
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 88,
+          "RESTATEMENT_CONFLICT": 90,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 18848
+          "UNKNOWN_CONCEPT": 18606
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8a69d9b4d21492460329a523199971d8ed6e231b1513f6c248ebcabde8541190",
@@ -167,8 +167,8 @@
       "name": "NEW JERSEY RESOURCES CORP",
       "sic": "4924",
       "rawFacts": 27753,
-      "mappedFacts": 5704,
-      "unmappedFacts": 22431,
+      "mappedFacts": 5933,
+      "unmappedFacts": 22202,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,18 +287,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22817,
+        "total": 22595,
         "by_severity": {
-          "INFO": 22431,
+          "INFO": 22202,
           "ERROR": 3,
-          "WARNING": 383
+          "WARNING": 390
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 283,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 99,
+          "RESTATEMENT_CONFLICT": 106,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 22431
+          "UNKNOWN_CONCEPT": 22202
         }
       },
       "latestFiling": {
@@ -309,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "86574df77b643c0ea4b56eb46af2ad8d3d193e12f741b529365579a7569a6077",
@@ -326,8 +326,8 @@
       "name": "ORAMED PHARMACEUTICALS INC.",
       "sic": "2834",
       "rawFacts": 12743,
-      "mappedFacts": 4150,
-      "unmappedFacts": 8616,
+      "mappedFacts": 4193,
+      "unmappedFacts": 8592,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -446,9 +446,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9218,
+        "total": 9194,
         "by_severity": {
-          "INFO": 8616,
+          "INFO": 8592,
           "WARNING": 602
         },
         "by_code": {
@@ -458,7 +458,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 27,
           "RESTATEMENT_CONFLICT": 157,
           "UNEXPECTED_DURATION": 177,
-          "UNKNOWN_CONCEPT": 8616
+          "UNKNOWN_CONCEPT": 8592
         }
       },
       "latestFiling": {
@@ -469,13 +469,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b9978276c5284cca2ec40ea600b6810abc8bffd6ddcb08dd386c5cf2cec5330b",
@@ -486,8 +486,8 @@
       "name": "Skillful Craftsman Education Technology Ltd",
       "sic": "8200",
       "rawFacts": 2990,
-      "mappedFacts": 855,
-      "unmappedFacts": 2205,
+      "mappedFacts": 857,
+      "unmappedFacts": 2204,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -606,15 +606,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2285,
+        "total": 2284,
         "by_severity": {
-          "INFO": 2205,
+          "INFO": 2204,
           "WARNING": 80
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 57,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 2205
+          "UNKNOWN_CONCEPT": 2204
         }
       },
       "latestFiling": {
@@ -625,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "879140237137e3cee72f4b15efc5791ece1557918cf8ba62f9646daa22d38976",
@@ -780,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a42bbe303213d1d89a6e12c1213ea271b3b7a0da3e622941a87ca37324c3030c",

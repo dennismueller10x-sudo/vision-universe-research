@@ -7,8 +7,8 @@
       "name": "Toll Brothers, Inc.",
       "sic": "1531",
       "rawFacts": 25522,
-      "mappedFacts": 5889,
-      "unmappedFacts": 19575,
+      "mappedFacts": 6167,
+      "unmappedFacts": 19339,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -126,18 +126,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19919,
+        "total": 19708,
         "by_severity": {
           "ERROR": 10,
-          "INFO": 19575,
-          "WARNING": 334
+          "INFO": 19339,
+          "WARNING": 359
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 281,
           "FISCAL_PERIOD_CONFLICT": 17,
           "FUTURE_DATA_LEAK": 10,
+          "PERIOD_MISMATCH": 21,
           "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 19575
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 19339
         }
       },
       "latestFiling": {
@@ -148,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "58ceffa1477285b850b8d3e0b7557f76429fdc1f62399506119e3ffaff4a04d1",
@@ -165,8 +167,8 @@
       "name": "EUROSEAS LTD.",
       "sic": "4412",
       "rawFacts": 4641,
-      "mappedFacts": 1522,
-      "unmappedFacts": 3349,
+      "mappedFacts": 1548,
+      "unmappedFacts": 3317,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,18 +287,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3525,
+        "total": 3504,
         "by_severity": {
-          "INFO": 3349,
+          "INFO": 3317,
           "ERROR": 5,
-          "WARNING": 171
+          "WARNING": 182
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 99,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 70,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 3349
+          "RESTATEMENT_CONFLICT": 71,
+          "UNEXPECTED_DURATION": 12,
+          "UNKNOWN_CONCEPT": 3317
         }
       },
       "latestFiling": {
@@ -307,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fec9cd822884f2280bba2dcd2d224935375191ab15325d1df9f0b5e97d2d92cb",
@@ -324,8 +326,8 @@
       "name": "Targa Resources Corp.",
       "sic": "4922",
       "rawFacts": 25212,
-      "mappedFacts": 6326,
-      "unmappedFacts": 18806,
+      "mappedFacts": 6500,
+      "unmappedFacts": 18623,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -444,18 +446,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19751,
+        "total": 19579,
         "by_severity": {
-          "INFO": 18806,
+          "INFO": 18623,
           "ERROR": 2,
-          "WARNING": 943
+          "WARNING": 954
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 810,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 132,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 18806
+          "RESTATEMENT_CONFLICT": 134,
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 18623
         }
       },
       "latestFiling": {
@@ -466,13 +468,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4d853bde4ce512f66646d3feeb7ad8850460dd6d2d219f53b77b71fe50f0582e",
@@ -483,8 +485,8 @@
       "name": "AerSale Corp",
       "sic": "5080",
       "rawFacts": 8126,
-      "mappedFacts": 2786,
-      "unmappedFacts": 5366,
+      "mappedFacts": 2787,
+      "unmappedFacts": 5365,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -603,10 +605,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5637,
+        "total": 5636,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 5366,
+          "INFO": 5365,
           "WARNING": 270
         },
         "by_code": {
@@ -615,7 +617,7 @@
           "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 104,
           "UNEXPECTED_DURATION": 15,
-          "UNKNOWN_CONCEPT": 5366
+          "UNKNOWN_CONCEPT": 5365
         }
       },
       "latestFiling": {
@@ -626,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eed0bea1acb157309df896f0c0d6609ca2a5f46593a6a7c3aa50cc6ee2b2ea20",
@@ -784,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ec9405091fa8d854e67e78bbc46884082e334d78d7e4cda089595a8123be8126",
@@ -940,13 +942,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d397e2726c762e85172bd062d3482c9e3eb2aca831088429a83f03ff9424b1aa",
@@ -957,11 +959,75 @@
       "name": "CLOVER HEALTH INVESTMENTS, CORP. /DE",
       "sic": "6324",
       "rawFacts": 8753,
-      "mappedFacts": 2045,
-      "unmappedFacts": 6706,
+      "mappedFacts": 2414,
+      "unmappedFacts": 6398,
       "calendarYears": 7,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 1.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "total_investments": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLOV"
@@ -1077,16 +1143,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6919,
+        "total": 6618,
         "by_severity": {
-          "INFO": 6706,
-          "WARNING": 213
+          "INFO": 6398,
+          "WARNING": 220
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 123,
-          "RESTATEMENT_CONFLICT": 85,
+          "RESTATEMENT_CONFLICT": 92,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 6706
+          "UNKNOWN_CONCEPT": 6398
         }
       },
       "latestFiling": {
@@ -1097,13 +1163,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9af4d3a8fe86df205430fa8c4ed2b0a9d8c1f16cf6e2f5cf53d26296dc773002",

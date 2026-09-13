@@ -7,8 +7,8 @@
       "name": "GILEAD SCIENCES, INC.",
       "sic": "2836",
       "rawFacts": 30859,
-      "mappedFacts": 8089,
-      "unmappedFacts": 22717,
+      "mappedFacts": 8404,
+      "unmappedFacts": 22440,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23556,
+        "total": 23283,
         "by_severity": {
-          "INFO": 22717,
-          "WARNING": 839
+          "INFO": 22440,
+          "WARNING": 843
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 779,
-          "RESTATEMENT_CONFLICT": 57,
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 22717
+          "UNKNOWN_CONCEPT": 22440
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f5b3f0b98b5b88b8a1477ad21aa78d69c6d28de7c0d6473ae2c959f4f4dc50a",
@@ -165,17 +166,108 @@
       "name": "Troops, Inc. /Cayman Islands/",
       "sic": "6159",
       "rawFacts": 6182,
-      "mappedFacts": 1881,
-      "unmappedFacts": 4411,
+      "mappedFacts": 1936,
+      "unmappedFacts": 4374,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 3.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 1.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
         "net_interest_income": {
           "annualPeriods": 4,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2021-12-31",
           "historyYears": 3.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 1.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -293,17 +385,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4563,
+        "total": 4541,
         "by_severity": {
-          "INFO": 4411,
-          "WARNING": 152
+          "INFO": 4374,
+          "WARNING": 167
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 89,
+          "CONCEPT_DISAGREEMENT": 102,
           "PERIOD_MISMATCH": 9,
-          "RESTATEMENT_CONFLICT": 51,
+          "RESTATEMENT_CONFLICT": 53,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 4411
+          "UNKNOWN_CONCEPT": 4374
         }
       },
       "latestFiling": {
@@ -314,13 +406,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd3eac2999d9f3225d2cf38a31095790d021537051a8b110acf0e3ea622a905a",
@@ -331,8 +423,8 @@
       "name": "Tuniu Corp",
       "sic": "4700",
       "rawFacts": 7035,
-      "mappedFacts": 1411,
-      "unmappedFacts": 5333,
+      "mappedFacts": 1413,
+      "unmappedFacts": 5332,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -451,15 +543,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5945,
+        "total": 5944,
         "by_severity": {
-          "INFO": 5333,
+          "INFO": 5332,
           "WARNING": 612
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 595,
           "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 5333
+          "UNKNOWN_CONCEPT": 5332
         }
       },
       "latestFiling": {
@@ -470,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0784fd776361dafb304838af979ab53e18f2ff8b15aeb80b8f1a059b23dbd099",
@@ -624,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5cdcf7d64bb9c2c951653c0bcd48a78ce3ba3064a1ef58305a32b357edd67a10",

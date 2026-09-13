@@ -7,11 +7,54 @@
       "name": "ALEXANDERS INC",
       "sic": "6798",
       "rawFacts": 14414,
-      "mappedFacts": 4154,
-      "unmappedFacts": 10209,
+      "mappedFacts": 4957,
+      "unmappedFacts": 9638,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2011-12-31",
+          "historyYears": 2.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ALX"
@@ -127,15 +170,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10870,
+        "total": 10313,
         "by_severity": {
-          "INFO": 10209,
-          "WARNING": 661
+          "INFO": 9638,
+          "WARNING": 675
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 635,
-          "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 10209
+          "RESTATEMENT_CONFLICT": 40,
+          "UNKNOWN_CONCEPT": 9638
         }
       },
       "latestFiling": {
@@ -146,13 +189,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "16802352e88388d42dc3bbc9a267bda97e30e64f672bccd7b7def7bcc0f55515",
@@ -308,13 +351,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d9753f52838ceecde2fb2f06728c6a57c851443490aaa83c36cf5f56f9ccd0a6",
@@ -325,8 +368,8 @@
       "name": "LINDBLAD EXPEDITIONS HOLDINGS, INC.",
       "sic": "4700",
       "rawFacts": 15803,
-      "mappedFacts": 5366,
-      "unmappedFacts": 10501,
+      "mappedFacts": 5371,
+      "unmappedFacts": 10497,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -445,16 +488,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10967,
+        "total": 10963,
         "by_severity": {
-          "INFO": 10501,
+          "INFO": 10497,
           "WARNING": 466
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 342,
           "RESTATEMENT_CONFLICT": 90,
           "UNEXPECTED_DURATION": 34,
-          "UNKNOWN_CONCEPT": 10501
+          "UNKNOWN_CONCEPT": 10497
         }
       },
       "latestFiling": {
@@ -465,13 +508,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ce2701f20f2e2f685ccbffc30569de7070dab6300055a07d8f7ac9a3a47eae77",
@@ -482,8 +525,8 @@
       "name": "Shuttle Pharmaceuticals Holdings, Inc.",
       "sic": "2834",
       "rawFacts": 3804,
-      "mappedFacts": 1162,
-      "unmappedFacts": 2683,
+      "mappedFacts": 1168,
+      "unmappedFacts": 2679,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -602,16 +645,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2847,
+        "total": 2843,
         "by_severity": {
-          "INFO": 2683,
+          "INFO": 2679,
           "WARNING": 164
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 71,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 87,
-          "UNKNOWN_CONCEPT": 2683
+          "UNKNOWN_CONCEPT": 2679
         }
       },
       "latestFiling": {
@@ -622,13 +665,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aef382bfd8a254c29833ee4e86cf94773dbeab1085ab62862710f2b404ae0cba",
@@ -774,13 +817,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9e67924933403b3aa2e8eca22610a2e6c7a57a05deaf7af00da2b58a1cad115b",

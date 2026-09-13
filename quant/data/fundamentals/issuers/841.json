@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "98236b47bfc415bb06092d2316e9d03665015abcedb49a7a497ceacc5b123e3a",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae66cf63a28b20375a81a9ea5a6072b95a534bc840c874353aa9d250a63d6cb5",
@@ -321,17 +321,108 @@
       "name": "National Bank Holdings Corp",
       "sic": "6021",
       "rawFacts": 28833,
-      "mappedFacts": 5320,
-      "unmappedFacts": 23596,
+      "mappedFacts": 7844,
+      "unmappedFacts": 21361,
       "calendarYears": 16,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 46,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 11.0
+        },
+        "deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 16,
           "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 12.0
+        },
+        "time_deposits": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -449,15 +540,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24012,
+        "total": 21788,
         "by_severity": {
-          "INFO": 23596,
-          "WARNING": 416
+          "INFO": 21361,
+          "WARNING": 427
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 402,
-          "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 23596
+          "RESTATEMENT_CONFLICT": 25,
+          "UNKNOWN_CONCEPT": 21361
         }
       },
       "latestFiling": {
@@ -468,13 +559,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f6a77bbb11e550166084f639cafc66b95de7fe3c8f9a1b3c43e86aa3f5807243",
@@ -485,8 +576,8 @@
       "name": "Arbe Robotics Ltd.",
       "sic": "7373",
       "rawFacts": 2139,
-      "mappedFacts": 689,
-      "unmappedFacts": 1533,
+      "mappedFacts": 705,
+      "unmappedFacts": 1525,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -606,15 +697,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1573,
+        "total": 1565,
         "by_severity": {
-          "INFO": 1533,
+          "INFO": 1525,
           "WARNING": 40
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 34,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 1533
+          "UNKNOWN_CONCEPT": 1525
         }
       },
       "latestFiling": {
@@ -625,13 +716,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4faf635292bf9cadcc81da785400bbdbe1a90a58ca2993da90b3161ab1a68ba4",

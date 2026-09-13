@@ -7,8 +7,8 @@
       "name": "ALAMO GROUP INC",
       "sic": "3523",
       "rawFacts": 20568,
-      "mappedFacts": 6887,
-      "unmappedFacts": 14294,
+      "mappedFacts": 7125,
+      "unmappedFacts": 14055,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -126,15 +126,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14494,
+        "total": 14256,
         "by_severity": {
-          "INFO": 14294,
-          "WARNING": 200
+          "INFO": 14055,
+          "WARNING": 201
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 182,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 14294
+          "UNKNOWN_CONCEPT": 14055
         }
       },
       "latestFiling": {
@@ -145,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "00acfe9c831498c037193f9137f0830168ad5b3e8bef289d93acdc908114fc87",
@@ -162,8 +163,8 @@
       "name": "Aclarion, Inc.",
       "sic": "8071",
       "rawFacts": 4477,
-      "mappedFacts": 1743,
-      "unmappedFacts": 2690,
+      "mappedFacts": 1746,
+      "unmappedFacts": 2688,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2880,
+        "total": 2878,
         "by_severity": {
-          "INFO": 2690,
+          "INFO": 2688,
           "WARNING": 190
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 114,
           "EXTREME_VALUE": 2,
           "RESTATEMENT_CONFLICT": 74,
-          "UNKNOWN_CONCEPT": 2690
+          "UNKNOWN_CONCEPT": 2688
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f9c9b1772078ffb1ca67916a71dc47847bf158ae085dac0c0c13f5fa3fe814f",
@@ -459,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8aa5ef3587dfcea3e2c9a2985ba0731f10206a90a1a025705f3a9297f227b5c5",
@@ -617,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c63d8d8defcf0809c270b5f8d6c1f5e252ea10c2368fe869e79a78c3822ef913",

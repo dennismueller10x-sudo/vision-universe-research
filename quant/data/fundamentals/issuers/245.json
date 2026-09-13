@@ -144,13 +144,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75bfe269b2206e6eaa4f0ec050cebad8c8b29299a8a9b2abe0f880f7a33e1f65",
@@ -161,8 +161,8 @@
       "name": "PIPER SANDLER COMPANIES",
       "sic": "6211",
       "rawFacts": 27016,
-      "mappedFacts": 6086,
-      "unmappedFacts": 20707,
+      "mappedFacts": 6638,
+      "unmappedFacts": 20168,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -281,16 +281,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21833,
+        "total": 21298,
         "by_severity": {
-          "INFO": 20707,
-          "WARNING": 1126
+          "INFO": 20168,
+          "WARNING": 1130
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1006,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 119,
-          "UNKNOWN_CONCEPT": 20707
+          "RESTATEMENT_CONFLICT": 123,
+          "UNKNOWN_CONCEPT": 20168
         }
       },
       "latestFiling": {
@@ -301,13 +301,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b3c6a2d2275d6abed28a136f537096defc02c3cb0f6c2584b75d2b8b830f409",
@@ -318,8 +318,8 @@
       "name": "HWH International Inc.",
       "sic": "5122",
       "rawFacts": 3262,
-      "mappedFacts": 998,
-      "unmappedFacts": 2276,
+      "mappedFacts": 1001,
+      "unmappedFacts": 2273,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -438,9 +438,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2402,
+        "total": 2399,
         "by_severity": {
-          "INFO": 2276,
+          "INFO": 2273,
           "ERROR": 1,
           "WARNING": 125
         },
@@ -449,7 +449,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 2276
+          "UNKNOWN_CONCEPT": 2273
         }
       },
       "latestFiling": {
@@ -460,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26d98638be653f520a43836144f7d20ba2187263fed86f8135c15d72808c5dc2",
@@ -616,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb2aad5a7044afbf66b16d7ea012e71a598f8bc48ab20916ccd2e30815d08aa1",

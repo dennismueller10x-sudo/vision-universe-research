@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f06ae570690bd5d6c0c7cc36bf89b6523ce6c8be39d70fe044abf4ef7b50bf45",
@@ -166,8 +166,8 @@
       "name": "TAL Education Group",
       "sic": "8200",
       "rawFacts": 6788,
-      "mappedFacts": 1703,
-      "unmappedFacts": 5304,
+      "mappedFacts": 1711,
+      "unmappedFacts": 5295,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -286,17 +286,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5424,
+        "total": 5422,
         "by_severity": {
-          "INFO": 5304,
-          "WARNING": 120
+          "INFO": 5295,
+          "WARNING": 127
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 104,
-          "PERIOD_MISMATCH": 1,
+          "CONCEPT_DISAGREEMENT": 108,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 13,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 5304
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 5295
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "acd7ebaff3c6849fcc2d465a314be8b98a8cabb4a89890e59b0457111155767b",
@@ -324,8 +324,8 @@
       "name": "Aurinia Pharmaceuticals Inc.",
       "sic": "2834",
       "rawFacts": 8543,
-      "mappedFacts": 2556,
-      "unmappedFacts": 6140,
+      "mappedFacts": 2604,
+      "unmappedFacts": 6110,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -443,16 +443,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6200,
+        "total": 6172,
         "by_severity": {
-          "INFO": 6140,
-          "WARNING": 60
+          "INFO": 6110,
+          "WARNING": 62
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 34,
-          "RESTATEMENT_CONFLICT": 20,
+          "RESTATEMENT_CONFLICT": 22,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 6140
+          "UNKNOWN_CONCEPT": 6110
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6ba229aa30f50674d4a03edf7dd8c74298422762bfe9505fe6db6dcc70092616",

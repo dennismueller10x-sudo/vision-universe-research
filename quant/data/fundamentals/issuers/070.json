@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6eb35ed276fb6a966c1eb79756519d28e1764efe12b881b1cd6285718f23f815",
@@ -163,17 +163,108 @@
       "name": "FIRST COMMUNITY BANKSHARES INC /VA/",
       "sic": "6022",
       "rawFacts": 35414,
-      "mappedFacts": 5897,
-      "unmappedFacts": 29818,
+      "mappedFacts": 8395,
+      "unmappedFacts": 27643,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 12.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 4.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 7.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -291,15 +382,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30139,
+        "total": 27979,
         "by_severity": {
-          "INFO": 29818,
-          "WARNING": 321
+          "INFO": 27643,
+          "WARNING": 336
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 257,
-          "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 29818
+          "CONCEPT_DISAGREEMENT": 261,
+          "RESTATEMENT_CONFLICT": 75,
+          "UNKNOWN_CONCEPT": 27643
         }
       },
       "latestFiling": {
@@ -310,13 +401,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9a1da906ce188a6f88979c82f679405edd9f307e13b4b868a484fe1a23f86508",
@@ -466,13 +557,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b939631bea02b59e924c9212571bdb0f11d9618986b10f046235e9e661973a34",
@@ -483,8 +574,8 @@
       "name": "Volato Group, Inc.",
       "sic": "4522",
       "rawFacts": 4332,
-      "mappedFacts": 1338,
-      "unmappedFacts": 2992,
+      "mappedFacts": 1341,
+      "unmappedFacts": 2990,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -604,16 +695,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3283,
+        "total": 3281,
         "by_severity": {
-          "INFO": 2992,
+          "INFO": 2990,
           "WARNING": 291
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 138,
           "RESTATEMENT_CONFLICT": 143,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 2992
+          "UNKNOWN_CONCEPT": 2990
         }
       },
       "latestFiling": {
@@ -624,13 +715,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "978e2b2b884215c4f2f394e674ff63cbaddc443ad7bab839fc28f331fe6cea4d",
@@ -779,13 +870,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e255726be6a32ddf569c1ffe92caa9c994ede02a9652c51f80ebf4d757b2df6b",

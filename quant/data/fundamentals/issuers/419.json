@@ -7,8 +7,8 @@
       "name": "TARGET CORP",
       "sic": "5331",
       "rawFacts": 25270,
-      "mappedFacts": 8017,
-      "unmappedFacts": 17107,
+      "mappedFacts": 8433,
+      "unmappedFacts": 16710,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17668,
+        "total": 17273,
         "by_severity": {
-          "INFO": 17107,
+          "INFO": 16710,
           "ERROR": 2,
-          "WARNING": 559
+          "WARNING": 561
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 487,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 72,
-          "UNKNOWN_CONCEPT": 17107
+          "RESTATEMENT_CONFLICT": 74,
+          "UNKNOWN_CONCEPT": 16710
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "327b93d0f5bbbff02e9ab4f4e0f586bafd03f8750fa006088094d4259e6d2b51",
@@ -165,8 +165,8 @@
       "name": "J M SMUCKER Co",
       "sic": "2033",
       "rawFacts": 22872,
-      "mappedFacts": 7422,
-      "unmappedFacts": 16036,
+      "mappedFacts": 7662,
+      "unmappedFacts": 15796,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -285,9 +285,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16585,
+        "total": 16345,
         "by_severity": {
-          "INFO": 16036,
+          "INFO": 15796,
           "ERROR": 6,
           "WARNING": 543
         },
@@ -296,7 +296,7 @@
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 10,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 16036
+          "UNKNOWN_CONCEPT": 15796
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "77b76dd314b7b2c90bd08844c676ec5254c511eb9f3dc8ff6ea8b5175819075e",
@@ -324,17 +324,108 @@
       "name": "ALERUS FINANCIAL CORP",
       "sic": "6021",
       "rawFacts": 17758,
-      "mappedFacts": 2558,
-      "unmappedFacts": 15186,
+      "mappedFacts": 3673,
+      "unmappedFacts": 14207,
       "calendarYears": 9,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 6.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 4.0
+        },
         "net_interest_income": {
           "annualPeriods": 9,
           "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 4.0
+        },
+        "time_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -452,15 +543,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15317,
+        "total": 14338,
         "by_severity": {
-          "INFO": 15186,
+          "INFO": 14207,
           "WARNING": 131
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 124,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 15186
+          "UNKNOWN_CONCEPT": 14207
         }
       },
       "latestFiling": {
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "61bc2d2bf0ce492d780322fb600425ec34fb296abc0539610c191f3a7f15095a",
@@ -488,8 +579,8 @@
       "name": "RCI HOSPITALITY HOLDINGS, INC.",
       "sic": "5812",
       "rawFacts": 25344,
-      "mappedFacts": 8014,
-      "unmappedFacts": 17245,
+      "mappedFacts": 8116,
+      "unmappedFacts": 17145,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -608,20 +699,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18126,
+        "total": 18027,
         "by_severity": {
-          "INFO": 17245,
+          "INFO": 17145,
           "ERROR": 16,
-          "WARNING": 865
+          "WARNING": 866
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 645,
-          "FISCAL_PERIOD_CONFLICT": 11,
+          "FISCAL_PERIOD_CONFLICT": 12,
           "FUTURE_DATA_LEAK": 16,
           "PERIOD_MISMATCH": 8,
           "RESTATEMENT_CONFLICT": 157,
           "UNEXPECTED_DURATION": 44,
-          "UNKNOWN_CONCEPT": 17245
+          "UNKNOWN_CONCEPT": 17145
         }
       },
       "latestFiling": {
@@ -632,13 +723,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cd678e4f8b67b60edfff6b31a9efae0b6781b584a67682993389864cc3a6d319",
@@ -649,8 +740,8 @@
       "name": "Riot Platforms, Inc.",
       "sic": "6199",
       "rawFacts": 15639,
-      "mappedFacts": 5518,
-      "unmappedFacts": 10236,
+      "mappedFacts": 5620,
+      "unmappedFacts": 10168,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -769,9 +860,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10682,
+        "total": 10614,
         "by_severity": {
-          "INFO": 10236,
+          "INFO": 10168,
           "WARNING": 446
         },
         "by_code": {
@@ -779,7 +870,7 @@
           "FISCAL_PERIOD_CONFLICT": 8,
           "RESTATEMENT_CONFLICT": 113,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 10236
+          "UNKNOWN_CONCEPT": 10168
         }
       },
       "latestFiling": {
@@ -790,13 +881,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "13b42dcf62e8951d6e67a911640904972ed5b12ccb85d128537193ecc4ec3cbf",
@@ -807,8 +898,8 @@
       "name": "Morningstar, Inc.",
       "sic": "6282",
       "rawFacts": 26581,
-      "mappedFacts": 7796,
-      "unmappedFacts": 19097,
+      "mappedFacts": 8137,
+      "unmappedFacts": 18763,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -927,18 +1018,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19258,
+        "total": 18927,
         "by_severity": {
-          "INFO": 19097,
+          "INFO": 18763,
           "ERROR": 2,
-          "WARNING": 159
+          "WARNING": 162
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 137,
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 19097
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 18763
         }
       },
       "latestFiling": {
@@ -949,13 +1041,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b19985d1adb4d17d7851f0be230c7ae3fdf28ee69944d6102126818b8f4a16a7",
@@ -966,8 +1058,8 @@
       "name": "KALA BIO, Inc.",
       "sic": "2834",
       "rawFacts": 8901,
-      "mappedFacts": 2816,
-      "unmappedFacts": 6094,
+      "mappedFacts": 2837,
+      "unmappedFacts": 6081,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -1086,15 +1178,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6232,
+        "total": 6219,
         "by_severity": {
-          "INFO": 6094,
+          "INFO": 6081,
           "WARNING": 138
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 96,
           "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 6094
+          "UNKNOWN_CONCEPT": 6081
         }
       },
       "latestFiling": {
@@ -1105,13 +1197,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "760eaff198054b73633cfd1a02844c3e2fb229e3fc43c06c345bfaaba5554164",
@@ -1122,8 +1214,8 @@
       "name": "LiveOne, Inc.",
       "sic": "5812",
       "rawFacts": 16175,
-      "mappedFacts": 4731,
-      "unmappedFacts": 11337,
+      "mappedFacts": 4751,
+      "unmappedFacts": 11324,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -1242,18 +1334,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12328,
+        "total": 12316,
         "by_severity": {
-          "INFO": 11337,
+          "INFO": 11324,
           "ERROR": 13,
-          "WARNING": 978
+          "WARNING": 979
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 583,
           "FUTURE_DATA_LEAK": 13,
-          "RESTATEMENT_CONFLICT": 342,
+          "RESTATEMENT_CONFLICT": 343,
           "UNEXPECTED_DURATION": 53,
-          "UNKNOWN_CONCEPT": 11337
+          "UNKNOWN_CONCEPT": 11324
         }
       },
       "latestFiling": {
@@ -1264,13 +1356,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b5776990a45e1350b4a8b7f8229e331b477d77325a3c4ed42947d508b8d384a0",
@@ -1422,13 +1514,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c2da19be7ff7f501ec778544edbfee1d501992be6493bc54ca91f96c82a1c57a",

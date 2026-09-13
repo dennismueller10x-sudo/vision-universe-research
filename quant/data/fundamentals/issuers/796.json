@@ -7,8 +7,8 @@
       "name": "SOLIGENIX, INC.",
       "sic": "2834",
       "rawFacts": 12279,
-      "mappedFacts": 4471,
-      "unmappedFacts": 7969,
+      "mappedFacts": 4529,
+      "unmappedFacts": 7936,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8160,
+        "total": 8129,
         "by_severity": {
-          "INFO": 7969,
-          "WARNING": 191
+          "INFO": 7936,
+          "WARNING": 193
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 83,
-          "RESTATEMENT_CONFLICT": 108,
-          "UNKNOWN_CONCEPT": 7969
+          "RESTATEMENT_CONFLICT": 110,
+          "UNKNOWN_CONCEPT": 7936
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "74b94c8cab563f5401cd4f52913dc56db046a1edfb77a6a72fd8db17f9202af6",
@@ -163,8 +163,8 @@
       "name": "BIOCRYST PHARMACEUTICALS INC",
       "sic": "2836",
       "rawFacts": 16283,
-      "mappedFacts": 5208,
-      "unmappedFacts": 11243,
+      "mappedFacts": 5317,
+      "unmappedFacts": 11175,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11523,
+        "total": 11455,
         "by_severity": {
-          "INFO": 11243,
+          "INFO": 11175,
           "WARNING": 280
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 199,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 68,
-          "UNKNOWN_CONCEPT": 11243
+          "UNKNOWN_CONCEPT": 11175
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dbee08bff23b343d4366b203ee13d6b17970eed610177ceda63b02c8d3ae63e5",
@@ -320,8 +320,8 @@
       "name": "GEO GROUP INC",
       "sic": "1520",
       "rawFacts": 28797,
-      "mappedFacts": 6622,
-      "unmappedFacts": 21538,
+      "mappedFacts": 6847,
+      "unmappedFacts": 21366,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -440,19 +440,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22446,
+        "total": 22302,
         "by_severity": {
-          "INFO": 21538,
+          "INFO": 21366,
           "ERROR": 1,
-          "WARNING": 907
+          "WARNING": 935
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 756,
+          "CONCEPT_DISAGREEMENT": 760,
           "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 146,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 21538
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 163,
+          "UNEXPECTED_DURATION": 4,
+          "UNIT_MISMATCH": 2,
+          "UNKNOWN_CONCEPT": 21366
         }
       },
       "latestFiling": {
@@ -463,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e7382e009ab02944e0de8177ae074003a6e451d57ad92f3ed97ebf1cb701f3a",
@@ -480,8 +482,8 @@
       "name": "SMITH & WESSON BRANDS, INC.",
       "sic": "3480",
       "rawFacts": 21177,
-      "mappedFacts": 6576,
-      "unmappedFacts": 14738,
+      "mappedFacts": 6601,
+      "unmappedFacts": 14713,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -600,15 +602,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15269,
+        "total": 15244,
         "by_severity": {
-          "INFO": 14738,
+          "INFO": 14713,
           "WARNING": 531
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 419,
           "RESTATEMENT_CONFLICT": 112,
-          "UNKNOWN_CONCEPT": 14738
+          "UNKNOWN_CONCEPT": 14713
         }
       },
       "latestFiling": {
@@ -619,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "39c2ad54724edb315a3e381ed965aa713b958a8c7dbc2e0741f93736594994cb",
@@ -775,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "54df624ec274eb1e117b2779cdff5de3cfab9fff02b0b26f8a44645fa1b47b7c",
@@ -792,8 +794,8 @@
       "name": "Aura Biosciences, Inc.",
       "sic": "2836",
       "rawFacts": 4926,
-      "mappedFacts": 1454,
-      "unmappedFacts": 3471,
+      "mappedFacts": 1563,
+      "unmappedFacts": 3380,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -911,14 +913,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3516,
+        "total": 3425,
         "by_severity": {
-          "INFO": 3471,
+          "INFO": 3380,
           "WARNING": 45
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 45,
-          "UNKNOWN_CONCEPT": 3471
+          "UNKNOWN_CONCEPT": 3380
         }
       },
       "latestFiling": {
@@ -929,13 +931,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1bce6750236b0aa2d99d63fd086f940f45827cdf1c5a0cb6e3e02fdb929e7abb",
@@ -946,11 +948,54 @@
       "name": "JBG SMITH Properties",
       "sic": "6798",
       "rawFacts": 15734,
-      "mappedFacts": 3090,
-      "unmappedFacts": 12286,
+      "mappedFacts": 3745,
+      "unmappedFacts": 11815,
       "calendarYears": 11,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "secured_debt": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "JBGS"
@@ -1066,15 +1111,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12781,
+        "total": 12330,
         "by_severity": {
-          "INFO": 12286,
-          "WARNING": 495
+          "INFO": 11815,
+          "WARNING": 515
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 464,
+          "CONCEPT_DISAGREEMENT": 482,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 12286
+          "UNKNOWN_CONCEPT": 11815
         }
       },
       "latestFiling": {
@@ -1085,13 +1131,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8534a71d625bf77ebf897c55cee7d47bdb8ad4fb4f4f7cc27b7fafea98b1b2dd",
@@ -1102,8 +1148,8 @@
       "name": "GCM Grosvenor Inc.",
       "sic": "6282",
       "rawFacts": 8567,
-      "mappedFacts": 1986,
-      "unmappedFacts": 6527,
+      "mappedFacts": 2080,
+      "unmappedFacts": 6464,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1222,16 +1268,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6757,
+        "total": 6694,
         "by_severity": {
-          "INFO": 6527,
+          "INFO": 6464,
           "WARNING": 230
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 174,
           "RESTATEMENT_CONFLICT": 30,
           "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 6527
+          "UNKNOWN_CONCEPT": 6464
         }
       },
       "latestFiling": {
@@ -1242,13 +1288,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be8b4dc924cebef581e591f41f792637693705187a4aaff1c5d14dc9f076251a",
@@ -1259,8 +1305,8 @@
       "name": "Fitness Champs Holdings Ltd",
       "sic": "7990",
       "rawFacts": 665,
-      "mappedFacts": 206,
-      "unmappedFacts": 428,
+      "mappedFacts": 214,
+      "unmappedFacts": 424,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -1379,15 +1425,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 505,
+        "total": 501,
         "by_severity": {
-          "INFO": 428,
+          "INFO": 424,
           "WARNING": 77
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 71,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 428
+          "UNKNOWN_CONCEPT": 424
         }
       },
       "latestFiling": {
@@ -1398,13 +1444,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c3abaac5676c14a53150ed1afdb1e55c8fd290000086b243f77fea098e869071",

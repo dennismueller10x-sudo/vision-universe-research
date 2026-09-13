@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "23ebdce4d4542efb6e32d73612b81555887659a32434cd625c46aab491732731",
@@ -163,8 +163,8 @@
       "name": "ENNIS, INC.",
       "sic": "2761",
       "rawFacts": 21945,
-      "mappedFacts": 6817,
-      "unmappedFacts": 15816,
+      "mappedFacts": 6836,
+      "unmappedFacts": 15797,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16069,
+        "total": 16050,
         "by_severity": {
-          "INFO": 15816,
+          "INFO": 15797,
           "WARNING": 253
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 117,
           "FISCAL_PERIOD_CONFLICT": 6,
           "RESTATEMENT_CONFLICT": 130,
-          "UNKNOWN_CONCEPT": 15816
+          "UNKNOWN_CONCEPT": 15797
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0440899fa6a223ceb7b38866910756cebb1dce2b07194efd0e16ba815aec0c1f",
@@ -461,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e5adf1f54c40fb1bb923270b355b94f52c7bf55eb9ab2a7e4d887e3dd8aa93fb",
@@ -478,8 +478,8 @@
       "name": "VALERO ENERGY CORP/TX",
       "sic": "2911",
       "rawFacts": 27123,
-      "mappedFacts": 7157,
-      "unmappedFacts": 19935,
+      "mappedFacts": 7161,
+      "unmappedFacts": 19932,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -598,9 +598,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20788,
+        "total": 20785,
         "by_severity": {
-          "INFO": 19935,
+          "INFO": 19932,
           "ERROR": 1,
           "WARNING": 852
         },
@@ -608,7 +608,7 @@
           "CONCEPT_DISAGREEMENT": 767,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 85,
-          "UNKNOWN_CONCEPT": 19935
+          "UNKNOWN_CONCEPT": 19932
         }
       },
       "latestFiling": {
@@ -619,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "80977f6e2a0b6ad4fa951c29e4f3ba38d6e3353fe8541ff1414e17ed8b076204",
@@ -636,8 +636,8 @@
       "name": "WESTWOOD HOLDINGS GROUP INC",
       "sic": "6282",
       "rawFacts": 19189,
-      "mappedFacts": 6326,
-      "unmappedFacts": 13290,
+      "mappedFacts": 6442,
+      "unmappedFacts": 13170,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -756,17 +756,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13699,
+        "total": 13587,
         "by_severity": {
-          "INFO": 13290,
+          "INFO": 13170,
           "ERROR": 27,
-          "WARNING": 382
+          "WARNING": 390
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 281,
           "FUTURE_DATA_LEAK": 27,
-          "RESTATEMENT_CONFLICT": 101,
-          "UNKNOWN_CONCEPT": 13290
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 103,
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 13170
         }
       },
       "latestFiling": {
@@ -777,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "84cb7ee9242b3668dea8a0e89600a0ca30e941e404aee1570a388232d57781af",
@@ -931,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ea5d3b28ecf697761c3c594c8e8f6f4183f114972c5d3b743487e346e6103bb0",

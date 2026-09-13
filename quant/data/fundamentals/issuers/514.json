@@ -7,8 +7,8 @@
       "name": "NEW ENGLAND REALTY ASSOCIATES LIMITED PARTNERSHIP",
       "sic": "6513",
       "rawFacts": 13968,
-      "mappedFacts": 3265,
-      "unmappedFacts": 10661,
+      "mappedFacts": 4171,
+      "unmappedFacts": 10056,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10862,
+        "total": 10265,
         "by_severity": {
-          "INFO": 10661,
+          "INFO": 10056,
           "ERROR": 18,
-          "WARNING": 183
+          "WARNING": 191
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 110,
           "FUTURE_DATA_LEAK": 18,
           "PERIOD_MISMATCH": 24,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 10661
+          "RESTATEMENT_CONFLICT": 57,
+          "UNKNOWN_CONCEPT": 10056
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "19a97755e28371e11c5571998299c7c08b12b8e8cab8264b3e90046ab4d6aca3",
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f97226ef3f8153660eb26f21640a510561ea069bb814cda8737e43bc36b0245a",
@@ -323,17 +323,108 @@
       "name": "LESAKA TECHNOLOGIES INC",
       "sic": "6099",
       "rawFacts": 32032,
-      "mappedFacts": 8184,
-      "unmappedFacts": 23531,
+      "mappedFacts": 8376,
+      "unmappedFacts": 23346,
       "calendarYears": 20,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2023-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 1.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2014-06-30",
+          "historyYears": 4.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2010-06-30",
+          "lastAvailablePeriod": "2018-06-30",
+          "historyYears": 8.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2017-06-30",
+          "lastAvailablePeriod": "2018-06-30",
+          "historyYears": 1.0
+        },
         "net_interest_income": {
           "annualPeriods": 3,
           "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2011-06-30",
           "historyYears": 2.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2023-06-30",
+          "historyYears": 5.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "0630",
@@ -451,17 +542,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24654,
+        "total": 24473,
         "by_severity": {
-          "INFO": 23531,
+          "INFO": 23346,
           "ERROR": 4,
-          "WARNING": 1119
+          "WARNING": 1123
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 861,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 258,
-          "UNKNOWN_CONCEPT": 23531
+          "RESTATEMENT_CONFLICT": 262,
+          "UNKNOWN_CONCEPT": 23346
         }
       },
       "latestFiling": {
@@ -472,13 +563,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fcaa75c83e9f62ba02daf275b98e0da1fa859ed391eb2d405ffd9cbd400d4b65",
@@ -489,8 +580,8 @@
       "name": "HYSTER-YALE, INC.",
       "sic": "3537",
       "rawFacts": 23094,
-      "mappedFacts": 6613,
-      "unmappedFacts": 16759,
+      "mappedFacts": 6692,
+      "unmappedFacts": 16702,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -609,15 +700,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17242,
+        "total": 17186,
         "by_severity": {
-          "INFO": 16759,
-          "WARNING": 483
+          "INFO": 16702,
+          "WARNING": 484
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 446,
-          "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 16759
+          "RESTATEMENT_CONFLICT": 38,
+          "UNKNOWN_CONCEPT": 16702
         }
       },
       "latestFiling": {
@@ -628,13 +719,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9ceeed459347b09f652c48bae4c9788ba308812dacd256601a0a8280b4f14db4",
@@ -645,8 +736,8 @@
       "name": "LAS VEGAS SANDS CORP",
       "sic": "7011",
       "rawFacts": 24219,
-      "mappedFacts": 7055,
-      "unmappedFacts": 17080,
+      "mappedFacts": 7234,
+      "unmappedFacts": 16856,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -765,17 +856,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18148,
+        "total": 17982,
         "by_severity": {
-          "INFO": 17080,
+          "INFO": 16856,
           "ERROR": 9,
-          "WARNING": 1059
+          "WARNING": 1117
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 931,
           "FUTURE_DATA_LEAK": 9,
           "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 17080
+          "UNEXPECTED_DURATION": 58,
+          "UNKNOWN_CONCEPT": 16856
         }
       },
       "latestFiling": {
@@ -786,13 +878,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d47b562007bf39a0b2bd3bf7db6a2ee90faf6d558e5accef1546edd9d6c6add6",
@@ -947,13 +1039,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "357ce4b3773deb81cff5df0875eb6ccb27f3c6e016593992a5896e6a35bd2ad4",
@@ -964,8 +1056,8 @@
       "name": "KIORA PHARMACEUTICALS INC",
       "sic": "2834",
       "rawFacts": 12117,
-      "mappedFacts": 3363,
-      "unmappedFacts": 8913,
+      "mappedFacts": 3386,
+      "unmappedFacts": 8898,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -1085,9 +1177,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9248,
+        "total": 9233,
         "by_severity": {
-          "INFO": 8913,
+          "INFO": 8898,
           "ERROR": 1,
           "WARNING": 334
         },
@@ -1097,7 +1189,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 105,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 8913
+          "UNKNOWN_CONCEPT": 8898
         }
       },
       "latestFiling": {
@@ -1108,13 +1200,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4faee98a6075a2bfa20a596490f110b7e6613e8f2f40b607ea5551e1e257d604",
@@ -1266,13 +1358,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0990c89623cb88991f1912980987692f30b6d297ef5f3bb720777484934f2796",
@@ -1283,8 +1375,8 @@
       "name": "BTC Digital Ltd.",
       "sic": "6199",
       "rawFacts": 3052,
-      "mappedFacts": 888,
-      "unmappedFacts": 2099,
+      "mappedFacts": 894,
+      "unmappedFacts": 2089,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1403,15 +1495,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2325,
+        "total": 2317,
         "by_severity": {
-          "INFO": 2099,
-          "WARNING": 226
+          "INFO": 2089,
+          "WARNING": 228
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 152,
+          "CONCEPT_DISAGREEMENT": 154,
           "RESTATEMENT_CONFLICT": 74,
-          "UNKNOWN_CONCEPT": 2099
+          "UNKNOWN_CONCEPT": 2089
         }
       },
       "latestFiling": {
@@ -1422,13 +1514,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "02dc182bf436169bb95c4f4544bfed97597432a78a0979bda08427ea5c55a74f",
@@ -1580,13 +1672,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f99dbd36ce2c634cff56440b8efa19bfa96dae70e1bdb97dcf719c26b1f2dff0",
@@ -1737,13 +1829,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6775e1124934ca63bf4be0db1aef4f2ef554a4dae88df7721e9b429cbd731753",

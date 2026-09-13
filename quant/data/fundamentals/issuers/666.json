@@ -7,8 +7,8 @@
       "name": "CALIX, INC",
       "sic": "4899",
       "rawFacts": 20272,
-      "mappedFacts": 6395,
-      "unmappedFacts": 14171,
+      "mappedFacts": 6441,
+      "unmappedFacts": 14136,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,14 +127,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14443,
+        "total": 14408,
         "by_severity": {
-          "INFO": 14171,
+          "INFO": 14136,
           "WARNING": 272
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 272,
-          "UNKNOWN_CONCEPT": 14171
+          "UNKNOWN_CONCEPT": 14136
         }
       },
       "latestFiling": {
@@ -145,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cf82787a36ebd7daa99cff685f3db9a505773752dfd9cd1f0094a4de913adb62",
@@ -162,8 +162,8 @@
       "name": "APA Corp",
       "sic": "1311",
       "rawFacts": 9010,
-      "mappedFacts": 1911,
-      "unmappedFacts": 7189,
+      "mappedFacts": 2011,
+      "unmappedFacts": 7085,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -282,15 +282,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7418,
+        "total": 7319,
         "by_severity": {
-          "INFO": 7189,
-          "WARNING": 229
+          "INFO": 7085,
+          "WARNING": 234
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 185,
-          "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 7189
+          "RESTATEMENT_CONFLICT": 45,
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 7085
         }
       },
       "latestFiling": {
@@ -301,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f0b5fffe19baea8e7fe8e891de0aed9413554eacf53bed59ed53b9ab525cd2b",

@@ -7,8 +7,8 @@
       "name": "LINDSAY CORP",
       "sic": "3523",
       "rawFacts": 25942,
-      "mappedFacts": 7975,
-      "unmappedFacts": 18235,
+      "mappedFacts": 8170,
+      "unmappedFacts": 18040,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18929,
+        "total": 18734,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 18235,
+          "INFO": 18040,
           "WARNING": 693
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 626,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 18235
+          "UNKNOWN_CONCEPT": 18040
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "47c06a69c689fba1976cd9c27d0c419403d0f02d86c523ea153086a436d65844",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b299b87a29b9fc43b8505100d26d4f282fa8c680ce317951638db06d4500e370",
@@ -321,8 +321,8 @@
       "name": "CENTURY ALUMINUM CO",
       "sic": "3334",
       "rawFacts": 22417,
-      "mappedFacts": 6130,
-      "unmappedFacts": 16402,
+      "mappedFacts": 6148,
+      "unmappedFacts": 16391,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -441,9 +441,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17044,
+        "total": 17033,
         "by_severity": {
-          "INFO": 16402,
+          "INFO": 16391,
           "ERROR": 4,
           "WARNING": 638
         },
@@ -451,7 +451,7 @@
           "CONCEPT_DISAGREEMENT": 549,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 89,
-          "UNKNOWN_CONCEPT": 16402
+          "UNKNOWN_CONCEPT": 16391
         }
       },
       "latestFiling": {
@@ -462,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "72e4018c5b8bb594008bd808bcc58f5cfa53698bbddfd67d64c35cefd7cf2d11",
@@ -479,17 +479,108 @@
       "name": "EAST WEST BANCORP INC",
       "sic": "6022",
       "rawFacts": 35194,
-      "mappedFacts": 5644,
-      "unmappedFacts": 29781,
+      "mappedFacts": 8150,
+      "unmappedFacts": 27539,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 3.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 5.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -607,18 +698,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30115,
+        "total": 27889,
         "by_severity": {
-          "INFO": 29781,
+          "INFO": 27539,
           "ERROR": 1,
-          "WARNING": 333
+          "WARNING": 349
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 252,
-          "FISCAL_PERIOD_CONFLICT": 14,
+          "FISCAL_PERIOD_CONFLICT": 24,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 29781
+          "RESTATEMENT_CONFLICT": 73,
+          "UNKNOWN_CONCEPT": 27539
         }
       },
       "latestFiling": {
@@ -629,13 +720,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2aeb089fb32c3c7b1063fab33d40ecedf9ad7d39458c69c212a999ac09e4a9e5",
@@ -646,8 +737,8 @@
       "name": "TE Connectivity plc",
       "sic": "5065",
       "rawFacts": 26386,
-      "mappedFacts": 8712,
-      "unmappedFacts": 17523,
+      "mappedFacts": 8723,
+      "unmappedFacts": 17353,
       "calendarYears": 23,
       "industry": null,
       "industryMetrics": {},
@@ -766,18 +857,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18470,
+        "total": 18459,
         "by_severity": {
-          "INFO": 17523,
+          "INFO": 17353,
           "ERROR": 2,
-          "WARNING": 945
+          "WARNING": 1104
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 775,
           "FISCAL_PERIOD_CONFLICT": 21,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 149,
-          "UNKNOWN_CONCEPT": 17523
+          "UNEXPECTED_DURATION": 108,
+          "UNIT_MISMATCH": 51,
+          "UNKNOWN_CONCEPT": 17353
         }
       },
       "latestFiling": {
@@ -788,13 +881,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "41625cc97ff50730659916486bca2e9eb2637a87b11be1072862e83f6d51abdf",
@@ -946,13 +1039,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1f1214b81aa6686b051291dadca7859ea139ec571c2d151af4c13d706ce27b74",
@@ -1104,13 +1197,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f3b92ca310a7615531793fe3e58fe83ef7a9c2ce47a7edefecbade88b24434a",

@@ -7,8 +7,8 @@
       "name": "ARTS WAY MANUFACTURING CO INC",
       "sic": "3523",
       "rawFacts": 17300,
-      "mappedFacts": 6017,
-      "unmappedFacts": 11311,
+      "mappedFacts": 6020,
+      "unmappedFacts": 11306,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12164,
+        "total": 12161,
         "by_severity": {
-          "INFO": 11311,
+          "INFO": 11306,
           "ERROR": 43,
-          "WARNING": 810
+          "WARNING": 812
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 626,
           "FISCAL_PERIOD_CONFLICT": 42,
           "FUTURE_DATA_LEAK": 43,
           "RESTATEMENT_CONFLICT": 142,
-          "UNKNOWN_CONCEPT": 11311
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 11306
         }
       },
       "latestFiling": {
@@ -149,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a84f289e1594eb248773cea1ea3fcfd8ef8b6aaa45b797249bd2cd36a6e62a58",
@@ -166,8 +167,8 @@
       "name": "Mativ Holdings, Inc.",
       "sic": "2621",
       "rawFacts": 27426,
-      "mappedFacts": 7979,
-      "unmappedFacts": 19209,
+      "mappedFacts": 8142,
+      "unmappedFacts": 19046,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -286,17 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20118,
+        "total": 19959,
         "by_severity": {
-          "INFO": 19209,
-          "WARNING": 909
+          "INFO": 19046,
+          "WARNING": 913
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 776,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 19209
+          "RESTATEMENT_CONFLICT": 132,
+          "UNKNOWN_CONCEPT": 19046
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "97bb6e639a47ede317e807f65884cb7c0c815dcbc6dac1acebb0295dfb9112c6",
@@ -324,8 +325,8 @@
       "name": "DROPBOX, INC.",
       "sic": "7372",
       "rawFacts": 13288,
-      "mappedFacts": 3355,
-      "unmappedFacts": 10286,
+      "mappedFacts": 3514,
+      "unmappedFacts": 10165,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -443,14 +444,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10310,
+        "total": 10189,
         "by_severity": {
-          "INFO": 10286,
+          "INFO": 10165,
           "WARNING": 24
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 24,
-          "UNKNOWN_CONCEPT": 10286
+          "UNKNOWN_CONCEPT": 10165
         }
       },
       "latestFiling": {
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd40ba4dbf61d3e02fe46bea7655be9a57b7c529ea5497bc29aeaf6f92331312",

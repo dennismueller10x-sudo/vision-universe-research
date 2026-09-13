@@ -7,11 +7,54 @@
       "name": "EASTGROUP PROPERTIES INC",
       "sic": "6798",
       "rawFacts": 20298,
-      "mappedFacts": 4964,
-      "unmappedFacts": 14781,
+      "mappedFacts": 6060,
+      "unmappedFacts": 13997,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EGP"
@@ -127,18 +170,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15289,
+        "total": 14509,
         "by_severity": {
-          "INFO": 14781,
+          "INFO": 13997,
           "ERROR": 2,
-          "WARNING": 506
+          "WARNING": 510
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 475,
+          "CONCEPT_DISAGREEMENT": 479,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 14781
+          "UNKNOWN_CONCEPT": 13997
         }
       },
       "latestFiling": {
@@ -149,13 +192,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5cab43f88cbaf2dd45c4eb45142158e6defc17813a73a7f11cb904f73a65cb0",
@@ -166,8 +209,8 @@
       "name": "ALLIANCE RESOURCE PARTNERS LP",
       "sic": "1221",
       "rawFacts": 21532,
-      "mappedFacts": 5355,
-      "unmappedFacts": 16574,
+      "mappedFacts": 5358,
+      "unmappedFacts": 16571,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -286,10 +329,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16811,
+        "total": 16808,
         "by_severity": {
           "ERROR": 19,
-          "INFO": 16574,
+          "INFO": 16571,
           "WARNING": 218
         },
         "by_code": {
@@ -297,7 +340,7 @@
           "FISCAL_PERIOD_CONFLICT": 33,
           "FUTURE_DATA_LEAK": 19,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 16574
+          "UNKNOWN_CONCEPT": 16571
         }
       },
       "latestFiling": {
@@ -308,13 +351,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5ddb5aa5003c290cfd3053dd25882e6f1bc625e7fc16815b30e7752d44b0694f",
@@ -465,13 +508,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd93a913914699c23dbe093b7469a5d61571311096497985dad4252f8d5bad24",
@@ -482,8 +525,8 @@
       "name": "Montauk Renewables, Inc.",
       "sic": "4932",
       "rawFacts": 7134,
-      "mappedFacts": 2438,
-      "unmappedFacts": 4655,
+      "mappedFacts": 2448,
+      "unmappedFacts": 4648,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -602,16 +645,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4970,
+        "total": 4963,
         "by_severity": {
-          "INFO": 4655,
+          "INFO": 4648,
           "WARNING": 315
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 301,
           "PERIOD_MISMATCH": 9,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 4655
+          "UNKNOWN_CONCEPT": 4648
         }
       },
       "latestFiling": {
@@ -622,13 +665,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "38fad35bdd951e8f38c17dbfe8876621a3a4253126e05eca76964afdb404a741",
@@ -639,8 +682,8 @@
       "name": "rYojbaba Co., Ltd.",
       "sic": "8742",
       "rawFacts": 430,
-      "mappedFacts": 124,
-      "unmappedFacts": 318,
+      "mappedFacts": 128,
+      "unmappedFacts": 316,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -759,14 +802,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 329,
+        "total": 327,
         "by_severity": {
-          "INFO": 318,
+          "INFO": 316,
           "WARNING": 11
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
-          "UNKNOWN_CONCEPT": 318
+          "UNKNOWN_CONCEPT": 316
         }
       },
       "latestFiling": {
@@ -777,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e4969d33f960c16aebf0bd243eb57c103ab3422e42ac42877a15b1835cdb5019",

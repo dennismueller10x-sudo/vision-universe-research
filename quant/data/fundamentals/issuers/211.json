@@ -7,8 +7,8 @@
       "name": "GATX CORP",
       "sic": "4700",
       "rawFacts": 23891,
-      "mappedFacts": 6353,
-      "unmappedFacts": 17831,
+      "mappedFacts": 6974,
+      "unmappedFacts": 17379,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18254,
+        "total": 17806,
         "by_severity": {
-          "INFO": 17831,
+          "INFO": 17379,
           "ERROR": 3,
-          "WARNING": 420
+          "WARNING": 424
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 370,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 50,
-          "UNKNOWN_CONCEPT": 17831
+          "RESTATEMENT_CONFLICT": 54,
+          "UNKNOWN_CONCEPT": 17379
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8a4b7efc6e23b1fa948113bbf6c757bc17f83195e95bb0dc19c0ae5d4e4d2e95",

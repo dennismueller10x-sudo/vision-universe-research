@@ -7,8 +7,8 @@
       "name": "SHENANDOAH TELECOMMUNICATIONS CO/VA/",
       "sic": "4813",
       "rawFacts": 21590,
-      "mappedFacts": 6341,
-      "unmappedFacts": 15238,
+      "mappedFacts": 6408,
+      "unmappedFacts": 15167,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16115,
+        "total": 16050,
         "by_severity": {
-          "INFO": 15238,
-          "WARNING": 877
+          "INFO": 15167,
+          "WARNING": 883
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 699,
-          "RESTATEMENT_CONFLICT": 178,
-          "UNKNOWN_CONCEPT": 15238
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 180,
+          "UNKNOWN_CONCEPT": 15167
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0ac4f9842e27312458acbe873b6c325c79e17757485359378b85c878e6b4fe46",
@@ -163,8 +164,8 @@
       "name": "OPPENHEIMER HOLDINGS INC",
       "sic": "6211",
       "rawFacts": 26392,
-      "mappedFacts": 5057,
-      "unmappedFacts": 21268,
+      "mappedFacts": 5326,
+      "unmappedFacts": 21075,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -283,15 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21792,
+        "total": 21601,
         "by_severity": {
-          "INFO": 21268,
-          "WARNING": 524
+          "INFO": 21075,
+          "WARNING": 526
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 485,
-          "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 21268
+          "RESTATEMENT_CONFLICT": 40,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 21075
         }
       },
       "latestFiling": {
@@ -302,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d80ee9213a94e97cd2afe9509542c0a7e29da08bb8102a90956b9dd0719ed309",
@@ -319,8 +321,8 @@
       "name": "ATI INC",
       "sic": "3317",
       "rawFacts": 28258,
-      "mappedFacts": 7322,
-      "unmappedFacts": 20435,
+      "mappedFacts": 7420,
+      "unmappedFacts": 20337,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -439,9 +441,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21790,
+        "total": 21692,
         "by_severity": {
-          "INFO": 20435,
+          "INFO": 20337,
           "WARNING": 1355
         },
         "by_code": {
@@ -449,7 +451,7 @@
           "FISCAL_PERIOD_CONFLICT": 19,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 143,
-          "UNKNOWN_CONCEPT": 20435
+          "UNKNOWN_CONCEPT": 20337
         }
       },
       "latestFiling": {
@@ -460,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "294e76dd21da38bb396fbe0a2e52f83cd366129fb31fa6b313a50b5afea1e3e4",
@@ -477,8 +479,8 @@
       "name": "Versus Systems Inc.",
       "sic": "7374",
       "rawFacts": 3215,
-      "mappedFacts": 1211,
-      "unmappedFacts": 2083,
+      "mappedFacts": 1215,
+      "unmappedFacts": 2080,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -597,9 +599,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2266,
+        "total": 2263,
         "by_severity": {
-          "INFO": 2083,
+          "INFO": 2080,
           "WARNING": 183
         },
         "by_code": {
@@ -607,7 +609,7 @@
           "EXTREME_VALUE": 2,
           "RESTATEMENT_CONFLICT": 90,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2083
+          "UNKNOWN_CONCEPT": 2080
         }
       },
       "latestFiling": {
@@ -618,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ca0c669d748bbba6a3230aea6de4e53e6c4afda44ad0f9e574ffbea044ead8b4",
@@ -774,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c39575e9a1a4e7b590c0b07570245a4af4a444590517453f8709c40d3cb1de74",
@@ -791,8 +793,8 @@
       "name": "Global-E Online Ltd.",
       "sic": "7372",
       "rawFacts": 2042,
-      "mappedFacts": 558,
-      "unmappedFacts": 1543,
+      "mappedFacts": 578,
+      "unmappedFacts": 1533,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -911,9 +913,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1584,
+        "total": 1574,
         "by_severity": {
-          "INFO": 1543,
+          "INFO": 1533,
           "ERROR": 2,
           "WARNING": 39
         },
@@ -921,7 +923,7 @@
           "CONCEPT_DISAGREEMENT": 32,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 1543
+          "UNKNOWN_CONCEPT": 1533
         }
       },
       "latestFiling": {
@@ -932,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e6133fa4d86b5a72a8cfd2ecee07636552900a31280f246546bd6171580b7bc6",
@@ -949,8 +951,8 @@
       "name": "SHF Holdings, Inc.",
       "sic": "6199",
       "rawFacts": 5266,
-      "mappedFacts": 1415,
-      "unmappedFacts": 3892,
+      "mappedFacts": 1501,
+      "unmappedFacts": 3826,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1070,18 +1072,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4058,
+        "total": 3996,
         "by_severity": {
-          "INFO": 3892,
+          "INFO": 3826,
           "ERROR": 1,
-          "WARNING": 165
+          "WARNING": 169
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 46,
+          "CONCEPT_DISAGREEMENT": 47,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 78,
+          "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 41,
-          "UNKNOWN_CONCEPT": 3892
+          "UNKNOWN_CONCEPT": 3826
         }
       },
       "latestFiling": {
@@ -1092,13 +1094,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e79bfa2ba18fe1e75edd60133270e13319fc507a237f54ffce019218bb3a32f6",
@@ -1109,8 +1111,8 @@
       "name": "Atmus Filtration Technologies Inc.",
       "sic": "3714",
       "rawFacts": 4062,
-      "mappedFacts": 1482,
-      "unmappedFacts": 2695,
+      "mappedFacts": 1500,
+      "unmappedFacts": 2677,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1229,16 +1231,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2774,
+        "total": 2757,
         "by_severity": {
-          "INFO": 2695,
-          "WARNING": 79
+          "INFO": 2677,
+          "WARNING": 80
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 39,
-          "FISCAL_PERIOD_CONFLICT": 14,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 2695
+          "UNKNOWN_CONCEPT": 2677
         }
       },
       "latestFiling": {
@@ -1249,13 +1251,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4adfae3ff89592ccf05df4b56e80e3997299228a37ebb31117621aa7ac3bc1c6",

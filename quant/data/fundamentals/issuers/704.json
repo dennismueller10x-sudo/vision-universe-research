@@ -7,8 +7,8 @@
       "name": "GENERAL MILLS INC",
       "sic": "2040",
       "rawFacts": 29337,
-      "mappedFacts": 8295,
-      "unmappedFacts": 21591,
+      "mappedFacts": 8475,
+      "unmappedFacts": 21427,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22434,
+        "total": 22271,
         "by_severity": {
-          "INFO": 21591,
-          "WARNING": 843
+          "INFO": 21427,
+          "WARNING": 844
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 768,
-          "RESTATEMENT_CONFLICT": 71,
+          "RESTATEMENT_CONFLICT": 72,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 21591
+          "UNKNOWN_CONCEPT": 21427
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9b066472b6c884cf6b4b5c6f900b969dcf6e19c31c9e8a113f5b2f663469cf65",
@@ -164,11 +164,54 @@
       "name": "WELLTOWER INC.",
       "sic": "6798",
       "rawFacts": 31018,
-      "mappedFacts": 5597,
-      "unmappedFacts": 24812,
+      "mappedFacts": 6698,
+      "unmappedFacts": 24013,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 9.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 45,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "WELL"
@@ -284,17 +327,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25825,
+        "total": 25045,
         "by_severity": {
-          "INFO": 24812,
-          "WARNING": 1013
+          "INFO": 24013,
+          "WARNING": 1032
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 888,
           "NEGATIVE_WHERE_IMPOSSIBLE": 13,
-          "RESTATEMENT_CONFLICT": 111,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 24812
+          "RESTATEMENT_CONFLICT": 120,
+          "UNEXPECTED_DURATION": 11,
+          "UNKNOWN_CONCEPT": 24013
         }
       },
       "latestFiling": {
@@ -305,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "71e3cbd043eb2cd66c76425506e66fede9ad4c447b249afdaa9fe83e6f235137",
@@ -464,13 +507,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f5ba8574d99082302f955928d4b79760f547bb5b7f45cac20fc992bc8c30097",
@@ -481,8 +524,8 @@
       "name": "Vivakor, Inc.",
       "sic": "4953",
       "rawFacts": 5516,
-      "mappedFacts": 1834,
-      "unmappedFacts": 3644,
+      "mappedFacts": 1907,
+      "unmappedFacts": 3600,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -601,9 +644,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3947,
+        "total": 3903,
         "by_severity": {
-          "INFO": 3644,
+          "INFO": 3600,
           "ERROR": 10,
           "WARNING": 293
         },
@@ -612,7 +655,7 @@
           "FUTURE_DATA_LEAK": 10,
           "RESTATEMENT_CONFLICT": 49,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 3644
+          "UNKNOWN_CONCEPT": 3600
         }
       },
       "latestFiling": {
@@ -623,13 +666,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8f4073047aa0615a11574850b3490aedd6914e37d1067a5c4036c768c741d4ab",
@@ -778,13 +821,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3a4022240a93d695c65b1d0cb3f80996ea08a6ac41b4c31ef3c684036a9b9e8e",
@@ -932,13 +975,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cc963cfd54db8403cc5e075eccc80557fd5fbc81690f3f33dd80e2b9950e8cc1",
@@ -1087,13 +1130,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "de5889e5223ffdbd5527e17377277245b1626cd83b66ecd8c36af266f4bcb9b0",
@@ -1244,13 +1287,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f89d17e767efc7b65d45b22ecc507c8dd5998b1ff40c517c8d839437a0d55deb",

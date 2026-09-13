@@ -7,8 +7,8 @@
       "name": "Arbutus Biopharma Corp",
       "sic": "2834",
       "rawFacts": 13612,
-      "mappedFacts": 4773,
-      "unmappedFacts": 9179,
+      "mappedFacts": 4832,
+      "unmappedFacts": 9140,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9310,
+        "total": 9273,
         "by_severity": {
-          "INFO": 9179,
+          "INFO": 9140,
           "ERROR": 1,
-          "WARNING": 130
+          "WARNING": 132
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 104,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 9179
+          "RESTATEMENT_CONFLICT": 24,
+          "UNKNOWN_CONCEPT": 9140
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6a57fcb1aa26eafd010658f1f571adac006e9bdd3f2605504a4489ec2fed5c1e",
@@ -167,8 +167,8 @@
       "name": "ADVANCED DRAINAGE SYSTEMS, INC.",
       "sic": "3086",
       "rawFacts": 21562,
-      "mappedFacts": 6153,
-      "unmappedFacts": 15233,
+      "mappedFacts": 6347,
+      "unmappedFacts": 15034,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -287,16 +287,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16559,
+        "total": 16365,
         "by_severity": {
-          "INFO": 15233,
-          "WARNING": 1326
+          "INFO": 15034,
+          "WARNING": 1331
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1073,
+          "CONCEPT_DISAGREEMENT": 1078,
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 248,
-          "UNKNOWN_CONCEPT": 15233
+          "UNKNOWN_CONCEPT": 15034
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4cf6fe48cbce452eba0fac78df1567965dbabbe5dc9b79fb8269529bf67be469",
@@ -324,8 +324,8 @@
       "name": "Liberty Energy Inc.",
       "sic": "1389",
       "rawFacts": 12198,
-      "mappedFacts": 3353,
-      "unmappedFacts": 8786,
+      "mappedFacts": 3410,
+      "unmappedFacts": 8729,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -444,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9115,
+        "total": 9058,
         "by_severity": {
-          "INFO": 8786,
+          "INFO": 8729,
           "WARNING": 329
         },
         "by_code": {
@@ -454,7 +454,7 @@
           "FISCAL_PERIOD_CONFLICT": 1,
           "RESTATEMENT_CONFLICT": 24,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 8786
+          "UNKNOWN_CONCEPT": 8729
         }
       },
       "latestFiling": {
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f9d2d140162d1f2fc1405b91ec3337fe262082147a0faddd081f79456eff15e3",
@@ -482,8 +482,8 @@
       "name": "Jasper Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 5988,
-      "mappedFacts": 1609,
-      "unmappedFacts": 4400,
+      "mappedFacts": 1615,
+      "unmappedFacts": 4397,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -603,9 +603,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4639,
+        "total": 4636,
         "by_severity": {
-          "INFO": 4400,
+          "INFO": 4397,
           "ERROR": 17,
           "WARNING": 222
         },
@@ -615,7 +615,7 @@
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 104,
           "UNEXPECTED_DURATION": 32,
-          "UNKNOWN_CONCEPT": 4400
+          "UNKNOWN_CONCEPT": 4397
         }
       },
       "latestFiling": {
@@ -626,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6c1fe08302c891a6d6e699a09607c789bc79505370d15abf3449fc566e962e03",
@@ -643,8 +643,8 @@
       "name": "VanEck Bitcoin ETF",
       "sic": "6221",
       "rawFacts": 979,
-      "mappedFacts": 163,
-      "unmappedFacts": 858,
+      "mappedFacts": 194,
+      "unmappedFacts": 831,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -762,9 +762,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 882,
+        "total": 855,
         "by_severity": {
-          "INFO": 858,
+          "INFO": 831,
           "ERROR": 9,
           "WARNING": 15
         },
@@ -772,7 +772,7 @@
           "CONCEPT_DISAGREEMENT": 10,
           "FUTURE_DATA_LEAK": 9,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 858
+          "UNKNOWN_CONCEPT": 831
         }
       },
       "latestFiling": {
@@ -783,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a280304bb3ed6730ec052b1074e20e202eeab9acc60ab1f087345355018c40b6",

@@ -7,8 +7,8 @@
       "name": "CORNING INC /NY",
       "sic": "3357",
       "rawFacts": 27439,
-      "mappedFacts": 7434,
-      "unmappedFacts": 20514,
+      "mappedFacts": 7642,
+      "unmappedFacts": 20301,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20993,
+        "total": 20789,
         "by_severity": {
-          "INFO": 20514,
-          "WARNING": 479
+          "INFO": 20301,
+          "WARNING": 488
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 393,
-          "FISCAL_PERIOD_CONFLICT": 22,
+          "FISCAL_PERIOD_CONFLICT": 24,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 20514
+          "UNIT_MISMATCH": 4,
+          "UNKNOWN_CONCEPT": 20301
         }
       },
       "latestFiling": {
@@ -147,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "beb234c4e451039f18d37ddf8e7341825126a8cbbc376100e7a11306841ec64c",
@@ -164,8 +166,8 @@
       "name": "EVERSOURCE ENERGY",
       "sic": "4911",
       "rawFacts": 25218,
-      "mappedFacts": 5816,
-      "unmappedFacts": 19457,
+      "mappedFacts": 6039,
+      "unmappedFacts": 19282,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20243,
+        "total": 20068,
         "by_severity": {
-          "INFO": 19457,
+          "INFO": 19282,
           "WARNING": 786
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 747,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 19457
+          "UNKNOWN_CONCEPT": 19282
         }
       },
       "latestFiling": {
@@ -303,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "409e59113f515693bf360245c53a70333b7d091abb73096643c9eac841ed4ee5",
@@ -463,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "786bb02caac79eacbe896362f53218d2c4c388562a4be7c6733cc80f9fdf0a9b",
@@ -480,8 +482,8 @@
       "name": "GSI TECHNOLOGY INC",
       "sic": "3674",
       "rawFacts": 19737,
-      "mappedFacts": 6531,
-      "unmappedFacts": 13287,
+      "mappedFacts": 6591,
+      "unmappedFacts": 13240,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -599,17 +601,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13653,
+        "total": 13609,
         "by_severity": {
-          "INFO": 13287,
+          "INFO": 13240,
           "ERROR": 1,
-          "WARNING": 365
+          "WARNING": 368
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 268,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 97,
-          "UNKNOWN_CONCEPT": 13287
+          "RESTATEMENT_CONFLICT": 100,
+          "UNKNOWN_CONCEPT": 13240
         }
       },
       "latestFiling": {
@@ -620,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6f57602bc2e897367873d32bd7e6964ee9730551b0523fd8efaaecf389846a2d",
@@ -637,8 +639,8 @@
       "name": "GLADSTONE INVESTMENT CORPORATION\\DE",
       "sic": null,
       "rawFacts": 5477,
-      "mappedFacts": 1017,
-      "unmappedFacts": 4473,
+      "mappedFacts": 1081,
+      "unmappedFacts": 4414,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -760,15 +762,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4629,
+        "total": 4570,
         "by_severity": {
-          "INFO": 4473,
+          "INFO": 4414,
           "WARNING": 156
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 130,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 4473
+          "UNKNOWN_CONCEPT": 4414
         }
       },
       "latestFiling": {
@@ -779,13 +781,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35bfd69fc500012db5bdc6e4c0b221649c1de47d715c6a21ed2d36eab952646c",
@@ -936,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e21d7dd1a3daa76bf0b0ece98b32c11837e5e9fe4f285fdb42afa531683b7aca",

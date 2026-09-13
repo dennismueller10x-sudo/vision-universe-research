@@ -7,17 +7,108 @@
       "name": "NORTHERN TRUST CORP",
       "sic": "6022",
       "rawFacts": 39360,
-      "mappedFacts": 5581,
-      "unmappedFacts": 34113,
+      "mappedFacts": 8291,
+      "unmappedFacts": 31846,
       "calendarYears": 19,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 11.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 11.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 20,
+          "quarterlyPeriods": 75,
+          "firstAvailablePeriod": "2006-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 19.0
+        },
+        "deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 19,
           "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2015-12-31",
+          "historyYears": 8.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -136,17 +227,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 34328,
+        "total": 32064,
         "by_severity": {
           "ERROR": 11,
-          "INFO": 34113,
-          "WARNING": 204
+          "INFO": 31846,
+          "WARNING": 207
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 191,
           "FUTURE_DATA_LEAK": 11,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 34113
+          "RESTATEMENT_CONFLICT": 16,
+          "UNKNOWN_CONCEPT": 31846
         }
       },
       "latestFiling": {
@@ -157,13 +248,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "36913793e1d0768ec072152b96e1d51be6df0910df37afb986f4e7b112c3077e",
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "552165551de7e02c6db538cdf910838b254a36070b60ad247820930b3638af2a",
@@ -471,13 +562,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "55f402ef4e3443ef927c0822acac0d83fd70e630702bef6307bad6eb712348c0",
@@ -488,8 +579,8 @@
       "name": "Luda Technology Group Ltd",
       "sic": "3317",
       "rawFacts": 849,
-      "mappedFacts": 240,
-      "unmappedFacts": 628,
+      "mappedFacts": 241,
+      "unmappedFacts": 627,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -608,15 +699,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 671,
+        "total": 670,
         "by_severity": {
-          "INFO": 628,
+          "INFO": 627,
           "WARNING": 43
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 39,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 628
+          "UNKNOWN_CONCEPT": 627
         }
       },
       "latestFiling": {
@@ -627,13 +718,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6d92d0c85428eedb23be5c7b090ed9771610c8ed4189615dda89245a9de5fa49",

@@ -7,8 +7,8 @@
       "name": "TENET HEALTHCARE CORP",
       "sic": "8062",
       "rawFacts": 28691,
-      "mappedFacts": 6243,
-      "unmappedFacts": 22380,
+      "mappedFacts": 6246,
+      "unmappedFacts": 22378,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23492,
+        "total": 23490,
         "by_severity": {
-          "INFO": 22380,
+          "INFO": 22378,
           "ERROR": 2,
           "WARNING": 1110
         },
@@ -140,7 +140,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 167,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 22380
+          "UNKNOWN_CONCEPT": 22378
         }
       },
       "latestFiling": {
@@ -151,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "103455144922bcb50b49960f1c370f2e1a4a44658bd57dbe68264f1c1f9dda16",
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c9f4fca04bb495ba64297c305e420f3ac80316a984a2bbf5604cb90bdb0c929e",
@@ -462,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c503f13366e70b2a0e58dd590a2ab8ac439904af170635f4f766aab399dd1e8",
@@ -479,8 +479,8 @@
       "name": "Akso Health Group",
       "sic": "7389",
       "rawFacts": 2992,
-      "mappedFacts": 849,
-      "unmappedFacts": 2091,
+      "mappedFacts": 882,
+      "unmappedFacts": 2066,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -599,17 +599,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2246,
+        "total": 2226,
         "by_severity": {
-          "INFO": 2091,
+          "INFO": 2066,
           "ERROR": 1,
-          "WARNING": 154
+          "WARNING": 159
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 106,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 48,
-          "UNKNOWN_CONCEPT": 2091
+          "PERIOD_MISMATCH": 3,
+          "RESTATEMENT_CONFLICT": 50,
+          "UNKNOWN_CONCEPT": 2066
         }
       },
       "latestFiling": {
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7146cf468ea4fe6bae8255991599f0fa9e1639f37bd1962fe4c7385304ea4f9d",
@@ -637,8 +638,8 @@
       "name": "Enovix Corp",
       "sic": "3690",
       "rawFacts": 7426,
-      "mappedFacts": 2077,
-      "unmappedFacts": 5090,
+      "mappedFacts": 2103,
+      "unmappedFacts": 5073,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -757,15 +758,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5585,
+        "total": 5568,
         "by_severity": {
-          "INFO": 5090,
+          "INFO": 5073,
           "WARNING": 495
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 321,
           "RESTATEMENT_CONFLICT": 174,
-          "UNKNOWN_CONCEPT": 5090
+          "UNKNOWN_CONCEPT": 5073
         }
       },
       "latestFiling": {
@@ -776,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bf5884de3504621be688933f35514e0fa9cb47c9ecd94c6a136f9b36948665de",

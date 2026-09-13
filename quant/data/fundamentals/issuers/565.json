@@ -7,17 +7,108 @@
       "name": "FIRST MID BANCSHARES, INC.",
       "sic": "6022",
       "rawFacts": 36766,
-      "mappedFacts": 5707,
-      "unmappedFacts": 31331,
+      "mappedFacts": 8463,
+      "unmappedFacts": 28867,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,17 +226,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 31657,
+        "total": 29201,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 31331,
-          "WARNING": 324
+          "INFO": 28867,
+          "WARNING": 332
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 297,
+          "CONCEPT_DISAGREEMENT": 298,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 31331
+          "RESTATEMENT_CONFLICT": 34,
+          "UNKNOWN_CONCEPT": 28867
         }
       },
       "latestFiling": {
@@ -156,13 +247,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26d7d6fbf612c593761a0db71326bcb842fad563580e4694ce91727dcedc56ca",
@@ -173,8 +264,8 @@
       "name": "HEALTHSTREAM INC",
       "sic": "7370",
       "rawFacts": 16878,
-      "mappedFacts": 5532,
-      "unmappedFacts": 11615,
+      "mappedFacts": 5683,
+      "unmappedFacts": 11493,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -293,15 +384,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11798,
+        "total": 11681,
         "by_severity": {
-          "INFO": 11615,
-          "WARNING": 183
+          "INFO": 11493,
+          "WARNING": 188
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 141,
-          "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 11615
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 46,
+          "UNKNOWN_CONCEPT": 11493
         }
       },
       "latestFiling": {
@@ -312,13 +404,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "796a52a1a1baae7bc51397bcacad2db45e93cf0283e9f1d377a46b6a714f0e8e",
@@ -329,8 +421,8 @@
       "name": "COLLEGIUM PHARMACEUTICAL, INC",
       "sic": "2834",
       "rawFacts": 14202,
-      "mappedFacts": 5307,
-      "unmappedFacts": 9044,
+      "mappedFacts": 5316,
+      "unmappedFacts": 9039,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -448,15 +540,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9269,
+        "total": 9264,
         "by_severity": {
-          "INFO": 9044,
+          "INFO": 9039,
           "WARNING": 225
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 219,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 9044
+          "UNKNOWN_CONCEPT": 9039
         }
       },
       "latestFiling": {
@@ -467,13 +559,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "91e50e06c199276ea3155b01d7404ba232c324627b6c5328b71ac6c59ac37e99",
@@ -484,8 +576,8 @@
       "name": "Where Food Comes From, Inc.",
       "sic": "7372",
       "rawFacts": 17123,
-      "mappedFacts": 6089,
-      "unmappedFacts": 11092,
+      "mappedFacts": 6093,
+      "unmappedFacts": 11089,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -604,9 +696,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11836,
+        "total": 11833,
         "by_severity": {
-          "INFO": 11092,
+          "INFO": 11089,
           "ERROR": 8,
           "WARNING": 736
         },
@@ -615,7 +707,7 @@
           "FUTURE_DATA_LEAK": 8,
           "RESTATEMENT_CONFLICT": 35,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11092
+          "UNKNOWN_CONCEPT": 11089
         }
       },
       "latestFiling": {
@@ -626,13 +718,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35784dd7e09c9240539b4360262a6dec075d38d4f174d1c3d5d786ac15469bf9",
@@ -643,8 +735,8 @@
       "name": "Rein Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 8934,
-      "mappedFacts": 2783,
-      "unmappedFacts": 6220,
+      "mappedFacts": 2832,
+      "unmappedFacts": 6171,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -763,15 +855,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6288,
+        "total": 6239,
         "by_severity": {
-          "INFO": 6220,
+          "INFO": 6171,
           "WARNING": 68
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 40,
           "RESTATEMENT_CONFLICT": 28,
-          "UNKNOWN_CONCEPT": 6220
+          "UNKNOWN_CONCEPT": 6171
         }
       },
       "latestFiling": {
@@ -782,13 +874,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6e44555a5277a2099092dd398f38c473c9f9fb3ea0d99887adb3114263c96e8b",
@@ -938,13 +1030,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "946cb71120043b4cb9d4fb6b324f77659975b6463650c31bc5de8eaa368aa9d9",
@@ -1093,13 +1185,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6ce58b98df48e857ad4da10e29c50aa4cbe484240501f3f884173e5a85ac19e1",

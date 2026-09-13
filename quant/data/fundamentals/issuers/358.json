@@ -7,8 +7,8 @@
       "name": "MANNATECH INC",
       "sic": "2833",
       "rawFacts": 21913,
-      "mappedFacts": 6368,
-      "unmappedFacts": 15927,
+      "mappedFacts": 6372,
+      "unmappedFacts": 15864,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -126,18 +126,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16480,
+        "total": 16476,
         "by_severity": {
-          "INFO": 15927,
+          "INFO": 15864,
           "ERROR": 11,
-          "WARNING": 542
+          "WARNING": 601
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 448,
           "FUTURE_DATA_LEAK": 11,
-          "PERIOD_MISMATCH": 1,
+          "PERIOD_MISMATCH": 58,
           "RESTATEMENT_CONFLICT": 93,
-          "UNKNOWN_CONCEPT": 15927
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 15864
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c858c72cd9fc9b402dd1f49ae76a53e827ed7cddfe5296e304cfac3133a98c2d",
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d43472b363aa3149e41fa9abe1bad801a4a53c441dbc409cb9265148471535cb",
@@ -462,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "019bba8fa25909b82607b35189b36ed73416a4be0edd4fad0dbc72835d5f27c4",
@@ -479,8 +480,8 @@
       "name": "MARRIOTT VACATIONS WORLDWIDE Corp",
       "sic": "6531",
       "rawFacts": 20914,
-      "mappedFacts": 5022,
-      "unmappedFacts": 15707,
+      "mappedFacts": 5382,
+      "unmappedFacts": 15323,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -599,16 +600,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16428,
+        "total": 16109,
         "by_severity": {
-          "INFO": 15707,
-          "WARNING": 721
+          "INFO": 15323,
+          "WARNING": 786
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 551,
-          "RESTATEMENT_CONFLICT": 133,
+          "CONCEPT_DISAGREEMENT": 552,
+          "PERIOD_MISMATCH": 63,
+          "RESTATEMENT_CONFLICT": 134,
           "UNEXPECTED_DURATION": 37,
-          "UNKNOWN_CONCEPT": 15707
+          "UNKNOWN_CONCEPT": 15323
         }
       },
       "latestFiling": {
@@ -619,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9c8250ecf1a81fdaf34246b8f174cf70f83170410d928fb143cf31ce3a38daea",
@@ -636,8 +638,8 @@
       "name": "Yum China Holdings, Inc.",
       "sic": "5812",
       "rawFacts": 15626,
-      "mappedFacts": 4008,
-      "unmappedFacts": 11478,
+      "mappedFacts": 4119,
+      "unmappedFacts": 11370,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -756,16 +758,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12216,
+        "total": 12108,
         "by_severity": {
-          "INFO": 11478,
+          "INFO": 11370,
           "WARNING": 738
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 503,
           "RESTATEMENT_CONFLICT": 23,
           "UNEXPECTED_DURATION": 212,
-          "UNKNOWN_CONCEPT": 11478
+          "UNKNOWN_CONCEPT": 11370
         }
       },
       "latestFiling": {
@@ -776,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b286d533ed7461cad5be77aab2c9409b0f603a67c69d013e314176d2df0a77b5",
@@ -793,8 +795,8 @@
       "name": "Academy Sports & Outdoors, Inc.",
       "sic": "5940",
       "rawFacts": 9301,
-      "mappedFacts": 3301,
-      "unmappedFacts": 6132,
+      "mappedFacts": 3356,
+      "unmappedFacts": 6077,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -912,15 +914,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6158,
+        "total": 6103,
         "by_severity": {
-          "INFO": 6132,
+          "INFO": 6077,
           "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
           "PERIOD_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 6132
+          "UNKNOWN_CONCEPT": 6077
         }
       },
       "latestFiling": {
@@ -931,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2f3a47ef6edfbe34ed6a139b7cca0655c1a6ef421dfa6c8e2a69410b511491dc",
@@ -1087,13 +1089,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b046f30c43b37786094e53f231e2e15e58ccdd5ad88c89c31ead887ae9b82ec8",

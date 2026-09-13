@@ -7,11 +7,54 @@
       "name": "AMERICAN TOWER CORP /MA/",
       "sic": "6798",
       "rawFacts": 32652,
-      "mappedFacts": 7888,
-      "unmappedFacts": 24369,
+      "mappedFacts": 8182,
+      "unmappedFacts": 24164,
       "calendarYears": 19,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AMT"
@@ -127,16 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25709,
+        "total": 25523,
         "by_severity": {
-          "INFO": 24369,
-          "WARNING": 1340
+          "INFO": 24164,
+          "WARNING": 1359
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1254,
-          "PERIOD_MISMATCH": 7,
-          "RESTATEMENT_CONFLICT": 79,
-          "UNKNOWN_CONCEPT": 24369
+          "PERIOD_MISMATCH": 22,
+          "RESTATEMENT_CONFLICT": 83,
+          "UNKNOWN_CONCEPT": 24164
         }
       },
       "latestFiling": {
@@ -147,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6366ae688386cfd4805d3f87d81ea11d2195202cb920e99afb637568b83ff89d",
@@ -297,13 +340,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b7ee1be886ff531f046e2283005aa169ec9d2f78a3c76bfb474a78006b7110a7",
@@ -453,13 +496,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75bff768439008b1f2fc238985d083ebd36d1e6f7f2954408202a8dd52c32bd0",

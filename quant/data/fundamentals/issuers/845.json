@@ -7,8 +7,8 @@
       "name": "APOGEE ENTERPRISES, INC.",
       "sic": "3231",
       "rawFacts": 25420,
-      "mappedFacts": 6853,
-      "unmappedFacts": 18753,
+      "mappedFacts": 7014,
+      "unmappedFacts": 18624,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19418,
+        "total": 19296,
         "by_severity": {
-          "INFO": 18753,
+          "INFO": 18624,
           "ERROR": 5,
-          "WARNING": 660
+          "WARNING": 667
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 522,
+          "CONCEPT_DISAGREEMENT": 524,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 138,
-          "UNKNOWN_CONCEPT": 18753
+          "RESTATEMENT_CONFLICT": 143,
+          "UNKNOWN_CONCEPT": 18624
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f1c90e529fbbb73b68f2cdbd4b2eb26bb88c53385eaa5edbd02fed5a9cff86da",
@@ -165,8 +165,8 @@
       "name": "LEVI STRAUSS & CO",
       "sic": "2300",
       "rawFacts": 21867,
-      "mappedFacts": 7346,
-      "unmappedFacts": 14903,
+      "mappedFacts": 7453,
+      "unmappedFacts": 14776,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,17 +285,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15283,
+        "total": 15176,
         "by_severity": {
-          "INFO": 14903,
+          "INFO": 14776,
           "ERROR": 2,
-          "WARNING": 378
+          "WARNING": 398
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 347,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 14903
+          "UNEXPECTED_DURATION": 20,
+          "UNKNOWN_CONCEPT": 14776
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "afc28eee99fb2d8978015f29ad57659e59519ce90008fb917da86b459f85bac4",
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2f7d57ded3a7478d812e694c59da95dd7c7c5e6602d6cd4fd032cee9ab0ab6a4",
@@ -618,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3515bd911eb092966b0e0cd6dc6ec470412ab6fdfbe7113c8135dcd6987c0c7d",
@@ -635,8 +636,8 @@
       "name": "enGene Therapeutics Inc.",
       "sic": "2836",
       "rawFacts": 3235,
-      "mappedFacts": 988,
-      "unmappedFacts": 2218,
+      "mappedFacts": 1020,
+      "unmappedFacts": 2195,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -756,15 +757,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2257,
+        "total": 2236,
         "by_severity": {
-          "INFO": 2218,
-          "WARNING": 39
+          "INFO": 2195,
+          "WARNING": 41
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 25,
-          "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 2218
+          "RESTATEMENT_CONFLICT": 16,
+          "UNKNOWN_CONCEPT": 2195
         }
       },
       "latestFiling": {
@@ -775,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eae6c044df472b43b7c7f69d5848af8edd972cb0795e7a7092d01e1d7964dea5",
@@ -931,13 +932,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8106864c5276330ae42ec833266215d89ae2282110ad90256d6a486523c7a565",
@@ -1081,13 +1082,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "96181e0ef954e1f765ff0fe104bcb57b7c7bbb3dc944cc34277a2082c82bdf10",

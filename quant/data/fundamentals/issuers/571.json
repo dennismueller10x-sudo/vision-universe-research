@@ -7,8 +7,8 @@
       "name": "ITRON, INC.",
       "sic": "3825",
       "rawFacts": 35761,
-      "mappedFacts": 8010,
-      "unmappedFacts": 27783,
+      "mappedFacts": 8106,
+      "unmappedFacts": 27727,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 28829,
+        "total": 28773,
         "by_severity": {
-          "INFO": 27783,
+          "INFO": 27727,
           "ERROR": 3,
           "WARNING": 1043
         },
@@ -138,7 +138,7 @@
           "FISCAL_PERIOD_CONFLICT": 16,
           "FUTURE_DATA_LEAK": 3,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 27783
+          "UNKNOWN_CONCEPT": 27727
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bb97204a6f408eaf3a35b4b3e969b02612f08c6718da8475fa82f9a0ab4f4f14",

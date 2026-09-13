@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4d148512c3e6d01feb1a66db06299590b59e811667e57890a694fa3290d2cd2d",
@@ -164,11 +164,54 @@
       "name": "FRANKLIN STREET PROPERTIES CORP /MA/",
       "sic": "6798",
       "rawFacts": 17270,
-      "mappedFacts": 4582,
-      "unmappedFacts": 12654,
+      "mappedFacts": 5494,
+      "unmappedFacts": 11970,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FSP"
@@ -284,17 +327,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12904,
+        "total": 12236,
         "by_severity": {
-          "INFO": 12654,
+          "INFO": 11970,
           "ERROR": 1,
-          "WARNING": 249
+          "WARNING": 265
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 217,
+          "CONCEPT_DISAGREEMENT": 227,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 32,
-          "UNKNOWN_CONCEPT": 12654
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 11970
         }
       },
       "latestFiling": {
@@ -305,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2058bf0b75bc9cf59218576209c384afc4605c0f6e8dc064b98071a321bc314c",
@@ -322,8 +366,8 @@
       "name": "FATE THERAPEUTICS INC",
       "sic": "2836",
       "rawFacts": 11439,
-      "mappedFacts": 3870,
-      "unmappedFacts": 7753,
+      "mappedFacts": 3888,
+      "unmappedFacts": 7742,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +486,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7873,
+        "total": 7862,
         "by_severity": {
-          "INFO": 7753,
+          "INFO": 7742,
           "WARNING": 120
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 75,
           "UNEXPECTED_DURATION": 45,
-          "UNKNOWN_CONCEPT": 7753
+          "UNKNOWN_CONCEPT": 7742
         }
       },
       "latestFiling": {
@@ -461,13 +505,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8ad9709c06c979bcdca51038f981e7be92b0c74356ba4fbbe65b6c937cf035e6",
@@ -618,13 +662,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd7aa940b5b407739b4a3f2bc6bdeb3d3539a30206a0da5406dabf4c7c008c74",

@@ -7,8 +7,8 @@
       "name": "ICAHN ENTERPRISES L.P.",
       "sic": "2911",
       "rawFacts": 21795,
-      "mappedFacts": 4157,
-      "unmappedFacts": 17269,
+      "mappedFacts": 4563,
+      "unmappedFacts": 16932,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18463,
+        "total": 18135,
         "by_severity": {
-          "INFO": 17269,
+          "INFO": 16932,
           "ERROR": 2,
-          "WARNING": 1192
+          "WARNING": 1201
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 978,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 18,
+          "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 194,
-          "UNKNOWN_CONCEPT": 17269
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 16932
         }
       },
       "latestFiling": {
@@ -150,13 +152,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "82e37406bfab34bd07c9581ddcffe7fbd1c0337d13588e791ea797aaf1c09e58",
@@ -167,8 +169,8 @@
       "name": "Coherus Oncology, Inc.",
       "sic": "2836",
       "rawFacts": 14012,
-      "mappedFacts": 4522,
-      "unmappedFacts": 9495,
+      "mappedFacts": 4558,
+      "unmappedFacts": 9472,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -287,16 +289,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9860,
+        "total": 9837,
         "by_severity": {
-          "INFO": 9495,
+          "INFO": 9472,
           "WARNING": 365
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 306,
           "RESTATEMENT_CONFLICT": 56,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 9495
+          "UNKNOWN_CONCEPT": 9472
         }
       },
       "latestFiling": {
@@ -307,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b9482eead3b5d68d76504697178723e13b68ff0140547ccb40fe2ab7edee9ced",
@@ -324,8 +326,8 @@
       "name": "Chaince Digital Holdings Inc.",
       "sic": "6199",
       "rawFacts": 4672,
-      "mappedFacts": 1480,
-      "unmappedFacts": 3183,
+      "mappedFacts": 1483,
+      "unmappedFacts": 3181,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -444,9 +446,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3408,
+        "total": 3406,
         "by_severity": {
-          "INFO": 3183,
+          "INFO": 3181,
           "WARNING": 225
         },
         "by_code": {
@@ -454,7 +456,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 76,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 3183
+          "UNKNOWN_CONCEPT": 3181
         }
       },
       "latestFiling": {
@@ -465,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2a822147c6e242a7ea1631fc6c1a04e2704160098225d4a5599a016ce2b098c4",
@@ -482,8 +484,8 @@
       "name": "Brightstar Lottery PLC",
       "sic": "7990",
       "rawFacts": 7703,
-      "mappedFacts": 1526,
-      "unmappedFacts": 6184,
+      "mappedFacts": 1648,
+      "unmappedFacts": 6031,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -602,16 +604,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6639,
+        "total": 6519,
         "by_severity": {
-          "INFO": 6184,
-          "WARNING": 455
+          "INFO": 6031,
+          "WARNING": 488
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 365,
-          "PERIOD_MISMATCH": 1,
+          "CONCEPT_DISAGREEMENT": 381,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 89,
-          "UNKNOWN_CONCEPT": 6184
+          "UNIT_MISMATCH": 16,
+          "UNKNOWN_CONCEPT": 6031
         }
       },
       "latestFiling": {
@@ -622,13 +625,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e3d596ec0dda70ce6febac72e6263987ea2cf8ca9ec3e2316c09320947b6fa78",
@@ -781,13 +784,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c560eae762a3bc51a8f14f55869a0e17c4407c067feb20644e19c24863c1b7bf",
@@ -798,8 +801,8 @@
       "name": "Ingram Micro Holding Corp",
       "sic": "5045",
       "rawFacts": 2687,
-      "mappedFacts": 972,
-      "unmappedFacts": 1799,
+      "mappedFacts": 992,
+      "unmappedFacts": 1779,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -918,14 +921,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1839,
+        "total": 1819,
         "by_severity": {
-          "INFO": 1799,
+          "INFO": 1779,
           "WARNING": 40
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 40,
-          "UNKNOWN_CONCEPT": 1799
+          "UNKNOWN_CONCEPT": 1779
         }
       },
       "latestFiling": {
@@ -936,13 +939,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "804484188ba7de6a84c9010014a273ce178d672d5c9bfd449b0f84d480db11e7",
@@ -1090,13 +1093,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5d0313e5945959bd8a234fce7ecddc5d1d2300929fac374f5f95255b3cba30e",

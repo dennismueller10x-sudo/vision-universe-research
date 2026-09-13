@@ -7,8 +7,8 @@
       "name": "BlackRock TCP Capital Corp.",
       "sic": null,
       "rawFacts": 4350,
-      "mappedFacts": 970,
-      "unmappedFacts": 3398,
+      "mappedFacts": 1066,
+      "unmappedFacts": 3302,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -126,16 +126,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3409,
+        "total": 3313,
         "by_severity": {
-          "INFO": 3398,
+          "INFO": 3302,
           "WARNING": 11
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 3398
+          "UNKNOWN_CONCEPT": 3302
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e9b6a570e164c003bb27451f4ec0c4e3b9167b50b03378e3a80167fd6bb4e5bd",
@@ -163,8 +163,8 @@
       "name": "GreenTree Hospitality Group Ltd.",
       "sic": "7011",
       "rawFacts": 5475,
-      "mappedFacts": 838,
-      "unmappedFacts": 4415,
+      "mappedFacts": 854,
+      "unmappedFacts": 4401,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -283,16 +283,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4891,
+        "total": 4886,
         "by_severity": {
-          "INFO": 4415,
-          "WARNING": 476
+          "INFO": 4401,
+          "WARNING": 485
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 413,
-          "PERIOD_MISMATCH": 1,
+          "CONCEPT_DISAGREEMENT": 419,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 4415
+          "UNKNOWN_CONCEPT": 4401
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ccb3494587a9c6e3c9f922397f2bfa86dbe00811aa87489e36a254ea332fca0e",
@@ -320,11 +320,75 @@
       "name": "Baldwin Insurance Group, Inc.",
       "sic": "6411",
       "rawFacts": 9553,
-      "mappedFacts": 2385,
-      "unmappedFacts": 7016,
+      "mappedFacts": 2413,
+      "unmappedFacts": 6999,
       "calendarYears": 8,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 1.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "BWIN"
@@ -440,16 +504,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7491,
+        "total": 7474,
         "by_severity": {
-          "INFO": 7016,
+          "INFO": 6999,
           "WARNING": 475
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 398,
           "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 7016
+          "UNKNOWN_CONCEPT": 6999
         }
       },
       "latestFiling": {
@@ -460,13 +524,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3613b6e5714081685ce8e92685fb6f0806d4e20a04cd91094c622507cae525d7",
@@ -614,13 +678,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "91b4313ab0812cdff76f29eb33935eed60cf9343db3ca3711b3b6916b3bb8f39",
@@ -768,13 +832,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7449027f54fbb415f9b6bbb532a9bbfe056495a0c17634a67dc12787c4809dd0",

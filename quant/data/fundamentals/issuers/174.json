@@ -7,11 +7,75 @@
       "name": "REINSURANCE GROUP OF AMERICA INC",
       "sic": "6311",
       "rawFacts": 35309,
-      "mappedFacts": 5593,
-      "unmappedFacts": 29876,
+      "mappedFacts": 7946,
+      "unmappedFacts": 27913,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "claims_liability": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 37,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "total_investments": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "RGA",
@@ -128,18 +192,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 30319,
+        "total": 28392,
         "by_severity": {
-          "INFO": 29876,
-          "WARNING": 443
+          "INFO": 27913,
+          "WARNING": 479
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 333,
           "EXTREME_VALUE": 14,
-          "FISCAL_PERIOD_CONFLICT": 8,
+          "FISCAL_PERIOD_CONFLICT": 12,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 86,
-          "UNKNOWN_CONCEPT": 29876
+          "RESTATEMENT_CONFLICT": 118,
+          "UNKNOWN_CONCEPT": 27913
         }
       },
       "latestFiling": {
@@ -150,13 +214,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ed0614616fad566e698b60890434e54fb6d0575fd1ce27fc4502c3e3ddb85939",
@@ -167,8 +231,8 @@
       "name": "Hyatt Hotels Corp",
       "sic": "7011",
       "rawFacts": 27618,
-      "mappedFacts": 6647,
-      "unmappedFacts": 20959,
+      "mappedFacts": 6741,
+      "unmappedFacts": 20808,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +351,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21481,
+        "total": 21394,
         "by_severity": {
-          "INFO": 20959,
-          "WARNING": 522
+          "INFO": 20808,
+          "WARNING": 586
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 478,
+          "PERIOD_MISMATCH": 64,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 20959
+          "UNKNOWN_CONCEPT": 20808
         }
       },
       "latestFiling": {
@@ -306,13 +371,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0ba03cd1ecc143e07b65bfa9b631fdb4849ea41be2e3379445c776dbd1e93454",
@@ -451,13 +516,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9722c3f357f2905c6c08925b999ccc72f2ec9a9708f9c35ffa6fff33f9ce19e",
@@ -468,8 +533,8 @@
       "name": "Burford Capital Ltd",
       "sic": "6199",
       "rawFacts": 4292,
-      "mappedFacts": 1106,
-      "unmappedFacts": 3218,
+      "mappedFacts": 1134,
+      "unmappedFacts": 3195,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -588,9 +653,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3396,
+        "total": 3373,
         "by_severity": {
-          "INFO": 3218,
+          "INFO": 3195,
           "WARNING": 178
         },
         "by_code": {
@@ -598,7 +663,7 @@
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 3218
+          "UNKNOWN_CONCEPT": 3195
         }
       },
       "latestFiling": {
@@ -609,13 +674,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6cf4e35745f6fcba7a03b574b64bbe7a541355d967778905640029a68cad9ef2",
@@ -767,13 +832,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae3feb3670dc327b9fa46c3b5ec046b6fda5b9d587d8c2890b27148d884e9cda",
@@ -784,8 +849,8 @@
       "name": "Acrivon Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 3826,
-      "mappedFacts": 1145,
-      "unmappedFacts": 2694,
+      "mappedFacts": 1186,
+      "unmappedFacts": 2668,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -903,15 +968,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2730,
+        "total": 2704,
         "by_severity": {
-          "INFO": 2694,
+          "INFO": 2668,
           "WARNING": 36
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 33,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 2694
+          "UNKNOWN_CONCEPT": 2668
         }
       },
       "latestFiling": {
@@ -922,13 +987,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ea28b1955f7617b530301136dbf6a4c5b3cd5034c05d85d6fa642a9ad49a59b6",

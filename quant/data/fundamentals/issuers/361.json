@@ -7,8 +7,8 @@
       "name": "LEE ENTERPRISES, Inc",
       "sic": "2711",
       "rawFacts": 20822,
-      "mappedFacts": 6462,
-      "unmappedFacts": 14450,
+      "mappedFacts": 6495,
+      "unmappedFacts": 14430,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15221,
+        "total": 15201,
         "by_severity": {
-          "INFO": 14450,
+          "INFO": 14430,
           "ERROR": 7,
           "WARNING": 764
         },
@@ -139,7 +139,7 @@
           "FUTURE_DATA_LEAK": 7,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 14450
+          "UNKNOWN_CONCEPT": 14430
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee5eae36e174e68306b7f237bd8abd199592126c56c99c66012ac20fe8b105a9",
@@ -167,17 +167,108 @@
       "name": "HOPE BANCORP INC",
       "sic": "6021",
       "rawFacts": 36487,
-      "mappedFacts": 5663,
-      "unmappedFacts": 31016,
+      "mappedFacts": 8266,
+      "unmappedFacts": 28673,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 36,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 2.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -295,20 +386,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 31303,
+        "total": 28972,
         "by_severity": {
-          "INFO": 31016,
+          "INFO": 28673,
           "ERROR": 1,
-          "WARNING": 286
+          "WARNING": 298
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 233,
-          "FISCAL_PERIOD_CONFLICT": 7,
+          "FISCAL_PERIOD_CONFLICT": 11,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 8,
-          "RESTATEMENT_CONFLICT": 36,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 31016
+          "RESTATEMENT_CONFLICT": 38,
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 28673
         }
       },
       "latestFiling": {
@@ -319,13 +410,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "817fcf5ae46542e44f31dc7dae5a5ae9286c1fc3a3f4a84e47728e20a839ab37",
@@ -336,8 +427,8 @@
       "name": "ASPAC III Acquisition Corp.",
       "sic": "6770",
       "rawFacts": 663,
-      "mappedFacts": 330,
-      "unmappedFacts": 345,
+      "mappedFacts": 335,
+      "unmappedFacts": 340,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -458,15 +549,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 364,
+        "total": 359,
         "by_severity": {
-          "INFO": 345,
+          "INFO": 340,
           "WARNING": 19
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 15,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 345
+          "UNKNOWN_CONCEPT": 340
         }
       },
       "latestFiling": {
@@ -477,13 +568,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9f40dd563ba7afcbad9ca5a851b24b7c9af98bc2790e5459b8de3b93362429d2",
@@ -633,13 +724,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ab40e74390826248ad0ad905f4aa9b1c890b9e7ea303637cf2f383604831c3c9",

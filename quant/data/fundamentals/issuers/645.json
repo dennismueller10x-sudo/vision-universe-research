@@ -7,11 +7,54 @@
       "name": "Summit Hotel Properties, Inc.",
       "sic": "6798",
       "rawFacts": 20866,
-      "mappedFacts": 5315,
-      "unmappedFacts": 15104,
+      "mappedFacts": 5781,
+      "unmappedFacts": 14807,
       "calendarYears": 16,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 39,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 31,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 8.0
+        },
+        "secured_debt": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2012-12-31",
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "INN",
@@ -129,16 +172,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15902,
+        "total": 15649,
         "by_severity": {
-          "INFO": 15104,
-          "WARNING": 798
+          "INFO": 14807,
+          "WARNING": 842
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 577,
-          "RESTATEMENT_CONFLICT": 126,
+          "CONCEPT_DISAGREEMENT": 617,
+          "RESTATEMENT_CONFLICT": 130,
           "UNEXPECTED_DURATION": 95,
-          "UNKNOWN_CONCEPT": 15104
+          "UNKNOWN_CONCEPT": 14807
         }
       },
       "latestFiling": {
@@ -149,13 +192,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "78e32bd663fc93ce0a9e2ccb3fff2b16181cb03acf131a13f684dbb5a185001f",
@@ -166,8 +209,8 @@
       "name": "Polyrizon Ltd.",
       "sic": "3841",
       "rawFacts": 406,
-      "mappedFacts": 161,
-      "unmappedFacts": 258,
+      "mappedFacts": 162,
+      "unmappedFacts": 256,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +329,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 278,
+        "total": 277,
         "by_severity": {
-          "INFO": 258,
-          "WARNING": 20
+          "INFO": 256,
+          "WARNING": 21
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 10,
+          "CONCEPT_DISAGREEMENT": 11,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 258
+          "UNKNOWN_CONCEPT": 256
         }
       },
       "latestFiling": {
@@ -305,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d8545bed08314f5f1c89d70c79cf85a856e7360880b95d8608f6ba12f32f9dcb",

@@ -7,8 +7,8 @@
       "name": "RB GLOBAL INC.",
       "sic": "7389",
       "rawFacts": 17485,
-      "mappedFacts": 5148,
-      "unmappedFacts": 12153,
+      "mappedFacts": 5190,
+      "unmappedFacts": 12098,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12931,
+        "total": 12889,
         "by_severity": {
-          "INFO": 12153,
+          "INFO": 12098,
           "ERROR": 2,
-          "WARNING": 776
+          "WARNING": 789
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 714,
           "FUTURE_DATA_LEAK": 2,
+          "PERIOD_MISMATCH": 11,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 12153
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 12098
         }
       },
       "latestFiling": {
@@ -148,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "44bcaa3f452febf21397e8b0f8dd01db1e21a3f3035ee52a54dc5fd131bbe86d",
@@ -165,8 +167,8 @@
       "name": "HireQuest, Inc.",
       "sic": "7363",
       "rawFacts": 16264,
-      "mappedFacts": 5608,
-      "unmappedFacts": 10722,
+      "mappedFacts": 5730,
+      "unmappedFacts": 10635,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -285,19 +287,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11380,
+        "total": 11295,
         "by_severity": {
-          "INFO": 10722,
-          "WARNING": 658
+          "INFO": 10635,
+          "WARNING": 660
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 280,
           "FISCAL_PERIOD_CONFLICT": 47,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "PERIOD_MISMATCH": 123,
-          "RESTATEMENT_CONFLICT": 202,
+          "RESTATEMENT_CONFLICT": 204,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 10722
+          "UNKNOWN_CONCEPT": 10635
         }
       },
       "latestFiling": {
@@ -308,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d72dc5926066d2ee48b4bdb8db059a4ed571a521d043baf09616a55840135aed",
@@ -465,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8794e43f0e746e3c37704fa9a375d9c19deed78c260b608cd4b27c25e35531cd",
@@ -482,8 +484,8 @@
       "name": "Ascent Solar Technologies, Inc.",
       "sic": "3674",
       "rawFacts": 14930,
-      "mappedFacts": 4969,
-      "unmappedFacts": 9954,
+      "mappedFacts": 4970,
+      "unmappedFacts": 9953,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -602,10 +604,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10595,
+        "total": 10594,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 9954,
+          "INFO": 9953,
           "WARNING": 640
         },
         "by_code": {
@@ -614,7 +616,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 130,
           "UNEXPECTED_DURATION": 173,
-          "UNKNOWN_CONCEPT": 9954
+          "UNKNOWN_CONCEPT": 9953
         }
       },
       "latestFiling": {
@@ -625,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e277fe66a7b42870f322c9a1dbdc4a4190e50a00ba762cd6c9c9f5ceea21e6b1",
@@ -642,8 +644,8 @@
       "name": "Jiayin Group Inc.",
       "sic": "6199",
       "rawFacts": 3035,
-      "mappedFacts": 601,
-      "unmappedFacts": 2255,
+      "mappedFacts": 621,
+      "unmappedFacts": 2242,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -762,15 +764,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2490,
+        "total": 2483,
         "by_severity": {
-          "INFO": 2255,
-          "WARNING": 235
+          "INFO": 2242,
+          "WARNING": 241
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 230,
+          "CONCEPT_DISAGREEMENT": 236,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 2255
+          "UNKNOWN_CONCEPT": 2242
         }
       },
       "latestFiling": {
@@ -781,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aac04d51da2625535f649136eb60b7144f5d975c60ad0161e30d5c12210177d8",
@@ -937,13 +939,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f42c43de7817d45e9079499b8090c9e45f8a34509aebf20765dad697160bef83",
@@ -1094,13 +1096,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "54573f32bbfa37d3b444fe147c080b54bf9d71f7d756708c3d615e57c4e1ca59",
@@ -1250,13 +1252,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "942dcd71b4e9fca25c2d7f572981167e928ceb80a1df882e685c564229b8498c",
@@ -1405,13 +1407,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ddc1eda1384b4a0bca131d18a691917cbeb65e91d56ae0b59b2e431f96e1c86b",

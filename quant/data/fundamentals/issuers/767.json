@@ -7,8 +7,8 @@
       "name": "SONOCO PRODUCTS CO",
       "sic": "2650",
       "rawFacts": 27906,
-      "mappedFacts": 7755,
-      "unmappedFacts": 20288,
+      "mappedFacts": 7775,
+      "unmappedFacts": 20227,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20797,
+        "total": 20777,
         "by_severity": {
-          "INFO": 20288,
+          "INFO": 20227,
           "ERROR": 3,
-          "WARNING": 506
+          "WARNING": 547
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 416,
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 3,
-          "PERIOD_MISMATCH": 8,
+          "PERIOD_MISMATCH": 40,
           "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 20288
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 20227
         }
       },
       "latestFiling": {
@@ -150,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d61f3232def123f1d26c3dd30d23cca49290af59f359a46cc5f26a1d49ca1d56",
@@ -167,8 +168,8 @@
       "name": "UFP INDUSTRIES INC",
       "sic": "2421",
       "rawFacts": 26182,
-      "mappedFacts": 8126,
-      "unmappedFacts": 18086,
+      "mappedFacts": 8285,
+      "unmappedFacts": 17911,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +288,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18863,
+        "total": 18704,
         "by_severity": {
-          "INFO": 18086,
-          "WARNING": 777
+          "INFO": 17911,
+          "WARNING": 793
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 688,
-          "RESTATEMENT_CONFLICT": 89,
-          "UNKNOWN_CONCEPT": 18086
+          "CONCEPT_DISAGREEMENT": 700,
+          "RESTATEMENT_CONFLICT": 93,
+          "UNKNOWN_CONCEPT": 17911
         }
       },
       "latestFiling": {
@@ -306,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9fa098de3e72308b354274c442688e4d7fd098eb21495a66d1564342510e292e",
@@ -323,8 +324,8 @@
       "name": "EXELIXIS, INC.",
       "sic": "2836",
       "rawFacts": 19377,
-      "mappedFacts": 6155,
-      "unmappedFacts": 13337,
+      "mappedFacts": 6269,
+      "unmappedFacts": 13267,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14061,
+        "total": 13991,
         "by_severity": {
-          "INFO": 13337,
+          "INFO": 13267,
           "ERROR": 2,
           "WARNING": 722
         },
@@ -455,7 +456,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 150,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 13337
+          "UNKNOWN_CONCEPT": 13267
         }
       },
       "latestFiling": {
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "855dba9ff4c019fc42bab9fa75fb1230865a792dd10801993576499f1d044e50",
@@ -621,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "61f1e9ee087c7f208dcb9b84e852262c88c4d6da677a9896d423c5917c02a4ee",
@@ -777,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f09a2c73c93c3f79c57352205fe60537bb47e788eb30b77f3ceae39d5110670",
@@ -794,8 +795,8 @@
       "name": "Netcapital Inc.",
       "sic": "6199",
       "rawFacts": 9051,
-      "mappedFacts": 4108,
-      "unmappedFacts": 4907,
+      "mappedFacts": 4123,
+      "unmappedFacts": 4896,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -915,16 +916,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5169,
+        "total": 5159,
         "by_severity": {
-          "INFO": 4907,
-          "WARNING": 262
+          "INFO": 4896,
+          "WARNING": 263
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 95,
-          "RESTATEMENT_CONFLICT": 143,
+          "RESTATEMENT_CONFLICT": 144,
           "UNEXPECTED_DURATION": 24,
-          "UNKNOWN_CONCEPT": 4907
+          "UNKNOWN_CONCEPT": 4896
         }
       },
       "latestFiling": {
@@ -935,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "333577006c4dab6a5acafd89e469b2352a63710fb2f47788f842f0bc02732088",
@@ -1077,13 +1078,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3bdd80ad52aef9a90a2e519fbeda53425d2f12eec77d9d573c0d745639c2077e",
@@ -1094,8 +1095,8 @@
       "name": "Marti Technologies, Inc.",
       "sic": "7510",
       "rawFacts": 1687,
-      "mappedFacts": 539,
-      "unmappedFacts": 1147,
+      "mappedFacts": 547,
+      "unmappedFacts": 1143,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1214,16 +1215,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1252,
+        "total": 1248,
         "by_severity": {
-          "INFO": 1147,
+          "INFO": 1143,
           "WARNING": 105
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 40,
           "RESTATEMENT_CONFLICT": 26,
           "UNEXPECTED_DURATION": 39,
-          "UNKNOWN_CONCEPT": 1147
+          "UNKNOWN_CONCEPT": 1143
         }
       },
       "latestFiling": {
@@ -1234,13 +1235,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "785b2ee8fbe2efd20570568e482b49d85660647746b1886ec0b235264186257c",
@@ -1251,8 +1252,8 @@
       "name": "Calisa Acquisition Corp",
       "sic": "7374",
       "rawFacts": 425,
-      "mappedFacts": 164,
-      "unmappedFacts": 274,
+      "mappedFacts": 168,
+      "unmappedFacts": 270,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1372,16 +1373,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 289,
+        "total": 285,
         "by_severity": {
-          "INFO": 274,
+          "INFO": 270,
           "WARNING": 15
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 5,
           "RESTATEMENT_CONFLICT": 2,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 274
+          "UNKNOWN_CONCEPT": 270
         }
       },
       "latestFiling": {
@@ -1392,13 +1393,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5b154886f5e8e43af9b840e3f8395cabebfd9dbbd95684f257daf1d4f0eae99b",
@@ -1547,13 +1548,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3b8511c3168ab61dac00a5ebb457576fb42cdbfc5de732684b64f6be404cb0ff",
@@ -1703,13 +1704,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "279aadb59bbdf521f70b180cf6e1ea82285556e39be0bb99c336fb6cd04a4bfc",

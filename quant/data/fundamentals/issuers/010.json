@@ -7,8 +7,8 @@
       "name": "CARMAX INC",
       "sic": "5500",
       "rawFacts": 27532,
-      "mappedFacts": 7263,
-      "unmappedFacts": 20577,
+      "mappedFacts": 7776,
+      "unmappedFacts": 20064,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21060,
+        "total": 20547,
         "by_severity": {
-          "INFO": 20577,
+          "INFO": 20064,
           "ERROR": 1,
           "WARNING": 482
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 428,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 20577
+          "UNKNOWN_CONCEPT": 20064
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f67fd54409fea5f6e5df6c571477dc6c02d942e69940c49f246da17d98af02a",
@@ -165,8 +165,8 @@
       "name": "EPAM Systems, Inc.",
       "sic": "7371",
       "rawFacts": 19289,
-      "mappedFacts": 6054,
-      "unmappedFacts": 13250,
+      "mappedFacts": 6072,
+      "unmappedFacts": 13238,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +285,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13435,
+        "total": 13423,
         "by_severity": {
-          "INFO": 13250,
+          "INFO": 13238,
           "WARNING": 185
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 173,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 13250
+          "UNKNOWN_CONCEPT": 13238
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "99b736be959443ede55bd36ca6c2bd0737ffc1a2d61d3d4c642952ff963998ad",
@@ -321,8 +321,8 @@
       "name": "Digital Brands Group, Inc.",
       "sic": "5600",
       "rawFacts": 6106,
-      "mappedFacts": 2237,
-      "unmappedFacts": 3936,
+      "mappedFacts": 2238,
+      "unmappedFacts": 3935,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -441,9 +441,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4196,
+        "total": 4195,
         "by_severity": {
-          "INFO": 3936,
+          "INFO": 3935,
           "ERROR": 6,
           "WARNING": 254
         },
@@ -453,7 +453,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 125,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 3936
+          "UNKNOWN_CONCEPT": 3935
         }
       },
       "latestFiling": {
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "51bedf49f7071ac821d4f15e8702685d0918e0c15db164ba20c209542046971e",
@@ -481,17 +481,108 @@
       "name": "OP Bancorp",
       "sic": "6022",
       "rawFacts": 16729,
-      "mappedFacts": 2856,
-      "unmappedFacts": 13710,
+      "mappedFacts": 4079,
+      "unmappedFacts": 12610,
       "calendarYears": 10,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 3.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 27,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 7.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "deposits": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 3.0
+        },
         "net_interest_income": {
           "annualPeriods": 10,
           "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 4.0
+        },
+        "time_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -609,9 +700,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13892,
+        "total": 12792,
         "by_severity": {
-          "INFO": 13710,
+          "INFO": 12610,
           "ERROR": 2,
           "WARNING": 180
         },
@@ -619,7 +710,7 @@
           "CONCEPT_DISAGREEMENT": 158,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 13710
+          "UNKNOWN_CONCEPT": 12610
         }
       },
       "latestFiling": {
@@ -630,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "373dafc060730f80490e3d586cd30e4fcf48983f57c50381cb583bc60caac36d",
@@ -647,8 +738,8 @@
       "name": "OTG Acquisition Corp. I",
       "sic": "6770",
       "rawFacts": 321,
-      "mappedFacts": 75,
-      "unmappedFacts": 230,
+      "mappedFacts": 77,
+      "unmappedFacts": 227,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -768,15 +859,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 252,
+        "total": 250,
         "by_severity": {
-          "INFO": 230,
-          "WARNING": 22
+          "INFO": 227,
+          "WARNING": 23
         },
         "by_code": {
+          "CONCEPT_DISAGREEMENT": 1,
           "PERIOD_MISMATCH": 2,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 230
+          "UNKNOWN_CONCEPT": 227
         }
       },
       "latestFiling": {
@@ -787,13 +879,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0640dd58769e44d196149ad1d8ce1ce43e123ce48dc4e6e0c715d76635f58979",

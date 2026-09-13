@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e21c22f8f8d45f4da0517c5b5e3b7755f7f3cc980bd1a0883bb1f2ed2359b0c4",
@@ -165,8 +165,8 @@
       "name": "ALBEMARLE CORP",
       "sic": "2821",
       "rawFacts": 29456,
-      "mappedFacts": 7934,
-      "unmappedFacts": 21641,
+      "mappedFacts": 8198,
+      "unmappedFacts": 21397,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,15 +286,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22588,
+        "total": 22344,
         "by_severity": {
-          "INFO": 21641,
+          "INFO": 21397,
           "WARNING": 947
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 819,
           "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 21641
+          "UNKNOWN_CONCEPT": 21397
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "48297f7ee30284e039fc6a7a3bd3f00b64868f33fc2df3bd6ef1269ff8d0f9f2",
@@ -322,11 +322,54 @@
       "name": "MacKenzie Realty Capital, Inc.",
       "sic": "6798",
       "rawFacts": 6929,
-      "mappedFacts": 1536,
-      "unmappedFacts": 5237,
+      "mappedFacts": 1866,
+      "unmappedFacts": 4987,
       "calendarYears": 9,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 2.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2022-06-30",
+          "lastAvailablePeriod": "2024-06-30",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 5.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2020-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 5.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2021-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 4.0
+        },
+        "secured_debt": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2022-06-30",
+          "lastAvailablePeriod": "2025-06-30",
+          "historyYears": 3.0
+        }
+      },
       "fiscalYearEnd": "0630",
       "tickers": [
         "MKZR"
@@ -442,15 +485,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5568,
+        "total": 5362,
         "by_severity": {
-          "INFO": 5237,
-          "WARNING": 331
+          "INFO": 4987,
+          "WARNING": 375
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 271,
-          "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 5237
+          "CONCEPT_DISAGREEMENT": 291,
+          "RESTATEMENT_CONFLICT": 84,
+          "UNKNOWN_CONCEPT": 4987
         }
       },
       "latestFiling": {
@@ -461,13 +504,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "70bff96a0e8fd3c476f8a050855e2234b4d2d2db8359408293b332b7eb73a049",

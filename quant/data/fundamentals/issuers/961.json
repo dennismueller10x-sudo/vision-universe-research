@@ -7,8 +7,8 @@
       "name": "RYDER SYSTEM INC",
       "sic": "7510",
       "rawFacts": 27334,
-      "mappedFacts": 7176,
-      "unmappedFacts": 20351,
+      "mappedFacts": 7391,
+      "unmappedFacts": 20136,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21028,
+        "total": 20813,
         "by_severity": {
-          "INFO": 20351,
+          "INFO": 20136,
           "ERROR": 5,
           "WARNING": 672
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 620,
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 52,
-          "UNKNOWN_CONCEPT": 20351
+          "UNKNOWN_CONCEPT": 20136
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae4518dfd6d1cbf28caf9859d0e16d1890af09190cfe15f9563b776f5f773f49",
@@ -165,11 +165,54 @@
       "name": "INCOME OPPORTUNITY REALTY INVESTORS INC /TX/",
       "sic": "6798",
       "rawFacts": 7777,
-      "mappedFacts": 3769,
-      "unmappedFacts": 4067,
+      "mappedFacts": 3958,
+      "unmappedFacts": 3947,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2018-12-31",
+          "historyYears": 8.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 7.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "IOR"
@@ -285,15 +328,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4321,
+        "total": 4207,
         "by_severity": {
-          "INFO": 4067,
-          "WARNING": 254
+          "INFO": 3947,
+          "WARNING": 260
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 64,
-          "RESTATEMENT_CONFLICT": 190,
-          "UNKNOWN_CONCEPT": 4067
+          "RESTATEMENT_CONFLICT": 196,
+          "UNKNOWN_CONCEPT": 3947
         }
       },
       "latestFiling": {
@@ -304,13 +347,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a16b85d1717123a89d93c7ef23011924ee0e2359176204e193bd4c3f675d4ca0",
@@ -460,13 +503,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "deb73263631ac0deee7240e914cb2e43b274caa5923819e6eeca746f7a173e4f",
@@ -477,17 +520,108 @@
       "name": "ENCORE CAPITAL GROUP INC",
       "sic": "6153",
       "rawFacts": 23858,
-      "mappedFacts": 5434,
-      "unmappedFacts": 17820,
+      "mappedFacts": 5459,
+      "unmappedFacts": 17802,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2012-12-31",
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 4,
           "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2015-12-31",
           "historyYears": 3.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -605,15 +739,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18386,
+        "total": 18368,
         "by_severity": {
-          "INFO": 17820,
+          "INFO": 17802,
           "WARNING": 566
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 510,
           "RESTATEMENT_CONFLICT": 56,
-          "UNKNOWN_CONCEPT": 17820
+          "UNKNOWN_CONCEPT": 17802
         }
       },
       "latestFiling": {
@@ -624,13 +758,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3d32b435113e01c83b51818d505e1f9b98c7551834532ee1f54a06832f54a983",
@@ -641,8 +775,8 @@
       "name": "DigitalOcean Holdings, Inc.",
       "sic": "7370",
       "rawFacts": 9446,
-      "mappedFacts": 2827,
-      "unmappedFacts": 6668,
+      "mappedFacts": 2858,
+      "unmappedFacts": 6649,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -761,15 +895,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6872,
+        "total": 6853,
         "by_severity": {
-          "INFO": 6668,
+          "INFO": 6649,
           "WARNING": 204
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 184,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 6668
+          "UNKNOWN_CONCEPT": 6649
         }
       },
       "latestFiling": {
@@ -780,13 +914,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd5975d989850c08e258e31751c27eca47f66754057b8393c1304d841e0d9a82",
@@ -939,13 +1073,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6743a6d75f71d39baa843276822411f11fd5ea03566500ddeb022b7d024f12bf",
@@ -956,8 +1090,8 @@
       "name": "ENIGMATIG LTD",
       "sic": "8742",
       "rawFacts": 275,
-      "mappedFacts": 92,
-      "unmappedFacts": 199,
+      "mappedFacts": 94,
+      "unmappedFacts": 198,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -1075,14 +1209,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 203,
+        "total": 202,
         "by_severity": {
-          "INFO": 199,
+          "INFO": 198,
           "WARNING": 4
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 4,
-          "UNKNOWN_CONCEPT": 199
+          "UNKNOWN_CONCEPT": 198
         }
       },
       "latestFiling": {
@@ -1093,13 +1227,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2b543312cbbf63384be3ec9c214fa0fdc1a66d4398d0fef3c8d42be3cbf76d23",

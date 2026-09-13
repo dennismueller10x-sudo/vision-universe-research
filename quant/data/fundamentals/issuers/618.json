@@ -7,8 +7,8 @@
       "name": "IRADIMED CORP",
       "sic": "3841",
       "rawFacts": 14304,
-      "mappedFacts": 4942,
-      "unmappedFacts": 9355,
+      "mappedFacts": 4980,
+      "unmappedFacts": 9331,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -126,16 +126,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9627,
+        "total": 9604,
         "by_severity": {
-          "INFO": 9355,
-          "WARNING": 272
+          "INFO": 9331,
+          "WARNING": 273
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 261,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 9,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 9355
+          "UNKNOWN_CONCEPT": 9331
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a137532160a19d2807aa7672ce8208e585e7486314c43c076898f6b909bf4739",
@@ -302,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "45bcf47c13f0d8a6f88b6eee5a40e4cdfe8273f17e09fd52a317860c944c97aa",
@@ -319,8 +320,8 @@
       "name": "GAXOS.AI INC.",
       "sic": "7372",
       "rawFacts": 3000,
-      "mappedFacts": 1058,
-      "unmappedFacts": 1948,
+      "mappedFacts": 1060,
+      "unmappedFacts": 1946,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -439,10 +440,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2032,
+        "total": 2030,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 1948,
+          "INFO": 1946,
           "WARNING": 83
         },
         "by_code": {
@@ -450,7 +451,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 33,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 1948
+          "UNKNOWN_CONCEPT": 1946
         }
       },
       "latestFiling": {
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "acc6cf685c7c9f3fd366e47ae06421a53c363b59df67ccd30e83f52e0732e3f0",

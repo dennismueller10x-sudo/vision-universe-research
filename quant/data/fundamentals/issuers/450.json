@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "26c318e9444e547d848ab31c37e9be58f6fe1a77fbf598b9758c900979dd3568",
@@ -164,11 +164,54 @@
       "name": "EPR PROPERTIES",
       "sic": "6798",
       "rawFacts": 26257,
-      "mappedFacts": 5713,
-      "unmappedFacts": 19747,
+      "mappedFacts": 6385,
+      "unmappedFacts": 19244,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2021-12-31",
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 38,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "EPR",
@@ -287,19 +330,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20836,
+        "total": 20378,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 19747,
-          "WARNING": 1088
+          "INFO": 19244,
+          "WARNING": 1133
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1010,
+          "CONCEPT_DISAGREEMENT": 1042,
           "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 70,
-          "UNKNOWN_CONCEPT": 19747
+          "RESTATEMENT_CONFLICT": 83,
+          "UNKNOWN_CONCEPT": 19244
         }
       },
       "latestFiling": {
@@ -310,13 +353,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "727e74274350246454cef0ccb63a4d075ba67c674a6fe388864d3f865fca5568",
@@ -467,13 +510,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eb8e16d2710bcaf66aad756ff04ff0258d9bb433a89bfb02ede731b068c9e348",
@@ -623,13 +666,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "27450d60a8da2f5bb38ffced89c1583c73db9fc13126942e7b686fcc1ba58f08",
@@ -640,8 +683,8 @@
       "name": "Commerce.com, Inc.",
       "sic": "7372",
       "rawFacts": 8639,
-      "mappedFacts": 2772,
-      "unmappedFacts": 5930,
+      "mappedFacts": 2811,
+      "unmappedFacts": 5906,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -760,15 +803,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6066,
+        "total": 6042,
         "by_severity": {
-          "INFO": 5930,
+          "INFO": 5906,
           "WARNING": 136
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 134,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 5930
+          "UNKNOWN_CONCEPT": 5906
         }
       },
       "latestFiling": {
@@ -779,13 +822,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "90373a870c4f968120b46255dc6bf18f6c36f46a514eabf7a68d072d6b3448e8",
@@ -937,13 +980,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "14afff07112c0bcf0a45f1e73ca56a32bb3ecd772d322e337fbf2ff69b6b45e8",
@@ -954,8 +997,8 @@
       "name": "Xerox Holdings Corp",
       "sic": "3577",
       "rawFacts": 15357,
-      "mappedFacts": 3018,
-      "unmappedFacts": 12226,
+      "mappedFacts": 3210,
+      "unmappedFacts": 12041,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -1075,16 +1118,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12608,
+        "total": 12423,
         "by_severity": {
-          "INFO": 12226,
+          "INFO": 12041,
           "WARNING": 382
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 368,
           "RESTATEMENT_CONFLICT": 12,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 12226
+          "UNKNOWN_CONCEPT": 12041
         }
       },
       "latestFiling": {
@@ -1095,13 +1138,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1bfad8d69e37ae4d92e22ae1843a024933b074ff82530c53286e32c9ce78046e",
@@ -1247,13 +1290,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a0e95b3436570cba74831ef905b7b492aefa78d7d1c010ad7e3205c909bfb536",
@@ -1264,9 +1307,9 @@
       "name": "Legato Merger Corp. IV",
       "sic": "6770",
       "rawFacts": 177,
-      "mappedFacts": 0,
+      "mappedFacts": 57,
       "unmappedFacts": 102,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0831",
@@ -1277,9 +1320,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2025-11-30",
+      "lastPeriodEnd": "2026-05-31",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1291,7 +1334,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1318,14 +1361,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1346,14 +1389,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1375,22 +1418,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 13
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 13,
+        "resolvedValues": 13
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 177,
+        "total": 108,
         "by_severity": {
           "INFO": 102,
-          "WARNING": 75
+          "WARNING": 6
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 102,
-          "UNPLACEABLE_PERIOD": 75
+          "CONCEPT_DISAGREEMENT": 6,
+          "UNKNOWN_CONCEPT": 102
         }
       },
       "latestFiling": {
@@ -1401,13 +1446,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dc1a860fc166fad8a364de72cd9cbfbd6d6d8920a322fa4dc82dfbc39f6734b2",

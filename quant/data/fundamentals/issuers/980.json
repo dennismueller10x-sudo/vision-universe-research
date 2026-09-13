@@ -7,8 +7,8 @@
       "name": "PG&E Corp",
       "sic": "4931",
       "rawFacts": 22016,
-      "mappedFacts": 6093,
-      "unmappedFacts": 16188,
+      "mappedFacts": 6290,
+      "unmappedFacts": 16014,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -136,19 +136,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17047,
+        "total": 16879,
         "by_severity": {
-          "INFO": 16188,
+          "INFO": 16014,
           "ERROR": 2,
-          "WARNING": 857
+          "WARNING": 863
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 787,
           "EXTREME_VALUE": 24,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 16188
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 45,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 16014
         }
       },
       "latestFiling": {
@@ -159,13 +161,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "79dd647fb84508b5a536ed3fc16a2a6ed2593bc9de7e15bf662656b4fb6c2a63",
@@ -176,8 +178,8 @@
       "name": "ASIA PACIFIC WIRE & CABLE CORP LTD",
       "sic": "3357",
       "rawFacts": 5575,
-      "mappedFacts": 857,
-      "unmappedFacts": 4794,
+      "mappedFacts": 867,
+      "unmappedFacts": 4786,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -296,15 +298,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4944,
+        "total": 4936,
         "by_severity": {
-          "INFO": 4794,
+          "INFO": 4786,
           "WARNING": 150
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 129,
           "RESTATEMENT_CONFLICT": 21,
-          "UNKNOWN_CONCEPT": 4794
+          "UNKNOWN_CONCEPT": 4786
         }
       },
       "latestFiling": {
@@ -315,13 +317,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4cf0ea199302424fd19bb569853f02625ab241fdd62f247e54438eb366575bfa",
@@ -332,8 +334,8 @@
       "name": "ASBURY AUTOMOTIVE GROUP INC",
       "sic": "5500",
       "rawFacts": 21209,
-      "mappedFacts": 6419,
-      "unmappedFacts": 14710,
+      "mappedFacts": 6537,
+      "unmappedFacts": 14630,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -452,15 +454,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15325,
+        "total": 15248,
         "by_severity": {
-          "INFO": 14710,
-          "WARNING": 615
+          "INFO": 14630,
+          "WARNING": 618
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 559,
-          "RESTATEMENT_CONFLICT": 56,
-          "UNKNOWN_CONCEPT": 14710
+          "RESTATEMENT_CONFLICT": 59,
+          "UNKNOWN_CONCEPT": 14630
         }
       },
       "latestFiling": {
@@ -471,13 +473,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aaaf43bfb86e49d0479b97cf9fd15c4af83c72e8bc224e4c759f652618006e1a",
@@ -488,8 +490,8 @@
       "name": "China SXT Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 2964,
-      "mappedFacts": 979,
-      "unmappedFacts": 2128,
+      "mappedFacts": 986,
+      "unmappedFacts": 2121,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -608,17 +610,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2248,
+        "total": 2243,
         "by_severity": {
-          "INFO": 2128,
+          "INFO": 2121,
           "ERROR": 4,
-          "WARNING": 116
+          "WARNING": 118
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 81,
+          "CONCEPT_DISAGREEMENT": 83,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 2128
+          "UNKNOWN_CONCEPT": 2121
         }
       },
       "latestFiling": {
@@ -629,13 +631,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "487f319711d89b065c9725722891e62fd8d4793e4d1bdc6a0868f3450cca3c51",

@@ -140,13 +140,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "519838460bdfd93c63f5a5b0e65fbe70546db35b560028ba6a85d29f51fbaa9f",
@@ -298,13 +298,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ad030cf26a7ef6a4a81da0f43745f712875d9efa1b8ae4c5102d224d3e69a5c",
@@ -315,8 +315,8 @@
       "name": "AMETEK INC/",
       "sic": "3823",
       "rawFacts": 24195,
-      "mappedFacts": 7944,
-      "unmappedFacts": 17019,
+      "mappedFacts": 7970,
+      "unmappedFacts": 16999,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -435,18 +435,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17434,
+        "total": 17418,
         "by_severity": {
-          "INFO": 17019,
+          "INFO": 16999,
           "ERROR": 1,
-          "WARNING": 414
+          "WARNING": 418
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 325,
           "FUTURE_DATA_LEAK": 1,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 69,
+          "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 20,
-          "UNKNOWN_CONCEPT": 17019
+          "UNKNOWN_CONCEPT": 16999
         }
       },
       "latestFiling": {
@@ -457,13 +459,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8ab03c704f9124691c9cc25661f1e35529b01aeceef02123e38de962bd5e8387",
@@ -613,13 +615,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "13d03e90daca8ee53d6a6ac01da973056e77b70fef33933c8b2b5250af634bf9",
@@ -769,13 +771,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "129e69c438195bf534b08e3a2a7cd8a852855e578f05544395babf3a4567d873",
@@ -786,8 +788,8 @@
       "name": "CNFinance Holdings Ltd.",
       "sic": "6199",
       "rawFacts": 3794,
-      "mappedFacts": 789,
-      "unmappedFacts": 3088,
+      "mappedFacts": 951,
+      "unmappedFacts": 2962,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -906,15 +908,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3174,
+        "total": 3055,
         "by_severity": {
-          "INFO": 3088,
-          "WARNING": 86
+          "INFO": 2962,
+          "WARNING": 93
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 76,
-          "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 3088
+          "RESTATEMENT_CONFLICT": 17,
+          "UNKNOWN_CONCEPT": 2962
         }
       },
       "latestFiling": {
@@ -925,13 +927,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a7596c1d8b05eb0044d310bfae51be6697ad7e6cbe4c824abf98de9171fee6fd",
@@ -1084,13 +1086,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bbe244983c6357695c57d0e7d2585b33dd518f1ddc772450f4cb90a3c72ab976",
@@ -1239,13 +1241,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "45c9918b630ecc0358ceda634b3f35170b50a2f4f27e633a01ba09af2d682a67",

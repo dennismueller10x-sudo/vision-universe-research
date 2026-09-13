@@ -7,11 +7,54 @@
       "name": "OMEGA HEALTHCARE INVESTORS INC",
       "sic": "6798",
       "rawFacts": 23735,
-      "mappedFacts": 5705,
-      "unmappedFacts": 17933,
+      "mappedFacts": 7387,
+      "unmappedFacts": 16644,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "secured_debt": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "OHI"
@@ -127,17 +170,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18494,
+        "total": 17302,
         "by_severity": {
-          "INFO": 17933,
-          "WARNING": 561
+          "INFO": 16644,
+          "WARNING": 658
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 504,
-          "FISCAL_PERIOD_CONFLICT": 13,
-          "RESTATEMENT_CONFLICT": 42,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 17933
+          "CONCEPT_DISAGREEMENT": 532,
+          "FISCAL_PERIOD_CONFLICT": 15,
+          "RESTATEMENT_CONFLICT": 72,
+          "UNEXPECTED_DURATION": 39,
+          "UNKNOWN_CONCEPT": 16644
         }
       },
       "latestFiling": {
@@ -148,13 +191,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "baae608298b8a2a4b0cc524c1cb3fddf7a95ea2aabb4ec74059998b708c58887",
@@ -165,8 +208,8 @@
       "name": "PAPA JOHNS INTERNATIONAL INC",
       "sic": "5812",
       "rawFacts": 26280,
-      "mappedFacts": 7082,
-      "unmappedFacts": 19205,
+      "mappedFacts": 7353,
+      "unmappedFacts": 18925,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +328,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20200,
+        "total": 19931,
         "by_severity": {
-          "INFO": 19205,
-          "WARNING": 995
+          "INFO": 18925,
+          "WARNING": 1006
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 827,
-          "RESTATEMENT_CONFLICT": 167,
+          "CONCEPT_DISAGREEMENT": 833,
+          "RESTATEMENT_CONFLICT": 172,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 19205
+          "UNKNOWN_CONCEPT": 18925
         }
       },
       "latestFiling": {
@@ -305,13 +348,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cdac9de5170eebb04ebc4b2196cf47a6483f3f7e26928886d2ec605dfe60fb0d",
@@ -460,13 +503,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8847efa2f19f99ce36161e7d314a1b9b39ef1e867268516b26ddf08a325df4b6",
@@ -616,13 +659,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fb049536b21e1fc226477562a405d637ab90c38fbbdfce426fdea434f1ba9869",

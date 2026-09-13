@@ -7,8 +7,8 @@
       "name": "KEWAUNEE SCIENTIFIC CORP /DE/",
       "sic": "3821",
       "rawFacts": 18465,
-      "mappedFacts": 6426,
-      "unmappedFacts": 12234,
+      "mappedFacts": 6433,
+      "unmappedFacts": 12227,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12955,
+        "total": 12948,
         "by_severity": {
-          "INFO": 12234,
+          "INFO": 12227,
           "WARNING": 721
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 684,
           "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 12234
+          "UNKNOWN_CONCEPT": 12227
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "57fd9eda17336e3f234acb45693ece988fd8cc6ad7cb0d6e0b10c86f5fb3442c",
@@ -164,7 +164,7 @@
       "sic": "8200",
       "rawFacts": 6980,
       "mappedFacts": 1539,
-      "unmappedFacts": 4972,
+      "unmappedFacts": 4968,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +285,16 @@
         "rules_version": "1.0.0",
         "total": 5683,
         "by_severity": {
-          "INFO": 4972,
+          "INFO": 4968,
           "ERROR": 4,
-          "WARNING": 707
+          "WARNING": 711
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 655,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 33,
-          "UNEXPECTED_DURATION": 19,
-          "UNKNOWN_CONCEPT": 4972
+          "UNEXPECTED_DURATION": 23,
+          "UNKNOWN_CONCEPT": 4968
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "52c24be74ac5e3660aa2b6b952333dbdb6510d256db76a58be91d0dc560810c1",
@@ -460,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e08650c0e42fd9aa1fb7ceea27e448f09cfef14f6fe77de679322d45be85cc02",
@@ -477,11 +477,75 @@
       "name": "Enact Holdings, Inc.",
       "sic": "6411",
       "rawFacts": 7457,
-      "mappedFacts": 1540,
-      "unmappedFacts": 6020,
+      "mappedFacts": 2080,
+      "unmappedFacts": 5588,
       "calendarYears": 8,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "claims_liability": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "total_investments": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ACT"
@@ -596,15 +660,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6024,
+        "total": 5592,
         "by_severity": {
-          "INFO": 6020,
+          "INFO": 5588,
           "WARNING": 4
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 6020
+          "UNKNOWN_CONCEPT": 5588
         }
       },
       "latestFiling": {
@@ -615,13 +679,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e0f671f907018f0d7b2cc3a0c29321fae6bf3aeb3fc64d15422431d2a2c5d602",
@@ -769,13 +833,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd3253caf19b4e0f8055bbb8c6237de221f0fa9001e09e359165ddd04c6a9727",
@@ -926,13 +990,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c6ab53a256d190b3d1bdd8cbf579f15f05364310dfee4915954da9becfb766d2",
@@ -1082,13 +1146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35d8e1e9799a121fa698285b356395886ac771e58fc832e7be0efeb2d7e94411",

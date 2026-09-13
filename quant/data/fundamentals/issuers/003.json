@@ -7,8 +7,8 @@
       "name": "PFIZER INC",
       "sic": "2834",
       "rawFacts": 33182,
-      "mappedFacts": 7418,
-      "unmappedFacts": 25458,
+      "mappedFacts": 7508,
+      "unmappedFacts": 25350,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26420,
+        "total": 26330,
         "by_severity": {
-          "INFO": 25458,
-          "WARNING": 962
+          "INFO": 25350,
+          "WARNING": 980
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 831,
-          "PERIOD_MISMATCH": 2,
+          "PERIOD_MISMATCH": 18,
           "RESTATEMENT_CONFLICT": 127,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 25458
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 25350
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4fa87ae0b8acf726496bb0968eff3714f834e8285aed94daa8c417f0f2504c69",
@@ -165,8 +165,8 @@
       "name": "ADVANCED ENERGY INDUSTRIES INC",
       "sic": "3679",
       "rawFacts": 25759,
-      "mappedFacts": 6990,
-      "unmappedFacts": 18158,
+      "mappedFacts": 7105,
+      "unmappedFacts": 18062,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -285,9 +285,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19073,
+        "total": 18977,
         "by_severity": {
-          "INFO": 18158,
+          "INFO": 18062,
           "ERROR": 2,
           "WARNING": 913
         },
@@ -296,7 +296,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 111,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 18158
+          "UNKNOWN_CONCEPT": 18062
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "81af52e8781423f1593d906eaec728405b1b00a9993d71be8bb462f086e2be27",
@@ -324,8 +324,8 @@
       "name": "XPO, Inc.",
       "sic": "4700",
       "rawFacts": 23743,
-      "mappedFacts": 6290,
-      "unmappedFacts": 17205,
+      "mappedFacts": 6294,
+      "unmappedFacts": 17201,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -444,9 +444,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18066,
+        "total": 18062,
         "by_severity": {
-          "INFO": 17205,
+          "INFO": 17201,
           "ERROR": 1,
           "WARNING": 860
         },
@@ -454,7 +454,7 @@
           "CONCEPT_DISAGREEMENT": 644,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 216,
-          "UNKNOWN_CONCEPT": 17205
+          "UNKNOWN_CONCEPT": 17201
         }
       },
       "latestFiling": {
@@ -465,13 +465,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "70aa9247962fb163b5ac4b87994d937b41f019bfd4aeb825ca230f6342d58369",
@@ -624,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "32b51391e88bd4962438ba6fa28757e715dae4cf359804523c32c0d03cd494b2",

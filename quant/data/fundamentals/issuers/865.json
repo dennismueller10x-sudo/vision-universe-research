@@ -7,11 +7,54 @@
       "name": "MEDICAL PROPERTIES TRUST INC",
       "sic": "6798",
       "rawFacts": 18581,
-      "mappedFacts": 4963,
-      "unmappedFacts": 13301,
+      "mappedFacts": 5456,
+      "unmappedFacts": 12898,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2012-12-31",
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MPT"
@@ -127,16 +170,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13651,
+        "total": 13261,
         "by_severity": {
-          "INFO": 13301,
-          "WARNING": 350
+          "INFO": 12898,
+          "WARNING": 363
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 298,
-          "FISCAL_PERIOD_CONFLICT": 34,
-          "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 13301
+          "CONCEPT_DISAGREEMENT": 308,
+          "FISCAL_PERIOD_CONFLICT": 36,
+          "RESTATEMENT_CONFLICT": 19,
+          "UNKNOWN_CONCEPT": 12898
         }
       },
       "latestFiling": {
@@ -147,13 +190,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5e9947ab94f0209c7998bcbc40483e0e444840f36bb2a15811f2792848e110d",
@@ -164,8 +207,8 @@
       "name": "EVERTEC, Inc.",
       "sic": "7374",
       "rawFacts": 21255,
-      "mappedFacts": 6056,
-      "unmappedFacts": 15055,
+      "mappedFacts": 6241,
+      "unmappedFacts": 14819,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -284,18 +327,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15915,
+        "total": 15738,
         "by_severity": {
-          "INFO": 15055,
-          "WARNING": 860
+          "INFO": 14819,
+          "WARNING": 919
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 773,
           "FISCAL_PERIOD_CONFLICT": 13,
-          "PERIOD_MISMATCH": 6,
+          "PERIOD_MISMATCH": 57,
           "RESTATEMENT_CONFLICT": 66,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 15055
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 14819
         }
       },
       "latestFiling": {
@@ -306,13 +349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7f649947d3130a789d195301427e3507a48692ef820bc22dd879b2ead3c21282",
@@ -463,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "77d508c76e20ed08e794a292d7ee001854a193b38fcd5f7bed32ee210addf2aa",
@@ -480,8 +523,8 @@
       "name": "Top KingWin Ltd",
       "sic": "7389",
       "rawFacts": 1352,
-      "mappedFacts": 380,
-      "unmappedFacts": 998,
+      "mappedFacts": 386,
+      "unmappedFacts": 992,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -602,13 +645,13 @@
         "rules_version": "1.0.0",
         "total": 1036,
         "by_severity": {
-          "INFO": 998,
-          "WARNING": 38
+          "INFO": 992,
+          "WARNING": 44
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 26,
+          "CONCEPT_DISAGREEMENT": 32,
           "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 998
+          "UNKNOWN_CONCEPT": 992
         }
       },
       "latestFiling": {
@@ -619,13 +662,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dfdc20ac3b197caa3107281a1e2e4c29321c82f98291759d1090b952a7a95725",

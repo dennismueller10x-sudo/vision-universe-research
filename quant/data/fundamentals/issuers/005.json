@@ -7,8 +7,8 @@
       "name": "RAYMOND JAMES FINANCIAL INC",
       "sic": "6211",
       "rawFacts": 36866,
-      "mappedFacts": 5403,
-      "unmappedFacts": 31435,
+      "mappedFacts": 7295,
+      "unmappedFacts": 29809,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32198,
+        "total": 30587,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 31435,
-          "WARNING": 760
+          "INFO": 29809,
+          "WARNING": 775
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 662,
-          "FISCAL_PERIOD_CONFLICT": 9,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 89,
-          "UNKNOWN_CONCEPT": 31435
+          "RESTATEMENT_CONFLICT": 98,
+          "UNKNOWN_CONCEPT": 29809
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bdadb031c54b74b1ce5aa9ca0c3cfee9e9c4f73c66236f0184ce232398f384ed",
@@ -166,8 +166,8 @@
       "name": "PTC INC.",
       "sic": "7372",
       "rawFacts": 25755,
-      "mappedFacts": 6850,
-      "unmappedFacts": 19284,
+      "mappedFacts": 6907,
+      "unmappedFacts": 19251,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +286,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19457,
+        "total": 19424,
         "by_severity": {
-          "INFO": 19284,
+          "INFO": 19251,
           "ERROR": 5,
           "WARNING": 168
         },
@@ -297,7 +297,7 @@
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 19284
+          "UNKNOWN_CONCEPT": 19251
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e9e9955a7e132af975370b57e1b1421812c0c7df2edbb1a6b84154366709e5e0",
@@ -464,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f3b6b30320e5acbbe9ff8868ffa83181bc9749cc7ab4b670b57e1b06d52cc9b",
@@ -620,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d9644406ec3569313209f6056942047c0dfc0f006b4822b0e58e46ddaeded672",
@@ -637,8 +637,8 @@
       "name": "Niki BioSolutions, Inc.",
       "sic": "3829",
       "rawFacts": 3054,
-      "mappedFacts": 743,
-      "unmappedFacts": 2377,
+      "mappedFacts": 759,
+      "unmappedFacts": 2367,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -757,16 +757,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2536,
+        "total": 2528,
         "by_severity": {
-          "INFO": 2377,
-          "WARNING": 159
+          "INFO": 2367,
+          "WARNING": 161
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 118,
           "RESTATEMENT_CONFLICT": 18,
-          "UNEXPECTED_DURATION": 23,
-          "UNKNOWN_CONCEPT": 2377
+          "UNEXPECTED_DURATION": 25,
+          "UNKNOWN_CONCEPT": 2367
         }
       },
       "latestFiling": {
@@ -777,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "90186ff24456e228cb474c5d021cf061e74dc232325f473a1cb0a0dacb13ce34",
@@ -794,8 +794,8 @@
       "name": "Beamr Imaging Ltd.",
       "sic": "7372",
       "rawFacts": 1387,
-      "mappedFacts": 456,
-      "unmappedFacts": 980,
+      "mappedFacts": 461,
+      "unmappedFacts": 975,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -914,15 +914,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 993,
+        "total": 988,
         "by_severity": {
-          "INFO": 980,
+          "INFO": 975,
           "WARNING": 13
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 980
+          "UNKNOWN_CONCEPT": 975
         }
       },
       "latestFiling": {
@@ -933,13 +933,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9dfdd1649a7112d1a6ee66b7bdbd098a7d76d1f128b701ba30f71d183d762bff",
@@ -1091,13 +1091,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "37c4fcf4656bd6487f93bce7354b987c558328d4f8a380ebb323287f31112f36",

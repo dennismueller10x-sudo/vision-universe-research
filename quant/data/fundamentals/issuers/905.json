@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f5e3cc3899c31e20bcbe3e4320271800b08b8cd41787ec1f14788b5c2e2c94e0",
@@ -165,11 +165,54 @@
       "name": "LTC PROPERTIES INC",
       "sic": "6798",
       "rawFacts": 19890,
-      "mappedFacts": 5082,
-      "unmappedFacts": 14283,
+      "mappedFacts": 6004,
+      "unmappedFacts": 13560,
       "calendarYears": 18,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "LTC"
@@ -285,17 +328,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14685,
+        "total": 14028,
         "by_severity": {
-          "INFO": 14283,
+          "INFO": 13560,
           "ERROR": 4,
-          "WARNING": 398
+          "WARNING": 464
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 373,
+          "CONCEPT_DISAGREEMENT": 403,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 14283
+          "RESTATEMENT_CONFLICT": 31,
+          "UNEXPECTED_DURATION": 30,
+          "UNKNOWN_CONCEPT": 13560
         }
       },
       "latestFiling": {
@@ -306,13 +350,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0cb8f77d065cbe270baa2a9769e2a908d742ef9fe4e8bb831f987f2d94efbe3c",
@@ -323,8 +367,8 @@
       "name": "INNOSPEC INC.",
       "sic": "2800",
       "rawFacts": 22742,
-      "mappedFacts": 6866,
-      "unmappedFacts": 16581,
+      "mappedFacts": 6890,
+      "unmappedFacts": 16557,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -443,15 +487,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16907,
+        "total": 16883,
         "by_severity": {
-          "INFO": 16581,
+          "INFO": 16557,
           "WARNING": 326
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 277,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 16581
+          "UNKNOWN_CONCEPT": 16557
         }
       },
       "latestFiling": {
@@ -462,13 +506,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e8a5ee4299a3a791a3a4b63c74afcacf6a3d8a7c567cc5230eb2643fb974838e",
@@ -479,8 +523,8 @@
       "name": "RingCentral, Inc.",
       "sic": "7374",
       "rawFacts": 17890,
-      "mappedFacts": 5691,
-      "unmappedFacts": 12393,
+      "mappedFacts": 5702,
+      "unmappedFacts": 12384,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +643,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12905,
+        "total": 12896,
         "by_severity": {
-          "INFO": 12393,
+          "INFO": 12384,
           "WARNING": 512
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 463,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 12393
+          "UNKNOWN_CONCEPT": 12384
         }
       },
       "latestFiling": {
@@ -618,13 +662,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "535e17642966202abc942114e9208bc0c53a87611b1ad0801dd36597243aa5c9",
@@ -635,8 +679,8 @@
       "name": "Installed Building Products, Inc.",
       "sic": "1520",
       "rawFacts": 21790,
-      "mappedFacts": 5860,
-      "unmappedFacts": 16184,
+      "mappedFacts": 5947,
+      "unmappedFacts": 16057,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -755,18 +799,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16661,
+        "total": 16574,
         "by_severity": {
-          "INFO": 16184,
-          "WARNING": 477
+          "INFO": 16057,
+          "WARNING": 517
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 406,
           "FISCAL_PERIOD_CONFLICT": 23,
-          "PERIOD_MISMATCH": 38,
+          "PERIOD_MISMATCH": 78,
           "RESTATEMENT_CONFLICT": 8,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16184
+          "UNKNOWN_CONCEPT": 16057
         }
       },
       "latestFiling": {
@@ -777,13 +821,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "754c76f5c46ae638b92b7e1abc2c860aa654817cbb31d10912e94360487d3fef",
@@ -794,8 +838,8 @@
       "name": "Rail Vision Ltd.",
       "sic": "3743",
       "rawFacts": 1276,
-      "mappedFacts": 468,
-      "unmappedFacts": 857,
+      "mappedFacts": 483,
+      "unmappedFacts": 841,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -914,15 +958,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 920,
+        "total": 908,
         "by_severity": {
-          "INFO": 857,
-          "WARNING": 63
+          "INFO": 841,
+          "WARNING": 67
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 40,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 857
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 841
         }
       },
       "latestFiling": {
@@ -933,13 +978,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b4d8ae37bb1cba13f99faa863bbb0acaffbd7615d8b154949aaec18821ff18c2",

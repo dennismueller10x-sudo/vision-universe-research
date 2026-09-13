@@ -7,8 +7,8 @@
       "name": "Lumen Technologies, Inc.",
       "sic": "4813",
       "rawFacts": 24870,
-      "mappedFacts": 6621,
-      "unmappedFacts": 18118,
+      "mappedFacts": 6786,
+      "unmappedFacts": 17855,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18480,
+        "total": 18316,
         "by_severity": {
-          "INFO": 18118,
-          "WARNING": 362
+          "INFO": 17855,
+          "WARNING": 461
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 307,
-          "FISCAL_PERIOD_CONFLICT": 13,
+          "FISCAL_PERIOD_CONFLICT": 14,
+          "PERIOD_MISMATCH": 46,
           "RESTATEMENT_CONFLICT": 26,
-          "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 18118
+          "UNEXPECTED_DURATION": 68,
+          "UNKNOWN_CONCEPT": 17855
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee91291f843bc48a49295d58f1161006b48fab2d2ea5990b5e600761bd50a791",
@@ -165,11 +166,75 @@
       "name": "RADIAN GROUP INC",
       "sic": "6351",
       "rawFacts": 23630,
-      "mappedFacts": 4862,
-      "unmappedFacts": 18603,
+      "mappedFacts": 6799,
+      "unmappedFacts": 17047,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "RDN"
@@ -285,20 +350,21 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19206,
+        "total": 17685,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 18603,
-          "WARNING": 602
+          "INFO": 17047,
+          "WARNING": 637
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 519,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 78,
-          "UNKNOWN_CONCEPT": 18603
+          "PERIOD_MISMATCH": 7,
+          "RESTATEMENT_CONFLICT": 105,
+          "UNIT_MISMATCH": 2,
+          "UNKNOWN_CONCEPT": 17047
         }
       },
       "latestFiling": {
@@ -309,13 +375,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "095cf0e0ad0b6d9e93afbad819871b8135dd560de057d6550d0fad098cc5fb96",
@@ -470,13 +536,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "15e1330280a5b9c4b22447aba3e8ba2fc68b139be37a6fb798d9b9d26e7daf83",
@@ -487,8 +553,8 @@
       "name": "Brookfield Asset Management Ltd.",
       "sic": "6282",
       "rawFacts": 1840,
-      "mappedFacts": 530,
-      "unmappedFacts": 1290,
+      "mappedFacts": 580,
+      "unmappedFacts": 1252,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -607,15 +673,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1378,
+        "total": 1342,
         "by_severity": {
-          "INFO": 1290,
-          "WARNING": 88
+          "INFO": 1252,
+          "WARNING": 90
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 54,
-          "RESTATEMENT_CONFLICT": 34,
-          "UNKNOWN_CONCEPT": 1290
+          "RESTATEMENT_CONFLICT": 36,
+          "UNKNOWN_CONCEPT": 1252
         }
       },
       "latestFiling": {
@@ -626,13 +692,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e2bdee8f7c9f883f8f5fdf169531921e57ed2ee9344b8936f2256064adc9ff2a",

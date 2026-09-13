@@ -7,8 +7,8 @@
       "name": "STAAR SURGICAL CO",
       "sic": "3851",
       "rawFacts": 23467,
-      "mappedFacts": 6540,
-      "unmappedFacts": 17133,
+      "mappedFacts": 6589,
+      "unmappedFacts": 17102,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17640,
+        "total": 17610,
         "by_severity": {
-          "INFO": 17133,
-          "WARNING": 507
+          "INFO": 17102,
+          "WARNING": 508
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 368,
           "FISCAL_PERIOD_CONFLICT": 49,
-          "RESTATEMENT_CONFLICT": 89,
+          "RESTATEMENT_CONFLICT": 90,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 17133
+          "UNKNOWN_CONCEPT": 17102
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cf6033a72df4bf03ed145fae689881de51251fe7283f9301d1be29636d7088d0",
@@ -165,8 +165,8 @@
       "name": "SIRIUS XM HOLDINGS INC.",
       "sic": "4832",
       "rawFacts": 25882,
-      "mappedFacts": 7413,
-      "unmappedFacts": 18499,
+      "mappedFacts": 7488,
+      "unmappedFacts": 18350,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +285,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19365,
+        "total": 19289,
         "by_severity": {
-          "INFO": 18499,
-          "WARNING": 866
+          "INFO": 18350,
+          "WARNING": 939
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 704,
-          "PERIOD_MISMATCH": 7,
+          "PERIOD_MISMATCH": 80,
           "RESTATEMENT_CONFLICT": 155,
-          "UNKNOWN_CONCEPT": 18499
+          "UNKNOWN_CONCEPT": 18350
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5ae6de2968f1e0b0bfe4507f5e643fa0ad4b1cbe4432d309b21038ff611230d5",
@@ -322,8 +322,8 @@
       "name": "Syndax Pharmaceuticals Inc",
       "sic": "2834",
       "rawFacts": 10450,
-      "mappedFacts": 3351,
-      "unmappedFacts": 7149,
+      "mappedFacts": 3487,
+      "unmappedFacts": 7065,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +442,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7225,
+        "total": 7141,
         "by_severity": {
-          "INFO": 7149,
+          "INFO": 7065,
           "WARNING": 76
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 70,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 7149
+          "UNKNOWN_CONCEPT": 7065
         }
       },
       "latestFiling": {
@@ -461,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c9cb945e5bc832ea445bacecde32daedd3c3b10f1c0d05aa2dd861f71741b701",
@@ -617,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3465561f02e491e09fc2a7bf3072eba25c9b328768041c2fa85f1eb41e69c449",
@@ -634,17 +634,108 @@
       "name": "Finance of America Companies Inc.",
       "sic": "6162",
       "rawFacts": 8601,
-      "mappedFacts": 2106,
-      "unmappedFacts": 6361,
+      "mappedFacts": 2145,
+      "unmappedFacts": 6330,
       "calendarYears": 7,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 6,
           "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -762,9 +853,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6863,
+        "total": 6832,
         "by_severity": {
-          "INFO": 6361,
+          "INFO": 6330,
           "WARNING": 502
         },
         "by_code": {
@@ -773,7 +864,7 @@
           "FISCAL_PERIOD_CONFLICT": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 12,
           "RESTATEMENT_CONFLICT": 152,
-          "UNKNOWN_CONCEPT": 6361
+          "UNKNOWN_CONCEPT": 6330
         }
       },
       "latestFiling": {
@@ -784,13 +875,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bf76728d49647584674c9171c6fc1c64308544f6f6ea8b5c5ca5e8d5060d20b5",

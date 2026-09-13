@@ -7,8 +7,8 @@
       "name": "NETSOL TECHNOLOGIES INC",
       "sic": "7372",
       "rawFacts": 22629,
-      "mappedFacts": 5791,
-      "unmappedFacts": 16416,
+      "mappedFacts": 5794,
+      "unmappedFacts": 16414,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17578,
+        "total": 17576,
         "by_severity": {
-          "INFO": 16416,
+          "INFO": 16414,
           "ERROR": 16,
           "WARNING": 1146
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 16,
           "RESTATEMENT_CONFLICT": 179,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 16416
+          "UNKNOWN_CONCEPT": 16414
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e266580984181c1590238a1dfbeafe1bb134947c6183e648948921fcb8c6518e",
@@ -166,8 +166,8 @@
       "name": "NETFLIX INC",
       "sic": "7841",
       "rawFacts": 23867,
-      "mappedFacts": 7998,
-      "unmappedFacts": 16372,
+      "mappedFacts": 8045,
+      "unmappedFacts": 16339,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -286,16 +286,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16594,
+        "total": 16561,
         "by_severity": {
-          "INFO": 16372,
+          "INFO": 16339,
           "WARNING": 222
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 106,
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 111,
-          "UNKNOWN_CONCEPT": 16372
+          "UNKNOWN_CONCEPT": 16339
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f872e311850855bf4e1126957ad653af6817161744aa9837a4c76c773e26ccd4",
@@ -323,8 +323,8 @@
       "name": "Cinemark Holdings, Inc.",
       "sic": "7830",
       "rawFacts": 20679,
-      "mappedFacts": 5786,
-      "unmappedFacts": 14734,
+      "mappedFacts": 5953,
+      "unmappedFacts": 14562,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -443,18 +443,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15768,
+        "total": 15602,
         "by_severity": {
-          "INFO": 14734,
+          "INFO": 14562,
           "ERROR": 2,
-          "WARNING": 1032
+          "WARNING": 1038
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 994,
+          "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 2,
+          "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 36,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 14734
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 14562
         }
       },
       "latestFiling": {
@@ -465,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ba907acf4e2e70475735648e2809c78d6ce4978574b8c0913b93675fed17daea",
@@ -482,8 +484,8 @@
       "name": "Zoetis Inc.",
       "sic": "2834",
       "rawFacts": 23661,
-      "mappedFacts": 6228,
-      "unmappedFacts": 17626,
+      "mappedFacts": 6362,
+      "unmappedFacts": 17497,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -602,9 +604,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18206,
+        "total": 18077,
         "by_severity": {
-          "INFO": 17626,
+          "INFO": 17497,
           "ERROR": 1,
           "WARNING": 579
         },
@@ -614,7 +616,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 13,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 17626
+          "UNKNOWN_CONCEPT": 17497
         }
       },
       "latestFiling": {
@@ -625,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ddd999e9aef88f0ec565ff46ad9e150dcaecd935e32ec5e0572f154333307506",
@@ -642,8 +644,8 @@
       "name": "Guardant Health, Inc.",
       "sic": "8071",
       "rawFacts": 12267,
-      "mappedFacts": 3284,
-      "unmappedFacts": 8955,
+      "mappedFacts": 3294,
+      "unmappedFacts": 8949,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -762,15 +764,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9184,
+        "total": 9178,
         "by_severity": {
-          "INFO": 8955,
+          "INFO": 8949,
           "WARNING": 229
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 223,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 8955
+          "UNKNOWN_CONCEPT": 8949
         }
       },
       "latestFiling": {
@@ -781,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "00bd6d3cd1c928c52f2e665bef2a8b08405604453506951362fafd603719e032",
@@ -798,8 +800,8 @@
       "name": "Twist Bioscience Corp",
       "sic": "2836",
       "rawFacts": 11008,
-      "mappedFacts": 3510,
-      "unmappedFacts": 7717,
+      "mappedFacts": 3539,
+      "unmappedFacts": 7699,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -917,15 +919,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7847,
+        "total": 7829,
         "by_severity": {
-          "INFO": 7717,
+          "INFO": 7699,
           "WARNING": 130
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 122,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 7717
+          "UNKNOWN_CONCEPT": 7699
         }
       },
       "latestFiling": {
@@ -936,13 +938,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5f58b10ba9bfbe558d351ec8df22e86604ac933414fd8605e3e210443c704c26",
@@ -953,8 +955,8 @@
       "name": "Tenable Holdings, Inc.",
       "sic": "7372",
       "rawFacts": 12031,
-      "mappedFacts": 3544,
-      "unmappedFacts": 8664,
+      "mappedFacts": 3641,
+      "unmappedFacts": 8604,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -1073,15 +1075,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8732,
+        "total": 8672,
         "by_severity": {
-          "INFO": 8664,
+          "INFO": 8604,
           "WARNING": 68
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 62,
           "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 8664
+          "UNKNOWN_CONCEPT": 8604
         }
       },
       "latestFiling": {
@@ -1092,13 +1094,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b6c31238e3f154f3a39704230c9b808fe18688dc7e0711db8c5352cea9de85c",
@@ -1109,8 +1111,8 @@
       "name": "Oric Pharmaceuticals, Inc.",
       "sic": "2834",
       "rawFacts": 5354,
-      "mappedFacts": 1828,
-      "unmappedFacts": 3562,
+      "mappedFacts": 1839,
+      "unmappedFacts": 3555,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1228,15 +1230,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3632,
+        "total": 3625,
         "by_severity": {
-          "INFO": 3562,
+          "INFO": 3555,
           "WARNING": 70
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 68,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 3562
+          "UNKNOWN_CONCEPT": 3555
         }
       },
       "latestFiling": {
@@ -1247,13 +1249,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c5fd6659556da2533858f8ac0a33eced8c04dc6d5594250aa3cadff3e5a5edf8",

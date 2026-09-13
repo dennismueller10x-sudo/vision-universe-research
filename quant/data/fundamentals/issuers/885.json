@@ -7,8 +7,8 @@
       "name": "UNION PACIFIC CORP",
       "sic": "4011",
       "rawFacts": 23948,
-      "mappedFacts": 6770,
-      "unmappedFacts": 17607,
+      "mappedFacts": 6966,
+      "unmappedFacts": 17411,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18040,
+        "total": 17850,
         "by_severity": {
-          "INFO": 17607,
+          "INFO": 17411,
           "ERROR": 4,
-          "WARNING": 429
+          "WARNING": 435
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 361,
-          "FISCAL_PERIOD_CONFLICT": 12,
+          "FISCAL_PERIOD_CONFLICT": 13,
           "FUTURE_DATA_LEAK": 4,
           "PERIOD_MISMATCH": 13,
-          "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 17607
+          "RESTATEMENT_CONFLICT": 48,
+          "UNKNOWN_CONCEPT": 17411
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b21794986bc8075f8843550db420b5c029834c898204d9f6ee2baeacbdb5b2c0",
@@ -167,8 +167,8 @@
       "name": "DIANA SHIPPING INC.",
       "sic": "4412",
       "rawFacts": 5751,
-      "mappedFacts": 1547,
-      "unmappedFacts": 4335,
+      "mappedFacts": 1599,
+      "unmappedFacts": 4305,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -289,9 +289,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4596,
+        "total": 4566,
         "by_severity": {
-          "INFO": 4335,
+          "INFO": 4305,
           "WARNING": 261
         },
         "by_code": {
@@ -299,7 +299,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 4335
+          "UNKNOWN_CONCEPT": 4305
         }
       },
       "latestFiling": {
@@ -310,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6a5cd16f677e112f5d50c046669a0dc82cbd74357c1e6d2bd028c078dbeda638",
@@ -327,8 +327,8 @@
       "name": "AtriCure, Inc.",
       "sic": "3841",
       "rawFacts": 20559,
-      "mappedFacts": 6636,
-      "unmappedFacts": 14525,
+      "mappedFacts": 6644,
+      "unmappedFacts": 14519,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -447,15 +447,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14609,
+        "total": 14603,
         "by_severity": {
-          "INFO": 14525,
+          "INFO": 14519,
           "WARNING": 84
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 73,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 14525
+          "UNKNOWN_CONCEPT": 14519
         }
       },
       "latestFiling": {
@@ -466,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "571c9d7ac8b3e8eb58dc633b5781f7c284b2e397b26e56158c0657550f7329c6",
@@ -483,8 +483,8 @@
       "name": "Acumen Pharmaceuticals, Inc.",
       "sic": "2836",
       "rawFacts": 5046,
-      "mappedFacts": 1573,
-      "unmappedFacts": 3558,
+      "mappedFacts": 1614,
+      "unmappedFacts": 3533,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -602,15 +602,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3582,
+        "total": 3557,
         "by_severity": {
-          "INFO": 3558,
+          "INFO": 3533,
           "WARNING": 24
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 3558
+          "UNKNOWN_CONCEPT": 3533
         }
       },
       "latestFiling": {
@@ -621,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "19f4abbe3f12af03aaef21d5ee6b84c43254d07e82f5fa4f018df5534c4b349f",
@@ -777,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f960b7a630f0efc786590389bd297f0acf7935bdb052d306b71f2882bac524e2",
@@ -934,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3e812f3a5d17c5b34fabfe94959529c266e0fe88b65de0fc390e9141f52c4c46",

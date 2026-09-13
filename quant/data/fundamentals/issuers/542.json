@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5acd4cddf81b9b7774b2c5f25af2a99e60da2bf6b26d7122de8771758c554b52",
@@ -167,8 +167,8 @@
       "name": "SCOTTS MIRACLE-GRO CO",
       "sic": "2870",
       "rawFacts": 29742,
-      "mappedFacts": 8641,
-      "unmappedFacts": 21023,
+      "mappedFacts": 8866,
+      "unmappedFacts": 20762,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21906,
+        "total": 21682,
         "by_severity": {
-          "INFO": 21023,
-          "WARNING": 883
+          "INFO": 20762,
+          "WARNING": 920
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 744,
-          "RESTATEMENT_CONFLICT": 139,
-          "UNKNOWN_CONCEPT": 21023
+          "PERIOD_MISMATCH": 32,
+          "RESTATEMENT_CONFLICT": 140,
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 20762
         }
       },
       "latestFiling": {
@@ -306,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5134d85d38c67795be88cc086cbe36f8db1acc428f7131b9d101b631332628f3",
@@ -323,8 +325,8 @@
       "name": "Freight Technologies, Inc.",
       "sic": "4731",
       "rawFacts": 3213,
-      "mappedFacts": 1075,
-      "unmappedFacts": 2256,
+      "mappedFacts": 1099,
+      "unmappedFacts": 2235,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -442,15 +444,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2375,
+        "total": 2354,
         "by_severity": {
-          "INFO": 2256,
+          "INFO": 2235,
           "WARNING": 119
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 68,
           "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 2256
+          "UNKNOWN_CONCEPT": 2235
         }
       },
       "latestFiling": {
@@ -461,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f9254085964f4d07684a34256e020038782590ed4afb92e0300720c0e95ae75f",
@@ -478,8 +480,8 @@
       "name": "CLPS Inc",
       "sic": "7372",
       "rawFacts": 3470,
-      "mappedFacts": 942,
-      "unmappedFacts": 2587,
+      "mappedFacts": 948,
+      "unmappedFacts": 2583,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -598,15 +600,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2687,
+        "total": 2685,
         "by_severity": {
-          "INFO": 2587,
-          "WARNING": 100
+          "INFO": 2583,
+          "WARNING": 102
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 96,
+          "CONCEPT_DISAGREEMENT": 98,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 2587
+          "UNKNOWN_CONCEPT": 2583
         }
       },
       "latestFiling": {
@@ -617,13 +619,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "97b6a3b55372416ba364199356fe42469452761b9f8c8249fcf127980fcc99fd",
@@ -774,13 +776,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c9882417cc98df6bc79ea01d03d6e0fb4253a290dfffdf89174171c46fd0d461",
@@ -791,9 +793,9 @@
       "name": "ACP Holdings Acquisition Corp.",
       "sic": "6770",
       "rawFacts": 93,
-      "mappedFacts": 0,
+      "mappedFacts": 17,
       "unmappedFacts": 59,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -804,9 +806,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -845,7 +847,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -873,14 +875,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -902,23 +904,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 5
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 5,
+        "resolvedValues": 5
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 93,
+        "total": 73,
         "by_severity": {
           "INFO": 59,
-          "WARNING": 34
+          "WARNING": 14
         },
         "by_code": {
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 59,
-          "UNPLACEABLE_PERIOD": 20
+          "UNKNOWN_CONCEPT": 59
         }
       },
       "latestFiling": {
@@ -929,13 +932,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b78174c4cfcfa8e3bf8a3cdbb09080fc68154fa64f09c04225144e6dfb0e3348",

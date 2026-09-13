@@ -7,11 +7,75 @@
       "name": "ATLANTIC AMERICAN CORP",
       "sic": "6311",
       "rawFacts": 18874,
-      "mappedFacts": 3686,
-      "unmappedFacts": 15204,
+      "mappedFacts": 5429,
+      "unmappedFacts": 13846,
       "calendarYears": 15,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "claims_liability": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "total_investments": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "AAME"
@@ -127,15 +191,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15575,
+        "total": 14217,
         "by_severity": {
-          "INFO": 15204,
+          "INFO": 13846,
           "WARNING": 371
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 364,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 15204
+          "UNKNOWN_CONCEPT": 13846
         }
       },
       "latestFiling": {
@@ -146,13 +210,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d921b46581b4d7bded864df659cee6453f5202dc8e25e036b7547dbca85c9456",
@@ -163,8 +227,8 @@
       "name": "BRIDGFORD FOODS CORP",
       "sic": "2013",
       "rawFacts": 12917,
-      "mappedFacts": 4695,
-      "unmappedFacts": 8659,
+      "mappedFacts": 4707,
+      "unmappedFacts": 8651,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -283,9 +347,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8721,
+        "total": 8713,
         "by_severity": {
-          "INFO": 8659,
+          "INFO": 8651,
           "ERROR": 10,
           "WARNING": 52
         },
@@ -295,7 +359,7 @@
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 9,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 8659
+          "UNKNOWN_CONCEPT": 8651
         }
       },
       "latestFiling": {
@@ -306,13 +370,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c9b32f903d4e2e8d6c8737101e1842f723c40b8015af5d1c2da3dde3224b5b4f",
@@ -323,8 +387,8 @@
       "name": "Spectrum Brands Holdings, Inc.",
       "sic": "3690",
       "rawFacts": 28697,
-      "mappedFacts": 6694,
-      "unmappedFacts": 21264,
+      "mappedFacts": 6968,
+      "unmappedFacts": 21007,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,19 +507,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23196,
+        "total": 22959,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 21264,
-          "WARNING": 1931
+          "INFO": 21007,
+          "WARNING": 1951
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1474,
-          "FISCAL_PERIOD_CONFLICT": 42,
+          "CONCEPT_DISAGREEMENT": 1475,
+          "FISCAL_PERIOD_CONFLICT": 45,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 399,
-          "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 21264
+          "RESTATEMENT_CONFLICT": 413,
+          "UNEXPECTED_DURATION": 18,
+          "UNKNOWN_CONCEPT": 21007
         }
       },
       "latestFiling": {
@@ -466,13 +530,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ee18a823a9312a52d3a84ba0e7b2df29f3b1a3277b479f236d948f62ed729e24",
@@ -623,13 +687,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bd438b2b05fd3ef97c19d70d519e7302701da8d957c35f112c58095c81f130d9",
@@ -640,8 +704,8 @@
       "name": "NORDIC AMERICAN TANKERS Ltd",
       "sic": "4400",
       "rawFacts": 4864,
-      "mappedFacts": 1742,
-      "unmappedFacts": 3354,
+      "mappedFacts": 1751,
+      "unmappedFacts": 3345,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -759,16 +823,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3427,
+        "total": 3419,
         "by_severity": {
-          "INFO": 3354,
-          "WARNING": 73
+          "INFO": 3345,
+          "WARNING": 74
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 60,
-          "RESTATEMENT_CONFLICT": 10,
+          "RESTATEMENT_CONFLICT": 11,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 3354
+          "UNKNOWN_CONCEPT": 3345
         }
       },
       "latestFiling": {
@@ -779,13 +843,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2b31dcca8b22d6eb5a8dbb535a98a77dd7ffbb8f85eddcdb7e36ab375eb5fde5",
@@ -935,13 +999,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0a4d84a9f67a6e8c8702dbe2cc20e0247f96198033eb90bd2975557da008992d",
@@ -952,8 +1016,8 @@
       "name": "KURA SUSHI USA, INC.",
       "sic": "5812",
       "rawFacts": 6834,
-      "mappedFacts": 2340,
-      "unmappedFacts": 4598,
+      "mappedFacts": 2353,
+      "unmappedFacts": 4590,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1071,15 +1135,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4700,
+        "total": 4692,
         "by_severity": {
-          "INFO": 4598,
+          "INFO": 4590,
           "WARNING": 102
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 88,
           "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 4598
+          "UNKNOWN_CONCEPT": 4590
         }
       },
       "latestFiling": {
@@ -1090,13 +1154,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c3e3d0fc4c1e1ad714eefa19a191fe67e8ddbcbdbf003327a44a80a07004ee4d",
@@ -1231,13 +1295,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3d9f19f055072679cf5e8b9a02478d97d997b961e4582c049626d8e8f5be4d64",
@@ -1386,13 +1450,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "60cecd2ca5d4e58c83ab10ca80e9eb7aa712b0feeb590e80c437796f9744ad79",
@@ -1403,8 +1467,8 @@
       "name": "Youlife Group Inc.",
       "sic": "8200",
       "rawFacts": 576,
-      "mappedFacts": 119,
-      "unmappedFacts": 408,
+      "mappedFacts": 122,
+      "unmappedFacts": 406,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -1523,14 +1587,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 460,
+        "total": 458,
         "by_severity": {
-          "INFO": 408,
+          "INFO": 406,
           "WARNING": 52
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 52,
-          "UNKNOWN_CONCEPT": 408
+          "UNKNOWN_CONCEPT": 406
         }
       },
       "latestFiling": {
@@ -1541,13 +1605,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "019b611272ea941600de5dae84a74248a44a69bcf961c04b208e151d27610299",
@@ -1698,13 +1762,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b8388414ce9f3de944c5682de6f8dcc8ee56b4309b9185fc80d9b95342c95246",
@@ -1855,13 +1919,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cddb475d211fe21bf023b371fb47318df62e168fc6e9c3f2de0510016f0b4eff",
@@ -2011,13 +2075,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "af76e3645fe0c102abd1ce34de368aa5430636c62bfba6591020b23e733ed080",
@@ -2165,13 +2229,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c0c44e4e7ad44eb7fc6cf233a4fc3abaedf2f184396f2baf24bc84676b632e78",

@@ -7,8 +7,8 @@
       "name": "BIOGEN INC.",
       "sic": "2836",
       "rawFacts": 30558,
-      "mappedFacts": 7805,
-      "unmappedFacts": 22965,
+      "mappedFacts": 7879,
+      "unmappedFacts": 22919,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23648,
+        "total": 23602,
         "by_severity": {
-          "INFO": 22965,
+          "INFO": 22919,
           "ERROR": 4,
           "WARNING": 679
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 22965
+          "UNKNOWN_CONCEPT": 22919
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5bd08ba2fc3c5b3f5765481dafe3c2e1e47d871033b66dab3f5a7e036c815931",
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8e7da154d992aded93509fe1067e812d166f3b18b4a2a8451f71c01ac08bafb4",
@@ -325,11 +325,54 @@
       "name": "Chatham Lodging Trust",
       "sic": "6798",
       "rawFacts": 18973,
-      "mappedFacts": 5553,
-      "unmappedFacts": 13130,
+      "mappedFacts": 6776,
+      "unmappedFacts": 11905,
       "calendarYears": 16,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CLDT",
@@ -446,16 +489,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13666,
+        "total": 12935,
         "by_severity": {
-          "INFO": 13130,
-          "WARNING": 536
+          "INFO": 11905,
+          "WARNING": 1030
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 485,
-          "RESTATEMENT_CONFLICT": 50,
-          "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 13130
+          "CONCEPT_DISAGREEMENT": 597,
+          "PERIOD_MISMATCH": 206,
+          "RESTATEMENT_CONFLICT": 98,
+          "UNEXPECTED_DURATION": 129,
+          "UNKNOWN_CONCEPT": 11905
         }
       },
       "latestFiling": {
@@ -466,13 +510,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "81c8ac9e4dfe53b8362e8596bf5ef431898897cd16fcd30f28b807c3ab69a2bc",
@@ -483,8 +527,8 @@
       "name": "GCL Global Holdings Ltd",
       "sic": "7372",
       "rawFacts": 1496,
-      "mappedFacts": 363,
-      "unmappedFacts": 1156,
+      "mappedFacts": 369,
+      "unmappedFacts": 1153,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -604,15 +648,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1233,
+        "total": 1230,
         "by_severity": {
-          "INFO": 1156,
+          "INFO": 1153,
           "WARNING": 77
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 73,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 1156
+          "UNKNOWN_CONCEPT": 1153
         }
       },
       "latestFiling": {
@@ -623,13 +667,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1cde97e9d375703624248958dccb54fd25f7e62ef14fd70b9dfbd2f0d12087bb",
@@ -640,9 +684,9 @@
       "name": "Bleichroeder Acquisition Corp. III",
       "sic": "6770",
       "rawFacts": 29,
-      "mappedFacts": 0,
+      "mappedFacts": 13,
       "unmappedFacts": 14,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -653,9 +697,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 1,
+      "firstPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -694,7 +738,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -715,21 +759,21 @@
         },
         "short_term_debt": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -751,23 +795,24 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 4
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 4,
+        "resolvedValues": 4
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29,
+        "total": 15,
         "by_severity": {
           "INFO": 14,
-          "WARNING": 15
+          "WARNING": 1
         },
         "by_code": {
           "PERIOD_MISMATCH": 1,
-          "UNKNOWN_CONCEPT": 14,
-          "UNPLACEABLE_PERIOD": 14
+          "UNKNOWN_CONCEPT": 14
         }
       },
       "latestFiling": {
@@ -778,13 +823,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9cc434498fcd7370e75c4fa5c216d2b2c31805311bb5bd15d704bda930355abe",

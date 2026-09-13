@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd10355b473a1bb8a0d881f8f501483a93bae2161416883440ac52ecc7f77396",
@@ -163,8 +163,8 @@
       "name": "URBAN OUTFITTERS INC",
       "sic": "5651",
       "rawFacts": 18272,
-      "mappedFacts": 6864,
-      "unmappedFacts": 11919,
+      "mappedFacts": 6996,
+      "unmappedFacts": 11828,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -282,9 +282,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11993,
+        "total": 11902,
         "by_severity": {
-          "INFO": 11919,
+          "INFO": 11828,
           "ERROR": 1,
           "WARNING": 73
         },
@@ -292,7 +292,7 @@
           "CONCEPT_DISAGREEMENT": 68,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 11919
+          "UNKNOWN_CONCEPT": 11828
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bfee3eefd0e886d6934190bc6242d18d5ebacb20ea6be032c7b8719286a025d8",
@@ -320,8 +320,8 @@
       "name": "KBR, INC.",
       "sic": "1600",
       "rawFacts": 31781,
-      "mappedFacts": 8118,
-      "unmappedFacts": 23736,
+      "mappedFacts": 8356,
+      "unmappedFacts": 23498,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -440,18 +440,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 24897,
+        "total": 24661,
         "by_severity": {
-          "INFO": 23736,
+          "INFO": 23498,
           "ERROR": 1,
-          "WARNING": 1160
+          "WARNING": 1162
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1023,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 7,
-          "RESTATEMENT_CONFLICT": 130,
-          "UNKNOWN_CONCEPT": 23736
+          "RESTATEMENT_CONFLICT": 132,
+          "UNKNOWN_CONCEPT": 23498
         }
       },
       "latestFiling": {
@@ -462,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3ff0a81a96427d5c0d2ba3b929f1386114c5326103e60f2e12f069c6112e599f",
@@ -479,8 +479,8 @@
       "name": "Silence Therapeutics plc",
       "sic": "2834",
       "rawFacts": 2931,
-      "mappedFacts": 947,
-      "unmappedFacts": 2114,
+      "mappedFacts": 955,
+      "unmappedFacts": 2110,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -599,15 +599,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2150,
+        "total": 2146,
         "by_severity": {
-          "INFO": 2114,
+          "INFO": 2110,
           "WARNING": 36
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 6,
           "RESTATEMENT_CONFLICT": 30,
-          "UNKNOWN_CONCEPT": 2114
+          "UNKNOWN_CONCEPT": 2110
         }
       },
       "latestFiling": {
@@ -618,13 +618,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fa632c46e0c1a4a9fced7f171492e5be3ef7705bedaeebc62440d4bc5bee6fc2",
@@ -635,11 +635,54 @@
       "name": "Chiron Real Estate Inc.",
       "sic": "6798",
       "rawFacts": 17110,
-      "mappedFacts": 3660,
-      "unmappedFacts": 13203,
+      "mappedFacts": 4260,
+      "unmappedFacts": 12773,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 7.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 1,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2013-08-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.33
+        },
+        "real_estate_gross": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2013-08-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.33
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "XRN",
@@ -757,18 +800,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13991,
+        "total": 13650,
         "by_severity": {
-          "INFO": 13203,
-          "WARNING": 788
+          "INFO": 12773,
+          "WARNING": 877
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 532,
+          "CONCEPT_DISAGREEMENT": 586,
           "FISCAL_PERIOD_CONFLICT": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 158,
-          "UNEXPECTED_DURATION": 91,
-          "UNKNOWN_CONCEPT": 13203
+          "RESTATEMENT_CONFLICT": 186,
+          "UNEXPECTED_DURATION": 98,
+          "UNKNOWN_CONCEPT": 12773
         }
       },
       "latestFiling": {
@@ -779,13 +822,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ef04f406b9565040c24da869f226c32ae53e56c3430b0fab5eb9a8721f23237c",
@@ -935,13 +978,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "05b1a76fa1c6537dbb6c902be81aae1606b9d4fd84d696cf0d28dd2c9427b4b1",
@@ -952,8 +995,8 @@
       "name": "AlTi Global, Inc.",
       "sic": "6282",
       "rawFacts": 6912,
-      "mappedFacts": 1517,
-      "unmappedFacts": 5360,
+      "mappedFacts": 1553,
+      "unmappedFacts": 5338,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1072,9 +1115,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5678,
+        "total": 5656,
         "by_severity": {
-          "INFO": 5360,
+          "INFO": 5338,
           "WARNING": 318
         },
         "by_code": {
@@ -1082,7 +1125,7 @@
           "FISCAL_PERIOD_CONFLICT": 17,
           "RESTATEMENT_CONFLICT": 117,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 5360
+          "UNKNOWN_CONCEPT": 5338
         }
       },
       "latestFiling": {
@@ -1093,13 +1136,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d45755b71862ac48570538901338af15f4eef10a1b28e55b4deb14bd6bffc8da",

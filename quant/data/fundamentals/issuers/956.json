@@ -7,8 +7,8 @@
       "name": "TENAX THERAPEUTICS, INC.",
       "sic": "2834",
       "rawFacts": 12331,
-      "mappedFacts": 4426,
-      "unmappedFacts": 7833,
+      "mappedFacts": 4505,
+      "unmappedFacts": 7784,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8564,
+        "total": 8518,
         "by_severity": {
-          "INFO": 7833,
+          "INFO": 7784,
           "ERROR": 2,
-          "WARNING": 729
+          "WARNING": 732
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 275,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 43,
-          "RESTATEMENT_CONFLICT": 190,
+          "RESTATEMENT_CONFLICT": 193,
           "UNEXPECTED_DURATION": 221,
-          "UNKNOWN_CONCEPT": 7833
+          "UNKNOWN_CONCEPT": 7784
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66e64b8f4ddc860cd44ea6984ab0b9295a7291c10c1b9042e3eacbfdab202d11",
@@ -167,8 +167,8 @@
       "name": "J&J SNACK FOODS CORP",
       "sic": "2052",
       "rawFacts": 23050,
-      "mappedFacts": 6324,
-      "unmappedFacts": 16758,
+      "mappedFacts": 6359,
+      "unmappedFacts": 16726,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,10 +286,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17104,
+        "total": 17072,
         "by_severity": {
           "ERROR": 19,
-          "INFO": 16758,
+          "INFO": 16726,
           "WARNING": 327
         },
         "by_code": {
@@ -298,7 +298,7 @@
           "FUTURE_DATA_LEAK": 19,
           "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 16758
+          "UNKNOWN_CONCEPT": 16726
         }
       },
       "latestFiling": {
@@ -309,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3689dd2be8de2279b3767c3902ee7bb597fcca784c291b60f5420a69f6aea84a",
@@ -326,8 +326,8 @@
       "name": "CONMED Corp",
       "sic": "3845",
       "rawFacts": 22647,
-      "mappedFacts": 7168,
-      "unmappedFacts": 16261,
+      "mappedFacts": 7346,
+      "unmappedFacts": 16053,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -446,16 +446,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16432,
+        "total": 16254,
         "by_severity": {
-          "INFO": 16261,
-          "WARNING": 171
+          "INFO": 16053,
+          "WARNING": 201
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 136,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 16261
+          "UNEXPECTED_DURATION": 30,
+          "UNKNOWN_CONCEPT": 16053
         }
       },
       "latestFiling": {
@@ -466,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1a542e814f0accfe7ab70cdd91a9ffefdad55bf6ae8b5e5e20a6eed42f9b8982",
@@ -483,8 +484,8 @@
       "name": "SPIRE INC",
       "sic": "4924",
       "rawFacts": 25688,
-      "mappedFacts": 6241,
-      "unmappedFacts": 19524,
+      "mappedFacts": 6449,
+      "unmappedFacts": 19314,
       "calendarYears": 24,
       "industry": null,
       "industryMetrics": {},
@@ -604,18 +605,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20079,
+        "total": 19871,
         "by_severity": {
-          "INFO": 19524,
+          "INFO": 19314,
           "ERROR": 1,
-          "WARNING": 554
+          "WARNING": 556
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 428,
+          "CONCEPT_DISAGREEMENT": 430,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 124,
-          "UNKNOWN_CONCEPT": 19524
+          "UNKNOWN_CONCEPT": 19314
         }
       },
       "latestFiling": {
@@ -626,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1eddccef10fa47aff02f95996755a6522f25c3dd459cb4d62d58f988c9597d8c",
@@ -783,13 +784,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e6edcca306586af90b3e12c165105454527da40f003746bad38bdcc5da1b218",
@@ -941,13 +942,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f469d2477f10c7649583853de6d62c2118b60c4bfe5a398209aeb6b5f3ce4d6f",
@@ -958,8 +959,8 @@
       "name": "TREASURE GLOBAL INC",
       "sic": "7389",
       "rawFacts": 5655,
-      "mappedFacts": 1662,
-      "unmappedFacts": 4030,
+      "mappedFacts": 1675,
+      "unmappedFacts": 4022,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1077,18 +1078,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4170,
+        "total": 4164,
         "by_severity": {
-          "INFO": 4030,
+          "INFO": 4022,
           "ERROR": 1,
-          "WARNING": 139
+          "WARNING": 141
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 65,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 73,
-          "UNKNOWN_CONCEPT": 4030
+          "RESTATEMENT_CONFLICT": 75,
+          "UNKNOWN_CONCEPT": 4022
         }
       },
       "latestFiling": {
@@ -1099,13 +1100,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "025dd200ebc83a5a658b675d701be9d7077c80d7f887e7a7071fe8ee50b4cdc3",

@@ -7,8 +7,8 @@
       "name": "Piedmont Realty Trust, Inc.",
       "sic": "6512",
       "rawFacts": 20035,
-      "mappedFacts": 5184,
-      "unmappedFacts": 14557,
+      "mappedFacts": 5799,
+      "unmappedFacts": 14163,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15041,
+        "total": 14648,
         "by_severity": {
-          "INFO": 14557,
-          "WARNING": 484
+          "INFO": 14163,
+          "WARNING": 485
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 438,
-          "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 14557
+          "RESTATEMENT_CONFLICT": 47,
+          "UNKNOWN_CONCEPT": 14163
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7dc178956004f87e5bfb9d297dd4e7f702146b76d63c1d3a63fae5e72984b047",
@@ -163,8 +163,8 @@
       "name": "IMMUNIC, INC.",
       "sic": "2834",
       "rawFacts": 10965,
-      "mappedFacts": 3419,
-      "unmappedFacts": 7656,
+      "mappedFacts": 3455,
+      "unmappedFacts": 7620,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -283,9 +283,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7854,
+        "total": 7818,
         "by_severity": {
-          "INFO": 7656,
+          "INFO": 7620,
           "WARNING": 198
         },
         "by_code": {
@@ -293,7 +293,7 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 106,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 7656
+          "UNKNOWN_CONCEPT": 7620
         }
       },
       "latestFiling": {
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b9e827c6b1fedb921c6f1b5e0b79af2e60869bdc2b07eae650e2c897dbfdf428",
@@ -461,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2710b951806df9f7983cebd4b1327ccc580a111db29e4d262d3a0b76ae5df1c0",
@@ -478,11 +478,54 @@
       "name": "Cherry Hill Mortgage Investment Corp",
       "sic": "6798",
       "rawFacts": 18193,
-      "mappedFacts": 4756,
-      "unmappedFacts": 13156,
+      "mappedFacts": 5154,
+      "unmappedFacts": 12843,
       "calendarYears": 14,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "CHMI",
@@ -600,11 +643,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13890,
+        "total": 13586,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 13156,
-          "WARNING": 733
+          "INFO": 12843,
+          "WARNING": 742
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 579,
@@ -612,9 +655,10 @@
           "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 126,
+          "PERIOD_MISMATCH": 7,
+          "RESTATEMENT_CONFLICT": 128,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 13156
+          "UNKNOWN_CONCEPT": 12843
         }
       },
       "latestFiling": {
@@ -625,13 +669,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "604a12c488298e0dfc1e00354385adac5885fccd62a1cb4c114ab525afce0b67",
@@ -642,8 +686,8 @@
       "name": "Palmer Square Capital BDC Inc.",
       "sic": null,
       "rawFacts": 4500,
-      "mappedFacts": 817,
-      "unmappedFacts": 3634,
+      "mappedFacts": 929,
+      "unmappedFacts": 3541,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -762,15 +806,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3718,
+        "total": 3625,
         "by_severity": {
-          "INFO": 3634,
+          "INFO": 3541,
           "WARNING": 84
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 62,
           "RESTATEMENT_CONFLICT": 22,
-          "UNKNOWN_CONCEPT": 3634
+          "UNKNOWN_CONCEPT": 3541
         }
       },
       "latestFiling": {
@@ -781,13 +825,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fe6200b234de21a0f7b83eca23663e7307bce64c5072fc8c239bded0e50ece71",
@@ -798,8 +842,8 @@
       "name": "LENZ Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 4834,
-      "mappedFacts": 1567,
-      "unmappedFacts": 3322,
+      "mappedFacts": 1599,
+      "unmappedFacts": 3301,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -917,15 +961,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3460,
+        "total": 3440,
         "by_severity": {
-          "INFO": 3322,
-          "WARNING": 138
+          "INFO": 3301,
+          "WARNING": 139
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 39,
-          "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 3322
+          "RESTATEMENT_CONFLICT": 100,
+          "UNKNOWN_CONCEPT": 3301
         }
       },
       "latestFiling": {
@@ -936,13 +980,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "38cfe9f7e29040b15baab164010115a48ad57a23bd460f5168c5688932d976ba",
@@ -953,11 +997,75 @@
       "name": "Hagerty, Inc.",
       "sic": "6411",
       "rawFacts": 8985,
-      "mappedFacts": 1828,
-      "unmappedFacts": 7169,
+      "mappedFacts": 2302,
+      "unmappedFacts": 6804,
       "calendarYears": 6,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "claims_liability": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "total_investments": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "HGTY"
@@ -1073,15 +1181,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7511,
+        "total": 7148,
         "by_severity": {
-          "INFO": 7169,
-          "WARNING": 342
+          "INFO": 6804,
+          "WARNING": 344
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 249,
-          "RESTATEMENT_CONFLICT": 93,
-          "UNKNOWN_CONCEPT": 7169
+          "RESTATEMENT_CONFLICT": 95,
+          "UNKNOWN_CONCEPT": 6804
         }
       },
       "latestFiling": {
@@ -1092,13 +1200,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "709d9e32a9e970786630088fc87d9dfb84bbb2529bb1e6bc9066f792ac80c6be",
@@ -1233,13 +1341,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f9854efac21badcc0fdeae37e5f25140be7f0d27b42c8df286dfe1041b4e7cad",
@@ -1388,13 +1496,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9dcb8252a2a4c5bb92e91315578867d7edcbb8267c6769a1f448f5d01671f068",

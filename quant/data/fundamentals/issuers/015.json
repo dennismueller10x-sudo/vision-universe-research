@@ -7,8 +7,8 @@
       "name": "IONIS PHARMACEUTICALS INC",
       "sic": "2834",
       "rawFacts": 17762,
-      "mappedFacts": 6133,
-      "unmappedFacts": 11713,
+      "mappedFacts": 6192,
+      "unmappedFacts": 11677,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12006,
+        "total": 11970,
         "by_severity": {
-          "INFO": 11713,
+          "INFO": 11677,
           "ERROR": 6,
           "WARNING": 287
         },
@@ -138,7 +138,7 @@
           "FUTURE_DATA_LEAK": 6,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11713
+          "UNKNOWN_CONCEPT": 11677
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "aaf2873fe1d4936e36897b2af090f007a5b3df6656e332f5ef3f3be8582aa9da",
@@ -166,8 +166,8 @@
       "name": "Polaris Inc.",
       "sic": "3790",
       "rawFacts": 26026,
-      "mappedFacts": 7540,
-      "unmappedFacts": 18669,
+      "mappedFacts": 7597,
+      "unmappedFacts": 18612,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,17 +286,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19315,
+        "total": 19262,
         "by_severity": {
-          "INFO": 18669,
+          "INFO": 18612,
           "ERROR": 3,
-          "WARNING": 643
+          "WARNING": 647
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 579,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 18669
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 66,
+          "UNKNOWN_CONCEPT": 18612
         }
       },
       "latestFiling": {
@@ -307,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "362e36b75dce886517a33629b49df8919816cfb7d223f6304bec60cc871c0a2d",
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0d059eef49cae4a2fa19b8e3d70cfd599404b5e6393c6a0be15e04bd1ce69590",

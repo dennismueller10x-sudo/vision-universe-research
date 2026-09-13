@@ -7,8 +7,8 @@
       "name": "Spok Holdings, Inc",
       "sic": "4812",
       "rawFacts": 17988,
-      "mappedFacts": 6535,
-      "unmappedFacts": 11985,
+      "mappedFacts": 6591,
+      "unmappedFacts": 11929,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -126,18 +126,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12183,
+        "total": 12128,
         "by_severity": {
-          "INFO": 11985,
+          "INFO": 11929,
           "ERROR": 1,
-          "WARNING": 197
+          "WARNING": 198
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 151,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 42,
+          "RESTATEMENT_CONFLICT": 43,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 11985
+          "UNKNOWN_CONCEPT": 11929
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b68587700fedf0ab78117ad676124b5c324d3b7d6744c381d9958bcb282a4979",
@@ -165,8 +165,8 @@
       "name": "Omega Flex, Inc.",
       "sic": "3430",
       "rawFacts": 15530,
-      "mappedFacts": 5373,
-      "unmappedFacts": 10328,
+      "mappedFacts": 5495,
+      "unmappedFacts": 10183,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -285,19 +285,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10818,
+        "total": 10700,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10328,
-          "WARNING": 489
+          "INFO": 10183,
+          "WARNING": 516
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 412,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 17,
-          "RESTATEMENT_CONFLICT": 44,
-          "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 10328
+          "PERIOD_MISMATCH": 23,
+          "RESTATEMENT_CONFLICT": 45,
+          "UNEXPECTED_DURATION": 19,
+          "UNKNOWN_CONCEPT": 10183
         }
       },
       "latestFiling": {
@@ -308,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f72d1e292f65a63f7200dc9843b53e2666576b82f5cc05958dbe7e39959c869",
@@ -325,8 +326,8 @@
       "name": "TEEKAY TANKERS LTD.",
       "sic": "4400",
       "rawFacts": 4917,
-      "mappedFacts": 1597,
-      "unmappedFacts": 3577,
+      "mappedFacts": 1650,
+      "unmappedFacts": 3526,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -445,16 +446,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3798,
+        "total": 3749,
         "by_severity": {
-          "INFO": 3577,
-          "WARNING": 221
+          "INFO": 3526,
+          "WARNING": 223
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 130,
-          "RESTATEMENT_CONFLICT": 88,
+          "RESTATEMENT_CONFLICT": 90,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 3577
+          "UNKNOWN_CONCEPT": 3526
         }
       },
       "latestFiling": {
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "30e15890631bbeeb2581e5989cd31c1d40d0dcfe6b9b16be6eb5c3823767a21e",
@@ -482,8 +483,8 @@
       "name": "BLUE OWL CAPITAL INC.",
       "sic": "6282",
       "rawFacts": 6360,
-      "mappedFacts": 1799,
-      "unmappedFacts": 4430,
+      "mappedFacts": 1867,
+      "unmappedFacts": 4388,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -602,16 +603,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4685,
+        "total": 4643,
         "by_severity": {
-          "INFO": 4430,
+          "INFO": 4388,
           "WARNING": 255
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 163,
           "RESTATEMENT_CONFLICT": 41,
           "UNEXPECTED_DURATION": 51,
-          "UNKNOWN_CONCEPT": 4430
+          "UNKNOWN_CONCEPT": 4388
         }
       },
       "latestFiling": {
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c8922736a8794a634ca2413658fc4daf24aa80f232f8087a5c49b86304f3700c",

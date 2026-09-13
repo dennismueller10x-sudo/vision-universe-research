@@ -7,17 +7,108 @@
       "name": "WASHINGTON TRUST BANCORP INC",
       "sic": "6022",
       "rawFacts": 35069,
-      "mappedFacts": 5469,
-      "unmappedFacts": 29721,
+      "mappedFacts": 8512,
+      "unmappedFacts": 27124,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 13.0
+        },
         "net_interest_income": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 50,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -135,15 +226,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 29935,
+        "total": 27340,
         "by_severity": {
-          "INFO": 29721,
-          "WARNING": 214
+          "INFO": 27124,
+          "WARNING": 216
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 191,
-          "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 29721
+          "RESTATEMENT_CONFLICT": 25,
+          "UNKNOWN_CONCEPT": 27124
         }
       },
       "latestFiling": {
@@ -154,13 +245,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a4201b8ee47f8997de9690343992d9bf132121bd4b9553e7bcbb8cbc50d9dc3e",
@@ -171,8 +262,8 @@
       "name": "OCCIDENTAL PETROLEUM CORP /DE/",
       "sic": "1311",
       "rawFacts": 25373,
-      "mappedFacts": 6247,
-      "unmappedFacts": 18425,
+      "mappedFacts": 6472,
+      "unmappedFacts": 18200,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -292,9 +383,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19773,
+        "total": 19548,
         "by_severity": {
-          "INFO": 18425,
+          "INFO": 18200,
           "WARNING": 1348
         },
         "by_code": {
@@ -303,7 +394,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "RESTATEMENT_CONFLICT": 135,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 18425
+          "UNKNOWN_CONCEPT": 18200
         }
       },
       "latestFiling": {
@@ -314,13 +405,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1a846b36066d8eaa3ff225df8dfdf1dce99fa5659a37cbe12a43cc81e6ebfa2c",
@@ -331,8 +422,8 @@
       "name": "LOCKHEED MARTIN CORP",
       "sic": "3760",
       "rawFacts": 22258,
-      "mappedFacts": 7931,
-      "unmappedFacts": 14420,
+      "mappedFacts": 8129,
+      "unmappedFacts": 14219,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -451,19 +542,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15191,
+        "total": 15001,
         "by_severity": {
-          "INFO": 14420,
+          "INFO": 14219,
           "ERROR": 6,
-          "WARNING": 765
+          "WARNING": 776
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 649,
+          "CONCEPT_DISAGREEMENT": 651,
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 108,
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 14420
+          "RESTATEMENT_CONFLICT": 116,
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 14219
         }
       },
       "latestFiling": {
@@ -474,13 +565,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6fa3632df2984b645e100b2c4823b3c44c5c45673bf9fc02116b2b26cdf8cdd6",
@@ -630,13 +721,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c826f94b9bb9aa1161992e97cee55c71d7d50a53507d367b903a3a7f765c738c",
@@ -787,13 +878,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f4373b6815da5774b64ca093b0d4459ac5af009e388703132b8b09275196fa72",
@@ -804,8 +895,8 @@
       "name": "Allegiant Travel CO",
       "sic": "4512",
       "rawFacts": 19378,
-      "mappedFacts": 5937,
-      "unmappedFacts": 13777,
+      "mappedFacts": 6079,
+      "unmappedFacts": 13635,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -924,9 +1015,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14198,
+        "total": 14056,
         "by_severity": {
-          "INFO": 13777,
+          "INFO": 13635,
           "ERROR": 5,
           "WARNING": 416
         },
@@ -935,7 +1026,7 @@
           "FUTURE_DATA_LEAK": 5,
           "RESTATEMENT_CONFLICT": 50,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 13777
+          "UNKNOWN_CONCEPT": 13635
         }
       },
       "latestFiling": {
@@ -946,13 +1037,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a5cfd6dbd9e3ad1ba487ddaae734b173410eddb3261d1b356ee7ac30aca9f3f3",
@@ -1102,13 +1193,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0a47f9f507fe8094f3925e2a7218f93bbe3bc48dda8f69d98d7ccc0c467daf32",
@@ -1258,13 +1349,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8bc6b30af5e888b923241ed24320b21030f65ae76c9196a118ab444f6f41a544",

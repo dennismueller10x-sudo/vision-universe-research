@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "19920bdb59b70fe99c49bc04e4cda63de4303408122ef731e88eaf8c0997420b",
@@ -164,8 +164,8 @@
       "name": "Vale S.A.",
       "sic": "1000",
       "rawFacts": 6825,
-      "mappedFacts": 1101,
-      "unmappedFacts": 5891,
+      "mappedFacts": 1111,
+      "unmappedFacts": 5886,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +284,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6062,
+        "total": 6057,
         "by_severity": {
-          "INFO": 5891,
+          "INFO": 5886,
           "ERROR": 2,
           "WARNING": 169
         },
@@ -295,7 +295,7 @@
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 20,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 5891
+          "UNKNOWN_CONCEPT": 5886
         }
       },
       "latestFiling": {
@@ -306,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eeff34e8bd7abf8a92c4373b465a6ff787a00c09f48342a9cfedda9bf52fd8a7",
@@ -323,17 +323,108 @@
       "name": "PROSPERITY BANCSHARES INC",
       "sic": "6022",
       "rawFacts": 30292,
-      "mappedFacts": 5197,
-      "unmappedFacts": 25353,
+      "mappedFacts": 7737,
+      "unmappedFacts": 23210,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deposits": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 14.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 51,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 15.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -450,16 +541,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25515,
+        "total": 23389,
         "by_severity": {
-          "INFO": 25353,
-          "WARNING": 162
+          "INFO": 23210,
+          "WARNING": 179
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 127,
-          "FISCAL_PERIOD_CONFLICT": 10,
+          "CONCEPT_DISAGREEMENT": 137,
+          "FISCAL_PERIOD_CONFLICT": 17,
           "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 25353
+          "UNKNOWN_CONCEPT": 23210
         }
       },
       "latestFiling": {
@@ -470,13 +561,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1ab324466dd8f2a872bc687bc253c603341981c40656ee952211879bb4707946",
@@ -487,8 +578,8 @@
       "name": "Origin Agritech LTD",
       "sic": "0100",
       "rawFacts": 10167,
-      "mappedFacts": 2462,
-      "unmappedFacts": 7280,
+      "mappedFacts": 2471,
+      "unmappedFacts": 7268,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -607,16 +698,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8418,
+        "total": 8409,
         "by_severity": {
-          "INFO": 7280,
-          "WARNING": 1138
+          "INFO": 7268,
+          "WARNING": 1141
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1047,
+          "CONCEPT_DISAGREEMENT": 1050,
           "NEGATIVE_WHERE_IMPOSSIBLE": 9,
           "RESTATEMENT_CONFLICT": 82,
-          "UNKNOWN_CONCEPT": 7280
+          "UNKNOWN_CONCEPT": 7268
         }
       },
       "latestFiling": {
@@ -627,13 +718,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4d25eb0638857a74aa7c71ecf0d3f4eaa3ba7e1e5fe1e69c5296bd00d2772fe8",
@@ -644,8 +735,8 @@
       "name": "Rekor Systems, Inc.",
       "sic": "3669",
       "rawFacts": 13178,
-      "mappedFacts": 3471,
-      "unmappedFacts": 9674,
+      "mappedFacts": 3512,
+      "unmappedFacts": 9646,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -764,18 +855,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10124,
+        "total": 10099,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 9674,
-          "WARNING": 449
+          "INFO": 9646,
+          "WARNING": 452
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 292,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 141,
+          "RESTATEMENT_CONFLICT": 144,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 9674
+          "UNKNOWN_CONCEPT": 9646
         }
       },
       "latestFiling": {
@@ -786,13 +877,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "951467dc1bd56f9dba32c0afbd3f889650abac07dd62e11c2fa00dc54cd492d2",

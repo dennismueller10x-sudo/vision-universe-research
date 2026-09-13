@@ -7,8 +7,8 @@
       "name": "UNITED STATES ANTIMONY CORP",
       "sic": "3330",
       "rawFacts": 16690,
-      "mappedFacts": 6617,
-      "unmappedFacts": 10214,
+      "mappedFacts": 6629,
+      "unmappedFacts": 10206,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,11 +127,11 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10832,
+        "total": 10826,
         "by_severity": {
           "ERROR": 5,
-          "INFO": 10214,
-          "WARNING": 613
+          "INFO": 10206,
+          "WARNING": 615
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 421,
@@ -139,8 +139,8 @@
           "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 6,
-          "RESTATEMENT_CONFLICT": 161,
-          "UNKNOWN_CONCEPT": 10214
+          "RESTATEMENT_CONFLICT": 163,
+          "UNKNOWN_CONCEPT": 10206
         }
       },
       "latestFiling": {
@@ -151,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1dd2b8895c086c906057da37ef01a7b165e7e80385eb5dc6d2c491af7c02cee7",
@@ -168,17 +168,108 @@
       "name": "ARROW FINANCIAL CORP",
       "sic": "6021",
       "rawFacts": 37364,
-      "mappedFacts": 4833,
-      "unmappedFacts": 32870,
+      "mappedFacts": 6601,
+      "unmappedFacts": 31373,
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 3.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 40,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        },
         "net_interest_income": {
           "annualPeriods": 15,
           "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2023-12-31",
           "historyYears": 14.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 57,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 10.0
+        },
+        "time_deposits": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -296,16 +387,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 33212,
+        "total": 31720,
         "by_severity": {
-          "INFO": 32870,
-          "WARNING": 342
+          "INFO": 31373,
+          "WARNING": 347
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 266,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
-          "RESTATEMENT_CONFLICT": 71,
-          "UNKNOWN_CONCEPT": 32870
+          "RESTATEMENT_CONFLICT": 76,
+          "UNKNOWN_CONCEPT": 31373
         }
       },
       "latestFiling": {
@@ -316,13 +407,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "89b6d97103d3f3ba03564107653916968d4bd7c64e97ff1198889a1269c97c50",
@@ -333,8 +424,8 @@
       "name": "SM Energy Co",
       "sic": "1311",
       "rawFacts": 22003,
-      "mappedFacts": 5208,
-      "unmappedFacts": 17128,
+      "mappedFacts": 5443,
+      "unmappedFacts": 16893,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -453,9 +544,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17190,
+        "total": 16955,
         "by_severity": {
-          "INFO": 17128,
+          "INFO": 16893,
           "ERROR": 7,
           "WARNING": 55
         },
@@ -463,7 +554,7 @@
           "CONCEPT_DISAGREEMENT": 48,
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 17128
+          "UNKNOWN_CONCEPT": 16893
         }
       },
       "latestFiling": {
@@ -474,13 +565,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dacf97609a99424b804c5efbe8bdb52976793a40c59135d899290b9fd9decc2e",
@@ -491,8 +582,8 @@
       "name": "Primoris Services Corp",
       "sic": "1623",
       "rawFacts": 20389,
-      "mappedFacts": 7724,
-      "unmappedFacts": 12992,
+      "mappedFacts": 7863,
+      "unmappedFacts": 12584,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -611,19 +702,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13469,
+        "total": 13330,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 12992,
-          "WARNING": 475
+          "INFO": 12584,
+          "WARNING": 744
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 431,
           "FUTURE_DATA_LEAK": 2,
-          "PERIOD_MISMATCH": 5,
+          "PERIOD_MISMATCH": 247,
           "RESTATEMENT_CONFLICT": 12,
-          "UNEXPECTED_DURATION": 27,
-          "UNKNOWN_CONCEPT": 12992
+          "UNEXPECTED_DURATION": 54,
+          "UNKNOWN_CONCEPT": 12584
         }
       },
       "latestFiling": {
@@ -634,13 +725,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9e09c6e6af97c0765f1051c7211b4469e303cd8715e21b988693d407b363a257",
@@ -651,8 +742,8 @@
       "name": "NAVIENT CORP",
       "sic": "6211",
       "rawFacts": 20132,
-      "mappedFacts": 4519,
-      "unmappedFacts": 15689,
+      "mappedFacts": 5675,
+      "unmappedFacts": 14642,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -772,15 +863,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16073,
+        "total": 15031,
         "by_severity": {
-          "INFO": 15689,
-          "WARNING": 384
+          "INFO": 14642,
+          "WARNING": 389
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 324,
           "RESTATEMENT_CONFLICT": 60,
-          "UNKNOWN_CONCEPT": 15689
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 14642
         }
       },
       "latestFiling": {
@@ -791,13 +883,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5e1b638a880b718c0fd1b22cbeefc2c5b2d9c20468d8f2eebf16f0cf22f8a9b0",
@@ -944,13 +1036,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "17153a7af6496fe40a359fbf190978f29cc9384f6f3cea460302390193630eca",

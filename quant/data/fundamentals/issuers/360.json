@@ -7,8 +7,8 @@
       "name": "PENTAIR plc",
       "sic": "3550",
       "rawFacts": 30487,
-      "mappedFacts": 8422,
-      "unmappedFacts": 21874,
+      "mappedFacts": 8577,
+      "unmappedFacts": 21741,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22886,
+        "total": 22755,
         "by_severity": {
-          "INFO": 21874,
+          "INFO": 21741,
           "ERROR": 1,
-          "WARNING": 1011
+          "WARNING": 1013
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 780,
           "FISCAL_PERIOD_CONFLICT": 30,
           "FUTURE_DATA_LEAK": 1,
+          "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 201,
-          "UNKNOWN_CONCEPT": 21874
+          "UNKNOWN_CONCEPT": 21741
         }
       },
       "latestFiling": {
@@ -149,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a70161487d52f257c6f51a580b53f83715d85432d0eeaed5fb231faa0ec02e09",
@@ -166,8 +167,8 @@
       "name": "GLOBAL PAYMENTS INC",
       "sic": "7389",
       "rawFacts": 25254,
-      "mappedFacts": 7363,
-      "unmappedFacts": 17581,
+      "mappedFacts": 7402,
+      "unmappedFacts": 17542,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +287,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18800,
+        "total": 18761,
         "by_severity": {
-          "INFO": 17581,
+          "INFO": 17542,
           "ERROR": 2,
           "WARNING": 1217
         },
@@ -298,7 +299,7 @@
           "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 209,
           "UNEXPECTED_DURATION": 76,
-          "UNKNOWN_CONCEPT": 17581
+          "UNKNOWN_CONCEPT": 17542
         }
       },
       "latestFiling": {
@@ -309,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "29f302be304a9051ba94cbdbf586002633524dd4d0bb09608bb49ed3a47c9530",
@@ -326,8 +327,8 @@
       "name": "RedCloud Holdings plc",
       "sic": "5990",
       "rawFacts": 802,
-      "mappedFacts": 248,
-      "unmappedFacts": 586,
+      "mappedFacts": 252,
+      "unmappedFacts": 584,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -445,16 +446,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 605,
+        "total": 603,
         "by_severity": {
-          "INFO": 586,
+          "INFO": 584,
           "WARNING": 19
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 14,
           "RESTATEMENT_CONFLICT": 1,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 586
+          "UNKNOWN_CONCEPT": 584
         }
       },
       "latestFiling": {
@@ -465,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6997c94c88fc81ef51fb79aa4a955c7b62f80cb7f08ccf5e1fdaaca7e4f88568",

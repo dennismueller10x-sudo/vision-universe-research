@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c8bbfce9e9e3e8da42696cb847f9188d09e9069b0bd8f78d7d4354ca7d90787f",
@@ -164,8 +164,8 @@
       "name": "Acushnet Holdings Corp.",
       "sic": "3949",
       "rawFacts": 16370,
-      "mappedFacts": 4861,
-      "unmappedFacts": 11631,
+      "mappedFacts": 5188,
+      "unmappedFacts": 11299,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +284,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12149,
+        "total": 11822,
         "by_severity": {
-          "INFO": 11631,
-          "WARNING": 518
+          "INFO": 11299,
+          "WARNING": 523
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 478,
+          "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 11631
+          "UNKNOWN_CONCEPT": 11299
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a9daa54b9e9e48c4620b2c45ebf94c69cb961c6a946e1191d5f56fea0150233d",
@@ -459,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "215f1eb6e3c272d36e1864a00ae91c1454097524e4539fcee013a20b5a78b129",
@@ -476,8 +477,8 @@
       "name": "Crane Co",
       "sic": "3490",
       "rawFacts": 5366,
-      "mappedFacts": 1626,
-      "unmappedFacts": 3728,
+      "mappedFacts": 1689,
+      "unmappedFacts": 3665,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -596,15 +597,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3887,
+        "total": 3824,
         "by_severity": {
-          "INFO": 3728,
+          "INFO": 3665,
           "WARNING": 159
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 97,
           "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 3728
+          "UNKNOWN_CONCEPT": 3665
         }
       },
       "latestFiling": {
@@ -615,13 +616,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e0fb03a98a42fa7a97c38e8f3132a34ad27dd53bc1d0d130030bfe4b1bee554b",
@@ -632,8 +633,8 @@
       "name": "Hall Chadwick Acquisition Corp",
       "sic": "3341",
       "rawFacts": 219,
-      "mappedFacts": 70,
-      "unmappedFacts": 122,
+      "mappedFacts": 72,
+      "unmappedFacts": 119,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -754,16 +755,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 162,
+        "total": 160,
         "by_severity": {
-          "INFO": 122,
-          "WARNING": 40
+          "INFO": 119,
+          "WARNING": 41
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 11,
           "RESTATEMENT_CONFLICT": 4,
-          "UNEXPECTED_DURATION": 25,
-          "UNKNOWN_CONCEPT": 122
+          "UNEXPECTED_DURATION": 26,
+          "UNKNOWN_CONCEPT": 119
         }
       },
       "latestFiling": {
@@ -774,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dee3eeeb0c153ec2e80cba2fab017046ffc06c8226ce3a0d71319eb72c37ff30",

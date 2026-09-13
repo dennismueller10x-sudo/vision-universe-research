@@ -145,13 +145,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9bff003d1c201966eeefe29ffd5e6b38c7d9372453d5c3411834d584a302fbc4",
@@ -163,7 +163,7 @@
       "sic": "1311",
       "rawFacts": 15495,
       "mappedFacts": 4520,
-      "unmappedFacts": 10962,
+      "unmappedFacts": 10949,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -285,15 +285,16 @@
         "total": 11354,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10962,
-          "WARNING": 391
+          "INFO": 10949,
+          "WARNING": 404
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 197,
           "FUTURE_DATA_LEAK": 1,
+          "PERIOD_MISMATCH": 13,
           "RESTATEMENT_CONFLICT": 123,
           "UNEXPECTED_DURATION": 71,
-          "UNKNOWN_CONCEPT": 10962
+          "UNKNOWN_CONCEPT": 10949
         }
       },
       "latestFiling": {
@@ -304,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "116d3e1fdcd11f7e9e8cf9a787a5902f0a9ed8ab3df22a0a1a4b10471199f0e0",
@@ -461,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e1ab3e8a5d577258f719deff82b54488a4f84af3c39d1a9730cc608558175254",
@@ -478,8 +479,8 @@
       "name": "Nuveen Churchill Direct Lending Corp.",
       "sic": null,
       "rawFacts": 5283,
-      "mappedFacts": 859,
-      "unmappedFacts": 4463,
+      "mappedFacts": 914,
+      "unmappedFacts": 4333,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -598,16 +599,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4560,
+        "total": 4523,
         "by_severity": {
-          "INFO": 4463,
-          "WARNING": 97
+          "INFO": 4333,
+          "WARNING": 190
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 66,
           "FISCAL_PERIOD_CONFLICT": 5,
+          "PERIOD_MISMATCH": 93,
           "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 4463
+          "UNKNOWN_CONCEPT": 4333
         }
       },
       "latestFiling": {
@@ -618,13 +620,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b6f8954ceeb0661567462d46e687eda05498ad79b0661e4bf77a0adc6241030a",

@@ -7,8 +7,8 @@
       "name": "SEABOARD CORP /DE/",
       "sic": "5150",
       "rawFacts": 20418,
-      "mappedFacts": 6261,
-      "unmappedFacts": 14125,
+      "mappedFacts": 6326,
+      "unmappedFacts": 14051,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14403,
+        "total": 14342,
         "by_severity": {
-          "INFO": 14125,
-          "WARNING": 278
+          "INFO": 14051,
+          "WARNING": 291
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 258,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 14125
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 14051
         }
       },
       "latestFiling": {
@@ -146,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6e2ee914f8543e9d01aa289d1c522b4069de19c4e62bf8cd1c65795748660b55",
@@ -163,8 +165,8 @@
       "name": "TELOS CORP",
       "sic": "7373",
       "rawFacts": 19565,
-      "mappedFacts": 5994,
-      "unmappedFacts": 13395,
+      "mappedFacts": 6026,
+      "unmappedFacts": 13375,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -283,9 +285,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14167,
+        "total": 14147,
         "by_severity": {
-          "INFO": 13395,
+          "INFO": 13375,
           "ERROR": 1,
           "WARNING": 771
         },
@@ -293,7 +295,7 @@
           "CONCEPT_DISAGREEMENT": 707,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 64,
-          "UNKNOWN_CONCEPT": 13395
+          "UNKNOWN_CONCEPT": 13375
         }
       },
       "latestFiling": {
@@ -304,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "59ce3e70c1e286a155edb8d92a578641e42b016f5eff57e568c1c2f832fe0d7e",
@@ -460,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "760d62fbfecfdaf389fc1afa904ada92e262fee8ce9e14cef918d796d4d37135",
@@ -477,11 +479,54 @@
       "name": "Apple Hospitality REIT, Inc.",
       "sic": "6798",
       "rawFacts": 14477,
-      "mappedFacts": 4554,
-      "unmappedFacts": 10051,
+      "mappedFacts": 5627,
+      "unmappedFacts": 9256,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 34,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 55,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "secured_debt": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "APLE"
@@ -597,16 +642,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10305,
+        "total": 9590,
         "by_severity": {
-          "INFO": 10051,
-          "WARNING": 254
+          "INFO": 9256,
+          "WARNING": 334
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 222,
-          "RESTATEMENT_CONFLICT": 26,
+          "CONCEPT_DISAGREEMENT": 290,
+          "RESTATEMENT_CONFLICT": 38,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 10051
+          "UNKNOWN_CONCEPT": 9256
         }
       },
       "latestFiling": {
@@ -617,13 +662,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fa4da7a1b16be2b721bcda11d7ffa91f887876003f6ef5c438fb67bff879c62e",
@@ -772,13 +817,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a0c670deeb4c78d6f260dc9caffd3dd97d016dec2bcc52992391b25245dde6b8",

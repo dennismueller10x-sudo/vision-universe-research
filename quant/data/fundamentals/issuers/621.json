@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2cdeca7648de1f236e84487d90f3c58df38a5c7855463bc21fe536aa48188710",
@@ -164,8 +164,8 @@
       "name": "RPM INTERNATIONAL INC/DE/",
       "sic": "2851",
       "rawFacts": 27043,
-      "mappedFacts": 7545,
-      "unmappedFacts": 19689,
+      "mappedFacts": 7847,
+      "unmappedFacts": 19428,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +284,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20301,
+        "total": 20042,
         "by_severity": {
-          "INFO": 19689,
-          "WARNING": 612
+          "INFO": 19428,
+          "WARNING": 614
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 573,
-          "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 19689
+          "RESTATEMENT_CONFLICT": 41,
+          "UNKNOWN_CONCEPT": 19428
         }
       },
       "latestFiling": {
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6389f9415990241727ac9e41d87f7f0a3ca02fca75525f92d38a3e26f8cd8744",
@@ -320,11 +320,75 @@
       "name": "ERIE INDEMNITY CO",
       "sic": "6411",
       "rawFacts": 17674,
-      "mappedFacts": 4100,
-      "unmappedFacts": 14055,
+      "mappedFacts": 4917,
+      "unmappedFacts": 13353,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 6.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 6.0
+        },
+        "claims_liability": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 5.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 6.0
+        },
+        "total_investments": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 23,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 5.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2014-12-31",
+          "historyYears": 4.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ERIE"
@@ -440,16 +504,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14305,
+        "total": 13612,
         "by_severity": {
-          "INFO": 14055,
-          "WARNING": 250
+          "INFO": 13353,
+          "WARNING": 259
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 174,
-          "FISCAL_PERIOD_CONFLICT": 5,
-          "RESTATEMENT_CONFLICT": 71,
-          "UNKNOWN_CONCEPT": 14055
+          "FISCAL_PERIOD_CONFLICT": 7,
+          "RESTATEMENT_CONFLICT": 78,
+          "UNKNOWN_CONCEPT": 13353
         }
       },
       "latestFiling": {
@@ -460,13 +524,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd08f04da152c16731574a80981804015099dad5cdf9e6ad6fea6f9a5075f6c9",
@@ -482,12 +546,103 @@
       "calendarYears": 17,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
           "annualPeriods": 3,
           "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2023-12-31",
           "historyYears": 2.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
         }
       },
       "fiscalYearEnd": "1231",
@@ -624,13 +779,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1b0e4ccf29ca530710ddaf3930d536e2b2353ea62468666d605d8946c79054e7",
@@ -641,11 +796,54 @@
       "name": "Orchid Island Capital, Inc.",
       "sic": "6798",
       "rawFacts": 12117,
-      "mappedFacts": 3379,
-      "unmappedFacts": 8757,
+      "mappedFacts": 3986,
+      "unmappedFacts": 7927,
       "calendarYears": 15,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 56,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 13.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ORC"
@@ -760,17 +958,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9003,
+        "total": 8418,
         "by_severity": {
-          "INFO": 8757,
+          "INFO": 7927,
           "ERROR": 22,
-          "WARNING": 224
+          "WARNING": 469
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 157,
           "FUTURE_DATA_LEAK": 22,
-          "RESTATEMENT_CONFLICT": 67,
-          "UNKNOWN_CONCEPT": 8757
+          "RESTATEMENT_CONFLICT": 80,
+          "UNEXPECTED_DURATION": 232,
+          "UNKNOWN_CONCEPT": 7927
         }
       },
       "latestFiling": {
@@ -781,13 +980,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ab7ec68692e76dfbe0633c34d51dedde185afc94088c3648980403b52d5a6ba3",
@@ -798,8 +997,8 @@
       "name": "Catheter Precision, Inc.",
       "sic": "3841",
       "rawFacts": 8175,
-      "mappedFacts": 2801,
-      "unmappedFacts": 5383,
+      "mappedFacts": 2810,
+      "unmappedFacts": 5377,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -918,15 +1117,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5596,
+        "total": 5590,
         "by_severity": {
-          "INFO": 5383,
+          "INFO": 5377,
           "WARNING": 213
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 145,
           "RESTATEMENT_CONFLICT": 68,
-          "UNKNOWN_CONCEPT": 5383
+          "UNKNOWN_CONCEPT": 5377
         }
       },
       "latestFiling": {
@@ -937,13 +1136,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4135ebc480a243c4608e5b45b0961ad4de5edd09000657a7b732d10991ae3a27",
@@ -1094,13 +1293,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b5bf3d5f1eec74545e0f15a5194e064da982b477c2d8df1677885f4c5fae159d",

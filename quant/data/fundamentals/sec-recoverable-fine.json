@@ -1,43 +1,71 @@
 {
   "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
   "denominator": {
-    "SEC_RECOVERABLE": 191
+    "SEC_RECOVERABLE": 161
   },
-  "accountedFor": 191,
+  "accountedFor": 161,
   "unaccounted": 0,
   "byCause": [
     {
       "cause": "SPAC_BLANK_CHECK",
-      "count": 25,
-      "percent": 13.089,
+      "count": 14,
+      "percent": 8.6957,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
-          "symbol": "ACGC",
-          "cik": "0002111542",
-          "evidence": "SIC 6770 / Name 'ACP Holdings Acquisition Corp.'"
+          "symbol": "BREZ",
+          "cik": "0002095443",
+          "evidence": "SIC 6770 / Name 'Breeze Acquisition Corp. II'"
         },
         {
-          "symbol": "ALPX",
-          "cik": "0002125551",
-          "evidence": "SIC 6770 / Name 'Alpex Acquisition Corp'"
+          "symbol": "IPHXU",
+          "cik": "0002146310",
+          "evidence": "SIC 6770 / Name 'Inflection Point Acquisition Corp. VIII'"
         },
         {
-          "symbol": "AMAN",
-          "cik": "0002112457",
-          "evidence": "SIC 6770 / Name 'Amanat Acquisition Corp.'"
+          "symbol": "JTTT",
+          "cik": "0002145659",
+          "evidence": "SIC 6770 / Name 'JATT III Acquisition Corp'"
         },
         {
-          "symbol": "ATLQ",
-          "cik": "0002128739",
-          "evidence": "SIC 6770 / Name 'JAB Acquisition Corp I'"
+          "symbol": "NSAI",
+          "cik": "0002133719",
+          "evidence": "SIC 6770 / Name 'NorthStrive Acquisition Corp I.'"
+        }
+      ]
+    },
+    {
+      "cause": "SPECIAL_PURPOSE_ENTITY",
+      "count": 48,
+      "percent": 29.8137,
+      "consequence": "NOT_APPLICABLE",
+      "examples": [
+        {
+          "symbol": "ASGI",
+          "cik": "0001793855",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'abrdn Global Infrastructure Income Fund'"
+        },
+        {
+          "symbol": "BCAT",
+          "cik": "0001809541",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock Capital Allocation Term Trust'"
+        },
+        {
+          "symbol": "BMEZ",
+          "cik": "0001785971",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock Health Sciences Term Trust'"
+        },
+        {
+          "symbol": "BMN",
+          "cik": "0001832871",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock 2037 Municipal Target Term Tru'"
         }
       ]
     },
     {
       "cause": "BANK",
       "count": 1,
-      "percent": 0.5236,
+      "percent": 0.6211,
       "consequence": "INDUSTRY_LAYER",
       "examples": [
         {
@@ -48,109 +76,88 @@
       ]
     },
     {
-      "cause": "ASSET_MANAGER",
-      "count": 1,
-      "percent": 0.5236,
-      "consequence": "INDUSTRY_LAYER",
-      "examples": [
-        {
-          "symbol": "MSBT",
-          "cik": "0002103612",
-          "evidence": "SIC 6221"
-        }
-      ]
-    },
-    {
-      "cause": "BALANCE_SHEET_ONLY",
-      "count": 2,
-      "percent": 1.0471,
-      "consequence": "SEC_RECOVERABLE",
-      "examples": [
-        {
-          "symbol": "OBX",
-          "cik": "0002130606",
-          "evidence": "SIC 2834, keine aufloesbare Bilanz"
-        },
-        {
-          "symbol": "RACC",
-          "cik": "0002118032",
-          "evidence": "SIC 2834, keine aufloesbare Bilanz"
-        }
-      ]
-    },
-    {
-      "cause": "TRUE_MISSING_TAG_MAPPING",
-      "count": 1,
-      "percent": 0.5236,
-      "consequence": "SEC_RECOVERABLE",
-      "examples": [
-        {
-          "symbol": "IOND",
-          "cik": "0002007691",
-          "evidence": "UNKNOWN_CONCEPT=225, SIC 6199"
-        }
-      ]
-    },
-    {
       "cause": "NO_XBRL_FACTS",
-      "count": 106,
-      "percent": 55.4974,
+      "count": 13,
+      "percent": 8.0745,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
-        {
-          "symbol": "AGBK",
-          "cik": "0002081206",
-          "evidence": "companyfacts leer, Formular 20-F"
-        },
-        {
-          "symbol": "AIIR",
-          "cik": "0002097725",
-          "evidence": "companyfacts leer, Formular 20-F"
-        },
-        {
-          "symbol": "ASGI",
-          "cik": "0001793855",
-          "evidence": "companyfacts leer, Formular -"
-        },
         {
           "symbol": "BANX",
           "cik": "0001578987",
           "evidence": "companyfacts leer, Formular -"
+        },
+        {
+          "symbol": "DTSS",
+          "cik": "0002110423",
+          "evidence": "companyfacts leer, Formular -"
+        },
+        {
+          "symbol": "DXYZ",
+          "cik": "0001843974",
+          "evidence": "companyfacts leer, Formular -"
+        },
+        {
+          "symbol": "ELC",
+          "cik": "0001348952",
+          "evidence": "companyfacts leer, Formular 10-Q"
         }
       ]
     },
     {
       "cause": "NO_XBRL_FINANCIALS",
-      "count": 13,
-      "percent": 6.8063,
+      "count": 3,
+      "percent": 1.8634,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
-        {
-          "symbol": "AGMB",
-          "cik": "0002020932",
-          "evidence": "1 Fakten, nur Deckblatt (dei), Formular 20-F"
-        },
         {
           "symbol": "ALPS",
           "cik": "0002025774",
           "evidence": "1 Fakten, nur Deckblatt (dei), Formular 20-F"
         },
         {
-          "symbol": "AUGO",
-          "cik": "0001468642",
-          "evidence": "1 Fakten, nur Deckblatt (dei), Formular 20-F/A"
-        },
-        {
           "symbol": "CIB",
           "cik": "0002058897",
           "evidence": "1 Fakten, nur Deckblatt (dei), Formular 20-F"
+        },
+        {
+          "symbol": "CNI",
+          "cik": "0000016868",
+          "evidence": "6 Fakten, nur Deckblatt (dei), Formular 40-F"
+        }
+      ]
+    },
+    {
+      "cause": "VERY_YOUNG_LISTING",
+      "count": 40,
+      "percent": 24.8447,
+      "consequence": "RESOLVES_WITH_TIME",
+      "examples": [
+        {
+          "symbol": "AGBK",
+          "cik": "0002081206",
+          "evidence": "companyfacts leer, notiert seit 2026-02-11"
+        },
+        {
+          "symbol": "AGMB",
+          "cik": "0002020932",
+          "evidence": "1 Fakten, nur Deckblatt, notiert seit 2026-02-06"
+        },
+        {
+          "symbol": "AIIR",
+          "cik": "0002097725",
+          "evidence": "companyfacts leer, notiert seit 2026-05-18"
+        },
+        {
+          "symbol": "AUGO",
+          "cik": "0001468642",
+          "evidence": "1 Fakten, nur Deckblatt, notiert seit 2025-07-16"
         }
       ]
     },
     {
       "cause": "REQUIRES_REVIEW",
       "count": 42,
-      "percent": 21.9895,
+      "percent": 26.087,
       "consequence": "REQUIRES_REVIEW",
       "examples": [
         {
@@ -177,63 +184,34 @@
     }
   ],
   "byConsequence": {
-    "NOT_APPLICABLE": 25,
-    "EXTERNAL_PROVIDER_CANDIDATE": 119,
+    "RESOLVES_WITH_TIME": 40,
     "REQUIRES_REVIEW": 42,
-    "SEC_RECOVERABLE": 3,
-    "INDUSTRY_LAYER": 2
+    "EXTERNAL_PROVIDER_CANDIDATE": 16,
+    "NOT_APPLICABLE": 62,
+    "INDUSTRY_LAYER": 1
   },
-  "stillRecoverableBySec": 3,
+  "stillRecoverableBySec": 0,
   "ciksByCause": {
     "SPAC_BLANK_CHECK": [
-      "0002087450",
-      "0002101135",
-      "0002108164",
-      "0002108962",
-      "0002111038",
-      "0002111542",
-      "0002112446",
-      "0002112457",
-      "0002115404",
-      "0002122505",
-      "0002123475",
-      "0002123969",
-      "0002125551",
-      "0002125567",
-      "0002126043",
-      "0002128045",
-      "0002128739",
-      "0002128739",
-      "0002129659",
-      "0002130386",
-      "0002131853",
-      "0002133136",
-      "0002136530",
-      "0002137777",
-      "0002137965"
+      "0001926314",
+      "0002079109",
+      "0002095443",
+      "0002114229",
+      "0002122392",
+      "0002128462",
+      "0002133239",
+      "0002133719",
+      "0002134856",
+      "0002137679",
+      "0002140030",
+      "0002145659",
+      "0002146310",
+      "0002147219"
     ],
-    "BANK": [
-      "0001841644"
-    ],
-    "ASSET_MANAGER": [
-      "0002103612"
-    ],
-    "BALANCE_SHEET_ONLY": [
-      "0002118032",
-      "0002130606"
-    ],
-    "TRUE_MISSING_TAG_MAPPING": [
-      "0002007691"
-    ],
-    "NO_XBRL_FACTS": [
-      "0000041091",
-      "0000066901",
+    "SPECIAL_PURPOSE_ENTITY": [
       "0000102426",
       "0000826020",
       "0000880406",
-      "0001348952",
-      "0001467093",
-      "0001487326",
       "0001495222",
       "0001495222",
       "0001495222",
@@ -244,15 +222,10 @@
       "0001517767",
       "0001523289",
       "0001551047",
-      "0001568194",
-      "0001578987",
       "0001604174",
       "0001604174",
       "0001604174",
       "0001622148",
-      "0001716951",
-      "0001716951",
-      "0001716951",
       "0001717457",
       "0001745059",
       "0001746967",
@@ -270,83 +243,85 @@
       "0001810523",
       "0001817159",
       "0001820378",
-      "0001823255",
       "0001832871",
-      "0001839970",
       "0001843181",
-      "0001843974",
       "0001855066",
-      "0001857047",
       "0001864208",
       "0001864843",
       "0001866874",
       "0001870833",
       "0001886878",
       "0001896036",
+      "0001998043",
+      "0001998043",
+      "0002044327",
+      "0002065812",
+      "0002131040"
+    ],
+    "BANK": [
+      "0001841644"
+    ],
+    "NO_XBRL_FACTS": [
+      "0000041091",
+      "0000066901",
+      "0001348952",
+      "0001568194",
+      "0001578987",
+      "0001716951",
+      "0001716951",
+      "0001823255",
+      "0001843974",
+      "0001857047",
+      "0001930147",
+      "0002110423",
+      "0002136387"
+    ],
+    "NO_XBRL_FINANCIALS": [
+      "0000016868",
+      "0002025774",
+      "0002058897"
+    ],
+    "VERY_YOUNG_LISTING": [
+      "0001467093",
+      "0001468642",
+      "0001487326",
+      "0001716951",
+      "0001839970",
       "0001903784",
       "0001912884",
       "0001919776",
-      "0001926314",
       "0001930147",
       "0001930147",
-      "0001930147",
-      "0001998043",
-      "0001998043",
+      "0002000756",
+      "0002000756",
+      "0002000756",
       "0002002660",
       "0002004711",
+      "0002020932",
       "0002025416",
       "0002027329",
       "0002039972",
-      "0002044327",
       "0002052053",
-      "0002065812",
+      "0002054507",
       "0002070534",
-      "0002079109",
+      "0002080073",
+      "0002080845",
       "0002081119",
       "0002081206",
+      "0002087398",
       "0002092314",
       "0002095096",
-      "0002095443",
       "0002097725",
       "0002098395",
       "0002101240",
       "0002104296",
       "0002108383",
       "0002109869",
-      "0002110423",
       "0002111860",
       "0002113060",
-      "0002114229",
       "0002119292",
-      "0002122392",
       "0002124403",
-      "0002128462",
-      "0002131040",
-      "0002132582",
-      "0002133239",
-      "0002133719",
-      "0002134856",
-      "0002136387",
-      "0002137679",
-      "0002140030",
-      "0002145659",
-      "0002146310",
-      "0002147219"
-    ],
-    "NO_XBRL_FINANCIALS": [
-      "0000016868",
-      "0001468642",
-      "0002000756",
-      "0002000756",
-      "0002000756",
-      "0002020932",
-      "0002025774",
-      "0002054507",
-      "0002058897",
-      "0002080073",
-      "0002080845",
-      "0002087398",
-      "0002127043"
+      "0002132582"
     ],
     "REQUIRES_REVIEW": [
       "0000062362",
@@ -393,21 +368,17 @@
       "0002092967"
     ]
   },
-  "ciksStillRecoverable": [
-    "0002007691",
-    "0002118032",
-    "0002130606"
-  ],
+  "ciksStillRecoverable": [],
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.8.0",
+    "normalization_logic": "1.9.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.4.0"
+      "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T16:19:59+00:00"
+  "generatedAtUtc": "2026-09-13T18:28:25+00:00"
 }

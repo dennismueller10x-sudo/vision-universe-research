@@ -7,8 +7,8 @@
       "name": "OXFORD INDUSTRIES INC",
       "sic": "2320",
       "rawFacts": 18270,
-      "mappedFacts": 7293,
-      "unmappedFacts": 11259,
+      "mappedFacts": 7492,
+      "unmappedFacts": 11060,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11637,
+        "total": 11438,
         "by_severity": {
-          "INFO": 11259,
+          "INFO": 11060,
           "WARNING": 378
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 323,
           "FISCAL_PERIOD_CONFLICT": 6,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 11259
+          "UNKNOWN_CONCEPT": 11060
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7ea58367587180191dcf03f95eba606dc006809b69be42e1ac09daad2e4caf34",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "42d03c2269d40b5882ff9552f8ac51672e210ec0f68dcfac83fcf632fe81d7f7",
@@ -322,8 +322,8 @@
       "name": "FEDERATED HERMES, INC.",
       "sic": "6282",
       "rawFacts": 22803,
-      "mappedFacts": 5490,
-      "unmappedFacts": 17466,
+      "mappedFacts": 5624,
+      "unmappedFacts": 17332,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17861,
+        "total": 17727,
         "by_severity": {
-          "INFO": 17466,
+          "INFO": 17332,
           "ERROR": 4,
           "WARNING": 391
         },
@@ -452,7 +452,7 @@
           "CONCEPT_DISAGREEMENT": 381,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 17466
+          "UNKNOWN_CONCEPT": 17332
         }
       },
       "latestFiling": {
@@ -463,13 +463,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0dc6cf495bcb63ef604218da7ede49b455f628acc0482014e325cf3c1cf2f3a4",
@@ -480,8 +480,8 @@
       "name": "Zurn Elkay Water Solutions Corp",
       "sic": "3560",
       "rawFacts": 24331,
-      "mappedFacts": 6768,
-      "unmappedFacts": 16989,
+      "mappedFacts": 6801,
+      "unmappedFacts": 16955,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -600,17 +600,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18116,
+        "total": 18083,
         "by_severity": {
-          "INFO": 16989,
+          "INFO": 16955,
           "ERROR": 2,
-          "WARNING": 1125
+          "WARNING": 1126
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 869,
           "FUTURE_DATA_LEAK": 2,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 256,
-          "UNKNOWN_CONCEPT": 16989
+          "UNKNOWN_CONCEPT": 16955
         }
       },
       "latestFiling": {
@@ -621,13 +622,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3cc1e90e0eb1a1393151716a5f9231d5faf82b1ac7ab6a116db74638f5888057",
@@ -776,13 +777,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "af12823cd3fd160e7da5ef02a44a21b16473cda9a9aaa5c62bfa76e4f171bc6f",
@@ -933,13 +934,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1c2f52a34715a7983b2dde6b68da346a292e458b1d5a5d171fec854b6a655eb2",

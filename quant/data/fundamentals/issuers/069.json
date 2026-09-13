@@ -12,7 +12,98 @@
       "calendarYears": 11,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "net_interest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "time_deposits": {
           "annualPeriods": 0,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": null,
@@ -155,13 +246,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "077709f3a2e7bf47f3c27d859625a2b9ac9132180589faa678460b0e80bdef67",
@@ -172,8 +263,8 @@
       "name": "AVALON HOLDINGS CORP",
       "sic": "4953",
       "rawFacts": 14614,
-      "mappedFacts": 4878,
-      "unmappedFacts": 9902,
+      "mappedFacts": 4879,
+      "unmappedFacts": 9901,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -292,16 +383,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10281,
+        "total": 10280,
         "by_severity": {
-          "INFO": 9902,
+          "INFO": 9901,
           "WARNING": 379
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 325,
           "FISCAL_PERIOD_CONFLICT": 13,
           "RESTATEMENT_CONFLICT": 41,
-          "UNKNOWN_CONCEPT": 9902
+          "UNKNOWN_CONCEPT": 9901
         }
       },
       "latestFiling": {
@@ -312,13 +403,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b15498694cec22ce72d97ee010e927ea0d196d7c757fdc1fad5da4e965703a38",
@@ -467,13 +558,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4e1f5f0677cc88db7bba0d7ed2bba63aa29467bd32511503139219d5b010263c",
@@ -484,8 +575,8 @@
       "name": "MapLight Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 972,
-      "mappedFacts": 289,
-      "unmappedFacts": 706,
+      "mappedFacts": 302,
+      "unmappedFacts": 698,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -603,14 +694,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 709,
+        "total": 701,
         "by_severity": {
-          "INFO": 706,
+          "INFO": 698,
           "WARNING": 3
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
-          "UNKNOWN_CONCEPT": 706
+          "UNKNOWN_CONCEPT": 698
         }
       },
       "latestFiling": {
@@ -621,13 +712,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2386b1c585c8d638fbb8f492d2e52055b2f8ff99ccc0a72cfa9ccf12989901ba",
@@ -638,8 +729,8 @@
       "name": "Nextdoor Holdings, Inc.",
       "sic": "7370",
       "rawFacts": 6198,
-      "mappedFacts": 1902,
-      "unmappedFacts": 4385,
+      "mappedFacts": 1912,
+      "unmappedFacts": 4379,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -757,9 +848,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4513,
+        "total": 4507,
         "by_severity": {
-          "INFO": 4385,
+          "INFO": 4379,
           "WARNING": 128
         },
         "by_code": {
@@ -767,7 +858,7 @@
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 21,
           "UNEXPECTED_DURATION": 40,
-          "UNKNOWN_CONCEPT": 4385
+          "UNKNOWN_CONCEPT": 4379
         }
       },
       "latestFiling": {
@@ -778,13 +869,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "1e6dd634411a7d91d2351c47b37168e3ca95f24b3e090863e993ddc090e163df",

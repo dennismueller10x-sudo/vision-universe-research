@@ -7,8 +7,8 @@
       "name": "HALLIBURTON CO",
       "sic": "1389",
       "rawFacts": 21368,
-      "mappedFacts": 6768,
-      "unmappedFacts": 14609,
+      "mappedFacts": 6915,
+      "unmappedFacts": 14462,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,19 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15365,
+        "total": 15222,
         "by_severity": {
-          "INFO": 14609,
+          "INFO": 14462,
           "ERROR": 1,
-          "WARNING": 755
+          "WARNING": 759
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 626,
           "EXTREME_VALUE": 60,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 68,
+          "RESTATEMENT_CONFLICT": 72,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 14609
+          "UNKNOWN_CONCEPT": 14462
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f88db51da615c0972a320dda2a4c53f48d06c604704172b2305d8604475010b0",
@@ -167,8 +167,8 @@
       "name": "HEALTHCARE SERVICES GROUP INC",
       "sic": "8050",
       "rawFacts": 23409,
-      "mappedFacts": 6462,
-      "unmappedFacts": 17344,
+      "mappedFacts": 6731,
+      "unmappedFacts": 17139,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -286,17 +286,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17696,
+        "total": 17494,
         "by_severity": {
-          "INFO": 17344,
-          "WARNING": 352
+          "INFO": 17139,
+          "WARNING": 355
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 321,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 28,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 17344
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 17139
         }
       },
       "latestFiling": {
@@ -307,13 +307,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "be17a1515f54a68dce95afdc0b615b2d9ed50b689311ac70cc222b603b81a07d",
@@ -466,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fea445bf13d1e938249db817028c4c3a7077732faa27de976423c4104cf1ad42",
@@ -483,8 +483,8 @@
       "name": "AMERICAN EAGLE OUTFITTERS INC",
       "sic": "5651",
       "rawFacts": 24932,
-      "mappedFacts": 7312,
-      "unmappedFacts": 17462,
+      "mappedFacts": 7525,
+      "unmappedFacts": 17242,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -603,17 +603,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18372,
+        "total": 18158,
         "by_severity": {
-          "INFO": 17462,
-          "WARNING": 910
+          "INFO": 17242,
+          "WARNING": 916
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 758,
-          "FISCAL_PERIOD_CONFLICT": 48,
-          "RESTATEMENT_CONFLICT": 103,
+          "FISCAL_PERIOD_CONFLICT": 51,
+          "RESTATEMENT_CONFLICT": 106,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 17462
+          "UNKNOWN_CONCEPT": 17242
         }
       },
       "latestFiling": {
@@ -624,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "211b092400c45aa19bfc3d4b4395dff669c0af6fb00319c2fa36cf5ef8951176",
@@ -641,8 +641,8 @@
       "name": "DEVON ENERGY CORP/DE",
       "sic": "1311",
       "rawFacts": 33308,
-      "mappedFacts": 7291,
-      "unmappedFacts": 25759,
+      "mappedFacts": 7363,
+      "unmappedFacts": 25713,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -761,18 +761,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26912,
+        "total": 26867,
         "by_severity": {
-          "INFO": 25759,
+          "INFO": 25713,
           "ERROR": 1,
-          "WARNING": 1152
+          "WARNING": 1153
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 930,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 220,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 25759
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 25713
         }
       },
       "latestFiling": {
@@ -783,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "2ca2dbfc365bfdc63b3194f4641e40a232c3b12e552aacbf86b35589bfdbc817",
@@ -800,8 +800,8 @@
       "name": "Immunome Inc.",
       "sic": "2834",
       "rawFacts": 4755,
-      "mappedFacts": 1820,
-      "unmappedFacts": 2928,
+      "mappedFacts": 1822,
+      "unmappedFacts": 2927,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -920,16 +920,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2966,
+        "total": 2965,
         "by_severity": {
-          "INFO": 2928,
+          "INFO": 2927,
           "WARNING": 38
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 4,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 2928
+          "UNKNOWN_CONCEPT": 2927
         }
       },
       "latestFiling": {
@@ -940,13 +940,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "7e93c06ea880846785201a902ceca9b222fe10fbb09a6c5754285d392bf4391a",
@@ -957,8 +957,8 @@
       "name": "Senmiao Technology Ltd",
       "sic": "7510",
       "rawFacts": 11878,
-      "mappedFacts": 2738,
-      "unmappedFacts": 8720,
+      "mappedFacts": 2746,
+      "unmappedFacts": 8712,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -1078,17 +1078,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9597,
+        "total": 9591,
         "by_severity": {
-          "INFO": 8720,
+          "INFO": 8712,
           "ERROR": 1,
-          "WARNING": 876
+          "WARNING": 878
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 576,
+          "CONCEPT_DISAGREEMENT": 578,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 300,
-          "UNKNOWN_CONCEPT": 8720
+          "UNKNOWN_CONCEPT": 8712
         }
       },
       "latestFiling": {
@@ -1099,13 +1099,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "048dd72b60f37bf1d7fb671317963d8d45a0e7de54dfe1ed9d4ee3289ea811ca",
@@ -1254,13 +1254,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ac6cb47a2a2b289971821f4aeac36740d2c8b3fa8919a79a97e6de952b11c05",
@@ -1271,8 +1271,8 @@
       "name": "Grayscale Sui Staking ETF",
       "sic": "6221",
       "rawFacts": 350,
-      "mappedFacts": 44,
-      "unmappedFacts": 308,
+      "mappedFacts": 50,
+      "unmappedFacts": 302,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1390,9 +1390,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 316,
+        "total": 310,
         "by_severity": {
-          "INFO": 308,
+          "INFO": 302,
           "ERROR": 1,
           "WARNING": 7
         },
@@ -1401,7 +1401,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 2,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 308
+          "UNKNOWN_CONCEPT": 302
         }
       },
       "latestFiling": {
@@ -1412,13 +1412,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ebc31f0a6ec122c36204fb2aaee20be061fde1104987535c372301cf29b89702",

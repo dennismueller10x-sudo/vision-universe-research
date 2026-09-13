@@ -7,8 +7,8 @@
       "name": "STANDEX INTERNATIONAL CORP/DE/",
       "sic": "3580",
       "rawFacts": 24565,
-      "mappedFacts": 6644,
-      "unmappedFacts": 17722,
+      "mappedFacts": 6846,
+      "unmappedFacts": 17529,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18559,
+        "total": 18366,
         "by_severity": {
-          "INFO": 17722,
+          "INFO": 17529,
           "WARNING": 837
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 727,
           "RESTATEMENT_CONFLICT": 110,
-          "UNKNOWN_CONCEPT": 17722
+          "UNKNOWN_CONCEPT": 17529
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f0ebfe3f93f784b2e114e3d542988391b4b7254705668981fd312f1d3445204",
@@ -163,8 +163,8 @@
       "name": "FISERV INC",
       "sic": "7389",
       "rawFacts": 25519,
-      "mappedFacts": 7324,
-      "unmappedFacts": 18061,
+      "mappedFacts": 7332,
+      "unmappedFacts": 18057,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -283,15 +283,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19003,
+        "total": 18999,
         "by_severity": {
-          "INFO": 18061,
+          "INFO": 18057,
           "WARNING": 942
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 814,
           "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 18061
+          "UNKNOWN_CONCEPT": 18057
         }
       },
       "latestFiling": {
@@ -302,13 +302,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "95e44236a4ecf26ff0650e225cf509e6b39d0cf4860ff8a89d7eff7cf9cf54f5",
@@ -319,8 +319,8 @@
       "name": "Eloxx Pharmaceuticals, Inc.",
       "sic": "2836",
       "rawFacts": 12598,
-      "mappedFacts": 3624,
-      "unmappedFacts": 8948,
+      "mappedFacts": 3625,
+      "unmappedFacts": 8947,
       "calendarYears": 30,
       "industry": null,
       "industryMetrics": {},
@@ -439,9 +439,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9492,
+        "total": 9491,
         "by_severity": {
-          "INFO": 8948,
+          "INFO": 8947,
           "ERROR": 1,
           "WARNING": 543
         },
@@ -451,7 +451,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 192,
           "UNEXPECTED_DURATION": 143,
-          "UNKNOWN_CONCEPT": 8948
+          "UNKNOWN_CONCEPT": 8947
         }
       },
       "latestFiling": {
@@ -462,13 +462,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a6e095825ce5847a708b59985de6a58c7ea54251778a75b88dc9b4fe67a0b5b7",
@@ -479,8 +479,8 @@
       "name": "BRUKER CORP",
       "sic": "3826",
       "rawFacts": 26338,
-      "mappedFacts": 6951,
-      "unmappedFacts": 18776,
+      "mappedFacts": 6997,
+      "unmappedFacts": 18710,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -600,18 +600,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19866,
+        "total": 19820,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 18776,
-          "WARNING": 1087
+          "INFO": 18710,
+          "WARNING": 1107
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 997,
           "FUTURE_DATA_LEAK": 3,
-          "PERIOD_MISMATCH": 48,
+          "PERIOD_MISMATCH": 67,
           "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 18776
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 18710
         }
       },
       "latestFiling": {
@@ -622,13 +623,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "25246278ce64c668b3302c9ee64f26a5691c3ca5cbbe0b54f68bfbad6ab100f1",
@@ -777,13 +778,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d8d501f8f6413a03b0d49c29d8248fe47772ae8188a57eae11072a1f2d54775c",

@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a86eb84ec98d3c53cf82d673af3e526cead74ca00903516b910d4c30aa1ba89d",
@@ -164,8 +164,8 @@
       "name": "SOLITARIO RESOURCES CORP.",
       "sic": "1040",
       "rawFacts": 12924,
-      "mappedFacts": 3546,
-      "unmappedFacts": 9649,
+      "mappedFacts": 3578,
+      "unmappedFacts": 9617,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,17 +284,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9887,
+        "total": 9855,
         "by_severity": {
           "ERROR": 17,
-          "INFO": 9649,
+          "INFO": 9617,
           "WARNING": 221
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 177,
           "FUTURE_DATA_LEAK": 17,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 9649
+          "UNKNOWN_CONCEPT": 9617
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "83f98ef77dd7add027010534de12e737a9d7f64470c2632483b2a942d4c9cc47",

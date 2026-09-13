@@ -7,8 +7,8 @@
       "name": "StoneX Group Inc.",
       "sic": "6200",
       "rawFacts": 31537,
-      "mappedFacts": 6031,
-      "unmappedFacts": 25166,
+      "mappedFacts": 6351,
+      "unmappedFacts": 24858,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 26177,
+        "total": 25878,
         "by_severity": {
-          "INFO": 25166,
+          "INFO": 24858,
           "ERROR": 2,
-          "WARNING": 1009
+          "WARNING": 1018
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 800,
           "FUTURE_DATA_LEAK": 2,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 206,
-          "UNKNOWN_CONCEPT": 25166
+          "RESTATEMENT_CONFLICT": 215,
+          "UNKNOWN_CONCEPT": 24858
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4cd8a5e7ac98fdc5c353923224e70e6cc3c7c7c9e4cebc9adda5a02fa3451da5",
@@ -166,8 +166,8 @@
       "name": "LENNAR CORP /NEW/",
       "sic": "1520",
       "rawFacts": 18651,
-      "mappedFacts": 5172,
-      "unmappedFacts": 13337,
+      "mappedFacts": 5275,
+      "unmappedFacts": 13248,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -287,17 +287,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13845,
+        "total": 13760,
         "by_severity": {
-          "INFO": 13337,
-          "WARNING": 508
+          "INFO": 13248,
+          "WARNING": 512
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 451,
           "FISCAL_PERIOD_CONFLICT": 5,
           "RESTATEMENT_CONFLICT": 44,
-          "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 13337
+          "UNIT_MISMATCH": 12,
+          "UNKNOWN_CONCEPT": 13248
         }
       },
       "latestFiling": {
@@ -308,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cf9c249705d57b0a6d2be7bc010d1d5e4d14c7be822a4c5afcc612d9e4ea70ec",
@@ -325,8 +325,8 @@
       "name": "WIDEPOINT CORP",
       "sic": "7373",
       "rawFacts": 17963,
-      "mappedFacts": 6221,
-      "unmappedFacts": 12057,
+      "mappedFacts": 6231,
+      "unmappedFacts": 12047,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -445,9 +445,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12479,
+        "total": 12469,
         "by_severity": {
-          "INFO": 12057,
+          "INFO": 12047,
           "ERROR": 7,
           "WARNING": 415
         },
@@ -456,7 +456,7 @@
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 77,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12057
+          "UNKNOWN_CONCEPT": 12047
         }
       },
       "latestFiling": {
@@ -467,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "eb51607fafe9d40ae9051c05999519054f9e3b61332e5056d3ff728a74241e6d",
@@ -484,8 +484,8 @@
       "name": "TSS, Inc.",
       "sic": "8742",
       "rawFacts": 15915,
-      "mappedFacts": 6180,
-      "unmappedFacts": 10154,
+      "mappedFacts": 6198,
+      "unmappedFacts": 10145,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -604,10 +604,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10564,
+        "total": 10555,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10154,
+          "INFO": 10145,
           "WARNING": 409
         },
         "by_code": {
@@ -616,7 +616,7 @@
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 43,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 10154
+          "UNKNOWN_CONCEPT": 10145
         }
       },
       "latestFiling": {
@@ -627,13 +627,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f54249d46abf2c03f6ebf66cb55af2bfc49d5d8d344bd3fc5c55980a699f8d54",
@@ -644,11 +644,54 @@
       "name": "Apollo Commercial Real Estate Finance, Inc.",
       "sic": "6798",
       "rawFacts": 17481,
-      "mappedFacts": 4423,
-      "unmappedFacts": 12866,
+      "mappedFacts": 4870,
+      "unmappedFacts": 12440,
       "calendarYears": 16,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 15,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2011-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 14.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "secured_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2019-12-31",
+          "historyYears": 9.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ARI"
@@ -764,17 +807,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13205,
+        "total": 12789,
         "by_severity": {
-          "INFO": 12866,
+          "INFO": 12440,
           "ERROR": 5,
-          "WARNING": 334
+          "WARNING": 344
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 326,
+          "CONCEPT_DISAGREEMENT": 330,
           "FUTURE_DATA_LEAK": 5,
-          "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 12866
+          "RESTATEMENT_CONFLICT": 14,
+          "UNKNOWN_CONCEPT": 12440
         }
       },
       "latestFiling": {
@@ -785,13 +828,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "059e983641f4de73fe2027d776b33916cd154ed4956050e038cd0474462b2f41",
@@ -802,8 +845,8 @@
       "name": "Life360, Inc.",
       "sic": "7374",
       "rawFacts": 6841,
-      "mappedFacts": 1832,
-      "unmappedFacts": 5047,
+      "mappedFacts": 1836,
+      "unmappedFacts": 5045,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -922,15 +965,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5149,
+        "total": 5147,
         "by_severity": {
-          "INFO": 5047,
+          "INFO": 5045,
           "WARNING": 102
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 99,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 5047
+          "UNKNOWN_CONCEPT": 5045
         }
       },
       "latestFiling": {
@@ -941,13 +984,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b703db95df8eb6157f729d5e17014345f4961300ef80da7817dd5c60d920bd7a",
@@ -958,8 +1001,8 @@
       "name": "SmartKem, Inc.",
       "sic": "3674",
       "rawFacts": 6513,
-      "mappedFacts": 2042,
-      "unmappedFacts": 4501,
+      "mappedFacts": 2048,
+      "unmappedFacts": 4495,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1078,16 +1121,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4606,
+        "total": 4600,
         "by_severity": {
-          "INFO": 4501,
+          "INFO": 4495,
           "WARNING": 105
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 29,
           "RESTATEMENT_CONFLICT": 58,
           "UNEXPECTED_DURATION": 18,
-          "UNKNOWN_CONCEPT": 4501
+          "UNKNOWN_CONCEPT": 4495
         }
       },
       "latestFiling": {
@@ -1098,13 +1141,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8cfe6c7f08db261c16bb98f086665da1f543466e5f447f6c8e3f1741e537e4e9",

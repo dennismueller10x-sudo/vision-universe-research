@@ -7,8 +7,8 @@
       "name": "PARK OHIO HOLDINGS CORP",
       "sic": "3460",
       "rawFacts": 19774,
-      "mappedFacts": 6871,
-      "unmappedFacts": 12993,
+      "mappedFacts": 6931,
+      "unmappedFacts": 12933,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13806,
+        "total": 13746,
         "by_severity": {
-          "INFO": 12993,
+          "INFO": 12933,
           "WARNING": 813
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 701,
           "RESTATEMENT_CONFLICT": 112,
-          "UNKNOWN_CONCEPT": 12993
+          "UNKNOWN_CONCEPT": 12933
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66e5dd99ed4da2579e2f293a6dd188274479f9dc65a8f2f47962069fe50845cd",
@@ -163,11 +163,75 @@
       "name": "BROWN & BROWN, INC.",
       "sic": "6411",
       "rawFacts": 26247,
-      "mappedFacts": 7421,
-      "unmappedFacts": 19009,
+      "mappedFacts": 8256,
+      "unmappedFacts": 18390,
       "calendarYears": 18,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2018-12-31",
+          "lastAvailablePeriod": "2023-12-31",
+          "historyYears": 5.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "total_investments": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 11.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 49,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        }
+      },
       "fiscalYearEnd": "0119",
       "tickers": [
         "BRO"
@@ -283,19 +347,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19939,
+        "total": 19327,
         "by_severity": {
-          "INFO": 19009,
+          "INFO": 18390,
           "ERROR": 1,
-          "WARNING": 929
+          "WARNING": 936
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 765,
-          "FISCAL_PERIOD_CONFLICT": 54,
+          "FISCAL_PERIOD_CONFLICT": 57,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 102,
+          "RESTATEMENT_CONFLICT": 106,
           "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 19009
+          "UNKNOWN_CONCEPT": 18390
         }
       },
       "latestFiling": {
@@ -306,13 +370,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "68192f7fcbb03169b29a6948171acaf3b933e24ce3adf21d90b5856b010493bf",
@@ -323,8 +387,8 @@
       "name": "ADTRAN Holdings, Inc.",
       "sic": "3661",
       "rawFacts": 35608,
-      "mappedFacts": 8866,
-      "unmappedFacts": 27007,
+      "mappedFacts": 9121,
+      "unmappedFacts": 26826,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -443,17 +507,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27482,
+        "total": 27306,
         "by_severity": {
-          "INFO": 27007,
+          "INFO": 26826,
           "ERROR": 7,
-          "WARNING": 468
+          "WARNING": 473
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 441,
           "FUTURE_DATA_LEAK": 7,
-          "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 27007
+          "RESTATEMENT_CONFLICT": 29,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 26826
         }
       },
       "latestFiling": {
@@ -464,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6ba30b33a1cd371d5bb277a12b4fe4ba472fb15fac5be69761d3dabf48d30ab3",
@@ -481,8 +546,8 @@
       "name": "CaliberCos Inc.",
       "sic": "6500",
       "rawFacts": 1889,
-      "mappedFacts": 830,
-      "unmappedFacts": 1001,
+      "mappedFacts": 841,
+      "unmappedFacts": 992,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -601,15 +666,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1246,
+        "total": 1237,
         "by_severity": {
-          "INFO": 1001,
+          "INFO": 992,
           "WARNING": 245
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 191,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 1001
+          "UNKNOWN_CONCEPT": 992
         }
       },
       "latestFiling": {
@@ -620,13 +685,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e819286865842f72df5d83b2ed580ebc5220fb0a592effb9b2056f534b6e5072",
@@ -637,8 +702,8 @@
       "name": "Rimini Street, Inc.",
       "sic": "7389",
       "rawFacts": 15691,
-      "mappedFacts": 4409,
-      "unmappedFacts": 11234,
+      "mappedFacts": 4427,
+      "unmappedFacts": 11223,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -757,9 +822,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11605,
+        "total": 11594,
         "by_severity": {
-          "INFO": 11234,
+          "INFO": 11223,
           "ERROR": 1,
           "WARNING": 370
         },
@@ -770,7 +835,7 @@
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 117,
           "UNEXPECTED_DURATION": 38,
-          "UNKNOWN_CONCEPT": 11234
+          "UNKNOWN_CONCEPT": 11223
         }
       },
       "latestFiling": {
@@ -781,13 +846,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "265b06b0e15c2f5402e8369d70c8ae7cec05d20df7f8bd81c4d94d32de3917e2",
@@ -798,8 +863,8 @@
       "name": "Spyre Therapeutics, Inc.",
       "sic": "2834",
       "rawFacts": 11133,
-      "mappedFacts": 3403,
-      "unmappedFacts": 7941,
+      "mappedFacts": 3420,
+      "unmappedFacts": 7931,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -918,15 +983,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8029,
+        "total": 8019,
         "by_severity": {
-          "INFO": 7941,
+          "INFO": 7931,
           "WARNING": 88
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 37,
           "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 7941
+          "UNKNOWN_CONCEPT": 7931
         }
       },
       "latestFiling": {
@@ -937,13 +1002,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3aca1b74180e81b6e62a5fffe295d6c7479bc249aad2752d3e0482733984a586",

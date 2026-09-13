@@ -7,8 +7,8 @@
       "name": "ARGAN INC",
       "sic": "1700",
       "rawFacts": 18635,
-      "mappedFacts": 6376,
-      "unmappedFacts": 12409,
+      "mappedFacts": 6618,
+      "unmappedFacts": 12132,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12792,
+        "total": 12580,
         "by_severity": {
-          "INFO": 12409,
+          "INFO": 12132,
           "ERROR": 1,
-          "WARNING": 382
+          "WARNING": 447
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 356,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 12409
+          "PERIOD_MISMATCH": 31,
+          "RESTATEMENT_CONFLICT": 27,
+          "UNEXPECTED_DURATION": 33,
+          "UNKNOWN_CONCEPT": 12132
         }
       },
       "latestFiling": {
@@ -148,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "687bdbd8eafc6f4d7c2d3f0d82bc028d456f76e81e81f6c2793fb5969172309d",
@@ -304,13 +306,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e833508dab364bc79e876872abb9e523bb25cfe1bbe602ba0968ddd81116c985",

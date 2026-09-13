@@ -7,8 +7,8 @@
       "name": "ODYSSEY MARINE EXPLORATION INC",
       "sic": "4400",
       "rawFacts": 16022,
-      "mappedFacts": 5495,
-      "unmappedFacts": 10385,
+      "mappedFacts": 5497,
+      "unmappedFacts": 10383,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11076,
+        "total": 11074,
         "by_severity": {
-          "INFO": 10385,
+          "INFO": 10383,
           "ERROR": 7,
           "WARNING": 684
         },
@@ -139,7 +139,7 @@
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 144,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 10385
+          "UNKNOWN_CONCEPT": 10383
         }
       },
       "latestFiling": {
@@ -150,13 +150,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3cd33a2f09e53efdcba971a3b4aabc9ba0c22e217887fdbe44a470e95b0736c7",
@@ -309,13 +309,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ac92234dcb2ba8de57e511e175f2ae53384eaaf224eb4606568de6b9d90839e3",
@@ -326,17 +326,108 @@
       "name": "WAFD INC",
       "sic": "6021",
       "rawFacts": 28275,
-      "mappedFacts": 5721,
-      "unmappedFacts": 22789,
+      "mappedFacts": 7907,
+      "unmappedFacts": 20862,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2020-09-30",
+          "historyYears": 10.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deposits": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 16.0
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 17.0
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 17.0
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 17.0
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 41,
+          "firstAvailablePeriod": "2009-09-30",
+          "lastAvailablePeriod": "2019-09-30",
+          "historyYears": 10.0
+        },
         "net_interest_income": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-09-30",
           "lastAvailablePeriod": "2025-09-30",
           "historyYears": 17.0
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 17.0
+        },
+        "noninterest_expense": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 17.0
+        },
+        "noninterest_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 17.0
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2008-09-30",
+          "lastAvailablePeriod": "2019-09-30",
+          "historyYears": 11.0
+        },
+        "time_deposits": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 61,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 15.0
         }
       },
       "fiscalYearEnd": "0930",
@@ -455,19 +546,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 23147,
+        "total": 21230,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 22789,
-          "WARNING": 356
+          "INFO": 20862,
+          "WARNING": 366
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 310,
-          "FISCAL_PERIOD_CONFLICT": 14,
+          "FISCAL_PERIOD_CONFLICT": 18,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 25,
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 22789
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 27,
+          "UNEXPECTED_DURATION": 9,
+          "UNKNOWN_CONCEPT": 20862
         }
       },
       "latestFiling": {
@@ -478,13 +570,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f4529265951280a32526ba834914ff331274af495660d5b2d7af2d71ff2cdfbe",
@@ -495,11 +587,54 @@
       "name": "Franklin BSP Realty Trust, Inc.",
       "sic": "6798",
       "rawFacts": 18636,
-      "mappedFacts": 4325,
-      "unmappedFacts": 13924,
+      "mappedFacts": 5054,
+      "unmappedFacts": 13300,
       "calendarYears": 13,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2022-12-31",
+          "historyYears": 2.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "secured_debt": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "FBRT",
@@ -616,17 +751,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14586,
+        "total": 13994,
         "by_severity": {
-          "INFO": 13924,
-          "WARNING": 662
+          "INFO": 13300,
+          "WARNING": 694
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 513,
-          "PERIOD_MISMATCH": 49,
-          "RESTATEMENT_CONFLICT": 59,
-          "UNEXPECTED_DURATION": 41,
-          "UNKNOWN_CONCEPT": 13924
+          "PERIOD_MISMATCH": 55,
+          "RESTATEMENT_CONFLICT": 65,
+          "UNEXPECTED_DURATION": 61,
+          "UNKNOWN_CONCEPT": 13300
         }
       },
       "latestFiling": {
@@ -637,13 +772,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "dd847a16699a0f51251ee57d9817de9dae6051854a255a8c9b086e764d96246a",
@@ -654,8 +789,8 @@
       "name": "Quetta Acquisition Corp",
       "sic": "6770",
       "rawFacts": 1255,
-      "mappedFacts": 481,
-      "unmappedFacts": 778,
+      "mappedFacts": 491,
+      "unmappedFacts": 771,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -775,16 +910,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 838,
+        "total": 831,
         "by_severity": {
-          "INFO": 778,
+          "INFO": 771,
           "WARNING": 60
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 33,
-          "UNKNOWN_CONCEPT": 778
+          "UNKNOWN_CONCEPT": 771
         }
       },
       "latestFiling": {
@@ -795,13 +930,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e666331eb7456a193f5f3cc25ad3efadaa660869982906ae86940c843e3a5140",
@@ -951,13 +1086,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "42984c50fed363da9c395432713b9d2e30c63d727f4ba08c2381dd41bac13cd8",

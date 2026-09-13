@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e7cb22ae0e34ecc199b4e35ff6a407d2c8875847e78aff74e69325dd81daa75e",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "12c4f8d7f5e96c490c257f1146b3cfa72f4b0d7f6470d4a1f3ee2f5a128d662c",
@@ -322,11 +322,75 @@
       "name": "AMERICAN COASTAL INSURANCE Corp",
       "sic": "6331",
       "rawFacts": 27129,
-      "mappedFacts": 5268,
-      "unmappedFacts": 21730,
+      "mappedFacts": 6961,
+      "unmappedFacts": 20396,
       "calendarYears": 19,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 47,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 53,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ACIC"
@@ -442,18 +506,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 22443,
+        "total": 21213,
         "by_severity": {
-          "INFO": 21730,
+          "INFO": 20396,
           "ERROR": 9,
-          "WARNING": 704
+          "WARNING": 808
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 579,
-          "FISCAL_PERIOD_CONFLICT": 12,
+          "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 113,
-          "UNKNOWN_CONCEPT": 21730
+          "RESTATEMENT_CONFLICT": 162,
+          "UNEXPECTED_DURATION": 53,
+          "UNKNOWN_CONCEPT": 20396
         }
       },
       "latestFiling": {
@@ -464,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "e067e3a2d2e550618e71a97413a3305a44f54f6ce6304849a63526d84901179a",
@@ -481,8 +546,8 @@
       "name": "Heartflow, Inc.",
       "sic": "3841",
       "rawFacts": 2080,
-      "mappedFacts": 514,
-      "unmappedFacts": 1573,
+      "mappedFacts": 526,
+      "unmappedFacts": 1565,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -601,14 +666,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1610,
+        "total": 1602,
         "by_severity": {
-          "INFO": 1573,
+          "INFO": 1565,
           "WARNING": 37
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 37,
-          "UNKNOWN_CONCEPT": 1573
+          "UNKNOWN_CONCEPT": 1565
         }
       },
       "latestFiling": {
@@ -619,13 +684,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "3db590bd6f16e1500186f0499e9095984cc2f2fbc6455c5ba0a9513bff086235",
@@ -636,8 +701,8 @@
       "name": "Zoom Communications, Inc.",
       "sic": "7370",
       "rawFacts": 11036,
-      "mappedFacts": 3059,
-      "unmappedFacts": 8076,
+      "mappedFacts": 3156,
+      "unmappedFacts": 8016,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -756,15 +821,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8278,
+        "total": 8218,
         "by_severity": {
-          "INFO": 8076,
+          "INFO": 8016,
           "WARNING": 202
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 194,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 8076
+          "UNKNOWN_CONCEPT": 8016
         }
       },
       "latestFiling": {
@@ -775,13 +840,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "403f166e470fa42c790c5449301922d6a85dea1a2107dab9f3cc979a5a132f2f",
@@ -792,8 +857,8 @@
       "name": "Arcus Biosciences, Inc.",
       "sic": "2834",
       "rawFacts": 8968,
-      "mappedFacts": 2718,
-      "unmappedFacts": 6223,
+      "mappedFacts": 2781,
+      "unmappedFacts": 6185,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -912,16 +977,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6391,
+        "total": 6355,
         "by_severity": {
-          "INFO": 6223,
-          "WARNING": 168
+          "INFO": 6185,
+          "WARNING": 170
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 101,
           "FISCAL_PERIOD_CONFLICT": 19,
-          "RESTATEMENT_CONFLICT": 48,
-          "UNKNOWN_CONCEPT": 6223
+          "RESTATEMENT_CONFLICT": 50,
+          "UNKNOWN_CONCEPT": 6185
         }
       },
       "latestFiling": {
@@ -932,13 +997,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cd3c9efb57f410185e86f579f33add6701a7267b8d91d611488984fa0a008925",
@@ -1090,13 +1155,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8de7137fda5fa8d1b5cb67d9ea5728fed209af5c250b43ed44a324cbb92d8274",

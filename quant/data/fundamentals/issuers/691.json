@@ -7,8 +7,8 @@
       "name": "NEW YORK TIMES CO",
       "sic": "2711",
       "rawFacts": 26314,
-      "mappedFacts": 7287,
-      "unmappedFacts": 18965,
+      "mappedFacts": 7499,
+      "unmappedFacts": 18753,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,16 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19643,
+        "total": 19431,
         "by_severity": {
-          "INFO": 18965,
+          "INFO": 18753,
           "WARNING": 678
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 522,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 152,
-          "UNKNOWN_CONCEPT": 18965
+          "UNKNOWN_CONCEPT": 18753
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6a88b5f2e24dcc16a2713491d3c84647b6684bae2f8732974afa54914714c397",
@@ -164,8 +164,8 @@
       "name": "CervoMed Inc.",
       "sic": "2834",
       "rawFacts": 10926,
-      "mappedFacts": 3954,
-      "unmappedFacts": 7017,
+      "mappedFacts": 3994,
+      "unmappedFacts": 6991,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -284,9 +284,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7426,
+        "total": 7400,
         "by_severity": {
-          "INFO": 7017,
+          "INFO": 6991,
           "WARNING": 409
         },
         "by_code": {
@@ -294,7 +294,7 @@
           "EXTREME_VALUE": 38,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 258,
-          "UNKNOWN_CONCEPT": 7017
+          "UNKNOWN_CONCEPT": 6991
         }
       },
       "latestFiling": {
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "375d0b952bf2c4f2bff13a4184842cca44f429aef0402cc20e6026d6efccccd0",
@@ -322,8 +322,8 @@
       "name": "PLUG POWER INC",
       "sic": "3620",
       "rawFacts": 21063,
-      "mappedFacts": 6694,
-      "unmappedFacts": 14508,
+      "mappedFacts": 6746,
+      "unmappedFacts": 14470,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -442,9 +442,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15241,
+        "total": 15203,
         "by_severity": {
-          "INFO": 14508,
+          "INFO": 14470,
           "ERROR": 1,
           "WARNING": 732
         },
@@ -455,7 +455,7 @@
           "NEGATIVE_WHERE_IMPOSSIBLE": 13,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 214,
-          "UNKNOWN_CONCEPT": 14508
+          "UNKNOWN_CONCEPT": 14470
         }
       },
       "latestFiling": {
@@ -466,13 +466,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "108acc7a4bfaadc01d5c2478a2ca12821c28534dc26f978c217771b5dc16d8e8",
@@ -483,8 +483,8 @@
       "name": "COMCAST CORP",
       "sic": "4841",
       "rawFacts": 24487,
-      "mappedFacts": 6887,
-      "unmappedFacts": 17603,
+      "mappedFacts": 7411,
+      "unmappedFacts": 17152,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -604,17 +604,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18485,
+        "total": 18050,
         "by_severity": {
-          "INFO": 17603,
+          "INFO": 17152,
           "ERROR": 10,
-          "WARNING": 872
+          "WARNING": 888
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 823,
           "FUTURE_DATA_LEAK": 10,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 17603
+          "RESTATEMENT_CONFLICT": 57,
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 17152
         }
       },
       "latestFiling": {
@@ -625,13 +626,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "fd06fac0a9602de0d8ea04dec2579df6cbd9e4d52778451cf5eb0d451b7b370f",
@@ -642,8 +643,8 @@
       "name": "Knight-Swift Transportation Holdings Inc.",
       "sic": "4213",
       "rawFacts": 25059,
-      "mappedFacts": 5935,
-      "unmappedFacts": 19320,
+      "mappedFacts": 6074,
+      "unmappedFacts": 19193,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -762,16 +763,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 20141,
+        "total": 20014,
         "by_severity": {
-          "INFO": 19320,
+          "INFO": 19193,
           "WARNING": 821
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 590,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 225,
-          "UNKNOWN_CONCEPT": 19320
+          "UNKNOWN_CONCEPT": 19193
         }
       },
       "latestFiling": {
@@ -782,13 +783,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d69b5e9884e19d8085a788ad90846936a3672fd07455033d3c91356883a8911f",
@@ -799,8 +800,8 @@
       "name": "LivaNova PLC",
       "sic": "3845",
       "rawFacts": 17680,
-      "mappedFacts": 5257,
-      "unmappedFacts": 12396,
+      "mappedFacts": 5348,
+      "unmappedFacts": 12340,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -919,9 +920,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13215,
+        "total": 13159,
         "by_severity": {
-          "INFO": 12396,
+          "INFO": 12340,
           "WARNING": 819
         },
         "by_code": {
@@ -929,7 +930,7 @@
           "FISCAL_PERIOD_CONFLICT": 54,
           "RESTATEMENT_CONFLICT": 170,
           "UNEXPECTED_DURATION": 59,
-          "UNKNOWN_CONCEPT": 12396
+          "UNKNOWN_CONCEPT": 12340
         }
       },
       "latestFiling": {
@@ -940,13 +941,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8cb633366f06a15aab9aada74227f2f1496c4d3067eaafb136d05ab51a6790a9",
@@ -1097,13 +1098,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "165dea9e5339c37000025f3de1a236f86ab807b93fb92e512660aeae6ab3138b",
@@ -1114,9 +1115,9 @@
       "name": "Ionic Digital Inc.",
       "sic": "6199",
       "rawFacts": 316,
-      "mappedFacts": 0,
+      "mappedFacts": 80,
       "unmappedFacts": 225,
-      "calendarYears": 0,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1224",
@@ -1125,9 +1126,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1139,7 +1140,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1166,7 +1167,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1180,7 +1181,7 @@
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1194,14 +1195,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1223,22 +1224,25 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 12,
+        "MEDIUM": 2
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 14,
+        "resolvedValues": 14
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 316,
+        "total": 228,
         "by_severity": {
           "INFO": 225,
-          "WARNING": 91
+          "WARNING": 3
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 225,
-          "UNPLACEABLE_PERIOD": 91
+          "CONCEPT_DISAGREEMENT": 3,
+          "UNKNOWN_CONCEPT": 225
         }
       },
       "latestFiling": {
@@ -1249,13 +1253,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0258c370931d092b4356eba1003231018d95d8576ebc88e1f204dc51d8662988",
@@ -1266,8 +1270,8 @@
       "name": "Elong Power Holding Ltd.",
       "sic": "3690",
       "rawFacts": 772,
-      "mappedFacts": 182,
-      "unmappedFacts": 607,
+      "mappedFacts": 195,
+      "unmappedFacts": 592,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -1386,15 +1390,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 646,
+        "total": 639,
         "by_severity": {
-          "INFO": 607,
-          "WARNING": 39
+          "INFO": 592,
+          "WARNING": 47
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 31,
-          "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 607
+          "CONCEPT_DISAGREEMENT": 38,
+          "RESTATEMENT_CONFLICT": 9,
+          "UNKNOWN_CONCEPT": 592
         }
       },
       "latestFiling": {
@@ -1405,13 +1409,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "04de1db3844ce473fb896ecdd308bde4de7159fe6e124aa1a01260551a7dcb43",

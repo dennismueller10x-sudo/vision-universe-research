@@ -7,8 +7,8 @@
       "name": "U-Haul Holding Co /NV/",
       "sic": "7510",
       "rawFacts": 28992,
-      "mappedFacts": 3932,
-      "unmappedFacts": 25142,
+      "mappedFacts": 4655,
+      "unmappedFacts": 24557,
       "calendarYears": 27,
       "industry": null,
       "industryMetrics": {},
@@ -128,17 +128,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25605,
+        "total": 25058,
         "by_severity": {
-          "INFO": 25142,
+          "INFO": 24557,
           "ERROR": 1,
-          "WARNING": 462
+          "WARNING": 500
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 384,
+          "CONCEPT_DISAGREEMENT": 413,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 78,
-          "UNKNOWN_CONCEPT": 25142
+          "RESTATEMENT_CONFLICT": 87,
+          "UNKNOWN_CONCEPT": 24557
         }
       },
       "latestFiling": {
@@ -149,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "df00608d452bcea406e5a27b856b708dde429d01ab7910df65fc7f5719996f88",
@@ -166,11 +166,75 @@
       "name": "DONEGAL GROUP INC",
       "sic": "6331",
       "rawFacts": 22789,
-      "mappedFacts": 3936,
-      "unmappedFacts": 19312,
+      "mappedFacts": 6062,
+      "unmappedFacts": 17649,
       "calendarYears": 17,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "claims_liability": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
+        "total_investments": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2010-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 15.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "DGICA",
@@ -286,15 +350,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19356,
+        "total": 17718,
         "by_severity": {
-          "INFO": 19312,
-          "WARNING": 44
+          "INFO": 17649,
+          "WARNING": 69
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 43,
-          "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 19312
+          "RESTATEMENT_CONFLICT": 26,
+          "UNKNOWN_CONCEPT": 17649
         }
       },
       "latestFiling": {
@@ -305,13 +369,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ef1e817a413ea50047c5d58ca9e4524d1db38159f8dfec0625bcdda1057abc81",
@@ -460,13 +524,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4f5e2eb3f87ed451a74e89cc550a498a261426d7f011ffc7507f06fbfa453de8",
@@ -601,13 +665,13 @@
       "latestFiling": null,
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "253a7b834824b01df6349924e23f11bb4a4c1dec1969c596e69eb99a42b5e037",
@@ -618,8 +682,8 @@
       "name": "Monte Rosa Therapeutics, Inc.",
       "sic": "2836",
       "rawFacts": 5900,
-      "mappedFacts": 1622,
-      "unmappedFacts": 4284,
+      "mappedFacts": 1668,
+      "unmappedFacts": 4254,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -737,15 +801,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4388,
+        "total": 4358,
         "by_severity": {
-          "INFO": 4284,
+          "INFO": 4254,
           "WARNING": 104
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 99,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 4284
+          "UNKNOWN_CONCEPT": 4254
         }
       },
       "latestFiling": {
@@ -756,13 +820,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "9733a75ce52e10b1e345d6da152da40ed2b2874f931f53687a9c1c368ba76fd5",
@@ -913,13 +977,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a0c4dbe35b5d56ecdda6ba7270cb549785ac9f0a781ea1127e7d61a467133b24",
@@ -930,9 +994,9 @@
       "name": "Amanat Acquisition Corp.",
       "sic": "6770",
       "rawFacts": 87,
-      "mappedFacts": 0,
+      "mappedFacts": 27,
       "unmappedFacts": 53,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -941,9 +1005,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -982,7 +1046,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1010,14 +1074,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1039,22 +1103,22 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 6
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 6,
+        "resolvedValues": 6
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 87,
+        "total": 53,
         "by_severity": {
-          "INFO": 53,
-          "WARNING": 34
+          "INFO": 53
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 53,
-          "UNPLACEABLE_PERIOD": 34
+          "UNKNOWN_CONCEPT": 53
         }
       },
       "latestFiling": {
@@ -1065,13 +1129,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66452a1e1ac2dfa4da16c018e1b1c5a9619962fcf22bca36734e047c2b571efd",

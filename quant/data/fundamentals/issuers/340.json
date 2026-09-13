@@ -7,8 +7,8 @@
       "name": "Consolidated Water Co. Ltd.",
       "sic": "4941",
       "rawFacts": 18511,
-      "mappedFacts": 6242,
-      "unmappedFacts": 12052,
+      "mappedFacts": 6439,
+      "unmappedFacts": 11855,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13159,
+        "total": 12962,
         "by_severity": {
-          "INFO": 12052,
+          "INFO": 11855,
           "WARNING": 1107
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1012,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 12052
+          "UNKNOWN_CONCEPT": 11855
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "45df504e7448bc278302ea39053ade8fd0ced04649dafc0feeb9372fe090e739",
@@ -163,8 +163,8 @@
       "name": "DTE ENERGY CO",
       "sic": "4911",
       "rawFacts": 33178,
-      "mappedFacts": 6810,
-      "unmappedFacts": 26350,
+      "mappedFacts": 7031,
+      "unmappedFacts": 26129,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -287,19 +287,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 27087,
+        "total": 26869,
         "by_severity": {
-          "INFO": 26350,
+          "INFO": 26129,
           "ERROR": 3,
-          "WARNING": 734
+          "WARNING": 737
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 654,
           "FUTURE_DATA_LEAK": 3,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 78,
+          "RESTATEMENT_CONFLICT": 81,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 26350
+          "UNKNOWN_CONCEPT": 26129
         }
       },
       "latestFiling": {
@@ -310,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "825677a0c8cf58640076e72905f70f5561e48218af610cc2c2c408ebd62183bc",
@@ -327,8 +327,8 @@
       "name": "DEL MONTE CORP",
       "sic": "0100",
       "rawFacts": 25476,
-      "mappedFacts": 7244,
-      "unmappedFacts": 18269,
+      "mappedFacts": 7554,
+      "unmappedFacts": 17752,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -447,17 +447,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19053,
+        "total": 18746,
         "by_severity": {
-          "INFO": 18269,
+          "INFO": 17752,
           "ERROR": 2,
-          "WARNING": 782
+          "WARNING": 992
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 705,
+          "CONCEPT_DISAGREEMENT": 706,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 18269
+          "PERIOD_MISMATCH": 139,
+          "RESTATEMENT_CONFLICT": 80,
+          "UNEXPECTED_DURATION": 67,
+          "UNKNOWN_CONCEPT": 17752
         }
       },
       "latestFiling": {
@@ -468,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c34f88a8fc54d27532b155e20388af02a3f407d06a1fa3435a8d823ccbad8191",
@@ -485,11 +487,54 @@
       "name": "MANHATTAN BRIDGE CAPITAL, INC",
       "sic": "6798",
       "rawFacts": 9716,
-      "mappedFacts": 4187,
-      "unmappedFacts": 5795,
+      "mappedFacts": 4369,
+      "unmappedFacts": 5663,
       "calendarYears": 17,
       "industry": "REIT",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "dividends_declared_per_share": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "impairment_of_real_estate": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_accumulated_depreciation": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_gross": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "real_estate_net": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2012-12-31",
+          "lastAvailablePeriod": "2013-12-31",
+          "historyYears": 1.0
+        },
+        "secured_debt": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 35,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2024-12-31",
+          "historyYears": 8.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "LOAN"
@@ -605,16 +650,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6018,
+        "total": 5886,
         "by_severity": {
-          "INFO": 5795,
+          "INFO": 5663,
           "WARNING": 223
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 206,
           "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 5795
+          "UNKNOWN_CONCEPT": 5663
         }
       },
       "latestFiling": {
@@ -625,13 +670,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b53b1653638ca5121e5647a37ee6a800f4dac88f4cff99d57dbf63fb7ab93e12",
@@ -781,13 +826,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "648f30a06f9b028b45459f32a1450bd4edc14313247181e37010e3512dcf00fc",
@@ -940,13 +985,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ab0ca7a2e6625333b2d33c0fb84c412bab31838f5f1af324918b378a3112d4ad",
@@ -1096,13 +1141,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d105233493cd0d563f54892d4349ad030ea2a2a43c343e09b7a0d06bc3aae88b",
@@ -1113,8 +1158,8 @@
       "name": "Immuneering Corp",
       "sic": "2834",
       "rawFacts": 5235,
-      "mappedFacts": 1775,
-      "unmappedFacts": 3614,
+      "mappedFacts": 1784,
+      "unmappedFacts": 3608,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1232,14 +1277,14 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3623,
+        "total": 3617,
         "by_severity": {
-          "INFO": 3614,
+          "INFO": 3608,
           "WARNING": 9
         },
         "by_code": {
           "PERIOD_MISMATCH": 9,
-          "UNKNOWN_CONCEPT": 3614
+          "UNKNOWN_CONCEPT": 3608
         }
       },
       "latestFiling": {
@@ -1250,13 +1295,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ab7321bef23b354750dbd78ce3e11029681dc2c1c63e70897544cfbc7ebdf693",
@@ -1267,8 +1312,8 @@
       "name": "GOLDEN HEAVEN GROUP HOLDINGS LTD.",
       "sic": "7990",
       "rawFacts": 1095,
-      "mappedFacts": 354,
-      "unmappedFacts": 793,
+      "mappedFacts": 364,
+      "unmappedFacts": 784,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -1386,14 +1431,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 805,
+        "total": 806,
         "by_severity": {
-          "INFO": 793,
-          "WARNING": 12
+          "INFO": 784,
+          "WARNING": 22
         },
         "by_code": {
-          "RESTATEMENT_CONFLICT": 12,
-          "UNKNOWN_CONCEPT": 793
+          "CONCEPT_DISAGREEMENT": 8,
+          "RESTATEMENT_CONFLICT": 14,
+          "UNKNOWN_CONCEPT": 784
         }
       },
       "latestFiling": {
@@ -1404,13 +1450,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "55881aee75d010a7696c71ad14bcd5e924908a34c39e28e32068bf6579d1cfdf",
@@ -1560,13 +1606,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b07303e6a90a8432d87a925a45f3d7ee942f8da395106997ce0f9844b293ba96",

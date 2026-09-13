@@ -7,8 +7,8 @@
       "name": "AMERICAN EXPRESS CO",
       "sic": "6199",
       "rawFacts": 31793,
-      "mappedFacts": 6329,
-      "unmappedFacts": 25695,
+      "mappedFacts": 8888,
+      "unmappedFacts": 23486,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 25950,
+        "total": 23763,
         "by_severity": {
-          "INFO": 25695,
-          "WARNING": 255
+          "INFO": 23486,
+          "WARNING": 277
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 222,
-          "RESTATEMENT_CONFLICT": 33,
-          "UNKNOWN_CONCEPT": 25695
+          "RESTATEMENT_CONFLICT": 55,
+          "UNKNOWN_CONCEPT": 23486
         }
       },
       "latestFiling": {
@@ -146,13 +146,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ae02271c64d2aacf701a7fa8706a0ced67ccae4015eb2e891f51dd2b145d84b3",
@@ -305,13 +305,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "150731ec4d0581157db070ce52f86295ff1588febaa198db21ea579bc366b065",
@@ -460,13 +460,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "07c635bb6f76ea4a1d49c5bb412d88c7007836e3fe86ccffcbf99f211e18195c",
@@ -617,13 +617,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cfc483fee8318c5eb46aa36367e3f5cad8bbf987b39e1fff8487fe71db864179",
@@ -634,9 +634,9 @@
       "name": "General Catalyst Global Resilience Merger Corp.",
       "sic": "6770",
       "rawFacts": 58,
-      "mappedFacts": 0,
+      "mappedFacts": 19,
       "unmappedFacts": 37,
-      "calendarYears": 0,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -647,9 +647,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -688,7 +688,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -716,14 +716,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -745,22 +745,22 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 5
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 5,
+        "resolvedValues": 5
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 58,
+        "total": 37,
         "by_severity": {
-          "INFO": 37,
-          "WARNING": 21
+          "INFO": 37
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 37,
-          "UNPLACEABLE_PERIOD": 21
+          "UNKNOWN_CONCEPT": 37
         }
       },
       "latestFiling": {
@@ -771,13 +771,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0e267608ad953f831323224fa6633a4110d4ebae244c7fa6d6194bd155aa2dc5",

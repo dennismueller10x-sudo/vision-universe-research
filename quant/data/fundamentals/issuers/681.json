@@ -7,8 +7,8 @@
       "name": "DOMINOS PIZZA INC",
       "sic": "5140",
       "rawFacts": 19576,
-      "mappedFacts": 6020,
-      "unmappedFacts": 13522,
+      "mappedFacts": 6295,
+      "unmappedFacts": 13247,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,20 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14310,
+        "total": 14065,
         "by_severity": {
-          "INFO": 13522,
+          "INFO": 13247,
           "ERROR": 1,
-          "WARNING": 787
+          "WARNING": 817
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 526,
+          "CONCEPT_DISAGREEMENT": 535,
           "FISCAL_PERIOD_CONFLICT": 34,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 109,
-          "UNEXPECTED_DURATION": 113,
-          "UNKNOWN_CONCEPT": 13522
+          "PERIOD_MISMATCH": 10,
+          "RESTATEMENT_CONFLICT": 112,
+          "UNEXPECTED_DURATION": 126,
+          "UNKNOWN_CONCEPT": 13247
         }
       },
       "latestFiling": {
@@ -151,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f6c8382c92f182e57d3ab4e5ed72ffdafec0d7549b47d6afefe9d37eda1e80b2",
@@ -168,8 +168,8 @@
       "name": "Nutex Health Inc.",
       "sic": "7389",
       "rawFacts": 15632,
-      "mappedFacts": 5313,
-      "unmappedFacts": 10388,
+      "mappedFacts": 5332,
+      "unmappedFacts": 10374,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -288,10 +288,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11168,
+        "total": 11154,
         "by_severity": {
           "ERROR": 4,
-          "INFO": 10388,
+          "INFO": 10374,
           "WARNING": 776
         },
         "by_code": {
@@ -299,7 +299,7 @@
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 27,
           "RESTATEMENT_CONFLICT": 401,
-          "UNKNOWN_CONCEPT": 10388
+          "UNKNOWN_CONCEPT": 10374
         }
       },
       "latestFiling": {
@@ -310,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c2449a79105e6fc522ff7355ca1168f86349b4c2b57d3630db5ffa6835365036",
@@ -470,13 +470,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "450a3a8410c20db6fa7ee9f6e107c86797a80f1e6d2dbb7660eed5ead7d52280",
@@ -628,13 +628,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6a96adf60e6f7775417ed188504d3ba1b5e70325ff9dabf656d58f623d0247d9",
@@ -645,8 +645,8 @@
       "name": "Apollo Global Management, Inc.",
       "sic": "6282",
       "rawFacts": 8968,
-      "mappedFacts": 1529,
-      "unmappedFacts": 7328,
+      "mappedFacts": 1739,
+      "unmappedFacts": 7073,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -766,16 +766,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7572,
+        "total": 7388,
         "by_severity": {
-          "INFO": 7328,
-          "WARNING": 244
+          "INFO": 7073,
+          "WARNING": 315
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 155,
-          "PERIOD_MISMATCH": 19,
+          "PERIOD_MISMATCH": 90,
           "RESTATEMENT_CONFLICT": 70,
-          "UNKNOWN_CONCEPT": 7328
+          "UNKNOWN_CONCEPT": 7073
         }
       },
       "latestFiling": {
@@ -786,13 +786,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f4d1f76fc99ab777d059463b99304078f008207b477697a76a2ef1dc98cb3e1f",

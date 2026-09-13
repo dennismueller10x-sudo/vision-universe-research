@@ -7,8 +7,8 @@
       "name": "NVE CORP /NEW/",
       "sic": "3674",
       "rawFacts": 14159,
-      "mappedFacts": 5846,
-      "unmappedFacts": 8584,
+      "mappedFacts": 6141,
+      "unmappedFacts": 8330,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,18 +127,20 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8786,
+        "total": 8547,
         "by_severity": {
-          "INFO": 8584,
+          "INFO": 8330,
           "ERROR": 4,
-          "WARNING": 198
+          "WARNING": 213
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 177,
           "FUTURE_DATA_LEAK": 4,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
+          "PERIOD_MISMATCH": 14,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 8584
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 8330
         }
       },
       "latestFiling": {
@@ -149,13 +151,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "c50dc51e300e2df26e7d5eea890647eda5719b106e2160d5343a2bba5a35fa05",
@@ -166,8 +168,8 @@
       "name": "AMEREN CORP",
       "sic": "4931",
       "rawFacts": 27000,
-      "mappedFacts": 6847,
-      "unmappedFacts": 20116,
+      "mappedFacts": 6877,
+      "unmappedFacts": 20101,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -286,9 +288,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21166,
+        "total": 21151,
         "by_severity": {
-          "INFO": 20116,
+          "INFO": 20101,
           "ERROR": 4,
           "WARNING": 1046
         },
@@ -297,7 +299,7 @@
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 4,
           "RESTATEMENT_CONFLICT": 118,
-          "UNKNOWN_CONCEPT": 20116
+          "UNKNOWN_CONCEPT": 20101
         }
       },
       "latestFiling": {
@@ -308,13 +310,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "35f7de8cd87fe6454a0ba5bd33568261eb3e8cf4fa36a8ae28acc9a7dc9edf1c",
@@ -325,8 +327,8 @@
       "name": "VALVOLINE INC",
       "sic": "2990",
       "rawFacts": 13477,
-      "mappedFacts": 4623,
-      "unmappedFacts": 8983,
+      "mappedFacts": 4632,
+      "unmappedFacts": 8961,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -445,15 +447,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9411,
+        "total": 9402,
         "by_severity": {
-          "INFO": 8983,
-          "WARNING": 428
+          "INFO": 8961,
+          "WARNING": 441
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 324,
+          "PERIOD_MISMATCH": 13,
           "RESTATEMENT_CONFLICT": 104,
-          "UNKNOWN_CONCEPT": 8983
+          "UNKNOWN_CONCEPT": 8961
         }
       },
       "latestFiling": {
@@ -464,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "cb5b87b5c76dce723b4cc95f58a1c2e08c321a3faa9800e4bad134f575ac7f5f",
@@ -621,13 +624,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "66399b316f961a6c1980de3be6cc01020370aab9882b413a3718d750291d439a",
@@ -638,8 +641,8 @@
       "name": "ADC Therapeutics SA",
       "sic": "2834",
       "rawFacts": 4983,
-      "mappedFacts": 1140,
-      "unmappedFacts": 3920,
+      "mappedFacts": 1150,
+      "unmappedFacts": 3914,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -758,15 +761,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4005,
+        "total": 3999,
         "by_severity": {
-          "INFO": 3920,
+          "INFO": 3914,
           "WARNING": 85
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 74,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 3920
+          "UNKNOWN_CONCEPT": 3914
         }
       },
       "latestFiling": {
@@ -777,13 +780,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "8b2c952c4b959663d90a44567ab7d2aef7d6f486ce53a2ab243c5eff87a7a6fe",
@@ -933,13 +936,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "5db57cbab9cb3655e1283f5ec60e84523c5077d7133105871f680297e466ba07",

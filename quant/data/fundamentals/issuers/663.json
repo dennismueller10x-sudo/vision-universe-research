@@ -7,8 +7,8 @@
       "name": "INTERPARFUMS INC",
       "sic": "2844",
       "rawFacts": 20180,
-      "mappedFacts": 6680,
-      "unmappedFacts": 13773,
+      "mappedFacts": 6883,
+      "unmappedFacts": 13566,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,17 +127,18 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14567,
+        "total": 14365,
         "by_severity": {
-          "INFO": 13773,
+          "INFO": 13566,
           "ERROR": 6,
-          "WARNING": 788
+          "WARNING": 793
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 623,
           "FUTURE_DATA_LEAK": 6,
-          "RESTATEMENT_CONFLICT": 165,
-          "UNKNOWN_CONCEPT": 13773
+          "RESTATEMENT_CONFLICT": 166,
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 13566
         }
       },
       "latestFiling": {
@@ -148,13 +149,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "18b696b9c45e08977f1d279268695c72f47fab3389479da5e7a3dc7d2b751e09",
@@ -165,8 +166,8 @@
       "name": "TSAKOS ENERGY NAVIGATION LTD",
       "sic": "4412",
       "rawFacts": 5511,
-      "mappedFacts": 1473,
-      "unmappedFacts": 4167,
+      "mappedFacts": 1480,
+      "unmappedFacts": 4159,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -287,15 +288,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4417,
+        "total": 4413,
         "by_severity": {
-          "INFO": 4167,
-          "WARNING": 250
+          "INFO": 4159,
+          "WARNING": 254
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 240,
-          "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 4167
+          "RESTATEMENT_CONFLICT": 11,
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 4159
         }
       },
       "latestFiling": {
@@ -306,13 +308,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0580f1764e4a30335d4878910dac5f644725c1ef2363f7bbba60f62af7ecc6f5",
@@ -323,8 +325,8 @@
       "name": "SANUWAVE Health, Inc.",
       "sic": "3841",
       "rawFacts": 17510,
-      "mappedFacts": 5719,
-      "unmappedFacts": 12108,
+      "mappedFacts": 5721,
+      "unmappedFacts": 12106,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -443,10 +445,10 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12487,
+        "total": 12485,
         "by_severity": {
           "ERROR": 7,
-          "INFO": 12108,
+          "INFO": 12106,
           "WARNING": 372
         },
         "by_code": {
@@ -454,7 +456,7 @@
           "FUTURE_DATA_LEAK": 7,
           "RESTATEMENT_CONFLICT": 145,
           "UNEXPECTED_DURATION": 18,
-          "UNKNOWN_CONCEPT": 12108
+          "UNKNOWN_CONCEPT": 12106
         }
       },
       "latestFiling": {
@@ -465,13 +467,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "08d6354d9097c1eecafc8ba8713f73452af7ae1c417b4cc00018c450129e26c8",
@@ -482,17 +484,108 @@
       "name": "Pioneer Bancorp, Inc./MD",
       "sic": "6036",
       "rawFacts": 12920,
-      "mappedFacts": 2095,
-      "unmappedFacts": 10910,
+      "mappedFacts": 3272,
+      "unmappedFacts": 9919,
       "calendarYears": 9,
       "industry": "BANK",
       "industryMetrics": {
+        "allowance_for_loan_losses": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
+          "firstAvailablePeriod": "2017-06-30",
+          "lastAvailablePeriod": "2023-06-30",
+          "historyYears": 6.0
+        },
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2023-06-30",
+          "historyYears": 5.0
+        },
+        "cash_and_due_from_banks": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 29,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "interest_and_dividend_income": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "interest_and_fee_income_loans": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "interest_expense_deposits": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "loans_and_leases_net": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 19,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2023-06-30",
+          "historyYears": 5.0
+        },
         "net_interest_income": {
           "annualPeriods": 8,
           "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-06-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.5
+        },
+        "net_interest_income_after_provision": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "noninterest_expense": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "noninterest_income": {
+          "annualPeriods": 8,
+          "quarterlyPeriods": 32,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 7.5
+        },
+        "provision_for_credit_losses": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2018-06-30",
+          "lastAvailablePeriod": "2022-06-30",
+          "historyYears": 4.0
+        },
+        "time_deposits": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-06-30",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.5
         }
       },
       "fiscalYearEnd": "1231",
@@ -610,15 +703,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11009,
+        "total": 10055,
         "by_severity": {
-          "INFO": 10910,
-          "WARNING": 99
+          "INFO": 9919,
+          "WARNING": 136
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 52,
-          "RESTATEMENT_CONFLICT": 47,
-          "UNKNOWN_CONCEPT": 10910
+          "CONCEPT_DISAGREEMENT": 66,
+          "RESTATEMENT_CONFLICT": 70,
+          "UNKNOWN_CONCEPT": 9919
         }
       },
       "latestFiling": {
@@ -629,13 +722,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "16cdba367d7d6aa652e1128440d7b5601b79a77a746bb21489086580026afb40",
@@ -646,8 +739,8 @@
       "name": "VTEX",
       "sic": "7372",
       "rawFacts": 2402,
-      "mappedFacts": 448,
-      "unmappedFacts": 2012,
+      "mappedFacts": 450,
+      "unmappedFacts": 2011,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -766,15 +859,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2047,
+        "total": 2046,
         "by_severity": {
-          "INFO": 2012,
+          "INFO": 2011,
           "WARNING": 35
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 24,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 2012
+          "UNKNOWN_CONCEPT": 2011
         }
       },
       "latestFiling": {
@@ -785,13 +878,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "496418d1757242fb6884298e73ab78c3fe1b04e6752849c19fd4429c03a1c90a",
@@ -939,13 +1032,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "59f2705bb0f3349aecb032ae04f401c4dd03a0e4a53358fc9524bf76e7e7a63b",

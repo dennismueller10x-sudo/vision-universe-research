@@ -7,11 +7,75 @@
       "name": "Elevance Health, Inc.",
       "sic": "6324",
       "rawFacts": 40102,
-      "mappedFacts": 8447,
-      "unmappedFacts": 31770,
+      "mappedFacts": 10182,
+      "unmappedFacts": 30247,
       "calendarYears": 20,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "claims_liability": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 73,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "ELV"
@@ -127,17 +191,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 32521,
+        "total": 31018,
         "by_severity": {
-          "INFO": 31770,
-          "WARNING": 751
+          "INFO": 30247,
+          "WARNING": 771
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 679,
-          "FISCAL_PERIOD_CONFLICT": 32,
-          "RESTATEMENT_CONFLICT": 25,
-          "UNEXPECTED_DURATION": 15,
-          "UNKNOWN_CONCEPT": 31770
+          "FISCAL_PERIOD_CONFLICT": 42,
+          "RESTATEMENT_CONFLICT": 27,
+          "UNEXPECTED_DURATION": 23,
+          "UNKNOWN_CONCEPT": 30247
         }
       },
       "latestFiling": {
@@ -148,13 +212,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "75f33897e6d63f80c4b068bfafce35c690e0851b22e3f71b6e2ef1af46c8ecc0",
@@ -165,8 +229,8 @@
       "name": "Fortinet, Inc.",
       "sic": "3577",
       "rawFacts": 23255,
-      "mappedFacts": 6768,
-      "unmappedFacts": 16381,
+      "mappedFacts": 6963,
+      "unmappedFacts": 16261,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -285,16 +349,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16918,
+        "total": 16798,
         "by_severity": {
-          "INFO": 16381,
+          "INFO": 16261,
           "WARNING": 537
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 494,
           "RESTATEMENT_CONFLICT": 41,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16381
+          "UNKNOWN_CONCEPT": 16261
         }
       },
       "latestFiling": {
@@ -305,13 +369,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "6113c049f33de17a2d2f8ab65af5f38cfa87d0cf9a807a93bf655cba89b9de15",
@@ -462,13 +526,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "428508bcea3e0654c7af6b4fc3c856ba5fe01c3888717c76629ba55bd42626e7",
@@ -479,8 +543,8 @@
       "name": "Ranger Energy Services, Inc.",
       "sic": "1389",
       "rawFacts": 9772,
-      "mappedFacts": 3354,
-      "unmappedFacts": 6428,
+      "mappedFacts": 3366,
+      "unmappedFacts": 6416,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -599,16 +663,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6736,
+        "total": 6724,
         "by_severity": {
-          "INFO": 6428,
+          "INFO": 6416,
           "WARNING": 308
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 273,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 6428
+          "UNKNOWN_CONCEPT": 6416
         }
       },
       "latestFiling": {
@@ -619,13 +683,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b96b46a3aa7e8440dca3fd8d694961aabc61f425441e1a1a534bc1261f8c93d9",
@@ -774,13 +838,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "bf0085a46f8fe4d024fe2b78d8ded43279195ac8b7b315c2996c69a22a7a6230",
@@ -928,13 +992,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "823fb59761336913720242139a55b1f2788efeb534051f97ef16408514d69dd0",

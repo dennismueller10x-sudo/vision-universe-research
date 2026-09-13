@@ -7,8 +7,8 @@
       "name": "EMCOR Group, Inc.",
       "sic": "1731",
       "rawFacts": 24511,
-      "mappedFacts": 6994,
-      "unmappedFacts": 17345,
+      "mappedFacts": 7191,
+      "unmappedFacts": 17147,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,15 +127,16 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17922,
+        "total": 17725,
         "by_severity": {
-          "INFO": 17345,
-          "WARNING": 577
+          "INFO": 17147,
+          "WARNING": 578
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 566,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 17345
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 17147
         }
       },
       "latestFiling": {
@@ -146,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "48692ee6a66e5bdcd690392abfcf234063d8bda5e98b607f59299194d261598e",
@@ -163,8 +164,8 @@
       "name": "READING INTERNATIONAL INC",
       "sic": "7830",
       "rawFacts": 24847,
-      "mappedFacts": 6829,
-      "unmappedFacts": 18181,
+      "mappedFacts": 6922,
+      "unmappedFacts": 18127,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -284,15 +285,15 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19031,
+        "total": 18978,
         "by_severity": {
-          "INFO": 18181,
-          "WARNING": 850
+          "INFO": 18127,
+          "WARNING": 851
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 795,
-          "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 18181
+          "RESTATEMENT_CONFLICT": 56,
+          "UNKNOWN_CONCEPT": 18127
         }
       },
       "latestFiling": {
@@ -303,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1800f67fa57a89c52b5ef1bf1b2fb2b75cc444bb510481f82a0d41e40399bd0",
@@ -460,13 +461,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "408dba96314f030367f7fa37994e5bfcad91d5d8391b3974f28d993181fde524",
@@ -614,13 +615,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ca1af5a506d53eb5ab6cb362868cbcd10294d79fb0c602629a89ebe921b76166",

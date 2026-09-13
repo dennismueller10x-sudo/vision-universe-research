@@ -7,8 +7,8 @@
       "name": "GRACO INC",
       "sic": "3561",
       "rawFacts": 23668,
-      "mappedFacts": 7469,
-      "unmappedFacts": 16674,
+      "mappedFacts": 7750,
+      "unmappedFacts": 16393,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -126,17 +126,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17080,
+        "total": 16810,
         "by_severity": {
-          "INFO": 16674,
+          "INFO": 16393,
           "ERROR": 1,
-          "WARNING": 405
+          "WARNING": 416
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 361,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 16674
+          "RESTATEMENT_CONFLICT": 55,
+          "UNKNOWN_CONCEPT": 16393
         }
       },
       "latestFiling": {
@@ -147,13 +147,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "a1301bd22bc965c7a30ac2739b3859aea767bdae93af04365c4a4aa67d7f740c",
@@ -303,13 +303,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "0f9722587f54ee2b9df80821cc6f814a0644c6213272d4350c0887f2d4c7ded3",
@@ -324,7 +324,71 @@
       "unmappedFacts": 3015,
       "calendarYears": 11,
       "industry": "INSURER",
-      "industryMetrics": {},
+      "industryMetrics": {
+        "available_for_sale_debt_securities": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_and_claims_incurred": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "benefits_losses_and_expenses": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "claims_liability": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "deferred_policy_acquisition_costs": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_investment_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "premiums_earned": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_investments": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "unearned_premiums": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        }
+      },
       "fiscalYearEnd": "1231",
       "tickers": [
         "MFC",
@@ -465,13 +529,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f558794d0f7d15a900f6e0c1616706c70ac9b536c854a62845bbe78210e19ab9",
@@ -482,8 +546,8 @@
       "name": "Blue Owl Capital Corp",
       "sic": null,
       "rawFacts": 5131,
-      "mappedFacts": 1129,
-      "unmappedFacts": 4115,
+      "mappedFacts": 1190,
+      "unmappedFacts": 4005,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -601,16 +665,17 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4151,
+        "total": 4090,
         "by_severity": {
-          "INFO": 4115,
-          "WARNING": 36
+          "INFO": 4005,
+          "WARNING": 85
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 32,
+          "PERIOD_MISMATCH": 49,
           "RESTATEMENT_CONFLICT": 3,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 4115
+          "UNKNOWN_CONCEPT": 4005
         }
       },
       "latestFiling": {
@@ -621,13 +686,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "d780a589ee1716dd10418e8a2724b6c821815f4e83f06a8a76df44810bc9e040",

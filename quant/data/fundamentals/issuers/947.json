@@ -7,8 +7,8 @@
       "name": "AZZ INC",
       "sic": "3470",
       "rawFacts": 21600,
-      "mappedFacts": 7269,
-      "unmappedFacts": 14735,
+      "mappedFacts": 7382,
+      "unmappedFacts": 14622,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -127,9 +127,9 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 15118,
+        "total": 15005,
         "by_severity": {
-          "INFO": 14735,
+          "INFO": 14622,
           "ERROR": 1,
           "WARNING": 382
         },
@@ -137,7 +137,7 @@
           "CONCEPT_DISAGREEMENT": 247,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 135,
-          "UNKNOWN_CONCEPT": 14735
+          "UNKNOWN_CONCEPT": 14622
         }
       },
       "latestFiling": {
@@ -148,13 +148,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "b2a93d5a91c40b854cb702a6fe796dc4231aa980a83b0bfe2b07131e5a085afb",
@@ -304,13 +304,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "028b3eae6f8bc861d42a3a364281f00003336650439de554b792e331aad1e71c",
@@ -321,8 +321,8 @@
       "name": "Designer Brands Inc.",
       "sic": "5661",
       "rawFacts": 24967,
-      "mappedFacts": 7377,
-      "unmappedFacts": 17963,
+      "mappedFacts": 7412,
+      "unmappedFacts": 17926,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -441,18 +441,19 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18398,
+        "total": 18363,
         "by_severity": {
-          "INFO": 17963,
-          "WARNING": 435
+          "INFO": 17926,
+          "WARNING": 437
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 286,
           "FISCAL_PERIOD_CONFLICT": 19,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
+          "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 122,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 17963
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 17926
         }
       },
       "latestFiling": {
@@ -463,13 +464,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "4ff93e69fdba2d5c9fe1488e0bfa029f4140e9cc00a88d8903b70a62228a5546",
@@ -620,13 +621,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "f8079d4caada650f7e533b0927efb5707d4fc1470815a732f36d25c38458aa88",
@@ -774,13 +775,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "de9a8c2ad2bc99d0594396e1159eac4b8fe302c4111e276cb2a13410f28f9624",
@@ -931,13 +932,13 @@
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.8.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.4.0"
+          "mapping_version": "1.5.0"
         }
       },
       "sourceDigest": "ac67d622f99a907aed895911c54214b484a6d73b600ea21aaa570095c03410f6",
