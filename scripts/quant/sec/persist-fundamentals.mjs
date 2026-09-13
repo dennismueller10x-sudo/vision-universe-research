@@ -159,6 +159,10 @@ async function readIndex(driver, budget) {
 export const PARALLEL_UPLOADS = Math.max(1, Number(process.env.VU_PERSIST_PARALLEL || 8));
 
 export async function push(driver, { facts, dryRun, log, parallel = PARALLEL_UPLOADS }) {
+  /* main() reicht als `log` das Zeugenprotokoll durch - ein Array, keine
+     Funktion. Lauf 34760939310 starb daran nach genau 500 Objekten:
+     "log is not a function". Der Test hatte 23 Objekte und kein log. */
+  const say = typeof log === "function" ? log : () => {};
   const changed = [];
   const budget = createBudget({ classAOperations: facts.length + 2, classBOperations: 2 });
   const index = await readIndex(driver, budget);
@@ -195,7 +199,7 @@ export async function push(driver, { facts, dryRun, log, parallel = PARALLEL_UPL
       objects[f.cik] = Object.assign({ key, bytes: f.bytes, sha256: f.sha256,
                                        persistedAt: new Date().toISOString() }, summary);
       changed.push(f.cik);
-      if (log && changed.length % 500 === 0) log(`  ${changed.length}/${pending.length} geschrieben`);
+      if (changed.length % 500 === 0) say(`  ${changed.length}/${pending.length} geschrieben`);
     }
   }
   await Promise.all(Array.from({ length: Math.min(parallel, pending.length) }, worker));

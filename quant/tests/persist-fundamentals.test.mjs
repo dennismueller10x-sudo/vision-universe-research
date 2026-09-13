@@ -176,3 +176,23 @@ test("parallel und seriell schreiben denselben Index", async () => {
   }));
   assert.deepEqual(strip(parallel.index), strip(seriell.index));
 });
+
+
+test("ein Array als log (wie main es reicht) bricht den Push nicht ab, auch nicht nach 500 Objekten", async () => {
+  const { mkdtempSync, writeFileSync, mkdirSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { gzipSync } = await import("node:zlib");
+  const { localFacts, push, witness, PREFIX } = await import("../../scripts/quant/sec/persist-fundamentals.mjs");
+  const { createFsDriver } = await import("../../scripts/market/storage/fs-driver.mjs");
+  const root = mkdtempSync(join(tmpdir(), "vu-persist-log-"));
+  const facts = join(root, "facts"); mkdirSync(facts);
+  const gz = gzipSync(Buffer.from(JSON.stringify({ versions: { normalization_logic: "t" }, factbook: { timelines: [] },
+                                                     quality: { summary: { total: 0 } }, filing_index: [], profile: {} })));
+  for (let i = 0; i < 501; i++) writeFileSync(join(facts, String(1000000 + i).padStart(10, "0") + ".json.gz"), gz);
+  const touched = [];
+  const driver = witness(createFsDriver(join(root, "bucket")), PREFIX + "/", touched);
+  const r = await push(driver, { facts: localFacts(facts), log: touched });
+  assert.equal(r.changed, 501);
+  assert.equal(r.objectCount, 501);
+});
