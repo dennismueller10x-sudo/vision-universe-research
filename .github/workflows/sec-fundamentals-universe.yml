@@ -105,6 +105,40 @@ jobs:
         # Ein Bericht, der ohne Daten nichts sagt, sagt auch mit Daten nichts.
         run: python3 scripts/quant/cli.py coverage-universe
 
+      - name: Abgleich Fundamentals x Marktdaten
+        # Der Overlap war lange null, weil die Marktdatenseite nur als
+        # Summe vorlag. Jetzt ist er gerechnet - und bleibt es nur,
+        # wenn er bei jedem Lauf neu gerechnet wird. Marktdaten werden
+        # dabei READ-ONLY gelesen; dieser Schritt fasst R2 nicht an.
+        run: |
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py reconcile
+
+      - name: Die fuenf Universen bleiben unterscheidbar
+        # §11. Der Satz "Vision Universe hat Fundamentaldaten fuer 7.004
+        # Aktien" ist falsch, und diese Pruefung sorgt dafuer, dass er
+        # auch dann falsch bleibt, wenn ihn jemand gern haette.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          r = json.load(open("quant/data/fundamentals/reconciliation.json"))
+          b = json.load(open("quant/data/fundamentals/backtest-readiness.json"))
+          q = json.load(open("quant/data/fundamentals/fundamental-quality.json"))
+          o = r["overlap"]
+          if o["FUNDAMENTAL_COMPANY_FACTS_AVAILABLE"] >= o["PRODUCT_TITLES"]:
+              sys.exit("Fundamentaldaten fuer JEDEN Produkttitel - das deckt der "
+                       "Bestand nicht (§11).")
+          if b["BACKTEST_PIT_FUNDAMENTAL_READY"] > o["FUNDAMENTAL_COMPANY_FACTS_AVAILABLE"]:
+              sys.exit("Mehr backtestfaehig als ueberhaupt Fundamentaldaten vorhanden.")
+          summe = sum(q["titles"]["byState"].values())
+          if summe != q["titles"]["denominator"]["PRODUCT_TITLES"]:
+              sys.exit(f"Die Titelzustaende decken {summe} von "
+                       f"{q['titles']['denominator']['PRODUCT_TITLES']} Titeln ab.")
+          print(f"Produktuniversum {o['PRODUCT_TITLES']}, davon "
+                f"{o['TECHNICAL_AND_FUNDAMENTAL']} technisch UND fundamental, "
+                f"{b['BACKTEST_PIT_FUNDAMENTAL_READY']} backtestfaehig.")
+          PY
+
       - name: Der Nenner ist das Produktuniversum
         # §19. Der bequemste Fehler waere, gegen den eigenen Bestand zu
         # zaehlen - dann meldet die Pipeline immer volle Deckung.
@@ -260,6 +294,11 @@ jobs:
       # `continue-on-error` auch nicht. Die einzige Verteidigung ist
       # die Reihenfolge: was teuer erkauft und nicht wiederherstellbar
       # ist, liegt im Zweig, bevor etwas Optionales laeuft.
+      - name: Abgleich mit dem Marktdaten-Universum
+        run: |
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py reconcile
+
       - name: Groessenkontrolle nach der Messung
         run: bash scripts/ci/pruefe-datengroesse.sh
 
