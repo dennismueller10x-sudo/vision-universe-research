@@ -1,15 +1,15 @@
 {
   "cik": "0000019617",
-  "generated_at_utc": "2026-09-13T12:35:29+00:00",
+  "generated_at_utc": "2026-09-13T16:20:06+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.7.1",
+    "normalization_logic": "1.8.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.3.0"
+      "mapping_version": "1.4.0"
     }
   },
   "profile": {
@@ -64,7 +64,7 @@
     ],
     "entity_type": "operating",
     "state_of_incorporation": "DE",
-    "retrieved_at": "2026-09-13T09:18:52+00:00",
+    "retrieved_at": "2026-09-13T13:51:21+00:00",
     "is_financial": true
   },
   "calendar": {
@@ -72,6 +72,7 @@
     "label_offset": 0,
     "fiscal_year_end_hint": "1231",
     "week_based": false,
+    "anchor_source": "ANNUAL_DURATIONS",
     "fiscal_years": [
       {
         "fiscal_year": 2007,
@@ -154,15 +155,15 @@
   },
   "quality_summary": {
     "rules_version": "1.0.0",
-    "total": 43417,
+    "total": 43190,
     "by_severity": {
-      "INFO": 42978,
+      "INFO": 42751,
       "WARNING": 439
     },
     "by_code": {
       "CONCEPT_DISAGREEMENT": 374,
       "RESTATEMENT_CONFLICT": 65,
-      "UNKNOWN_CONCEPT": 42978
+      "UNKNOWN_CONCEPT": 42751
     }
   },
   "quality_errors": {
