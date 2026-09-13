@@ -29,8 +29,8 @@
   /* Der vollständige Wortlaut der Bildunterschrift - auf kleinen Displays
      zeigt die Fläche nur zwei Zeilen davon, der Rest steht im title. */
   var CAPTION_PATH = "Vier Renditen über 1, 3, 6 und 12 Monate, gezeichnet als Balken. Das ist " +
-    "kein Kursverlauf: zwischen den Zeiträumen wird nichts behauptet, und absolute Kursniveaus " +
-    "dieses Titels sind Anbieterdaten und bleiben zurück.";
+    "kein Kursverlauf: zwischen den Zeiträumen wird nichts behauptet, und für diesen Titel " +
+    "liegt noch keine Kursreihe vor.";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function C() { return D.Cards; }
@@ -71,6 +71,9 @@
     var index = 0;
     var timer = null;
     var angehalten = false;
+    /* Das Live-Abonnement der gerade gezeigten Flaeche. Beim Wechsel
+       gekuendigt, bevor das naechste entsteht: ein Titel, ein Strom. */
+    var abo = { kuendigen: null };
 
     stocks.forEach(function (stock, i) {
       var knopf = el("button", { type: "button", role: "tab",
@@ -83,9 +86,10 @@
     function zeigen(neu) {
       index = (neu + stocks.length) % stocks.length;
       var stock = stocks[index];
+      if (abo.kuendigen) { abo.kuendigen(); abo.kuendigen = null; }
       S.clear(inner);
       inner.appendChild(copy(stock, options));
-      inner.appendChild(media(stock));
+      inner.appendChild(media(stock, abo));
       /* Die Eingangsfläche übernimmt die Farbwelt des Signals, das sie
          zeigt: ein neues Jahreshoch leuchtet anders als ein Ausbruch. */
       host.setAttribute("data-world", stock.world || "leadership");
@@ -175,10 +179,11 @@
    * sonst der rebasierte Renditepfad - beides echte Daten, keines davon
    * Dekoration. Die Bildunterschrift sagt, was man sieht.
    */
-  function media(stock) {
+  function media(stock, abo) {
     var host = el("div", { class: "dx-hero-media" });
     var chartHost = el("div", { style: "position:relative" });
     host.appendChild(chartHost);
+    liveStreifen(host, stock, abo);
 
     var kunst = D.Artwork.stockArtwork(stock, { width: 640, height: 320, ticker: true,
                                                 scale: "hero", range: "1J" });
@@ -201,12 +206,37 @@
          kein Kursverlauf. */
       host.appendChild(el("p", { class: "dx-hero-caption", title: CAPTION_PATH,
         text: "Rendite über 1, 3, 6 und 12 Monate — als Balken, nicht als Kurskurve. " +
-              "Absolute Kurse dieses Titels sind Anbieterdaten und bleiben zurück." }));
+              "Für diesen Titel liegt noch keine Kursreihe vor; eine Linie ohne Kurse gäbe es nicht." }));
       return host;
     }
     host.appendChild(el("p", { class: "dx-hero-caption",
       text: "Für diesen Titel wird keine Rendite ausgeliefert." }));
     return host;
+  }
+
+  /* Der Tagesverlauf unter dem Jahreschart: dieselbe Quelle wie die Karte
+     und die Aktienseite (Live-Hub), dieselbe Beschriftung. Erscheint nur,
+     wenn ein Snapshot vorliegt - sonst bleibt die Flaeche, wie sie ist. */
+  function liveStreifen(host, stock, abo) {
+    var Hub = D.LiveHub, MC = D.MicroChart;
+    if (!Hub || !Hub.enabled() || stock.dataMode !== "real" || !MC || !MC.renderIntraday) return;
+    if (!Hub.entryFor(stock.symbol)) return;
+    var streifen = el("div", { class: "dx-hero-live", "data-symbol": stock.symbol });
+    host.appendChild(streifen);
+    abo.kuendigen = Hub.subscribe(stock.symbol, function (p) {
+      if (!p.snapshot) { if (streifen.parentNode) streifen.parentNode.removeChild(streifen); return; }
+      var svgNode = MC.renderIntraday(p.snapshot, { width: 640, height: 110, symbol: stock.symbol,
+                                                    label: p.label && p.label.label });
+      if (!svgNode) return;
+      S.clear(streifen);
+      streifen.setAttribute("data-live", p.snapshot.regularComplete ? "complete" : "running");
+      streifen.appendChild(svgNode);
+      streifen.appendChild(el("p", { class: "dx-hero-live-label" }, [
+        C().liveLabel(p.label, p.snapshot),
+        el("span", { text: " · 5-Minuten-Kurse, " + p.snapshot.provider + "/" + (p.snapshot.venue || "IEX") +
+                           " · Uhrzeiten New York" })
+      ]));
+    });
   }
 
   global.VUDiscover = global.VUDiscover || {};

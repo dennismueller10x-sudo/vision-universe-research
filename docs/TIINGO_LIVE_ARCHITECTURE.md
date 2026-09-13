@@ -163,3 +163,20 @@ Realtime-Daten dazukommen — und was er tut, wenn sie ausbleiben —, beantwort
 `VU_REALTIME_MARKET_DATA_ARCHITECTURE.md`. Die Fähigkeitsmatrix,
 die Feature-Gates und die Regel, dass der Schlüssel den Browser nie erreicht,
 gelten dort unverändert weiter.
+
+## Nachtrag 13.09.2026 — Eigentümer-Freigabe und Intraday-Snapshots
+
+Der Eigentümer hat am 13.09.2026 erklärt, dass die Tiingo-Freigabe für die
+öffentliche Anzeige der Market-Data vorliegt (freigegebenes großes Paket). Die
+Erklärung steht mit Datum in `quant/config/development-preview.json`
+(`grants`), beide Live-Gates sind offen, das Anbieterprofil führt Tiingo mit
+`OWNER_DECLARED_LICENSED`. Was sich an dieser Architektur **nicht** ändert:
+kein Schlüssel im Browser, kein direkter Anbieteraufruf, kein Simulationsmodus.
+
+Der gebaute Weg für „live" bleibt der dritte aus der Tabelle oben — jetzt im
+Sitzungstakt: `scripts/market/ingest-intraday.mjs` holt 5-Minuten-Bars
+(IEX) je Titel und Sitzung, `intraday-snapshots.yml` alle zehn Minuten für
+die Discover-Flächen und einmal nach Schluss für das Universum;
+`discover/ui/live-hub.js` verteilt einen Snapshot je Titel an Karte,
+Eingangsfläche und Aktienseite. Die Seite nennt den Stand („Heute · Stand
+15:42") und behauptet keinen Strom. Details: `VU_DISCOVER_FULL_UNIVERSE_LIVE.md`.

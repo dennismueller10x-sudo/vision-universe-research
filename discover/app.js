@@ -56,6 +56,13 @@
         var bekannt = state.meta.universes.some(function (u) { return u.universeId === state.universeId; });
         if (!bekannt) state.universeId = state.meta.universes[0].universeId;
       }
+      /* Der Live-Hub: ein Verzeichnis, einmal - danach entscheidet jede
+         Karte synchron, ob sie einen Tagesverlauf hat. Ohne Freigabe
+         (meta.realtime.available) bleibt er aus, und nichts wird geholt. */
+      if (D.LiveHub) {
+        D.LiveHub.init({ realtime: state.meta.realtime, calendar: state.calendar });
+        return D.LiveHub.loadIndex().catch(function () { return null; }).then(function () { return state.meta; });
+      }
       return state.meta;
     });
   }
@@ -68,10 +75,25 @@
 
   /* ------------------------------------------------------- Marktstatus */
   function marketState() {
-    return D.RealtimeSource.assess({
+    var lage = D.RealtimeSource.assess({
       gates: state.meta.gates, audience: "public", calendar: state.calendar,
       asOf: universeMeta().asOf, now: new Date()
     });
+    /* Der Session-Resolver benennt, welche Sitzung gerade gilt und wie
+       sie heisst - dieselbe Sprache wie auf den Karten. */
+    var T = global.VURealtime && global.VURealtime.TradingSession;
+    if (T) {
+      lage.trading = T.resolve(new Date(), { calendar: state.calendar });
+      var Hub = D.LiveHub, idx = Hub && Hub.enabled() ? Hub.index() : null;
+      var stand = null;
+      if (idx && idx.generatedAt && global.VURealtime.MarketHours) {
+        var lp = global.VURealtime.MarketHours.localParts(idx.generatedAt, lage.trading.timezone);
+        if (lp && lp.date === lage.trading.localDate) stand = { asOfLocal: lp.clock.slice(0, 5), sessionDate: idx.displaySession && idx.displaySession.sessionDate };
+      }
+      lage.beschreibung = T.describe(lage.trading, stand);
+      lage.liveSnapshots = !!(idx && idx.entryCount);
+    }
+    return lage;
   }
 
   /**
@@ -87,12 +109,24 @@
                : lage.session === "REGULAR" ? "dx-status--open"
                : (lage.session === "PRE" || lage.session === "AFTER") ? "dx-status--ext" : "";
 
+    /* Die Zeile sagt, was gilt: "Geöffnet · Stand 15:42" waehrend der
+       Sitzung, sonst "Geschlossen · Letzter Handelstag · Freitag". Kein
+       "Live" ohne Strom, kein technischer Code. */
+    var zusatz;
+    if (lage.beschreibung && lage.liveSnapshots) {
+      zusatz = lage.trading.marketState === "OPEN"
+        ? lage.beschreibung.label.replace(/^Heute · /, "")
+        : lage.beschreibung.label;
+    } else {
+      zusatz = universe.asOf ? S.formatDate(universe.asOf) : "";
+    }
     var status = el("div", { class: "dx-status " + klasse,
-      title: lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS)." }, [
+      title: (lage.beschreibung ? lage.beschreibung.timezoneNote + ". " : "") +
+             (lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS).") }, [
       el("span", { class: "dx-dot" }),
       el("b", { text: "US Market" }),
-      document.createTextNode(lage.mode === "live" ? "Live" : sessionWort(lage)),
-      document.createTextNode(universe.asOf ? " · " + S.formatDate(universe.asOf) : "")
+      document.createTextNode(lage.mode === "live" ? "Live" : (lage.beschreibung ? lage.beschreibung.state : sessionWort(lage))),
+      document.createTextNode(zusatz ? " · " + zusatz : "")
     ]);
 
     var switcher = el("div", { class: "dx-switch", role: "group", "aria-label": "Universum" });
@@ -212,12 +246,14 @@
         "Sie tragen vollständige Kursreihen und zeigen deshalb Kurs, Verlauf und Chart — aber " +
         "keine reale Marktaussage. Ranglisten werden ausschließlich innerhalb dieses " +
         "Universums gerechnet.");
-    } else if (universe.redistribution) {
-      hinweis = datenhinweis("Kursniveaus",
-        "Absolute Kurse realer Titel sind Anbieterdaten und bleiben zurück.",
-        "Die Karten zeigen deshalb Renditen über 1, 3, 6 und 12 Monate als Balken — keinen " +
-        "Kursverlauf. Bei " + universe.withPriceSeries + " freigegebenen Titeln steht zusätzlich " +
-        "der echte Chart.");
+    } else if (universe.securities > universe.withPriceSeries) {
+      /* Nur solange nicht jeder Titel eine Kursreihe traegt: dann sagt die
+         Seite, wie viele es sind - und dass der Rest Balken zeigt, keine
+         Linie. Tragen alle eine Reihe, gibt es keinen Hinweis. */
+      hinweis = datenhinweis("Kursreihen",
+        "Für " + universe.withPriceSeries + " von " + universe.securities + " Titeln liegt eine Kursreihe vor.",
+        "Titel ohne Kursreihe zeigen Renditen über 1, 3, 6 und 12 Monate als Balken — keinen " +
+        "Kursverlauf. Die übrigen Reihen kommen mit dem nächsten Marktdaten-Lauf; geschätzt wird nichts.");
     }
 
     var homeInfo = (state.meta.home || []).filter(function (h) {

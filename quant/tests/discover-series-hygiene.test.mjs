@@ -68,10 +68,17 @@ test("DS5 · ein scopeUniverse ohne Datei ist ein Fehler, kein leerer Umfang", (
   });
 });
 
-test("DS6 · preview-scope loest die heutige Konfiguration auf genau die fuenf Golden-Five-Titel auf", async () => {
+test("DS6 · preview-scope loest die heutige Konfiguration auf das Produktuniversum auf - keine Fuenferliste mehr", async () => {
   const m = await import("../../scripts/market/preview-scope.mjs");
+  const U = await import("../../scripts/market/universe-source.mjs");
   const r = m.resolveScope(root);
-  assert.deepEqual([...r.tickers].sort(), ["AAPL", "JPM", "MSFT", "NVDA", "XOM"]);
+  const produkt = U.resolveProductUniverse(root);
+  /* Umfang = Produktuniversum + fullHistory-Titel + Benchmark; nichts
+     davon steht als Zahl im Test - die Quelle bestimmt die Groesse. */
+  assert.ok(r.tickers.size >= produkt.securities.length, "Umfang kleiner als das Produktuniversum");
+  for (const t of ["AAPL", "JPM", "MSFT", "NVDA", "XOM", "SPY"]) assert.ok(r.tickers.has(t), t + " fehlt im Umfang");
   assert.equal(r.unresolved.length, 0);
   assert.ok(r.securities.every((s) => /^ref_/.test(s.securityId)));
+  assert.equal(r.universeSource.source, produkt.source);
+  assert.ok(["INTEGRATED", "PENDING"].includes(r.universeSource.handover.status));
 });

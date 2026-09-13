@@ -1544,3 +1544,34 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-featured-media .dx-lazy-media{height:220px}
 .dx-lazy-media[data-loading]{min-height:60px}
 @media (max-width:860px){.dx-featured-media .dx-lazy-media{height:150px}}
+
+/* ------------------------------------------------------ Tagesverlauf
+   Der Intraday-Chart auf Karte, Eingangsflaeche und Aktienseite - ein
+   Renderer (microchart.js#renderIntraday), drei Groessen. Die
+   Beschriftung nennt den Stand; ein Punkt ohne Strom blinkt nicht. */
+.dx-live-label{position:absolute;left:12px;top:6px;z-index:1;pointer-events:none;
+  font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--discover-dim);
+  white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+.dx-live-label i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--w);
+  margin:0 6px 1px 0;vertical-align:middle;opacity:.95}
+[data-live="complete"] .dx-live-label i{opacity:.4}
+.dx-poster--compact .dx-live-label{display:none}
+.dx-micro--intraday .dx-art-node-ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.4}
+.dx-micro--intraday.dx-micro--down .dx-art-node-ring{stroke:var(--discover-down)}
+.dx-micro-axis{fill:var(--discover-dim);font-size:10.5px;font-family:var(--sans)}
+.dx-micro-grid{stroke:rgba(255,255,255,.06);stroke-width:1}
+.dx-micro-price{fill:var(--discover-text);font-weight:600}
+.dx-micro-base{opacity:.7}
+.dx-hero-live{position:relative;margin-top:8px}
+.dx-hero-live svg{width:100%;height:96px;display:block;color:var(--w)}
+.dx-hero-live .dx-live-label{position:static;display:inline;text-transform:none;letter-spacing:0;font-size:inherit;color:inherit}
+.dx-hero-live-label{font-size:11px;color:var(--discover-dim);line-height:1.5;margin:4px 0 0}
+.dx-intraday{position:relative;height:100%}
+.dx-intraday-chart{width:100%;height:auto;max-height:420px;display:block;color:var(--w)}
+.dx-intraday-note{font-size:11.5px;color:var(--discover-dim);margin:6px 10px 8px;line-height:1.5}
+.dx-intraday-note .dx-live-label{position:static;display:inline;text-transform:none;letter-spacing:0;font-size:inherit;color:var(--discover-text)}
+@media (max-width:860px){
+  .dx-hero-live svg{height:64px}
+  .dx-live-label{font-size:9px;left:10px;top:4px}
+  .dx-intraday-chart{max-height:280px}
+}

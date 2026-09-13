@@ -203,10 +203,36 @@
     lazyBeobachter.observe(node);
   }
 
+  /* Ein zweiter Beobachter fuer den Tagesverlauf - mit Rand von nur 80
+     Pixeln und ohne Abmelden: eine Karte abonniert, wenn sie im Bild ist,
+     und kuendigt, wenn sie es verlaesst. Ausserhalb des Bildschirms gibt
+     es kein Abonnement - nie mehr Abonnements als sichtbare Karten. */
+  var liveBeobachter = null;
+  function liveBeobachten(node, rein, raus) {
+    if (!global.IntersectionObserver) { rein(); return; }
+    if (!liveBeobachter) {
+      liveBeobachter = new global.IntersectionObserver(function (eintraege) {
+        eintraege.forEach(function (e) {
+          var t = e.target;
+          if (e.isIntersecting) { if (t.__liveRein) t.__liveRein(); }
+          else if (t.__liveRaus) t.__liveRaus();
+        });
+      }, { rootMargin: "80px 0px" });
+    }
+    node.__liveRein = rein; node.__liveRaus = raus;
+    liveBeobachter.observe(node);
+  }
+
   /**
    * Das Datenbild einer Karte - sofort, wenn die Reihe da ist (oder es
    * keine gibt: dann die Leiter); sonst ein Platzhalter, der eindeutig
    * kein Chart ist, und die Reihe, sobald die Karte sichtbar wird.
+   *
+   * Seit dem Live-Hub kommt davor der Tagesverlauf: traegt der Titel
+   * einen Intraday-Snapshot (Verzeichnis des Hubs), zeigt die Karte die
+   * laufende oder letzte Sitzung mit Beschriftung ("Heute · Stand 15:42",
+   * "Letzter Handelstag · Freitag") - und laedt die Tagesreihe nur, wenn
+   * es keinen gibt. Ein Abruf je sichtbarer Karte, nicht zwei.
    *
    * Der Platzhalter hat dieselbe Hoehe wie das Bild: beim Laden springt
    * nichts. Dieselbe Reihe wird je Titel einmal geladen (series-loader).
@@ -219,17 +245,25 @@
     var host = el("div", { class: opts.klasse || "dx-lazy-media" });
     var ps = card.priceSeries;
     var Loader = D() && D().SeriesLoader;
+    var Hub = D() && D().LiveHub;
     var verweis = ps && ps.status === "CALCULATED" && ps.path && !ps.points && Loader;
-    if (!verweis) {
+    var liveFaehig = !!(Hub && Hub.enabled() && card.dataMode === "real" && opts.live !== false && card.symbol);
+    host.setAttribute("data-symbol", card.symbol || "");
+    if (!verweis && !liveFaehig) {
       host.appendChild(D().Artwork.stockArtwork(card, artOpts));
       return host;
     }
-    host.setAttribute("data-series", ps.path);
-    host.setAttribute("data-loading", "true");
-    host.style.setProperty("--ar", w + " / " + h);
-    host.appendChild(el("div", { class: "dx-art-skeleton", "aria-hidden": "true", text: "Kurs lädt" }));
-    beobachten(host, function () {
+
+    /* Der Tagesverlauf hat Vorrang - wenn das Verzeichnis den Titel kennt.
+       Das Verzeichnis liegt beim Start der Seite vor (app.js laedt es mit
+       der Metadatei); die Entscheidung faellt deshalb hier synchron. */
+    var liveEintrag = liveFaehig ? Hub.entryFor(card.symbol) : null;
+
+    function tagesreihe() {
+      if (host.__live) return;
+      if (!verweis) { S.clear(host); host.appendChild(D().Artwork.stockArtwork(card, artOpts)); return; }
       Loader.get(ps.path).then(function (reihe) {
+        if (host.__live) return;
         var voll = Object.assign({}, card, { priceSeries: Loader.merge(ps, reihe) });
         S.clear(host);
         host.removeAttribute("data-loading");
@@ -237,12 +271,61 @@
       }).catch(function () {
         /* Die Reihe kam nicht: dann das, was ohne sie gilt - die Leiter.
            Kein leeres Bild, kein Fehlertext auf der Karte. */
+        if (host.__live) return;
         S.clear(host);
         host.removeAttribute("data-loading");
         host.appendChild(D().Artwork.stockArtwork(card, artOpts));
       });
-    });
+    }
+
+    if (verweis || liveEintrag) {
+      host.setAttribute("data-series", verweis ? ps.path : "");
+      host.setAttribute("data-loading", "true");
+      host.style.setProperty("--ar", w + " / " + h);
+      host.appendChild(el("div", { class: "dx-art-skeleton", "aria-hidden": "true", text: "Kurs lädt" }));
+    } else {
+      host.appendChild(D().Artwork.stockArtwork(card, artOpts));
+    }
+    if (verweis) {
+      beobachten(host, function () { if (!liveEintrag) tagesreihe(); });
+    }
+    if (liveFaehig) liveBinden(host, card, artOpts, tagesreihe);
     return host;
+  }
+
+  /* Abonnieren im Bild, kuendigen ausserhalb. Der Rueckruf zeichnet den
+     Tagesverlauf neu, wenn ein neuerer Stand kommt - und faellt auf die
+     Tagesreihe zurueck, wenn es fuer den Titel keinen gibt. */
+  function liveBinden(host, card, artOpts, tagesreihe) {
+    var Hub = D().LiveHub, MC = D().MicroChart;
+    var abo = null;
+    function zeigen(p) {
+      if (!p.snapshot) {
+        if (!host.__live) tagesreihe();
+        return;
+      }
+      var svgNode = MC.renderIntraday(p.snapshot, { width: artOpts.width, height: artOpts.height,
+                                                    symbol: card.symbol, label: p.label && p.label.label });
+      if (!svgNode) { if (!host.__live) tagesreihe(); return; }
+      host.__live = true;
+      S.clear(host);
+      host.removeAttribute("data-loading");
+      host.setAttribute("data-live", p.snapshot.regularComplete ? "complete" : "running");
+      host.setAttribute("data-session", p.snapshot.sessionDate);
+      host.appendChild(svgNode);
+      host.appendChild(liveLabel(p.label, p.snapshot));
+    }
+    liveBeobachten(host,
+      function () { if (!abo) abo = Hub.subscribe(card.symbol, zeigen); },
+      function () { if (abo) { abo(); abo = null; } });
+  }
+
+  /** "Heute · Stand 15:42" - die Beschriftung des Tagesverlaufs. */
+  function liveLabel(label, snap) {
+    var text = (label && label.label) || "";
+    return el("span", { class: "dx-live-label", title: (label && label.timezoneNote ? label.timezoneNote + " · " : "") +
+                        "5-Minuten-Kurse, " + snap.provider + (snap.venue ? "/" + snap.venue : "") },
+      [el("i", { "aria-hidden": "true" }), document.createTextNode(text)]);
   }
 
   function D() { return global.VUDiscover; }
@@ -535,7 +618,9 @@
            ist, kostet nichts. */
         var kind = track.children[index];
         var media = kind && kind.querySelector && kind.querySelector("[data-series]");
-        if (media && D().SeriesLoader) D().SeriesLoader.prefetch(media.getAttribute("data-series"));
+        var sym = kind && kind.getAttribute && kind.getAttribute("data-symbol");
+        if (D().LiveHub && D().LiveHub.enabled() && sym && D().LiveHub.entryFor(sym)) D().LiveHub.prefetch(sym);
+        else if (media && D().SeriesLoader && media.getAttribute("data-series")) D().SeriesLoader.prefetch(media.getAttribute("data-series"));
       }
     }) : null;
 
@@ -599,7 +684,7 @@
     pct: pct, pctPoints: pctPoints, money: money, score: score, times: times,
     toneClass: toneClass, valueOf: valueOf, statusOf: statusOf, STATUS_TEXT: STATUS_TEXT,
     svg: svg, ensureDefs: ensureDefs,
-    areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia, lazyArtwork: lazyArtwork,
+    areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia, lazyArtwork: lazyArtwork, liveLabel: liveLabel,
     SIGNAL_TONE: SIGNAL_TONE,
     signalChip: signalChip, poster: poster, rankPoster: rankPoster, sectorTile: sectorTile,
     rail: rail, railHead: railHead, withRailNav: withRailNav, grid: grid,

@@ -1,0 +1,185 @@
+name: Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)
+
+# Eigentuemerentscheidung 2026-09-13 - siehe quant/config/development-preview.json.
+# Holt und veroeffentlicht Tiingo-Tageskurse fuer den dort freigegebenen Umfang
+# (scopeUniverse = PRODUCT_UNIVERSE: Company Master, sobald er im Branch liegt,
+# sonst universe-FULL_UNIVERSE.json - siehe scripts/market/universe-source.mjs):
+#   - Arbeitsablage (.market-cache) aus dem letzten Lauf, inkrementell nachgeladen
+#   - volle Historie fuer die fullHistory-Titel  -> quant/data/market/golden-preview/daily/
+#   - ein Jahr Tagesschluss fuer alle im Umfang  -> quant/data/market/discover-series/
+#   - Faktorzeilen fuer das ganze Universum      -> quant/data/market/factors/factors-FULL_UNIVERSE.json
+#   - Discover-Daten (Reihen, Startseite, Live-Umfang) -> discover/data/
+# Der Umfang steht nicht in diesem Workflow und in keinem Skript - nur in der
+# Konfiguration. Der Schluessel bleibt serverseitig (GitHub-Secret); er
+# erscheint nicht im Log, nicht im Bericht, nicht im Repository.
+#
+# Nachfolger von golden-five-market-data.yml (Phase 5, fuenf Titel). Der
+# Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches dient
+# ein Push mit der Marke `[market-data-refresh]` in der Commit-Nachricht als
+# Ausloeser. Ohne Marke laeuft nichts.
+
+on:
+  workflow_dispatch:
+    inputs:
+      initial:
+        description: 'Erstimport (volle Historie ab initialFrom/historyFrom statt inkrementell)'
+        type: boolean
+        default: false
+  schedule:
+    # Taeglich nach dem US-Handelsschluss (16:00 New York = 20:00/21:00 UTC), um 22:30 UTC.
+    - cron: '30 22 * * 1-5'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/ingest-tiingo.mjs'
+      - 'scripts/market/preview-scope.mjs'
+      - 'scripts/market/universe-source.mjs'
+      - 'scripts/market/publish-discover-series.mjs'
+      - 'scripts/market/build-market-factors.mjs'
+      - 'scripts/discover/build-discover-data.mjs'
+      - 'quant/config/development-preview.json'
+      - 'quant/config/feature-gates.json'
+      - '.github/workflows/market-data-refresh.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[market-data-refresh]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ohne Zugang wird nichts abgerufen oder veroeffentlicht."
+            exit 1
+          fi
+          echo "Zugang vorhanden."
+
+      # Die Arbeitsablage zwischen Laeufen erhalten: der zweite Lauf laedt nur
+      # die Tage seit dem ersten nach. Eigener Schluessel, damit der 7-GB-Stand
+      # des Skalierungs-Workflows (volle Historie ab 1990) hier nicht landet.
+      - name: Arbeitsablage aus dem letzten Lauf holen
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-${{ github.run_id }}
+          restore-keys: |
+            discover-market-cache-
+
+      - name: Universumsquelle
+        run: node scripts/market/universe-source.mjs
+
+      - name: Tageskurse fuer das Produktuniversum (inkrementell) + kompakte Discover-Reihen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
+            --scope-from-preview --publish-preview --commercial --request-budget=6000 --concurrency=4
+
+      - name: Faktorzeilen fuer das ganze Universum
+        run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE
+
+      - name: Technical Intelligence + Elliott + SEC-Quant-Panel neu bauen (frische Kurse)
+        run: |
+          node scripts/technical/build-technical-data.mjs
+          node scripts/quant/build-sec-quant-panel.mjs
+
+      - name: Neu gebaute Daten stimmen mit den Engines ueberein
+        run: node scripts/technical/verify-technical-data.mjs
+
+      - name: Discover-Daten (Reihen, Startseite, Live-Umfang)
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Kein Schluessel im Statusbericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Regressionssuite
+        run: |
+          node --test "quant/tests/*.test.mjs"
+          node --test "discover/tests/*.test.mjs"
+
+      - name: Groesse der Arbeitsablage
+        id: disk
+        if: always()
+        run: |
+          if [ -d .market-cache ]; then
+            SIZE_MB=$(du -sm .market-cache | cut -f1)
+            echo "Arbeitsablage: ${SIZE_MB} MB"
+            echo "cache_mb=$SIZE_MB" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache_mb=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Arbeitsablage sichern (nur unterhalb der Ablagegrenze)
+        if: always() && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
+        uses: actions/cache/save@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-${{ github.run_id }}
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/golden-preview quant/data/market/discover-series \
+                  quant/data/market/factors quant/data/market/tiingo-status.json \
+                  quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung an veroeffentlichten Marktdaten."
+          else
+            git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Marktdaten-Refresh - Produktuniversum'
+            echo ''
+            if [ -f quant/data/market/tiingo-status.json ]; then
+              node -e '
+                const s = require("./quant/data/market/tiingo-status.json");
+                const z = s.summary || {};
+                console.log("| Kennzahl | Wert |"); console.log("|---|---|");
+                console.log("| Titel angefragt | " + (z.requested ?? "-") + " |");
+                console.log("| erfolgreich | " + (z.ok ?? "-") + " |");
+                console.log("| fehlgeschlagen | " + (z.failed ?? "-") + " |");
+                console.log("| abgelehnt (Qualitaet) | " + (z.rejected ?? "-") + " |");
+                console.log("| Anfragen | " + (z.requests ?? "-") + " |");
+                console.log("| Kontingent Stunde | " + (s.quota ? s.quota.hourUsed + "/" + s.quota.hourLimit : "-") + " |");
+              '
+            fi
+            if [ -f quant/data/market/discover-series/index.json ]; then
+              node -e 'const i = require("./quant/data/market/discover-series/index.json"); console.log("\nKompakte Reihen: " + i.count + " (Umfang " + i.scope.tickers.length + ")");'
+            fi
+            if [ -f discover/data/meta.json ]; then
+              node -e 'const m = require("./discover/data/meta.json"); const u = m.universes.find(x => x.universeId === "US_REAL"); console.log("\nDiscover US_REAL: " + u.securities + " Titel, " + u.withPriceSeries + " mit Kursreihe, Faktoren " + JSON.stringify(u.factorCoverage));'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

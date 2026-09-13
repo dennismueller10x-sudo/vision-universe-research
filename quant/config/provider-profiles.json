@@ -770,7 +770,7 @@
     "tiingo": {
       "providerId": "tiingo",
       "displayName": "Tiingo",
-      "plan": "Free",
+      "plan": "Commercial (freigegebenes grosses Paket laut Eigentuemer, 2026-09-13)",
       "scope": "US-Aktien und ETFs, Kurse; Fundamentaldaten im Free-Tarif eingeschraenkt",
       "findings": {
         "pointInTimeFundamentals": {
@@ -854,22 +854,33 @@
         }
       },
       "licensing": {
-        "status": "LEGAL_REVIEW_REQUIRED",
-        "checkedAt": "2026-09-07",
+        "status": "OWNER_DECLARED_LICENSED",
+        "checkedAt": "2026-09-13",
         "findings": {
-          "developmentUse": "UNKNOWN",
-          "commercialUse": "UNKNOWN",
-          "externalDisplay": "UNKNOWN",
-          "derivedValues": "UNKNOWN",
-          "redistribution": "UNKNOWN",
-          "caching": "UNKNOWN",
-          "historicalStorage": "UNKNOWN",
-          "publicGithubStorage": "UNKNOWN",
-          "mobileApp": "UNKNOWN",
+          "developmentUse": "OWNER_DECLARED",
+          "commercialUse": "OWNER_DECLARED",
+          "externalDisplay": "OWNER_DECLARED",
+          "derivedValues": "OWNER_DECLARED",
+          "redistribution": "OWNER_DECLARED",
+          "caching": "OWNER_DECLARED",
+          "historicalStorage": "OWNER_DECLARED",
+          "publicGithubStorage": "OWNER_DECLARED",
+          "mobileApp": "OWNER_DECLARED",
           "aiUsage": "UNKNOWN",
           "modelTraining": "UNKNOWN"
         },
-        "note": "Der Laufzeitnachweis beantwortet technische Fragen, keine rechtlichen. Besonders offen: die IEX-Intradaydaten des Free-Tarifs sind an eine nicht-anzeigende Nutzung geknuepft - was das fuer eine oeffentliche Seite bedeutet, ist eine Lizenzfrage. Die oeffentliche Anzeige bleibt deshalb per MarketDataDisplayPolicy aus, bis jemand mit der Befugnis dazu etwas anderes festhaelt."
+        "note": "Seit 2026-09-13 gilt die Erklaerung des Eigentuemers als Grundlage fuer die oeffentliche Anzeige (Tageskurse, abgeleitete Werte, Intraday, Realtime) des Produktuniversums; sie steht mit Datum in quant/config/development-preview.json (grants) und wird von display-policy.js je Datenklasse geprueft. Der Vertragstext liegt dem Repository nicht vor, eine eigene Rechtspruefung wurde nicht vorgenommen - OWNER_DECLARED ist deshalb eine eigene Stufe, nicht DOCUMENTATION_VERIFIED. Weiterhin offen und unveraendert: aiUsage und modelTraining (UNKNOWN). Die Kursart der IEX-Intradaydaten bleibt vom Anbieter unbenannt (priceType UNSPECIFIED).",
+        "previousStatus": {
+          "status": "LEGAL_REVIEW_REQUIRED",
+          "until": "2026-09-13"
+        },
+        "declaration": {
+          "by": "Repository owner",
+          "date": "2026-09-13",
+          "text": "Die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data liegt vor. Wir verwenden das entsprechend freigegebene grosse Paket.",
+          "evidenceLevel": "OWNER_DECLARED",
+          "contractInRepository": false
+        }
       },
       "cost": {
         "checkedAt": "2026-09-07",

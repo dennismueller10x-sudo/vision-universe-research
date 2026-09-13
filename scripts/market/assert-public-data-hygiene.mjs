@@ -92,6 +92,36 @@ if (existsSync(seriesDir)) {
   }
 }
 
+/* Intraday-Snapshots (5-Minuten-Verlaeufe je Sitzung): derselbe Umfang,
+   dieselbe Grundlage. Ein Snapshot fuer einen Titel ausserhalb des
+   Umfangs oder ohne Grundlage ist ein Leck. Und: kein Punkt ausserhalb
+   der regulaeren Sitzung in `points` - erweiterte Zeiten liegen getrennt. */
+const intradayDir = join(root, "quant", "data", "market", "intraday");
+if (existsSync(intradayDir)) {
+  let intradayScope = new Set();
+  try {
+    intradayScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/intraday/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const date of readdirSync(intradayDir).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n))) {
+    for (const name of readdirSync(join(intradayDir, date)).filter((n) => n.endsWith(".json"))) {
+      const payload = json(join("quant", "data", "market", "intraday", date, name));
+      if (!payload || !Array.isArray(payload.points) || !payload.points.length) continue;
+      if (!payload.symbol || !intradayScope.has(payload.symbol)) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: intraday points for ticker ` +
+                      `'${payload.symbol || "unknown"}' outside the declared scope`);
+      }
+      if (!payload.publishBasis) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: published without a stated basis`);
+      }
+      if (payload.sessionDate !== date) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: sessionDate ${payload.sessionDate} does not match its directory`);
+      }
+    }
+  }
+}
+
 const dashboardMarket = json("dashboard/data/market_data.json");
 if (dashboardMarket) {
   for (const [symbol, rows] of Object.entries(dashboardMarket.symbols || {})) {

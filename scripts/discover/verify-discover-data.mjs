@@ -81,6 +81,12 @@ check(meta.contractVersion === Contract.CONTRACT_VERSION,
 const { resolveScope } = await import(join(root, "scripts", "market", "preview-scope.mjs"));
 const seriesScope = resolveScope(root, PREVIEW).tickers;
 const previewScope = new Set();
+/* Oeffentliche Freigabe (Grant mit publicRawDisplayAllowed + Grundlage):
+   dann gilt der ganze aufgeloeste Umfang. Sonst je Titel die enge
+   Development-Preview-Erlaubnis. */
+const oeffentlich = DisplayPolicy.check({ providerId: "tiingo", dataClass: "marketData",
+                                          audience: "public", form: "raw", gates: GATES });
+if (oeffentlich.allowed) for (const t of seriesScope) previewScope.add(t);
 for (const grant of PREVIEW.grants || []) {
   for (const ticker of grant.developmentPreviewScope || []) {
     const verdict = DisplayPolicy.check({
@@ -175,9 +181,12 @@ for (const universe of meta.universes) {
              discover/data/series/ und muss dort existieren, mit Punkten,
              Herkunft und Stand. */
           check(punkte === 0, `${file}: ${card.symbol} traegt Punkte auf der Karte statt eines Verweises`);
-          check(typeof ps.path === "string" && ps.path.startsWith("/discover/data/series/" + id + "/"),
+          /* Zwei zulaessige Ablagen: der Series-Store des Builds oder die
+             kanonische kompakte Reihe (quant/data/market/discover-series/). */
+          const kanonisch = typeof ps.path === "string" && ps.path.startsWith("/quant/data/market/discover-series/");
+          check(typeof ps.path === "string" && (kanonisch || ps.path.startsWith("/discover/data/series/" + id + "/")),
             `${file}: ${card.symbol} priceSeries ohne Verweis auf den Series-Store`);
-          const seriesFile = join(DATA, "series", id, card.symbol + ".json");
+          const seriesFile = kanonisch ? join(root, ps.path.slice(1)) : join(DATA, "series", id, card.symbol + ".json");
           check(existsSync(seriesFile), `${file}: ${card.symbol} Verweis ohne Datei ${seriesFile}`);
           if (existsSync(seriesFile)) {
             const reihe = readJSON(seriesFile);

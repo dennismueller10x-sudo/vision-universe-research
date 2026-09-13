@@ -135,16 +135,26 @@ test("R9 · Ohne jede Reihe scheitert jeder Zeitraum, ohne Absturz", () => {
   assert.equal(res.suggestion, null, "wenn nichts geht, wird auch nichts vorgeschlagen");
 });
 
-test("R10 · Die ausgelieferte Konfiguration schaltet nichts frei", () => {
-  // Der Standardzustand des Repositories. Waere hier eines der Gates an,
-  // liefe die oeffentliche Seite mit Live-Daten, deren Lizenzlage
-  // ungeklaert ist.
+test("R10 · Die ausgelieferte Konfiguration schaltet nur mit eingetragener Grundlage frei", () => {
+  // Seit 2026-09-13 stehen die Live-Gates offen (Eigentuemerentscheidung).
+  // Ein offenes Gate allein schaltet nichts frei: die Anzeigerichtlinie
+  // verlangt zusaetzlich einen Grant mit Grundlage und Datum. Genau diese
+  // Paarung wird hier geprueft - ein Gate ohne Grant waere ein Fehler.
   const cfg = JSON.parse(readFileSync(join(ROOT, "quant", "config", "feature-gates.json"), "utf8"));
+  const preview = JSON.parse(readFileSync(join(ROOT, "quant", "config", "development-preview.json"), "utf8"));
   const gates = Policy.gatesFromConfig(cfg);
-  assert.equal(gates.ENABLE_LIVE_MARKET_DATA, false);
-  assert.equal(gates.ENABLE_PUBLIC_LIVE_MARKET_DATA, false);
+  const grants = preview.grants || [];
+  if (gates.ENABLE_PUBLIC_LIVE_MARKET_DATA) {
+    assert.ok(grants.some((g) => g.providerId === "tiingo" && g.publicRealtimeAllowed === true && g.basis && g.checkedAt),
+      "ENABLE_PUBLIC_LIVE_MARKET_DATA ist offen, aber kein Tiingo-Grant traegt publicRealtimeAllowed mit Grundlage");
+  }
+  if (gates.ENABLE_LIVE_MARKET_DATA) {
+    assert.ok(grants.some((g) => g.providerId === "tiingo" && g.dataClass === "intraday" && g.basis && g.checkedAt),
+      "ENABLE_LIVE_MARKET_DATA ist offen, aber kein Intraday-Grant traegt eine Grundlage");
+  }
   for (const name of Object.keys(cfg.gates)) {
     assert.ok(cfg.gates[name].reason, name + " steht ohne Begruendung da");
+    assert.match(cfg.gates[name].changedAt || "", /^\d{4}-\d{2}-\d{2}$/, name + " ohne Datum");
   }
 });
 

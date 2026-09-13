@@ -68,7 +68,12 @@ const RANK_LIMIT = parseInt(arg("--rank-limit", "50"), 10) || 50;
    Darueber wandert sie in die Arbeitsablage, und ausgeliefert werden die
    Deckungsbilanz und der Screener - genau das, was die Fragen aus §15
    beantwortet. */
-const DETAIL_LIMIT = parseInt(arg("--detail-limit", "500"), 10) || 500;
+/* Bis 2026-09-13 blieben Einzelzeilen ueber 500 Titel in der Arbeitsablage
+   (MVP-Grenze). Faktorzeilen sind abgeleitete Werte ohne Kursniveaus und
+   seit der Eigentuemerentscheidung fuer das ganze Produktuniversum
+   ausgeliefert - der Discover-Build liest sie. --detail-limit bleibt als
+   Schalter fuer Sonderfaelle. */
+const DETAIL_LIMIT = parseInt(arg("--detail-limit", "1000000"), 10) || 1000000;
 
 const universeFile = join(SCALE_DIR, `universe-${GATE}.json`);
 if (!existsSync(universeFile)) {

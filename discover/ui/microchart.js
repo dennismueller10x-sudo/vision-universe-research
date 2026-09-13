@@ -32,7 +32,7 @@
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
-  var MODULE_VERSION = "discover-microchart-1.0.0";
+  var MODULE_VERSION = "discover-microchart-1.1.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function svg(tag, attrs) {
@@ -158,6 +158,121 @@
            " — Quelle " + ps.source + ", Stand " + (ps.asOf || "unbekannt");
   }
 
+  /* -------------------------------------------------- Intraday-Verlauf */
+
+  /**
+   * Der Tagesverlauf einer Sitzung: 5-Minuten-Schlusskurse ueber der
+   * Sitzungszeit. Die Zeitachse ist die ganze Sitzung (09:30-16:00 New
+   * York); eine laufende Sitzung fuellt sie nur so weit, wie echte Punkte
+   * reichen. Nichts wird animiert, nichts fortgeschrieben.
+   *
+   * Gezeichnet wird nur, was der Intraday-Vertrag durchlaesst
+   * (VURealtime.IntradaySnapshot.validate). Sonst null.
+   *
+   * @param {object} snap  Snapshot (quant/engines/realtime/intraday-snapshot.js)
+   * @param {object} opt   {width, height, symbol, label, axis}
+   */
+  function renderIntraday(snap, opt) {
+    opt = opt || {};
+    var Snap = global.VURealtime && global.VURealtime.IntradaySnapshot;
+    if (!snap || !Array.isArray(snap.points) || snap.points.length < 2) return null;
+    if (Snap && !Snap.validate(snap).ok) return null;
+
+    var w = opt.width || 300, h = opt.height || 92, axis = opt.axis === true;
+    var padTop = Math.max(8, h * 0.12), padBottom = axis ? Math.max(18, h * 0.14) : Math.max(6, h * 0.08);
+    var padX = opt.padX !== undefined ? opt.padX : Math.max(4, w * 0.02);
+    var padRight = axis ? Math.max(padX, 52) : padX;
+    var openMin = minutesOf(snap.sessionOpenLocal || "09:30"), closeMin = minutesOf(snap.sessionCloseLocal || "16:00");
+    var span = Math.max(1, closeMin - openMin);
+    var closes = snap.points.map(function (p) { return p[1]; });
+    var base = isNum(snap.previousClose) ? snap.previousClose : closes[0];
+    var lo = Math.min.apply(null, closes.concat([base])), hi = Math.max.apply(null, closes.concat([base]));
+    if (lo === hi) { lo -= 1; hi += 1; }
+    var spanne = hi - lo; lo -= spanne * 0.1; hi += spanne * 0.1;
+    var last = closes[closes.length - 1];
+    var up = last >= base;
+    var laeuft = snap.regularComplete !== true;
+
+    var x = function (m) { return padX + ((m - openMin) / span) * (w - padX - padRight); };
+    var y = function (v) { return h - padBottom - ((v - lo) / (hi - lo)) * (h - padTop - padBottom); };
+
+    var text = beschreibungIntraday(snap, opt.symbol, opt.label);
+    var node = svg("svg", {
+      class: "dx-micro dx-micro--intraday" + (up ? "" : " dx-micro--down") + (laeuft ? " dx-micro--running" : ""),
+      viewBox: "0 0 " + w + " " + h, preserveAspectRatio: "none", role: "img",
+      "data-art": "intraday", "data-direction": up ? "up" : "down",
+      "data-session": snap.sessionDate, "data-complete": laeuft ? "false" : "true",
+      "aria-label": text
+    });
+    var titel = svg("title", {}); titel.textContent = text; node.appendChild(titel);
+
+    var lauf = (render.zaehler = (render.zaehler || 0) + 1);
+    var defs = svg("defs", {});
+    var grad = svg("linearGradient", { id: "dxi" + lauf, x1: 0, y1: 0, x2: 0, y2: 1 });
+    grad.appendChild(svg("stop", { offset: "0%", "stop-color": "currentColor", "stop-opacity": ".26" }));
+    grad.appendChild(svg("stop", { offset: "100%", "stop-color": "currentColor", "stop-opacity": "0" }));
+    defs.appendChild(grad); node.appendChild(defs);
+
+    /* Die Startlinie: der Vortagesschluss. Ohne ihn der erste Punkt - und
+       dann sagt die Beschreibung das auch. */
+    node.appendChild(svg("line", { class: "dx-art-base", x1: padX, x2: w - padRight,
+      y1: y(base).toFixed(1), y2: y(base).toFixed(1) }));
+    var d = "";
+    snap.points.forEach(function (p) {
+      if (!isNum(p[1])) return;
+      d += (d ? "L" : "M") + x(minutesOf(p[0])).toFixed(1) + " " + y(p[1]).toFixed(1) + " ";
+    });
+    var xLast = x(minutesOf(snap.points[snap.points.length - 1][0])), xFirst = x(minutesOf(snap.points[0][0]));
+    if (opt.area !== false) {
+      node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxi" + lauf + ")",
+        d: d + "L" + xLast.toFixed(1) + " " + (h - padBottom).toFixed(1) + " L" + xFirst.toFixed(1) + " " + (h - padBottom).toFixed(1) + " Z" }));
+    }
+    node.appendChild(svg("path", { class: "dx-art-line", d: d.trim() }));
+    if (laeuft) {
+      node.appendChild(svg("circle", { class: "dx-art-node-ring", cx: xLast.toFixed(1), cy: y(last).toFixed(1), r: 5.5 }));
+    }
+    node.appendChild(svg("circle", { class: "dx-art-node", cx: xLast.toFixed(1), cy: y(last).toFixed(1), r: 2.8 }));
+
+    if (axis) {
+      var marken = [];
+      for (var m = Math.ceil(openMin / 60) * 60; m <= closeMin; m += 60) marken.push(m);
+      marken.forEach(function (m) {
+        if (m - openMin < 20 || closeMin - m < 20) return;
+        node.appendChild(svg("line", { class: "dx-micro-grid", x1: x(m).toFixed(1), x2: x(m).toFixed(1),
+          y1: padTop, y2: (h - padBottom).toFixed(1) }));
+        node.appendChild(svg("text", { class: "dx-micro-axis", x: x(m).toFixed(1), y: h - 4,
+          "text-anchor": "middle", text: pad2(Math.floor(m / 60)) + ":00" }));
+      });
+      node.appendChild(svg("text", { class: "dx-micro-axis", x: padX, y: h - 4, "text-anchor": "start",
+        text: snap.sessionOpenLocal || "09:30" }));
+      node.appendChild(svg("text", { class: "dx-micro-axis", x: (w - padRight).toFixed(1), y: h - 4,
+        "text-anchor": "end", text: snap.sessionCloseLocal || "16:00" }));
+      node.appendChild(svg("text", { class: "dx-micro-axis dx-micro-price", x: (w - padRight + 6).toFixed(1),
+        y: (y(last) + 3.5).toFixed(1), "text-anchor": "start", text: preis(last) }));
+      if (isNum(snap.previousClose) && Math.abs(y(base) - y(last)) > 12) {
+        node.appendChild(svg("text", { class: "dx-micro-axis dx-micro-base", x: (w - padRight + 6).toFixed(1),
+          y: (y(base) + 3.5).toFixed(1), "text-anchor": "start", text: preis(base) }));
+      }
+    }
+    return node;
+  }
+
+  function pad2(n) { return n < 10 ? "0" + n : String(n); }
+  function preis(v) { return (Math.abs(v) >= 1000 ? v.toFixed(0) : v.toFixed(2)).replace(".", ","); }
+  function minutesOf(hhmm) {
+    var p = String(hhmm || "").split(":");
+    return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+  }
+
+  function beschreibungIntraday(snap, symbol, label) {
+    var erster = snap.points[0][0], letzter = snap.points[snap.points.length - 1][0];
+    return (symbol ? symbol + ": " : "") + "Tagesverlauf " + datum(snap.sessionDate) + ", " +
+           (snap.interval === "5min" ? "5-Minuten-Kurse" : "Intraday-Kurse") + " von " + erster + " bis " + letzter +
+           " New Yorker Zeit" + (isNum(snap.previousClose) ? ", Startlinie Vortagesschluss" : ", Startlinie erster Kurs") +
+           (label ? " — " + label : "") + " — Quelle " + snap.provider + (snap.venue ? "/" + snap.venue : "") +
+           ", Stand " + (snap.asOfLocal || snap.asOf || "unbekannt");
+  }
+
   /* ------------------------------------------------------ Renditeleiter */
 
   var STUFEN = [["return1M", "1M"], ["return3M", "3M"], ["return6M", "6M"], ["return12M", "1J"]];
@@ -267,6 +382,7 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MicroChart = {
     MODULE_VERSION: MODULE_VERSION, hasSeries: hasSeries, pointsFor: pointsFor,
-    render: render, ladder: ladder, ladderInto: ladderInto, prozent: prozent, RANGE_BARS: RANGE_BARS
+    render: render, renderIntraday: renderIntraday, ladder: ladder, ladderInto: ladderInto,
+    prozent: prozent, RANGE_BARS: RANGE_BARS
   };
 })(window);

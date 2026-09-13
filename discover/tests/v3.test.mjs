@@ -41,7 +41,8 @@ test("kein synthetischer Verlauf als Kurschart: Linien nur mit Freigabe", { skip
       if (Array.isArray(punkte)) assert.ok(punkte.length >= 5, c.symbol + " Reihe ohne Punkte");
       else {
         assert.ok(typeof ps.path === "string", c.symbol + " weder Punkte noch Verweis");
-        const datei = join(DATA, ps.path.replace("/discover/data/", ""));
+        const datei = ps.path.startsWith("/quant/") ? join(root, ps.path.slice(1))
+                    : join(DATA, ps.path.replace("/discover/data/", ""));
         assert.ok(existsSync(datei), c.symbol + " Verweis ohne Datei");
         assert.ok(readJSON(datei).points.length >= 5, c.symbol + " Datei ohne Punkte");
       }

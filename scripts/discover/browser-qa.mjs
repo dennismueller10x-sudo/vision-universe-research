@@ -360,11 +360,16 @@ await check("Detail: Zeitraumwechsel zeichnet neu", async () => {
 });
 
 await check("Detail: gesperrte Zeiträume sind abgeblendet und begründet", async () => {
+  /* 1T ist entweder verfuegbar (ein Intraday-Snapshot liegt vor) oder
+     gesperrt mit Grund - am Knopf (title) oder im Kapitel. */
   const eintag = await desktop.$('.dx-tf button:text-is("1T")');
   assert(eintag, "kein 1T-Knopf");
-  assert((await eintag.getAttribute("disabled")) !== null, "1T ist nicht gesperrt");
-  const hinweis = await desktop.textContent(".dx-chapter");
-  assert(/Intraday/.test(hinweis), "der gesperrte Zeitraum nennt keinen Grund");
+  if ((await eintag.getAttribute("disabled")) !== null) {
+    const grund = ((await eintag.getAttribute("title")) || "") + (await desktop.textContent(".dx-chapter"));
+    assert(/Intraday|Tagesverlauf/.test(grund), "der gesperrte Zeitraum nennt keinen Grund");
+  } else {
+    assert(await desktop.$(".dx-intraday-chart, .q-tchart"), "1T verfuegbar, aber kein Chart");
+  }
 });
 
 await check("Detail: Chart-Werkzeuge sind verstaut und vollstaendig", async () => {

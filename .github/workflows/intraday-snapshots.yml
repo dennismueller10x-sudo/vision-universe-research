@@ -1,0 +1,131 @@
+name: Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach Schluss)
+
+# Eigentuemerentscheidung 2026-09-13 - quant/config/development-preview.json
+# (intraday). Holt 5-Minuten-Bars ueber den bestehenden Tiingo-Adapter und
+# legt je Titel und Sitzung einen Snapshot ab (quant/data/market/intraday/).
+#
+#   waehrend der Sitzung  alle 10 Minuten: die Titel auf den Discover-Flaechen
+#                         (discover/data/live-scope/US_REAL.json)
+#   nach Handelsschluss   einmal: das ganze Produktuniversum, damit jede
+#                         Aktienseite ein 1T hat
+#
+# Der Trading Session Resolver (quant/engines/realtime/trading-session.js)
+# entscheidet je Lauf, welche Sitzung gilt; ausserhalb der Sitzung und bei
+# abgeschlossenen Snapshots wird nichts abgerufen. Cron kennt keine
+# Sommerzeit - das Fenster ist deshalb breit (13-21 UTC) und der Resolver
+# haelt die Laeufe ausserhalb der Sitzung kurz (kein Abruf, kein Commit).
+#
+# Grenzen, die dieser Weg hat und die die Seite nennt: GitHub Pages baut
+# hoechstens ~10-mal je Stunde; ein Snapshot ist deshalb bis zu ~10 Minuten
+# alt, und die Karte schreibt "Heute · Stand 15:42" statt "live".
+#
+# Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
+# dient ein Push mit der Marke `[intraday-snapshot]` als Ausloeser.
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'discover (Flaechen), universe (alles) oder Tickerliste (AAPL,MSFT)'
+        type: string
+        default: 'discover'
+  schedule:
+    - cron: '*/10 13-21 * * 1-5'
+    - cron: '35 21 * * 1-5'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/ingest-intraday.mjs'
+      - 'quant/engines/realtime/trading-session.js'
+      - 'quant/engines/realtime/intraday-snapshot.js'
+      - '.github/workflows/intraday-snapshots.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intraday-snapshots
+  cancel-in-progress: false
+
+jobs:
+  snapshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[intraday-snapshot]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ohne Zugang wird nichts abgerufen."
+            exit 1
+          fi
+
+      - name: Umfang bestimmen
+        id: scope
+        run: |
+          SCOPE='${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}'
+          if [ -z "$SCOPE" ]; then
+            # Der Lauf um 21:35 UTC ist der Universumslauf nach Schluss; alle anderen: Discover-Flaechen.
+            if [ "${{ github.event.schedule }}" = "35 21 * * 1-5" ]; then SCOPE=universe; else SCOPE=discover; fi
+          fi
+          echo "scope=$SCOPE" >> "$GITHUB_OUTPUT"
+          echo "Umfang: $SCOPE"
+
+      - name: Intraday-Snapshots holen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/ingest-intraday.mjs --scope=${{ steps.scope.outputs.scope }}
+
+      - name: Kein Schluessel im Statusbericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A quant/data/market/intraday
+          if git diff --cached --quiet; then
+            echo "Keine neuen Snapshots."
+          else
+            git commit -m "Intraday-Snapshots: ${{ steps.scope.outputs.scope }} ($(node -e 'const s=require("./quant/data/market/intraday/status.json");console.log(s.session.sessionDate+" "+s.marketStateAtRun+", "+s.summary.written+" geschrieben, "+s.summary.requests+" Anfragen")'))"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Intraday-Snapshots'
+            echo ''
+            if [ -f quant/data/market/intraday/status.json ]; then
+              node -e '
+                const s = require("./quant/data/market/intraday/status.json"); const z = s.summary || {};
+                console.log("| Kennzahl | Wert |"); console.log("|---|---|");
+                console.log("| Sitzung | " + s.session.sessionDate + " (" + s.session.kind + ", " + (s.session.isComplete ? "abgeschlossen" : s.session.isRunning ? "laeuft" : "offen") + ") |");
+                console.log("| Marktlage beim Lauf | " + s.marketStateAtRun + " · " + s.localTimeAtRun + " New York |");
+                console.log("| Umfang | " + s.scope + " (" + z.requested + " Titel) |");
+                console.log("| abgerufen / geschrieben / gewachsen | " + z.fetched + " / " + z.written + " / " + z.grown + " |");
+                console.log("| unveraenderlich uebersprungen | " + z.skippedImmutable + " |");
+                console.log("| ohne regulaere Bars / fehlgeschlagen | " + z.notPublishable + " / " + z.failed + " |");
+                console.log("| Anfragen | " + z.requests + (z.stopped ? " (Abbruch: " + z.stopped + ")" : "") + " |");
+                console.log("| Gruende | " + JSON.stringify(z.reasons) + " |");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

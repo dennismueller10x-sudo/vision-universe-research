@@ -12,7 +12,7 @@ name: Tiingo Commercial — Scale Gates
 # workflow_dispatch verlangt bei GitHub, dass die Workflow-Datei auf dem
 # Default-Branch liegt - hier also erst nach einem Merge nutzbar. Bis
 # dahin gilt dieselbe Loesung wie in tiingo-verify.yml und
-# golden-five-market-data.yml: ein Push-Ausloeser auf Entwicklungsbranches
+# market-data-refresh.yml: ein Push-Ausloeser auf Entwicklungsbranches
 # mit einer Marke in der Commit-Nachricht. OHNE MARKE LAEUFT NICHTS - ein
 # Workflow, der bei jedem Push das Kontingent eines kostenpflichtigen
 # Zugangs anfasst, waere ein Fehler mit Rechnung.

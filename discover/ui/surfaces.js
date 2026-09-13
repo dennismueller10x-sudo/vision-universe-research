@@ -156,8 +156,8 @@
         el("p", { class: "dx-featured-caption", text: echt
           ? "Echter Kursverlauf, Tagesschlusskurse — Quelle " + ps.source +
             ", Stand " + (ps.asOf || "")
-          : "Rendite über 1, 3, 6 und 12 Monate als Balken — kein Kursverlauf. Absolute Kurse " +
-            "bleiben zurück." })
+          : "Rendite über 1, 3, 6 und 12 Monate als Balken — kein Kursverlauf. Für diesen Titel " +
+            "liegt noch keine Kursreihe vor." })
       ])
     ]);
     link.addEventListener("click", function () {

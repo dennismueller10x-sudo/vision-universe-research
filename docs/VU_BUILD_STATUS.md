@@ -30,6 +30,7 @@ Bereinigungssemantik.**
 | 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
 | 6 | V3: Surfaces, Relevanz, Diversity, Chart Truth Contract, Themenwelten (Branch, nicht gemergt) | `VU_DISCOVER_V3.md`, `VU_DISCOVER_V3_COLLECTION_AUDIT.md` |
 | 7 | Price Data Completion: Umfang an einer Stelle, kompakte Reihen, Series-Store, Lazy Loading (Branch) | `VU_DISCOVER_PRICE_DATA_COMPLETION.md`, `VU_DISCOVER_PRICE_COVERAGE.md` |
+| 8 | Full Market Universe & Live Intraday: Eigentümer-Freigabe (13.09.2026) in Richtlinie/Gates/Profil, kanonische Universumsquelle mit Company-Master-Übergabepunkt, Trading Session Resolver, Intraday-Vertrag + Ingest + Snapshots, Live-Hub, Micro-Intraday auf Karten/Hero/Aktienseite (1T), Workflows `market-data-refresh.yml` + `intraday-snapshots.yml` (Branch, nicht gemergt, nicht veröffentlicht) | `VU_DISCOVER_FULL_UNIVERSE_LIVE.md` |
 
 Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
 der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.

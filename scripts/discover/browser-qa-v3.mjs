@@ -45,10 +45,24 @@ const fake = await d.evaluate(() => {
   return { arts: arts.length, preis, leiter, mehrpunkt: pfad };
 });
 ok("Keine Renditepfad-Linie mehr (kein Mehrpunkt-Artwork)", fake.mehrpunkt === 0, JSON.stringify(fake));
-ok("Leitern werden gezeichnet", fake.leiter > 10, JSON.stringify(fake));
+/* Leitern gibt es nur fuer Titel ohne Reihe und ohne Snapshot; mit
+   vollstaendiger Abdeckung koennen sie ganz fehlen. Gezaehlt wird deshalb,
+   dass es Datenbilder gibt und keines davon ein Renditepfad ist. */
+const bilder = await d.evaluate(() => document.querySelectorAll('.dx-art, [data-art="intraday"]').length);
+ok("Datenbilder werden gezeichnet (Leiter, Linie oder Tagesverlauf)", bilder > 0, JSON.stringify(fake) + " bilder " + bilder);
 /* Eine Linie nur bei Golden Five */
-const linien = await d.evaluate(() => [...document.querySelectorAll('.dx-poster .dx-art[data-art="price"]')].map((a) => a.closest(".dx-poster").getAttribute("data-symbol")));
-ok("Linien nur bei freigegebenen Titeln", linien.every((s) => ["AAPL","MSFT","NVDA","JPM","XOM"].includes(s)), linien.join(","));
+/* Linien nur dort, wo eine freigegebene Reihe oder ein Snapshot vorliegt -
+   der Umfang kommt aus den ausgelieferten Verzeichnissen, nicht aus einer
+   Liste im Test. */
+const freigegeben = await d.evaluate(async () => {
+  const out = new Set();
+  try { const i = await (await fetch("/quant/data/market/discover-series/index.json")).json(); (i.tickers || []).forEach((t) => out.add(t)); } catch (e) {}
+  const Hub = window.VUDiscover.LiveHub; const idx = Hub && Hub.index();
+  if (idx && idx.entries) Object.keys(idx.entries).forEach((t) => out.add(t));
+  return [...out];
+});
+const linien = await d.evaluate(() => [...document.querySelectorAll('.dx-poster .dx-art[data-art="price"], .dx-poster [data-art="intraday"]')].map((a) => a.closest(".dx-poster").getAttribute("data-symbol")));
+ok("Linien nur bei freigegebenen Titeln (Reihe oder Snapshot)", linien.every((s) => freigegeben.includes(s)), linien.filter((s) => !freigegeben.includes(s)).join(",") || (linien.length + " Linien"));
 if (SHOTS) await d.screenshot({ path: SHOTS + "/01-home-desktop.png" });
 
 /* Nachladen: scrollen bis alle Stuecke da sind */
@@ -90,8 +104,9 @@ await d.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
 ok("Detail NVDA: Chart mit Pfad", await d.evaluate(() => !!document.querySelector("#d-root svg path[d]")));
 if (SHOTS) await d.screenshot({ path: SHOTS + "/04-detail-nvda-desktop.png" });
 await d.goto(BASE + "/discover/#/s/US_REAL/VLO", { waitUntil: "networkidle" }); await warten(d, 1200);
-const vlo = await d.evaluate(() => ({ leiter: !!document.querySelector(".dx-ladder-gross"), pfad: !!document.querySelector(".dx-spark.dx-hero-chart") }));
-ok("Detail VLO: Leiter statt Renditepfad", vlo.leiter && !vlo.pfad, JSON.stringify(vlo));
+const vlo = await d.evaluate(() => ({ leiter: !!document.querySelector(".dx-ladder-gross"), intraday: !!document.querySelector(".dx-intraday-chart"),
+                                       tages: !!document.querySelector(".q-tchart"), pfad: !!document.querySelector(".dx-spark.dx-hero-chart") }));
+ok("Detail VLO: Leiter, Tageschart oder Tagesverlauf - nie ein Renditepfad", (vlo.leiter || vlo.intraday || vlo.tages) && !vlo.pfad, JSON.stringify(vlo));
 if (SHOTS) await d.screenshot({ path: SHOTS + "/05-detail-vlo-desktop.png" });
 
 /* Kategorie Thema */
@@ -181,10 +196,20 @@ ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" |
   ok("Lazy: beim Scrollen kommen Reihen nach, keine doppelt", danach.requests > stand.requests && danach.requests === new Set(serien).size, JSON.stringify(danach));
   /* Golden Five im realen Universum: Linie kommt nach dem Laden */
   await lz.goto(BASE + "/discover/#/c/US_REAL/thema-ki", { waitUntil: "networkidle" }); await warten(lz, 900);
-  const nvda = await lz.evaluate(() => { const m = document.querySelector('.dx-poster[data-symbol="NVDA"] .dx-art'); return m ? m.getAttribute("data-art") : null; });
-  ok("Lazy: NVDA-Karte zeichnet nach dem Laden eine echte Linie", nvda === "price", String(nvda));
-  const amd = await lz.evaluate(() => { const m = document.querySelector('.dx-poster[data-symbol="AMD"] .dx-art'); return m ? m.getAttribute("data-art") : null; });
-  ok("Lazy: AMD-Karte (ausserhalb des Umfangs) zeichnet die Leiter - ohne Abruf", amd === "ladder" && !serien.some((u) => u.includes("/US_REAL/AMD.json")), String(amd));
+  const nvda = await lz.evaluate(() => { const m = document.querySelector('.dx-poster[data-symbol="NVDA"] .dx-art, .dx-poster[data-symbol="NVDA"] [data-art]'); return m ? m.getAttribute("data-art") : null; });
+  ok("Lazy: NVDA-Karte zeichnet nach dem Laden eine echte Linie (Tagesreihe oder Tagesverlauf)", nvda === "price" || nvda === "intraday", String(nvda));
+  /* Eine Karte ohne Reihe und ohne Snapshot - welche, entscheiden die
+     Daten - zeichnet die Leiter und loest keinen Abruf aus. */
+  const ohne = await lz.evaluate(() => {
+    const Hub = window.VUDiscover.LiveHub;
+    for (const p of document.querySelectorAll(".dx-poster")) {
+      const s = p.getAttribute("data-symbol"); const media = p.querySelector("[data-series]");
+      const hatReihe = media && media.getAttribute("data-series"); const hatLive = Hub && Hub.enabled() && Hub.entryFor(s);
+      if (!hatReihe && !hatLive) { const m = p.querySelector(".dx-art"); return { s, art: m ? m.getAttribute("data-art") : null }; }
+    }
+    return null;
+  });
+  ok("Lazy: Karte ohne Reihe/Snapshot zeichnet die Leiter - ohne Abruf", !ohne || (ohne.art === "ladder" && !serien.some((u) => u.includes("/" + ohne.s + ".json"))), JSON.stringify(ohne));
 }
 
 /* Keine Sackgassen: jeder "Alle anzeigen"-Link fuehrt auf eine Kategorie, die laedt. */

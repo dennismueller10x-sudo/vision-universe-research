@@ -41,6 +41,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
+const { resolveProductUniverse } = await import(join(root, "scripts", "market", "universe-source.mjs"));
 
 const Factors = require(join(root, "quant", "engines", "market-factors.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
@@ -296,11 +297,11 @@ function withheldSeries(status, message) {
  * sobald sie sichtbar ist (ui/series-loader.js); ein Titel in drei
  * Sammlungen laedt sie einmal.
  */
-function seriesRef(series, range, universeId, symbol) {
+function seriesRef(series, range, universeId, symbol, path) {
   if (!series || series.status !== "CALCULATED") return series;
   return { status: series.status, source: series.source, priceSeriesType: series.priceSeriesType,
            asOf: series.asOf, range: range || "6M", from: series.from, to: series.to,
-           points: null, path: "/discover/data/series/" + universeId + "/" + symbol + ".json",
+           points: null, path: path || ("/discover/data/series/" + universeId + "/" + symbol + ".json"),
            message: null };
 }
 /* Kompatibilitaet: aeltere Stellen im Build nennen die Funktion noch so. */
@@ -339,13 +340,43 @@ function scoreAll(metrics, values) {
 }
 
 /* ====================================================== Universum: REAL */
+/* Welche Faktordatei traegt Einzelzeilen fuer das Produktuniversum?
+   Bevorzugt FULL_UNIVERSE (alle Titel); solange deren Einzelzeilen noch
+   nicht im Repository liegen (erster Lauf des Workflows
+   market-data-refresh.yml steht aus), das groesste vorhandene Gate - und
+   der Build sagt dann in meta.universes[].factorCoverage, dass er nur
+   einen Teil des Universums rechnet. Keine Zahl ist hier fest verdrahtet. */
+function pickFactorsFile() {
+  const dir = join(root, "quant", "data", "market", "factors");
+  const kandidaten = ["FULL_UNIVERSE", "GATE_2000", "GATE_500", "GATE_100"]
+    .map((g) => ({ gate: g, file: join(dir, `factors-${g}.json`) }))
+    .filter((k) => existsSync(k.file));
+  if (!kandidaten.length) throw new Error("Keine Faktordatei mit Einzelzeilen unter quant/data/market/factors/.");
+  return kandidaten[0];
+}
+
 function buildRealUniverse(nameMap, goldenBars, compactSeries) {
-  const factors = readJSON(join(root, "quant", "data", "market", "factors", "factors-GATE_500.json"));
-  const universe = readJSON(join(root, "quant", "data", "market", "scale", "universe-GATE_500.json"));
-  const byTicker = new Map(universe.securities.map((s) => [s.ticker, s]));
+  const universeSource = resolveProductUniverse(root);
+  const faktorQuelle = pickFactorsFile();
+  const factors = readJSON(faktorQuelle.file);
+  const byTicker = new Map(universeSource.securities.map((s) => [s.ticker, s]));
+  const factorTickers = new Set(factors.securities.map((f) => f.ticker));
+  const factorCoverage = {
+    universe: universeSource.securities.length,
+    withFactorRows: universeSource.securities.filter((s) => factorTickers.has(s.ticker)).length,
+    factorsGate: faktorQuelle.gate,
+    partial: faktorQuelle.gate !== "FULL_UNIVERSE",
+    note: faktorQuelle.gate === "FULL_UNIVERSE"
+      ? "Faktorzeilen fuer das ganze Produktuniversum."
+      : `Nur ${faktorQuelle.gate}-Faktorzeilen im Repository; FULL_UNIVERSE-Einzelzeilen entstehen im Workflow market-data-refresh.yml.`
+  };
 
   const stocks = [];
   for (const sec of factors.securities) {
+    /* Nur Titel des Produktuniversums: was der Company Master ausschliesst
+       (Warrants, Units, Rights, Testwerte), bekommt keine Karte - auch wenn
+       eine Faktorzeile existiert. */
+    if (!byTicker.has(sec.ticker)) continue;
     const values = sec.values || {};
     const ref = byTicker.get(sec.ticker) || {};
     const metrics = flatMetrics(values);
@@ -366,6 +397,12 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
        laenger. */
     const kompakt = compactSeries.get(sec.ticker) || null;
     const kompaktDated = kompakt ? kompakt.points.map((p) => ({ date: p[0], close: p[1] })) : null;
+    /* Der Pfad der Reihe: die kompakte Reihe wird nicht kopiert, die Karte
+       laedt die kanonische Datei aus quant/data/market/discover-series/.
+       Nur Titel mit voller Historie und ohne kompakte Reihe bekommen eine
+       Kopie im Series-Store. */
+    const seriesPath = kompakt ? "/quant/data/market/discover-series/" + (kompakt.securityId || sec.securityId) + ".json" : null;
+    const kursCloses = goldenCloses || (kompaktDated ? kompaktDated.map((b) => b.close) : null);
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
@@ -381,11 +418,14 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
       /* Absolute Kursniveaus realer Titel bleiben nach der
          Redistributionsregel des Bestandssystems zurueck. Die Card zeigt
          deshalb keinen Preis - und sagt warum, statt eine Null. */
-      price: goldenCloses
-        ? Contract.field(round(goldenCloses[goldenCloses.length - 1], 4))
+      /* Der letzte Schlusskurs: aus der vollen Historie oder aus der
+         kompakten Reihe - beide sind freigegeben (Eigentuemerentscheidung
+         2026-09-13). Ohne Reihe bleibt das Feld leer und sagt warum. */
+      price: kursCloses
+        ? Contract.field(round(kursCloses[kursCloses.length - 1], 4))
         : Contract.field(null, "WITHHELD_REDISTRIBUTION"),
-      changePercent: goldenCloses && goldenCloses.length > 1
-        ? Contract.field(round((goldenCloses[goldenCloses.length - 1] / goldenCloses[goldenCloses.length - 2] - 1) * 100, 4))
+      changePercent: kursCloses && kursCloses.length > 1
+        ? Contract.field(round((kursCloses[kursCloses.length - 1] / kursCloses[kursCloses.length - 2] - 1) * 100, 4))
         : Contract.field(null, "WITHHELD_REDISTRIBUTION"),
       sparkline: goldenCloses ? weeklySparkline(goldenCloses) : null,
       sparklineStatus: goldenCloses ? "CALCULATED" : "WITHHELD_REDISTRIBUTION",
@@ -409,11 +449,15 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     });
     stock.scoreDetail = scores;
     stock.rawValues = values;
+    stock.seriesPath = seriesPath;
     stocks.push(stock);
   }
 
   return {
     universeId: "US_REAL",
+    universeSource: { source: universeSource.source, file: universeSource.file, version: universeSource.version,
+                      counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
+    factorCoverage,
     label: METHODOLOGY.universes.US_REAL.label,
     kind: "real",
     provider: factors.provider,
@@ -422,7 +466,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     generatedAt: factors.generatedAt,
     engine: factors.engine,
     redistribution: factors.redistribution,
-    sourceFile: "quant/data/market/factors/factors-GATE_500.json",
+    sourceFile: faktorQuelle.file.replace(root + "/", ""),
     stocks
   };
 }
@@ -773,7 +817,7 @@ function buildRow(universe, config) {
     plain: texte[i],
     /* Der Verweis auf die Reihe, nicht die Reihe: geladen wird, was
        sichtbar wird. */
-    priceSeries: seriesRef(s.priceSeries, config.microRange || "6M", universe.universeId, s.symbol)
+    priceSeries: seriesRef(s.priceSeries, config.microRange || "6M", universe.universeId, s.symbol, s.seriesPath)
   }));
   /* Die Karte muss sich selbst erklaeren koennen: der Klartext wird aus
      der KARTE nachgerechnet, nicht aus dem Titel im Speicher. Was die
@@ -1031,7 +1075,7 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
       if (list.length < 4) continue;
       const texte = Klartext.reihe(list, "sektor-" + step.sector);
       const cards = list.map((s, i) => Object.assign(Contract.toCard(s), {
-        plain: texte[i], priceSeries: seriesRef(s.priceSeries, "6M", U, s.symbol)
+        plain: texte[i], priceSeries: seriesRef(s.priceSeries, "6M", U, s.symbol, s.seriesPath)
       }));
       const ordered = Relevance.discoveryOrder(cards, { recognition: RECOGNITION }).cards;
       surfaces.push({ type: "row", variant: step.variant || "compact", id: "sektor-" + slug(step.sector),
@@ -1197,7 +1241,7 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
   if (!series.available && stock.priceSeries && stock.priceSeries.status === "CALCULATED" &&
       Array.isArray(stock.priceSeries.points)) {
     series = { available: true, source: "discover-series",
-               path: "/discover/data/series/" + universe.universeId + "/" + stock.symbol + ".json",
+               path: stock.seriesPath || ("/discover/data/series/" + universe.universeId + "/" + stock.symbol + ".json"),
                priceSeriesType: stock.priceSeries.priceSeriesType || "SPLIT_ADJUSTED",
                dataMode: stock.dataMode, bars: stock.priceSeries.points.length,
                from: stock.priceSeries.from, reason: null, message: null };
@@ -1222,7 +1266,7 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     price: stock.price, changePercent: stock.changePercent,
     sparkline: stock.sparkline, sparklineStatus: stock.sparklineStatus,
     performancePath: stock.performancePath, performancePathStatus: stock.performancePathStatus,
-    priceSeries: seriesRef(stock.priceSeries, "1J", universe.universeId, stock.symbol),
+    priceSeries: seriesRef(stock.priceSeries, "1J", universe.universeId, stock.symbol, stock.seriesPath),
     was: stock.was || null, recognitionTier: stock.recognitionTier || null,
     signals: stock.signals, badges: stock.badges,
     metrics: stock.metrics, metricStatus: stock.metricStatus,
@@ -1406,6 +1450,26 @@ for (const universe of universes) {
 
   rowIndex.push({ universeId: universe.universeId, rows });
 
+  /* Der Live-Umfang: welche Titel stehen auf einer Discover-Flaeche
+     (Startseite, Reihen, Sektorkacheln, Eingangsflaeche)? Genau fuer die
+     holt der Intraday-Ingest (scripts/market/ingest-intraday.mjs
+     --scope=discover) waehrend der Sitzung Snapshots. Der Rest des
+     Universums bekommt seinen Tagesverlauf nach Handelsschluss. */
+  if (universe.kind === "real") {
+    const live = new Set();
+    for (const [, row] of rowsById) (row.cards || []).forEach((c) => live.add(c.symbol));
+    sectorPayload.forEach((sp) => sp.cards.forEach((c) => live.add(c.symbol)));
+    featured.forEach((f) => live.add(f.symbol));
+    (homeSymbols.get(universe.universeId) || new Set()).forEach((sym) => live.add(sym));
+    write(`live-scope/${universe.universeId}.json`, {
+      universeId: universe.universeId, generatedAt: universe.generatedAt, asOf: universe.asOf,
+      count: live.size, symbols: [...live].sort(),
+      note: "Titel auf Discover-Flaechen. Umfang des Intraday-Ingests waehrend der Sitzung; " +
+            "gelesen von scripts/market/ingest-intraday.mjs --scope=discover."
+    });
+    console.log(`     ${universe.universeId.padEnd(9)} Live-Umfang: ${live.size} Titel`);
+  }
+
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
   write(`search/${universe.universeId}.json`, {
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
@@ -1435,6 +1499,8 @@ for (const universe of universes) {
   for (const stock of universe.stocks) {
     const ps = stock.priceSeries;
     if (!ps || ps.status !== "CALCULATED" || !Array.isArray(ps.points)) continue;
+    /* Kanonische Reihe vorhanden: kein Duplikat im Series-Store. */
+    if (stock.seriesPath) continue;
     write(`series/${universe.universeId}/${stock.symbol}.json`, {
       contractVersion: Contract.CONTRACT_VERSION,
       symbol: stock.symbol, instrumentId: stock.symbol, universeId: universe.universeId,
@@ -1492,6 +1558,37 @@ for (const universe of universes) {
 }
 
 console.log("6/6  Meta …");
+/* Die Live-Lage, wie der Client sie liest: Gate UND Grundlage. Auf GitHub
+   Pages heisst "live" Snapshot-Refresh im Sitzungstakt; die Seite nennt
+   den Stand mit Uhrzeit. Ein LIVE-Punkt ohne Strom gibt es nicht. */
+function realtimeMeta() {
+  const intraday = DisplayPolicy.check({ providerId: "tiingo", dataClass: "intraday", audience: "public",
+                                         form: "raw", gates: GATES });
+  const cfg = PREVIEW_CONFIG.intraday || {};
+  const verfuegbar = intraday.allowed && GATES.ENABLE_PUBLIC_LIVE_MARKET_DATA === true && cfg.enabled !== false;
+  return {
+    available: verfuegbar,
+    mode: verfuegbar ? "snapshot" : "eod",
+    reason: verfuegbar ? null : (intraday.reason || "gateDisabled"),
+    message: verfuegbar
+      ? "Intraday-Snapshots (" + (cfg.interval || "5min") + ", Tiingo/IEX) werden waehrend der Sitzung alle " +
+        (cfg.refreshMinutes || 10) + " Minuten erneuert. Die Seite nennt den Stand mit Uhrzeit; " +
+        "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar."
+      : (intraday.message || "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt.") +
+        " Discover zeigt den letzten ausgelieferten Stand und kennzeichnet ihn als solchen.",
+    basis: intraday.basis || null, checkedAt: intraday.checkedAt || null,
+    intraday: verfuegbar ? {
+      index: "/quant/data/market/intraday/index.json",
+      pathPattern: "/quant/data/market/intraday/<sessionDate>/<securityId>.json",
+      interval: cfg.interval || "5min", refreshMinutes: cfg.refreshMinutes || 10,
+      extendedHours: cfg.extendedHours !== false, provider: "tiingo", venue: "IEX",
+      isLiveStream: false, isDelayed: true
+    } : null,
+    realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
+    derivedFields: ["leadershipScore", "momentumScore", "relativeStrengthScore",
+                    "breakoutScore", "percentiles", "movingAverages"]
+  };
+}
 const meta = {
   module: "discover",
   moduleVersion: "discover-3.0.0",
@@ -1518,16 +1615,8 @@ const meta = {
     acc[name] = DisplayPolicy.gateReason(GATES_CONFIG, name);
     return acc;
   }, {}),
-  realtime: {
-    available: false,
-    reason: "gateDisabled",
-    message: "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt und für Realtime liegt keine " +
-             "Anzeigeerlaubnis vor. Discover zeigt den letzten ausgelieferten Stand und " +
-             "kennzeichnet ihn als solchen - es gibt keinen LIVE-Punkt ohne Live-Daten.",
-    realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
-    derivedFields: ["leadershipScore", "momentumScore", "relativeStrengthScore",
-                    "breakoutScore", "percentiles", "movingAverages"]
-  },
+  realtime: realtimeMeta(),
+  universeSource: real.universeSource,
   universes: universes.map((u) => ({
     universeId: u.universeId, label: u.label, kind: u.kind, provider: u.provider,
     benchmark: u.benchmark, asOf: u.asOf, generatedAt: u.generatedAt,
@@ -1539,6 +1628,10 @@ const meta = {
     notTradingExcluded: u.stocks.filter((s) => s.discoveryEligible === false)
       .map((s) => ({ symbol: s.symbol, reason: s.ineligibleReason })),
     detailPages: detailSets.get(u.universeId).size,
+    factorCoverage: u.factorCoverage || null,
+    universeSource: u.universeSource ? { source: u.universeSource.source, file: u.universeSource.file,
+                                         version: u.universeSource.version, counts: u.universeSource.counts,
+                                         handover: u.universeSource.handover } : null,
     redistribution: u.redistribution || null,
     note: METHODOLOGY.universes[u.universeId].note,
     rankingScope: METHODOLOGY.universes[u.universeId].rankingScope
@@ -1547,8 +1640,10 @@ const meta = {
   rowConfigs: ROWS.map((r) => ({ id: r.id, title: r.title, theme: r.theme || null,
                                  microRange: r.microRange || "6M", rule: r.rule || null })),
   sources: [
-    "quant/data/market/factors/factors-GATE_500.json",
-    "quant/data/market/scale/universe-GATE_500.json",
+    real.sourceFile,
+    real.universeSource.file,
+    "quant/data/market/discover-series/*.json",
+    "quant/data/market/intraday/index.json",
     "quant/data/market/golden-preview/daily/*.json",
     "quant/data/technical/index.json",
     "quant/data/securities.json",

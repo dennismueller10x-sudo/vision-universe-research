@@ -66,6 +66,13 @@ const PREVIEW_CONFIG_PATH = join(root, "quant", "config", "development-preview.j
    duerfen: 5 heute, 498 oder 7.000, sobald der Eigentuemer den Umfang
    aendert. Requests je Lauf = Titel im Umfang. */
 const SCOPE_FROM_PREVIEW = args.has("--scope-from-preview");
+/* --commercial: Kontingente des Commercial-Zugangs (providers/tiingo/
+   adapter.js#COMMERCIAL_LIMITS) statt der Free-Grenzen. Das ganze
+   Produktuniversum passt nicht in 50 Anfragen je Stunde; dieselbe
+   Umschaltung, die run-scale-gate.mjs benutzt - kein zweiter Adapter. */
+const COMMERCIAL = args.has("--commercial") || process.env.TIINGO_PLAN === "commercial";
+const REQUEST_BUDGET = parseInt((process.argv.find((a) => a.startsWith("--request-budget=")) || "").slice(17), 10) || 0;
+const CONCURRENCY = parseInt((process.argv.find((a) => a.startsWith("--concurrency=")) || "").slice(14), 10) || 0;
 const PREVIEW_SCOPE = (PUBLISH_PREVIEW || SCOPE_FROM_PREVIEW)
   ? resolveScope(root, JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"))) : null;
 const SECURITIES = SCOPE_FROM_PREVIEW
@@ -192,11 +199,22 @@ const registry = SymbolMapping.createRegistry(
   }))
 );
 
-const capabilities = Tiingo.freePlanCapabilities();
+const capabilities = COMMERCIAL ? Tiingo.commercialPlanCapabilities() : Tiingo.freePlanCapabilities();
+if (COMMERCIAL && (REQUEST_BUDGET > 0 || CONCURRENCY > 0)) {
+  capabilities.limits = Object.assign({}, capabilities.limits,
+    REQUEST_BUDGET > 0 ? { requestsPerHour: REQUEST_BUDGET,
+                           requestsPerDay: Math.max(capabilities.limits.requestsPerDay, REQUEST_BUDGET) } : {},
+    CONCURRENCY > 0 ? { concurrency: CONCURRENCY } : {});
+  capabilities.limits.provenance = Object.assign({}, capabilities.limits.provenance,
+    { requestsPerHour: "SAFETY_CEILING", budgetNote: "Vom Aufrufer gesetzt (--request-budget). Weiterhin unsere Zahl, nicht Tiingos." });
+}
 const provider = Tiingo.createTiingoProvider({
   apiKey, capabilities, symbolRegistry: registry,
+  baseUrl: process.env.TIINGO_BASE_URL || undefined,
   fetchImpl: (url, init) => fetch(url, init)
 });
+console.log(`  Zugang:    ${capabilities.plan || (COMMERCIAL ? "commercial" : "free")} · ` +
+            `${capabilities.limits.requestsPerHour}/h, ${capabilities.limits.concurrency || 1} gleichzeitig`);
 const store = MarketStore.createMarketStore({ root, providerId: Tiingo.PROVIDER_ID });
 
 /* Interne Nutzung pruefen - der Import selbst ist eine interne Handlung. */
@@ -215,8 +233,17 @@ if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 const pending = store.remaining(checkpoint, SECURITIES.map((s) => s.securityId));
 console.log(`  Ausstehend: ${pending.length} von ${SECURITIES.length}` +
             (checkpoint.done.length ? ` (${checkpoint.done.length} bereits erledigt)` : ""));
-console.log(`  Kontingent: ${Tiingo.FREE_LIMITS.requestsPerHour}/Stunde, ` +
-            `${Tiingo.FREE_LIMITS.requestsPerDay}/Tag\n`);
+console.log(`  Kontingent: ${capabilities.limits.requestsPerHour}/Stunde, ` +
+            `${capabilities.limits.requestsPerDay}/Tag\n`);
+
+/* Ab wann Tageskurse geholt werden: fullHistory-Titel ab initialFrom (die
+   Aktienseite braucht 5J/Max), alle anderen ab discoverSeries.historyFrom -
+   genug fuer 252-Tage-Faktoren und die kompakte Jahresreihe. */
+const HISTORY_FROM = (PREVIEW_SCOPE && JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8")).discoverSeries || {}).historyFrom || null;
+function initialFromFor(security) {
+  if (!SCOPE_FROM_PREVIEW || !HISTORY_FROM) return CONFIG.fetch.initialFrom;
+  return PREVIEW_SCOPE.fullHistory.has(security.ticker) ? CONFIG.fetch.initialFrom : HISTORY_FROM;
+}
 
 const perSecurity = {};
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
@@ -228,8 +255,8 @@ for (const security of SECURITIES) {
   if (checkpoint.done.includes(id)) { skipped++; console.log(`${label} uebersprungen (erledigt)`); continue; }
 
   const from = INITIAL
-    ? CONFIG.fetch.initialFrom
-    : store.nextFetchFrom(id, { initialFrom: CONFIG.fetch.initialFrom });
+    ? initialFromFor(security)
+    : store.nextFetchFrom(id, { initialFrom: initialFromFor(security) });
 
   if (DRY_RUN) {
     const last = store.lastStoredDate(id);
@@ -471,7 +498,7 @@ writeStatus({
   /* Woher jede zugesagte Faehigkeit ihren Wert hat. Ohne diese Angabe ist
      die Matrix eine Behauptung; mit ihr ist sie nachpruefbar. */
   evidence: capabilities.evidence,
-  limits: Tiingo.FREE_LIMITS,
+  limits: capabilities.limits,
   adjustmentStatus: provider.adjustmentStatus(),
   health: { status: health.status, message: health.message },
   quota: quota,

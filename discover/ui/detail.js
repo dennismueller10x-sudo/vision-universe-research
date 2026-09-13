@@ -79,9 +79,15 @@
       detail: detail, range: "1Y",
       overlays: OVERLAYS.reduce(function (acc, o) { acc[o.id] = o.on === true; return acc; }, {}),
       panes: PANES.reduce(function (acc, p) { acc[p.id] = p.on === true; return acc; }, {}),
-      bars: null, weeklyBars: null, bundle: null, mehrOffen: false
+      bars: null, weeklyBars: null, bundle: null, mehrOffen: false,
+      /* Der Tagesverlauf aus dem Live-Hub (Snapshot + Beschriftung). */
+      intraday: null, redraw: null
     };
   }
+
+  /* Das Live-Abonnement der Aktienseite - eines je Seite, gekuendigt,
+     sobald die naechste Seite gezeichnet wird. */
+  var detailAbo = null;
 
   function loadSeries(detail) {
     var series = detail.series || {};
@@ -127,6 +133,7 @@
     options = options || {};
     var state = createState(detail);
     S.clear(root);
+    if (detailAbo) { detailAbo(); detailAbo = null; }
 
     /* Die Farbwelt des Titels steht am Kopf der Seite und hoert weiter
        unten auf. Das ist keine Laune: oben wird entdeckt, unten wird
@@ -174,15 +181,37 @@
     root.appendChild(technicalIntelligence(detail));
     root.appendChild(provenance(detail));
 
-    loadSeries(detail).then(function (loaded) {
+    /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
+       Titel. Er wird abgewartet, bevor der Chart entsteht - damit der
+       Standard-Zeitraum 1T ist, wenn es einen gibt, und 1J, wenn nicht. */
+    var Hub = D.LiveHub;
+    var liveErst = new Promise(function (resolve) {
+      if (!Hub || !Hub.enabled() || detail.dataMode !== "real") { resolve(null); return; }
+      var erledigt = false;
+      detailAbo = Hub.subscribe(detail.symbol, function (p) {
+        state.intraday = p.snapshot ? p : null;
+        if (!erledigt) { erledigt = true; resolve(state.intraday); return; }
+        if (state.redraw && state.range === "1D") state.redraw();
+      });
+      /* Ein Hub, der nicht antwortet, haelt die Seite nicht auf. */
+      global.setTimeout(function () { if (!erledigt) { erledigt = true; resolve(null); } }, 4000);
+    });
+
+    Promise.all([loadSeries(detail), liveErst]).then(function (teile) {
+      var loaded = teile[0];
       S.clear(chartHost);
       /* Ohne Kursreihe heisst das Kapitel nicht "Kursverlauf" - es zeigt
          keinen. Es zeigt die Wertentwicklung ueber vier Zeitraeume. */
-      chartHost.appendChild(el("h2", { text: loaded ? "Kursverlauf" : "Wertentwicklung" }));
-      if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
-      state.bars = loaded.bars;
-      state.weeklyBars = loaded.weeklyBars || null;
-      state.bundle = loaded.bundle;
+      var hatChart = !!loaded || !!state.intraday;
+      chartHost.appendChild(el("h2", { text: hatChart ? "Kursverlauf" : "Wertentwicklung" }));
+      if (!hatChart) { chartHost.appendChild(noSeries(detail)); return; }
+      if (loaded) {
+        state.bars = loaded.bars;
+        state.weeklyBars = loaded.weeklyBars || null;
+        state.bundle = loaded.bundle;
+      }
+      if (state.intraday) state.range = "1D";
+      else if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
       chartHost.appendChild(chartSection(state));
     }).catch(function (err) {
       S.clear(chartHost);
@@ -567,8 +596,12 @@
     var paneHost = el("div", {});
 
     var gates = (global.VUDiscoverMeta && global.VUDiscoverMeta.gates) || {};
-    var daily = { eod: barsAsRows(state.bars), intraday: [] };
-    var weekly = state.weeklyBars ? { eod: barsAsRows(state.weeklyBars), intraday: [] } : null;
+    /* Der Tagesverlauf als Zeilen fuer die Zeitraum-Engine: sie entscheidet
+       damit, ob 1T verfuegbar ist - dieselbe Regel wie ueberall (Gate vor
+       Daten). Gezeichnet wird 1T aus dem Snapshot selbst. */
+    var intradayRows = intradayAlsZeilen(state.intraday);
+    var daily = { eod: state.bars ? barsAsRows(state.bars) : [], intraday: intradayRows };
+    var weekly = state.weeklyBars ? { eod: barsAsRows(state.weeklyBars), intraday: intradayRows } : null;
 
     function quelleFuer(rangeId) {
       var mitTag = Ranges.selectRange(rangeId, daily, { gates: gates });
@@ -592,7 +625,9 @@
          Jahre, alles. Drei Jahre und zehn Jahre liegen dazwischen, ohne
          eine eigene Frage zu beantworten - sie sind auf der Analyseebene
          ueber dieselbe Engine erreichbar. */
-      if (["3M", "YTD", "3Y", "10Y"].indexOf(r.id) !== -1) return;
+      /* 5T entfaellt: der Hub haelt eine Sitzung je Titel, und "fuenf
+         Tage" aus einem Tag waeren eine Behauptung. */
+      if (["5D", "3M", "YTD", "3Y", "10Y"].indexOf(r.id) !== -1) return;
       /* Die Engine nennt den Zeitraum "5T", weil sie in Handelstagen
          denkt. Ein Mensch sagt "1 Woche". Umbenannt wird nur die
          Beschriftung - die Auswahl bleibt dieselbe Engine-Entscheidung. */
@@ -636,6 +671,8 @@
     }
 
     function zeichnen() {
+      state.redraw = zeichnen;
+      if (state.range === "1D") { zeichneIntraday(state, chartBox, paneHost, controls); return; }
       var gewaehlt = quelleFuer(state.range);
       var selection = gewaehlt.selection;
       var aktiveBars = gewaehlt.bars;
@@ -709,6 +746,50 @@
 
     zeichnen();
     return wrap;
+  }
+
+  /* Der Tagesverlauf auf der Aktienseite: derselbe Renderer wie auf der
+     Karte (ein Chart-Engine fuer Intraday), groesser und mit Zeitachse.
+     Keine Overlays: gleitende Durchschnitte ueber 5-Minuten-Kurse waeren
+     andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
+     bleibt deshalb zu. */
+  function zeichneIntraday(state, chartBox, paneHost, controls) {
+    var MC = D.MicroChart;
+    var p = state.intraday;
+    S.clear(chartBox); S.clear(paneHost); S.clear(controls);
+    if (!p || !p.snapshot || !MC || !MC.renderIntraday) {
+      chartBox.appendChild(C().emptyState("Kein Tagesverlauf",
+        "Für diesen Titel liegt kein Tagesverlauf vor."));
+      return;
+    }
+    var mobil = global.innerWidth < 860;
+    var svgNode = MC.renderIntraday(p.snapshot, { width: mobil ? 640 : 960, height: mobil ? 260 : 400,
+                                                  axis: true, symbol: state.detail.symbol,
+                                                  label: p.label && p.label.label });
+    if (!svgNode) {
+      chartBox.appendChild(C().emptyState("Kein Tagesverlauf", "Der Snapshot dieses Titels ist unvollständig."));
+      return;
+    }
+    svgNode.classList.add("dx-intraday-chart");
+    var rahmen = el("div", { class: "dx-intraday", "data-live": p.snapshot.regularComplete ? "complete" : "running" });
+    rahmen.appendChild(svgNode);
+    chartBox.appendChild(rahmen);
+    var snap = p.snapshot;
+    var text = (p.label && p.label.label ? p.label.label : "") +
+      " · 5-Minuten-Kurse, " + snap.provider + "/" + (snap.venue || "IEX") + " · Uhrzeiten New York" +
+      (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
+      (snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
+    chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [C().liveLabel(p.label, snap),
+      el("span", { text: text.replace(/^[^·]*· /, " · ") })]));
+  }
+
+  function intradayAlsZeilen(p) {
+    if (!p || !p.snapshot || !Array.isArray(p.snapshot.points)) return [];
+    var snap = p.snapshot;
+    return snap.points.map(function (pt) {
+      return { date: snap.sessionDate, timestamp: snap.sessionDate + "T" + pt[0], close: pt[1],
+               open: pt[1], high: pt[1], low: pt[1], volume: null };
+    });
   }
 
   /** Schnellzugriff, darunter auf Wunsch die ganze Liste. */
@@ -899,8 +980,8 @@
         leiter,
         el("p", { style: "margin:14px 2px 0;font-size:12px;color:var(--discover-dim);line-height:1.6",
           text: "Vier Zeiträume, vier gerechnete Renditen — dazwischen wird nichts behauptet. " +
-                "Absolute Kurse dieses Titels sind Anbieterdaten und bleiben zurück; deshalb " +
-                "gibt es hier keinen Kursverlauf." })
+                "Für diesen Titel liegt noch keine Kursreihe vor; deshalb gibt es hier keinen " +
+                "Kursverlauf, und keiner wird geschätzt." })
       ]));
     }
     host.appendChild(el("div", { style: "margin-top:18px" }, [

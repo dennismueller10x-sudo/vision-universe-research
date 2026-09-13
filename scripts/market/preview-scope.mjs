@@ -10,7 +10,9 @@
    Ticker". Hier steht sie EINMAL, und sie kann zwei Formen haben:
 
      scope:          ["AAPL", "MSFT", ...]     eine Tickerliste
-     scopeUniverse:  "GATE_500"                ein Universum aus
+     scopeUniverse:  "PRODUCT_UNIVERSE"        die kanonische Universums-
+                                               quelle (universe-source.mjs)
+                     oder "GATE_500"           ein Universum aus
                                                quant/data/market/scale/
 
    Beides zusammen ist die Vereinigung. Der Eigentuemer erweitert den
@@ -26,6 +28,7 @@
    ========================================================================= */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { resolveUniverse, PRODUCT_UNIVERSE } from "./universe-source.mjs";
 
 function readJSON(file) { return JSON.parse(readFileSync(file, "utf8")); }
 
@@ -80,16 +83,27 @@ export function knownSecurities(root) {
 export function resolveScope(root, config) {
   config = config || loadPreviewConfig(root);
   const tickers = new Set((config.scope || []).map((t) => String(t).toUpperCase()));
-  let universeFile = null;
+  /* Der Benchmark gehoert zum Abruf-Umfang (relative Staerke braucht ihn),
+     steht aber nicht in `scope`: er ist kein Titel, der bewertet wird. */
+  if (config.benchmark) tickers.add(String(config.benchmark).toUpperCase());
+  let universeFile = null, universe = null;
   if (config.scopeUniverse) {
-    universeFile = join(root, "quant", "data", "market", "scale", "universe-" + config.scopeUniverse + ".json");
-    if (!existsSync(universeFile)) {
+    /* PRODUCT_UNIVERSE ist die kanonische Quelle (universe-source.mjs:
+       Company Master, sobald er im Branch liegt, sonst das groesste
+       belegte Universum). Ein Gate-Name nennt ein Universum aus
+       quant/data/market/scale/. Eine fehlende Datei ist ein Fehler, kein
+       leerer Umfang. */
+    try {
+      universe = resolveUniverse(root, config.scopeUniverse);
+    } catch (err) {
       throw new Error("development-preview.json nennt scopeUniverse " + config.scopeUniverse +
-                      ", aber " + universeFile + " existiert nicht.");
+                      ", aber die Quelle fehlt: " + err.message);
     }
-    for (const s of readJSON(universeFile).securities || []) if (s.ticker) tickers.add(s.ticker);
+    universeFile = join(root, universe.file);
+    for (const s of universe.securities) if (s.ticker) tickers.add(s.ticker);
   }
   const bekannt = knownSecurities(root);
+  if (universe) for (const s of universe.securities) if (!bekannt.has(s.ticker)) bekannt.set(s.ticker, Object.assign({ source: universe.file }, s));
   const securities = [], unresolved = [];
   for (const t of [...tickers].sort()) {
     const s = bekannt.get(t);
@@ -100,7 +114,10 @@ export function resolveScope(root, config) {
   const fh = (config.discoverSeries && Array.isArray(config.discoverSeries.fullHistory))
     ? config.discoverSeries.fullHistory : (config.scope || []);
   return { tickers, securities, fullHistory: new Set(fh.map((t) => String(t).toUpperCase())),
-           unresolved, universeFile: universeFile ? universeFile.replace(root + "/", "") : null };
+           unresolved, universeFile: universeFile ? universeFile.replace(root + "/", "") : null,
+           universeSource: universe ? { source: universe.source, file: universe.file, version: universe.version,
+                                        counts: universe.counts, sha256: universe.sha256,
+                                        handover: universe.handover } : null };
 }
 
 /**

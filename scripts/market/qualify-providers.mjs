@@ -116,7 +116,8 @@ const rows = table.map((t) => [
   GATE_MARK[t.pit] || "?",
   GATE_MARK[t.delisted] || "?",
   GATE_MARK[t.restatements] || "?",
-  t.licenseConfidence === "LEGAL_REVIEW_REQUIRED" ? "offen" : t.licenseConfidence,
+  t.licenseConfidence === "LEGAL_REVIEW_REQUIRED" ? "offen"
+    : t.licenseConfidence === "OWNER_DECLARED_LICENSED" ? "vom Eigentuemer erklaert" : t.licenseConfidence,
   t.qualification,
   `${t.runtimeVerifiedCount}/${t.evidenceTotal}`
 ]);

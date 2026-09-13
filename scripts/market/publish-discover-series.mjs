@@ -40,7 +40,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT = join(HERE, "..", "..");
 
 export const SERIES_DIR = join("quant", "data", "market", "discover-series");
-export const SERIES_SCHEMA = "discover-series-1.0.0";
+export const SERIES_SCHEMA = "discover-series-1.1.0";
 /* Ein Jahr Handelstage plus Reserve, damit "1J" im Chart wirklich ein
    Jahr zeigt, auch nach Feiertagen. */
 export const DEFAULT_POINTS = 270;
@@ -77,6 +77,10 @@ export function compactSeries(payload, security, permission, opts) {
   const fenster = dated.slice(-maxPoints);
   return {
     schemaVersion: SERIES_SCHEMA,
+    /* Dieselben Felder, die der Chart Truth Contract im Client verlangt
+       (status, source): die Karte laedt diese Datei direkt, ohne Kopie. */
+    status: "CALCULATED",
+    source: payload.provider || "tiingo",
     securityId: security.securityId,
     ticker: security.ticker,
     instrumentId: security.ticker,
@@ -131,10 +135,19 @@ export function publishDiscoverSeries(opt) {
   const written = [], skipped = [];
   const erwartet = new Set();
   for (const security of resolved.securities) {
-    const anzeige = DisplayPolicy.check({
-      providerId: "tiingo", dataClass: "marketData", audience: "development_preview",
-      form: "raw", ticker: security.ticker, gates
+    /* Oeffentliche Freigabe zuerst (Eigentuemerentscheidung 2026-09-13,
+       grants mit publicRawDisplayAllowed); fehlt sie, gilt je Titel die
+       enge Development-Preview-Erlaubnis. Zwei Stufen derselben
+       Richtlinie, keine zweite Regel. */
+    let anzeige = DisplayPolicy.check({
+      providerId: "tiingo", dataClass: "marketData", audience: "public", form: "raw", gates
     });
+    if (!anzeige.allowed) {
+      anzeige = DisplayPolicy.check({
+        providerId: "tiingo", dataClass: "marketData", audience: "development_preview",
+        form: "raw", ticker: security.ticker, gates
+      });
+    }
     if (!anzeige.allowed) {
       skipped.push({ ticker: security.ticker, reason: "notPermitted", message: anzeige.message });
       continue;
