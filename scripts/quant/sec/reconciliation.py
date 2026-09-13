@@ -27,6 +27,7 @@ VIER REGELN
 import json
 import re
 from collections import Counter, defaultdict
+from datetime import date
 from pathlib import Path
 
 from .registry import MetricRegistry
@@ -928,7 +929,7 @@ FINE_CAUSES = (
     "IFRS_REMAINING", "PERIOD_MAPPING", "UNIT_MAPPING", "CURRENCY_MAPPING",
     "ALTERNATIVE_US_GAAP_CONCEPT", "INDUSTRY_SPECIFIC_ACCOUNTING",
     "TRUE_MISSING_TAG_MAPPING", "ISSUER_MAPPING", "INSUFFICIENT_DISCLOSURE",
-    "NO_XBRL_FACTS", "NO_XBRL_FINANCIALS",
+    "NO_XBRL_FACTS", "NO_XBRL_FINANCIALS", "VERY_YOUNG_LISTING",
     "NOT_APPLICABLE", "REQUIRES_REVIEW", "EXTERNAL_DATA_REQUIRED",
 )
 
@@ -958,6 +959,7 @@ FINE_TO_RECOVERABILITY = {
     # Mapping schliesst das - nur die Zeit oder ein Anbieter.
     "NO_XBRL_FACTS": "EXTERNAL_PROVIDER_CANDIDATE",
     "NO_XBRL_FINANCIALS": "EXTERNAL_PROVIDER_CANDIDATE",
+    "VERY_YOUNG_LISTING": "RESOLVES_WITH_TIME",
 }
 
 SIC_BANK = {"6021", "6022", "6029", "6035", "6036", "6099", "6111", "6141", "6153", "6159", "6162", "6163"}
@@ -994,26 +996,45 @@ def fine_cause(record):
     if not record.get("fundamentals"):
         return "REQUIRES_REVIEW", "kein Factbook (Fehlerschlange / Abruf ausstehend)"
 
-    # 1b. Factbook da, aber die SEC hat keine XBRL-Abschluesse geliefert.
-    #     Gemessen an den 69 Restfaellen von Lauf 16: acht Emittenten mit
-    #     null rohen Fakten, weitere mit einem einzigen Deckblatt-Fakt
-    #     (Canadian National, 40-F, 26 Jahresberichte, 6 Fakten).
-    raw = fund.get("rawFacts")
-    if raw == 0:
-        return "NO_XBRL_FACTS", f"companyfacts leer, Formular {form or '-'}"
-    if raw is not None and raw <= 12 and not fund.get("mappedFacts") \
-            and not fund.get("unmappedFacts"):
-        return "NO_XBRL_FINANCIALS", (f"{raw} Fakten, nur Deckblatt (dei), "
-                                      f"Formular {form or '-'}")
-
     # 2. Strukturen, die keinen operativen Abschluss haben - bevor
-    #    irgendjemand nach einem Umsatz-Tag sucht.
+    #    irgendjemand nach einem Umsatz-Tag sucht. VOR der XBRL-Pruefung:
+    #    ein geschlossener Fonds ohne companyfacts ist kein Anbieterfall,
+    #    er ist NOT_APPLICABLE. Lauf 34766155710 hatte 106 leere
+    #    companyfacts als NO_XBRL_FACTS gefuehrt, darunter die Fonds.
     if sic in SIC_SPAC or (not hat_werte and _SPAC_NAME.search(name)):
         return "SPAC_BLANK_CHECK", f"SIC {sic or '-'} / Name '{name[:40]}'"
     if not sic and _FUND_NAME.search(name) and not hat_werte:
         return "SPECIAL_PURPOSE_ENTITY", f"Investmentgesellschaft ohne SIC, Name '{name[:40]}'"
     if form in ("N-CSR", "N-CSRS", "N-Q", "N-PORT"):
         return "SPECIAL_PURPOSE_ENTITY", f"Formular {form}"
+
+    # 2b. Factbook da, aber die SEC hat keine XBRL-Abschluesse geliefert.
+    #     Gemessen an den 69 Restfaellen von Lauf 16: acht Emittenten mit
+    #     null rohen Fakten, weitere mit einem einzigen Deckblatt-Fakt
+    #     (Canadian National, 40-F, 26 Jahresberichte, 6 Fakten). Eine
+    #     junge Notierung ohne XBRL hat ihren ersten Jahresabschluss noch
+    #     nicht eingereicht: das loest die Zeit, kein Anbieter.
+    raw = fund.get("rawFacts")
+    alter = _listing_age_years(record, date.today().isoformat())
+    jung = alter is not None and alter < YOUNG_LISTING_YEARS
+    if raw == 0:
+        if jung:
+            return "VERY_YOUNG_LISTING", (f"companyfacts leer, notiert seit "
+                                         f"{record.get('firstTradeDate')}")
+        return "NO_XBRL_FACTS", f"companyfacts leer, Formular {form or '-'}"
+    if raw is not None and raw <= 12 and not fund.get("mappedFacts") \
+            and not fund.get("unmappedFacts"):
+        if jung:
+            return "VERY_YOUNG_LISTING", (f"{raw} Fakten, nur Deckblatt, notiert seit "
+                                         f"{record.get('firstTradeDate')}")
+        return "NO_XBRL_FINANCIALS", (f"{raw} Fakten, nur Deckblatt (dei), "
+                                      f"Formular {form or '-'}")
+    # Kein Jahresende im Kalender und keine Jahreseinreichung: der erste
+    # Jahresbericht kommt, und mit ihm der Kalender.
+    if jung and not fund.get("calendarYears") and not hat_werte \
+            and form in ("10-Q", "10-Q/A"):
+        return "VERY_YOUNG_LISTING", (f"kein Jahresende im Kalender, nur {form}, notiert seit "
+                                     f"{record.get('firstTradeDate')}")
 
     # 3. Branchen, deren Kernkennzahlen anders heissen. Sie sind hier
     #    nur, wenn NICHTS aufloest - eine Bank mit Nettoergebnis steht

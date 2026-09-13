@@ -392,3 +392,32 @@ class OhneXbrlTests(unittest.TestCase):
                          "name": "Cerebras Systems Inc."})
         ursache, _ = rec.fine_cause(r)
         self.assertNotIn(ursache, ("NO_XBRL_FACTS", "NO_XBRL_FINANCIALS"))
+
+
+class JungeNotierungOhneXbrlTests(unittest.TestCase):
+    def test_ein_fonds_ohne_xbrl_bleibt_not_applicable(self):
+        r = titel(fundamentals=True, latestForm="N-CSR", cik="0000000051",
+                  _fund={"rawFacts": 0, "mappedFacts": 0, "unmappedFacts": 0, "sic": "",
+                         "name": "BlackRock Capital Allocation Term Trust"})
+        ursache, _ = rec.fine_cause(r)
+        self.assertEqual(ursache, "SPECIAL_PURPOSE_ENTITY")
+
+    def test_eine_junge_notierung_ohne_xbrl_loest_die_zeit(self):
+        from datetime import date
+        jung = date.today().replace(year=date.today().year - 1).isoformat()
+        r = titel(fundamentals=True, latestForm="20-F", cik="0000000052", firstTradeDate=jung,
+                  _fund={"rawFacts": 1, "mappedFacts": 0, "unmappedFacts": 0, "sic": "2834",
+                         "name": "Agomab Therapeutics NV"})
+        ursache, _ = rec.fine_cause(r)
+        self.assertEqual(ursache, "VERY_YOUNG_LISTING")
+        self.assertEqual(rec.FINE_TO_RECOVERABILITY[ursache], "RESOLVES_WITH_TIME")
+
+    def test_nur_10q_und_kein_kalender_bei_junger_notierung(self):
+        from datetime import date
+        jung = date.today().replace(year=date.today().year - 1).isoformat()
+        r = titel(fundamentals=True, latestForm="10-Q", cik="0000000053", firstTradeDate=jung,
+                  findingCodes={"UNPLACEABLE_PERIOD": 16, "UNKNOWN_CONCEPT": 18},
+                  _fund={"rawFacts": 34, "mappedFacts": 0, "unmappedFacts": 18, "calendarYears": 0,
+                         "sic": "2834", "name": "Obsidian Therapeutics, Inc."})
+        ursache, _ = rec.fine_cause(r)
+        self.assertEqual(ursache, "VERY_YOUNG_LISTING")

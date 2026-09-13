@@ -171,3 +171,28 @@ class IndustryRegistryValidationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GemessenesVokabularTests(unittest.TestCase):
+    """Jedes Konzept der Branchenschicht ist am Bestand gemessen, nicht erinnert."""
+
+    MESSUNGEN = {"BANK": "banks", "INSURER": "insurers", "REIT": "reits"}
+
+    def test_jedes_branchenkonzept_steht_in_der_sic_messung(self):
+        root = Path(__file__).resolve().parents[3] / "quant" / "data" / "fundamentals"
+        gemessen = {}
+        for industry, datei in self.MESSUNGEN.items():
+            pfad = root / f"unmapped-concepts-{datei}.json"
+            if not pfad.exists():
+                self.skipTest(f"{pfad.name} fehlt - noch keine SIC-Messung")
+            payload = json.loads(pfad.read_text(encoding="utf-8"))
+            gemessen[industry] = {r["concept"]: r["issuers"] for r in payload["concepts"]}
+        registry = MetricRegistry.load()
+        for name, definition in registry.industry_metrics.items():
+            for rule in definition.concepts:
+                if rule.concept == "InterestIncomeExpenseNet":
+                    continue   # gemessen in der revenue-losen Gesamtliste (223 Emittenten)
+                treffer = [ind for ind in definition.industries
+                           if gemessen[ind].get(rule.qualified, 0) >= 50]
+                self.assertTrue(treffer, f"{name}: {rule.qualified} ist in keiner SIC-Messung "
+                                         f"mit >= 50 Emittenten belegt")

@@ -38,6 +38,7 @@ ANNUAL_FORMS = ("10-K", "20-F", "40-F")
 ANCHOR_SOURCE_ANNUAL_DURATIONS = "ANNUAL_DURATIONS"
 ANCHOR_SOURCE_ANNUAL_FILING_INSTANTS = "ANNUAL_FILING_INSTANTS"
 ANCHOR_SOURCE_YEAR_END_HINT = "REGISTERED_YEAR_END"
+ANCHOR_SOURCE_YEAR_END_PROJECTED = "REGISTERED_YEAR_END_PROJECTED"
 ANCHOR_SOURCE_NONE = "NONE"
 
 # Two annual period ends closer together than this belong to the same fiscal
@@ -140,6 +141,17 @@ class FiscalCalendar:
             annual_ends = cls._year_ends_from_hint(raw_facts, fiscal_year_end_hint)
             if annual_ends:
                 anchor_source = ANCHOR_SOURCE_YEAR_END_HINT
+        if not annual_ends and fiscal_year_end_hint:
+            # A filer whose first balance sheet postdates its last registered
+            # year end (a SPAC formed in March reporting Q2 and Q3, no prior
+            # year-end comparative yet) has reported nothing ON a year end.
+            # The registered day still fixes the calendar: the year ends that
+            # bracket the reported dates are the filer's own declaration,
+            # projected onto the years it reported in. Measured on run
+            # 34766155710: the last three issuers without a value.
+            annual_ends = cls._year_ends_projected_from_hint(raw_facts, fiscal_year_end_hint)
+            if annual_ends:
+                anchor_source = ANCHOR_SOURCE_YEAR_END_PROJECTED
 
         # An annual filing's own reporting period is its latest annual period end.
         anchors = {}
@@ -237,6 +249,41 @@ class FiscalCalendar:
                    for delta in (-1, 0, 1)):
                 ends.add(end)
         return ends
+
+    @staticmethod
+    def _year_ends_projected_from_hint(raw_facts, fiscal_year_end_hint):
+        """Registered year ends (MMDD) bracketing the reported period ends."""
+        hint = str(fiscal_year_end_hint).strip()
+        if len(hint) != 4 or not hint.isdigit():
+            return set()
+        month, day = int(hint[:2]), int(hint[2:])
+        reported = [parse_date(f.end) for f in raw_facts
+                    if f.start is None and f.taxonomy != "dei" and f.end]
+        reported = [d for d in reported if d is not None]
+        if not reported:
+            return set()
+
+        def registered(year):
+            try:
+                return date(year, month, day)
+            except ValueError:
+                return date(year, month, 28)
+
+        first, last = min(reported), max(reported)
+        ends = set()
+        for year in range(first.year - 1, last.year + 1):
+            end = registered(year)
+            # The most recent year end BEFORE the first report anchors the
+            # window; later ones only if a report falls after them.
+            if end < first or any(end < d for d in reported):
+                ends.add(end)
+        if not ends:
+            return set()
+        # Keep only the latest end before the first report plus everything after.
+        before = [e for e in ends if e < first]
+        keep = {max(before)} if before else set()
+        keep |= {e for e in ends if e >= first}
+        return keep
 
     @staticmethod
     def _label_years(fy_ends, anchors, label_offset):

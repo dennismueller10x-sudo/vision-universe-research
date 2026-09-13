@@ -105,7 +105,17 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #             Konzepte die Schicht traegt, sagt die Registry - gemessen
 #             am Vokabular der Emittenten ohne `revenue`, nicht aus dem
 #             Gedaechtnis.
-NORMALIZATION_LOGIC_VERSION = "1.8.0"
+# 1.9.0 — Das registrierte Jahresende traegt auch ohne einen Bericht
+#         auf dem Jahresende. Gemessen an Lauf 34766155710: die letzten
+#         drei Emittenten ohne Wert waren im Fruehjahr gegruendete
+#         Gesellschaften mit 10-Qs fuer Q2 und Q3 und noch keiner
+#         Vorjahresbilanz - nichts war auf einem Jahresende datiert, und
+#         der Kalender blieb leer. Die bei der SEC registrierten
+#         Jahresenden, die die gemeldeten Stichtage einrahmen, sind
+#         die eigene Erklaerung des Emittenten; sie werden auf die
+#         Jahre projiziert, in denen er gemeldet hat. Rumpfperioden ab
+#         Gruendung bleiben UNEXPECTED_DURATION.
+NORMALIZATION_LOGIC_VERSION = "1.9.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -136,7 +146,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "03e8520646024715b0eb438cd20c68c37f717bbeb1d8d7baecf924d21906131c"
+    "9c0e34629186c8c430140e877df727f70fdbf7ffd6c4434ed99d7390064f9812"
 )
 
 

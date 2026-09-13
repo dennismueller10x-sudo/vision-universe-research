@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.4.0",
+  "mapping_version": "1.5.0",
   "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
@@ -117,6 +117,530 @@
         }
       ],
       "note": "Measured in run 34749245361 on issuers with values but no revenue: 223 issuers, 34,830 facts. Further bank, insurer and REIT concepts are added from the per-SIC measurement (unmapped-concepts-banks/insurers/reits.json), never from memory."
+    },
+    "interest_and_dividend_income": {
+      "label": "Interest and dividend income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestAndDividendIncomeOperating",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 287 of 329 issuers in SIC scope)."
+    },
+    "interest_and_fee_income_loans": {
+      "label": "Interest and fee income on loans and leases",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestAndFeeIncomeLoansAndLeases",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 267 of 329 issuers in SIC scope)."
+    },
+    "interest_expense_deposits": {
+      "label": "Interest expense on deposits",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestExpenseDeposits",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 260 of 329 issuers in SIC scope)."
+    },
+    "net_interest_income_after_provision": {
+      "label": "Net interest income after provision for credit losses",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestIncomeExpenseAfterProvisionForLoanLoss",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 296 of 329 issuers in SIC scope)."
+    },
+    "provision_for_credit_losses": {
+      "label": "Provision for loan and lease losses",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProvisionForLoanAndLeaseLosses",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 263 of 329 issuers in SIC scope)."
+    },
+    "noninterest_income": {
+      "label": "Noninterest income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NoninterestIncome",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 295 of 329 issuers in SIC scope)."
+    },
+    "noninterest_expense": {
+      "label": "Noninterest expense",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NoninterestExpense",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 296 of 329 issuers in SIC scope)."
+    },
+    "deposits": {
+      "label": "Deposits",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Deposits",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 296 of 329 issuers in SIC scope)."
+    },
+    "time_deposits": {
+      "label": "Time deposits",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "TimeDeposits",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 286 of 329 issuers in SIC scope)."
+    },
+    "loans_and_leases_net": {
+      "label": "Loans and leases receivable, net",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LoansAndLeasesReceivableNetReportedAmount",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 270 of 329 issuers in SIC scope)."
+    },
+    "allowance_for_loan_losses": {
+      "label": "Allowance for loan and lease losses",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LoansAndLeasesReceivableAllowance",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 273 of 329 issuers in SIC scope)."
+    },
+    "available_for_sale_debt_securities": {
+      "label": "Available-for-sale debt securities",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK",
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AvailableForSaleSecuritiesDebtSecurities",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 281 of 329 issuers in SIC scope). Insurers: 89 of 104."
+    },
+    "cash_and_due_from_banks": {
+      "label": "Cash and due from banks",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CashAndDueFromBanks",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 269 of 329 issuers in SIC scope)."
+    },
+    "premiums_earned": {
+      "label": "Premiums earned, net",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PremiumsEarnedNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 94 of 104 issuers in SIC scope)."
+    },
+    "net_investment_income": {
+      "label": "Net investment income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetInvestmentIncome",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 86 of 104 issuers in SIC scope)."
+    },
+    "benefits_and_claims_incurred": {
+      "label": "Policyholder benefits and claims incurred, net",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PolicyholderBenefitsAndClaimsIncurredNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 88 of 104 issuers in SIC scope)."
+    },
+    "benefits_losses_and_expenses": {
+      "label": "Benefits, losses and expenses",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "BenefitsLossesAndExpenses",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 79 of 104 issuers in SIC scope)."
+    },
+    "claims_liability": {
+      "label": "Liability for claims and claims adjustment expense",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilityForClaimsAndClaimsAdjustmentExpense",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 93 of 104 issuers in SIC scope)."
+    },
+    "unearned_premiums": {
+      "label": "Unearned premiums",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "UnearnedPremiums",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 79 of 104 issuers in SIC scope)."
+    },
+    "deferred_policy_acquisition_costs": {
+      "label": "Deferred policy acquisition costs",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DeferredPolicyAcquisitionCosts",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 88 of 104 issuers in SIC scope)."
+    },
+    "total_investments": {
+      "label": "Investments",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Investments",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 87 of 104 issuers in SIC scope)."
+    },
+    "real_estate_gross": {
+      "label": "Real estate investment property, gross",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateGrossAtCarryingValue",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateInvestmentPropertyAtCost",
+          "priority": 20
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 139 of 175 issuers in SIC scope). At-cost variant: 112."
+    },
+    "real_estate_net": {
+      "label": "Real estate investment property, net",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateInvestmentPropertyNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 131 of 175 issuers in SIC scope)."
+    },
+    "real_estate_accumulated_depreciation": {
+      "label": "Real estate accumulated depreciation",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateAccumulatedDepreciation",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateInvestmentPropertyAccumulatedDepreciation",
+          "priority": 20
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 137 of 175 issuers in SIC scope). Property variant: 119."
+    },
+    "secured_debt": {
+      "label": "Secured debt",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "SecuredDebt",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 114 of 175 issuers in SIC scope)."
+    },
+    "impairment_of_real_estate": {
+      "label": "Impairment of real estate",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ImpairmentOfRealEstate",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 116 of 175 issuers in SIC scope)."
+    },
+    "dividends_declared_per_share": {
+      "label": "Common stock dividends declared per share",
+      "kind": "duration",
+      "statement": "other",
+      "units": [
+        "USD/shares"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CommonStockDividendsPerShareDeclared",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 161 of 175 issuers in SIC scope)."
     }
   },
   "metrics": {

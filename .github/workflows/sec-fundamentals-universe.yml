@@ -450,7 +450,8 @@ jobs:
           N=$(python3 -c 'import json;print(json.load(open("quant/data/fundamentals/coverage-report.json"))["fundamentals"]["COMPANY_FACTS_AVAILABLE"])')
           bash scripts/ci/commit-and-push.sh \
             "SEC Fundamentals: $N Emittenten mit Geschaeftszahlen aus Lauf ${{ github.run_id }}" \
-            quant/data/fundamentals quant/data/universe quant/data/sec
+            quant/data/fundamentals quant/data/universe quant/data/sec \
+            docs/VU_SEC_FINAL_RECOVERY_REPORT.md
 
       - name: Bestehende Produktartefakte auffrischen (nur der Validierungssatz)
         # AUSDRUECKLICH BEGRENZT. `coverage`, `export` und `canonical`

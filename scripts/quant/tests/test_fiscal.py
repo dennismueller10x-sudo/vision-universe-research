@@ -223,6 +223,22 @@ class PeriodsOutsideTheLearnedYearsTests(unittest.TestCase):
         self.assertEqual(retailer.fy_ends, [date(2026, 1, 3)])
         self.assertEqual(retailer.assign(None, "2026-04-04")[1], "Q1")
 
+    def test_a_filer_with_no_report_on_a_year_end_gets_the_registered_year_projected(self):
+        # A SPAC formed in March: 10-Qs for Q2 and Q3, nothing dated on a
+        # year end yet. The registered day (1231) brackets what it reported.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2025-06-30", form="10-Q", fp="Q2", fy=2025),
+            _fact("Assets", None, "2025-09-30", form="10-Q", fp="Q3", fy=2025),
+            _fact("GeneralAndAdministrativeExpense", "2025-03-12", "2025-06-30",
+                  form="10-Q", fp="Q2", fy=2025),
+        ], fiscal_year_end_hint="1231")
+        self.assertEqual(calendar.anchor_source, "REGISTERED_YEAR_END_PROJECTED")
+        self.assertEqual(calendar.fy_ends, [date(2024, 12, 31)])
+        self.assertEqual(calendar.assign(None, "2025-06-30"), (2025, "Q2", "instant"))
+        self.assertEqual(calendar.assign(None, "2025-09-30"), (2025, "Q3", "instant"))
+        # Inception-to-date is not a quarter and stays unplaced, with reason.
+        self.assertEqual(calendar.assign("2025-03-12", "2025-06-30")[2], "UNKNOWN")
+
     def test_the_anchor_source_survives_a_round_trip_through_the_store(self):
         calendar = FiscalCalendar.from_raw_facts("1", [
             _fact("Assets", None, "2008-12-31", form="20-F"),
