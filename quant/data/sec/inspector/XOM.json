@@ -1,15 +1,15 @@
 {
   "cik": "0000034088",
-  "generated_at_utc": "2026-09-13T08:43:03+00:00",
+  "generated_at_utc": "2026-09-13T12:35:30+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.7.0",
-    "formula": "1.1.0",
+    "normalization_logic": "1.7.1",
+    "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.2.0"
+      "mapping_version": "1.3.0"
     }
   },
   "profile": {
@@ -29,7 +29,7 @@
     ],
     "entity_type": "operating",
     "state_of_incorporation": "NJ",
-    "retrieved_at": "2026-09-13T07:17:14+00:00",
+    "retrieved_at": "2026-09-13T09:18:54+00:00",
     "is_financial": false
   },
   "calendar": {
@@ -23543,7 +23543,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2015FY",
         "capital_expenditures@FY2015FY"
@@ -23569,7 +23569,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "long_term_debt@FY2015FY",
         "short_term_debt@FY2015FY"
@@ -23595,7 +23595,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "total_debt@FY2015FY",
         "cash_and_equivalents@FY2015FY"
@@ -23621,7 +23621,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "total_debt@FY2015FY",
         "stockholders_equity@FY2015FY",
@@ -23648,7 +23648,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2015FY",
         "operating_cash_flow@FY2015FY",
@@ -23697,7 +23697,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2016FY",
         "capital_expenditures@FY2016FY"
@@ -23723,7 +23723,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "long_term_debt@FY2016FY",
         "short_term_debt@FY2016FY"
@@ -23749,7 +23749,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "total_debt@FY2016FY",
         "cash_and_equivalents@FY2016FY"
@@ -23775,7 +23775,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "total_debt@FY2016FY",
         "stockholders_equity@FY2016FY",
@@ -23802,7 +23802,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2016FY",
         "operating_cash_flow@FY2016FY",
@@ -23851,7 +23851,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2017FY",
         "capital_expenditures@FY2017FY"
@@ -23877,7 +23877,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "long_term_debt@FY2017FY",
         "short_term_debt@FY2017FY"
@@ -23903,7 +23903,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "total_debt@FY2017FY",
         "cash_and_equivalents@FY2017FY"
@@ -23929,7 +23929,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "total_debt@FY2017FY",
         "stockholders_equity@FY2017FY",
@@ -23956,7 +23956,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2017FY",
         "operating_cash_flow@FY2017FY",
@@ -24005,7 +24005,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2018FY",
         "capital_expenditures@FY2018FY"
@@ -24064,7 +24064,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2018FY",
         "operating_cash_flow@FY2018FY",
@@ -24113,7 +24113,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2019FY",
         "capital_expenditures@FY2019FY"
@@ -24172,7 +24172,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2019FY",
         "operating_cash_flow@FY2019FY",
@@ -24221,7 +24221,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2020FY",
         "capital_expenditures@FY2020FY"
@@ -24280,7 +24280,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2020FY",
         "operating_cash_flow@FY2020FY",
@@ -24329,7 +24329,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2021FY",
         "capital_expenditures@FY2021FY"
@@ -24388,7 +24388,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2021FY",
         "operating_cash_flow@FY2021FY",
@@ -24437,7 +24437,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2022FY",
         "capital_expenditures@FY2022FY"
@@ -24496,7 +24496,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2022FY",
         "operating_cash_flow@FY2022FY",
@@ -24545,7 +24545,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2023FY",
         "capital_expenditures@FY2023FY"
@@ -24604,7 +24604,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2023FY",
         "operating_cash_flow@FY2023FY",
@@ -24653,7 +24653,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2024FY",
         "capital_expenditures@FY2024FY"
@@ -24712,7 +24712,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2024FY",
         "operating_cash_flow@FY2024FY",
@@ -24761,7 +24761,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2025FY",
         "capital_expenditures@FY2025FY"
@@ -24820,7 +24820,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2025FY",
         "operating_cash_flow@FY2025FY",
@@ -24946,7 +24946,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2022Q1",
         "capital_expenditures@FY2022Q1"
@@ -25005,7 +25005,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2022Q1",
         "operating_cash_flow@FY2022Q1",
@@ -25054,7 +25054,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2022Q2",
         "capital_expenditures@FY2022Q2"
@@ -25113,7 +25113,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2022Q2",
         "operating_cash_flow@FY2022Q2",
@@ -25162,7 +25162,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2022Q3",
         "capital_expenditures@FY2022Q3"
@@ -25221,7 +25221,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2022Q3",
         "operating_cash_flow@FY2022Q3",
@@ -25270,7 +25270,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2022Q4",
         "capital_expenditures@FY2022Q4"
@@ -25329,7 +25329,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2022Q4",
         "operating_cash_flow@FY2022Q4",
@@ -25378,7 +25378,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2023Q1",
         "capital_expenditures@FY2023Q1"
@@ -25437,7 +25437,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2023Q1",
         "operating_cash_flow@FY2023Q1",
@@ -25486,7 +25486,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2023Q2",
         "capital_expenditures@FY2023Q2"
@@ -25545,7 +25545,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2023Q2",
         "operating_cash_flow@FY2023Q2",
@@ -25594,7 +25594,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2023Q3",
         "capital_expenditures@FY2023Q3"
@@ -25653,7 +25653,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2023Q3",
         "operating_cash_flow@FY2023Q3",
@@ -25702,7 +25702,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2023Q4",
         "capital_expenditures@FY2023Q4"
@@ -25761,7 +25761,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2023Q4",
         "operating_cash_flow@FY2023Q4",
@@ -25810,7 +25810,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2024Q1",
         "capital_expenditures@FY2024Q1"
@@ -25869,7 +25869,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2024Q1",
         "operating_cash_flow@FY2024Q1",
@@ -25918,7 +25918,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2024Q2",
         "capital_expenditures@FY2024Q2"
@@ -25977,7 +25977,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2024Q2",
         "operating_cash_flow@FY2024Q2",
@@ -26026,7 +26026,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2024Q3",
         "capital_expenditures@FY2024Q3"
@@ -26085,7 +26085,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2024Q3",
         "operating_cash_flow@FY2024Q3",
@@ -26134,7 +26134,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2024Q4",
         "capital_expenditures@FY2024Q4"
@@ -26193,7 +26193,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2024Q4",
         "operating_cash_flow@FY2024Q4",
@@ -26242,7 +26242,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2025Q1",
         "capital_expenditures@FY2025Q1"
@@ -26301,7 +26301,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2025Q1",
         "operating_cash_flow@FY2025Q1",
@@ -26350,7 +26350,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2025Q2",
         "capital_expenditures@FY2025Q2"
@@ -26409,7 +26409,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2025Q2",
         "operating_cash_flow@FY2025Q2",
@@ -26458,7 +26458,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2025Q3",
         "capital_expenditures@FY2025Q3"
@@ -26517,7 +26517,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2025Q3",
         "operating_cash_flow@FY2025Q3",
@@ -26566,7 +26566,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2025Q4",
         "capital_expenditures@FY2025Q4"
@@ -26625,7 +26625,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2025Q4",
         "operating_cash_flow@FY2025Q4",
@@ -26674,7 +26674,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "operating_cash_flow@FY2026Q1",
         "capital_expenditures@FY2026Q1"
@@ -26733,7 +26733,7 @@
       "concept": null,
       "source": "VISION_UNIVERSE_DERIVED",
       "transformation": "FORMULA",
-      "formula_version": "1.1.0",
+      "formula_version": "1.2.0",
       "inputs": [
         "net_income@FY2026Q1",
         "operating_cash_flow@FY2026Q1",

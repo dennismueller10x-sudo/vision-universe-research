@@ -143,42 +143,52 @@
     },
     {
       "cause": "IFRS_REMAINING",
-      "count": 16,
-      "percent": 4.1667,
+      "count": 3,
+      "percent": 0.7812,
       "consequence": "SEC_RECOVERABLE",
       "examples": [
         {
-          "symbol": "AIIR",
-          "cik": "0002097725",
-          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=0"
+          "symbol": "HQ",
+          "cik": "0002088256",
+          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=10"
         },
         {
-          "symbol": "ALPS",
-          "cik": "0002025774",
-          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=0"
+          "symbol": "HQWWW",
+          "cik": "0002088256",
+          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=10"
         },
         {
-          "symbol": "CNI",
-          "cik": "0000016868",
-          "evidence": "Formular 40-F, UNKNOWN_CONCEPT=0"
-        },
-        {
-          "symbol": "HBNB",
-          "cik": "0002054507",
-          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=0"
+          "symbol": "XNDU",
+          "cik": "0002097163",
+          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=7"
         }
       ]
     },
     {
       "cause": "PERIOD_MAPPING",
-      "count": 1,
-      "percent": 0.2604,
+      "count": 9,
+      "percent": 2.3438,
       "consequence": "SEC_RECOVERABLE",
       "examples": [
         {
+          "symbol": "ALPS",
+          "cik": "0002025774",
+          "evidence": "UNPLACEABLE_PERIOD=1, Formular 20-F, keine unbekannten Konzepte"
+        },
+        {
+          "symbol": "CNI",
+          "cik": "0000016868",
+          "evidence": "UNPLACEABLE_PERIOD=6, Formular 40-F, keine unbekannten Konzepte"
+        },
+        {
+          "symbol": "HBNB",
+          "cik": "0002054507",
+          "evidence": "UNPLACEABLE_PERIOD=1, Formular 20-F, keine unbekannten Konzepte"
+        },
+        {
           "symbol": "JMKE",
           "cik": "0002127043",
-          "evidence": "Periodenbefunde ohne unbekannte Konzepte"
+          "evidence": "UNPLACEABLE_PERIOD=10, Formular 10-Q, keine unbekannten Konzepte"
         }
       ]
     },
@@ -212,10 +222,15 @@
     },
     {
       "cause": "INSUFFICIENT_DISCLOSURE",
-      "count": 24,
-      "percent": 6.25,
+      "count": 29,
+      "percent": 7.5521,
       "consequence": "REQUIRES_REVIEW",
       "examples": [
+        {
+          "symbol": "AIIR",
+          "cik": "0002097725",
+          "evidence": "Formular 20-F, weder Befund noch Wert"
+        },
         {
           "symbol": "BANX",
           "cik": "0001578987",
@@ -229,11 +244,6 @@
         {
           "symbol": "BSP",
           "cik": "0002004711",
-          "evidence": "keine periodische Einreichung im Factbook"
-        },
-        {
-          "symbol": "DETX",
-          "cik": "0001919776",
           "evidence": "keine periodische Einreichung im Factbook"
         }
       ]
@@ -269,11 +279,11 @@
   ],
   "byConsequence": {
     "NOT_APPLICABLE": 219,
-    "SEC_RECOVERABLE": 77,
+    "SEC_RECOVERABLE": 72,
     "INDUSTRY_LAYER": 10,
-    "REQUIRES_REVIEW": 78
+    "REQUIRES_REVIEW": 83
   },
-  "stillRecoverableBySec": 77,
+  "stillRecoverableBySec": 72,
   "ciksByCause": {
     "SPAC_BLANK_CHECK": [
       "0001850733",
@@ -543,24 +553,19 @@
       "0002131524"
     ],
     "IFRS_REMAINING": [
+      "0002088256",
+      "0002088256",
+      "0002097163"
+    ],
+    "PERIOD_MAPPING": [
       "0000016868",
-      "0001912884",
       "0002000756",
       "0002000756",
       "0002000756",
-      "0002025416",
       "0002025774",
       "0002054507",
       "0002080073",
       "0002080845",
-      "0002088256",
-      "0002088256",
-      "0002092314",
-      "0002097163",
-      "0002097725",
-      "0002119292"
-    ],
-    "PERIOD_MAPPING": [
       "0002127043"
     ],
     "TRUE_MISSING_TAG_MAPPING": [
@@ -605,21 +610,26 @@
       "0001716951",
       "0001843974",
       "0001857047",
+      "0001912884",
       "0001919776",
       "0001930147",
       "0001930147",
       "0001930147",
       "0002002660",
       "0002004711",
+      "0002025416",
       "0002052053",
       "0002081119",
+      "0002092314",
       "0002095096",
+      "0002097725",
       "0002101240",
       "0002104296",
       "0002109869",
       "0002110423",
       "0002111860",
       "0002113060",
+      "0002119292",
       "0002132582",
       "0002136387"
     ],
@@ -697,7 +707,6 @@
     "0001892704",
     "0001898718",
     "0001903784",
-    "0001912884",
     "0001921603",
     "0001958928",
     "0002000756",
@@ -707,7 +716,6 @@
     "0002020932",
     "0002021728",
     "0002021880",
-    "0002025416",
     "0002025774",
     "0002027329",
     "0002035832",
@@ -736,14 +744,12 @@
     "0002089271",
     "0002091017",
     "0002091349",
-    "0002092314",
     "0002092446",
     "0002093507",
     "0002094433",
     "0002094496",
     "0002096997",
     "0002097163",
-    "0002097725",
     "0002098395",
     "0002098430",
     "0002100161",
@@ -753,7 +759,6 @@
     "0002114044",
     "0002118032",
     "0002118195",
-    "0002119292",
     "0002124403",
     "0002127043",
     "0002130606",
@@ -767,8 +772,8 @@
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.2.0"
+      "mapping_version": "1.3.0"
     }
   },
-  "generatedAtUtc": "2026-09-13T09:14:20+00:00"
+  "generatedAtUtc": "2026-09-13T12:35:25+00:00"
 }

@@ -381,7 +381,7 @@
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.2.0"
+      "mapping_version": "1.3.0"
     }
   },
   "priorities": {
@@ -419,8 +419,8 @@
       {
         "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
         "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
-        "COUNT": 1156,
-        "PERCENT": 16.5049,
+        "COUNT": 1157,
+        "PERCENT": 16.5191,
         "TOP_CAUSES": [
           {
             "cause": "MISSING_CANONICAL_TAG_MAPPING",
@@ -428,7 +428,7 @@
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 198
+            "count": 199
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -526,5 +526,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-09-13T09:14:20+00:00"
+  "generatedAtUtc": "2026-09-13T12:35:25+00:00"
 }

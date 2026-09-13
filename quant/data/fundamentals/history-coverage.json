@@ -1,13 +1,13 @@
 {
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.7.0",
-    "formula": "1.1.0",
+    "normalization_logic": "1.7.1",
+    "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.2.0"
+      "mapping_version": "1.3.0"
     }
   },
   "note": "Tiefe je Kennzahl, gemessen an aufloesbaren Perioden. Eine Zeitreihe ohne aufloesbaren Wert zaehlt nicht - sonst waere jede leere Huelle eine Deckung.",
@@ -17,7 +17,7 @@
   },
   "annual": {
     "revenue": {
-      ">=1y": 4359,
+      ">=1y": 4358,
       ">=3y": 4002,
       ">=5y": 3540,
       ">=10y": 2303,
@@ -45,14 +45,14 @@
       ">=15y": 2046
     },
     "capital_expenditures": {
-      ">=1y": 4456,
+      ">=1y": 4455,
       ">=3y": 4093,
       ">=5y": 3664,
       ">=10y": 2440,
       ">=15y": 1712
     },
     "free_cash_flow": {
-      ">=1y": 4445,
+      ">=1y": 4444,
       ">=3y": 4081,
       ">=5y": 3650,
       ">=10y": 2432,
@@ -81,15 +81,15 @@
     }
   },
   "annualOverall": {
-    ">=1y": 4359,
+    ">=1y": 4358,
     ">=3y": 4002,
     ">=5y": 3540,
     ">=10y": 2303,
     ">=15y": 1664
   },
   "quarterlyOverall": {
-    ">=1y": 3480,
-    ">=3y": 3238,
+    ">=1y": 3479,
+    ">=3y": 3237,
     ">=5y": 2953,
     ">=10y": 2057,
     ">=15y": 1510
@@ -2096,5 +2096,5 @@
       "historyYears": 17.0
     }
   ],
-  "generatedAtUtc": "2026-09-13T08:35:16+00:00"
+  "generatedAtUtc": "2026-09-13T12:23:55+00:00"
 }
