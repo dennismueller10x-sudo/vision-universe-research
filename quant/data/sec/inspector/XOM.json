@@ -1,15 +1,15 @@
 {
   "cik": "0000034088",
-  "generated_at_utc": "2026-09-13T07:07:13+00:00",
+  "generated_at_utc": "2026-09-13T08:43:03+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.6.0",
+    "normalization_logic": "1.7.0",
     "formula": "1.1.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.1.0"
+      "mapping_version": "1.2.0"
     }
   },
   "profile": {
@@ -29,7 +29,7 @@
     ],
     "entity_type": "operating",
     "state_of_incorporation": "NJ",
-    "retrieved_at": "2026-09-12T17:20:29+00:00",
+    "retrieved_at": "2026-09-13T07:17:14+00:00",
     "is_financial": false
   },
   "calendar": {
@@ -119,15 +119,15 @@
   },
   "quality_summary": {
     "rules_version": "1.0.0",
-    "total": 15615,
+    "total": 15477,
     "by_severity": {
-      "INFO": 14541,
-      "WARNING": 1074
+      "INFO": 14402,
+      "WARNING": 1075
     },
     "by_code": {
       "CONCEPT_DISAGREEMENT": 989,
-      "RESTATEMENT_CONFLICT": 83,
-      "UNKNOWN_CONCEPT": 14541,
+      "RESTATEMENT_CONFLICT": 84,
+      "UNKNOWN_CONCEPT": 14402,
       "UNPLACEABLE_PERIOD": 2
     }
   },
