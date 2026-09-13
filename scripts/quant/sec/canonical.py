@@ -202,8 +202,18 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
                 "fiscalYear": int(fiscal_year),
                 "periodEnd": period_end,
                 "value": value,
-                "unit": unit,
-                "currency": "USD" if unit == "usd_m" else None,
+                "unit": _unit_for(unit, fact),
+                # DIE WAEHRUNG IST DIE GEMELDETE, NICHT USD.
+                #
+                # Diese Zeile stand hart auf "USD". Fuer einen
+                # 10-K-Einreicher stimmt das; Unilever meldet in EUR,
+                # Canadian National in CAD. Einen EUR-Wert als USD
+                # auszuliefern waere kein Rundungsfehler, sondern eine
+                # falsche Zahl - und umzurechnen waere geraten: ein
+                # Kurs von heute auf eine Periode von 2012 zerstoert
+                # genau die Point-in-Time-Eigenschaft, die diese
+                # Schicht traegt.
+                "currency": _currency_for(unit, fact),
                 # SEC publishes no separate company-announcement timestamp; the
                 # filing date is the earliest public moment we can evidence.
                 "reportedAt": _date(fact.provenance.filed),
@@ -239,6 +249,42 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
                            and r["fiscalYear"] == int(fiscal_year))]
 
     return out
+
+
+def _reported_currency(fact):
+    """Die Waehrung, in der der Emittent diesen Wert gemeldet hat."""
+    unit = getattr(fact, "unit", None)
+    if not unit:
+        return None
+    if len(unit) == 3 and unit.isalpha() and unit.isupper():
+        return unit
+    if unit.endswith("/shares"):
+        code = unit.split("/", 1)[0]
+        if len(code) == 3 and code.isalpha() and code.isupper():
+            return code
+    return None
+
+
+def _currency_for(canonical_unit, fact):
+    """Waehrung eines kanonischen Werts, oder None fuer Stueckzahlen."""
+    if canonical_unit not in ("usd_m", "usd"):
+        return None
+    return _reported_currency(fact) or "USD"
+
+
+def _unit_for(canonical_unit, fact):
+    """Die kanonische Einheit, mit der tatsaechlichen Waehrung im Namen.
+
+    `usd_m` heisst "Millionen USD". Fuer einen EUR-Melder waere das
+    falsch beschriftet; er bekommt `eur_m`. Der Skalenfaktor bleibt
+    derselbe - millionen sind millionen -, nur die Waehrung wechselt.
+    """
+    if canonical_unit not in ("usd_m", "usd"):
+        return canonical_unit
+    waehrung = _reported_currency(fact)
+    if not waehrung or waehrung == "USD":
+        return canonical_unit
+    return canonical_unit.replace("usd", waehrung.lower(), 1)
 
 
 def _resolve(resolver, sec_metric, fiscal_year, fiscal_period, as_of):
@@ -288,6 +334,28 @@ def filings_for_company(document, calendar, security):
     return out
 
 
+def reporting_currency(document):
+    """Die Waehrung, in der dieser Emittent berichtet - gezaehlt, nicht geraten.
+
+    Gewaehlt wird die haeufigste Waehrung seiner Beobachtungen. Ein
+    Emittent, der in EUR bilanziert und einzelne Angaben in USD macht,
+    bleibt damit ein EUR-Melder. Ohne jede monetaere Beobachtung bleibt
+    es bei USD - das ist der Normalfall des US-Einreichers.
+    """
+    from collections import Counter
+    zaehler = Counter()
+    for timeline in (document.get("factbook") or {}).get("timelines") or []:
+        for observation in (timeline.get("observations") or []):
+            unit = observation.get("unit") or ""
+            if len(unit) == 3 and unit.isalpha() and unit.isupper():
+                zaehler[unit] += 1
+            elif unit.endswith("/shares"):
+                code = unit.split("/", 1)[0]
+                if len(code) == 3 and code.isalpha() and code.isupper():
+                    zaehler[code] += 1
+    return zaehler.most_common(1)[0][0] if zaehler else "USD"
+
+
 def security_for_company(document, ticker):
     """Canonical Security record.
 
@@ -305,7 +373,11 @@ def security_for_company(document, ticker):
         "name": profile.get("name") or "",
         "assetType": "equity",
         "exchangeId": (profile.get("exchanges") or ["UNKNOWN"])[0] or "UNKNOWN",
-        "currency": "USD",
+        "currency": reporting_currency(document),
+        # SEC/EDGAR fuehrt kein Sitzland je Emittent, das hier belastbar
+        # waere. `US` heisst: bei der US-Aufsicht einreichend - nicht,
+        # dass die Gesellschaft in den USA sitzt. Unilever tut beides
+        # nicht und reicht trotzdem ein.
         "country": "US",
         "sector": profile.get("sic_description") or "Unknown",
         "industry": profile.get("sic_description") or "Unknown",

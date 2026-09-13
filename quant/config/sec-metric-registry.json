@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.1.0",
-  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall.",
+  "mapping_version": "1.2.0",
+  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
       "id": "FINANCIALS",
@@ -59,6 +59,11 @@
           "taxonomy": "us-gaap",
           "concept": "SalesRevenueServicesNet",
           "priority": 60
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Revenue",
+          "priority": 200
         }
       ]
     },
@@ -119,6 +124,11 @@
           "taxonomy": "us-gaap",
           "concept": "OperatingIncomeLoss",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLossFromOperatingActivities",
+          "priority": 200
         }
       ]
     },
@@ -139,6 +149,11 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLossBeforeTax",
+          "priority": 200
         }
       ]
     },
@@ -154,6 +169,16 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeTaxExpenseBenefit",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "IncomeTaxExpenseContinuingOperations",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentTaxExpenseIncome",
+          "priority": 210
         }
       ]
     },
@@ -179,6 +204,16 @@
           "taxonomy": "us-gaap",
           "concept": "NetIncomeLossAvailableToCommonStockholdersBasic",
           "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLossAttributableToOwnersOfParent",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLoss",
+          "priority": 210
         }
       ]
     },
@@ -199,6 +234,11 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsPerBasicShare",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "BasicEarningsLossPerShare",
+          "priority": 200
         }
       ]
     },
@@ -219,6 +259,11 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsPerDilutedShare",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "DilutedEarningsLossPerShare",
+          "priority": 200
         }
       ]
     },
@@ -239,6 +284,11 @@
           "taxonomy": "us-gaap",
           "concept": "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashFlowsFromUsedInOperatingActivities",
+          "priority": 200
         }
       ]
     },
@@ -270,6 +320,11 @@
           "taxonomy": "us-gaap",
           "concept": "PaymentsToAcquireOtherPropertyPlantAndEquipment",
           "priority": 40
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "priority": 200
         }
       ]
     },
@@ -290,6 +345,16 @@
           "taxonomy": "us-gaap",
           "concept": "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashAndCashEquivalents",
+          "priority": 200
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Cash",
+          "priority": 195
         }
       ]
     },
@@ -330,6 +395,21 @@
           "taxonomy": "us-gaap",
           "concept": "Assets",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Assets",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "EquityAndLiabilities",
+          "priority": 210
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilitiesAndStockholdersEquity",
+          "priority": 190
         }
       ]
     },
@@ -345,6 +425,11 @@
           "taxonomy": "us-gaap",
           "concept": "Liabilities",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Liabilities",
+          "priority": 200
         }
       ]
     },
@@ -365,6 +450,16 @@
           "taxonomy": "us-gaap",
           "concept": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "EquityAttributableToOwnersOfParent",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Equity",
+          "priority": 210
         }
       ]
     },
@@ -385,6 +480,11 @@
           "taxonomy": "us-gaap",
           "concept": "LongTermDebt",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "LongtermBorrowings",
+          "priority": 200
         }
       ]
     },
@@ -430,6 +530,11 @@
           "taxonomy": "us-gaap",
           "concept": "DebtLongtermAndShorttermCombinedAmount",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Borrowings",
+          "priority": 200
         }
       ]
     },
@@ -470,6 +575,11 @@
           "taxonomy": "us-gaap",
           "concept": "WeightedAverageNumberOfDilutedSharesOutstanding",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "AdjustedWeightedAverageShares",
+          "priority": 200
         }
       ]
     },
@@ -490,6 +600,11 @@
           "taxonomy": "us-gaap",
           "concept": "WeightedAverageNumberOfShareOutstandingBasicAndDiluted",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "WeightedAverageShares",
+          "priority": 200
         }
       ]
     },
@@ -553,6 +668,11 @@
           "taxonomy": "us-gaap",
           "concept": "InterestExpenseNonoperating",
           "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "FinanceCosts",
+          "priority": 200
         }
       ]
     },
@@ -645,6 +765,11 @@
           "taxonomy": "us-gaap",
           "concept": "AssetsCurrent",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentAssets",
+          "priority": 200
         }
       ]
     },
@@ -661,6 +786,11 @@
           "taxonomy": "us-gaap",
           "concept": "LiabilitiesCurrent",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentLiabilities",
+          "priority": 200
         }
       ]
     },
@@ -708,6 +838,11 @@
           "taxonomy": "us-gaap",
           "concept": "AccountsNotesAndLoansReceivableNetCurrent",
           "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentTradeReceivables",
+          "priority": 200
         }
       ]
     },
@@ -724,6 +859,11 @@
           "taxonomy": "us-gaap",
           "concept": "RetainedEarningsAccumulatedDeficit",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "RetainedEarnings",
+          "priority": 200
         }
       ]
     },
@@ -783,6 +923,11 @@
           "taxonomy": "us-gaap",
           "concept": "NetCashProvidedByUsedInInvestingActivitiesContinuingOperations",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashFlowsFromUsedInInvestingActivities",
+          "priority": 200
         }
       ]
     },
@@ -804,6 +949,11 @@
           "taxonomy": "us-gaap",
           "concept": "NetCashProvidedByUsedInFinancingActivitiesContinuingOperations",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashFlowsFromUsedInFinancingActivities",
+          "priority": 200
         }
       ]
     },
@@ -879,6 +1029,11 @@
           "taxonomy": "us-gaap",
           "concept": "RepaymentsOfNotesPayable",
           "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "RepaymentsOfBorrowingsClassifiedAsFinancingActivities",
+          "priority": 200
         }
       ]
     }

@@ -42,7 +42,28 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         weggelassen. Fuer jeden bereits gespeicherten Factbook heisst
 #         das: neu normalisieren, sonst fehlt EBITDA dort weiter und
 #         niemand merkt es.
-NORMALIZATION_LOGIC_VERSION = "1.6.0"
+# 1.7.0 — Fremdwaehrungen und die IFRS-Taxonomie.
+#
+#         Zwei Mauern fielen gleichzeitig, und beide standen vor
+#         denselben Emittenten. 35 Kennzahlen akzeptierten nur `USD`;
+#         Unilever meldet in EUR, Canadian National in CAD, und ein
+#         korrekt gemapptes Konzept scheiterte trotzdem an der Einheit.
+#         Und die Registry kannte ausschliesslich us-gaap - fuer einen
+#         20-F-Einreicher gab es also gar nichts zu mappen.
+#
+#         Jetzt gilt: jede ISO-Waehrung dort, wo USD galt, UMGERECHNET
+#         WIRD NICHTS (ein Kurs von heute auf eine Periode von 2012
+#         waere geraten und zerstoerte die Point-in-Time-Eigenschaft),
+#         die Waehrung steht am Wert, und die Registry 1.2.0 mappt 31
+#         gemessene ifrs-full-Konzepte plus die Bilanzidentitaet
+#         LiabilitiesAndStockholdersEquity.
+#
+#         Fuer jeden gespeicherten Factbook heisst das: neu
+#         normalisieren. Ohne diesen Versionssprung wuerden die 5.437
+#         zwischengespeicherten Emittenten als aktuell gelten, der Lauf
+#         meldete Erfolg, und von der ganzen Mapping-Arbeit kaeme nichts
+#         an.
+NORMALIZATION_LOGIC_VERSION = "1.7.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -71,7 +92,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "1c9c3c7ffa3af534ed8dedce038d9db41ea405143d797b466956b8b146230b99"
+    "63e2c0cac80ecfd98a9e8c7c3e0ea054bdd5d442351211d163df569bb2e72e24"
 )
 
 

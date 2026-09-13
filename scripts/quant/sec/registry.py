@@ -62,8 +62,50 @@ class MetricDefinition:
             raise RegistryError(f"metric {name}: duplicate concept priorities {priorities}")
         self.concepts = tuple(sorted(rules, key=lambda rule: rule.priority))
 
+    # EINE BILANZ IN EURO IST EINE BILANZ.
+    #
+    # Die Registry fuehrt 35 Kennzahlen mit `units: ["USD"]`. Fuer einen
+    # 10-K-Einreicher ist das richtig. Fuer Unilever, Shell oder
+    # Canadian National ist es eine Mauer: sie melden in EUR, USD oder
+    # CAD, und ein korrekt gemapptes Konzept waere trotzdem an der
+    # Einheit gescheitert - mit einem UNIT_MISMATCH, der aussieht wie
+    # ein Datenfehler und einer ist, den wir gebaut haben.
+    #
+    # Akzeptiert wird deshalb JEDE ISO-Waehrung, wo USD akzeptiert wird.
+    # UMGERECHNET WIRD NICHTS. Ein Kurs von heute auf eine Periode von
+    # 2012 anzuwenden waere geraten und zerstoerte die
+    # Point-in-Time-Eigenschaft, die diese Schicht traegt. Der Wert
+    # behaelt seine Waehrung, und die Waehrung steht daneben.
+    MONETARY_UNITS = {"USD"}
+    PER_SHARE_UNITS = {"USD/shares"}
+
+    @staticmethod
+    def _is_currency(code):
+        return len(code) == 3 and code.isalpha() and code.isupper()
+
     def allows_unit(self, unit):
-        return unit in self.units
+        if unit in self.units:
+            return True
+        if not unit:
+            return False
+        # Geldbetrag: jede Waehrung, wo USD erlaubt ist.
+        if self.MONETARY_UNITS & set(self.units) and self._is_currency(unit):
+            return True
+        # Betrag je Aktie: dasselbe, aber mit Nenner.
+        if self.PER_SHARE_UNITS & set(self.units) and unit.endswith("/shares"):
+            return self._is_currency(unit.split("/", 1)[0])
+        return False
+
+    def currency_of(self, unit):
+        """Die Waehrung eines Werts, oder None fuer nicht-monetaere Einheiten."""
+        if not unit:
+            return None
+        if self._is_currency(unit):
+            return unit
+        if unit.endswith("/shares"):
+            code = unit.split("/", 1)[0]
+            return code if self._is_currency(code) else None
+        return None
 
     def priority_of(self, taxonomy, concept):
         for rule in self.concepts:

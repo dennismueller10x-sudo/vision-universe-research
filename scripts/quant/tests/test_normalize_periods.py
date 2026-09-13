@@ -228,12 +228,80 @@ class MappingIntegrityTests(unittest.TestCase):
         cls.registry = MetricRegistry.load()
 
     def test_a_disallowed_unit_is_rejected_not_coerced(self):
+        """Die Regel gilt weiter - nur war EUR das falsche Beispiel dafuer.
+
+        Bis Version 1.7.0 stand hier EUR als "unerlaubte Einheit". Das
+        war keine Regel ueber Einheiten, sondern eine ueber Herkunft:
+        ein Umsatz in Euro ist ein Umsatz. Geprueft wird jetzt mit einer
+        Einheit, die fuer einen Geldbetrag wirklich keine ist.
+        """
         builder = FactsBuilder(2000000004)
-        builder.add("us-gaap", "Revenues", "EUR", 100.0, "2023-12-31", "2023-01-01",
+        builder.add("us-gaap", "Revenues", "shares", 100.0, "2023-12-31", "2023-01-01",
                     "acc-1", "10-K", "2024-02-20", fy=2023, fp="FY")
         result, _ = normalize(builder, self.registry, 2000000004)
         self.assertIsNone(result.factbook.get("revenue", 2023, "FY"))
         self.assertIn("UNIT_MISMATCH", [issue["code"] for issue in result.issues])
+
+    def test_eine_bilanz_in_euro_ist_eine_bilanz(self):
+        """35 Kennzahlen liessen nur USD zu. Unilever meldet in EUR.
+
+        Ein korrekt gemapptes Konzept scheiterte trotzdem an der
+        Einheit - mit einem UNIT_MISMATCH, der aussah wie ein
+        Datenfehler und einer war, den wir gebaut hatten.
+        """
+        builder = FactsBuilder(2000000014)
+        builder.add("us-gaap", "Revenues", "EUR", 100.0, "2023-12-31", "2023-01-01",
+                    "acc-1", "10-K", "2024-02-20", fy=2023, fp="FY")
+        result, _ = normalize(builder, self.registry, 2000000014)
+        timeline = result.factbook.get("revenue", 2023, "FY")
+        self.assertIsNotNone(timeline, "ein Umsatz in Euro ist ein Umsatz")
+        self.assertNotIn("UNIT_MISMATCH", [issue["code"] for issue in result.issues])
+        self.assertEqual(timeline.observations[0].unit, "EUR",
+                         "die Waehrung bleibt am Wert - umgerechnet wird nichts")
+
+    def test_die_ifrs_taxonomie_wird_gemappt(self):
+        """Fuer einen 20-F-Einreicher gab es vorher gar nichts zu mappen."""
+        builder = FactsBuilder(2000000015)
+        builder.add("ifrs-full", "Revenue", "EUR", 250.0, "2023-12-31", "2023-01-01",
+                    "acc-2", "20-F", "2024-03-12", fy=2023, fp="FY")
+        builder.add("ifrs-full", "ProfitLoss", "EUR", 40.0, "2023-12-31", "2023-01-01",
+                    "acc-2", "20-F", "2024-03-12", fy=2023, fp="FY")
+        result, _ = normalize(builder, self.registry, 2000000015)
+        self.assertIsNotNone(result.factbook.get("revenue", 2023, "FY"))
+        self.assertIsNotNone(result.factbook.get("net_income", 2023, "FY"))
+
+    def test_der_gemeldete_posten_gewinnt_ueber_die_bilanzidentitaet(self):
+        """LiabilitiesAndStockholdersEquity ist per Definition die Bilanzsumme.
+
+        Sie zu mappen schafft Deckung, wo die Aktivseite fehlt - 4.828
+        Emittenten melden sie. Aber sie darf die gemeldete Aktivseite
+        nie verdraengen, und die IFRS-Konzepte duerfen keines von
+        beiden verdraengen. Geprueft wird die Rangfolge selbst: die
+        kleinere Zahl gewinnt.
+        """
+        gemeldet = self.registry.metrics_for_concept("us-gaap", "Assets")
+        identitaet = self.registry.metrics_for_concept(
+            "us-gaap", "LiabilitiesAndStockholdersEquity")
+        ifrs = self.registry.metrics_for_concept("ifrs-full", "Assets")
+        self.assertEqual([m for m, _ in gemeldet], ["total_assets"])
+        self.assertEqual([m for m, _ in identitaet], ["total_assets"])
+        self.assertEqual([m for m, _ in ifrs], ["total_assets"])
+        self.assertLess(gemeldet[0][1], identitaet[0][1],
+                        "die gemeldete Aktivseite muss vor der Identitaet kommen")
+        self.assertLess(identitaet[0][1], ifrs[0][1],
+                        "us-gaap muss vor ifrs-full kommen")
+
+    def test_kein_ifrs_konzept_verdraengt_ein_us_gaap_konzept(self):
+        """Ein Emittent, der beide Taxonomien fuehrt, bleibt konsistent."""
+        for metric in ("revenue", "net_income", "total_assets",
+                       "stockholders_equity", "operating_cash_flow"):
+            definition = self.registry.get(metric)
+            usgaap = [r.priority for r in definition.concepts if r.taxonomy == "us-gaap"]
+            ifrs = [r.priority for r in definition.concepts if r.taxonomy == "ifrs-full"]
+            if usgaap and ifrs:
+                with self.subTest(metric=metric):
+                    self.assertLess(max(usgaap), min(ifrs),
+                                    f"{metric}: ifrs-full draengt sich vor us-gaap")
 
     def test_a_duration_fact_cannot_fill_an_instant_metric(self):
         builder = FactsBuilder(2000000005)
