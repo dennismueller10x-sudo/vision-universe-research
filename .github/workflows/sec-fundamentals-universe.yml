@@ -394,6 +394,26 @@ jobs:
           echo "--- und ueber den ganzen Bestand ---"
           python3 scripts/quant/cli.py concepts --top 40 \
             --out quant/data/fundamentals/unmapped-concepts-all.json
+          # Die Emittenten, die nach der Feinklassifikation noch
+          # SEC-loesbar sind - ohne SPACs und Fonds, deren Vokabular
+          # sonst jede Liste dominiert. Erst der Abgleich benennt sie.
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py reconcile
+          echo "--- nur die noch SEC-loesbaren ---"
+          python3 scripts/quant/cli.py concepts --top 80 \
+            --ciks-file quant/data/fundamentals/sec-recoverable-fine.json \
+            --ciks-key ciksStillRecoverable \
+            --out quant/data/fundamentals/unmapped-concepts-recoverable.json
+          # Banken, Versicherer, REITs: Werte da, Umsatz-Tag nicht. Ihr
+          # Vokabular ist das, was die Branchenschicht braucht.
+          echo "--- WARUM die Perioden der noch loesbaren nicht platzierbar sind ---"
+          python3 scripts/quant/cli.py findings --limit 8 \
+            --ciks-file quant/data/fundamentals/sec-recoverable-fine.json \
+            --ciks-key ciksStillRecoverable \
+            --out quant/data/fundamentals/findings-recoverable.json
+          echo "--- Emittenten mit Werten, aber ohne revenue ---"
+          python3 scripts/quant/cli.py concepts --top 80 --without-metric revenue \
+            --out quant/data/fundamentals/unmapped-concepts-no-revenue.json
 
       - name: Abgleich mit dem Marktdaten-Universum
         run: |

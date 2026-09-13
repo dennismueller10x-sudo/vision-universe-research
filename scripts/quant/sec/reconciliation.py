@@ -25,6 +25,7 @@ VIER REGELN
      teuerste Zahl in einem Deckungsbericht.
 """
 import json
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -862,6 +863,189 @@ def external_candidate_report(records):
     }
 
 
+# ============================================================ §5 FEIN
+#
+# Jeder der SEC_RECOVERABLE-Faelle bekommt EINE belastbare Ursache aus
+# dem Katalog - und eine Angabe, WORAN sie erkannt wurde. Eine
+# Klassifikation ohne Beleg ist eine Vermutung mit Grossbuchstaben.
+#
+# Reihenfolge ist Absicht: strukturelle Gruende (kein Abschluss, weil
+# es keinen gibt) vor technischen (Abschluss da, Mapping fehlt). Ein
+# SPAC ohne Umsatz ist kein Mapping-Problem, und wer ihn so fuehrt,
+# sucht anschliessend ein Konzept, das es nicht gibt.
+FINE_CAUSES = (
+    "SPAC_BLANK_CHECK", "SPECIAL_PURPOSE_ENTITY", "PRE_REVENUE_COMPANY",
+    "MINING_EXPLORATION", "BANK", "INSURER", "ASSET_MANAGER", "REIT",
+    "NO_OPERATING_REVENUE_BY_DESIGN", "BALANCE_SHEET_ONLY",
+    "IFRS_REMAINING", "PERIOD_MAPPING", "UNIT_MAPPING", "CURRENCY_MAPPING",
+    "ALTERNATIVE_US_GAAP_CONCEPT", "INDUSTRY_SPECIFIC_ACCOUNTING",
+    "TRUE_MISSING_TAG_MAPPING", "ISSUER_MAPPING", "INSUFFICIENT_DISCLOSURE",
+    "NOT_APPLICABLE", "REQUIRES_REVIEW", "EXTERNAL_DATA_REQUIRED",
+)
+
+# Was aus einer Feinursache folgt: schliesst sie ein Mapping (SEC), die
+# Zeit, ein Anbieter - oder gar nichts, weil nichts fehlt?
+FINE_TO_RECOVERABILITY = {
+    "SPAC_BLANK_CHECK": "NOT_APPLICABLE",
+    "SPECIAL_PURPOSE_ENTITY": "NOT_APPLICABLE",
+    "NO_OPERATING_REVENUE_BY_DESIGN": "NOT_APPLICABLE",
+    "NOT_APPLICABLE": "NOT_APPLICABLE",
+    "PRE_REVENUE_COMPANY": "NOT_APPLICABLE",
+    "MINING_EXPLORATION": "NOT_APPLICABLE",
+    "BANK": "INDUSTRY_LAYER", "INSURER": "INDUSTRY_LAYER",
+    "ASSET_MANAGER": "INDUSTRY_LAYER", "REIT": "INDUSTRY_LAYER",
+    "INDUSTRY_SPECIFIC_ACCOUNTING": "INDUSTRY_LAYER",
+    "BALANCE_SHEET_ONLY": "SEC_RECOVERABLE",
+    "IFRS_REMAINING": "SEC_RECOVERABLE", "PERIOD_MAPPING": "SEC_RECOVERABLE",
+    "UNIT_MAPPING": "SEC_RECOVERABLE", "CURRENCY_MAPPING": "SEC_RECOVERABLE",
+    "ALTERNATIVE_US_GAAP_CONCEPT": "SEC_RECOVERABLE",
+    "TRUE_MISSING_TAG_MAPPING": "SEC_RECOVERABLE", "ISSUER_MAPPING": "SEC_RECOVERABLE",
+    "INSUFFICIENT_DISCLOSURE": "REQUIRES_REVIEW", "REQUIRES_REVIEW": "REQUIRES_REVIEW",
+    "EXTERNAL_DATA_REQUIRED": "EXTERNAL_PROVIDER_CANDIDATE",
+}
+
+SIC_BANK = {"6021", "6022", "6029", "6035", "6036", "6099", "6111", "6141", "6153", "6159", "6162", "6163"}
+SIC_INSURER = {"6311", "6321", "6324", "6331", "6351", "6361", "6399", "6411"}
+SIC_ASSET_MANAGER = {"6211", "6282", "6221"}
+SIC_REIT = {"6798"}
+SIC_SPAC = {"6770"}
+SIC_BIOTECH = {"2834", "2835", "2836", "8731"}
+SIC_MINING = {"1000", "1040", "1090", "1220", "1221", "1311", "1381", "1382", "1400"}
+SIC_SOFTWARE_SHELL = {"7372", "7370", "7371", "7373", "7374"}
+
+_FUND_NAME = re.compile(
+    r"\b(fund|trust|income co|capital corp|municipal|term trust|credit co|bdc)\b", re.I)
+_SPAC_NAME = re.compile(r"\b(acquisition|blank check|spac|merger corp)\b", re.I)
+
+
+def fine_cause(record):
+    """Die Feinursache eines SEC_RECOVERABLE-Falls, mit Beleg.
+
+    Gibt (ursache, beleg) zurueck. Der Beleg nennt das Merkmal, an dem
+    entschieden wurde - SIC, Formular, Befundcode, Name -, damit jede
+    Zuordnung nachpruefbar ist und keine nur plausibel klingt.
+    """
+    fund = record.get("_fund") or {}
+    sic = str(fund.get("sic") or "")
+    name = fund.get("name") or ""
+    form = record.get("latestForm")
+    codes = record.get("findingCodes") or {}
+    hat_werte = record.get("resolvedValues", 0) > 0
+    metrics = record.get("metrics") or {}
+    has = lambda m: bool(metrics.get(m))
+
+    # 1. Kein Factbook: der Abruf steht aus oder ist gescheitert.
+    if not record.get("fundamentals"):
+        return "REQUIRES_REVIEW", "kein Factbook (Fehlerschlange / Abruf ausstehend)"
+
+    # 2. Strukturen, die keinen operativen Abschluss haben - bevor
+    #    irgendjemand nach einem Umsatz-Tag sucht.
+    if sic in SIC_SPAC or (not hat_werte and _SPAC_NAME.search(name)):
+        return "SPAC_BLANK_CHECK", f"SIC {sic or '-'} / Name '{name[:40]}'"
+    if not sic and _FUND_NAME.search(name) and not hat_werte:
+        return "SPECIAL_PURPOSE_ENTITY", f"Investmentgesellschaft ohne SIC, Name '{name[:40]}'"
+    if form in ("N-CSR", "N-CSRS", "N-Q", "N-PORT"):
+        return "SPECIAL_PURPOSE_ENTITY", f"Formular {form}"
+
+    # 3. Branchen, deren Kernkennzahlen anders heissen. Sie sind hier
+    #    nur, wenn NICHTS aufloest - eine Bank mit Nettoergebnis steht
+    #    laengst nicht mehr in SEC_RECOVERABLE.
+    if sic in SIC_BANK:
+        return "BANK", f"SIC {sic}"
+    if sic in SIC_INSURER:
+        return "INSURER", f"SIC {sic}"
+    if sic in SIC_ASSET_MANAGER:
+        return "ASSET_MANAGER", f"SIC {sic}"
+    if sic in SIC_REIT:
+        return "REIT", f"SIC {sic}"
+
+    # 4. Vorumsatzlich: kein Umsatz ist hier der Normalfall, nicht die
+    #    Luecke. Bleibt der Emittent OHNE JEDEN Wert, fehlt trotzdem
+    #    etwas - dann ist es Bilanz oder Cashflow, nicht Umsatz.
+    if sic in SIC_BIOTECH:
+        return ("PRE_REVENUE_COMPANY", f"SIC {sic}") if hat_werte or has("total_assets") \
+            else ("BALANCE_SHEET_ONLY", f"SIC {sic}, keine aufloesbare Bilanz")
+    if sic in SIC_MINING:
+        return ("MINING_EXPLORATION", f"SIC {sic}") if hat_werte or has("total_assets") \
+            else ("BALANCE_SHEET_ONLY", f"SIC {sic}, keine aufloesbare Bilanz")
+
+    # 5. Technische Gruende, in der Reihenfolge ihrer Eindeutigkeit.
+    #
+    # Die Periode ZUERST. Nachgesehen an den 16 vermeintlichen
+    # IFRS-Resten: 15 von 16 sind 20-F-Einreicher mit NULL unbekannten
+    # Konzepten und UNPLACEABLE_PERIOD - die Taxonomie ist gemappt, der
+    # Kalender findet die Periode nicht. Wer das als IFRS fuehrt, sucht
+    # ein Konzept, das laengst da ist.
+    perioden = (codes.get("UNPLACEABLE_PERIOD", 0) + codes.get("UNEXPECTED_DURATION", 0)
+                + codes.get("PERIOD_MISMATCH", 0))
+    if perioden and not codes.get("UNKNOWN_CONCEPT"):
+        return "PERIOD_MAPPING", (f"UNPLACEABLE_PERIOD={codes.get('UNPLACEABLE_PERIOD', 0)}, "
+                                  f"Formular {form or '-'}, keine unbekannten Konzepte")
+    if codes.get("UNIT_MISMATCH"):
+        return "UNIT_MAPPING", f"UNIT_MISMATCH={codes['UNIT_MISMATCH']}"
+    if form in FOREIGN_FORMS:
+        if not codes and not hat_werte:
+            # Ein einziges 20-F, kein Befund, kein Wert: die Fakten kamen
+            # gar nicht erst an - oder nur dei-Deckblattangaben. Erst der
+            # Blick in den Speicher sagt, welches. Nicht raten.
+            return "INSUFFICIENT_DISCLOSURE", f"Formular {form}, weder Befund noch Wert"
+        return "IFRS_REMAINING", f"Formular {form}, UNKNOWN_CONCEPT={codes.get('UNKNOWN_CONCEPT', 0)}"
+    if codes.get("CONCEPT_DISAGREEMENT"):
+        return "ALTERNATIVE_US_GAAP_CONCEPT", f"CONCEPT_DISAGREEMENT={codes['CONCEPT_DISAGREEMENT']}"
+    if not form:
+        return "INSUFFICIENT_DISCLOSURE", "keine periodische Einreichung im Factbook"
+    if codes.get("UNKNOWN_CONCEPT") and sic in SIC_SOFTWARE_SHELL and not hat_werte:
+        # Ein "Software"-Titel ohne einen einzigen aufloesbaren Wert
+        # ist in aller Regel ein Mantel mit SIC 737x. Nicht raten:
+        # zur Pruefung, mit Beleg.
+        return "REQUIRES_REVIEW", f"SIC {sic} ohne jeden Wert, UNKNOWN_CONCEPT={codes['UNKNOWN_CONCEPT']}"
+    if codes.get("UNKNOWN_CONCEPT"):
+        return "TRUE_MISSING_TAG_MAPPING", f"UNKNOWN_CONCEPT={codes['UNKNOWN_CONCEPT']}, SIC {sic or '-'}"
+    return "REQUIRES_REVIEW", "kein eindeutiges Merkmal"
+
+
+def fine_classification_report(records):
+    """§5: jeder Fall accounted for. Keine Restgruppe ohne Grund."""
+    betroffen = [r for r in records if r.get("gapRecoverability") == SEC_RECOVERABLE]
+    nach_ursache = Counter()
+    nach_folge = Counter()
+    beispiele = defaultdict(list)
+    for r in betroffen:
+        ursache, beleg = fine_cause(r)
+        r["fineCause"], r["fineEvidence"] = ursache, beleg
+        nach_ursache[ursache] += 1
+        nach_folge[FINE_TO_RECOVERABILITY[ursache]] += 1
+        if len(beispiele[ursache]) < 4:
+            beispiele[ursache].append({"symbol": (r["symbols"] or [None])[0], "cik": r["cik"],
+                                       "evidence": beleg})
+    unbelegt = [r for r in betroffen if r.get("fineCause") not in FINE_CAUSES]
+    return {
+        "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem "
+                "sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer "
+                "diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener "
+                "Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand "
+                "schliesst, weder wir noch ein Anbieter.",
+        "denominator": {"SEC_RECOVERABLE": len(betroffen)},
+        "accountedFor": len(betroffen) - len(unbelegt),
+        "unaccounted": len(unbelegt),
+        "byCause": [
+            {"cause": c, "count": nach_ursache[c], "percent": _pct(nach_ursache[c], len(betroffen)),
+             "consequence": FINE_TO_RECOVERABILITY[c], "examples": beispiele[c]}
+            for c in FINE_CAUSES if nach_ursache[c]
+        ],
+        "byConsequence": dict(nach_folge),
+        "stillRecoverableBySec": sum(n for c, n in nach_ursache.items()
+                                     if FINE_TO_RECOVERABILITY[c] == "SEC_RECOVERABLE"),
+        # Die vollstaendigen Listen, damit ein Messlauf GENAU diese
+        # Emittenten anschauen kann - nicht die Stichprobe oben.
+        "ciksByCause": {c: sorted(r["cik"] for r in betroffen if r.get("fineCause") == c and r["cik"])
+                        for c in FINE_CAUSES if nach_ursache[c]},
+        "ciksStillRecoverable": sorted(
+            r["cik"] for r in betroffen
+            if FINE_TO_RECOVERABILITY.get(r.get("fineCause")) == "SEC_RECOVERABLE" and r["cik"]),
+    }
+
+
 def backtest_report(records):
     """§9. Was ist wirklich backtestfaehig - und ab welcher Tiefe?
 
@@ -1105,6 +1289,8 @@ def build_reconciliation(root, registry=None, today=None, min_years=3):
         "backtest-readiness.json": dict(backtest_report(records), versions=stamp),
         "sec-recoverable-causes.json": dict(sec_recoverable_report(records),
                                             versions=stamp),
+        "sec-recoverable-fine.json": dict(fine_classification_report(records),
+                                          versions=stamp),
         "external-provider-candidates.json": dict(external_candidate_report(records),
                                                   versions=stamp),
         "fundamental-quality.json": dict(quality_report(records, fundamentals),

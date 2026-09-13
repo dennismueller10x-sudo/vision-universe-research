@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.2.0",
+  "mapping_version": "1.3.0",
   "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
@@ -19,6 +19,27 @@
       ],
       "reason": "UNSUPPORTED_ACCOUNTING_STRUCTURE",
       "note": "Depository, credit, security and insurance institutions (SIC 6000-6499) have no cost of revenue, so gross-profit style metrics are undefined rather than missing. Debt is an operating input for a bank, not leverage, so total debt, net debt, debt/equity and ROIC do not carry their usual meaning. Metrics that remain computable but are not comparable to industrials (capex, free cash flow, operating margin) stay available and are flagged in docs/SEC_NORMALIZATION.md rather than suppressed."
+    },
+    {
+      "id": "BLANK_CHECK_SPAC",
+      "sic_min": 6770,
+      "sic_max": 6770,
+      "not_applicable": [
+        "revenue",
+        "cost_of_revenue",
+        "gross_profit",
+        "operating_income",
+        "ebitda",
+        "capital_expenditures",
+        "free_cash_flow",
+        "inventory",
+        "receivables",
+        "research_and_development",
+        "sga_expense",
+        "depreciation_and_amortization"
+      ],
+      "reason": "NOT_APPLICABLE_FOR_SECTOR",
+      "note": "Blank-Check-Gesellschaften (SIC 6770) haben keinen Geschaeftsbetrieb: kein Umsatz, keine Herstellkosten, keine Investitionen. Ein Treuhandkonto ist keine Bilanzsumme und Zinsen darauf sind kein Umsatz. Diese Kennzahlen sind fuer die Struktur nicht sinnvoll - NOT_APPLICABLE, nicht MISSING. Bilanz, Eigenkapital, Kasse und Nettoergebnis bleiben zulaessig, weil ein SPAC sie tatsaechlich hat."
     }
   ],
   "metrics": {

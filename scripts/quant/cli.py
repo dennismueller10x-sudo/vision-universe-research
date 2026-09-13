@@ -576,6 +576,14 @@ def cmd_concepts(args):
     if not ciks:
         print("Kein Faktenspeicher. Erst `ingest`.")
         return 2
+    if args.ciks_file:
+        # Genau die Emittenten, die ein Bericht benannt hat - z. B. die
+        # 77, die nach der Feinklassifikation noch SEC-loesbar sind.
+        # Ohne diese Eingrenzung dominiert das SPAC-Vokabular jede Liste.
+        payload = json.loads(Path(args.ciks_file).read_text(encoding="utf-8"))
+        gewollt = set(payload.get(args.ciks_key) if args.ciks_key else payload)
+        ciks = [c for c in ciks if c in gewollt]
+        print(f"  Eingegrenzt auf {len(ciks)} Emittenten aus {args.ciks_file}")
 
     von_konzept = Counter()          # Fakten je Konzept
     emittenten_je_konzept = Counter()  # Emittenten je Konzept
@@ -734,6 +742,55 @@ def cmd_verify_reload(args):
     })
     print(f"\n  RELOAD_WITHOUT_SEC_REFETCH = {verdict}  ({bestanden}/{len(ergebnisse)})")
     return 0 if verdict == "PASS" else 1
+
+
+def cmd_findings(args):
+    """Die Befundtexte eines Codes fuer benannte Emittenten - WARUM, nicht nur wie oft.
+
+    UNPLACEABLE_PERIOD=6 sagt, dass sechs Perioden nicht zugeordnet
+    wurden. Der Befundtext sagt, WELCHE und WESHALB - und erst der
+    entscheidet, ob der Kalender, das Formular oder die Einreichung das
+    Problem ist. Streamt einzeln; haelt nie zwei Factbooks.
+    """
+    store = JsonFactStore(compress=True)
+    gewollt = None
+    if args.ciks_file:
+        payload = json.loads(Path(args.ciks_file).read_text(encoding="utf-8"))
+        gewollt = set(payload.get(args.ciks_key) if args.ciks_key else payload)
+    ciks = [c for c in store.list_companies() if gewollt is None or c in gewollt]
+    if args.ciks:
+        ciks = [c.strip() for c in args.ciks.split(",") if c.strip()]
+    out = []
+    for cik in ciks:
+        document = store.read_company(cik)
+        if document is None:
+            continue
+        name = ((document.get("profile") or {}).get("name") or "")[:40]
+        calendar = document.get("calendar") or {}
+        stats = document.get("stats") or {}
+        treffer = [f for f in (document.get("quality") or {}).get("findings") or []
+                   if not args.code or f.get("code") == args.code]
+        forms = Counter((f.get("form") or "?") for f in document.get("filing_index") or [])
+        row = {"cik": cik, "name": name, "latestForm": (document.get("latest_filing") or {}).get("form"),
+               "filingForms": dict(forms), "rawFacts": stats.get("raw_facts"),
+               "mapped": stats.get("mapped"), "unmapped": stats.get("unmapped"),
+               "timelines": len((document.get("factbook") or {}).get("timelines") or []),
+               "fiscalYearEnd": (document.get("profile") or {}).get("fiscal_year_end"),
+               "calendarYears": len(calendar.get("fiscal_years") or []),
+               "findings": [{k: f.get(k) for k in ("code", "message", "concept", "end", "form",
+                                                    "fiscal_year", "fiscal_period")}
+                            for f in treffer[:args.limit]]}
+        out.append(row)
+        print(f"  {cik} {name:<40} {row['latestForm'] or '-':<6} roh={row['rawFacts']} "
+              f"gemappt={row['mapped']} zeitreihen={row['timelines']} kal={row['calendarYears']}J "
+              f"FYE={row['fiscalYearEnd']} formulare={dict(forms)}")
+        for f in row["findings"][:args.limit]:
+            print(f"      {f['code']}: {f['message']}  [{f.get('concept') or ''} {f.get('end') or ''} {f.get('form') or ''}]")
+        document = None
+    if args.out:
+        _write(Path(args.out), {"schema_version": 1, "generated_at_utc": _utcnow(),
+                                "code": args.code, "issuers": out})
+    return 0
 
 
 def cmd_reconcile(args):
@@ -1083,6 +1140,8 @@ def build_parser():
                      help="nur Emittenten MIT Werten, aber OHNE diese Kennzahl "
                           "(z. B. revenue: Banken, Versicherer, REITs)")
     con.add_argument("--out", help="Ergebnis zusaetzlich als JSON schreiben")
+    con.add_argument("--ciks-file", help="JSON mit einer CIK-Liste - nur diese Emittenten")
+    con.add_argument("--ciks-key", help="Schluessel in --ciks-file, unter dem die Liste steht")
     con.set_defaults(func=cmd_concepts)
 
     vr = subparsers.add_parser(
@@ -1091,6 +1150,14 @@ def build_parser():
     vr.add_argument("--ciks", help="Komma-Liste; Standard: alles im Reload-Verzeichnis")
     vr.add_argument("--local-dir", help="lokaler Faktenspeicher (Standard: quant/data/sec/facts)")
     vr.set_defaults(func=cmd_verify_reload)
+
+    fi = subparsers.add_parser("findings", help="Befundtexte je Emittent - warum, nicht nur wie oft")
+    fi.add_argument("--code", help="nur dieser Befundcode, z. B. UNPLACEABLE_PERIOD")
+    fi.add_argument("--ciks", help="Komma-Liste")
+    fi.add_argument("--ciks-file"); fi.add_argument("--ciks-key")
+    fi.add_argument("--limit", type=int, default=6)
+    fi.add_argument("--out")
+    fi.set_defaults(func=cmd_findings)
 
     rec = subparsers.add_parser(
         "reconcile", help="Fundamentals gegen das Marktdaten-/Technical-Universum abgleichen")
