@@ -279,6 +279,8 @@ mkdirSync(OUT_DIR, { recursive: true });
 const provenance = {
   generatedAt: new Date().toISOString(),
   gate: GATE,
+  universeSource: universe.universeSource || null,
+  universeFile: universe.universeFile || null,
   provider: "tiingo",
   engine: MarketFactors.VERSION,
   benchmark: benchmark ? { id: benchmark.id, bars: benchmark.bars, last: benchmark.last }

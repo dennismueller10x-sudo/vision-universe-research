@@ -81,3 +81,16 @@ test("US5 · Das Repository loest heute auf eine echte Quelle auf - keine Zahl i
   const g = resolveUniverse(root, "GATE_100");
   assert.equal(g.securities.length, 100);
 });
+
+test("US6 · Kuratierte Sektoren bleiben am Titel: Overlay je securityId, ohne Mitgliedschaft zu aendern", () => {
+  const r = resolveProductUniverse(root);
+  assert.ok(r.curatedSectors && r.curatedSectors.present, "Gate-Datei mit kuratierten Sektoren fehlt");
+  const mitSektor = r.securities.filter((s) => s.sectorStatus === "CURATED");
+  assert.equal(mitSektor.length, r.curatedSectors.securities);
+  assert.ok(mitSektor.length >= 50, "kuratierte Sektorzuordnung verloren");
+  assert.ok(mitSektor.every((s) => typeof s.sector === "string" && s.sector.length));
+  const aapl = r.securities.find((s) => s.ticker === "AAPL");
+  assert.equal(aapl.sector, "Technology");
+  assert.equal(r.counts.productUniverse, 7004, "das Overlay aendert die Mitgliedschaft nicht");
+  assert.ok(r.securities.filter((s) => !s.sector).every((s) => !s.sectorStatus), "kein geratener Status");
+});

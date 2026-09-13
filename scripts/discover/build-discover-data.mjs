@@ -416,8 +416,11 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
       dataMode: "real",
       provider: factors.provider || "tiingo",
       exchange: sec.exchange || ref.exchange || null,
-      sector: sec.sector || (named && named.sector) || null,
-      sectorStatus: sec.sector ? (sec.sectorStatus || "CURATED") : "SOURCE_MISSING",
+      /* Sektor: aus der Faktorzeile, sonst aus der Universumsquelle (kuratierte
+         Zuordnung), sonst aus der Namensquelle - nie geraten. */
+      sector: sec.sector || ref.sector || (named && named.sector) || null,
+      sectorStatus: sec.sector ? (sec.sectorStatus || "CURATED")
+                  : ref.sector ? (ref.sectorStatus || "CURATED") : "SOURCE_MISSING",
       /* Absolute Kursniveaus realer Titel bleiben nach der
          Redistributionsregel des Bestandssystems zurueck. Die Card zeigt
          deshalb keinen Preis - und sagt warum, statt eine Null. */

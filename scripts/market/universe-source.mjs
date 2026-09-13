@@ -105,12 +105,41 @@ function fromSecurityMaster(root, file) {
     }
   }
   securities.sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
+  const kuratiert = overlayCuratedSectors(root, securities);
   return {
     source: "SECURITY_MASTER", file: SECURITY_MASTER_FILE, version: quelle.version || null,
     generatedAt: quelle.generatedAt || null, securities, counts,
     sha256: createHash("sha256").update(roh).digest("hex"),
+    curatedSectors: kuratiert,
     handover: Object.assign({}, HANDOVER, { status: "INTEGRATED" })
   };
+}
+
+/**
+ * Kuratierte Sektorzuordnung: der Company Master fuehrt keinen Sektor. Die
+ * kuratierten Zuordnungen (sectorStatus CURATED) liegen weiter in der
+ * Gate-Datei universe-FULL_UNIVERSE.json und werden hier je securityId
+ * uebernommen - nur die Felder, nie die Mitgliedschaft. Ohne Datei bleibt
+ * der Sektor SOURCE_MISSING; nichts wird geraten.
+ */
+const CURATED_SECTOR_FILE = "quant/data/market/scale/universe-FULL_UNIVERSE.json";
+function overlayCuratedSectors(root, securities) {
+  const file = join(root, CURATED_SECTOR_FILE);
+  if (!existsSync(file)) return { file: CURATED_SECTOR_FILE, present: false, securities: 0 };
+  const u = JSON.parse(readFileSync(file, "utf8"));
+  const byId = new Map();
+  for (const s of u.securities || []) {
+    if (s.sector && s.sectorStatus === "CURATED") byId.set(s.securityId || "ref_" + s.ticker, s);
+  }
+  let n = 0;
+  for (const s of securities) {
+    const k = byId.get(s.securityId);
+    if (!k) continue;
+    s.sector = k.sector; s.sectorStatus = "CURATED";
+    if (k.industry) { s.industry = k.industry; s.industryStatus = k.industryStatus || "CURATED"; }
+    n++;
+  }
+  return { file: CURATED_SECTOR_FILE, present: true, securities: n };
 }
 
 function fromScaleUniverse(root, file, name) {
