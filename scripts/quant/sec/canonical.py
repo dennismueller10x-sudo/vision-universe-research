@@ -151,21 +151,43 @@ def _source_periods(fiscal_period):
     return (fiscal_period, "YTD2", "YTD3", "FY")
 
 
+def _camel(name):
+    head, *rest = name.split("_")
+    return head + "".join(part.capitalize() for part in rest)
+
+
+def industry_metric_map(registry, industry):
+    """metricId map for one industry's layer, shaped like METRIC_MAP.
+
+    Every industry metric is a monetary amount published in millions of its
+    reported currency; the unit label follows the same `<ccy>_m` rule as the
+    core map, so a CAD bank publishes `cad_m`.
+    """
+    if industry is None:
+        return {}
+    return {
+        name: (_camel(name), "usd_m", 1e-6)
+        for name in registry.industry_metric_names(industry.industry_id)
+    }
+
+
 def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at,
-                     conflicts=None):
+                     conflicts=None, metric_map=None):
     """Canonical FundamentalFacts for one company and one fiscal period.
 
     One record per canonical metric per revision. A later filing that repeats an
     unchanged number produces no new revision; a changed number does, flagged
-    `restated`.
+    `restated`. `metric_map` defaults to the core contract; the industry layer
+    passes its own map and lands in its own block of the bundle.
     """
     from .derived import reconstruct
 
     factbook = resolver.factbook
     conflicts = conflicts if conflicts is not None else []
     out = []
+    metric_map = METRIC_MAP if metric_map is None else metric_map
 
-    for sec_metric, (metric_id, unit, scale) in METRIC_MAP.items():
+    for sec_metric, (metric_id, unit, scale) in metric_map.items():
         instants = revision_instants(factbook, sec_metric, fiscal_year, fiscal_period)
         if not instants:
             continue
@@ -432,6 +454,24 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
             facts.extend(facts_for_period(resolver, security, fiscal_year,
                                           f"Q{index}", ingested_at, conflicts))
 
+    # DIE BRANCHENSCHICHT STEHT NEBEN DEM KERNVERTRAG, NICHT DARIN.
+    #
+    # Eine Bank hat keinen Umsatz im Sinne von `revenue`; sie hat
+    # Zinsertraege. Diese in `facts` unter revenue auszuliefern waere
+    # eine erfundene Zahl mit richtigem Etikett. Die Branchenkennzahlen
+    # bekommen ihren eigenen Block mit eigenen metricIds, nur fuer
+    # Emittenten, deren SIC die Branche ausweist. Wer sie nicht liest,
+    # sieht den Kernvertrag unveraendert.
+    industry, _names = registry.industry_metrics_for(getattr(factbook.profile, "sic", None))
+    industry_facts, industry_conflicts = [], []
+    if industry is not None:
+        layer_map = industry_metric_map(registry, industry)
+        for fiscal_year in quarterly_scope:
+            for index in range(1, 5):
+                industry_facts.extend(facts_for_period(
+                    resolver, security, fiscal_year, f"Q{index}", ingested_at,
+                    industry_conflicts, metric_map=layer_map))
+
     bundle = {
         "schema": "vu-canonical-v1",
         "generatedAtUtc": ingested_at,
@@ -442,6 +482,15 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
         "facts": facts,
         "unsupportedMetrics": UNSUPPORTED_METRICS,
         "periodEndConflicts": conflicts,
+        "industrySpecificMetrics": ({
+            "industry": industry.industry_id,
+            "label": industry.label,
+            "metricIds": sorted({fact["metricId"] for fact in industry_facts}),
+            "facts": industry_facts,
+            "periodEndConflicts": industry_conflicts,
+            "note": ("industry vocabulary published beside the core contract; "
+                     "these metricIds never appear in `facts`."),
+        } if industry is not None else None),
         "coverage": {
             "annualYearsExamined": annual_scope,
             "note": ("facts are quarterly only (Q1..Q4): quant/engines/schema.js keys a "
@@ -451,6 +500,7 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
             "factCount": len(facts),
             "metricIds": sorted({fact["metricId"] for fact in facts}),
             "suppressedCells": len(conflicts),
+            "industryFactCount": len(industry_facts),
         },
     }
     LOGGER.info("canonical bundle cik=%s facts=%d", document["cik"], len(facts))

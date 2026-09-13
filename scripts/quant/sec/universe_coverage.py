@@ -298,11 +298,30 @@ def issuer_fundamentals(document, registry):
             "derivedFrom": [list(gruppe) for gruppe in varianten],
         }
 
+    # Branchenschicht (§10): fuer Banken, Versicherer und REITs zaehlt
+    # zusaetzlich, was ihre eigene Sprache hergibt. Getrennt vom Kern -
+    # ein Zinsertrag wird nie als revenue gezaehlt.
+    industry, industry_names = registry.industry_metrics_for(profile.get("sic"))
+    industry_metrics = {}
+    for metric in industry_names:
+        jahre = sorted(jahre_je_metrik.get(metric, ()))
+        annual = _resolve_history(resolver, jahre, metric, annual=True)
+        quarterly = _resolve_history(resolver, jahre, metric, annual=False)
+        industry_metrics[metric] = {
+            "annualPeriods": len(annual),
+            "quarterlyPeriods": len(quarterly),
+            "firstAvailablePeriod": annual[0][2] if annual else None,
+            "lastAvailablePeriod": annual[-1][2] if annual else None,
+            "historyYears": _history_years(annual),
+        }
+
     pit = document.get("quality", {}).get("summary", {}) or {}
     return {
         "cik": document.get("cik"),
         "name": profile.get("name"),
         "sic": profile.get("sic"),
+        "industry": industry.industry_id if industry else None,
+        "industryMetrics": industry_metrics,
         "fiscalYearEnd": profile.get("fiscal_year_end"),
         "tickers": profile.get("tickers") or [],
         "status": "INGESTED",

@@ -92,6 +92,14 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #             Datum; die Herkunft steht als anchor_source am Kalender.
 #             Die Rumpfperiode selbst bleibt UNEXPECTED_DURATION - ein
 #             Siebenmonatsumsatz ist kein Jahresumsatz.
+#
+#         (c) Die Branchenschicht (§10). Banken, Versicherer und REITs
+#             bekommen im kanonischen Buendel einen EIGENEN Block
+#             `industrySpecificMetrics` mit eigenen metricIds; der
+#             Kernvertrag in `facts` bleibt unveraendert. Welche
+#             Konzepte die Schicht traegt, sagt die Registry - gemessen
+#             am Vokabular der Emittenten ohne `revenue`, nicht aus dem
+#             Gedaechtnis.
 NORMALIZATION_LOGIC_VERSION = "1.8.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -123,7 +131,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "63f3b2c3dbc5d60fbd269341618bb529c09924bc7338b34e433141d69a3a1aba"
+    "2b1be0958e6c3bd27a46911d14a8b2da798e526a3dbd99fd07b1d29ace714cd4"
 )
 
 
