@@ -1,0 +1,156 @@
+{
+  "note": "Wodurch entstehen die SEC_RECOVERABLE-Luecken? Die Reihenfolge hier ist die Reihenfolge der naechsten Arbeit - gemessen, nicht vermutet. NICHTS davon wurde repariert.",
+  "denominator": {
+    "SEC_RECOVERABLE": 926
+  },
+  "byCause": [
+    {
+      "cause": "IFRS_OR_FOREIGN_TAXONOMY",
+      "count": 561,
+      "percent": 60.5832,
+      "formTypes": {
+        "20-F": 386,
+        "40-F": 110,
+        "40-F/A": 35,
+        "20-F/A": 30
+      },
+      "examples": [
+        {
+          "symbol": "AAPG",
+          "cik": "0002023311",
+          "form": "20-F"
+        },
+        {
+          "symbol": "AAUC",
+          "cik": "0001993344",
+          "form": "40-F"
+        },
+        {
+          "symbol": "ABEV",
+          "cik": "0001565025",
+          "form": "20-F"
+        },
+        {
+          "symbol": "ABVX",
+          "cik": "0001956827",
+          "form": "20-F"
+        },
+        {
+          "symbol": "ACB",
+          "cik": "0001683541",
+          "form": "40-F"
+        }
+      ]
+    },
+    {
+      "cause": "MISSING_CANONICAL_TAG_MAPPING",
+      "count": 223,
+      "percent": 24.0821,
+      "formTypes": {
+        "10-Q": 221,
+        "10-Q/A": 2
+      },
+      "examples": [
+        {
+          "symbol": "AACO",
+          "cik": "0002099906",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "AACP",
+          "cik": "0002102123",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "AADX",
+          "cik": "0002118195",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "ACGC",
+          "cik": "0002111542",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "ADAC",
+          "cik": "0002083002",
+          "form": "10-Q"
+        }
+      ]
+    },
+    {
+      "cause": "PERIOD_MAPPING",
+      "count": 3,
+      "percent": 0.324,
+      "formTypes": {
+        "10-Q": 3
+      },
+      "examples": [
+        {
+          "symbol": "CATLU",
+          "cik": "0002104391",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "JMKE",
+          "cik": "0002127043",
+          "form": "10-Q"
+        },
+        {
+          "symbol": "JONE",
+          "cik": "0002129056",
+          "form": "10-Q"
+        }
+      ]
+    },
+    {
+      "cause": "OTHER_SEC_RECOVERABLE",
+      "count": 139,
+      "percent": 15.0108,
+      "formTypes": {
+        "KEINE_EINREICHUNG": 136,
+        "10-Q": 3
+      },
+      "examples": [
+        {
+          "symbol": "AIO",
+          "cik": "0001778114",
+          "form": null
+        },
+        {
+          "symbol": "ASGI",
+          "cik": "0001793855",
+          "form": null
+        },
+        {
+          "symbol": "BANX",
+          "cik": "0001578987",
+          "form": null
+        },
+        {
+          "symbol": "BCAT",
+          "cik": "0001809541",
+          "form": null
+        },
+        {
+          "symbol": "BLSM",
+          "cik": "0001839970",
+          "form": null
+        }
+      ]
+    }
+  ],
+  "largestBlock": "IFRS_OR_FOREIGN_TAXONOMY",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.6.0",
+    "formula": "1.1.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.1.0"
+    }
+  },
+  "generatedAtUtc": "2026-09-13T04:41:32+00:00"
+}

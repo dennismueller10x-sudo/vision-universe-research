@@ -80,6 +80,52 @@ function loadMaster() {
    Jede Faehigkeit braucht einen Beleg aus einer Datei, die es gibt. Was
    hier nicht eingesammelt wird, ist spaeter false - und zwar nicht, weil
    es unmoeglich waere, sondern weil es nicht gemessen wurde. */
+/* ------------------------------------------ Kanonische Marktdeckung
+
+   Der abgenommene Stand des R2-/Marktdaten-Workstreams, READ-ONLY
+   gelesen. Beide Berichte liefern ihre AUSNAHMEN namentlich - das ist
+   der Grund, warum sich aus Summen hier doch eine Aussage je Titel
+   gewinnen laesst, ohne etwas zu schaetzen:
+
+     CHART_AVAILABILITY  6.997 / 7.004, sieben Titel namentlich
+     TECHNICAL_ELIGIBLE  5.963 / 7.004, 1.041 Befunde namentlich
+
+   Wer im Produktuniversum steht und in keiner der beiden Ausnahmelisten,
+   ist gedeckt. Das ist keine Ableitung, sondern die Umkehrung einer
+   vollstaendigen Aufzaehlung.
+
+   Gibt null zurueck, wenn die Quelle fehlt - dann faellt der Aufrufer
+   auf die alten Gate-Belege zurueck UND sagt das im Artefakt. Stillzu-
+   schweigen, dass eine andere Quelle gerechnet hat, waere der Fehler. */
+function kanonischeMarktdeckung() {
+  const metrikDatei = join(root, "quant", "data", "market", "history", "coverage-metrics.json");
+  const technikDatei = join(root, "quant", "data", "technical", "scale",
+                            "technical-coverage-ELIGIBLE_US_EQUITY.json");
+  if (!existsSync(metrikDatei) || !existsSync(technikDatei)) return null;
+
+  const metriken = readJSON(metrikDatei);
+  const technik = readJSON(technikDatei);
+
+  const nichtDarstellbar = new Set(
+    (metriken.CHART_AVAILABILITY || {}).notRenderableSymbols || []);
+
+  /* Der Bericht fuehrt alles ausser TECHNICAL_READY plus den
+     Canary-Satz. Die Canaries sind READY und duerfen nicht als Befund
+     gelesen werden - sonst faellt AAPL aus dem technischen Universum. */
+  const nichtTechnisch = new Map();
+  for (const [sym, row] of Object.entries(technik.perSymbol || {})) {
+    if (row.technical && row.technical !== "TECHNICAL_READY") {
+      nichtTechnisch.set(String(sym).toUpperCase(), row.technical);
+    }
+  }
+
+  return {
+    nichtDarstellbar, nichtTechnisch,
+    runId: (technik.run || {}).runId || (metriken.generatedAt || "unbekannt"),
+    metriken, technik
+  };
+}
+
 function collectEvidence() {
   const ev = new Map();
   const sources = [];
@@ -478,13 +524,33 @@ function main() {
      allen Gate-Berichten (§34). Ein Mitglied kann mehrere Listings
      haben; gewertet wird das beste Listing, denn der Kursverlauf einer
      Zweitnotiz ist der Kursverlauf des Papiers. */
+  /* DIE KANONISCHE QUELLE ENTSCHEIDET, NICHT DIE GATE-LAEUFE.
+     Der abgenommene Marktdatenstand liegt als drei Kennzahlen vor
+     (quant/data/market/history/coverage-metrics.json) und ist je Titel
+     aufloesbar, weil beide Berichte ihre AUSNAHMEN namentlich fuehren:
+     sieben nicht darstellbare Titel, 1.041 technisch zu kurze. Alles
+     andere im Produktuniversum ist gedeckt.
+
+     Die alten Gate-Laeufe bleiben als ZUSATZBELEG (Barzahl, Zeitraum,
+     Datenqualitaet) - sie endeten vor der Erweiterung des
+     Wertpapierstamms und taugen nicht als Deckungsaussage. */
+  const kanon = kanonischeMarktdeckung();
+
   const marketByMember = new Map();
   for (const inst of instruments) {
     if (!Master.inProductUniverse(inst)) continue;
     const member = inst.masterMemberId || inst.instrumentId;
     const e = evidence.get(String(inst.symbol).toUpperCase()) || {};
     const bars = e.priceHistoryBars || 0;
-    const hatVerlauf = bars > 0 || e.priceHistoryVerified === true;
+    const sym = String(inst.symbol).toUpperCase();
+    /* Kanonisch, wenn die Quelle vorliegt; sonst der alte Beleg - und
+       dann sagt das Feld `src` auch, dass es der alte ist. */
+    const hatVerlauf = kanon
+      ? !kanon.nichtDarstellbar.has(sym)
+      : (bars > 0 || e.priceHistoryVerified === true);
+    const technisch = kanon
+      ? (kanon.nichtTechnisch.get(sym) || "TECHNICAL_READY")
+      : (e.technicalState || null);
     const vorher = marketByMember.get(member);
     const zeile = {
       m: member,
@@ -495,10 +561,10 @@ function main() {
       b: bars,
       fr: e.factorReady === true,
       q: e.dataQuality || null,
-      t: e.technicalState || null,
+      t: technisch,
       f: e.priceHistoryFirst || null,
       l: e.priceHistoryLast || null,
-      src: e.priceHistorySource || null
+      src: kanon ? "canonical:" + kanon.runId : (e.priceHistorySource || null)
     };
     /* Bestes Listing gewinnt: erst Kursverlauf, dann Barzahl. */
     if (!vorher || (zeile.ph && !vorher.ph) || (zeile.ph === vorher.ph && zeile.b > vorher.b)) {
@@ -509,9 +575,32 @@ function main() {
   writeJSON(join(OUT_ROOT, "market-capability.json"), {
     version: Master.VERSION,
     generatedAt: new Date().toISOString(),
-    note: "Marktdaten-Zustaende je Mitglied des Produktuniversums, abgeleitet aus den " +
-          "Gate- und Technical-Berichten. KEINE Kurse, keine Neuberechnung, keine " +
-          "Veraenderung an R2 oder der Marktdaten-Pipeline - diese Datei liest nur.",
+    note: "Marktdaten-Zustaende je Mitglied des Produktuniversums. KEINE Kurse, keine " +
+          "Neuberechnung, keine Veraenderung an R2 oder der Marktdaten-Pipeline - " +
+          "diese Datei liest nur.",
+    source: kanon ? {
+      kind: "CANONICAL",
+      owner: "R2-/Marktdaten-Workstream",
+      runId: kanon.runId,
+      files: ["quant/data/market/history/coverage-metrics.json",
+              "quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json"],
+      provenance: "quant/data/market/history/CANONICAL_SOURCE.json",
+      method: "Beide Berichte fuehren ihre Ausnahmen namentlich. Wer im Produktuniversum " +
+              "steht und in keiner Ausnahmeliste, ist gedeckt - die Umkehrung einer " +
+              "vollstaendigen Aufzaehlung, keine Schaetzung.",
+      accepted: {
+        R2_SERIES_AVAILABLE: (kanon.metriken.STORAGE_COVERAGE || {}).stored,
+        HISTORICAL_CHART_AVAILABLE: (kanon.metriken.CHART_AVAILABILITY || {}).renderable,
+        TECHNICAL_HISTORY_ELIGIBLE:
+          (kanon.metriken.TECHNICAL_HISTORY_ELIGIBILITY || {}).eligible
+      }
+    } : {
+      kind: "LEGACY_GATE_RUNS",
+      warning: "Die kanonische Quelle fehlt. Gerechnet wurde aus den Gate-Laeufen, und " +
+               "die endeten VOR der Erweiterung des Wertpapierstamms. Diese Zahlen sind " +
+               "eine Stichprobe und keine Deckung.",
+      files: ["quant/data/market/scale/gate-*.json"]
+    },
     fields: {
       m: "masterMemberId", s: "Kuerzel des gewerteten Listings", i: "instrumentId",
       ph: "Kursverlauf belegt", ps: "Kursstand belegt", b: "Bars (0 = bestanden ohne Einzelzeile)",

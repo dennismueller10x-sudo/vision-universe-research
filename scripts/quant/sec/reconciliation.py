@@ -222,19 +222,46 @@ def load_issuer_fundamentals(root):
     return out
 
 
-def _annual_years(fundamentals, metric="revenue"):
-    """Jahre auflösbarer Historie einer Leitkennzahl."""
+def _annual_years(fundamentals):
+    """Jahre auflösbarer Fundamentalhistorie eines Emittenten.
+
+    GEMESSEN AM EMITTENTEN, NICHT AM UMSATZ.
+
+    Die erste Fassung nahm die Tiefe der Kennzahl `revenue` als Mass
+    fuer die Historie. Fuer einen Industriewert ist das richtig; fuer
+    eine Bank ist es falsch. Banken melden Zinsertraege, Vermoegens-
+    verwalter Gebuehren, und keiner von beiden taggt "Revenues".
+
+    Die Folge war kein Rundungsfehler: 635 Emittenten mit Werten haben
+    keinen Umsatz-Tag, darunter AllianceBernstein (seit 1988 notiert,
+    17 Jahre Nettoergebnis, Cashflow und Bilanzsumme) und Ameris
+    Bancorp (16 Jahre in sieben Kennzahlen). Sie standen mit
+    Jahreshistorie 0 im Bericht und wanderten als
+    EXTERNAL_PROVIDER_CANDIDATE in die Anbieterbegruendung - 517 Titel,
+    die nichts brauchen, was man kaufen kann.
+
+    Gezaehlt wird deshalb die Spanne der aufloesbaren Perioden des
+    Emittenten. Sie steht bereits gemessen im Factbook.
+    """
     if not fundamentals:
         return 0.0
-    row = (fundamentals.get("metrics") or {}).get(metric) or {}
+    return float(fundamentals.get("historyYears") or 0.0)
+
+
+def _quarter_years(fundamentals):
+    """Quartalstiefe des Emittenten, aus seinen aufloesbaren Perioden."""
+    if not fundamentals:
+        return 0.0
+    return float(fundamentals.get("quarterlyPeriods") or 0) / 4.0
+
+
+def _revenue_years(fundamentals):
+    """Die Umsatztiefe getrennt - sie bleibt eine nuetzliche Zahl,
+    nur eben keine Aussage ueber die Historie des Emittenten."""
+    if not fundamentals:
+        return 0.0
+    row = (fundamentals.get("metrics") or {}).get("revenue") or {}
     return float(row.get("historyYears") or 0.0)
-
-
-def _quarter_years(fundamentals, metric="revenue"):
-    if not fundamentals:
-        return 0.0
-    row = (fundamentals.get("metrics") or {}).get(metric) or {}
-    return float(row.get("quarterlyPeriods") or 0) / 4.0
 
 
 def _has_metric(fundamentals, metric):
@@ -287,6 +314,7 @@ def join_members(members, fundamentals, market):
             "resolvedValues": pit.get("resolvedValues", 0) if fund else 0,
             "annualYears": _annual_years(fund),
             "quarterYears": _quarter_years(fund),
+            "revenueYears": _revenue_years(fund),
             "latestForm": ((fund or {}).get("latestFiling") or {}).get("form"),
             "findingCodes": ((fund or {}).get("qualitySummary") or {}).get("by_code") or {},
             "metrics": {m: _has_metric(fund, m) for m in CORE_METRIC_LABELS},
@@ -409,11 +437,31 @@ def overlap_report(records, market):
     preis_ids = {r["memberId"] for r in preis}
     pit_ids = {r["memberId"] for r in pit}
 
+    # §6: der Kern, den ein Screener wirklich braucht. Ohne Umsatz,
+    # Ergebnis und Bilanzsumme ist ein Titel fundamental nicht bewertbar.
+    kern = {r["memberId"] for r in records
+            if all(r["metrics"].get(m) for m in ("revenue", "net_income", "total_assets"))}
+
     return {
         "note": "Gezaehlt auf Papierebene gegen PRODUCT_TITLES. Der Join laeuft ueber "
-                "masterMemberId -> issuerId, nie ueber das Kuerzel (§2).",
+                "securityId == masterMemberId -> issuerId -> CIK, nie ueber das "
+                "Kuerzel allein (§3).",
         "denominator": {"PRODUCT_TITLES": gesamt},
         "PRODUCT_TITLES": gesamt,
+        # --- §4 Marktseite, kanonisch
+        "R2_HISTORY_AVAILABLE": len(preis),
+        "R2_HISTORY_UNAVAILABLE": gesamt - len(preis),
+        "TECHNICAL_HISTORY_ELIGIBLE": len(technisch),
+        "TECHNICAL_INSUFFICIENT_HISTORY": gesamt - len(technisch),
+        # --- §5 Schnittmengen mit R2
+        "R2_AND_FUNDAMENTAL": len(preis_ids & fund_ids),
+        "R2_WITHOUT_FUNDAMENTAL": len(preis_ids - fund_ids),
+        "TECHNICAL_WITHOUT_FUNDAMENTAL": len(tech_ids - fund_ids),
+        "PIT_AND_R2": len(pit_ids & preis_ids),
+        "PIT_R2_AND_TECHNICAL": len(pit_ids & preis_ids & tech_ids),
+        "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS":
+            len(pit_ids & preis_ids & tech_ids & kern),
+        # --- Bestandsnamen aus der vorigen Stufe, unveraendert
         "MARKET_HISTORY_AVAILABLE": len(preis),
         "TECHNICAL_COVERED": len(technisch),
         "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": len(fundamental),
@@ -451,40 +499,71 @@ ACCEPTED_R2 = {
 
 
 def _accepted_state(market, preis, technisch, gesamt):
-    """Der abgenommene R2-Stand neben der eigenen, belegbaren Ableitung.
+    """Der abgenommene R2-Stand gegen die eigene Rechnung - GEPRUEFT.
 
-    DIE DIFFERENZ IST DER BEFUND, NICHT DER FEHLER.
+    Frueher stand hier eine Differenz, weil die Marktdatenseite nur als
+    Summe vorlag und der Overlap gegen die alten Gate-Laeufe gerechnet
+    wurde: 5.397 statt 6.997, 5.378 statt 5.963.
 
-    Der abgenommene Stand nennt 6.997 Titel mit Kurshistorie. Dieses
-    Repository kann davon nur so viele einem konkreten Papier zuordnen,
-    wie die Gate-Berichte hergeben - die uebrigen sind im
-    R2-Workstream belegt, dessen Einzelnachweise hier nicht liegen.
+    Jetzt liegt die kanonische Quelle je Titel vor. Beide Berichte
+    fuehren ihre AUSNAHMEN namentlich - sieben nicht darstellbare Titel,
+    1.041 technisch zu kurze. Wer im Produktuniversum steht und in
+    keiner Ausnahmeliste, ist gedeckt. Das ist die Umkehrung einer
+    vollstaendigen Aufzaehlung und keine Schaetzung; deshalb MUSS die
+    eigene Rechnung die abgenommene Zahl treffen.
 
-    Beide Zahlen stehen nebeneinander. Die abgenommene als Wahrheit
-    ueber die Marktdatenlage, die abgeleitete als das, was sich HIER
-    verbinden laesst. Wer die erste fuer den Join benutzt, rechnet mit
-    Titeln, die er nicht benennen kann.
+    Trifft sie sie nicht, ist das ein Befund und keine Rundung - er
+    steht als `reconciled: false` mit der Differenz da, statt
+    stillschweigend einen neuen Nenner einzufuehren (§4).
     """
+    quelle = (market or {}).get("source") or {}
+    kanonisch = quelle.get("kind") == "CANONICAL"
+    akzeptiert = dict(ACCEPTED_R2)
+    if kanonisch and quelle.get("accepted"):
+        # Die Zahlen aus der Quelle selbst, nicht aus unserer Konstante.
+        akzeptiert.update({k: v for k, v in quelle["accepted"].items() if v is not None})
+
+    abweichung_preis = preis - akzeptiert["HISTORICAL_CHART_AVAILABLE"]
+    abweichung_tech = technisch - akzeptiert["TECHNICAL_HISTORY_ELIGIBLE"]
+    stimmt = abweichung_preis == 0 and abweichung_tech == 0
+
+    erklaerung = None
+    if not stimmt:
+        erklaerung = (
+            "Die eigene Rechnung weicht vom abgenommenen Stand ab. Moegliche "
+            "Ursachen, in dieser Reihenfolge zu pruefen: (1) das Produktuniversum "
+            "hier ist nicht dasselbe wie das, gegen das die Kennzahlen gerechnet "
+            "wurden, (2) eine Ausnahmeliste wurde unvollstaendig gelesen, (3) der "
+            "Identitaetsjoin trifft nicht jeden Titel. KEIN neuer Nenner ohne "
+            "geklaerte Ursache (§4).")
+    elif not kanonisch:
+        erklaerung = (
+            "Gerechnet wurde aus den alten Gate-Laeufen, nicht aus der kanonischen "
+            "Quelle. Die Gate-Laeufe endeten VOR der Erweiterung des "
+            "Wertpapierstamms - diese Zahlen sind eine Stichprobe.")
+
     return {
-        "status": "ACCEPTED_TOTALS_ONLY",
+        "status": "CANONICAL_PER_INSTRUMENT" if kanonisch else "LEGACY_GATE_RUNS",
         "owner": "R2-/Marktdaten-Workstream",
-        "accepted": dict(ACCEPTED_R2),
-        "joinable": {
-            "MARKET_HISTORY_AVAILABLE": preis,
-            "TECHNICAL_COVERED": technisch,
+        "sourceRunId": quelle.get("runId"),
+        "provenance": quelle.get("provenance"),
+        "accepted": akzeptiert,
+        "computed": {
+            "HISTORICAL_CHART_AVAILABLE": preis,
+            "TECHNICAL_HISTORY_ELIGIBLE": technisch,
             "PRODUCT_TITLES": gesamt,
         },
-        "unattributable": {
-            "MARKET_HISTORY": ACCEPTED_R2["HISTORICAL_CHART_AVAILABLE"] - preis,
-            "TECHNICAL": ACCEPTED_R2["TECHNICAL_HISTORY_ELIGIBLE"] - technisch,
+        "delta": {
+            "HISTORICAL_CHART_AVAILABLE": abweichung_preis,
+            "TECHNICAL_HISTORY_ELIGIBLE": abweichung_tech,
         },
+        "reconciled": stimmt,
+        "explanation": erklaerung,
+        "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), "
+                "nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung "
+                "und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die "
+                "Schnittmengen gerechnet.",
         "evidenceSources": (market or {}).get("evidenceSources"),
-        "note": "Der abgenommene Stand liegt in diesem Zweig nur als SUMME vor, nicht je "
-                "Papier. Jede Schnittmenge oben ist deshalb gegen die belegbare Ableitung "
-                "gerechnet und nicht gegen die abgenommene Summe - sonst waere sie eine "
-                "Schaetzung mit zwei Nachkommastellen. Die Differenz steht als "
-                "unattributable daneben und ist die Aufgabe, die der Anschluss an die "
-                "kanonische R2-Quelle loest.",
     }
 
 
@@ -650,6 +729,136 @@ def priority_report(records):
                 "Frage. Ihre Summe ist deshalb KEINE Titelzahl.",
         "denominator": {"PRODUCT_TITLES": gesamt},
         "groups": gruppen,
+    }
+
+
+# §10. Die 926 SEC_RECOVERABLE aufgeschluesselt: WODURCH entstehen sie?
+#
+# Die Gruppe zu kennen reicht nicht. Sie sagt, dass wir die Luecke
+# schliessen koennen - nicht, welcher Normalisierungsblock den groessten
+# Gewinn bringt. Diese Aufschluesselung ist die Reihenfolge der naechsten
+# Arbeit, und sie wird gemessen statt vermutet.
+SEC_SUBCAUSES = (
+    "IFRS_OR_FOREIGN_TAXONOMY",
+    "MISSING_CANONICAL_TAG_MAPPING",
+    "ALTERNATIVE_XBRL_CONCEPT",
+    "PERIOD_MAPPING",
+    "ISSUER_MAPPING",
+    "UNIT_OR_CURRENCY_NORMALIZATION",
+    "OTHER_SEC_RECOVERABLE",
+)
+
+# Befundcode -> Normalisierungsblock. Die Codes kommen aus der
+# Qualitaetspruefung der Ingestion und sind gemessen, nicht geraten.
+FINDING_TO_SUBCAUSE = {
+    "UNKNOWN_CONCEPT": "MISSING_CANONICAL_TAG_MAPPING",
+    "CONCEPT_DISAGREEMENT": "ALTERNATIVE_XBRL_CONCEPT",
+    "UNPLACEABLE_PERIOD": "PERIOD_MAPPING",
+    "UNEXPECTED_DURATION": "PERIOD_MAPPING",
+    "PERIOD_MISMATCH": "PERIOD_MAPPING",
+    "UNIT_MISMATCH": "UNIT_OR_CURRENCY_NORMALIZATION",
+}
+
+
+def _subcause(record):
+    """Welcher Normalisierungsblock schliesst DIESE Luecke?
+
+    Auslaendische Taxonomie zuerst: bei einem 20-F-Einreicher ist
+    UNKNOWN_CONCEPT kein fehlendes Mapping einzelner Konzepte, sondern
+    eine ganze Taxonomie, die niemand gemappt hat. Wer das als
+    Tag-Mapping fuehrt, schaetzt den Aufwand um Groessenordnungen falsch.
+    """
+    if record.get("gapCause") == FOREIGN_ISSUER:
+        return "IFRS_OR_FOREIGN_TAXONOMY"
+    if record.get("gapCause") == IDENTITY_MAPPING_GAP:
+        return "ISSUER_MAPPING"
+    if record.get("gapCause") == NO_SEC_COMPANY_FACTS:
+        # CIK bekannt, Abruf steht aus. Kein Mapping-, ein Laufproblem.
+        return "OTHER_SEC_RECOVERABLE"
+    codes = record.get("findingCodes") or {}
+    if codes:
+        # Der haeufigste Befund dieses Emittenten entscheidet.
+        haeufigster = max(codes.items(), key=lambda kv: kv[1])[0]
+        return FINDING_TO_SUBCAUSE.get(haeufigster, "OTHER_SEC_RECOVERABLE")
+    return "OTHER_SEC_RECOVERABLE"
+
+
+def sec_recoverable_report(records):
+    """§10. Nur messen, nicht reparieren."""
+    betroffen = [r for r in records if r.get("gapRecoverability") == SEC_RECOVERABLE]
+    nach_block = Counter()
+    formen = defaultdict(Counter)
+    beispiele = defaultdict(list)
+    for record in betroffen:
+        block = _subcause(record)
+        record["secSubcause"] = block
+        nach_block[block] += 1
+        formen[block][record.get("latestForm") or "KEINE_EINREICHUNG"] += 1
+        if len(beispiele[block]) < 5:
+            beispiele[block].append({
+                "symbol": (record["symbols"] or [None])[0],
+                "cik": record["cik"],
+                "form": record["latestForm"],
+            })
+    return {
+        "note": "Wodurch entstehen die SEC_RECOVERABLE-Luecken? Die Reihenfolge hier ist "
+                "die Reihenfolge der naechsten Arbeit - gemessen, nicht vermutet. "
+                "NICHTS davon wurde repariert.",
+        "denominator": {"SEC_RECOVERABLE": len(betroffen)},
+        "byCause": [
+            {"cause": block, "count": nach_block[block],
+             "percent": _pct(nach_block[block], len(betroffen)),
+             "formTypes": dict(formen[block].most_common(5)),
+             "examples": beispiele[block]}
+            for block in SEC_SUBCAUSES if nach_block[block]
+        ],
+        "largestBlock": max(nach_block.items(), key=lambda kv: kv[1])[0] if nach_block else None,
+    }
+
+
+# §11. Die echten externen Kandidaten - und die Frage, ob sie ueberhaupt
+# historische Fundamentaldaten brauchen.
+def external_candidate_report(records):
+    """§11. Keine Anbieterauswahl, nur das Profil der Luecke."""
+    betroffen = [r for r in records
+                 if r.get("gapRecoverability") == EXTERNAL_PROVIDER_CANDIDATE]
+    typen = Counter(r.get("securityType") or "UNBEKANNT" for r in betroffen)
+    formen = Counter(r.get("latestForm") or "KEINE_EINREICHUNG" for r in betroffen)
+    auslaendisch = sum(1 for r in betroffen if (r.get("latestForm") or "") in FOREIGN_FORMS)
+    adr = sum(1 for r in betroffen if r.get("adrEvidence") == "adr")
+    vorzuege = sum(1 for r in betroffen if r.get("securityType") not in ("COMMON_STOCK", None))
+
+    # DIE ENTSCHEIDENDE UNTERSCHEIDUNG.
+    #
+    # Ein Titel mit Geschaeftszahlen, dem nur Jahre fehlen, braucht
+    # TIEFERE HISTORIE. Ein Titel ganz ohne Zahlen braucht ueberhaupt
+    # welche. Das sind zwei verschiedene Produkte und zwei verschiedene
+    # Preise - sie in einer Zahl zu fuehren waere die Grundlage fuer den
+    # falschen Vertrag.
+    braucht_tiefe = sum(1 for r in betroffen
+                        if r["fundamentals"] and r["resolvedValues"] > 0)
+    braucht_ueberhaupt = len(betroffen) - braucht_tiefe
+
+    return {
+        "note": "Profil der Luecke, KEINE Anbieterauswahl (§11, §15).",
+        "COUNT": len(betroffen),
+        "ISSUER_TYPES": dict(typen.most_common()),
+        "FORM_TYPES": dict(formen.most_common(8)),
+        "FOREIGN_ISSUERS": auslaendisch,
+        "ADR": adr,
+        "PREFERRED_OR_SPECIAL_CLASSES": vorzuege,
+        "OTHER": len(betroffen) - auslaendisch - vorzuege,
+        "needs": {
+            "DEEPER_HISTORICAL_FUNDAMENTALS": braucht_tiefe,
+            "ANY_HISTORICAL_FUNDAMENTALS": braucht_ueberhaupt,
+            "ESTIMATES_OR_FORWARD_OR_CONSENSUS": 0,
+            "note": "Schaetzungen, Forward Metrics und Analystenkonsens schliessen KEINE "
+                    "dieser Luecken - sie sind eine andere Faehigkeit, keine tiefere "
+                    "Historie. Wer sie hier mitzaehlt, begruendet einen Einkauf mit "
+                    "einer Zahl, die ihn nicht traegt. Ob Vision Universe sie will, "
+                    "ist eine Produktfrage und steht hier bewusst auf 0.",
+        },
+        "providerDecision": "OFFEN (§15).",
     }
 
 
@@ -894,6 +1103,10 @@ def build_reconciliation(root, registry=None, today=None, min_years=3):
         "gap-classification.json": dict(gaps, versions=stamp,
                                         priorities=priority_report(records)),
         "backtest-readiness.json": dict(backtest_report(records), versions=stamp),
+        "sec-recoverable-causes.json": dict(sec_recoverable_report(records),
+                                            versions=stamp),
+        "external-provider-candidates.json": dict(external_candidate_report(records),
+                                                  versions=stamp),
         "fundamental-quality.json": dict(quality_report(records, fundamentals),
                                          versions=stamp),
     }

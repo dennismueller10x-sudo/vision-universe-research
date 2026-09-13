@@ -55,6 +55,9 @@ class IdentitaetsjoinTests(unittest.TestCase):
         fundamentals = {"iss_cik_0000000001": {
             "issuerId": "iss_cik_0000000001", "pit": {"state": "PIT_READY",
                                                       "resolvedValues": 12},
+            # Tiefe am EMITTENTEN, nicht am Umsatz - eine Bank meldet
+            # keinen Umsatz und haette hier sonst Historie 0.
+            "historyYears": 9.0, "quarterlyPeriods": 36,
             "metrics": {"revenue": {"annualPeriods": 9, "historyYears": 9.0,
                                     "quarterlyPeriods": 36}},
             "latestFiling": {"form": "10-K"}, "qualitySummary": {}}}
@@ -69,6 +72,7 @@ class IdentitaetsjoinTests(unittest.TestCase):
         """§2: Fundamentals nicht duplizieren - aber zwei Papiere bleiben zwei."""
         gemeinsam = {"issuerId": "iss_cik_0000000002",
                      "pit": {"state": "PIT_READY", "resolvedValues": 40},
+                     "historyYears": 10.0, "quarterlyPeriods": 40,
                      "metrics": {"revenue": {"annualPeriods": 10, "historyYears": 10.0,
                                              "quarterlyPeriods": 40}},
                      "latestFiling": {"form": "10-K"}, "qualitySummary": {}}
@@ -202,15 +206,41 @@ class BerichtTests(unittest.TestCase):
         b = rec.backtest_report(self.records)
         self.assertIs(b["lookAheadControl"]["survivorshipFreeUniverse"], False)
 
-    def test_der_abgenommene_r2_stand_wird_nicht_nachgerechnet(self):
-        """§1: read-only. Die Differenz gehoert in den Bericht, nicht in die Rechnung."""
+    def test_eine_abweichung_vom_abgenommenen_stand_wird_gemeldet(self):
+        """§4: nicht stillschweigend einen neuen Nenner verwenden.
+
+        Diese drei Testsaetze koennen den abgenommenen Stand gar nicht
+        treffen. Genau das muss der Bericht sagen - mit Differenz und
+        Ursachenliste, nicht mit einer stillen Anpassung.
+        """
         o = rec.overlap_report(self.records, None)
-        akzeptiert = o["acceptedMarketDataState"]
-        self.assertEqual(akzeptiert["accepted"]["HISTORICAL_CHART_AVAILABLE"], 6997)
-        self.assertEqual(akzeptiert["accepted"]["TECHNICAL_HISTORY_ELIGIBLE"], 5963)
+        a = o["acceptedMarketDataState"]
+        self.assertEqual(a["accepted"]["HISTORICAL_CHART_AVAILABLE"], 6997)
+        self.assertEqual(a["accepted"]["TECHNICAL_HISTORY_ELIGIBLE"], 5963)
+        self.assertFalse(a["reconciled"])
+        self.assertNotEqual(a["delta"]["HISTORICAL_CHART_AVAILABLE"], 0)
+        self.assertIn("neuer Nenner", a["explanation"])
         # Keine Schnittmenge darf gegen die abgenommene Summe gerechnet sein.
         self.assertLessEqual(o["TECHNICAL_AND_FUNDAMENTAL"], o["TECHNICAL_COVERED"])
-        self.assertIn("unattributable", akzeptiert)
+
+    def test_mit_der_kanonischen_quelle_stimmt_die_rechnung_ueberein(self):
+        """Der Sinn des Anschlusses: die eigene Zahl MUSS die abgenommene treffen."""
+        markt = {
+            "source": {"kind": "CANONICAL", "runId": "34611793308",
+                       "accepted": {"HISTORICAL_CHART_AVAILABLE": 2,
+                                    "TECHNICAL_HISTORY_ELIGIBLE": 2}},
+            "members": [],
+        }
+        a = rec.overlap_report(self.records, markt)["acceptedMarketDataState"]
+        self.assertEqual(a["status"], "CANONICAL_PER_INSTRUMENT")
+        self.assertTrue(a["reconciled"], a["explanation"])
+        self.assertEqual(a["delta"]["HISTORICAL_CHART_AVAILABLE"], 0)
+        self.assertIsNone(a["explanation"])
+
+    def test_ohne_kanonische_quelle_sagt_der_bericht_das(self):
+        """Eine Stichprobe darf sich nicht als Deckung ausgeben."""
+        a = rec.overlap_report(self.records, None)["acceptedMarketDataState"]
+        self.assertEqual(a["status"], "LEGACY_GATE_RUNS")
 
 
 class QualitaetTests(unittest.TestCase):
@@ -240,3 +270,49 @@ class QualitaetTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HistorientiefeTests(unittest.TestCase):
+    """Die Tiefe gehoert dem Emittenten, nicht dem Umsatz.
+
+    AllianceBernstein ist seit 1988 notiert und hat 17 Jahre
+    Nettoergebnis, Cashflow und Bilanzsumme - aber keinen Umsatz-Tag.
+    Banken melden Zinsertraege, Vermoegensverwalter Gebuehren. Wer die
+    Historie am Umsatz misst, schreibt 635 Emittenten eine Null zu und
+    schiebt 517 davon in die Anbieterbegruendung.
+    """
+
+    @staticmethod
+    def bank():
+        return {"issuerId": "iss_cik_0001109354", "historyYears": 17.0,
+                "quarterlyPeriods": 69,
+                "pit": {"state": "PIT_READY", "resolvedValues": 600},
+                "metrics": {
+                    "revenue": {"annualPeriods": 0, "historyYears": 0.0},
+                    "net_income": {"annualPeriods": 18, "historyYears": 17.0},
+                    "total_assets": {"annualPeriods": 17, "historyYears": 16.0},
+                },
+                "latestFiling": {"form": "10-Q"}, "qualitySummary": {}}
+
+    def test_ein_emittent_ohne_umsatz_hat_trotzdem_historie(self):
+        self.assertEqual(rec._annual_years(self.bank()), 17.0)
+        self.assertEqual(rec._revenue_years(self.bank()), 0.0)
+
+    def test_die_quartalstiefe_kommt_ebenfalls_vom_emittenten(self):
+        self.assertEqual(rec._quarter_years(self.bank()), 69 / 4.0)
+
+    def test_eine_bank_ist_kein_anbieterkandidat(self):
+        """Der Fehler, den das kostet: 517 Titel, die nichts brauchen,
+        was man kaufen kann, in der Begruendung fuer einen Einkauf."""
+        members = {"ref_AB": {
+            "memberId": "ref_AB", "symbols": ["AB"], "instrumentIds": ["vu_ab"],
+            "issuerId": "iss_cik_0001109354", "cik": "0001109354",
+            "eligibility": "ELIGIBLE", "securityType": "COMMON_STOCK",
+            "securityClass": None, "shareClass": None, "country": "US",
+            "adrEvidence": None, "firstTradeDate": "1988-04-15", "otc": False}}
+        records = rec.join_members(members, {"iss_cik_0001109354": self.bank()},
+                                  {"members": []})
+        grund, wieder = rec.classify_gap(records[0], today="2026-09-13",
+                                         sec_tickers={"AB"})
+        self.assertIsNone(grund, "eine Bank mit 17 Jahren Historie hat keine Luecke")
+        self.assertIsNone(wieder)
