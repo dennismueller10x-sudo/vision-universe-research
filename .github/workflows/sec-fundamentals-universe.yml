@@ -307,6 +307,16 @@ jobs:
               --skip-unresolved --bulk --max-failure-rate 0.05
           fi
 
+      - name: Fehlerschlange einzeln nachholen (SEC-API, fair access)
+        # §8: erst der Sammelweg, dann der Rest einzeln. 40 Emittenten
+        # fehlen im Bulk-Archiv und standen drei Laeufe lang in der
+        # Schlange, weil der Versuchszaehler sie uebersprang. Ein
+        # companyfacts-404 ergibt ein leeres Factbook mit Status, kein
+        # Dauerfehler. Der Bericht sagt je Emittent, was die SEC gesagt hat.
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: python3 scripts/quant/cli.py retry --reset-attempts
+
       # Vor der Messung und vor dem Commit - damit ein spaeterer
       # Fehlschlag den teuer erkauften Bestand nicht mitnimmt.
       - name: SEC-Zwischenspeicher sichern

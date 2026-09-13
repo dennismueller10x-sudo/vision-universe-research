@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 
 from . import quality as quality_module
 from .fiscal import FiscalCalendar
+from .http_client import SECHTTPError
 from .normalize import build_availability_map, normalize_company
 from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from .registry import MetricRegistry
@@ -83,8 +84,27 @@ class IngestionPipeline:
             return {"cik": cik, "status": STATUS_UNCHANGED, "signature": signature,
                     "seconds": round(time.monotonic() - started, 2)}
 
+        companyfacts_status = "AVAILABLE"
         if company_facts is None:
-            company_facts = self.provider.get_company_facts(cik)
+            try:
+                company_facts = self.provider.get_company_facts(cik)
+            except SECHTTPError as exc:
+                if exc.status != 404:
+                    raise
+                # EIN 404 AUF COMPANYFACTS IST EINE ANTWORT, KEIN FEHLER.
+                #
+                # Die SEC fuehrt fuer diesen Emittenten keine XBRL-Fakten -
+                # 40-F-Einreicher sind befreit, ein frisch notierter hat noch
+                # nichts eingereicht. 40 Emittenten standen deshalb in drei
+                # Laeufen als "Abruf gescheitert" in der Fehlerschlange und
+                # wurden nach drei Versuchen still uebersprungen. Ein leeres
+                # Factbook mit companyfacts_status sagt, was die SEC gesagt
+                # hat; der Feinklassifikator macht daraus NO_XBRL_FACTS oder
+                # VERY_YOUNG_LISTING statt REQUIRES_REVIEW.
+                LOGGER.info("cik=%s companyfacts 404 at the SEC: no XBRL facts", cik)
+                companyfacts_status = "NOT_AVAILABLE_404"
+                company_facts = {"cik": int(cik), "entityName": profile.name,
+                                 "facts": {}, "_source": "sec-companyfacts-404"}
         facts_hash = self.raw_store.put(cik, "companyfacts", company_facts)
 
         # Provenance records when this payload was FIRST retrieved, not when
@@ -111,6 +131,7 @@ class IngestionPipeline:
             "generated_at_utc": _utcnow(),
             "versions": version_stamp(self.registry.version),
             "raw_companyfacts_sha256": facts_hash,
+            "companyfacts_status": companyfacts_status,
             "latest_filing": signature,
             "filing_years": _filing_years(filing_metadata),
             "filing_index": _filing_index(filing_metadata),
@@ -268,11 +289,23 @@ class IngestionPipeline:
         self.fact_store.write_manifest(manifest)
         return {"results": results, "state": state, "manifest": manifest}
 
-    def retry_failed(self, max_attempts=3):
+    def retry_failed(self, max_attempts=3, reset_attempts=False):
+        """Die Fehlerschlange erneut abrufen - einzeln, ueber die SEC-API.
+
+        `reset_attempts` setzt den Versuchszaehler zurueck. Ohne das bleibt
+        ein Emittent nach drei Fehlversuchen fuer immer in der Schlange:
+        `_ingest_entries` ueberspringt ihn, und die Schlange sieht aus wie
+        Arbeit, die niemand macht.
+        """
         state = self.checkpoint.load()
         queue = list(state.get("retry_queue", []))
         if not queue:
             return {"results": [], "state": state, "manifest": self.fact_store.read_manifest()}
+        if reset_attempts:
+            for cik in queue:
+                if cik in state.get("failed", {}):
+                    state["failed"][cik]["attempts"] = 0
+            self.checkpoint.save(state)
         return self.ingest_universe([{"cik": cik} for cik in queue], resume=True,
                                     max_attempts=max_attempts)
 

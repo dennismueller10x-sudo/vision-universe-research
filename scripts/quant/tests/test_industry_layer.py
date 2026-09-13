@@ -187,12 +187,25 @@ class GemessenesVokabularTests(unittest.TestCase):
                 self.skipTest(f"{pfad.name} fehlt - noch keine SIC-Messung")
             payload = json.loads(pfad.read_text(encoding="utf-8"))
             gemessen[industry] = {r["concept"]: r["issuers"] for r in payload["concepts"]}
+        # Ein Konzept, das GEMAPPT ist, taucht in der Liste der unbekannten
+        # Konzepte nicht mehr auf - sein Beleg ist dann die Deckung der
+        # Branchenschicht im Abgleich: bei wie vielen Emittenten der Branche
+        # loest die Kennzahl auf. Vorher oder nachher gemessen, nie erinnert.
+        abgleich = root / "reconciliation.json"
+        schicht = {}
+        if abgleich.exists():
+            payload = json.loads(abgleich.read_text(encoding="utf-8"))
+            schicht = (payload.get("industryLayer") or {}).get("industries") or {}
         registry = MetricRegistry.load()
         for name, definition in registry.industry_metrics.items():
+            aufgeloest = [ind for ind in definition.industries
+                          if ((schicht.get(ind) or {}).get("metrics") or {}).get(name, {}).get("ISSUERS", 0) >= 50]
+            if aufgeloest:
+                continue
             for rule in definition.concepts:
                 if rule.concept == "InterestIncomeExpenseNet":
                     continue   # gemessen in der revenue-losen Gesamtliste (223 Emittenten)
                 treffer = [ind for ind in definition.industries
                            if gemessen[ind].get(rule.qualified, 0) >= 50]
-                self.assertTrue(treffer, f"{name}: {rule.qualified} ist in keiner SIC-Messung "
-                                         f"mit >= 50 Emittenten belegt")
+                self.assertTrue(treffer, f"{name}: {rule.qualified} ist weder in einer SIC-Messung "
+                                         f"mit >= 50 Emittenten belegt noch loest es bei >= 50 auf")

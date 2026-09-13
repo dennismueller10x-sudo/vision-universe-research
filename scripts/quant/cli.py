@@ -361,6 +361,12 @@ def cmd_ingest(args):
             "UNRESOLVED_NOT_INGESTED": len(skipped),
             "ciks": [r["cik"] for r in outcome["results"]
                      if r.get("status") not in ("ok", "skipped", "unchanged")][:200],
+            # WARUM, nicht nur wie viele: ohne die Fehlerklasse stand die
+            # Schlange drei Laeufe lang da, und niemand konnte sagen, ob
+            # die SEC 404 sagt oder der Abruf stirbt.
+            "byError": dict(Counter(_fehlerklasse(r["error"]) for r in outcome["results"]
+                                    if r.get("error")).most_common()),
+            "retryQueue": list((outcome.get("state") or {}).get("retry_queue", []))[:200],
         },
     })
 
@@ -415,11 +421,51 @@ def cmd_update(args):
 
 
 def cmd_retry(args):
+    """Die Fehlerschlange einzeln ueber die SEC-API nachholen (§8: erst Sammelweg, dann Rest)."""
     pipeline = IngestionPipeline(run_id=args.run_id)
-    outcome = pipeline.retry_failed()
+    vorher = len(pipeline.checkpoint.load().get("retry_queue", []))
+    outcome = pipeline.retry_failed(reset_attempts=getattr(args, "reset_attempts", False))
+    fehler = Counter()
     for result in outcome["results"]:
-        print(f"  {result['cik']}: {result['status']}")
-    return 1 if outcome["state"]["failed"] else 0
+        print(f"  {result['cik']}: {result['status']}"
+              + (f"  {str(result.get('error'))[:120]}" if result.get("error") else ""))
+        if result.get("error"):
+            fehler[_fehlerklasse(result["error"])] += 1
+    nachher = len(outcome["state"].get("retry_queue", []))
+    print(f"\n  Fehlerschlange: {vorher} vorher, {nachher} nachher, "
+          f"{len(outcome['results'])} erneut versucht")
+    _write(Path(args.out), {
+        "schema_version": 1,
+        "generated_at_utc": _utcnow(),
+        "note": "Einzelabruf der Fehlerschlange ueber die SEC-API nach dem Sammelweg. "
+                "Ein companyfacts-404 ist keine Stoerung, sondern die Antwort der SEC "
+                "(keine XBRL-Fakten) und ergibt ein leeres Factbook mit Status.",
+        "QUEUE_BEFORE": vorher, "QUEUE_AFTER": nachher,
+        "RETRIED": len(outcome["results"]),
+        "resetAttempts": bool(getattr(args, "reset_attempts", False)),
+        "byStatus": dict(Counter(r.get("status") for r in outcome["results"])),
+        "byError": dict(fehler.most_common()),
+        "results": [{"cik": r["cik"], "status": r.get("status"),
+                     "error": (str(r.get("error"))[:300] if r.get("error") else None)}
+                    for r in outcome["results"]],
+    })
+    # Kein Abbruch: was nach dem Einzelabruf noch fehlt, steht mit Grund im
+    # Bericht und in der Feinklassifikation. Der Lauf misst weiter.
+    return 0
+
+
+def _fehlerklasse(text):
+    text = str(text)
+    if "HTTP 404" in text:
+        return "SEC_404_" + ("SUBMISSIONS" if "submissions" in text else
+                             "COMPANYFACTS" if "companyfacts" in text else "OTHER")
+    if "HTTP 403" in text:
+        return "SEC_403"
+    if "HTTP 5" in text:
+        return "SEC_5XX"
+    if "HTTP 429" in text:
+        return "SEC_429"
+    return text.split(":")[0][:60] or "UNKNOWN"
 
 
 def cmd_export(args):
@@ -1180,6 +1226,10 @@ def build_parser():
 
     retry = subparsers.add_parser("retry", help="retry the failure queue")
     retry.add_argument("--run-id", default="default")
+    retry.add_argument("--reset-attempts", action="store_true",
+                       help="Versuchszaehler zuruecksetzen - sonst bleiben Emittenten nach "
+                            "drei Fehlversuchen fuer immer in der Schlange")
+    retry.add_argument("--out", default=str(ROOT / "quant" / "data" / "fundamentals" / "retry-run.json"))
     retry.set_defaults(func=cmd_retry)
 
     export = subparsers.add_parser("export", help="write the data inspector views")
