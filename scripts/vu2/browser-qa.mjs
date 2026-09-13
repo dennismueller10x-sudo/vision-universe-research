@@ -3,14 +3,22 @@ import {createServer} from 'node:http';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import {createRequire} from 'node:module';
-const {chromium}=createRequire(import.meta.url)('playwright');
+const require=createRequire(import.meta.url);
+const {chromium}=require('playwright');
+const axePath=require.resolve('axe-core/axe.min.js');
 const root=resolve(process.cwd()),out=resolve(process.env.VU_QA_OUTPUT||'../vu2-evidence/experience');
 await mkdir(out,{recursive:true});
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml'};
 const server=createServer(async(req,res)=>{try{let pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(pathname.split('/').some(s=>s.startsWith('.')))throw Error('private');if(pathname.endsWith('/'))pathname+='index.html';const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))throw Error('path');res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.statusCode=404;res.end('Not found');}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[];
+const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[];
+async function auditAccessibility(page,view,width){
+ await page.addScriptTag({path:axePath});
+ const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}));
+ accessibility.push({view,width,engine:result.testEngine,violations:result.violations,incomplete:result.incomplete,passedRules:result.passes.length});
+ await writeFile(out+'/accessibility.json',JSON.stringify({scope:'Automated WCAG 2.1 A/AA checks; not a manual accessibility certification',results:accessibility},null,2));
+}
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist','atlas']){
  const started=performance.now();await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
@@ -68,6 +76,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('quality');await page.getByRole('combobox',{name:'Atlas Unternehmen'}).selectOption('NVDA');await page.locator('.atlas-evidence').getByText('65,21 %',{exact:true}).waitFor();await page.getByText('Beleg & Definition',{exact:true}).first().click();
   const calls=await page.evaluate(async()=>{const tools=VUAtlasTools.create(VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery}));return [await tools.call('runBacktest',{}),await tools.call('getQuantEvidence',{ticker:'TSLA'})];});if(calls[0].ok||calls[1].data.state==='AVAILABLE')throw Error('Atlas crossed execution/display scope');
  }
+ await auditAccessibility(page,view,width);
  await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}checks.push({view,width,pass:true});
  }
  await page.goto(origin+'/vu2/?view=does-not-exist');await page.getByRole('heading',{name:'Diese Ansicht wurde nicht gefunden',exact:true}).waitFor();if(await page.locator('h1').count()!==1)throw Error('unknown route kept a misleading view');await page.screenshot({path:out+'/not-found-'+width+'.png',fullPage:true});await page.getByRole('link',{name:'Research öffnen',exact:true}).click();await page.getByRole('heading',{name:'Research ohne Umwege',exact:true}).waitFor();checks.push({view:'unknown-workspace-recovery',width,pass:true});
@@ -89,4 +98,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
  const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});for(const view of ['home','compare','research']){await tablet.goto(origin+'/vu2/?view='+view);await tablet.locator('main footer').waitFor();if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('tablet overflow '+view);const nav=tablet.locator('.nav');if(!await nav.isVisible()||await nav.locator('a').count()!==6)throw Error('tablet navigation incomplete');await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});}await tablet.close();
  await writeFile(out+'/results.json',JSON.stringify({checks},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));
+ const violations=accessibility.flatMap(r=>r.violations.map(v=>({view:r.view,width:r.width,id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))})));
+ console.log(JSON.stringify({accessibilityPages:accessibility.length,violations}));
+ if(violations.length)throw Error('Automated accessibility gate failed; see accessibility.json');
 }finally{await browser.close();await new Promise(r=>server.close(r));}
