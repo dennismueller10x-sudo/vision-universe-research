@@ -9,3 +9,5 @@ Owned: existing browser script/workflow, resource-budget.mjs and focused tests, 
 Acceptance:8 budget observations across four measured views at1440/390; excessive bytes or request count fails. Missing/nonfinite/negative measurement fails. Aggregate workspaces reject per-security history fanout; all budgeted views reject fixtures. Stock retains its legitimate full-history request. No invented thresholds for unmeasured views. Resource report stored before aggregate budget failure.
 
 Tests:5 focused budget tests PASS, syntax/diff PASS. Actions browser gate pending. Rollback additive QA checks only. No provider-scale runs, merge or deployment.
+
+Gate PASS: PR87 b9fb020, Browser34744234979/job103689039208 SUCCESS. Log confirms45 existing browser checks,32 accessibility scans with no violations,8 budget checks with no failures.5 focused unit tests also pass in Actions. No threshold relaxation or product-code repair required.
