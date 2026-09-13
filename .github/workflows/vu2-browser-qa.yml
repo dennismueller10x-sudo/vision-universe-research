@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test resource budget failure cases
+        run: node --test scripts/vu2/resource-budget.test.mjs
       - name: Install isolated browser test dependency
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3
       - name: Install Chromium
