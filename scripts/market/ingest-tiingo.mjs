@@ -315,7 +315,9 @@ for (const security of SECURITIES) {
     const codes = validation.findings.filter((f) => f.severity === "error").map((f) => f.code);
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed",
                         message: codes.join(", "), findings: validation.findings.slice(0, 8) };
-    console.log(`${label} ABGELEHNT — ${validation.stats.errors} Fehler (${codes[0]})`);
+    /* stats ist null, wenn die Reihe schon vor der Bar-Pruefung scheitert
+       (z. B. leere oder unlesbare Antwort) - dann zaehlen die Befunde. */
+    console.log(`${label} ABGELEHNT — ${validation.stats ? validation.stats.errors : codes.length} Fehler (${codes[0]})`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
