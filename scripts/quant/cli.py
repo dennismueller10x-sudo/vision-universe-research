@@ -588,10 +588,24 @@ def cmd_concepts(args):
             continue
         geprueft += 1
         # Ein Emittent ohne aufloesbare Werte ist der teure Fall.
-        leer = not (document.get("factbook") or {}).get("timelines")
+        timelines = (document.get("factbook") or {}).get("timelines") or []
+        leer = not timelines
         if args.only_unresolved and not leer:
             document = None
             continue
+        # --without-metric revenue: Emittenten, die etwas liefern, aber
+        # genau diese Kennzahl nicht. Das ist die Bank, der Versicherer,
+        # der REIT - und ihr Vokabular ist das, was ein Branchenmapping
+        # braucht. Ein Mapping aus dem Gedaechtnis trifft die Konzepte,
+        # an die man sich erinnert; dieses hier trifft die, die vorkommen.
+        if args.without_metric:
+            hat_werte = bool(timelines)
+            hat_metrik = any(
+                (t.get("metric") if isinstance(t, dict) else None) == args.without_metric
+                for t in timelines)
+            if not hat_werte or hat_metrik:
+                document = None
+                continue
         betroffen += 1
         eigene = set()
         for finding in (document.get("quality") or {}).get("findings") or []:
@@ -622,8 +636,9 @@ def cmd_concepts(args):
             "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert "
                     "nach betroffenen EMITTENTEN - ein Konzept, das ein einziger "
                     "Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
-            "scope": "issuers_without_any_resolved_value" if args.only_unresolved
-                     else "all_issuers",
+            "scope": ("issuers_without_any_resolved_value" if args.only_unresolved
+                      else f"issuers_with_values_but_without_{args.without_metric}"
+                      if args.without_metric else "all_issuers"),
             "issuers_scanned": geprueft,
             "issuers_in_scope": betroffen,
             "by_taxonomy": dict(taxonomien.most_common()),
@@ -633,6 +648,92 @@ def cmd_concepts(args):
             ],
         })
     return 0
+
+
+def cmd_verify_reload(args):
+    """§21 J: Reload reproduziert dieselben kanonischen Werte - ohne SEC.
+
+    persist-fundamentals.mjs hat Objekte aus der dauerhaften Ablage nach
+    .sec-reload/facts zurueckgeladen. Dieser Befehl liest sie als
+    eigenen Faktenspeicher, leitet daraus die kanonischen Buendel ab und
+    vergleicht sie mit denen aus dem lokalen Speicher.
+
+    "Ohne SEC" ist keine Zusage, sondern eine Sperre: fuer die Dauer
+    dieses Befehls wirft jeder Netzwerkzugriff. Ein Vergleich, der
+    heimlich nachlaedt, waere kein Nachweis der Persistenz.
+    """
+    import urllib.request
+    from quant.sec.canonical import build_company_bundle
+
+    def gesperrt(*_a, **_k):
+        raise RuntimeError("RELOAD_MUST_NOT_FETCH: Netzwerkzugriff waehrend verify-reload")
+    urllib.request.urlopen = gesperrt
+
+    registry = MetricRegistry.load()
+    reload_dir = Path(args.reload_dir)
+    lokal = (JsonFactStore(directory=Path(args.local_dir), compress=True)
+             if getattr(args, "local_dir", None) else JsonFactStore(compress=True))
+    zurueck = JsonFactStore(directory=reload_dir, compress=True)
+    ciks = [c.strip() for c in (args.ciks or "").split(",") if c.strip()] or zurueck.list_companies()
+    if not ciks:
+        print(f"Nichts zurueckgeladen unter {reload_dir}.")
+        return 2
+
+    def kanonisch(document, ticker):
+        bundle = build_company_bundle(document, registry, ticker)
+        # Zeitstempel des Bauens sind kein Inhalt.
+        facts = [{k: v for k, v in f.items() if k != "ingestedAt"} for f in bundle.get("facts") or []]
+        return sorted(facts, key=lambda f: (f["metricId"], f["fiscalYear"], f["fiscalPeriod"],
+                                            f.get("periodEnd") or "", f.get("revisionId") or 0))
+
+    ergebnisse = []
+    for cik in ciks:
+        a = lokal.read_company(cik)
+        b = zurueck.read_company(cik)
+        zeile = {"cik": cik, "localPresent": a is not None, "reloadPresent": b is not None}
+        if a is None or b is None:
+            zeile["pass"] = False
+            zeile["reason"] = "fehlt " + ("lokal" if a is None else "im Reload")
+            ergebnisse.append(zeile); continue
+        zeile["documentsIdentical"] = (a == b)
+        ticker = ((a.get("profile") or {}).get("tickers") or [None])[0] or f"CIK{cik}"
+        ka, kb = kanonisch(a, ticker), kanonisch(b, ticker)
+        zeile["canonicalFacts"] = len(ka)
+        zeile["canonicalFactsIdentical"] = (ka == kb)
+        zeile["currencies"] = sorted({f.get("currency") for f in ka if f.get("currency")})
+        # Die Buendel fuehren bewusst nur Quartale (eine Jahreszeile
+        # kollidiert im Produktschema mit Q4). Die Jahrestiefe ist die
+        # Zahl der Geschaeftsjahre, nicht die der FY-Zeilen.
+        zeile["annualPeriods"] = len({f["fiscalYear"] for f in ka})
+        zeile["quarterlyPeriods"] = len({(f["fiscalYear"], f["fiscalPeriod"]) for f in ka
+                                         if f["fiscalPeriod"] != "FY"})
+        zeile["restated"] = sum(1 for f in ka if f.get("restatementStatus") != "original")
+        zeile["everyFactHasFilingAndAccession"] = all(
+            f.get("filedAt") and f.get("sourceFilingId") for f in ka)
+        zeile["normalizationLogic"] = (b.get("versions") or {}).get("normalization_logic")
+        zeile["pass"] = (zeile["documentsIdentical"] and zeile["canonicalFactsIdentical"]
+                         and zeile["everyFactHasFilingAndAccession"] and len(ka) > 0)
+        ergebnisse.append(zeile)
+        print(f"  {cik}  {'PASS' if zeile['pass'] else 'FAIL'}  {len(ka)} kanonische Werte, "
+              f"{zeile['annualPeriods']} Jahre, {zeile['quarterlyPeriods']} Quartale, "
+              f"{'+'.join(zeile['currencies']) or '-'}, {zeile['restated']} restated, "
+              f"v{zeile['normalizationLogic']}")
+
+    bestanden = sum(1 for z in ergebnisse if z.get("pass"))
+    verdict = "PASS" if bestanden == len(ergebnisse) and ergebnisse else "FAIL"
+    _write(ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json", {
+        "schema_version": 1, "generated_at_utc": _utcnow(),
+        "versions": version_stamp(registry.version),
+        "note": "Zurueckgeladene Objekte als eigener Faktenspeicher gelesen, kanonisch "
+                "abgeleitet und mit dem lokalen Stand verglichen. Netzwerkzugriff war "
+                "waehrend des Vergleichs gesperrt.",
+        "RELOAD_WITHOUT_SEC_REFETCH": verdict,
+        "requested": len(ergebnisse), "passed": bestanden,
+        "networkBlocked": True,
+        "results": ergebnisse,
+    })
+    print(f"\n  RELOAD_WITHOUT_SEC_REFETCH = {verdict}  ({bestanden}/{len(ergebnisse)})")
+    return 0 if verdict == "PASS" else 1
 
 
 def cmd_reconcile(args):
@@ -978,8 +1079,18 @@ def build_parser():
     con.add_argument("--top", type=int, default=60)
     con.add_argument("--only-unresolved", action="store_true",
                      help="nur Emittenten ohne einen einzigen aufloesbaren Wert")
+    con.add_argument("--without-metric",
+                     help="nur Emittenten MIT Werten, aber OHNE diese Kennzahl "
+                          "(z. B. revenue: Banken, Versicherer, REITs)")
     con.add_argument("--out", help="Ergebnis zusaetzlich als JSON schreiben")
     con.set_defaults(func=cmd_concepts)
+
+    vr = subparsers.add_parser(
+        "verify-reload", help="zurueckgeladene Factbooks kanonisch ableiten und vergleichen")
+    vr.add_argument("--reload-dir", default=str(ROOT / ".sec-reload" / "facts"))
+    vr.add_argument("--ciks", help="Komma-Liste; Standard: alles im Reload-Verzeichnis")
+    vr.add_argument("--local-dir", help="lokaler Faktenspeicher (Standard: quant/data/sec/facts)")
+    vr.set_defaults(func=cmd_verify_reload)
 
     rec = subparsers.add_parser(
         "reconcile", help="Fundamentals gegen das Marktdaten-/Technical-Universum abgleichen")

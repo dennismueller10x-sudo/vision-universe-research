@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-13T09:10:05+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.7.1",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.2.0"
+    }
+  },
+  "note": "Zurueckgeladene Objekte als eigener Faktenspeicher gelesen, kanonisch abgeleitet und mit dem lokalen Stand verglichen. Netzwerkzugriff war waehrend des Vergleichs gesperrt.",
+  "RELOAD_WITHOUT_SEC_REFETCH": "PASS",
+  "requested": 1,
+  "passed": 1,
+  "networkBlocked": true,
+  "results": [
+    {
+      "cik": "4100000001",
+      "localPresent": true,
+      "reloadPresent": true,
+      "documentsIdentical": true,
+      "canonicalFacts": 480,
+      "canonicalFactsIdentical": true,
+      "currencies": [
+        "USD"
+      ],
+      "annualPeriods": 11,
+      "quarterlyPeriods": 44,
+      "restated": 0,
+      "everyFactHasFilingAndAccession": true,
+      "normalizationLogic": "1.7.1",
+      "pass": true
+    }
+  ]
+}

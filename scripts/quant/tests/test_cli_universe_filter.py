@@ -141,6 +141,12 @@ class NoUndefinedNamesTests(unittest.TestCase):
                     namen.add(arg.id)
                 elif isinstance(arg, ast.arg):
                     namen.add(arg.arg)
+                # Eine verschachtelte Funktion ist ebenfalls eine Bindung.
+                # Der Sammler kannte sie nicht, und der erste Aufruf einer
+                # inneren Hilfsfunktion fiel als "nirgends definiert" auf.
+                elif isinstance(arg, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) \
+                        and arg is not funktion:
+                    namen.add(arg.name)
             return namen
 
         baum = ast.parse(Path(cli.__file__).read_text(encoding="utf-8"))

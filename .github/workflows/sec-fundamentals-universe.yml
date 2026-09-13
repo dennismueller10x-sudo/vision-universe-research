@@ -97,7 +97,8 @@ jobs:
           node --test \
             quant/tests/company-master.test.mjs \
             quant/tests/issuer-master.test.mjs \
-            quant/tests/sec-universe-scale.test.mjs
+            quant/tests/sec-universe-scale.test.mjs \
+            quant/tests/persist-fundamentals.test.mjs
 
       - name: Coverage gegen das Produktuniversum
         # Laeuft mit leerem Faktenspeicher und muss trotzdem eine ehrliche
@@ -213,6 +214,16 @@ jobs:
       (github.event_name == 'push' &&
        contains(github.event.head_commit.message, '[sec-backfill]'))
     timeout-minutes: 350
+    # EINER NACH DEM ANDEREN, UND KEINER WIRD ABGEBROCHEN.
+    #
+    # Zwei Backfills zugleich teilen sich denselben Cache-Schluessel
+    # und denselben Zweig - der zweite ueberschreibt, was der erste
+    # gerade sichert. cancel-in-progress waere die andere Falle: eine
+    # Re-Normalisierung von 70 Minuten mittendrin abzubrechen verliert
+    # alles bis zum Checkpoint. Also Warteschlange, kein Abbruch.
+    concurrency:
+      group: sec-backfill
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -301,6 +312,61 @@ jobs:
             quant/data/sec/facts
             .quant-state
           key: sec-fundamentals-${{ github.run_id }}
+
+      # ---------------------------------------------------- DAUERHAFT
+      #
+      # Der Faktenspeicher lag bis hierher an genau EINEM Ort: in diesem
+      # Cache. Der wird nach sieben Tagen ohne Zugriff verdraengt und
+      # teilt sich 10 GB mit allem anderen. Ein Bestand, der nur dort
+      # liegt, ist nicht persistiert - er ist geparkt.
+      #
+      # Ab hier liegt er in R2, unter v1/sec/fundamentals/, mit
+      # demselben Treiber und derselben Nullkosten-Haertung wie die
+      # Kurshistorie. Der Kursstore v1/tiingo/ wird nicht angefasst -
+      # und das ist nachgewiesen, nicht versprochen: ein Zeuge um den
+      # Treiber wirft bei jedem fremden Schluessel.
+      - name: Sind die Zugangsdaten fuer die dauerhafte Ablage hinterlegt?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          fehlt=0
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET \
+                   VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; fehlt=1; fi
+          done
+          # Kein stilles Ueberspringen: ohne Ablage ist der Lauf nicht
+          # abgeschlossen, und das muss rot werden.
+          [ "$fehlt" -eq 0 ] || exit 1
+
+      - name: Dauerhafte Ablage - Fundamentals nach R2
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/quant/sec/persist-fundamentals.mjs --push
+
+      # §21. Zurueckladen heisst nicht "die Datei existiert". Acht
+      # Emittenten unterschiedlicher Bauart kommen aus R2 zurueck - Large
+      # Cap, IFRS in EUR, 20-F, 40-F, Bank, Vermoegensverwalter,
+      # vorumsatzliche Biotech, 18 Jahre Historie -, werden als eigener
+      # Faktenspeicher gelesen, kanonisch abgeleitet und mit dem lokalen
+      # Stand verglichen. Das Netz ist dabei gesperrt.
+      - name: Persistenz-Abnahme - Reload ohne SEC
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/quant/sec/persist-fundamentals.mjs --reload \
+            0000320193,0000217410,0000932787,0000756894,0000072971,0000820027,0001279704,0000093410
+          python3 scripts/quant/cli.py verify-reload
 
       - name: Coverage messen
         run: python3 scripts/quant/cli.py coverage-universe
