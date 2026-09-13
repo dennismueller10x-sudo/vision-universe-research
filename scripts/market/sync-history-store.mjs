@@ -257,6 +257,10 @@ async function main() {
   }
 
   if (PUSH) {
+    // Revalidate persisted accounting before any series mutation, even when
+    // an earlier preflight was valid. Corruption must not be discovered late.
+    const month = Guard.monthKey();
+    const usage = await store.readUsage(month);
     const results = await pool(members, CONCURRENCY, async (m) => {
       const file = cacheFile(m.securityId);
       if (!existsSync(file)) return { skipped: true, ticker: m.ticker };
@@ -315,8 +319,6 @@ async function main() {
          einem Lauf ohne Aenderung. Seine Lesevorgaenge haben stattgefunden
          und zaehlen gegen die Freigrenze; ein Stand, der sie verschweigt,
          laeuft ueber die Monate aus dem Tritt. */
-      const month = Guard.monthKey();
-      const usage = await store.readUsage(month);
       const spent = store.budget.spent;
       const totalBytes = Object.values(merged).reduce((a, m) => a + (m.bytes || 0), 0);
       await store.writeUsage(Guard.applyUsage(usage, {

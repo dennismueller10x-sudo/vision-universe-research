@@ -15,7 +15,7 @@ const member={ticker:'TST',securityId:'ref_TST'};
 const bar=(date,close=10)=>({securityId:member.securityId,date,close,adjustedClose:close});
 function fixture(t){
  const dir=mkdtempSync(join(tmpdir(),'vu2-sync-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
- const files=['scripts/market/sync-history-store.mjs','scripts/market/storage/fs-driver.mjs',
+ const files=['scripts/market/sync-history-store.mjs','scripts/market/preflight-zero-cost.mjs','scripts/market/storage/fs-driver.mjs',
  'quant/engines/history-store.js','quant/engines/bar-codec.js','quant/engines/zero-cost-guard.js','quant/config/tiingo-scale.json'];
  for(const f of files){mkdirSync(dirname(join(dir,f)),{recursive:true});copyFileSync(new URL(f,root),join(dir,f));}
  const universe=join(dir,'quant/data/market/scale/universe-TEST.json');mkdirSync(dirname(universe),{recursive:true});writeFileSync(universe,JSON.stringify({securities:[member]}));
@@ -102,4 +102,40 @@ test('offline, mismatched or malformed preflight never authorizes restore',t=>{
   assert.equal(r.status,3,r.stdout+r.stderr);assert.match(r.stderr,/ZERO_COST_GUARD_BLOCKED/);
   assert.equal(existsSync(f.cache),false);
  }
+});
+
+test('corrupt persisted accounting stops push before any series is written',async t=>{
+ const f=fixture(t);f.local(f.series([bar('2026-09-09')]));
+ await f.durable.driver.put(f.durable.usageKey.replace('MONTH',Guard.monthKey()),Buffer.from('{invalid'));
+ const r=f.run('push');assert.equal(r.status,1);assert.match(r.stderr,/History usage state is invalid/);
+ assert.equal(await f.durable.getSeries('TST'),null);
+});
+
+function preflight(f,operation='RECOVERY',extra=[]){
+ const out=join(f.dir,'measured-preflight.json');
+ const result=spawnSync(process.execPath,[join(f.dir,'scripts/market/preflight-zero-cost.mjs'),
+  '--operation',operation,'--gate','TEST','--local-root',join(f.dir,'durable'),'--out',out,...extra],
+  {encoding:'utf8',env:{PATH:process.env.PATH}});
+ return {result,report:existsSync(out)?JSON.parse(readFileSync(out)):null,out};
+}
+test('existing preflight producer budgets every restored or pushed symbol, including already stored ones',async t=>{
+ const f=fixture(t);f.local(f.series([bar('2026-09-09')]));assert.equal(f.run('push').status,0);
+ let p=preflight(f,'BULK_UPLOAD');assert.equal(p.result.status,0,p.result.stderr);
+ assert.equal(p.report.executionAllowed,true);assert.equal(p.report.plan.toFetch,1);
+ assert.equal(p.report.verdict.estimate.breakdown.objectReads,2);
+ p=preflight(f);assert.equal(p.result.status,0,p.result.stderr);assert.equal(p.report.accountingKnown,true);
+ assert.equal(p.report.verdict.estimate.breakdown.objectReads,1);
+ assert.equal(p.report.verdict.estimate.breakdown.objectWrites,0);
+ rmSync(f.workingDir,{recursive:true,force:true});
+ const restored=spawnSync(process.execPath,[join(f.dir,'scripts/market/sync-history-store.mjs'),
+  '--pull','--gate','TEST','--local-root',join(f.dir,'durable'),'--work-dir',f.workingDir,
+  '--preflight',p.out,'--report',join(f.dir,'sync-report.json')],{encoding:'utf8',env:{PATH:process.env.PATH}});
+ assert.equal(restored.status,0,restored.stdout+restored.stderr);assert.equal(JSON.parse(readFileSync(f.cache)).barCount,1);
+});
+test('offline estimates and missing or corrupt monthly accounting never issue execution budgets',async t=>{
+ const f=fixture(t);let p=preflight(f,'RECOVERY',['--offline']);
+ assert.equal(p.result.status,0);assert.equal(p.report.executionAllowed,false);assert.equal(p.report.budgetForRun,null);
+ p=preflight(f);assert.equal(p.result.status,3);assert.equal(p.report.accountingKnown,false);assert.equal(p.report.budgetForRun,null);
+ await f.durable.driver.put(f.durable.usageKey.replace('MONTH',Guard.monthKey()),Buffer.from('{invalid'));
+ p=preflight(f);assert.equal(p.result.status,3);assert.equal(p.report.measured,false);assert.equal(p.report.budgetForRun,null);
 });
