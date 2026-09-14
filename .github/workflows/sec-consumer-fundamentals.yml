@@ -1,0 +1,108 @@
+name: SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)
+
+# Fundamentaldaten fuer die Consumer Experience: je Unternehmen des
+# Produktuniversums ein kompaktes Bundle (Annual / Quarterly / TTM, PIT,
+# Herkunft je Wert) aus dem SEC-Bulk-Archiv companyfacts.zip - EINE Anfrage
+# statt tausender, genau wie die Fair-Access-Regeln der SEC es wollen.
+# Dieselbe Pipeline wie "Update SEC fundamentals" (scripts/quant/sec/),
+# nur mit einer anderen, schlanken Ausgabe (scripts/quant/sec/consumer.py).
+#
+# Identitaet: Ticker + Boerse -> CIK aus der kanonischen Namensschicht
+# (quant/data/market/security-master/company-names.json). Ohne CIK gibt es
+# keine Fundamentaldaten - und keine Schaetzung.
+#
+# Ausloeser: Dispatch, woechentlich (Montag frueh, nach dem SEC-Wochenlauf)
+# oder ein Push mit der Marke `[sec-consumer]`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Nur die ersten N CIKs (Testlauf); leer = alle'
+        type: string
+        default: ''
+  schedule:
+    - cron: "30 7 * * 1"
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sec-consumer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  consumer:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[sec-consumer]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Offline-Tests der SEC-Pipeline
+        run: python3 scripts/quant/cli.py test
+
+      - name: Universumsquelle
+        run: node scripts/market/universe-source.mjs
+
+      - name: Consumer-Fundamentals aus companyfacts.zip
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+        run: |
+          LIMIT="${{ github.event.inputs.limit }}"
+          python3 scripts/quant/cli.py --log-level WARNING consumer --bulk --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT}
+          du -sh quant/data/sec/consumer
+          node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length}))'
+
+      - name: Discover-Daten neu bauen (mit Fundamentals)
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Capability Matrix je Instrument
+        run: node scripts/market/build-capability-matrix.mjs
+
+      - name: Kein Schluessel in den Artefakten
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Regressionssuite
+        run: |
+          node --test "quant/tests/*.test.mjs"
+          node --test "discover/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/sec/consumer quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(c.secAvailable+"/"+c.productUniverse+" Unternehmen, 10J "+c.history10y+", 5J "+c.history5y+", TTM "+c.ttmPossible)')
+          git commit -m "SEC Consumer-Fundamentals: $Z"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### SEC Consumer-Fundamentals'
+            echo ''
+            if [ -f quant/data/sec/consumer_coverage.json ]; then
+              node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); for (const k of ["productUniverse","cikMapped","withoutCik","secAvailable","notInCompanyFacts","annualHistory","quarterlyHistory","ttmPossible","latestFundamentals","history3y","history5y","history10y"]) console.log("| "+k+" | "+c[k]+" |"); console.log(""); console.log("| Kennzahl | annual | quarterly | ttm |"); console.log("|---|---|---|---|"); for (const [m,v] of Object.entries(c.perMetric)) console.log("| "+m+" | "+v.annual+" | "+v.quarterly+" | "+v.ttm+" |"); console.log(""); console.log("Fehler: "+c.failures.length);'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

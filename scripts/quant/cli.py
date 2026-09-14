@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from quant.sec import coverage as coverage_module
 from quant.sec import gates as gates_module
 from quant.sec.canonical import DATA_SOURCE, build_company_bundle
+from quant.sec import consumer as consumer_module
 from quant.sec.periods import PeriodResolver
 from quant.sec.pipeline import IngestionPipeline, export_inspector_view, _rehydrate
 from quant.sec.provider import SECProvider, normalize_cik
@@ -35,6 +36,7 @@ from quant.sec.restatements import POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN, POL
 from quant.sec.store import JsonFactStore
 from quant.sec.version import version_stamp
 
+LOGGER = logging.getLogger("vu.sec.cli")
 ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "quant" / "data" / "sec"
 INSPECTOR_DIR = DATA_DIR / "inspector"
@@ -487,6 +489,90 @@ def cmd_inspect(args):
     return 0
 
 
+def cmd_consumer(args):
+    """Consumer fundamentals for the product universe from the SEC bulk archive.
+
+    Identity comes from the canonical name layer (ticker + exchange -> CIK);
+    the raw facts come from companyfacts.zip in one request. Output: one
+    compact bundle per CIK plus an index by ticker and the measured coverage.
+    """
+    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle,
+                                    load_product_universe_ciks, summarize_bundle)
+    registry = MetricRegistry.load()
+    provider = SECProvider()
+    names_file = Path(args.names)
+    by_cik, without_cik = load_product_universe_ciks(names_file)
+    product_count = sum(len(e["tickers"]) for e in by_cik.values()) + len(without_cik)
+    wanted = set(by_cik)
+    if args.ciks:
+        wanted = {normalize_cik(c) for c in args.ciks.split(",")} & wanted
+    if args.limit:
+        wanted = set(sorted(wanted)[:args.limit])
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    as_of = args.as_of or str(date.today())
+    print(f"  Produktuniversum: {product_count} Titel, {len(by_cik)} CIKs, {len(without_cik)} ohne CIK; angefragt {len(wanted)}")
+
+    index_rows, seen, failures = [], set(), []
+    if args.bulk:
+        source = provider.iter_bulk_company_facts(ciks=wanted)
+    else:
+        source = ((cik, provider.get_company_facts(cik)) for cik in sorted(wanted))
+    written = set()
+    for cik, payload in source:
+        entry = by_cik[cik]
+        try:
+            bundle = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
+                                           security_ids=entry["securityIds"], name=entry["name"],
+                                           annual_years=args.annual_years, quarters=args.quarters,
+                                           provider=provider)
+        except Exception as exc:  # noqa: BLE001 - one bad company must not stop 6,000
+            failures.append({"cik": cik, "tickers": entry["tickers"], "error": f"{type(exc).__name__}: {exc}"})
+            LOGGER.warning("cik=%s failed: %s", cik, exc)
+            continue
+        seen.add(cik)
+        if bundle is None:
+            failures.append({"cik": cik, "tickers": entry["tickers"], "error": "NO_PERIODIC_FACTS"})
+            continue
+        path = out_dir / f"CIK{cik}.json"
+        path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
+        written.add(path.name)
+        summary = summarize_bundle(bundle)
+        cov = bundle["coverage"]
+        summary["file"] = f"consumer/{path.name}"
+        summary["metricsAnnual"] = sorted(cov["annualMetrics"])
+        summary["metricsQuarterly"] = sorted(cov["quarterlyMetrics"])
+        summary["metricsTtm"] = list(cov["ttmMetrics"])
+        index_rows.append(summary)
+        if len(index_rows) % 250 == 0:
+            print(f"  {len(index_rows)} Unternehmen geschrieben ...")
+    unmatched = sorted(wanted - seen)
+    if not args.keep_stale:
+        _prune(out_dir, written)
+    by_ticker = {}
+    for row in index_rows:
+        for ticker in row["tickers"]:
+            by_ticker[ticker] = {"cik": row["cik"], "file": row["file"], "annualYears": row["annualYears"],
+                                 "quarterly": row["quarterly"], "ttm": row["ttm"],
+                                 "h3": row["h3"], "h5": row["h5"], "h10": row["h10"],
+                                 "latestAnnualYear": row["latestAnnualYear"],
+                                 "latestQuarter": row["latestQuarter"]}
+    coverage = aggregate_coverage(index_rows, product_count, sum(len(e["tickers"]) for e in by_cik.values()),
+                                  without_cik, unmatched)
+    coverage["failures"] = failures
+    coverage["withoutCikTickers"] = without_cik
+    coverage["notInCompanyFactsCiks"] = unmatched
+    coverage["asOf"] = as_of
+    coverage["generated_at_utc"] = _utcnow()
+    coverage["versions"] = version_stamp(registry.version)
+    coverage["namesLayer"] = str(names_file.relative_to(ROOT)) if names_file.is_absolute() else str(names_file)
+    _write(out_dir / "index.json", {"schema": consumer_module.SCHEMA, "generated_at_utc": _utcnow(),
+                                    "asOf": as_of, "count": len(index_rows), "byTicker": by_ticker})
+    _write(DATA_DIR / "consumer_coverage.json", coverage)
+    print(f"  fertig: {len(index_rows)} Bundles, {len(failures)} Fehler, {len(unmatched)} CIKs nicht im Archiv")
+    return 0
+
+
 def cmd_test(args):
     import unittest
     loader = unittest.TestLoader()
@@ -555,6 +641,18 @@ def build_parser():
     inspect.add_argument("--policy", choices=POLICIES, default=POLICY_LATEST_KNOWN)
     inspect.add_argument("--hide-missing", action="store_true")
     inspect.set_defaults(func=cmd_inspect)
+
+    consumer = subparsers.add_parser("consumer", help="compact consumer fundamentals for the product universe")
+    consumer.add_argument("--names", default=str(ROOT / "quant" / "data" / "market" / "security-master" / "company-names.json"))
+    consumer.add_argument("--out", default=str(DATA_DIR / "consumer"))
+    consumer.add_argument("--as-of")
+    consumer.add_argument("--bulk", action="store_true", help="read companyfacts.zip (one request) instead of per-company calls")
+    consumer.add_argument("--ciks", help="comma-separated CIK subset")
+    consumer.add_argument("--limit", type=int)
+    consumer.add_argument("--annual-years", type=int, default=consumer_module.DEFAULT_ANNUAL_YEARS)
+    consumer.add_argument("--quarters", type=int, default=consumer_module.DEFAULT_QUARTERS)
+    consumer.add_argument("--keep-stale", action="store_true")
+    consumer.set_defaults(func=cmd_consumer)
 
     test = subparsers.add_parser("test", help="run the offline test suite")
     test.add_argument("--verbose", action="store_true")
