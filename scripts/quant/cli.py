@@ -772,8 +772,10 @@ def cmd_daily(args):
     state = daily.load_state()
     since = date.fromisoformat(args.since) if args.since else None
     ciks = [normalize_cik(c) for c in args.ciks.split(",") if c.strip()] if args.ciks else None
+    from quant.sec import universe_coverage
     report = daily.run_daily(pipeline, provider.client, universe_ciks, state, since=since,
-                             ciks_override=ciks, dry_run=args.dry_run, log=print)
+                             ciks_override=ciks, dry_run=args.dry_run, log=print,
+                             shard_records=universe_coverage.load_issuer_shards(ROOT))
     report["UNIVERSE_SKIPPED_WITHOUT_CIK"] = len(skipped)
     daily.DAILY_DIR.mkdir(parents=True, exist_ok=True)
     _write(daily.DAILY_DIR / "latest-run.json", report)

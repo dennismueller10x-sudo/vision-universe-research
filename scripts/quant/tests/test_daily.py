@@ -35,9 +35,12 @@ class DailyStub(StubSEC):
         super().__init__(companies)
         self.index = {}          # date -> list of (cik, form, filed, accession)
         self.broken = set()      # URLs that answer 500
+        self.forbidden = set()   # index URLs that answer 403 (sec.gov for missing days)
 
-    def get_bytes(self, url, use_cache=True):
+    def get_bytes(self, url, use_cache=True, expected_statuses=()):
         self.calls.append(url)
+        if url in self.forbidden:
+            raise SECHTTPError(url, 403, "Forbidden", 1)
         for day, rows in self.index.items():
             if url == daily.index_url(day):
                 lines = ["Description: Master Index", "", "CIK|Company Name|Form Type|Date Filed|Filename",
@@ -120,6 +123,23 @@ class KeinNeuesFilingTests(DailyTestCase):
         anfragen = self.stub.calls[vorher:]
         self.assertTrue(all("daily-index" in u for u in anfragen), anfragen)
         self.assertEqual(self.state["LAST_SEC_CHECK"], TODAY.isoformat())
+
+    def test_ein_403_der_sec_fuer_einen_fehlenden_index_ist_kein_fehler(self):
+        # Labor Day 2026-09-07: sec.gov antwortete 403, nicht 404.
+        self.stub.forbidden.add(daily.index_url(date(2026, 9, 7)))
+        report = self._run(since=date(2026, 9, 7), today=date(2026, 9, 8))
+        self.assertEqual(report["STATUS"], "SUCCESS")
+        self.assertIn("2026-09-07", report["SEC_INDEX"]["daysWithoutIndex"])
+
+    def test_bootstrap_aus_scherben_braucht_kein_factbook(self):
+        rows = {"iss_cik_4300000001": {"cik": "4300000001",
+                                       "latestFiling": {"accession": "X-1", "filing_date": "2025-03-01", "form": "10-K"},
+                                       "versions": {"normalization_logic": "1.9.0"}}}
+        state = daily.empty_state()
+        added = daily.bootstrap_state(state, self.store, shard_records=rows)
+        self.assertEqual(added, 2)
+        self.assertEqual(state["ISSUER_LAST_PROCESSED"]["4300000001"]["LATEST_ACCESSION"], "X-1")
+        self.assertIn("4300000002", state["ISSUER_LAST_PROCESSED"])   # aus dem Speicher
 
     def test_ein_tag_ohne_index_ist_kein_fehler(self):
         report = self._run()
@@ -358,3 +378,21 @@ class ScherbenUndAggregateTests(unittest.TestCase):
                          erwartet["fundamentals"]["COMPANY_FACTS_AVAILABLE"])
         self.assertEqual(reports["coverage"]["metrics"]["revenue"]["COUNT"],
                          erwartet["metrics"]["revenue"]["COUNT"])
+
+
+class ErwarteteStatusTests(unittest.TestCase):
+    def test_der_client_wiederholt_einen_erwarteten_status_nicht(self):
+        import urllib.error
+        from quant.sec.http_client import DiskCache, RateLimiter, SECHttpClient
+        aufrufe = []
+        def opener(url, headers, timeout):
+            aufrufe.append(url)
+            raise urllib.error.HTTPError(url, 403, "Forbidden", {}, None)
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        client = SECHttpClient(user_agent="Test test@example.com", cache=DiskCache(Path(tmp.name)),
+                               rate_limiter=RateLimiter(sleep=lambda s: None), opener=opener,
+                               sleep=lambda s: None)
+        with self.assertRaises(SECHTTPError) as ctx:
+            client.get_bytes("https://www.sec.gov/x", use_cache=False, expected_statuses=(403,))
+        self.assertEqual(ctx.exception.status, 403)
+        self.assertEqual(len(aufrufe), 1)

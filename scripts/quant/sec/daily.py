@@ -105,9 +105,12 @@ def fetch_index_day(client, day, today=None):
     url = index_url(day)
     try:
         # Der Index von heute waechst noch; der von gestern ist fertig.
-        payload = client.get_bytes(url, use_cache=(day < today))
+        # sec.gov antwortet auf einen fehlenden Tagesindex (Wochenende,
+        # Feiertag - Labor Day 2026-09-07 im ersten echten Lauf) mit 403,
+        # nicht 404. Beides heisst: kein Index an diesem Tag.
+        payload = client.get_bytes(url, use_cache=(day < today), expected_statuses=(403, 404))
     except SECHTTPError as exc:
-        if exc.status == 404:
+        if exc.status in (403, 404):
             return None
         raise
     return parse_master_index(payload.decode("latin-1", errors="replace"))
@@ -180,18 +183,38 @@ def issuer_state_from_document(document):
     }
 
 
-def bootstrap_state(state, store, ciks=None):
+def bootstrap_state(state, store, ciks=None, shard_records=None):
     """Emittenten ohne State-Eintrag aus dem Speicher nachtragen.
 
     Der Speicher IST der Beweis, was verarbeitet wurde: die historische
     Basis wurde ohne diesen State aufgebaut, und niemand soll sie dafuer
-    erneut holen.
+    erneut holen. Die Emittenten-Scherben im Repository tragen dieselbe
+    Signatur (latestFiling) und sind in Sekunden gelesen; 5.479 Factbooks
+    zu entpacken kostete im ersten echten Lauf dreieinhalb Minuten.
     """
     known = state["ISSUER_LAST_PROCESSED"]
     added = 0
+    rows = {}
+    for issuer_id, row in (shard_records or {}).items():
+        cik = normalize_cik(row.get("cik") or issuer_id.replace("iss_cik_", ""))
+        rows[cik] = row
     for cik in (ciks if ciks is not None else store.list_companies()):
         cik = normalize_cik(cik)
         if cik in known:
+            continue
+        row = rows.get(cik)
+        latest = (row or {}).get("latestFiling") or {}
+        if latest.get("accession"):
+            known[cik] = {
+                "LATEST_ACCESSION": latest.get("accession"),
+                "LATEST_FILED_AT": latest.get("filing_date"),
+                "LATEST_ACCEPTED_AT": latest.get("acceptance_datetime"),
+                "LATEST_FORM": latest.get("form"),
+                "PROCESSED_AT": (row.get("versions") or {}).get("generated_at_utc") or None,
+                "NORMALIZATION_LOGIC_VERSION": (row.get("versions") or {}).get("normalization_logic"),
+                "accessions": [latest.get("accession")],
+            }
+            added += 1
             continue
         document = store.read_company(cik)
         if document is None:
@@ -271,7 +294,8 @@ def _accession_dupes(document):
 
 
 def run_daily(pipeline, client, universe_ciks, state, today=None, since=None,
-              ciks_override=None, dry_run=False, checkpoint=None, log=None):
+              ciks_override=None, dry_run=False, checkpoint=None, log=None,
+              shard_records=None):
     """Ein Tageslauf. Gibt den Health Report (§16) zurueck und schreibt den State."""
     say = log or (lambda *_: None)
     started = time.monotonic()
@@ -280,7 +304,9 @@ def run_daily(pipeline, client, universe_ciks, state, today=None, since=None,
     checkpoint = checkpoint or pipeline.checkpoint
     cp_state = checkpoint.load()
 
-    bootstrapped = bootstrap_state(state, store)
+    bootstrapped = bootstrap_state(state, store, shard_records=shard_records)
+    if bootstrapped:
+        save_state(state)
 
     # --- 1. Aenderungen erkennen
     if since is None:

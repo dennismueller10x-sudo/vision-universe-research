@@ -189,8 +189,15 @@ class SECHttpClient:
         # 1s, 2s, 4s, 8s ... plus up to 1s of jitter to avoid lockstep retries.
         return (2 ** attempt) + self._jitter()
 
-    def get_bytes(self, url, use_cache=True):
-        """Fetch a URL, honouring cache, dedup, rate limit and retry policy."""
+    def get_bytes(self, url, use_cache=True, expected_statuses=()):
+        """Fetch a URL, honouring cache, dedup, rate limit and retry policy.
+
+        `expected_statuses` are HTTP codes that mean "not there" for this
+        URL and are raised at once instead of retried: sec.gov answers a
+        missing Tagesindex (Wochenende, Feiertag) mit 403, und fuenf
+        Versuche mit Backoff fuer jeden Sonntag waeren zehn Sekunden fuer
+        nichts.
+        """
         if use_cache:
             cached = self.cache.get(url)
             if cached is not None:
@@ -216,7 +223,7 @@ class SECHttpClient:
             # The owner failed; fall through and try once ourselves.
 
         try:
-            payload = self._fetch_with_retry(url)
+            payload = self._fetch_with_retry(url, expected_statuses=expected_statuses)
         finally:
             if owner:
                 with self._inflight_lock:
@@ -227,7 +234,7 @@ class SECHttpClient:
             self.cache.put(url, payload)
         return payload
 
-    def _fetch_with_retry(self, url):
+    def _fetch_with_retry(self, url, expected_statuses=()):
         last_status = None
         last_message = ""
         for attempt in range(self.max_retries + 1):
@@ -243,6 +250,8 @@ class SECHttpClient:
                 return payload
             except urllib.error.HTTPError as exc:
                 last_status, last_message = exc.code, str(exc.reason)
+                if exc.code in expected_statuses:
+                    raise SECHTTPError(url, exc.code, str(exc.reason), attempt + 1)
                 retryable = exc.code in RETRYABLE_STATUS
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 last_status, last_message = None, str(exc)
