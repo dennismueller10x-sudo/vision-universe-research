@@ -22,6 +22,7 @@ import sys
 from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -471,7 +472,15 @@ def _fehlerklasse(text):
 def cmd_export(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
+    ciks = _ciks_from_universe(getattr(args, "universe", None))
+    if getattr(args, "ciks", None):
+        # Der taegliche Lauf frischt nur die Buendel der Emittenten auf, die
+        # ein neues Filing hatten - und nur, wenn sie bereits ein Buendel im
+        # Repository haben. Ohne diese Grenze schriebe der Lauf 5.400 mal
+        # 400 KB.
+        gewollt = {normalize_cik(c) for c in args.ciks.split(",") if c.strip()}
+        ciks = sorted(gewollt if ciks is None else (set(ciks) & gewollt))
+    documents = _documents(store, ciks=ciks)
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
@@ -745,6 +754,110 @@ def cmd_final_report(args):
     return 0
 
 
+def cmd_daily(args):
+    """Der taegliche Incremental-Lifecycle: nur neue oder geaenderte Filings (§1-§16).
+
+    Kein Full Backfill. Der SEC-Tagesindex sagt, wer seit dem letzten
+    Lauf eingereicht hat; genau diese Emittenten werden frisch geholt,
+    normalisiert und im Speicher aktualisiert. Persistenz, Reload und
+    Downstream folgen als eigene Schritte (`daily-downstream`).
+    """
+    from quant.sec import daily
+
+    pipeline = IngestionPipeline(run_id="daily")
+    provider = pipeline.provider
+    companies, skipped = _resolve_universe(
+        provider, _load_universe(args.universe), verify=False, skip_unresolved=True)
+    universe_ciks = {normalize_cik(c["cik"]) for c in companies if c.get("cik")}
+    state = daily.load_state()
+    since = date.fromisoformat(args.since) if args.since else None
+    ciks = [normalize_cik(c) for c in args.ciks.split(",") if c.strip()] if args.ciks else None
+    report = daily.run_daily(pipeline, provider.client, universe_ciks, state, since=since,
+                             ciks_override=ciks, dry_run=args.dry_run, log=print)
+    report["UNIVERSE_SKIPPED_WITHOUT_CIK"] = len(skipped)
+    daily.DAILY_DIR.mkdir(parents=True, exist_ok=True)
+    _write(daily.DAILY_DIR / "latest-run.json", report)
+    _write(daily.DAILY_DIR / "updated-issuers.json", daily.updated_issuers_manifest(report))
+    print(f"\n  {report['STATUS']}: {report['ISSUERS_UPDATED']} aktualisiert, "
+          f"{report['FAILED_ISSUERS']} gescheitert, {report['RETRY_QUEUE']} in der Schlange, "
+          f"{report['SEC_CHANGES_FOUND']} Filings im Index, "
+          f"{report['TOTAL_RUNTIME_SECONDS']} s")
+    for u in report["updated"]:
+        print(f"    {u['cik']} {u['reason']:<11} {u['latestForm'] or '-':<7} {u['latestFiledAt'] or '-'} "
+              f"{len(u['metricsChanged'])} Kennzahlen geaendert")
+    for f in report["failed"]:
+        print(f"    {f['cik']} FEHLER {f['error'][:100]}")
+    return 1 if report["STATUS"] == daily.STATUS_FAILURE else 0
+
+
+def cmd_daily_downstream(args):
+    """Nach Persistenz und Reload: abhaengige Artefakte nur fuer die aktualisierten Emittenten.
+
+    Scherben je Emittent, Aggregate aus den Scherben, Abgleich, kanonische
+    Buendel (nur vorhandene), UPDATED_ISSUERS-Manifest und der Health
+    Report mit den Persistenz- und Reload-Zahlen dieses Laufs.
+    """
+    from quant.sec import daily, universe_coverage
+
+    registry = MetricRegistry.load()
+    store = JsonFactStore(compress=True)
+    latest = json.loads((daily.DAILY_DIR / "latest-run.json").read_text(encoding="utf-8"))
+    updated = latest.get("updated") or []
+    ciks = [u["cik"] for u in updated]
+    started = datetime.now(timezone.utc)
+
+    # 1. Scherben: nur die aktualisierten Emittenten neu rechnen.
+    per_issuer = universe_coverage.load_issuer_shards(ROOT)
+    for cik in ciks:
+        document = store.read_company(cik)
+        if document is None:
+            continue
+        per_issuer["iss_cik_" + cik] = universe_coverage.issuer_fundamentals(document, registry)
+    if per_issuer and not latest.get("DRY_RUN"):
+        universe = universe_coverage.load_universe(ROOT)
+        reports = universe_coverage.reports_from_records(ROOT, per_issuer, registry=registry,
+                                                          universe=universe)
+        _write_universe_reports(reports, registry)
+        # 2. Abgleich mit dem Marktdaten-Universum (liest die Scherben).
+        cmd_reconcile(SimpleNamespace())
+        # 3. Kanonische Buendel: nur Emittenten mit neuem Filing UND vorhandenem Buendel.
+        if ciks:
+            cmd_canonical(SimpleNamespace(universe=None, ciks=",".join(ciks), only_existing=True,
+                                          annual_years=12, quarterly_years=None))
+
+    # 4. Persistenz- und Reload-Zahlen dieses Laufs in den Bericht.
+    persistence = {}
+    pfad = ROOT / "quant" / "data" / "fundamentals" / "persistence.json"
+    if pfad.exists():
+        persistence = json.loads(pfad.read_text(encoding="utf-8"))
+    reload_report = {}
+    pfad = ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json"
+    if pfad.exists():
+        reload_report = json.loads(pfad.read_text(encoding="utf-8"))
+    push = persistence.get("push") or {}
+    latest["R2_OBJECTS_WRITTEN"] = push.get("changed")
+    latest["R2_OBJECTS_UNCHANGED"] = push.get("unchanged")
+    latest["R2_PERSISTENCE"] = "PASS" if push and push.get("changed", 0) >= len(ciks) else (
+        "SKIPPED" if not ciks else "FAIL")
+    latest["RELOAD_WITHOUT_SEC_REFETCH"] = reload_report.get("RELOAD_WITHOUT_SEC_REFETCH")
+    latest["RELOAD_SAMPLE"] = {"requested": reload_report.get("requested"),
+                               "passed": reload_report.get("passed")}
+    latest["DOWNSTREAM_INVALIDATIONS"] = len(ciks)
+    latest["DOWNSTREAM_TARGETS"] = list(daily.DOWNSTREAM_TARGETS)
+    latest["DOWNSTREAM_RUNTIME_SECONDS"] = round(
+        (datetime.now(timezone.utc) - started).total_seconds(), 1)
+    latest["TOTAL_RUNTIME"] = round(latest.get("TOTAL_RUNTIME_SECONDS", 0)
+                                    + latest["DOWNSTREAM_RUNTIME_SECONDS"], 1)
+    _write(daily.DAILY_DIR / f"health-{latest['RUN_DATE']}.json", latest)
+    _write(daily.DAILY_DIR / "latest-run.json", latest)
+    _write(daily.DAILY_DIR / "updated-issuers.json", daily.updated_issuers_manifest(latest, {
+        "R2_OBJECTS_WRITTEN": latest["R2_OBJECTS_WRITTEN"],
+        "RELOAD_WITHOUT_SEC_REFETCH": latest["RELOAD_WITHOUT_SEC_REFETCH"]}))
+    print(f"  Downstream: {len(ciks)} Emittenten in Scherben und Buendeln aufgefrischt, "
+          f"R2 geschrieben: {latest['R2_OBJECTS_WRITTEN']}, Reload: {latest['RELOAD_WITHOUT_SEC_REFETCH']}")
+    return 0
+
+
 def cmd_verify_reload(args):
     """§21 J: Reload reproduziert dieselben kanonischen Werte - ohne SEC.
 
@@ -967,6 +1080,13 @@ def cmd_coverage_universe(args):
     reports = universe_coverage.build_reports(
         ROOT, _iter_documents(store), registry=registry, universe=universe,
         progress_every=250)
+    _write_universe_reports(reports, registry)
+    return 0
+
+
+def _write_universe_reports(reports, registry):
+    """Berichte und Emittenten-Scherben schreiben - vom vollen wie vom taeglichen Lauf."""
+    from quant.sec import universe_coverage
 
     out = ROOT / "quant" / "data" / "fundamentals"
     now = _utcnow()
@@ -979,18 +1099,7 @@ def cmd_coverage_universe(args):
     # Die Emittentenbilanz in Scherben - eine Zeile je Emittent, nicht die
     # volle Historie. Die gehoert in die Arbeitsablage: 400 KB je Emittent
     # mal 7.000 waeren 2,8 GB, und ein Git-Repository ist kein Datenspeicher.
-    shards = {}
-    for issuer_id, row in reports["perIssuer"].items():
-        shard = str(row["cik"]).zfill(10)[-3:]
-        shards.setdefault(shard, []).append(dict(row, issuerId=issuer_id))
-    issuer_dir = out / "issuers"
-    if issuer_dir.exists():
-        for stale in issuer_dir.glob("*.json"):
-            stale.unlink()
-    for shard, rows in sorted(shards.items()):
-        rows.sort(key=lambda r: r["issuerId"])
-        _write(issuer_dir / f"{shard}.json",
-               {"shard": shard, "count": len(rows), "issuers": rows})
+    universe_coverage.write_issuer_shards(ROOT, reports["perIssuer"])
 
     _write(out / "manifest.json", {
         "generated_at_utc": now,
@@ -1089,14 +1198,25 @@ def cmd_canonical(args):
     """
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
+    ciks = _ciks_from_universe(getattr(args, "universe", None))
+    if getattr(args, "ciks", None):
+        # Der taegliche Lauf frischt nur die Buendel der Emittenten auf, die
+        # ein neues Filing hatten - und nur, wenn sie bereits ein Buendel im
+        # Repository haben. Ohne diese Grenze schriebe der Lauf 5.400 mal
+        # 400 KB.
+        gewollt = {normalize_cik(c) for c in args.ciks.split(",") if c.strip()}
+        ciks = sorted(gewollt if ciks is None else (set(ciks) & gewollt))
+    documents = _documents(store, ciks=ciks)
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
     declared = _declared_tickers()
     index, written = [], set()
+    nur_vorhandene = bool(getattr(args, "only_existing", False))
     for document in documents:
         ticker = _canonical_ticker(document, declared)
+        if nur_vorhandene and not (CANONICAL_DIR / f"{ticker}.json").exists():
+            continue
         bundle = build_company_bundle(document, registry, ticker,
                                       annual_years=args.annual_years,
                                       quarterly_years=args.quarterly_years)
@@ -1114,6 +1234,11 @@ def cmd_canonical(args):
             "annualYearsExamined": bundle["coverage"]["annualYearsExamined"],
             "quarterlyYears": bundle["coverage"]["quarterlyYears"],
         })
+    if nur_vorhandene:
+        # Selektiv aufgefrischt: Index und Bestand bleiben, nur die
+        # geschriebenen Buendel sind neu.
+        print(f"  {len(written)} kanonische Buendel aufgefrischt (nur vorhandene)")
+        return 0
     _prune(CANONICAL_DIR, written)
     _write(DATA_DIR / "canonical_index.json", {
         "schema_version": 1,
@@ -1255,6 +1380,17 @@ def build_parser():
     con.add_argument("--sic", help="SIC-Spannen, z. B. 6020-6036,6021 - nur diese Emittenten")
     con.set_defaults(func=cmd_concepts)
 
+    dl = subparsers.add_parser("daily", help="taeglicher Incremental-Lifecycle: nur neue/geaenderte Filings")
+    dl.add_argument("--universe", default=str(ROOT / "quant" / "data" / "universe" / "sec-universe.json"))
+    dl.add_argument("--since", help="ersten Indextag erzwingen (YYYY-MM-DD); Standard: letzter Check")
+    dl.add_argument("--ciks", help="nur diese CIKs verarbeiten (Recovery / Test), kommagetrennt")
+    dl.add_argument("--dry-run", action="store_true", help="nur erkennen, nichts holen")
+    dl.set_defaults(func=cmd_daily)
+
+    dd = subparsers.add_parser("daily-downstream",
+                               help="nach Persistenz und Reload: Scherben, Aggregate, Abgleich, Manifest, Health Report")
+    dd.set_defaults(func=cmd_daily_downstream)
+
     fr = subparsers.add_parser("final-report", help="Abschlussbericht §25/§26 aus den Artefakten rendern")
     fr.add_argument("--out", default=str(ROOT / "docs" / "VU_SEC_FINAL_RECOVERY_REPORT.md"))
     fr.set_defaults(func=cmd_final_report)
@@ -1302,6 +1438,9 @@ def build_parser():
 
     canonical = subparsers.add_parser(
         "canonical", help="write the canonical FundamentalFact/Filing payload")
+    canonical.add_argument("--ciks", help="nur diese CIKs (kommagetrennt), z. B. aus dem Daily-Manifest")
+    canonical.add_argument("--only-existing", action="store_true",
+                           help="nur Buendel neu schreiben, die schon unter quant/data/sec/canonical liegen")
     canonical.add_argument("--annual-years", type=int, default=12)
     canonical.add_argument("--quarterly-years", type=int, default=None,
                            help="limit the quarterly window; default is the full history")

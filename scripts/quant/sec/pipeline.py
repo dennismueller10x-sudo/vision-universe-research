@@ -52,9 +52,10 @@ class IngestionPipeline:
             return None
         newest = max(periodic, key=lambda row: (row["filing_date"] or "", row["accession"] or ""))
         return {"accession": newest["accession"], "filing_date": newest["filing_date"],
-                "form": newest["form"], "periodic_filings": len(periodic)}
+                "form": newest["form"], "periodic_filings": len(periodic),
+                "acceptance_datetime": newest.get("acceptance_datetime")}
 
-    def ingest_company(self, cik, force=False, company_facts=None):
+    def ingest_company(self, cik, force=False, company_facts=None, fresh=False):
         """Fetch, archive, normalize, quality-check and store one company.
 
         `company_facts` accepts a payload that was already retrieved — that is
@@ -65,7 +66,7 @@ class IngestionPipeline:
         cik = normalize_cik(cik)
         started = time.monotonic()
 
-        submissions = self.provider.get_submissions(cik)
+        submissions = self.provider.get_submissions(cik, fresh=fresh)
         submissions_hash = self.raw_store.put(cik, "submissions", submissions)
         # Stamp the retrieval time from the archive before anything reads it, so
         # the profile is derived from a stable timestamp too (see below).
@@ -87,7 +88,7 @@ class IngestionPipeline:
         companyfacts_status = "AVAILABLE"
         if company_facts is None:
             try:
-                company_facts = self.provider.get_company_facts(cik)
+                company_facts = self.provider.get_company_facts(cik, fresh=fresh)
             except SECHTTPError as exc:
                 if exc.status != 404:
                     raise
@@ -163,7 +164,14 @@ class IngestionPipeline:
             return False
         if not self._versions_current(stored):
             return False
-        return stored.get("latest_filing") == signature
+        # Verglichen werden Akzessionsnummer und Einreichungsdatum - nicht
+        # das ganze Woerterbuch. Die Signatur traegt seit dem taeglichen
+        # Lauf auch acceptance_datetime; ein Vergleich des ganzen Objekts
+        # haette jeden vorher gespeicherten Emittenten als geaendert gelesen
+        # und 5.400 companyfacts erneut geholt.
+        alt = stored.get("latest_filing") or {}
+        return ((alt.get("accession"), alt.get("filing_date"))
+                == (signature.get("accession"), signature.get("filing_date")))
 
     # ----------------------------------------------------------------- universe
 

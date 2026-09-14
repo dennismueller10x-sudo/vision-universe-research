@@ -161,7 +161,7 @@ class SECProvider:
 
     # --------------------------------------------------------------- submissions
 
-    def get_submissions(self, cik, include_history=True):
+    def get_submissions(self, cik, include_history=True, fresh=False):
         """Full submissions record with the paged older filings merged in.
 
         The SEC keeps only the most recent ~1000 filings in `filings.recent`;
@@ -169,7 +169,11 @@ class SECProvider:
         a company's pre-2015 filing history is silently invisible.
         """
         cik = normalize_cik(cik)
-        payload = self.client.get_json(SUBMISSIONS_URL.format(cik=cik))
+        # `fresh` umgeht den 24-Stunden-Cache: der taegliche Lauf weiss aus
+        # dem Tagesindex, dass es ein neues Filing gibt, und darf sich
+        # nicht von einer gestern gespeicherten Uebersicht widerlegen
+        # lassen. Die aelteren Seiten (filings.files) aendern sich nicht.
+        payload = self.client.get_json(SUBMISSIONS_URL.format(cik=cik), use_cache=not fresh)
         if include_history:
             for page in (payload.get("filings", {}) or {}).get("files", []) or []:
                 name = page.get("name")
@@ -260,9 +264,9 @@ class SECProvider:
 
     # --------------------------------------------------------------------- facts
 
-    def get_company_facts(self, cik):
+    def get_company_facts(self, cik, fresh=False):
         cik = normalize_cik(cik)
-        payload = self.client.get_json(COMPANY_FACTS_URL.format(cik=cik))
+        payload = self.client.get_json(COMPANY_FACTS_URL.format(cik=cik), use_cache=not fresh)
         payload["_retrieved_at"] = _utcnow_iso()
         return payload
 

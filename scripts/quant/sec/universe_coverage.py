@@ -477,6 +477,22 @@ def _depth_buckets(values, depths=DEPTH_YEARS):
     return out
 
 
+def issuer_records(documents, registry, progress_every=0):
+    """Die Bilanz je Emittent - EINE Zeile je Factbook, nie zwei Factbooks zugleich."""
+    per_issuer = {}
+    gelesen = 0
+    for document in documents:
+        cik = str(document.get("cik")).zfill(10)
+        per_issuer["iss_cik_" + cik] = issuer_fundamentals(document, registry)
+        document = None
+        gelesen += 1
+        if progress_every and gelesen % progress_every == 0:
+            LOGGER.info("coverage: %d Emittenten ausgewertet", gelesen)
+    if progress_every:
+        LOGGER.info("coverage: %d Emittenten ausgewertet (fertig)", gelesen)
+    return per_issuer
+
+
 def build_reports(root, documents, registry=None, universe=None, progress_every=0):
     """Die vier Berichte aus §11 bis §14, plus der Gap Report aus §20.
 
@@ -488,25 +504,24 @@ def build_reports(root, documents, registry=None, universe=None, progress_every=
     funktioniert hatte.
     """
     registry = registry or MetricRegistry.load()
+    per_issuer = issuer_records(documents, registry, progress_every=progress_every)
+    return reports_from_records(root, per_issuer, registry=registry, universe=universe)
+
+
+def reports_from_records(root, per_issuer, registry=None, universe=None):
+    """Die Berichte aus bereits gerechneten Emittentensaetzen.
+
+    Das ist der Weg des taeglichen Laufs: er rechnet die Saetze nur fuer
+    die Emittenten neu, die ein neues Filing hatten, liest die uebrigen
+    aus den Scherben und aggregiert - statt 5.400 Factbooks fuer drei
+    Aenderungen zu lesen.
+    """
+    registry = registry or MetricRegistry.load()
     universe = universe or load_universe(root)
+    per_issuer = dict(per_issuer)
 
     members = product_members(universe["instruments"])
     issuers_in_master = {row["issuerId"]: row for row in universe["issuers"]}
-
-    per_issuer = {}
-    gelesen = 0
-    for document in documents:
-        cik = str(document.get("cik")).zfill(10)
-        per_issuer["iss_cik_" + cik] = issuer_fundamentals(document, registry)
-        # Das Dokument wird hier nicht mehr gebraucht. Die Referenz
-        # loeschen, damit der naechste Durchlauf sie nicht neben seiner
-        # eigenen haelt.
-        document = None
-        gelesen += 1
-        if progress_every and gelesen % progress_every == 0:
-            LOGGER.info("coverage: %d Emittenten ausgewertet", gelesen)
-    if progress_every:
-        LOGGER.info("coverage: %d Emittenten ausgewertet (fertig)", gelesen)
 
     # Der Faktenspeicher ist gitignored. Was im Repository liegt, sind die
     # kanonischen Buendel - fuer sie gilt dieselbe Frage, und sie werden
@@ -755,3 +770,37 @@ def build_reports(root, documents, registry=None, universe=None, progress_every=
     return {"coverage": coverage, "history": history, "overlap": overlap,
             "quality": quality_report, "gaps": gaps, "perIssuer": per_issuer,
             "members": len(members)}
+
+
+def load_issuer_shards(root):
+    """Die Emittentensaetze aus den Scherben unter quant/data/fundamentals/issuers."""
+    base = Path(root) / "quant" / "data" / "fundamentals" / "issuers"
+    out = {}
+    if not base.exists():
+        return out
+    for path in sorted(base.glob("*.json")):
+        for row in (_read_json(path).get("issuers") or []):
+            issuer_id = row.get("issuerId") or ("iss_cik_" + str(row.get("cik")).zfill(10))
+            row = dict(row)
+            row.pop("issuerId", None)
+            out[issuer_id] = row
+    return out
+
+
+def write_issuer_shards(root, per_issuer):
+    """Scherben neu schreiben - eine je letzte drei CIK-Stellen, sortiert."""
+    from json import dumps
+    out = Path(root) / "quant" / "data" / "fundamentals" / "issuers"
+    out.mkdir(parents=True, exist_ok=True)
+    shards = {}
+    for issuer_id, row in per_issuer.items():
+        shard = str(row["cik"]).zfill(10)[-3:]
+        shards.setdefault(shard, []).append(dict(row, issuerId=issuer_id))
+    for stale in out.glob("*.json"):
+        stale.unlink()
+    for shard, rows in sorted(shards.items()):
+        rows.sort(key=lambda r: r["issuerId"])
+        (out / f"{shard}.json").write_text(
+            dumps({"shard": shard, "count": len(rows), "issuers": rows}, indent=2,
+                  ensure_ascii=False) + "\n", encoding="utf-8")
+    return len(shards)
